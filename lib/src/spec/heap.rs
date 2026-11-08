@@ -284,7 +284,7 @@ pub(crate) fn made_with(layout: &crate::harness::Layout, domain: &super::ObjectD
 fn unbuilt(made_by: &super::Construction) -> String {
     match made_by {
         super::Construction::Constructors { .. } => unreachable!("constructors are built"),
-        super::Construction::FieldByField => "the domain is made field by field, which includes states no constructor makes; only a domain made by constructors is built, and a check over constructor-made objects would be about other inputs than the claim's".into(),
+        super::Construction::FieldByField {} => "the domain is made field by field, which includes states no constructor makes; only a domain made by constructors is built, and a check over constructor-made objects would be about other inputs than the claim's".into(),
         super::Construction::Planned { .. } => "the domain is made by a construction plan, which the objects stream builds (llm-dlc/loops/application-core-objects.md); until it does, a check over the constructor domain would be about other inputs than the claim's".into(),
         super::Construction::Invariant { invariants } => format!("the domain is made of the states that satisfy the invariant{} {}, which no check builds; only a domain made by constructors is, and a check over constructor-made objects would be about other inputs than the claim's", if invariants.len() == 1 { "" } else { "s" }, invariants.join("; ")),
     }

@@ -391,7 +391,7 @@ fn check_planned_in(work: &Path, claim: &CanonicalClaim, before: &Path, after: &
     let crate::spec::Construction::Planned { before: plan_before, after: plan_after } = &domain.made_by else {
         return Err(gap(format!("a domain made {}: the effect check makes a method's inputs by a construction plan", match &domain.made_by {
             crate::spec::Construction::Constructors { .. } => "by the constructors a regression check finds",
-            crate::spec::Construction::FieldByField => "field by field",
+            crate::spec::Construction::FieldByField {} => "field by field",
             crate::spec::Construction::Invariant { .. } => "of invariants",
             crate::spec::Construction::Planned { .. } => "by a plan",
         })));

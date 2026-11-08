@@ -495,6 +495,7 @@ fn compare_counts_a_declared_environment_as_a_persons_decision() {
         cache: None,
         bounds: ClaimBounds { unwind: 8, max_array_length: 4 },
         environment,
+        domains: Default::default(),
     };
     let declared = jvmcontract::compare::run(&options(&w, vec![query(1)])).unwrap_or_else(|u| panic!("{u}"));
     assert_eq!(declared.effort.decisions.get("environment assumption"), Some(&1), "{:?}", declared.effort.decisions);

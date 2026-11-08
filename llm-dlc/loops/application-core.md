@@ -1054,6 +1054,61 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     building it would be a capability of its own (harness, witness, replay), and no row needs it.
   - **Docs**: `lib/README.md`'s list paragraph and its interfaces paragraph, and the module doc of `spec::plans`.
   - **Next**: the last of item 6, `compare` with a plan per subject. Then item 7.
+- 2026-11-08, **Phase 5 step 1, interface request 6 done (its last part): `compare --domains`, a kernel subject's
+  declared domain**, a construction plan with its setup calls passed to the heap check as it is.
+  - **The reproducer**: `compare` on the throttle family's `before` and `after-setup` (one unit short only once a call
+    has taken some) **verified** `Throttle#allows` over the constructor domain, and had no way to state the setup
+    plan's domain: `--domains` was an unknown argument, and `compare::run` built every kernel claim with
+    `domain: None`. The new `tests/compare_domains.rs` refutes it under the declared plan, and failed before.
+  - **Why a domain, not a bare plan**: a plan doesn't say the claim's classes, input and allocation bounds or label,
+    which the heap check enforces and which the user decided twice for frozen claims (O3, `basket-first-claim`). So
+    the file states each subject's whole domain, a frozen claim's `domain` as it is, `made_by: planned` carrying the
+    plan. The tool doesn't choose those for a person.
+  - **The change**:
+    - `compare --domains FILE` (`compare::load_domains`, `Options::domains`): a JSON object from each new method
+      (`pkg.Class#method`, as the report names it) to its `ObjectDomain`. A subject's kernel claim has that domain as
+      it is, so `heap::check_with` enforces or refuses each part of it, as it does a frozen claim's.
+    - A domain for a subject the run checks no claim of (an unchanged method, an entry point's handler, a misspelt
+      name) is refused before any proof, naming the kernel's pairs. A subject that isn't a method, and a plan
+      `construction::check_plans` refuses, are refused on reading.
+    - Each declared domain counts as one domain restriction a person made, in the effort report.
+    - **A serde hole closed with it**, as cycle 13's was in `spec/plans.rs`: `spec/mod.rs` had no
+      `deny_unknown_fields` at all, so a domain stated with a misspelt option (`"nulable"`) was read as the domain
+      without it. `ObjectDomain`, `VersionBounds`, `ObjectBounds` and `Construction` now refuse a field they don't
+      have, and `Construction::FieldByField` is an empty struct variant (`FieldByField {}`), which the attribute
+      reaches. The JSON is the same, and every frozen claim still reads.
+  - **Checks**:
+    - `compare_domains` 3 of 3:
+      - the correct case and the defect: over the constructor domain `after-setup` is verified, labelled so; over the
+        setup plan it is refuted on the result, the witness the whole history (`after the setup this.take(…)`) run
+        on a JVM, the claim carrying the domain as declared and the effort counting one domain restriction; `after`
+        is verified over it; over the constructor-only plan `after-setup` is verified, labelled "right after its
+        constructor", and `one-short` refuted;
+      - the cached evidence: an exact rerun under the setup plan is the stored result; the constructor-only plan is
+        another key, checked again; an edit of the target under the setup plan is never answered by the stored
+        proof;
+      - the refusals: a domain for `Throttle#take` (unchanged) or a misspelt subject, a field-by-field domain (the
+        kernel pair unsupported, "field by field"), and files with a misspelt domain field, a bounds field, a field
+        under `field-by-field`, a subject that isn't a method, and a plan whose new version renames the receiver its
+        setup call is made on.
+        The command line reads the file, and exits 1 on the refutation.
+    - Two sabotages fail them: the kernel claim ignoring the declared domain fails all three tests, and
+      `ObjectDomain` without `deny_unknown_fields` fails the misspelt option.
+    - Inline: the library's unit tests 257, `compare` 1, `heap` 49, `summaries` 40, `environment` 17, `effects` 19,
+      `application_core_objects` 22, `value_parameters` 10, `values` 18, `reuse` 12, `reuse_summaries` 14,
+      `environment_responses` 8, `environment_quotes` 4 (`preparation`'s benchmark ignored, as always). The
+      integration check passes: the contract 14 of 14 (every frozen claim reads under the strict domain), the unit
+      tests, `compare` 1, `effects` 19, `foundations` 5, and the Python suites.
+  - **For the for-review list**: the proof cache keys the check a domain makes (its harness, the methods that make
+    its inputs, the stated domain), not the domain's label or bounds, which the heap check enforces after the proof.
+    So the constructor-only plan, which makes exactly the constructor domain's harness, and no declared domain share
+    one stored proof, each result stating its own domain. Sound, since the proof is the same, but the brief's Phase 0
+    says "the claim key covers the label": that holds of `spec::cache::key`, not of the regression key a heap check is
+    reused under. The test states it.
+  - **Docs**: `lib/README.md` (the `compare` usage, its paragraph and effort sentence, the plan paragraph, the
+    interfaces paragraph), `compare --domains`'s help, and the docs of `compare` and `spec::ObjectDomain`.
+  - **Item 6 is done.** **Next**: item 7, `lib/README.md`'s four sentences the streams couldn't rewrite. Then step 2's
+    joint acceptance as jobs.
 - Status: working
 
 ## Loop settings

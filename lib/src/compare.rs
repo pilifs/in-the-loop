@@ -8,16 +8,19 @@
 //! 2. **The kernel.** Every changed method pair alignment matches ([`crate::alignment::align`]), the entry points'
 //!    handlers apart, checked by the heap engine ([`crate::spec::heap::check_with`]) under the correspondence
 //!    alignment proposes for it and the contract its two signatures imply, with the identity relations a Java API
-//!    returning one of its object parameters is held to. A subject with several proposals, or one a person must
+//!    returning one of its object parameters is held to. Its inputs are made by their constructors, or by the domain a
+//!    person declares for the subject (`compare --domains`, [`Options::domains`]): a construction plan with its setup
+//!    calls, say, passed to the check as it is, its label and bounds included. A subject with several proposals, or one a person must
 //!    decide, is not checked: it is a question. The proposal's evidence is the proof's, under its claim key; its intent
 //!    stays proposed, and a standalone method's proved relation is not an approved refactor.
 //! 3. **Reuse.** With a cache directory, every proof runs under the proof cache: an unchanged rerun is an exact hit,
 //!    the entry points' effect-trace proofs ([`crate::effects::check_with`], keyed on the rewritten builds, recording
 //!    stubs included) as the kernel's checks, and a changed pure helper is proved once and taken as one function in
 //!    its callers.
-//! 4. **Effort.** Every decision a person made, by category, and every question the run leaves for one. The only
-//!    input of a person's this run takes is a declared environment (`compare --environment`): each modelled call in it
-//!    is an environment assumption a person made. What it asks, it lists.
+//! 4. **Effort.** Every decision a person made, by category, and every question the run leaves for one. The inputs of
+//!    a person's this run takes are a declared environment (`compare --environment`), each modelled call in it an
+//!    environment assumption a person made, and the declared domains (`compare --domains`), each a domain restriction
+//!    a person made. What it asks, it lists.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -29,8 +32,8 @@ use crate::effects::EntryCheck;
 use crate::spec::cache::Reuse;
 use crate::spec::observe::{Change, Obligation};
 use crate::spec::{
-    heap, CanonicalClaim, ClaimBounds, Correspondence, Evidence, Hint, HintContent, Observation, Outcome, Part, ToolIdentity, Unsupported, Verdict,
-    VersionDigests,
+    heap, CanonicalClaim, ClaimBounds, Correspondence, Evidence, Hint, HintContent, ObjectDomain, Observation, Outcome, Part, ToolIdentity, Unsupported,
+    Verdict, VersionDigests,
 };
 
 /// What `compare` takes.
@@ -46,6 +49,31 @@ pub struct Options {
     /// ([`crate::environment::declared`]): every entry point's effect check takes them in place of its spec's calls,
     /// and each counts as one of the person's environment assumptions in the effort report.
     pub environment: Vec<crate::spec::ModeledCall>,
+    /// The domains a person declares, by kernel subject (the new method, `pkg.Class#method`, as the report names it;
+    /// `compare --domains`, [`load_domains`]): the subject's claim has that domain in place of the constructor domain,
+    /// and its check takes it as it is ([`crate::spec::heap::check_with`]: a construction plan, its classes, bounds and
+    /// label). Each counts as one of the person's domain restrictions. A domain for a subject the run doesn't check
+    /// (an unchanged method, an entry point's handler, a name alignment doesn't match) is refused before any proof,
+    /// never left unread.
+    pub domains: BTreeMap<String, ObjectDomain>,
+}
+
+/// Reads `compare --domains FILE`: a JSON object from each kernel subject to its domain, as a claim states one
+/// (`{"pkg.Class#method": {"classes": [...], "bounds": ..., "made_by": {"kind": "planned", ...}, "label": ...}}`). A
+/// field a domain doesn't have is refused, and so is a plan [`crate::construction::check_plans`] refuses.
+pub fn load_domains(path: &Path) -> Result<BTreeMap<String, ObjectDomain>, Unsupported> {
+    let fail = |e: String| unsupported(format!("--domains {}: {e}", path.display()));
+    let text = std::fs::read_to_string(path).map_err(|e| fail(e.to_string()))?;
+    let domains: BTreeMap<String, ObjectDomain> = serde_json::from_str(&text).map_err(|e| fail(e.to_string()))?;
+    for (subject, domain) in &domains {
+        if !subject.contains('#') {
+            return Err(fail(format!("{subject} is not a method, pkg.Class#method")));
+        }
+        if let crate::spec::Construction::Planned { before, after } = &domain.made_by {
+            crate::construction::check_plans(before, after).map_err(|u| fail(format!("{subject}'s plan: {u}")))?;
+        }
+    }
+    Ok(domains)
 }
 
 /// The categories of a person's decisions, every one counted, so that effort can't hide by moving category.
@@ -123,21 +151,30 @@ pub fn run(options: &Options) -> Result<Report, Unsupported> {
     let old = crate::spec::observe::entry_points(before)?;
     let new = crate::spec::observe::entry_points(after)?;
     let obligations = crate::spec::observe::compare(&old, &new)?;
-    let entries = crate::effects::check_builds(before, after, &[], None, options.bounds.clone(), options.cache.as_deref(), &options.environment)?;
     let handlers: Vec<&str> = old.iter().chain(new.iter()).map(|s| s.handler.as_str()).collect();
 
     let load = |dir: &Path| Build::load(dir).map_err(|e| unsupported(format!("reading the build {}: {e}", dir.display())));
     let (b, a) = (load(before)?, load(after)?);
     let aligned = alignment::align(&b, &a, None);
     let hints = alignment::hints(&aligned);
+    let pairs: Vec<&alignment::mappings::Mapping> = aligned.mappings.iter().filter(|m| !handlers.contains(&m.after.as_str()) && !handlers.contains(&m.before.as_str())).collect();
+    // A declared domain is read by the check of its subject, or the run is refused: never a domain stated and unread.
+    if let Some(subject) = options.domains.keys().find(|s| !pairs.iter().any(|m| &m.after == *s)) {
+        let subjects: Vec<&str> = pairs.iter().map(|m| m.after.as_str()).collect();
+        let why = if handlers.contains(&subject.as_str()) { "it is an entry point's handler, which its observation spec's claim checks".to_string() } else { format!("the kernel's changed method pairs are {}", if subjects.is_empty() { "none".to_string() } else { subjects.join(", ") }) };
+        return Err(unsupported(format!("--domains declares a domain for {subject}, which this run checks no kernel claim of ({why}): a domain no check reads is refused")));
+    }
+    let entries = crate::effects::check_builds(before, after, &[], None, options.bounds.clone(), options.cache.as_deref(), &options.environment)?;
     let mut kernel = Vec::new();
-    for m in aligned.mappings.iter().filter(|m| !handlers.contains(&m.after.as_str()) && !handlers.contains(&m.before.as_str())) {
+    for m in pairs {
         kernel.push(check_kernel(m, &hints.entries, &b, options));
     }
 
     let mut effort = Effort { decisions: CATEGORIES.iter().map(|c| (c.to_string(), 0)).collect(), ..Default::default() };
     // Each modelled call a person declares is a decision of theirs: what the dependency may answer.
     *effort.decisions.get_mut("environment assumption").expect("a category") += options.environment.len();
+    // Each declared domain is one too: which inputs the subject's claim is about.
+    *effort.decisions.get_mut("domain restriction").expect("a category") += options.domains.len();
     for o in &obligations {
         let decide = match o.change {
             Change::Removed => format!("{} is gone from the new build: approve its {} as removed, or it stays unresolved", o.entry, o.observation),
@@ -196,7 +233,7 @@ fn check_kernel(m: &alignment::mappings::Mapping, hints: &[Hint], b: &Build, opt
     let claim = CanonicalClaim {
         contract,
         closures: VersionDigests { before: "digested by the proof cache".into(), after: "digested by the proof cache".into() },
-        domain: None,
+        domain: options.domains.get(&m.after).cloned(),
         observations,
         correspondence: correspondence.clone(),
         environment: None,

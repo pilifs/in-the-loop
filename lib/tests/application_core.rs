@@ -215,7 +215,7 @@ fn g0_an_unsupported_domain_policy_is_refused_before_any_verdict() {
     let mut extra_class = kernel.clone();
     extra_class.domain.as_mut().unwrap().classes.push("shop.Discount".into());
     for (what, claim) in [
-        ("field by field", with(Construction::FieldByField)),
+        ("field by field", with(Construction::FieldByField {})),
         ("invariants", with(Construction::Invariant { invariants: vec!["q.quantity > 0".into()] })),
         ("a factory the kernel doesn't have", with(calls(&["before: shop.Quote(long cents, int quantity)", "after: shop.Quote.of(long cents, int quantity)"]))),
         ("a constructor left out", with(calls(&["before: shop.Quote(long cents, int quantity)", "after: shop.Quote(shop.Money amount, int quantity)"]))),

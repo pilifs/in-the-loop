@@ -236,6 +236,13 @@ enum Command {
         /// an environment assumption a person made.
         #[arg(long)]
         environment: Option<PathBuf>,
+        /// The domains a person declares for kernel subjects, as JSON: an object from each new method
+        /// (`pkg.Class#method`, as the report names it) to its domain as a claim states one (classes, bounds,
+        /// `nullable`, `may_alias`, `made_by` and `label`; `compare::load_domains`), a construction plan with setup
+        /// calls, say. The subject is checked over that domain in place of its constructors'. A domain for a subject
+        /// the run doesn't check is refused. Each counts in the effort report as a domain restriction a person made.
+        #[arg(long)]
+        domains: Option<PathBuf>,
         /// Print the report as JSON instead of text.
         #[arg(long)]
         json: bool,
@@ -1044,9 +1051,10 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let all = checks.iter().all(|c| c.checked.as_ref().is_some_and(|k| k.outcome.verdict == jvmcontract::spec::Verdict::Verified));
             Ok(if all { 0 } else { 1 })
         }
-        Command::Compare { before, after, cache, unwind, max_array_length, environment, json, report: report_dir, sources, base } => {
+        Command::Compare { before, after, cache, unwind, max_array_length, environment, domains, json, report: report_dir, sources, base } => {
             let environment = environment.as_deref().map(jvmcontract::environment::load).transpose().map_err(|u| Error::new(u.to_string()))?.unwrap_or_default();
-            let options = jvmcontract::compare::Options { before, after, cache, bounds: jvmcontract::spec::ClaimBounds { unwind, max_array_length }, environment };
+            let domains = domains.as_deref().map(jvmcontract::compare::load_domains).transpose().map_err(|u| Error::new(u.to_string()))?.unwrap_or_default();
+            let options = jvmcontract::compare::Options { before, after, cache, bounds: jvmcontract::spec::ClaimBounds { unwind, max_array_length }, environment, domains };
             let report = jvmcontract::compare::run(&options).map_err(|u| Error::new(u.to_string()))?;
             if let Some(dir) = &report_dir {
                 jvmcontract::sarif::write(&dir.join("compare.sarif"), &jvmcontract::compare::findings(&report, &sources, base.as_deref()))?;

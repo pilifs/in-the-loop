@@ -632,7 +632,7 @@ fn a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_
         }
     };
     let made_by = |m: Construction| move |c: &mut CanonicalClaim| c.domain.as_mut().unwrap().made_by = m.clone();
-    refused("a domain made field by field", &made_by(Construction::FieldByField), &["field by field"]);
+    refused("a domain made field by field", &made_by(Construction::FieldByField {}), &["field by field"]);
     refused("a domain of invariants", &made_by(Construction::Invariant { invariants: vec!["q.quantity > 0".into()] }), &["invariant", "q.quantity > 0"]);
     // A factory in place of the constructor, a constructor left out, and one the check doesn't call.
     let calls = |calls: &[&str]| made_by(Construction::Constructors { calls: calls.iter().map(|c| c.to_string()).collect() });

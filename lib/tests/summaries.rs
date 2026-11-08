@@ -370,7 +370,7 @@ fn each_part_the_brief_names_changes_the_key() {
         ("the domain's policy: who may be null", Box::new(|c| { c.domain.as_mut().unwrap().nullable.clear(); })),
         ("the domain's policy: who may alias", Box::new(|c| { c.domain.as_mut().unwrap().may_alias.clear(); })),
         ("the constructor a domain makes its inputs with", Box::new(|c| c.domain.as_mut().unwrap().made_by = jvmcontract::spec::Construction::Constructors { calls: vec!["after: shop.Quote.of(long, int)".into()] })),
-        ("the domain made field by field", Box::new(|c| c.domain.as_mut().unwrap().made_by = jvmcontract::spec::Construction::FieldByField)),
+        ("the domain made field by field", Box::new(|c| c.domain.as_mut().unwrap().made_by = jvmcontract::spec::Construction::FieldByField {})),
         ("an observation's payload", Box::new(|c| if let Some(jvmcontract::spec::Observation::Effect { payload, .. }) = c.observations.iter_mut().find(|o| matches!(o, jvmcontract::spec::Observation::Effect { .. })) { payload.pop(); })),
         ("the observation policy: an identity relation dropped", Box::new(|c| c.observations.retain(|o| !matches!(o, jvmcontract::spec::Observation::Identity { .. })))),
         ("the correspondence", Box::new(|c| c.correspondence.as_mut().unwrap().inputs[0].new = "new.q.amount.cents + 1".into())),

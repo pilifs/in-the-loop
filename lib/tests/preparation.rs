@@ -58,7 +58,7 @@ fn timed<T>(f: impl FnOnce() -> T) -> (T, f64) {
 }
 
 fn options(after: &Path, cache: &Path) -> Options {
-    Options { before: build("before").to_path_buf(), after: after.to_path_buf(), cache: Some(cache.to_path_buf()), bounds: ClaimBounds { unwind: 16, max_array_length: 8 }, environment: Vec::new() }
+    Options { before: build("before").to_path_buf(), after: after.to_path_buf(), cache: Some(cache.to_path_buf()), bounds: ClaimBounds { unwind: 16, max_array_length: 8 }, environment: Vec::new(), domains: Default::default() }
 }
 
 /// The sums of a run's proofs, by stage, every level of proof included (a helper's own proof is inside its caller's

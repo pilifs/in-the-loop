@@ -103,8 +103,10 @@ pub struct ApprovedChange {
     pub text: String,
 }
 
-/// The object part of an input domain.
+/// The object part of an input domain. It and its parts refuse a field they don't have, so that a domain stated with
+/// a misspelt option (`nulable`) is refused, never read as the domain without it (`compare --domains`, a frozen claim).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ObjectDomain {
     /// The application classes an input object may have.
     pub classes: Vec<String>,
@@ -126,12 +128,14 @@ pub struct ObjectDomain {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct VersionBounds {
     pub before: ObjectBounds,
     pub after: ObjectBounds,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ObjectBounds {
     /// Input objects, all parameters together.
     pub input_objects: u32,
@@ -139,15 +143,17 @@ pub struct ObjectBounds {
     pub allocations: u32,
 }
 
-/// How a domain's input objects are made.
+/// How a domain's input objects are made. A variant without fields is an empty struct variant (`FieldByField {}`),
+/// which `deny_unknown_fields` reaches, as in `plans` (a unit variant of an internally tagged enum takes any field and
+/// drops it).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case", tag = "kind")]
+#[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum Construction {
     /// By these constructors or factories, with symbolic arguments (decision 2 of the brief): every state is one the
     /// application can make, and no claim is made about states only later calls reach.
     Constructors { calls: Vec<String> },
     /// Field by field: states no constructor makes are included, as assumptions. Named, not built in this loop.
-    FieldByField,
+    FieldByField {},
     /// States constrained by invariants. Named, not built in this loop.
     Invariant { invariants: Vec<String> },
     /// By a construction plan for each version: constructors or factories, shared nodes, bounded arrays and values,

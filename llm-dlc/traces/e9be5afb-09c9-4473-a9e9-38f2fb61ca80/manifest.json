@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e9be5afb-09c9-4473-a9e9-38f2fb61ca80",
-  "status": "ended",
+  "status": "open",
   "title": "Application-core feature streams exiting early",
   "first_prompt": "The latest feature streams (\"application-core\") appear to have exited early. Can you investigate?",
   "client": {
@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-08T13:37:27.160Z",
-  "duration_seconds": 7882,
+  "ended": "2026-11-08T17:20:16.853Z",
+  "duration_seconds": 21251,
   "stats": {
-    "turns": 7,
-    "api_calls": 116,
-    "tool_calls": 117,
+    "turns": 8,
+    "api_calls": 122,
+    "tool_calls": 122,
     "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 332237,
+    "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 248,
-      "output_tokens": 125020,
-      "cache_read_input_tokens": 20577128,
-      "cache_creation_input_tokens": 441071
+      "input_tokens": 262,
+      "output_tokens": 130544,
+      "cache_read_input_tokens": 22283398,
+      "cache_creation_input_tokens": 752719
     }
   },
   "tools": {
-    "Bash": 102,
+    "Bash": 105,
     "Write": 7,
+    "AskUserQuestion": 4,
     "Read": 4,
-    "AskUserQuestion": 2,
     "Agent": 1,
     "ScheduleWakeup": 1
   },
@@ -49,24 +49,24 @@
     {
       "index": 0,
       "started": "2026-11-08T11:26:05.429Z",
-      "ended": "2026-11-08T13:37:27.160Z",
-      "turns": 7,
-      "api_calls": 116,
+      "ended": "2026-11-08T17:20:16.853Z",
+      "turns": 8,
+      "api_calls": 122,
       "usage": {
-        "input_tokens": 248,
-        "output_tokens": 125020,
-        "cache_read_input_tokens": 20577128,
-        "cache_creation_input_tokens": 441071
+        "input_tokens": 262,
+        "output_tokens": 130544,
+        "cache_read_input_tokens": 22283398,
+        "cache_creation_input_tokens": 752719
       },
-      "peak_context_tokens": 332237
+      "peak_context_tokens": 339175
     }
   ],
   "log": {
-    "sha256": "ca6ae47fac60de22a39c2ceacb71f268705c0e2a970139bf62a3e9f604561265",
-    "bytes": 3107980,
-    "lines": 1060,
-    "gzip_bytes": 576504,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/ca6ae47fac60de22a39c2ceacb71f268705c0e2a970139bf62a3e9f604561265.jsonl.gz"
+    "sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e",
+    "bytes": 3191214,
+    "lines": 1106,
+    "gzip_bytes": 586352,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz"
   },
   "subagents": [
     {
@@ -281,6 +281,94 @@
       "summary": "application-core Phase 5 step 1: a plan's adapted list root and a result's identity with the list's elements, so the contract's V2 claims reach their verdicts",
       "body": "Interface request 1's last part (llm-dlc/loops/application-core.md). construction::check_plans now takes a construction plan's root that is an adapted list of application objects, named as the root. It resolves the root's domain under this tool's list model (values::resolve), and refuses by name a list that may be null, an adapted String root, and roots that differ between the versions. The regression check makes the list as it makes a list parameter, under the domain's own bound (the frozen basket claims' 3) rather than --max-array-length. An object result that the check follows into its fields is no longer refused next to a list: the harness, the replay and the Java text compare it for identity with each of the list's objects, before and now (harness::Root::Element, named lines[0] for the first object and lines.m1, ... for the others). That covers basket-first-claim's identity:result==lines[0]. The statement states the list's objects as one observation of the list, so a claim's field:lines is compared. The list counts among the input objects, and a contract input may name a generic parameter by its erased type.\n\nVerified: the contract (lib/tests/application_core.rs) accepts no refusal for V2's claims any more and passes 14 of 14. basket-total-claim and basket-clear-claim reach all ten of expected.json's verdicts. basket-first-claim reaches four of its five. copied-first is left unresolved by the allocation gate, because the claim bounds allocations at 0 and the defect's copy makes 2 objects (the Line and the IllegalArgumentException its constructor may throw). expected.json says refuted. A frozen fixture's bound conflicts with its expectation, as O3's did, so this goes to the user, with the options in Progress. Until then the contract holds that one case to exactly the gate's outcome. tests/value_parameters.rs has 3 new tests (10 pass): the plan's own bound, and the identity preserved by the rewrite and refuted on copied-first with the bound raised to 2 (witness replayed on a JVM); seven refusals by name; and a planned claim's cache reused exactly but not under another list bound. Two sabotages fail them: identity references without the list's objects, and the replay reading them as null. The integration check passes, and so does every other test binary but integration.rs (JBMC). Docs: lib/README.md.",
       "log_sha256": "ca6ae47fac60de22a39c2ceacb71f268705c0e2a970139bf62a3e9f604561265"
+    },
+    {
+      "change_id": "ztwluxllsmxkwoltzozlyqyoslqmqvln",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a claim's value domains are resolved under this tool's models before its key, and before a modelled call's or a plan node's adapted value is refused",
+      "body": "Interface request 2 of the application-core merge. values::resolve_claim resolves every String and list domain a claim carries (a plan's adapted values at its roots, in its nodes and setup calls; a modelled call's adapted response and an object response's plan), and spec::cache::key resolves the claim before digesting it. A claim stated in the frozen claims' words and the same claim stated by the models' identities are now one key; a claim stated under another model, another JDK or a stronger level, or over a domain the adapters refuse, is uncacheable by name instead of keyed. environment::lower and construction::check_plans resolve an adapted result or node value before refusing it, so another model is refused for that; the adapted-result refusal now names what is missing (no stub makes an adapter's value).\n\nReproducer: tests/values.rs's a_claims_value_domains_are_resolved_before_its_key_and_its_checks, which failed with each of the three call sites taken out. It also checks values::resolve_claim against the test file's reference walk on all eight frozen claims. tests/reuse.rs's every_semantic_part_of_a_plan_or_a_model_changes_the_key expected other keys for a String model stated at the model's own level and a list model that says it leaves out nothing: once resolved, both are the frozen claim (ValueModels::resolve replaces a stated evidence record with the model's own), so the test now asserts their keys are the frozen claim's; a list of Strings and a String model stated as proved are asserted never keyed. Listed for review in the brief's Progress.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "soynvvqnuktyuqmusvknunwxxywppwrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a JBMC refutation through a stub that doesn't reproduce is no verdict under --confirm, VF-023's rule (verification pending)",
+      "body": "Interface request 3 of the application-core merge (llm-dlc/loops/application-core.md). VF-023: under --engine auto --confirm the own checker proves listSizes and listChange, and JBMC 6.11.0 refutes them through its stub of java.util.List.size(), with a witness the interpreter replays as holding; the tool reported 'the engines disagree'. equivalence::confirm now treats a JBMC refutation whose witness does not reproduce and whose preflight finds a stub as no verdict, naming the stubs, as it already did for a construct JBMC runs otherwise than the JVM. The own checker's proof stands, not confirmed; a witness that reproduces is still a disagreement.\n\nVerified: the values stream's reproducer (tests/values.rs confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict) is un-ignored and passes, and fails with the rule removed; conformance 10, values 18, and application-core-integration.sh pass. Job 20261108-141443-vf-023-rerun-the-conformance-corpus-unde reruns job 20261108-070211's step 2 unchanged and closes VF-023 when it passes. Docs: lib/README.md's --confirm paragraph and the doc of equivalence::confirm.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "wrpxlowuvyyozrtqyvpozqlrwvvwnpvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls",
+      "body": "Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.\n\nReproducer first: o2_a_setup_methods_edit_alone_is_another_claim_never_reused now also asks that exact reruns of the proof and the refutation are reused and that the typed calls list the history. It failed on the rerun with the guard in place, and with the guard dropped but the setup methods not rooted it failed on a stale hit (an edit of the setup method alone was answered by the stored proof). Verified: application_core_objects 22/22, build.py's new test_a_witness_keeps_its_setup_calls_and_they_validate, the integration check (contract 14/14, unit tests 254, compare, effects, foundations, Python suites), and every other test binary but integration.rs (JBMC).\n\nFound and recorded in Progress for item 6: property::run still refuses prove --cache --plan although the reuse stream's property key already reads the plan; lifting it needs an end-to-end test. Docs: lib/README.md's plan and claim-root paragraphs, proof_cache's module doc.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "pszyvtwkuqoovtwotnznuyrnvyxkknop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the VF-023 rerun; VF-023 closed",
+      "body": "Job 20261108-141443 (the conformance corpus under auto --confirm, at 13f3e9a0dac8) passed in 23m18s, peak 1.8 GiB, so VF-023 is closed in verification/findings.md. Its only output, lib/target/conformance-confirm.log, was not applied because the file changed since the job's commit; it is a log, so no rerun.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "lkwsnvtrumwnnvsvrrznozkworovxmov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a dependency's DTO response, made by the construction plan, fresh or stable, or null (E3)",
+      "body": "Interface request 5's E3 half. A modelled call's normal result may now be a DTO (Returned::Object): one object of an application class, made by the one node of a construction plan by the constructor it names from integral or boolean leaves, or null where the model allows it. environment::lower turns it into a Response, each environment table entry's answer being its null flag and its leaves. The class is checked in each build: primitive instance fields only, no static field, no method beside its constructors, then construction::root (the objects stream's plan, so the environment has no object builder of its own). The effect check refuses a build that calls a method on the DTO, writes its field outside its constructors, or calls Object's hashCode, toString, wait or notify where it handles one. The stubs make the response from the chosen entry: a new object for every call under a fresh identity, one per entry for the trace under a stable one. A constructor that rejects the chosen leaves marks the log unresolved (a new mark bit; the build tag moves from 64 to 128). An array, String, inner-object or dependency field, a factory, a setup call, several roots and a stable identity under a per-call choice are refused by name.\n\nReproducer: the new lib/tests/environment_responses.rs, whose 8 tests all failed on the old refusal ('E3, not built yet'). They now pass: a rewrite proves; a changed null branch and a changed field test are refuted and replayed on a JVM; two responses compared by identity prove under stable and are refuted under fresh; a rejecting constructor is unresolved; five builds beyond data are refused by name; the claim key changes with identity, nullability and the DTO's constructor, and an exact rerun is reused. Two sabotages (fresh kept like stable; the null flag ignored) each fail two tests. The integration check passes (contract 14/14, 254 unit tests), as do environment 16, effects 18 and observations 12. Q's E1 and E2 rows through environment::check are the next cycle: the effect check takes integral handler inputs only, so the quote's plan-made receiver and request and its String keys need more than this.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "xmukllkrsvmkulswwuspzomzqqomrwxz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a method's claim under an environment, its receiver and request made by their plan, so the quote family's E1 and E2 rows reach their verdicts",
+      "body": "Interface request 5's second half. environment::check now runs the new effects::check_planned: the effect check's generated method takes a planned domain's flat inputs (primitive leaves, bounded int arrays, the values stream's String) and the environment's tables, makes the receiver and request by the constructors their plan names (construction::flat_roots, each dependency of an application interface null and answered by the stubs), and calls the method. A constructor's exception is the outcome, as the call's is. A modelled call's String key is compared by content (environment::lower accepts it); a key past the claim's String bound marks the log unresolved (a new mark bit). Under a plan, a payload String is snapshotted by its content within the same bound. The domain is enforced as the regression gate does (classes, input objects, allocations), and what the plan doesn't make is refused by name.\n\nVerified: the contract's E1 and E2 rows now accept no refusal and reach all sixteen of expected.json's verdicts on the frozen quote fixture (quote-claim: after and alias-to-copy verified, four defects refuted on the result, missing-catch on the exception, wrong-branch-event on the event, each witness replayed on a JVM; offer-claim: helper-extra-field refuted, the rest verified). The new tests/environment_quotes.rs (4 tests) covers the witness words, a key and a payload past the bound left unresolved, six refusals and an allocation bound, and the claim key under the proof cache. Three sabotages fail them. The integration check passes, as do environment 16, environment_responses 8 and observations 12; bmc::bits' known timing flake failed two of four integration runs and no standalone run. Two tests that expected a String key to be refused now assert the refusal that still applies.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "olkzqrwkvzvlksooxtpxynnsummotmkl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: compare counts a declared environment as a person's decision, and the stale help and docs of --environment, --plan and prove --cache",
+      "body": "Interface request 6's first part (llm-dlc/loops/application-core.md). compare::run now counts each modelled call of a declared --environment as one environment assumption in its effort report; before, a person's model counted 0. Reproducer: tests/environment.rs's compare_counts_a_declared_environment_as_a_persons_decision, which failed before the change and passes now.\n\nThe help of effects/compare --environment, equivalence/prove --plan and prove --cache, and the docs of compare::Options, property::Options and equivalence::Options, no longer say the option is refused until a stream builds it; they say what it takes and what is refused by name. The effect check's replay error and lib/README.md no longer blame the JVM runner's 16 words of stack, which jvm_witness::run has sized from the arguments since item 1.\n\nVerified: environment 17 of 17; the integration check passes (the contract 14 of 14, unit tests 254, compare 1, effects 18, foundations 5, the Python suites).",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "xttxqzsnlyxsxpynynkzowlzvukoqqzo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: prove --cache --plan, a planned property cached with its setup methods in the key, and a property result's reuse in its outcome",
+      "body": "Interface request 6 of the merge, its property-cache part. property::run no longer refuses --cache with --plan: the reuse stream's property claim already reads the plan whole and roots its makers and setup calls in the code closure. property::Outcome gains a reuse field (Reuse::Exact with the key and provenance on a hit), and reuse::property_store takes &mut Outcome, so a result that can't be stored says why in the outcome's output instead of on the standard error.\n\nReproducer first: tests/reuse.rs's new a_planned_property_is_cached_and_an_edit_of_its_setup_method_alone_is_proved_again failed on the guard before. It now shows a planned property of a counter verified, stored and reused exactly; an edit of the setup method alone proved again and refuted with the whole history, the rerun reusing the refutation with it; a plan without the setup call keyed apart; and a cache that is a file noted in the output with the verdict unchanged. Taking the setup calls out of the key's roots makes it fail on a stale hit. reuse 12, application_core_objects 22, value_parameters 10 and summaries 40 pass, and so does the integration check (the contract 14 of 14, unit tests 254, compare 1, effects 18, foundations 5, the Python suites). prove --cache's help, lib/README.md and the module docs are updated.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "vvlqvmonnwyvpzvuoqyomvqtnuyluwtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a string literal is read by its code units, an isolated surrogate included, so two literals that differ only in one are never one",
+      "body": "The values stream's request for the merge (interface request 6): the class reader decoded every CONSTANT_Utf8 as Rust text, so \"\\uDBFF\" and \"\\uDBFE\" both read as \"\\uFFFD\", for the interpreter, the own checker, the closure digests and the relocated classes the JVM runs alike. The reproducers failed before: a rewrite of \"\\uDBFF\".charAt(0) to the constant 0xDBFF was refuted, with the JVM run agreeing because relocate had rewritten the old version's literal; a cached proof was reused for a build whose literal differs only in its surrogate; and the effect check verified a send whose topic changed from \"q\\uDBFF\" to \"q\\uDBFE\", a wrong proof.\n\nConstant::Utf8 now keeps the code units of an entry that isn't well-formed UTF-16 (ConstantPool::utf16), and such a String constant loads as the new BootstrapArg::Units, which a reader that takes only Str refuses. relocate keeps an entry's bytes unless renaming changes its text. The interpreter interns literals by code units (ldc, ConstantValue, concatenation recipes and constants, typeSwitch labels); the own checker's literal identity is its units; the effect check's payload literals are units; shared::shape, and so a closure's digest, prints them. The String model's ldc evidence record admits isolated surrogates and leaves nothing out, which changes the String model's identity and so every String claim's key (cache misses, never a wrong reuse).\n\nVerified inline: the new tests/string_literals.rs (2), tests/effects.rs's payload-literal test, and the values corpus's lone-surrogate cases on the JVM, the interpreter and the own checker; a sabotage (relocate copying as text) fails all three new tests. The library's unit tests 256, and every test binary but integration.rs (JBMC) pass; the integration check passes (the contract 14 of 14). Progress updated; the rest of item 6 is ElementKind::String's bound and compare with a plan per subject.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "rntvlrrvovlknmxroottkvnznlrpxzws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a list of Strings bounds its elements' code units, and no variant of the shared interfaces drops a field it doesn't have",
+      "body": "Interface request 6's ElementKind::String bound: ElementKind::String is now { max_length }, the elements' code units bounded apart from the list's length, and a bound left out is refused. The reproducer: a list of Strings stated with that bound read back without it, because serde's deny_unknown_fields doesn't reach a unit variant of an internally tagged enum. All eight unit variants of lib/src/spec/plans.rs had the same hole (a new unit test probes each), so {\"kind\": \"per-call\", \"results\": [0, 1]} in an environment file was a per-call choice with its script dropped. Each is now an empty struct variant (Query {}), with the same JSON, so no frozen fixture or claim key changes for it.\n\nThe list adapter still refuses a list of Strings by name, now for the true reason: it makes lists of an application class's objects only, and no acceptance case needs a list of Strings. A regression check's List<String> parameter is refused in those words (before: 'java.lang.String, which is no application class'). The list model's record says the same; it is part of the model's identity, so list claims get new keys, a cache miss.\n\nVerified inline: the library's unit tests 257, values 18, value_parameters 10, reuse 12, environment 17, environment_responses 8, environment_quotes 4, reuse_summaries 14, application_core_objects 22, heap 49, string_literals 2, alignment 34, conformance 10, observations 12, summaries 40, skill 1; the integration check passes (the contract 14 of 14). Docs: lib/README.md's list and interfaces paragraphs, spec::plans' module doc. The brief's Progress records it; the rest of the brief is current.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
+    },
+    {
+      "change_id": "ozqzmwkprvsvywqswqqmmrnsouootyro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: compare --domains, a kernel subject's declared domain passed to the heap check as it is, and the claim's object domain refuses a field it doesn't have",
+      "body": "The last of interface request 6 (the objects stream's: give compare a plan per subject). Before, compare built every kernel claim with no domain, so on the throttle family's after-setup defect (one unit short only once a setup call has taken some) it verified Throttle#allows over the constructor domain, and had no way to state the setup plan's domain. Now compare --domains FILE takes a JSON object from each kernel subject (the new method, pkg.Class#method) to its ObjectDomain, as a frozen claim states one; the subject's claim carries it as it is, so spec::heap::check_with enforces or refuses each part. A whole domain rather than a bare plan, because a plan doesn't say the claim's classes, bounds or label, which the user decided twice for frozen claims. A domain for a subject the run checks no claim of (an unchanged method, an entry point's handler, a misspelt name) is refused before any proof; each declared domain counts as one domain restriction in the effort report.\n\nWith it, the serde hole cycle 13 closed in spec/plans.rs is closed in spec/mod.rs: ObjectDomain, VersionBounds, ObjectBounds and Construction had no deny_unknown_fields, so a domain with a misspelt option (nulable) was read as the domain without it. They now refuse unknown fields, and Construction::FieldByField is an empty struct variant so the attribute reaches it. The JSON is unchanged and every frozen claim still reads.\n\nVerified: the new lib/tests/compare_domains.rs (3 tests: after-setup verified over the constructor domain and refuted over the declared setup plan with the whole history run on a JVM, after verified, one-short refuted over the constructor-only plan; an exact rerun reused and another plan or an edited target checked again; the refusals and the command line). Two sabotages fail it (the claim ignoring the declared domain; ObjectDomain without deny_unknown_fields). The library's unit tests (257) and every affected test binary pass, and so does the integration check (the contract 14 of 14). Found for the for-review list: the proof cache keys the check a domain makes, not its label or bounds, so a constructor-only plan and no declared domain share one stored proof, each result stating its own domain. That is sound, but the brief's Phase 0 sentence 'the claim key covers the label' holds of spec::cache::key, not of the regression key a heap check is reused under. Item 6 is done; item 7 is next.",
+      "log_sha256": "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e"
     }
   ],
   "logs": {
@@ -312,6 +400,12 @@
       "bytes": 958445,
       "lines": 327,
       "gzip_bytes": 178647,
+      "url": null
+    },
+    "be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e": {
+      "bytes": 3191214,
+      "lines": 1106,
+      "gzip_bytes": 586352,
       "url": null
     },
     "be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7": {

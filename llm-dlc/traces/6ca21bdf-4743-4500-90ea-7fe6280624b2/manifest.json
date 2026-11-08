@@ -12,34 +12,35 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T17:04:27.001Z",
-  "duration_seconds": 24118,
+  "ended": "2026-11-08T17:20:50.082Z",
+  "duration_seconds": 25101,
   "stats": {
-    "turns": 80,
-    "api_calls": 839,
-    "tool_calls": 835,
-    "tool_errors": 5,
-    "compactions": 13,
+    "turns": 85,
+    "api_calls": 902,
+    "tool_calls": 899,
+    "tool_errors": 6,
+    "compactions": 14,
     "peak_context_tokens": 292860,
     "usage": {
-      "input_tokens": 1722,
-      "output_tokens": 556860,
-      "cache_read_input_tokens": 119600749,
-      "cache_creation_input_tokens": 2303857
+      "input_tokens": 1850,
+      "output_tokens": 598662,
+      "cache_read_input_tokens": 127376381,
+      "cache_creation_input_tokens": 2471270
     }
   },
   "tools": {
-    "Bash": 761,
-    "Read": 36,
-    "Edit": 16,
-    "Monitor": 7,
-    "ToolSearch": 6,
+    "Bash": 818,
+    "Read": 39,
+    "Edit": 17,
+    "Monitor": 8,
+    "ToolSearch": 7,
     "TaskStop": 5,
-    "Write": 4
+    "Write": 5
   },
   "files_touched": [
     "lib/src/equivalence.rs",
     "lib/src/values.rs",
+    "lib/tests/compare_domains.rs",
     "lib/tests/environment_quotes.rs",
     "lib/tests/environment_responses.rs",
     "lib/tests/string_literals.rs",
@@ -233,24 +234,38 @@
     {
       "index": 13,
       "started": "2026-11-08T16:48:23.547Z",
-      "ended": "2026-11-08T17:04:27.001Z",
-      "turns": 6,
-      "api_calls": 58,
+      "ended": "2026-11-08T17:04:59.591Z",
+      "turns": 7,
+      "api_calls": 62,
       "usage": {
-        "input_tokens": 122,
-        "output_tokens": 25798,
-        "cache_read_input_tokens": 6249423,
-        "cache_creation_input_tokens": 127230
+        "input_tokens": 130,
+        "output_tokens": 27386,
+        "cache_read_input_tokens": 6820070,
+        "cache_creation_input_tokens": 133773
       },
-      "peak_context_tokens": 140309
+      "peak_context_tokens": 146852
+    },
+    {
+      "index": 14,
+      "started": "2026-11-08T17:05:31.493Z",
+      "ended": "2026-11-08T17:20:50.082Z",
+      "turns": 4,
+      "api_calls": 59,
+      "usage": {
+        "input_tokens": 120,
+        "output_tokens": 40214,
+        "cache_read_input_tokens": 7204985,
+        "cache_creation_input_tokens": 160870
+      },
+      "peak_context_tokens": 173949
     }
   ],
   "log": {
-    "sha256": "4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136",
-    "bytes": 22813379,
-    "lines": 7697,
-    "gzip_bytes": 4345370,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136.jsonl.gz"
+    "sha256": "5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768",
+    "bytes": 24607677,
+    "lines": 8315,
+    "gzip_bytes": 4697499,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -517,6 +532,14 @@
       "summary": "application-core Phase 5 step 1: a list of Strings bounds its elements' code units, and no variant of the shared interfaces drops a field it doesn't have",
       "body": "Interface request 6's ElementKind::String bound: ElementKind::String is now { max_length }, the elements' code units bounded apart from the list's length, and a bound left out is refused. The reproducer: a list of Strings stated with that bound read back without it, because serde's deny_unknown_fields doesn't reach a unit variant of an internally tagged enum. All eight unit variants of lib/src/spec/plans.rs had the same hole (a new unit test probes each), so {\"kind\": \"per-call\", \"results\": [0, 1]} in an environment file was a per-call choice with its script dropped. Each is now an empty struct variant (Query {}), with the same JSON, so no frozen fixture or claim key changes for it.\n\nThe list adapter still refuses a list of Strings by name, now for the true reason: it makes lists of an application class's objects only, and no acceptance case needs a list of Strings. A regression check's List<String> parameter is refused in those words (before: 'java.lang.String, which is no application class'). The list model's record says the same; it is part of the model's identity, so list claims get new keys, a cache miss.\n\nVerified inline: the library's unit tests 257, values 18, value_parameters 10, reuse 12, environment 17, environment_responses 8, environment_quotes 4, reuse_summaries 14, application_core_objects 22, heap 49, string_literals 2, alignment 34, conformance 10, observations 12, summaries 40, skill 1; the integration check passes (the contract 14 of 14). Docs: lib/README.md's list and interfaces paragraphs, spec::plans' module doc. The brief's Progress records it; the rest of the brief is current.",
       "log_sha256": "4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136"
+    },
+    {
+      "change_id": "ozqzmwkprvsvywqswqqmmrnsouootyro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: compare --domains, a kernel subject's declared domain passed to the heap check as it is, and the claim's object domain refuses a field it doesn't have",
+      "body": "The last of interface request 6 (the objects stream's: give compare a plan per subject). Before, compare built every kernel claim with no domain, so on the throttle family's after-setup defect (one unit short only once a setup call has taken some) it verified Throttle#allows over the constructor domain, and had no way to state the setup plan's domain. Now compare --domains FILE takes a JSON object from each kernel subject (the new method, pkg.Class#method) to its ObjectDomain, as a frozen claim states one; the subject's claim carries it as it is, so spec::heap::check_with enforces or refuses each part. A whole domain rather than a bare plan, because a plan doesn't say the claim's classes, bounds or label, which the user decided twice for frozen claims. A domain for a subject the run checks no claim of (an unchanged method, an entry point's handler, a misspelt name) is refused before any proof; each declared domain counts as one domain restriction in the effort report.\n\nWith it, the serde hole cycle 13 closed in spec/plans.rs is closed in spec/mod.rs: ObjectDomain, VersionBounds, ObjectBounds and Construction had no deny_unknown_fields, so a domain with a misspelt option (nulable) was read as the domain without it. They now refuse unknown fields, and Construction::FieldByField is an empty struct variant so the attribute reaches it. The JSON is unchanged and every frozen claim still reads.\n\nVerified: the new lib/tests/compare_domains.rs (3 tests: after-setup verified over the constructor domain and refuted over the declared setup plan with the whole history run on a JVM, after verified, one-short refuted over the constructor-only plan; an exact rerun reused and another plan or an edited target checked again; the refusals and the command line). Two sabotages fail it (the claim ignoring the declared domain; ObjectDomain without deny_unknown_fields). The library's unit tests (257) and every affected test binary pass, and so does the integration check (the contract 14 of 14). Found for the for-review list: the proof cache keys the check a domain makes, not its label or bounds, so a constructor-only plan and no declared domain share one stored proof, each result stating its own domain. That is sound, but the brief's Phase 0 sentence 'the claim key covers the label' holds of spec::cache::key, not of the regression key a heap check is reused under. Item 6 is done; item 7 is next.",
+      "log_sha256": "5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768"
     }
   ],
   "logs": {
@@ -560,6 +583,12 @@
       "bytes": 4385326,
       "lines": 1494,
       "gzip_bytes": 868432,
+      "url": null
+    },
+    "5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768": {
+      "bytes": 24607677,
+      "lines": 8315,
+      "gzip_bytes": 4697499,
       "url": null
     },
     "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229": {
