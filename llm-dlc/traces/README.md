@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 06:51 UTC |
-| Prompts | 1,637 |
-| Model calls | 16,361 |
-| Tool calls | 17,350 (306 failed) |
-| Compactions | 243 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 07:19 UTC |
+| Prompts | 1,643 |
+| Model calls | 16,410 |
+| Tool calls | 17,400 (307 failed) |
+| Compactions | 244 |
 | Subagents | 10 |
-| Tokens written | 17,786,742 |
-| Tokens read | 2,672,133,424 (97.9% from cache) |
-| Commits with a trace | 493 |
-| Log snapshots | 601 (1365.9 MB gzipped, 593 uploaded) |
+| Tokens written | 17,811,674 |
+| Tokens read | 2,676,809,350 (97.9% from cache) |
+| Commits with a trace | 494 |
+| Log snapshots | 602 (1368.5 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | open | 2 h 17 min | `claude-opus-5-5` | 35 | 431 | 429 | 0 | 7 | 315,218 | 8 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | open | 2 h 45 min | `claude-opus-5-5` | 41 | 480 | 479 | 1 | 8 | 315,218 | 9 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,15 +165,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 313,628 | 874 | 1,197,265 | 62,443,364 | 98.1% | 203 |
+| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 338,560 | 974 | 1,309,264 | 67,007,191 | 98.1% | 202 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 15,192 | 87.6% | 65 |
-| `Read` | 800 | 4.6% | 34 |
-| `Edit` | 652 | 3.8% | 34 |
+| `Bash` | 15,233 | 87.5% | 65 |
+| `Read` | 803 | 4.6% | 34 |
+| `Edit` | 658 | 3.8% | 34 |
 | `Write` | 409 | 2.4% | 30 |
 | `ToolSearch` | 103 | 0.6% | 26 |
 | `Monitor` | 69 | 0.4% | 23 |
@@ -687,6 +687,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 491 | change `vnrtpxst` | application-core objects O2: a constructor or setup call that writes a static field is refused by name, the negative control of unsupported side effects in a constructor | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/a0fc0a514d7a0dbbc7bdc517f035df2bbf1e99123a36dac95fc7d5f87fbca260.jsonl.gz)) |
 | 492 | change `qvzkzuzo` | application-core objects O2: an input only one version's constructors accept is a difference, the negative control of a narrower new constructor under an anchored domain (verification pending) | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/e100ad198018322aae67da4baa6499db486cc8c80276767c661fec30f825b099.jsonl.gz)) |
 | 493 | change `ozwozwko` | application-core objects O2: a shrunk witness is the same failure as the one found, replayed before it is accepted (verification pending) | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/7121f280dc9c36618eb4551eabd16dcd851ec60b90c20c473961955aec8d20ce.jsonl.gz)) |
+| 494 | change `urlkszxt` | application-core objects O2: every constructor and setup method that makes a check's inputs is listed as a claim root, for the reuse stream's key | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3.jsonl.gz)) |
 
 ## Logs
 
@@ -758,7 +759,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 8 | 0 | 10.7 MB | `7121f280dc9c`, not uploaded |
+| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 9 | 0 | 13.2 MB | `26bf08a708a0`, not uploaded |
 
 ## Session notes
 

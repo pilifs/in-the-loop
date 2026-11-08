@@ -1254,6 +1254,44 @@ impl Layout {
         (calls.into_iter().collect(), classes.into_iter().collect())
     }
 
+    /// The claim roots of the check's inputs (O2 of `llm-dlc/loops/application-core-objects.md`, for the reuse
+    /// stream's claim key): in each version, every method the harness calls to make the receiver, the arguments
+    /// and the receiver's state, so that an edit of any of them alone changes the claim. They are each object's
+    /// constructors, the inner objects' included ([`RecordType::constructors`], a plan's chosen descriptor among
+    /// them), then the setup calls on the receiver ([`Layout::setup`]), in order and each once. The previous
+    /// version's are under the names its classes have in its own build, without the `before/` prefix of the
+    /// relocated build (a record's own names are unprefixed already), and include those of a receiver or record
+    /// it is given by `--before-arguments` (`previous`). The target itself is not among them.
+    pub fn construction_roots(&self, previous: Option<&BeforeMethod>) -> ConstructionRoots {
+        let unprefixed = |class: &str| class.strip_prefix("before/").unwrap_or(class).to_string();
+        let inits = |r: &RecordType| r.constructors().into_iter().map(|(owner, d)| crate::classfile::MemberRef::new(&unprefixed(&owner), "<init>", &d));
+        let (mut before, mut after) = (Vec::new(), Vec::new());
+        for slot in self.records() {
+            if let Slot::Record { record, before: previous_record, .. } = slot {
+                after.extend(inits(record));
+                before.extend(inits(previous_record.as_ref().unwrap_or(record)));
+            }
+        }
+        if let Some(p) = previous {
+            for r in p.receiver.iter().chain(p.records.iter().flatten()) {
+                before.extend(inits(r));
+            }
+        }
+        // The setup calls are on the receiver, of the target's class in each version.
+        let receiver_class = |version: bool| match &self.receiver {
+            Some(Slot::Record { record, before: b, .. }) => Some(if version { record.class.clone() } else { b.as_ref().map(|b| b.class.clone()).or_else(|| previous.and_then(|p| p.receiver.as_ref()).map(|r| r.class.clone())).unwrap_or_else(|| record.class.clone()) }),
+            _ => None,
+        };
+        for (roots, version) in [(&mut after, true), (&mut before, false)] {
+            if let Some(class) = receiver_class(version) {
+                roots.extend(self.setup.iter().map(|s| crate::classfile::MemberRef::new(&unprefixed(&class), &s.method, &s.descriptor)));
+            }
+            let mut seen = std::collections::HashSet::new();
+            roots.retain(|m| seen.insert(m.clone()));
+        }
+        ConstructionRoots { before, after }
+    }
+
     pub fn has_records(&self) -> bool {
         self.receiver.is_some() || self.result.0.is_some() || self.result.1.is_some() || self.args.iter().any(|s| matches!(s, Slot::Record { .. }))
     }
@@ -1448,6 +1486,14 @@ fn previous_reads(text: &str) -> Vec<(String, bool)> {
         }
     }
     out
+}
+
+/// The claim roots of a check's inputs in each version ([`Layout::construction_roots`]): the methods the harness
+/// calls to make them, which a claim key's closures must cover along with the target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ConstructionRoots {
+    pub before: Vec<crate::classfile::MemberRef>,
+    pub after: Vec<crate::classfile::MemberRef>,
 }
 
 /// The previous version of the method, when it is not the target under the same name with the same parameters:
@@ -3899,6 +3945,30 @@ mod tests {
         let mut chosen = layout_of();
         chosen.choose(&["a".into()], &[]).unwrap();
         assert!(chosen.share("b", "a").unwrap_err().contains("has a choice of null or of another object as well"));
+    }
+
+    /// O2's claim roots: each version's constructors, an inner object's included, then the setup calls on its own
+    /// receiver's class, each once, so that the cache's key can cover every method that makes the inputs.
+    #[test]
+    fn the_construction_roots_are_every_constructor_and_setup_call_of_each_version() {
+        let fields = |class: &str, names: &[(&str, Type)]| Fields { class: class.into(), fields: names.iter().map(|(n, t)| (n.to_string(), FieldKind::Value(t.clone()))).collect() };
+        let counter = |class: &str| RecordType::made(class, vec![("step".into(), Type::Int)], Vec::new(), fields(class, &[("step", Type::Int)]));
+        let inner = RecordType::made("m/Inner", vec![("v".into(), Type::Int)], Vec::new(), fields("m/Inner", &[("v", Type::Int)]));
+        let wrap = RecordType::made("m/Wrap", vec![("in".into(), Type::Object("m/Inner".into())), ("k".into(), Type::Int)], vec![inner.clone()], fields("m/Wrap", &[("k", Type::Int)]));
+        let names = ["a".to_string(), "b".to_string(), "n".to_string()];
+        let types = [Type::Object("m/Wrap".into()), Type::Object("m/Wrap".into()), Type::Int];
+        let both = Some((wrap.clone(), Some(wrap.clone())));
+        // The previous version's receiver is of the class as it was named then.
+        let mut layout = Layout::new(Some((counter("m/Counter"), Some(counter("m/OldCounter")))), &names, &types, &[both.clone(), both, None], (None, None));
+        layout.add_setup("add", "(I)V", &[("setup.0.n".into(), Type::Int)]).unwrap();
+        layout.add_setup("reset", "()V", &[]).unwrap();
+        let text = |roots: &[crate::classfile::MemberRef]| roots.iter().map(|m| format!("{}.{}{}", m.owner, m.name, m.descriptor)).collect::<Vec<_>>();
+        let roots = layout.construction_roots(None);
+        assert_eq!(text(&roots.after), ["m/Counter.<init>(I)V", "m/Wrap.<init>(Lm/Inner;I)V", "m/Inner.<init>(I)V", "m/Counter.add(I)V", "m/Counter.reset()V"], "each once, in order");
+        assert_eq!(text(&roots.before), ["m/OldCounter.<init>(I)V", "m/Wrap.<init>(Lm/Inner;I)V", "m/Inner.<init>(I)V", "m/OldCounter.add(I)V", "m/OldCounter.reset()V"]);
+        // A static target's inputs have no setup calls; without records there is nothing to root.
+        let plain = Layout::new(None, &["n".to_string()], &[Type::Int], &[None], (None, None));
+        assert_eq!(plain.construction_roots(None), ConstructionRoots { before: Vec::new(), after: Vec::new() });
     }
 
     #[test]

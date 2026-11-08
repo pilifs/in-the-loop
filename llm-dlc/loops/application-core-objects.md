@@ -390,6 +390,37 @@ Never relax the interface to unblock it.
   - `lib/README.md`: a paragraph **A shrunk witness is the same failure**.
   - **Next**: the claim roots of constructors and setup methods, for reuse. O2's String adapter waits for the merge
     (values' `nlkuyptr` is on its branch).
+- 2026-11-08, **O2's claim roots: what makes the inputs, registered for reuse.** The integration report is still
+  06:36's (the generated files only); jobs `20261108-063512-…` and `20261108-064305-…` are still pending.
+  - **What**: `harness::Layout::construction_roots(previous)` gives each version's roots besides the target. They
+    are every object's constructor, the inner objects' and a plan's chosen descriptor included, then the setup calls
+    on that version's receiver class, in order and each once. The previous version's are named as its own build names
+    them, and include a receiver or record given by `--before-arguments`. Factories are still refused, and models are
+    the values stream's, so neither is a root yet. The regression check's identical-bytecode shortcut now takes its
+    roots from it (the same set as before, the setup calls included).
+  - **The reproducer**: `tests/application_core_objects.rs`'s `o2_a_setup_methods_edit_alone_is_another_claim_never_reused`
+    rewrites `count` after one `add` (verified under `--cache`), then edits only the setup method `add`. That build
+    must miss the cache and be refuted, with `after the setup this.add(setup.0.n=4)` in the witness, run on a JVM. It
+    passes because a claim with a setup sequence runs uncached. With that guard switched off it fails: today's key
+    reuses the stale `verified`.
+  - **Interface request, for reuse** (`proof_cache.rs` is its file): root `Regression::claim`'s closures at the
+    target plus `self.layout.construction_roots(self.previous)`, in place of its own list of constructors, then drop
+    the uncached guard for setup sequences in `equivalence.rs` (this stream's, at the merge). Tried in the working
+    copy and reverted, not committed: with that change and the guard off, the new test passes, and so do
+    `o1_a_receivers_constructor_is_part_of_the_cached_claim` and the ignored
+    `an_inner_objects_constructor_is_part_of_the_cached_claim`. Reuse's `qssovxor` covers the inner constructors the
+    same way (`RecordType::constructors`) but not the setup calls. Its property key (`reuse.rs`, on its branch)
+    already roots a plan's makers and setup calls.
+  - **Verified inline** (native, no JBMC): the harness unit test
+    `the_construction_roots_are_every_constructor_and_setup_call_of_each_version` and the test above. The lib tests (229)
+    and the suites `heap`, `foundations`, `compare`, `effects`, `observations`, `alignment`, `summaries`,
+    `conformance` and `skill` pass; 20 pass and 1 ignored in the stream's file; `application_core` passes except
+    O3, the fixture's allocation bound (the second entry).
+  - **No job**: the shortcut's roots are the same set as before, and no proof changes.
+  - `lib/README.md`: a paragraph **What makes the inputs is part of the claim**.
+  - **Next**: `witness::differences` must not count a replay that couldn't run one version as reproduced (the main
+    brief's Phase 0 finding, on VF-015's step 4: this stream's replay plumbing), with a reproducer first. O2's String
+    adapter waits for the merge. Optional: array fields in property expressions.
 - Status: working
 
 ## Loop settings

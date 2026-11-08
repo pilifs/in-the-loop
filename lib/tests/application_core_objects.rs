@@ -242,6 +242,43 @@ fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
 
+/// O2's claim roots: a setup method is a root of the claim, as a constructor is. A rewrite of `count` after one
+/// `add` is verified under `--cache`; a build that changes only the setup method `add`, so that a history of
+/// `add(4)` counts one more, is another claim, never answered by the cache, and refuted with its history. It holds
+/// today because a claim with a setup sequence runs uncached; it must hold once the claim key roots the setup calls
+/// (`harness::Layout::construction_roots`, for the reuse stream's `proof_cache::Regression::claim`).
+#[test]
+fn o2_a_setup_methods_edit_alone_is_another_claim_never_reused() {
+    let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-cache-setup");
+    let _ = std::fs::remove_dir_all(&cache);
+    let before = counter("roots-before", |s| s.to_string());
+    let rewrite = |s: &str| s.replace("        return count;\n", "        int c = count;\n        return c;\n");
+    let after = counter("roots-after", rewrite);
+    let edited = counter("roots-edited", |s| rewrite(s).replace("count += n * step;", "count += n == 4 ? n * step + 1 : n * step;"));
+    let plan = counter_plan(&[ADD]);
+    let run = |name: &str, after: &Path| {
+        let mut options = equivalence::Options::new(&before, after, "counters.Counter#count");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.cache = Some(cache.clone());
+        options.plan = Some(plans(&plan, &plan));
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        equivalence::run(&options).unwrap()
+    };
+    let cold = run("roots-cold", &after);
+    assert_eq!(cold.verdict, Verdict::Verified, "{}", cold.output);
+    let rerun = run("roots-rerun", &after);
+    assert_eq!(rerun.verdict, Verdict::Verified, "{}", rerun.output);
+    let o = run("roots-edited", &edited);
+    assert!(o.reuse.is_none(), "another setup method is another claim: {}", o.output);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("after the setup this.add(setup.0.n=4)"), "the whole history: {}", c.input);
+    assert!(c.jvm.is_some(), "{}", o.output);
+}
+
 /// A build of the shared contract's throttle family (`tests/fixtures/application-core/throttle`): `before`,
 /// `after`, or a defect overlaid on `after`.
 fn throttle(build: &str) -> PathBuf {

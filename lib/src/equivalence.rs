@@ -1469,16 +1469,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // The harness builds each record through its constructor in both versions: a target identical in both needs no
     // proof only when the constructors are too.
     if plan.identical.is_some() {
-        let constructors: Vec<MemberRef> = layout
-            .records()
-            .iter()
-            .flat_map(|s| match s {
-                harness::Slot::Record { record, .. } => record.constructors().into_iter().map(|(owner, d)| MemberRef::new(&owner, "<init>", &d)).collect(),
-                harness::Slot::Plain(_) => Vec::new(),
-            })
-            // And the setup calls (O3), which make the receiver's state.
-            .chain(layout.setup.iter().map(|s| MemberRef::new(&class_internal, &s.method, &s.descriptor)))
-            .collect();
+        // The new version's construction roots, the setup calls (O3) among them, compared by the same names in
+        // both builds: a version that makes its inputs otherwise is not identical.
+        let constructors = layout.construction_roots(previous.as_ref()).after;
         if !shared::identical_closure(&shared_before_cp, &shared_after_cp, &constructors) {
             plan.identical = None;
         }

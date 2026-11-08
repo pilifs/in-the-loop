@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.480Z",
-  "ended": "2026-11-08T06:51:25.830Z",
-  "duration_seconds": 8220,
+  "ended": "2026-11-08T07:19:54.167Z",
+  "duration_seconds": 9929,
   "stats": {
-    "turns": 35,
-    "api_calls": 431,
-    "tool_calls": 429,
-    "tool_errors": 0,
-    "compactions": 7,
+    "turns": 41,
+    "api_calls": 480,
+    "tool_calls": 479,
+    "tool_errors": 1,
+    "compactions": 8,
     "peak_context_tokens": 315218,
     "usage": {
-      "input_tokens": 874,
-      "output_tokens": 313628,
-      "cache_read_input_tokens": 62443364,
-      "cache_creation_input_tokens": 1197265
+      "input_tokens": 974,
+      "output_tokens": 338560,
+      "cache_read_input_tokens": 67007191,
+      "cache_creation_input_tokens": 1309264
     }
   },
   "tools": {
-    "Bash": 385,
-    "Read": 24,
-    "Edit": 5,
+    "Bash": 426,
+    "Read": 27,
+    "Edit": 11,
     "Monitor": 4,
     "SendMessage": 4,
     "ToolSearch": 4,
@@ -39,7 +39,9 @@
     "Write": 1
   },
   "files_touched": [
+    "lib/README.md",
     "lib/src/construction.rs",
+    "lib/src/harness/mod.rs",
     "lib/tests/application_core_objects.rs",
     "llm-dlc/loops/application-core-objects.md"
   ],
@@ -145,24 +147,38 @@
     {
       "index": 7,
       "started": "2026-11-08T06:36:55.992Z",
-      "ended": "2026-11-08T06:51:25.830Z",
-      "turns": 4,
-      "api_calls": 53,
+      "ended": "2026-11-08T06:51:53.533Z",
+      "turns": 6,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 28640,
-        "cache_read_input_tokens": 5521341,
-        "cache_creation_input_tokens": 127950
+        "input_tokens": 114,
+        "output_tokens": 30263,
+        "cache_read_input_tokens": 5948728,
+        "cache_creation_input_tokens": 132171
       },
-      "peak_context_tokens": 141029
+      "peak_context_tokens": 145252
+    },
+    {
+      "index": 8,
+      "started": "2026-11-08T06:52:38.667Z",
+      "ended": "2026-11-08T07:19:54.167Z",
+      "turns": 4,
+      "api_calls": 46,
+      "usage": {
+        "input_tokens": 92,
+        "output_tokens": 23309,
+        "cache_read_input_tokens": 4136440,
+        "cache_creation_input_tokens": 107778
+      },
+      "peak_context_tokens": 120857
     }
   ],
   "log": {
-    "sha256": "7121f280dc9c36618eb4551eabd16dcd851ec60b90c20c473961955aec8d20ce",
-    "bytes": 12326298,
-    "lines": 4618,
-    "gzip_bytes": 2298514,
-    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/7121f280dc9c36618eb4551eabd16dcd851ec60b90c20c473961955aec8d20ce.jsonl.gz"
+    "sha256": "26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3",
+    "bytes": 13594041,
+    "lines": 5127,
+    "gzip_bytes": 2561287,
+    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -229,6 +245,14 @@
       "summary": "application-core objects O2: a shrunk witness is the same failure as the one found, replayed before it is accepted (verification pending)",
       "body": "The shrinker's oracle was the generated harness alone, which accepts any failure, so a witness of one difference could shrink into a witness of another and be reported as the input found, shrunk. Reproducer (lib/tests/application_core_objects.rs, o2_a_shrunk_witness_reproduces_the_same_failure, failing before in both halves): a receiver's field difference found at add(this=new Counter(20), n=4) shrank to new Counter(1), where only the new constructor rejects the step, a difference on the exception; in prove, a violated assertion at new Counter(20) shrank into an IllegalStateException thrown at step 2. Now witness::shrink_in_harness_keeping takes a same-failure predicate, asked of every candidate the harness refutes: a regression check accepts a candidate whose two replays differ in exactly the observations the found input differs in, and a property check one where the same throws clause applies and the same exception class is thrown, or the method returns normally. Both shrink to new Counter(3) with the original failure, run on a JVM. The unchecked shrink_in_harness, which nothing called, is removed. A shrunk recipe stays legal by construction (the harness's own domain and admission rule, a plan's choice flags kept, no longer or null array); the doc and a new lib/README.md paragraph say so.\n\nVerified inline (native engine, no JBMC): the stream's test file (19 pass, 1 ignored), the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill, and application_core except O3, the frozen throttle fixture's allocation bound recorded for the coordinator. The lib tests pass except a load-dependent timing test in the values stream's bmc/bits.rs, which passed alone 3 of 3, recorded under Progress. Also records that O1's job 20261108-045000 passed, and the 06:36 integration report, whose merge conflicts only in sync.py's generated files.\n\nJob 20261108-064305-application-core-objects-o2-a-shrunk-wit: lib/tests/integration.rs under JBMC, whose tests assert particular shrunk witnesses.",
       "log_sha256": "7121f280dc9c36618eb4551eabd16dcd851ec60b90c20c473961955aec8d20ce"
+    },
+    {
+      "change_id": "urlkszxtksrmzuuympkskyzxslzwoxlz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core objects O2: every constructor and setup method that makes a check's inputs is listed as a claim root, for the reuse stream's key",
+      "body": "harness::Layout::construction_roots gives, for each version, every method the harness calls to make the inputs besides the target: each object's constructor (inner objects' and a plan's chosen descriptor included), then the setup calls on that version's receiver class, in order and each once, the previous version's under its own build's names. The regression check's identical-bytecode shortcut now takes its roots from it (the same set as before). The proof cache's regression key (proof_cache.rs, the reuse stream's file) still roots only the target and the constructors, so a claim with a setup sequence keeps running uncached; the interface request under the brief's Progress asks reuse to root Regression::claim at construction_roots, after which this stream drops the guard at the merge.\n\nVerified inline (native, no JBMC): a harness unit test of the roots, and tests/application_core_objects.rs's o2_a_setup_methods_edit_alone_is_another_claim_never_reused, where an edit of only the setup method add misses the cache and is refuted with its whole history, run on a JVM. With the uncached guard switched off it fails (the stale verified is reused); with the key rooted at construction_roots as well, tried in the working copy and reverted, it passes, as do the receiver-constructor cache test and the ignored inner-constructor one. Lib tests 229 of 229; the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill pass; application_core passes except O3, the frozen fixture's allocation bound already recorded for the coordinator. No job: no proof changes.",
+      "log_sha256": "26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3"
     }
   ],
   "logs": {
@@ -236,6 +260,12 @@
       "bytes": 6844856,
       "lines": 2579,
       "gzip_bytes": 1211462,
+      "url": null
+    },
+    "26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3": {
+      "bytes": 13594041,
+      "lines": 5127,
+      "gzip_bytes": 2561287,
       "url": null
     },
     "6165fac44ea742c036f028b896813199c92f3f4adfc53dd9caa16c2a7c0088ed": {
