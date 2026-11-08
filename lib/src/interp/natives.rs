@@ -790,15 +790,18 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         Native::List { elements, mutable } => list_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Set { elements, mutable } => set_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Map { entries, mutable } => map_method(m, r, entries, mutable, name, descriptor, &args),
-        Native::Iterator { elements, position } => match name {
+        Native::Iterator { elements, position, immutable: of_immutable } => match name {
             "hasNext" => Ok(Some(Value::bool(position < elements.len()))),
             "next" => {
                 if position >= elements.len() {
                     return Err(m.throw("java/util/NoSuchElementException", None));
                 }
-                *m.heap.get_mut(r) = Object::Native(Native::Iterator { elements: elements.clone(), position: position + 1 });
+                *m.heap.get_mut(r) = Object::Native(Native::Iterator { elements: elements.clone(), position: position + 1, immutable: of_immutable });
                 Ok(Some(elements[position]))
             }
+            // The immutable collections' iterators refuse `remove` whatever their position, as `Iterator.remove`'s
+            // default does; a mutable collection's would change the collection, which a snapshot can't.
+            "remove" if of_immutable => Err(immutable(m)),
             _ => unsupported(format!("Iterator.{name}")),
         },
         Native::Class(t) => match name {
@@ -1272,7 +1275,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             }
             Some(Value::Int(result))
         }
-        ("iterator", _) => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0 }))),
+        ("iterator", _) => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0, immutable: !mutable }))),
         ("forEach", _) => {
             for e in elements {
                 m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![e])?;
@@ -1382,7 +1385,7 @@ fn set_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool, 
             }
             Some(Value::Int(1))
         }
-        "iterator" => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0 }))),
+        "iterator" => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0, immutable: !mutable }))),
         "forEach" => {
             for e in elements {
                 m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![e])?;

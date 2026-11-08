@@ -456,3 +456,93 @@ fn the_gap_scan_counts_the_modelled_string_methods_and_no_others() {
     let other = bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &["values.Strings#upper".into()]).unwrap()).unwrap();
     assert!(other.gaps.keys().any(|g| g.owner == "java/lang/String" && g.name == "toUpperCase"), "{:?}", other.gaps);
 }
+
+const LISTS: &str = "values/Lists";
+
+/// The check of a list method of [`LISTS`], every argument an `int`, merging paths from the start or never.
+fn list_checked(cp: &ClassPath, method: &str, merge_after: u64) -> Outcome {
+    bmc::check(cp, LISTS, method, &Options { merge_after, ..Options::default() }).unwrap()
+}
+
+/// A list check's violation, under both search orders, whose witness (its `int` arguments) fails the claim on the
+/// JVM and in the interpreter, which makes its lists with its own `List.of`.
+fn list_refuted(cp: &ClassPath, method: &str) -> Vec<i32> {
+    let class = cp.application(LISTS).unwrap().unwrap();
+    let descriptor = class.methods.iter().find(|m| m.name == method).unwrap().descriptor.clone();
+    let arity = MethodDescriptor::parse(&descriptor).unwrap().params.len();
+    let mut found = Vec::new();
+    for merge_after in [0, u64::MAX] {
+        let out = list_checked(cp, method, merge_after);
+        assert_eq!(out.verdict, Verdict::Violation, "{method} (merging after {merge_after}): {:?}", out.problem);
+        let args: Vec<i32> = (0..arity as u32).map(|slot| out.raw_inputs.get(&slot).map(|v| v.parse().unwrap()).unwrap_or(0)).collect();
+        let jvm = run_on_jvm(compiled().unwrap(), &[format!("values.Lists {method} {}", args.iter().map(|a| a.to_string()).collect::<Vec<_>>().join(" "))]).remove(0);
+        assert_eq!(jvm, "throws java.lang.AssertionError", "{method}{args:?} on the JVM");
+        let mut m = Machine::new(cp);
+        let interpreter = match m.call_static(LISTS, method, &descriptor, args.iter().map(|&a| Value::Int(a)).collect()) {
+            Err(Fault::Throw(r)) => format!("throws {}", m.class_of(r).replace('/', ".")),
+            other => format!("{other:?}"),
+        };
+        assert_eq!(interpreter, jvm, "{method}{args:?} in the interpreter");
+        found.push(args);
+    }
+    found.remove(0)
+}
+
+fn list_verified(cp: &ClassPath, method: &str) {
+    for merge_after in [0, u64::MAX] {
+        let out = list_checked(cp, method, merge_after);
+        assert_eq!(out.verdict, Verdict::Verified, "{method} (merging after {merge_after}): {:?}", out.problem);
+    }
+}
+
+/// The basket's kernels over lists made by `List.of`, as a harness makes them: each rewrite proved on every list
+/// of up to three lines, any two of which may be one object, and each planted defect refuted with a replayed
+/// witness: a duplicate skipped (two elements one line), the last line for the first (two different lines), a copy
+/// for the element (identity), and every line read before any is cleared (an alias between elements). Before, the
+/// own checker ran none of the list models (`List.of` was the gap `jdk-static-method`), so no check reached a list.
+#[test]
+fn the_own_checker_runs_the_immutable_list_models_and_keeps_order_duplicates_and_aliases() {
+    let Some(cp) = checker_classes() else { return };
+    for method in ["totalRewritten", "firstRewritten", "clearRewritten"] {
+        list_verified(&cp, method);
+    }
+    // n, c1, c2, then each line's unit price and quantity.
+    let dup = list_refuted(&cp, "totalSkippingDuplicates");
+    assert!(dup[0] >= 2 && (dup[1] == 0 || (dup[0] == 3 && dup[2] == 1 && dup[1] == 1)), "a line given twice in a row: {dup:?}");
+    let reordered = list_refuted(&cp, "firstReordered");
+    assert!(reordered[0] >= 2, "a list with a last line other than its first: {reordered:?}");
+    let copied = list_refuted(&cp, "firstByCopy");
+    assert!(copied[0] >= 1, "any line: {copied:?}");
+    let aliased = list_refuted(&cp, "clearBlindToAliases");
+    assert!(aliased[0] >= 2, "one line given twice: {aliased:?}");
+    let distinct = list_refuted(&cp, "elementsAreDistinct");
+    assert_eq!(distinct[1], 0, "elements 0 and 1 one line: {distinct:?}");
+}
+
+/// The models' other behaviour the kernels may reach, as the JDK's: `size`, `isEmpty` and the iterator (each
+/// element in order, then `NoSuchElementException`); `get` out of range an `IndexOutOfBoundsException` from a list
+/// of one or two and an `ArrayIndexOutOfBoundsException` from any other, a claim that they are one class refuted;
+/// a null element refused by `List.of`; every change refused; `copyOf` of such a list the list itself, and one empty
+/// list. `copyOf` of another implementation (an `ArrayList`) is refused by name, never taken for one of these.
+#[test]
+fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
+    let Some(cp) = checker_classes() else { return };
+    for method in ["sizeAndIteration", "getOutOfRange", "ofRejectsNull", "changesAreRefused", "copyOfIsTheList", "oneEmptyList"] {
+        list_verified(&cp, method);
+    }
+    let one_class = list_refuted(&cp, "getThrowsOneClass");
+    assert!(one_class[0] == 1 || one_class[0] == 2, "a List12: {one_class:?}");
+    // The gap scan agrees: the models' methods are walked, as the engine runs them, and none is a gap; an
+    // `ArrayList` still is one.
+    let scan = |target: &str| bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &[format!("values.Lists#{target}")]).unwrap()).unwrap();
+    for (target, walked) in [("sizeAndIteration", "java.util.ImmutableCollections$ListItr.next"), ("clearRewritten", "java.util.ImmutableCollections$ListN.get"), ("copyOfIsTheList", "java.util.ImmutableCollections.listCopy")] {
+        let s = scan(target);
+        assert!(s.gaps.is_empty() && s.refused.is_empty(), "{target}: {:?} {:?}", s.gaps, s.refused);
+        assert!(s.methods.iter().any(|m| m.starts_with(walked)), "{target}: {:?}", s.methods);
+    }
+    assert!(scan("copyOfAnotherImplementation").gaps.keys().any(|g| g.owner == "java/util/ArrayList"));
+    let out = list_checked(&cp, "copyOfAnotherImplementation", u64::MAX);
+    assert_eq!(out.verdict, Verdict::Unverifiable);
+    let problem = out.problem.unwrap_or_default();
+    assert!(problem.contains("jdk-constructor") && problem.contains("java.util.ArrayList"), "{problem}");
+}

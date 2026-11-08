@@ -72,9 +72,22 @@ pub const MODELS: &[Model] = &[
 
 /// The models only for JBMC's class path ([`Model::jbmc_only`]) that the tool's own checker runs as bytecode all the
 /// same ([`ClassPath::checker_model`](crate::classpath::ClassPath::checker_model)): `java.lang.Enum`, whose
-/// constructor and accessors an enum's initializer and methods call. Its state is two fields of the enum's own
-/// objects, which the checker holds like any other field; the interpreter keeps its natives for the class.
-pub const CHECKER_RUNS: &[&str] = &["java/lang/Enum"];
+/// constructor and accessors an enum's initializer and methods call, and the immutable lists `List.of` and
+/// `List.copyOf` make (`List`'s factories, `ImmutableCollections`, its `List12`, `ListN`, `AbstractImmutableList` and
+/// `ListItr`), written without a JDK call so that the checker runs every step as JBMC does. Their state is fields of
+/// their own objects (an enum's name and ordinal, a list's elements) and `ImmutableCollections`' two statics (the one
+/// empty list, the sentinel of a list of one), which the checker holds as an application class's
+/// ([`ClassPath::checker_class`](crate::classpath::ClassPath::checker_class)); the interpreter keeps its natives for
+/// these classes, which the conformance corpus checks against a JVM.
+pub const CHECKER_RUNS: &[&str] = &[
+    "java/lang/Enum",
+    "java/util/List",
+    "java/util/ImmutableCollections",
+    "java/util/ImmutableCollections$AbstractImmutableList",
+    "java/util/ImmutableCollections$ListItr",
+    "java/util/ImmutableCollections$List12",
+    "java/util/ImmutableCollections$ListN",
+];
 
 /// The model of a class, by internal name, whichever engines run it.
 pub fn find(name: &str) -> Option<&'static Model> {

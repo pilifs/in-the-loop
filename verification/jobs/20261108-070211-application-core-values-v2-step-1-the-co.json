@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-070211-application-core-values-v2-step-1-the-co",
+  "title": "application-core values V2 step 1: the conformance corpus under --engine auto and auto --confirm, now that the own checker runs the immutable-list models",
+  "description": "Values stream of llm-dlc/loops/application-core.md (llm-dlc/loops/application-core-values.md, V2 step 1, acceptance row V2), at the commit that submits this job. The tool's own checker (lib/src/bmc) now runs lib/models' List.of/List.copyOf and ImmutableCollections bytecode (models::CHECKER_RUNS), which it met as the gap jdk-static-method before. Inline, lib/tests/conformance.rs's own-checker test passes with 12 list claims of the corpus now decided natively, each as the JVM decides it (listSizes, listNull, listChange, listCopySame, listGet proved and refuted; listCopyMutable's and listOfArray's refutations). This job runs the two ignored corpus tests that need JBMC: under --engine jbmc and --engine auto (auto now takes the native verdict on those claims instead of falling back to JBMC), and under auto --confirm (JBMC is now asked to confirm the own checker's new list proofs, on JBMC's class path with the same models). Domain and bounds: the corpus's, unchanged (int parameters, the claims' assumptions, unwind 16). Engine: jbmc, native via auto. Expected verdicts: no Verified the JVM refutes, every violation reproduced on the JVM; under --confirm a proof of the own checker's is Confirmed or NotAsked, never Disagreed where the JVM agrees with it. Expected process status: exit 0 for both steps. matchesExpected is the tests passing; a failure lists each disagreement, a finding to triage, not to retry.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs",
+      "lib/src/bmc/mod.rs",
+      "lib/src/models.rs",
+      "llm-dlc/loops/application-core-values.md"
+    ]
+  },
+  "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_jbmc_and_auto and the_corpus_agrees_with_the_jvm_under_auto_confirm both pass",
+  "submitted": {
+    "at": "2026-11-08T07:02:11+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "50m",
+    "memoryLimit": "3.5G",
+    "timeout": "150m",
+    "notes": "the two tests ran about 21 and 22 min each in 20261107-222356's jobs, peak 1.2 GiB"
+  },
+  "steps": [
+    {
+      "name": "conformance corpus under jbmc and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/conformance-jbmc.log",
+    "lib/target/conformance-confirm.log"
+  ]
+}

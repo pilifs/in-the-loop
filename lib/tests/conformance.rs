@@ -143,7 +143,9 @@ fn corpus() -> Vec<Case> {
         Case::new("fatal", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): the calls lib/models models for
-        // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them.
+        // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them. The own checker runs the list models too (V2 of
+        // llm-dlc/loops/application-core-values.md): a list claim is undecided (U) there only where it reaches
+        // another JDK call (an `ArrayList`, a boxed `Integer`'s methods).
         Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], V).refuted(None, "result < 20", &[], X),
         // Enums in the own checker (Phase 5, its last step): `$VALUES` at an index that is an input, a switch through
         // javac's `$SwitchMap` class, constants with bodies and a field named as `Enum`'s private one, an enum whose
@@ -158,25 +160,25 @@ fn corpus() -> Vec<Case> {
         Case::new("enumBroken", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 13", &[], X),
         Case::new("enumValueOf", &[("4", "returns 5")]).holds(None, "result == n + 1", &[], U).refuted(None, "result == n", &[], U),
         Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
-            .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], U)
-            .refuted(None, "result >= 10", &[], U),
-        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], U).refuted(None, "result == 5", &[], U),
+            .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], V)
+            .refuted(None, "result >= 10", &[], X),
+        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], V).refuted(None, "result == 5", &[], X),
         Case::new("listChange", &[("0", "returns 1"), ("1", UOE), ("2", UOE), ("3", UOE), ("4", UOE), ("5", UOE), ("6", UOE), ("7", UOE), ("8", "returns 1"), ("10", "returns 3"), ("13", UOE), ("-1", "returns 1")])
-            .holds(Some("n == 0 || n == 8"), "result == 1", &[], U)
-            .refuted(None, "result >= 1", &[], U),
-        Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], U).refuted(None, "result == 1", &[], U),
+            .holds(Some("n == 0 || n == 8"), "result == 1", &[], V)
+            .refuted(None, "result >= 1", &[], X),
+        Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("listCopyMutable", &[("0", "returns 1"), ("1", "returns 10"), ("2", NPE), ("9", NPE)])
             .holds(Some("n <= 0"), "result == 1", &[], U)
-            .refuted(None, "result <= 10", &[], U),
+            .refuted(None, "result <= 10", &[], X),
         Case::new("listGet", &[("0", "returns 1"), ("1", "throws java.lang.IndexOutOfBoundsException"), ("-1", "throws java.lang.IndexOutOfBoundsException"), ("10", "returns 2"), ("12", "returns 1"), ("13", "throws java.lang.ArrayIndexOutOfBoundsException"), ("20", "throws java.lang.ArrayIndexOutOfBoundsException")])
-            .holds(Some("n == 0 || n == 12"), "result == 1", &[], U)
-            .refuted(None, "result >= 1", &[], U),
+            .holds(Some("n == 0 || n == 12"), "result == 1", &[], V)
+            .refuted(None, "result >= 1", &[], X),
         Case::new("listSearch", &[("0", NPE), ("2", "returns -1089"), ("5", "returns 90"), ("7", "returns -1110")])
             .holds(Some("n == 5"), "result == 90", &[], U)
             .refuted(None, "result < 0", &[], U),
         Case::new("listEquals", &[("2", "returns 11"), ("3", "returns 0")]).holds(Some("n != 2"), "result == 0", &[], U).refuted(None, "result == 0", &[], U),
         Case::new("listIterate", &[("0", "returns 6"), ("1", "throws java.util.NoSuchElementException")]).holds(Some("n <= 0"), "result == 6", &[], U).refuted(None, "result == 6", &[], U),
-        Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], U).refuted(None, "result == 111", &[], U),
+        Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], U).refuted(None, "result == 111", &[], X),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X)
@@ -696,8 +698,11 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
             match &run.outcome.advice {
                 None if verdict != claim.native => failures.push(format!("{label}: with no gap in the harness, --gaps advised says {verdict:?} where strict says {:?}", claim.native)),
                 Some(_) if verdict != Verdict::Unverifiable || run.outcome.search.is_some() => failures.push(format!("{label}: --gaps advised gave advice and solved anyway: {}", run.outcome.output)),
-                // The scan may see a gap on a path no input takes; on this corpus it sees none strict does not meet.
-                Some(_) if claim.native != Verdict::Unverifiable => failures.push(format!("{label}: --gaps advised asks for contracts where strict decides the claim ({:?}): {}", claim.native, run.outcome.output)),
+                // The scan may see a gap on a path no input takes; on this corpus it sees none strict does not meet,
+                // so strict proves no claim advised stops on. A violation strict finds on a path that meets no gap
+                // stands though other paths meet one (`listCopyMutable`: `List.copyOf(null)`'s exception, and an
+                // `ArrayList` on the others), and advised stops before solving there, as it is meant to.
+                Some(_) if claim.native == Verdict::Verified => failures.push(format!("{label}: --gaps advised asks for contracts where strict proves the claim: {}", run.outcome.output)),
                 Some(a) => advised.push(format!("{} ({}; strict: {:?})", case.method, a.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>().join(", "), claim.native)),
                 None => {}
             }

@@ -226,8 +226,9 @@ pub enum Native {
     Boxed { class: String, value: Value },
     /// `java.lang.Class`, by the type it denotes.
     Class(Type),
-    /// An iterator over a snapshot of a list or set.
-    Iterator { elements: Vec<Value>, position: usize },
+    /// An iterator over a snapshot of a list or set; `immutable` for one of an immutable collection (`List.of`,
+    /// `Set.of`), whose `remove` throws `UnsupportedOperationException` as the JDK's does.
+    Iterator { elements: Vec<Value>, position: usize, immutable: bool },
     /// An exception of a JDK class: `java.lang.ArithmeticException`, say.
     Throwable { class: String, message: Option<Ref>, cause: Option<Ref> },
     /// A lambda or method reference: the functional interface and its method, the implementation method and the

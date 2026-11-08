@@ -12,33 +12,38 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T06:17:44.291Z",
-  "duration_seconds": 6199,
+  "ended": "2026-11-08T07:02:28.055Z",
+  "duration_seconds": 8883,
   "stats": {
-    "turns": 18,
-    "api_calls": 201,
-    "tool_calls": 198,
-    "tool_errors": 3,
-    "compactions": 3,
+    "turns": 25,
+    "api_calls": 283,
+    "tool_calls": 278,
+    "tool_errors": 5,
+    "compactions": 4,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 408,
-      "output_tokens": 163534,
-      "cache_read_input_tokens": 28196447,
-      "cache_creation_input_tokens": 573487
+      "input_tokens": 580,
+      "output_tokens": 231571,
+      "cache_read_input_tokens": 41173830,
+      "cache_creation_input_tokens": 795414
     }
   },
   "tools": {
-    "Bash": 186,
+    "Bash": 259,
     "Read": 5,
-    "Write": 3,
-    "Monitor": 2,
-    "ToolSearch": 2
+    "Edit": 4,
+    "Write": 4,
+    "Monitor": 3,
+    "ToolSearch": 3
   },
   "files_touched": [
+    "lib/src/classpath.rs",
+    "lib/src/models.rs",
     "lib/src/values.rs",
     "lib/tests/fixtures/values/values/Checks.java",
-    "lib/tests/values.rs"
+    "lib/tests/fixtures/values/values/Lists.java",
+    "lib/tests/values.rs",
+    "llm-dlc/loops/application-core-values.md"
   ],
   "context_windows": [
     {
@@ -86,24 +91,38 @@
     {
       "index": 3,
       "started": "2026-11-08T06:02:11.536Z",
-      "ended": "2026-11-08T06:17:44.291Z",
-      "turns": 4,
-      "api_calls": 33,
+      "ended": "2026-11-08T06:18:08.675Z",
+      "turns": 5,
+      "api_calls": 36,
       "usage": {
-        "input_tokens": 66,
-        "output_tokens": 28303,
-        "cache_read_input_tokens": 2926722,
-        "cache_creation_input_tokens": 111176
+        "input_tokens": 74,
+        "output_tokens": 29636,
+        "cache_read_input_tokens": 3302309,
+        "cache_creation_input_tokens": 114006
       },
-      "peak_context_tokens": 124255
+      "peak_context_tokens": 127087
+    },
+    {
+      "index": 4,
+      "started": "2026-11-08T06:18:48.430Z",
+      "ended": "2026-11-08T07:02:28.055Z",
+      "turns": 6,
+      "api_calls": 79,
+      "usage": {
+        "input_tokens": 164,
+        "output_tokens": 66704,
+        "cache_read_input_tokens": 12601796,
+        "cache_creation_input_tokens": 219097
+      },
+      "peak_context_tokens": 232176
     }
   ],
   "log": {
-    "sha256": "e0c1ceae0ea7ef5b6d37ad79027360d66a828f00ee9bc0703afbd076e59f5972",
-    "bytes": 5373114,
-    "lines": 2156,
-    "gzip_bytes": 971076,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/e0c1ceae0ea7ef5b6d37ad79027360d66a828f00ee9bc0703afbd076e59f5972.jsonl.gz"
+    "sha256": "1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548",
+    "bytes": 7487314,
+    "lines": 3026,
+    "gzip_bytes": 1297867,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -130,9 +149,23 @@
       "summary": "application-core values V1 step 3: the String value adapter, its domain, evidence, witness reader, encoding and rebuilding",
       "body": "values::StringAdapter (lib/src/values.rs) is the String's value adapter: a spec::plans::ValueDomain of kind string with its bound, nullability and the model's evidence (values::string_model: the model identity STRING_MODEL, JDK 25.0.5 sampled, level tested, and what it leaves out), the bound for the own checker (bound, bmc::Parameters::max_string_length), a reader of a String argument from the checker's witness (read: units, null, or an earlier argument's object), and encode and rebuild between the interpreter's JStr and a witness's units. A String outside the domain (too long, null where not nullable, not code units) is refused by each, never cut. Verified by four unit tests and by lib/tests/values.rs, whose refutations now read their witnesses through read and rebuild every String in the interpreter's replay through rebuild, checked to encode back; the whole lib suite passes, the integration contract included (one untouched timing test of bmc::bits failed once under load and passed alone and on the rerun).\n\nvalues::adapter still refuses a String, now saying the adapter is built and what a check lacks: the wiring that would let a regression or property check take a String parameter (the harness declaring it, the bound passed to the checker, jbmc::JbmcResult::arguments and the replay rebuilding it) is in the objects stream's files, and is recorded under Progress as an interface request. The briefs disagree here: the integration contract's V1 row (v1_a_symbolic_string_crosses_the_proof_boundary) accepts only the values stream's refusal, and the values brief makes V1's crossing of the proof boundary this stream's row, while the main brief's ownership gives harness/, equivalence.rs and property.rs to objects. Registering the adapter before that wiring would fail the contract's V1 row on another stream's files, so it waits for it.",
       "log_sha256": "e0c1ceae0ea7ef5b6d37ad79027360d66a828f00ee9bc0703afbd076e59f5972"
+    },
+    {
+      "change_id": "qmtpnxsuzpspnzxwxmqnyswnxourpulx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values V2 step 1: the own checker runs the immutable-list models, keeping order, duplicates and aliases (verification pending)",
+      "body": "V2's audit, then its first step. The models in lib/models/java/util (List.of, List.copyOf, ImmutableCollections' List12, ListN, ListItr) are the JDK's lists step for step with no JDK call, but were marked JBMC only, so the tool's own checker met List.of as the gap jdk-static-method and no check reached a list. models::CHECKER_RUNS now lists them. The checker calls their static methods as application methods, runs ImmutableCollections' initializer and holds its statics (ClassPath::checker_class, the one empty list and a list of one's sentinel), and treats AbstractCollection()'s empty constructor as exact. The gap scan walks the same methods and counts an interface call on a list or its iterator as no gap where the models implement it (gaps::dispatched_to_models). Any other java.util collection the checker could hold is made by a JDK call that is a gap where it's made, so copyOf of an ArrayList is still refused by name.\n\nReproducer: lib/tests/values.rs runs the checker on harness-shaped methods (tests/fixtures/values/values/Lists.java) that make lists the way a harness would: List.of over 0 to 3 constructor-made lines, any two of which may be one object. Before this change all of them met the jdk-static-method gap. Now the basket fixture's three rewrites are proved. Its four defects are refuted: a duplicate skipped, the last line for the first, a copy for the element, and an alias between elements. So is a wrong claim that two elements are two lines. size, isEmpty and the iterator behave as the JDK's; get out of range throws the JDK's class (List12 IndexOutOfBounds, ListN ArrayIndexOutOfBounds); null elements and changes are refused; copyOf of such a list is the list itself. Every refutation is replayed on a JVM and in the interpreter. Evidence level: tested.\n\nThe conformance corpus changed. 12 of its list claims that had no own-checker verdict are now decided, each as the JVM decides it. Their records are updated and lib/benchmark/conformance.json is re-blessed. One assertion of tests/conformance.rs is narrowed: it read any claim that strict decides while advised stops on a gap as a scan seeing an unreachable gap. listCopyMutable's refutation is a violation on a path with no gap, which strict's documented rule lets stand, so the assertion now fails only on a strict proof that advised stops on. The corpus also found an interpreter bug: an immutable collection's iterator refused remove instead of throwing UnsupportedOperationException, so one witness didn't replay. That is fixed (Native::Iterator records whether its collection is immutable). Found but not fixed, under Progress: the interpreter names every immutable list ListN, so getClass of a List12 differs from the JVM's. The whole lib suite passes. Job 20261108-070211-application-core-values-v2-step-1-the-co runs the corpus's two JBMC tests (engine jbmc and auto, and auto --confirm, which now confirms the checker's list proofs). Expected to pass.",
+      "log_sha256": "1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548"
     }
   ],
   "logs": {
+    "1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548": {
+      "bytes": 7487314,
+      "lines": 3026,
+      "gzip_bytes": 1297867,
+      "url": null
+    },
     "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae": {
       "bytes": 4231436,
       "lines": 1751,

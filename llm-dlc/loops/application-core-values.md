@@ -248,10 +248,70 @@ just to bring a gap count down.
   When that lands, `values::adapter` returns the adapter (one line here), and the contract's V1 row reaches its
   verdicts (`Codes#vip`: the rewrite verified, `short-prefix` refuted). The environment stream's String payload
   snapshot (`effects.rs`, a literal only today) can use `encode`. Until then V1's row waits on that wiring.
-- **Next**: V2, the bounded immutable list. First its audit: what `lib/models`' `List.of`/`copyOf` and
-  `ImmutableCollections` models do, which of their bytecode the own checker can run faithfully
-  (`models::CHECKER_RUNS`, `classpath.rs`), and what the L fixture (`basket`) and its claims need; then a
-  reproducer.
+- 2026-11-08, **V2's audit**, against the code at `nlkuyptr`:
+  - **The models** (`lib/models/java/util/List.java`, `ImmutableCollections.java`) are the JDK's lists step for step,
+    written without a JDK call: `List12` for one or two elements (the second the sentinel `EMPTY` for one), `ListN`
+    over an array of its own otherwise, one `EMPTY_LIST`, `NullPointerException` on a null element, every change
+    `UnsupportedOperationException`, `get` out of range `IndexOutOfBoundsException` from a `List12` and
+    `ArrayIndexOutOfBoundsException` from a `ListN`, `ListItr` (`NoSuchElementException` past the end), `copyOf` of
+    one of them the list itself and of any other `Collection` its `isEmpty` and `toArray`. Marked JBMC only, they
+    are on JBMC's class path and nowhere else; the interpreter keeps natives that do the same
+    (`interp::ImmutableList`, the corpus's `the_models_only_jbmc_runs_agree_with_the_jvm`).
+  - **The own checker** ran none of it: `List.of` was the gap `jdk-static-method`, so no check reached a list. Its
+    bytecode is inside the checker's fragment once four things are admitted: a static call of a model only for
+    JBMC (`ClassPath::checker_runs`), `ImmutableCollections`' initializer and statics, `AbstractCollection()`'s
+    empty constructor, and the gap scan's dispatch of an interface call to the models.
+  - **The L fixture** (`basket`) takes a `List<Line>` parameter of at most 3 constructor-made lines, any two of
+    which may be one object. Its regression checks (`Basket#total`, `#clearAll`) stop today at `values::adapter`,
+    and its three claims at the planned domain (`Part::Objects`). A list parameter needs the harness to make it, as
+    for a String: objects' files.
+  - **Found, not fixed**: the interpreter names every immutable list `ImmutableCollections$ListN`
+    (`interp::value::Native::class_name`), a `List12` included, so its `getClass()` differs from the JVM's for a list
+    of one or two (its `get` and searches do throw as a `List12`'s).
+- 2026-11-08, **V2 step 1, the own checker runs the immutable-list models** (this commit):
+  - **What changed**: `models::CHECKER_RUNS` adds `List`, `ImmutableCollections` and its four list classes. The
+    checker calls a static method of one of them as an application method (its class initialized first), holds
+    `ImmutableCollections`' statics and runs its initializer (`ClassPath::checker_class`, `checker_statics`), and
+    reproduces `AbstractCollection()` exactly (`gaps::exact_jdk_call`). The gap scan walks the same methods and
+    counts an interface call on a list or its iterator as no gap where the models implement it
+    (`gaps::dispatched_to_models`): every other `java.util` collection or iterator the checker could hold is made by
+    a JDK constructor or method, a gap where it is made. `copyOf` of an `ArrayList` still meets its JDK calls.
+  - **Reproducer and checks**: `tests/values.rs` runs the checker on harness-shaped methods
+    (`tests/fixtures/values/values/Lists.java`) that make their lists as a harness would, by `List.of` over 0 to 3
+    constructor-made lines, any two of which may be one object, each version in a world of its own; every
+    refutation is replayed on the JVM and in the interpreter, which must throw the check's `AssertionError`.
+    Before, all of them met `List.of` as the gap `jdk-static-method`. Now, merging from the start and never:
+    - the basket's three rewrites by index (`total`, `first`, `clearAll`) proved;
+    - its four defects refuted: a duplicate skipped (a line given twice in a row), the last line for the first (a
+      reordering), a copy for the element (identity), every line read before any is cleared (an alias between
+      elements), and a wrong claim that two elements are two lines (negative controls: a duplicated or reordered
+      element, alias-sensitive behaviour of a mutable element);
+    - `size`, `isEmpty` and the iterator in order then `NoSuchElementException`; `get` out of range by the JDK's
+      classes, and a claim that both kinds throw one class refuted with a list of one or two; a null element
+      refused; `add` and `set` refused; `copyOf` of such a list the list itself, and one empty list;
+    - `copyOf` of an `ArrayList` refused by name (`jdk-constructor`); the gap scan finds no gap over the models.
+
+    Evidence level: `tested` (the models' bytecode is the JDK's lists as written by hand; sampled JVM replays and
+    the corpus's conformance), not `proved`. No job: seconds, inline.
+  - **The conformance corpus** (`tests/conformance.rs`): 12 of its list claims had no verdict on the own checker
+    (recorded `U`) and are now decided, each as the JVM decides it (`listSizes`, `listNull`, `listChange`,
+    `listCopySame`, `listGet` proved and refuted; the refutations of `listCopyMutable` and `listOfArray`). The rest
+    still reach another JDK call (an `ArrayList`, a boxed `Integer`'s methods) and stay `U`. The records are updated,
+    and `lib/benchmark/conformance.json` re-blessed from them (12 `nativeStrict` values). One assertion is narrowed:
+    it took any claim strict decides while advised stops on a gap as the scan seeing a gap no input reaches, but
+    `listCopyMutable`'s refutation is a violation on a path with no gap (`copyOf(null)`), which strict's rule lets
+    stand while other paths meet the `ArrayList`'s gaps; it now fails only on a strict *proof* advised stops on.
+  - **The interpreter**, found by the corpus: an immutable list's or set's iterator refused `remove` instead of
+    throwing `UnsupportedOperationException` as the JDK's does, so `listChange`'s refutation (`n=17`) didn't
+    replay. `Native::Iterator` now knows its collection is immutable.
+  - **Job** `20261108-070211-application-core-values-v2-step-1-the-co`: the corpus's two JBMC tests (`--engine
+    jbmc`/`auto`, and `auto --confirm`, which now asks JBMC to confirm the checker's list proofs), expected to pass.
+    Nothing below waits on it.
+  - **Not yet**: a list *parameter*. As for a String, a check takes one only once the harness makes it.
+- **Next**: V2 step 2, the list value adapter (`values::ListAdapter`): its domain (`ValueDomain` of kind `list`,
+  the element class, the bound, the model's evidence), how a harness makes the list from the elements it made and
+  the choices of the witness (the shape `Lists.list` has), and `encode` and `rebuild` between the interpreter's list
+  and `WitnessValue::List`; then an interface request to the objects stream for the harness, as for Strings.
 - Status: working
 
 ## Loop settings

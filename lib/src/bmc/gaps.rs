@@ -467,10 +467,31 @@ pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str)
     if name != "<init>" {
         return false;
     }
-    if (owner == "java/lang/Object" || owner == "java/lang/Record") && descriptor == "()V" {
+    // `AbstractCollection()` is the JDK's empty protected constructor, which the immutable lists' model
+    // (`ImmutableCollections.AbstractImmutableList`, run by the own checker) calls as the JDK's lists do.
+    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection") && descriptor == "()V" {
         return true;
     }
     matches!(descriptor, "()V" | "(Ljava/lang/String;)V" | "(Ljava/lang/String;Ljava/lang/Throwable;)V") && crate::classpath::is_jdk_name(owner) && cp.is_subtype(owner, "java/lang/Throwable")
+}
+
+/// The JDK interfaces the immutable-list models implement that no other object the engine holds does, unless a gap
+/// made it: a `java.util` collection or iterator is never a parameter of a check but one of these models' (the values
+/// adapter refuses any other implementation), and is otherwise made by a JDK constructor or returned by a JDK method,
+/// each a gap where it is made.
+const LIST_MODEL_INTERFACES: &[&str] = &["java/util/List", "java/util/Collection", "java/lang/Iterable", "java/util/Iterator"];
+
+/// Whether a virtual or interface call `owner.name(descriptor)` reaches only methods the engine runs, so that the
+/// scan counts it as no gap: `owner` is one of the models the engine runs ([`crate::models::CHECKER_RUNS`]), whose
+/// subclasses are the models' own, or one of [`LIST_MODEL_INTERFACES`]; a model implements the method
+/// (`overrides`, the walk's), and every application class below `owner` has code for it too, its own or a model's.
+/// On a receiver a gap made, the engine meets the JDK call where it runs it, as before.
+fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &str, overrides: &[String]) -> bool {
+    if !(crate::models::CHECKER_RUNS.contains(&owner) || LIST_MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| crate::models::CHECKER_RUNS.contains(&o.as_str())) {
+        return false;
+    }
+    let Ok(classes) = cp.application_classes() else { return false };
+    classes.iter().filter(|(n, cf)| !cf.is_interface() && cp.is_subtype(n, owner)).all(|(n, _)| cp.checker_method(n, name, descriptor).is_some_and(|(c, m)| cp.checker_runs(&c.name) && m.code.is_some()))
 }
 
 /// What the engine does with an instance call (or a constructor) that resolves to no application method with code.
@@ -560,10 +581,10 @@ pub fn initializers(cp: &ClassPath, class: &str) -> Vec<String> {
 }
 
 fn initializers_of(cp: &ClassPath, class: &str, out: &mut Vec<String>, seen: &mut BTreeSet<String>) {
-    if crate::classpath::is_jdk_name(class) || !seen.insert(class.to_string()) {
+    if !cp.checker_statics(class) || !seen.insert(class.to_string()) {
         return;
     }
-    let Ok(Some(cf)) = cp.application(class) else { return };
+    let Some(cf) = cp.checker_class(class) else { return };
     for s in initialization_supers(cp, class) {
         initializers_of(cp, &s, out, seen);
     }
@@ -615,7 +636,7 @@ fn runs_initializer_in(cp: &ClassPath, class: &str, visiting: &BTreeSet<String>)
     if visiting.contains(class) {
         return true;
     }
-    let Ok(Some(cf)) = cp.application(class) else { return false };
+    let Some(cf) = cp.checker_class(class) else { return false };
     if cf.method("<clinit>", "()V").is_none() {
         return false;
     }
@@ -840,23 +861,30 @@ impl<'a> Walker<'a> {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
         let what = format!("{}.{name}", declaring.replace('/', "."));
         let constant = !put && self.constant(&declaring, name);
-        if crate::classpath::is_jdk_name(&declaring) || !self.cp.is_application(&declaring) {
+        if !self.cp.checker_statics(&declaring) {
             if put {
                 self.refuse("writes a static field of the JDK", what, site);
             } else if !constant {
                 self.refuse("reads a static field of the JDK that is not a compile-time constant", what, site);
             }
-        } else if !constant && self.cp.application(&declaring).ok().flatten().is_some_and(|cf| cf.method("<clinit>", "()V").is_some()) && !self.runs(&declaring) {
+        } else if !constant && self.cp.checker_class(&declaring).is_some_and(|cf| cf.method("<clinit>", "()V").is_some()) && !self.runs(&declaring) {
             self.refuse(if put { "writes a static field of a class whose initializer the engine does not run" } else { "reads a static field of a class whose initializer the engine does not run" }, what, site);
         }
         self.initialise(&declaring, site);
     }
 
-    /// The application classes that are `owner` or below it and declare `name(descriptor)`: the methods an
-    /// invocation on a receiver of one of them runs.
+    /// The application classes, and the models the engine runs ([`crate::models::CHECKER_RUNS`]), that are `owner`
+    /// or below it and declare `name(descriptor)`: the methods an invocation on a receiver of one of them runs.
     fn overrides(&self, owner: &str, name: &str, descriptor: &str) -> Vec<String> {
         let Ok(classes) = self.cp.application_classes() else { return Vec::new() };
-        classes.iter().filter(|(n, cf)| cf.method(name, descriptor).is_some_and(|m| m.code.is_some()) && self.cp.is_subtype(n, owner)).map(|(n, _)| n.clone()).collect()
+        let mut out: Vec<String> = classes.iter().filter(|(n, cf)| cf.method(name, descriptor).is_some_and(|m| m.code.is_some()) && self.cp.is_subtype(n, owner)).map(|(n, _)| n.clone()).collect();
+        // And the models the engine runs (an immutable list's `size`, on a `List`).
+        for model in crate::models::CHECKER_RUNS {
+            if self.cp.checker_model(model).is_some_and(|cf| cf.method(name, descriptor).is_some_and(|m| m.code.is_some())) && self.cp.is_subtype(model, owner) {
+                out.push(model.to_string());
+            }
+        }
+        out
     }
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
@@ -910,6 +938,10 @@ impl<'a> Walker<'a> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
+                    } else if let Some((c, _)) = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, m)| self.cp.checker_runs(&member.owner) && self.cp.checker_runs(&c.name) && m.code.is_some()) {
+                        // A model the engine runs although it is only for JBMC's class path (`List.of`), as it does.
+                        self.initialise(&c.name, &site);
+                        self.enqueue(&c.name, &member.name, &member.descriptor);
                     } else {
                         match jdk_static_call(&member.owner, &member.name, &member.descriptor) {
                             JdkCall::Exact => *self.scan.exact.entry(format!("{}.{}", member.owner.replace('/', "."), member.name)).or_default() += 1,
@@ -939,7 +971,13 @@ impl<'a> Walker<'a> {
                         }
                         continue;
                     }
-                    // A String method the engine models on the content it holds; on a String with none (a
+                    // A call on a list or its iterator that the models the engine runs implement (`size`,
+                    // `get`, `iterator`, `next` …), walked above among the overrides: see [`dispatched_to_models`].
+                    if !special && dispatched_to_models(self.cp, &member.owner, &member.name, &member.descriptor, &overrides) {
+                        *self.scan.exact.entry(format!("{}.{}{} (on the list models)", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1;
+                        continue;
+                    }
+                    // A String method the engine models on content it holds; on a String with none (a
                     // number's digits) the engine meets the JDK call as a gap where it is run.
                     if !special && super::models_string_method(&member.owner, &member.name, &member.descriptor) {
                         *self.scan.exact.entry(format!("{}.{}{} (on its content)", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1;
