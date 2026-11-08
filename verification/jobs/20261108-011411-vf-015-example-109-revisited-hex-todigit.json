@@ -1,0 +1,78 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-011411-vf-015-example-109-revisited-hex-todigit",
+  "title": "VF-015: example 109 revisited, Hex#toDigit's regression proof, after the gap preflight asks JBMC's solver; closes VF-015 when it passes",
+  "description": "Example 109 (apache/commons-codec commit 43a9aa66, Hex.toDigit restricted to ASCII) could not make the regression proof between the old toDigit (Character.digit(ch, 16)) and the new one, because JBMC had no usable Character.digit: a stub, or the JDK's own tables read wrongly. jvmcontract now ships a Character model generated from the JDK's decimal-digit table and runs JBMC without its string solver. This job clones the two commits, compiles src/main/java of each with javac, and runs: (1) prove on the OLD version that toDigit(0x0660, 0) == 0, which the earlier run answered wrongly as violated; (2) equivalence between the versions, expected to find the intended change (a Unicode digit the old version decodes and the new one rejects); (3) equivalence with --unchanged-unless 'ch > 127', expected verified: on ASCII nothing changed. A violation in (3) would be a real finding about the commit. Resubmitted with its steps unchanged by the cleanup loop's native stream (VF-015): JDK models have shipped with jvmcontract since the first run, whose step 3 could not replay JBMC's witness because the interpreter refused to read java.nio.charset.StandardCharsets.UTF_8. Closes VF-015 when it passes. Resubmitted again, steps unchanged, by the stub-reachability loop (llm-dlc/loops/stub-reachability.md, step 4): the last run's step 3 was proved by JBMC but refused under --gaps strict, because the gap preflight counted JBMC's stub of String.format(String, Object[]) as entered. It is called by DecoderException(String, Object...) on toDigit's exception path, which ch == 1632 makes infeasible, but only the solver decides that. The preflight now probes each call site of a stub its symbolic execution still enters (a guarded assertion before the call, in one more JBMC run), and leaves a stub out of the gaps only when every probe and every unwinding assertion holds. Expected: step 3 verified with no JBMC gap, the note naming String.format as shown unreached by the solver. This is the second and last attempt of the cleanup native stream's N3 under the cleanup timebox. If step 4's witness replay then fails on java.nio.charset.StandardCharsets.UTF_8 (lib/src/interp/natives.rs:373), that is the interpreter fix VF-015's entry names.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "jbmc:models",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "109"
+    ],
+    "paths": [
+      "lib/models/java/lang/Character.java",
+      "lib/src/jbmc_gaps.rs"
+    ],
+    "jobs": [
+      "20261107-165827-example-109-revisited-hex-todigit-s-regr",
+      "20261107-233000-stub-reachability-step-1-can-jbmc-s-solv"
+    ]
+  },
+  "expected": "step 3 verified in seconds; step 4 a violation whose witness is a non-ASCII digit, replayed in the interpreter (before: a digit value, after: DecoderException); step 5 verified over every char x int",
+  "submitted": {
+    "at": "2026-11-08T01:14:11+00:00",
+    "by": "claude-opus-5-5",
+    "session": "807d6ed2-a98d-4f93-8dbb-28d70736eff7"
+  },
+  "requires": [
+    "git",
+    "javac",
+    "jbmc",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "10m",
+    "notes": "as 20261107-165827, whose clone, compile and step 3 took about 10 s at 100 MiB peak; the preflight now adds a probe run of the proof's size (about 0.1 s in the step 1 experiment)"
+  },
+  "steps": [
+    {
+      "name": "clone",
+      "run": "mkdir -p verification/.work-109 && cd verification/.work-109 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+      "cwd": "."
+    },
+    {
+      "name": "compile",
+      "run": "mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+      "cwd": "verification/.work-109"
+    },
+    {
+      "name": "old toDigit decodes the Arabic-Indic zero",
+      "run": "jvmcontract prove 'org.apache.commons.codec.binary.Hex#toDigit' --classes base-classes --assume 'ch == 1632' --assert 'result == 0' --timeout 300 --work work-old",
+      "cwd": "verification/.work-109"
+    },
+    {
+      "name": "the change, found",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change; test $? -eq 1",
+      "cwd": "verification/.work-109"
+    },
+    {
+      "name": "nothing else changed on ASCII",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --unchanged-unless 'ch > 127' --timeout 600 --work work-ascii",
+      "cwd": "verification/.work-109"
+    }
+  ],
+  "outputs": [
+    "verification/.work-109/work-old/jbmc.log",
+    "verification/.work-109/work-change",
+    "verification/.work-109/work-ascii"
+  ],
+  "supersedes": "20261107-165827-example-109-revisited-hex-todigit-s-regr"
+}

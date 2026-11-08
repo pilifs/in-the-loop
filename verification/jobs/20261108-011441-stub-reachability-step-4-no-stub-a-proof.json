@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-011441-stub-reachability-step-4-no-stub-a-proof",
+  "title": "Stub reachability, step 4: no stub a proof enters is left out of JBMC's gaps: the gap tests and the conformance corpus under JBMC and auto",
+  "description": "The JBMC gap preflight (lib/src/jbmc_gaps.rs) gained a third step: for the stubs its symbolic execution still enters, it runs the proof once more with a probe before each call site (a method of jvmcontract.StubProbe that fails an assertion behind CProver.nondetBoolean() and otherwise makes the call), and leaves a stub out of the gaps only when every probe and every unwinding assertion holds. This job guards that the step leaves out no stub a proof does enter. It runs, unchanged: the preflight's unit tests on the runner's JBMC (two of them run JBMC on lib/tests/fixtures/jbmc-paths/P.java); the gap tests in lib/tests/integration.rs, which expect JBMC's stubs of a throwing JDK constructor, a JDK mutator, monitors and unlinked invokedynamic calls to be refused by name under strict, assumed under assume, and handed to contracts under advised and --confirm; and the conformance corpus under --engine jbmc and auto (the_corpus_agrees_with_the_jvm_under_jbmc_and_auto), where a stub wrongly left out would show as a JBMC verdict the JVM refutes. From llm-dlc/loops/stub-reachability.md, step 4.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "jbmc:gaps"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/jbmc_gaps.rs",
+      "lib/src/shared.rs",
+      "lib/tests/integration.rs",
+      "lib/tests/conformance.rs"
+    ]
+  },
+  "expected": "every step exits 0: the jbmc_gaps unit tests pass, the eight gap tests pass with the gaps they name, and the corpus test passes (each JBMC and auto verdict agrees with the JVM)",
+  "submitted": {
+    "at": "2026-11-08T01:14:41+00:00",
+    "session": "807d6ed2-a98d-4f93-8dbb-28d70736eff7",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "40m",
+    "memoryLimit": "3.5G",
+    "timeout": "2h",
+    "notes": "the corpus under JBMC and auto took 1388 s at 1.6 GiB peak in 20261107-222356 (with the auto --confirm test too); the probe adds at most one JBMC run per proof whose symbolic run enters a stub; the gap tests take a few minutes; release build first"
+  },
+  "steps": [
+    {
+      "name": "the gap preflight's unit tests, live ones included",
+      "run": "cd lib && cargo test --release --lib jbmc_gaps",
+      "cwd": "."
+    },
+    {
+      "name": "the gap tests under JBMC",
+      "run": "cd lib && cargo test --release --test integration -- jbmc_own_approximations_are_gaps_in_the_same_modes jbmc_applies_the_contracts_for_its_gaps advised_stops_before_solving_with_each_gap a_gap_is_refused_by_name_under_strict the_contract_library_closes_gaps_on_its_records a_contract_closes_its_gap_and_the_verdict_rests_on_it a_witness_through_contracts_is_run_on_a_jvm confirm_applies_the_own_checkers_contracts_for_jbmc",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-probe.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/conformance-jbmc-probe.log"
+  ]
+}

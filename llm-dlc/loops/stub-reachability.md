@@ -169,7 +169,18 @@ Settled by the user on 2026-11-07:
   - Next: step 4. Resubmit VF-015's job with the title naming "closes VF-015 when it passes". Submit the guard job:
     the gap tests in `lib/tests/integration.rs` (`jbmc_own_approximations_are_gaps_in_the_same_modes`, the advised and
     contract ones), and the conformance corpus under `--engine jbmc`.
-- Status: working
+- **Step 4: the checks are queued.**
+  - VF-015's job is resubmitted with its steps unchanged, as `20261108-011411-vf-015-example-109-revisited-hex-todigit`.
+    `pipeline.py resubmit` keeps the old title, so the title and description were then edited to name "closes VF-015
+    when it passes" and what changed. This is N3's second and last attempt under the cleanup timebox.
+  - The guard is `20261108-011441-stub-reachability-step-4-no-stub-a-proof`. It runs the preflight's unit tests on the
+    runner's JBMC, then the eight gap tests in `lib/tests/integration.rs` (their filters checked with `--list`), then
+    the corpus test under JBMC and auto. It doesn't stop when a step fails.
+  - Next: collect both jobs.
+    - If both pass, close VF-015 and stop with `done`.
+    - If VF-015's step 4 fails on `StandardCharsets.UTF_8`, that interpreter fix is this brief's next item.
+    - If a guard test fails, a stub a proof enters was left out: fix the probe first.
+- Status: waiting on jobs 20261108-011411-vf-015-example-109-revisited-hex-todigit 20261108-011441-stub-reachability-step-4-no-stub-a-proof
 
 ## Loop settings
 
