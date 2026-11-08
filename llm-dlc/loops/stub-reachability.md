@@ -124,7 +124,30 @@ Settled by the user on 2026-11-07:
     that says "unreached" there is wrong.
   - Next: step 2, once the job is collected. Choose by `lib/target/stub-reach/summary.txt` (it comes back in the
     result's outputs), or stop with `blocked:` and the measurements.
-- Status: waiting on jobs 20261107-233000-stub-reachability-step-1-can-jbmc-s-solv
+- **Step 2: the probe is chosen.** The job passed (collected in `qkrlyslv`). Its log ends with the summary:
+
+  | Run | The proof (jvmcontract's last JBMC run) | A. `--cover location` | B. the probe at the call site |
+  |---|---|---|---|
+  | case (`ch == 1632`) | proved, 129 ms; strict refuses it on `String.format` | usage error, 3 ms | `Reach.reach`'s assertion SUCCESS, 92 ms |
+  | control (no `--assume`) | refuted, 105 ms | usage error, 4 ms | `Reach.reach`'s assertion FAILURE, 90 ms |
+
+  - **A doesn't exist.** JBMC 6.11 answers `Unknown option: --cover`. The `--cover` in `--unwinding-assertions`' help
+    line is CBMC's text, carried over, so the brief's "JBMC 6.11 has `--cover`" is wrong.
+  - **B is correct on both runs**: the stub is unreached under the assumption and reached without it. It is also cheap:
+    one JBMC run of the proof's own size, faster than the proof itself here, and well within the preflight's 60 s cap
+    (`PREFLIGHT_SECONDS`).
+  - **What step 3 must keep.**
+    - The probe counts only when the same run's unwinding assertions all hold. Otherwise paths past the bound were
+      cut, and the stub stays a gap. A timeout, an unknown or unreadable output also leaves the stub a gap.
+    - A probe as `throw new AssertionError()` ends its path in any case: JBMC either lowers it to an assertion and
+      an assumption of false (as remembered, not checked: JBMC's source isn't here) or throws. So a stub reached only
+      after another probed call would look unreached, which is unsound. Step 3 either probes one stub per run, or
+      guards the probe with `CProver.nondetBoolean()` and falls through to the real call. Its reproducer should
+      include two stubs in sequence.
+    - The probe goes immediately before each call site of the stub, in every class the listing shows calling it
+      (`redirect_calls_directory` over the class path). A stub leaves the gaps only when every one of its probes holds.
+  - Next: step 3, the probe in `jbmc_gaps.rs` after `symbolic`, with its reproducer first.
+- Status: working
 
 ## Loop settings
 

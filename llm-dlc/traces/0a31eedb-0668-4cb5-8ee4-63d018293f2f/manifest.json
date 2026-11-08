@@ -12,24 +12,24 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-07T23:23:44.332Z",
-  "ended": "2026-11-08T00:55:29.049Z",
-  "duration_seconds": 5505,
+  "ended": "2026-11-08T00:55:45.511Z",
+  "duration_seconds": 5521,
   "stats": {
     "turns": 1,
-    "api_calls": 26,
-    "tool_calls": 27,
+    "api_calls": 28,
+    "tool_calls": 28,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 62697,
+    "peak_context_tokens": 63870,
     "usage": {
-      "input_tokens": 52,
-      "output_tokens": 8108,
-      "cache_read_input_tokens": 988487,
-      "cache_creation_input_tokens": 51313
+      "input_tokens": 56,
+      "output_tokens": 9145,
+      "cache_read_input_tokens": 1114800,
+      "cache_creation_input_tokens": 52486
     }
   },
   "tools": {
-    "Bash": 26,
+    "Bash": 27,
     "bash": 1
   },
   "files_touched": [],
@@ -37,24 +37,24 @@
     {
       "index": 0,
       "started": "2026-11-07T23:23:44.332Z",
-      "ended": "2026-11-08T00:55:29.049Z",
+      "ended": "2026-11-08T00:55:45.511Z",
       "turns": 1,
-      "api_calls": 26,
+      "api_calls": 28,
       "usage": {
-        "input_tokens": 52,
-        "output_tokens": 8108,
-        "cache_read_input_tokens": 988487,
-        "cache_creation_input_tokens": 51313
+        "input_tokens": 56,
+        "output_tokens": 9145,
+        "cache_read_input_tokens": 1114800,
+        "cache_creation_input_tokens": 52486
       },
-      "peak_context_tokens": 62697
+      "peak_context_tokens": 63870
     }
   ],
   "log": {
-    "sha256": "267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066",
-    "bytes": 574674,
-    "lines": 163,
-    "gzip_bytes": 111542,
-    "path": "llm-dlc/traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/logs/267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066.jsonl.gz"
+    "sha256": "e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f",
+    "bytes": 592479,
+    "lines": 176,
+    "gzip_bytes": 114801,
+    "path": "llm-dlc/traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/logs/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -73,6 +73,14 @@
       "summary": "Record verification results for 7 jobs: VF-001 closed, VF-002 still blocked in build.py, VF-018 triaged",
       "body": "Run of 2026-11-07/08 on vm-1. Both conformance-corpus jobs passed with their test run (VF-001 closed). Examples 147 and 148 failed again in build.py's stage_contracts, which is handed the attempt directory rather than the example's folder (VF-002, with the line numbers). The VF-018 triage job passed: JBMC's formula for objects.Kernel#price is 18k variables and 77k clauses at every unwind, and no variant finished in 900 s, so the solver and not the unwinding is the cost. The witness-search job and the stub-reachability step-1 experiment passed. Outputs of the passed jobs were applied by collect.",
       "log_sha256": "267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066"
+    },
+    {
+      "change_id": "mwzqmlswqxyqwsywvmoxrzwxllqppwsu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Stub reachability, step 2: the probe at the call site is chosen, since JBMC 6.11 has no --cover",
+      "body": "The step 1 job (20261107-233000-stub-reachability-step-1-can-jbmc-s-solv) passed. It reproduced VF-015's step 3 on commons-codec 87f6aa28 and a control without the --assume, then tried two ways of having JBMC's solver decide whether the proof reaches String.format's stub. --cover location is a usage error: JBMC 6.11 doesn't know the option, and the brief's claim that it has one is wrong (the mention in --unwinding-assertions' help line is CBMC's text). A probe assertion at DecoderException's String.format call, from a rewritten caller, was correct on both: it holds under ch == 1632 and fails without the assumption. It took 92 ms, against the proof's 129 ms. llm-dlc/loops/stub-reachability.md's Progress records the measurements and the choice. It also records what step 3 must keep: the probe counts only when the run's unwinding assertions hold; a probe that throws ends its path, so stubs are probed one per run or the probe is guarded by a nondet branch; and a stub leaves the gaps only when every one of its call sites' probes holds. Verified by reading the job's log and outputs; nothing else changed.",
+      "log_sha256": "e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f"
     }
   ],
   "logs": {
@@ -86,6 +94,12 @@
       "bytes": 276963,
       "lines": 54,
       "gzip_bytes": 71250,
+      "url": null
+    },
+    "e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f": {
+      "bytes": 592479,
+      "lines": 176,
+      "gzip_bytes": 114801,
       "url": null
     }
   },
