@@ -132,6 +132,19 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   handles a declared exception). Then this job, resubmitted with step 4 checking for a found change rather than exit 1,
   in a session a person starts. That is a harness change with unit tests, plus one job of a few seconds of JBMC.
   Recorded in [`llm-dlc/loops/stub-reachability.md`](../llm-dlc/loops/stub-reachability.md)'s Progress.
+- **Rerun** 2026-11-08 on `claude-vm`: job `20261108-024648-vf-015-example-109-revisited-hex-todigit` (at
+  `eea1a8a8a699`, after the harness catches declared checked exceptions) failed at step 5 only, in 10.6 s. Steps 3
+  and 4 pass, and step 4 now means what it says: a violation found for the change, witness `toDigit(ch='٧',
+  index=-1)`, before 7, after unreplayable (`String.format depends on the default locale`), reproduced by the
+  interpreter. Step 5 ("nothing else changed on ASCII", expected: verified) no longer fails on the exception
+  property; it now exits 1 with `cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM
+  (throwing-initializer at before./after. CharEncoding.<clinit> and Hex.<clinit>), so the proof is refused under every
+  --gaps mode`. JBMC treats those initializers as possibly throwing NullPointerException (probably the
+  `StandardCharsets`/`Charset` stub), and the proof is refused by the harness's own `catch` clauses naming
+  NullPointerException/Error. **Needs**: whoever owns the native/JBMC-defect stream to decide whether those
+  initializers can really throw (a model of the charset constants, or the defect check recognising that no path
+  reaches the throw, as the gap preflight now does for stubs), or the job to use `--engine auto`. Then resubmit.
+  Logs: `verification/results/20261108-024648-vf-015-example-109-revisited-hex-todigit/logs/5-*.log`. Stays open.
 
 ### VF-002: examples 147, 148 and 149 never reach a proof
 

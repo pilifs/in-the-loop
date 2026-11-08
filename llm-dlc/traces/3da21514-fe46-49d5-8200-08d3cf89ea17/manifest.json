@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T02:49:56.536Z",
-  "duration_seconds": 28445,
+  "ended": "2026-11-08T02:50:36.674Z",
+  "duration_seconds": 28485,
   "stats": {
     "turns": 22,
-    "api_calls": 290,
-    "tool_calls": 310,
+    "api_calls": 294,
+    "tool_calls": 314,
     "tool_errors": 2,
     "compactions": 1,
-    "peak_context_tokens": 349752,
+    "peak_context_tokens": 355451,
     "usage": {
-      "input_tokens": 608,
-      "output_tokens": 288005,
-      "cache_read_input_tokens": 60139556,
-      "cache_creation_input_tokens": 1018811
+      "input_tokens": 616,
+      "output_tokens": 290678,
+      "cache_read_input_tokens": 61547888,
+      "cache_creation_input_tokens": 1024510
     }
   },
   "tools": {
-    "Bash": 265,
+    "Bash": 269,
     "Write": 20,
     "Edit": 18,
     "ToolSearch": 3,
@@ -83,24 +83,24 @@
     {
       "index": 1,
       "started": "2026-11-08T02:14:46.238Z",
-      "ended": "2026-11-08T02:49:56.536Z",
+      "ended": "2026-11-08T02:50:36.674Z",
       "turns": 4,
-      "api_calls": 146,
+      "api_calls": 150,
       "usage": {
-        "input_tokens": 292,
-        "output_tokens": 142577,
-        "cache_read_input_tokens": 29869281,
-        "cache_creation_input_tokens": 320255
+        "input_tokens": 300,
+        "output_tokens": 145250,
+        "cache_read_input_tokens": 31277613,
+        "cache_creation_input_tokens": 325954
       },
-      "peak_context_tokens": 349752
+      "peak_context_tokens": 355451
     }
   ],
   "log": {
-    "sha256": "10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04",
-    "bytes": 6984410,
-    "lines": 2603,
-    "gzip_bytes": 1190204,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04.jsonl.gz"
+    "sha256": "d905afd9efbe653427b2ecca0151d4c70bdf77859401dcd41df0374cd2888d0b",
+    "bytes": 7075858,
+    "lines": 2638,
+    "gzip_bytes": 1203318,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/d905afd9efbe653427b2ecca0151d4c70bdf77859401dcd41df0374cd2888d0b.jsonl.gz"
   },
   "subagents": [
     {
@@ -339,6 +339,14 @@
       "summary": "application-core Phase 0 step 2: the four interfaces as types in spec/plans.rs, each refused until its stream builds it",
       "body": "The application-core streams meet at four interfaces, now types in lib/src/spec/plans.rs that extend the foundations IR rather than compete with it: a construction plan (ConstructionPlan: a bounded DAG of constructor- or factory-made nodes with stable ids, shared nodes for aliasing, typed leaves, bounded arrays, adapted values, dependencies the environment stands for, the roots, an optional short setup sequence and the domain's restrictions; shape_problem names a cycle, a duplicate, a dangling id, a choice of another class or a bound exceeded), carried by a new Construction::Planned domain; a value domain (ValueDomain, with its model's evidence level, from implemented to proved) and the witness value a replay rebuilds (WitnessValue, UTF-16 code units); a modelled call's CallModel (stable id, argument key, query or choice coupling, permitted results or exceptions, bound), carried by ModeledCall's new optional model; and a helper's Summary (read footprint, alias and null facts, domain, bounds, relation, effects, dependency proofs). Every struct refuses unknown fields and every enum unknown variants. Part gains Objects, Values, Environment and Reuse.\n\nNothing gets read as absent: a planned domain is refused by the heap check (Part::Objects) and a call's model by the effect check (Part::Environment) until those streams build them, and neither is among the claim key's known fields, so a claim with one is uncacheable. Tests: plans.rs's unit tests (round trips, every interface refusing an unknown field or variant, the plan's shape problems), tests/heap.rs a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_builds_it, tests/effects.rs a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it; the spec unit tests and the heap, effects, foundations and summaries suites pass inline. Docs: lib/README.md, and the brief's Progress.",
       "log_sha256": "10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04"
+    },
+    {
+      "change_id": "ponxovxryktlvxtmnlrrmplprowxozwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-015: the rerun at eea1a8a8 gets past the exception property and is refused on throwing initializers",
+      "body": "Job 20261108-024648-vf-015-example-109-revisited-hex-todigit: steps 3 and 4 pass (step 4 now finds the change with a replayed witness), step 5 is refused by jvmcontract for 4 throwing-initializer defects. Its results/ files were already swept into the application-core Phase 0 step 2 commit by another session's commit; this commit holds only the VF-015 entry update in verification/findings.md.",
+      "log_sha256": "d905afd9efbe653427b2ecca0151d4c70bdf77859401dcd41df0374cd2888d0b"
     }
   ],
   "logs": {
@@ -443,6 +451,12 @@
       "lines": 965,
       "gzip_bytes": 586181,
       "url": "https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/c89857e12644a23cc777e3841b8a4981268142869d06e8fddef662c1c72bff79.jsonl.gz"
+    },
+    "d905afd9efbe653427b2ecca0151d4c70bdf77859401dcd41df0374cd2888d0b": {
+      "bytes": 7075858,
+      "lines": 2638,
+      "gzip_bytes": 1203318,
+      "url": null
     }
   },
   "redaction_policy": 4,
