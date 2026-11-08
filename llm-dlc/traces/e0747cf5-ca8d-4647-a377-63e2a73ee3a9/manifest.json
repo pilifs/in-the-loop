@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "e0747cf5-ca8d-4647-a377-63e2a73ee3a9",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T08:23:30.331Z",
+  "ended": "2026-11-08T08:27:16.855Z",
+  "duration_seconds": 227,
+  "stats": {
+    "turns": 1,
+    "api_calls": 9,
+    "tool_calls": 11,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 41459,
+    "usage": {
+      "input_tokens": 18,
+      "output_tokens": 2137,
+      "cache_read_input_tokens": 285845,
+      "cache_creation_input_tokens": 28340
+    }
+  },
+  "tools": {
+    "Bash": 10,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T08:23:30.331Z",
+      "ended": "2026-11-08T08:27:16.855Z",
+      "turns": 1,
+      "api_calls": 9,
+      "usage": {
+        "input_tokens": 18,
+        "output_tokens": 2137,
+        "cache_read_input_tokens": 285845,
+        "cache_creation_input_tokens": 28340
+      },
+      "peak_context_tokens": 41459
+    }
+  ],
+  "log": {
+    "sha256": "4dfc3c5ad20c4c33e2a6d9b4636487ae43d041fd0ff9b5dba0d37b0c5186ddcc",
+    "bytes": 363188,
+    "lines": 99,
+    "gzip_bytes": 83400,
+    "path": "llm-dlc/traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/logs/4dfc3c5ad20c4c33e2a6d9b4636487ae43d041fd0ff9b5dba0d37b0c5186ddcc.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "xwxzqmrmxumnxumtrotuuzkoqutkzszl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result for application-core values VF-023 diagnosis job (passed)",
+      "body": "The diagnosis probes (one- and two-element List.of, with and without the static initializer) all verify under JBMC 6.11.0, so the minimal probe does not reproduce the refutation seen in VF-023; the cause lies in the listSizes/listChange harnesses. VF-023 stays open with this noted. Only verification results and findings.md changed.",
+      "log_sha256": "4dfc3c5ad20c4c33e2a6d9b4636487ae43d041fd0ff9b5dba0d37b0c5186ddcc"
+    }
+  ],
+  "logs": {
+    "4dfc3c5ad20c4c33e2a6d9b4636487ae43d041fd0ff9b5dba0d37b0c5186ddcc": {
+      "bytes": 363188,
+      "lines": 99,
+      "gzip_bytes": 83400,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

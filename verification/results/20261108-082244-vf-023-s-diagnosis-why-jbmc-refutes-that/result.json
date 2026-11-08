@@ -1,0 +1,994 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that",
+  "title": "VF-023's diagnosis: why JBMC refutes that a one-element List.of from lib/models has size 1",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.6s, peak 54.7 MiB (estimated 5m00s, 1.5 GiB); 94 output file(s) changed; signals: jvmcontract:holds×3",
+  "attention": [
+    "step 1 (VF-023 probes under JBMC) was held back 0.8s by its 1-CPU quota in 1.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that.json",
+    "sha256": "8e9757f2e538bf70a79fd8822fe5d4dfef1f2304069e5676ee52e685c8ae61f2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that",
+      "title": "VF-023's diagnosis: why JBMC refutes that a one-element List.of from lib/models has size 1",
+      "description": "Values stream of llm-dlc/loops/application-core.md (llm-dlc/loops/application-core-values.md, acceptance row V2; finding VF-023 in verification/findings.md), at the commit that submits this job. Job 20261108-070211-… failed at step 2 because under --engine auto --confirm JBMC 6.11.0 refutes the corpus's listSizes(n=1) and listChange(n=0), which the own checker proves and the JVM, the interpreter and lib/models' lists run on a JVM all hold. Each spurious witness is a one-element List.of, whose List12 stores the static sentinel ImmutableCollections.EMPTY as its second element (size() is 'e1 != EMPTY ? 2 : 1'). Every other list claim JBMC decides agrees with the JVM, including a two-element List12's size, get(0) of a one-element one, and EMPTY_LIST's identity. This job changes nothing. verification/triage/vf023.sh runs three property proofs with JBMC alone (jvmcontract prove --engine jbmc, the default unwind and timeout 300 s, one int parameter the claims don't read, the models on JBMC's class path as always) and keeps JBMC's logs: 'one' (List.of(new Object()).size() == 1), 'oneAfterInit' (List.of() first, so that ImmutableCollections is initialized before the List12 constructor reads EMPTY), and 'two' (two elements, the control). From each counterexample trace it extracts the assignments to ImmutableCollections' statics, to a List12's e1 and to the class-initialization flags. On a JVM the three give 1, 1 and 2. Expected verdicts: 'one' refuted by JBMC, with the interpreter's replay holding (VF-023 reproduced); 'two' verified; 'oneAfterInit' unknown, which is the question. Expected process status: the script exits 0 (it exits 1 only if the probe fails to compile). matchesExpected is the script running to the end. The verdicts are the evidence, read from summary.txt and the trace files.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "verification/triage/vf023.sh",
+          "lib/models/java/util/ImmutableCollections.java",
+          "llm-dlc/loops/application-core-values.md"
+        ]
+      },
+      "expected": "exits 0, with summary.txt naming each probe's verdict and the trace steps that set EMPTY and e1",
+      "submitted": {
+        "at": "2026-11-08T08:22:44+00:00",
+        "session": "b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f",
+        "by": "application-core-values stream (claude-opus-5-5)"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1.5G",
+        "duration": "5m",
+        "notes": "three JBMC runs over a three-line method each: seconds to a minute each; the corpus's list claims took under 10 s each under JBMC"
+      },
+      "steps": [
+        {
+          "name": "VF-023 probes under JBMC",
+          "run": "bash verification/triage/vf023.sh",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/vf023"
+      ]
+    }
+  },
+  "sourceCommit": "8ddb0f7417c659e0e5399a0ed988223b0bdaa126",
+  "startedAt": "2026-11-08T08:24:02+00:00",
+  "finishedAt": "2026-11-08T08:26:06+00:00",
+  "wallSeconds": 124.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4146446,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 2415919104,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1610612736,
+    "durationSeconds": 300.0,
+    "notes": "three JBMC runs over a three-line method each: seconds to a minute each; the corpus's list claims took under 10 s each under JBMC"
+  },
+  "usage": {
+    "peakMemoryBytes": 57393152,
+    "wallSeconds": 1.6,
+    "cpuSeconds": 1.2,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 121.451,
+      "cpuSeconds": 121.345,
+      "cpuThrottledSeconds": 0.165,
+      "peakMemoryBytes": 2157461504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b02335ecf9a7d3db3949c4d900a4aa23593937dfe31016281250f21ed9ac2426",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 01s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "VF-023 probes under JBMC",
+      "run": "bash verification/triage/vf023.sh",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 1.603,
+      "cpuSeconds": 1.204,
+      "cpuThrottledSeconds": 0.806,
+      "peakMemoryBytes": 57393152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-vf-023-probes-under-jbmc.log",
+        "lines": 10,
+        "bytes": 946,
+        "sha256": "9e3b807888a358f36d240517d23a0975b92cd86aa8bd3894e35dc0af84264e03",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 3
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 3,
+          "text": "✓ probe.Probe#one satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "probe.Probe#one satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 6,
+          "text": "✓ probe.Probe#oneAfterInit satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "probe.Probe#oneAfterInit satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 9,
+          "text": "✓ probe.Probe#two satisfies `result == 2` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "probe.Probe#two satisfies `result == 2` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "on the JVM (one, oneAfterInit, two): 1 1 2",
+        "-- one [result == 1]: jvmcontract exit 0 in 208 ms",
+        "✓ probe.Probe#one satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)",
+        "one (jbmc.log): no failed property in lib/target/vf023/work-one/jbmc.log",
+        "-- oneAfterInit [result == 1]: jvmcontract exit 0 in 175 ms",
+        "✓ probe.Probe#oneAfterInit satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)",
+        "oneAfterInit (jbmc.log): no failed property in lib/target/vf023/work-oneAfterInit/jbmc.log",
+        "-- two [result == 2]: jvmcontract exit 0 in 171 ms",
+        "✓ probe.Probe#two satisfies `result == 2` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)",
+        "two (jbmc.log): no failed property in lib/target/vf023/work-two/jbmc.log"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/vf023/classes/probe/Probe.class",
+      "change": "added",
+      "bytes": 1655,
+      "sha256": "10b09c0489b60e4be294d1802d1c18b545bfc97e6333d5606f0225331eb144ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/one-trace.txt",
+      "change": "added",
+      "bytes": 73,
+      "sha256": "be0aa710c90a57fadf63780924ee9cb2d3df6e9f655e2d98e5bbc60e284a029b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/one.log",
+      "change": "added",
+      "bytes": 346,
+      "sha256": "6f4aa189806c540732629e9a0e7c17f76023e2e38ebc584581d94fec4c9c529b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/oneAfterInit-trace.txt",
+      "change": "added",
+      "bytes": 91,
+      "sha256": "2c9f60e6eafd773f02da24dcdbd1473a9e4a0de03ff88fcca353a1613240687f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/oneAfterInit.log",
+      "change": "added",
+      "bytes": 355,
+      "sha256": "1fea7b9d7c7eb2a106fa098dd1a44fc307ff3d4419ab893649ebf01b33638a62",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/src/probe/Probe.java",
+      "change": "added",
+      "bytes": 563,
+      "sha256": "5cd04081403003853c90b77968969bf72fe47186699033f7a543ccf06b5eee26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/summary.txt",
+      "change": "added",
+      "bytes": 1026,
+      "sha256": "871376d386dd9f7044abe82bea3860c5501bb49b97b10b140ad06baedb707817",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/trace.py",
+      "change": "added",
+      "bytes": 1254,
+      "sha256": "6298a66ddf37cc10f1277ac9ea1b5167b4b937abd6f2e24de26ac0dbda902d0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/two-trace.txt",
+      "change": "added",
+      "bytes": 73,
+      "sha256": "edb8e0feea61207906e2a1057bde46558b71b4b81a3a9c1dd99cf4951a29ba11",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/two.log",
+      "change": "added",
+      "bytes": 346,
+      "sha256": "7c0f5b516b17d240296592c4dc770c017952de9c237163f3b2909e18a238e620",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1275,
+      "sha256": "78241779887701ba55ac6199576ce6b4e00dc64c7dfaa066f4b1aa3b2950850a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1240,
+      "sha256": "1e27b22966be6516c7b2ce26753826a67e89a4bce8a7c78619ce86a631017127",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 124908,
+      "sha256": "65f90d356d1936abbb97c060a4a15f9b96ba74b443740a8590270e30cd849417",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jbmc-symex.txt",
+      "change": "added",
+      "bytes": 33964,
+      "sha256": "7e472a6441de19e47c8e6e441276efef0fff9f9dffe385a9421d4d6b8c7c6dfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jbmc.log",
+      "change": "added",
+      "bytes": 3799,
+      "sha256": "12cfdd558a0c0539befaf36d8a81e4010aba4b1b2b7a1e631ae985a00b507cf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-one/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1284,
+      "sha256": "7c8452b24579821b8b93fc1b52723ad115fccdc9375ddadb21797e4a6310e73d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1249,
+      "sha256": "7d6dfaa1fbfb307eaa000dede91029f918d962533f069660d9aa0dfee6eb61ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 139785,
+      "sha256": "fb1335808c6523904a8dcf1f77f22d118de4e51dfcd0a6fab6fc18a8354a6021",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jbmc-symex.txt",
+      "change": "added",
+      "bytes": 36763,
+      "sha256": "995cf4525b67ac31926ae6efcc24b756f603b33873e64adeefb42f680d036b7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jbmc.log",
+      "change": "added",
+      "bytes": 3798,
+      "sha256": "6bf01d59c787d73dabf09e559b836dcefb70da7be01285c80e45f796464172ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-oneAfterInit/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1275,
+      "sha256": "8ee7e3089749c75dff5ae23d382b6ece3fd0049a8ce12671db6ed34f3307e097",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1240,
+      "sha256": "f21a79849ddcfa954c9d95e16609e13d3d68f5e13b5cfbce8afa8b645966b448",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 134497,
+      "sha256": "7133953369d5879125404a21aefe9b0a21f085e521916ed800e3fca33f1e1247",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jbmc-symex.txt",
+      "change": "added",
+      "bytes": 38185,
+      "sha256": "eab117a743e21effe5743694834ff77963e5b73b03aba7e249405383b186c5ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jbmc.log",
+      "change": "added",
+      "bytes": 3798,
+      "sha256": "5f74e42bc8e25e8ff52d813ff1681ef681c2eb6de31e677c3422c5b5c6e1eff9",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf023/work-two/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T08:27:02+00:00",
+    "applied": [
+      "lib/target/vf023/classes/probe/Probe.class",
+      "lib/target/vf023/one-trace.txt",
+      "lib/target/vf023/one.log",
+      "lib/target/vf023/oneAfterInit-trace.txt",
+      "lib/target/vf023/oneAfterInit.log",
+      "lib/target/vf023/src/probe/Probe.java",
+      "lib/target/vf023/summary.txt",
+      "lib/target/vf023/trace.py",
+      "lib/target/vf023/two-trace.txt",
+      "lib/target/vf023/two.log",
+      "lib/target/vf023/work-one/harness/PropertyHarness.class",
+      "lib/target/vf023/work-one/harness/PropertyHarness.java",
+      "lib/target/vf023/work-one/jbmc-goto.txt",
+      "lib/target/vf023/work-one/jbmc-symex.txt",
+      "lib/target/vf023/work-one/jbmc.log",
+      "lib/target/vf023/work-one/jdk/java/lang/Byte.class",
+      "lib/target/vf023/work-one/jdk/java/lang/Integer.class",
+      "lib/target/vf023/work-one/jdk/java/lang/Long.class",
+      "lib/target/vf023/work-one/jdk/java/lang/Math.class",
+      "lib/target/vf023/work-one/jdk/java/lang/Short.class",
+      "lib/target/vf023/work-one/jdk/java/lang/StrictMath.class",
+      "lib/target/vf023/work-one/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf023/work-one/models/java/lang/Character.class",
+      "lib/target/vf023/work-one/models/java/lang/Enum.class",
+      "lib/target/vf023/work-one/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf023/work-one/models/java/lang/Long$LongCache.class",
+      "lib/target/vf023/work-one/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf023/work-one/models/java/nio/charset/Charset.class",
+      "lib/target/vf023/work-one/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf023/work-one/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf023/work-one/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf023/work-one/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf023/work-one/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf023/work-one/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf023/work-one/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf023/work-one/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf023/work-one/models/java/util/ImmutableCollections.class",
+      "lib/target/vf023/work-one/models/java/util/List.class",
+      "lib/target/vf023/work-oneAfterInit/harness/PropertyHarness.class",
+      "lib/target/vf023/work-oneAfterInit/harness/PropertyHarness.java",
+      "lib/target/vf023/work-oneAfterInit/jbmc-goto.txt",
+      "lib/target/vf023/work-oneAfterInit/jbmc-symex.txt",
+      "lib/target/vf023/work-oneAfterInit/jbmc.log",
+      "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Byte.class",
+      "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Integer.class",
+      "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Long.class",
+      "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Math.class",
+      "lib/target/vf023/work-oneAfterInit/jdk/java/lang/Short.class",
+      "lib/target/vf023/work-oneAfterInit/jdk/java/lang/StrictMath.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/lang/Character.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/lang/Enum.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/lang/Long$LongCache.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/Charset.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/util/ImmutableCollections.class",
+      "lib/target/vf023/work-oneAfterInit/models/java/util/List.class",
+      "lib/target/vf023/work-two/harness/PropertyHarness.class",
+      "lib/target/vf023/work-two/harness/PropertyHarness.java",
+      "lib/target/vf023/work-two/jbmc-goto.txt",
+      "lib/target/vf023/work-two/jbmc-symex.txt",
+      "lib/target/vf023/work-two/jbmc.log",
+      "lib/target/vf023/work-two/jdk/java/lang/Byte.class",
+      "lib/target/vf023/work-two/jdk/java/lang/Integer.class",
+      "lib/target/vf023/work-two/jdk/java/lang/Long.class",
+      "lib/target/vf023/work-two/jdk/java/lang/Math.class",
+      "lib/target/vf023/work-two/jdk/java/lang/Short.class",
+      "lib/target/vf023/work-two/jdk/java/lang/StrictMath.class",
+      "lib/target/vf023/work-two/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf023/work-two/models/java/lang/Character.class",
+      "lib/target/vf023/work-two/models/java/lang/Enum.class",
+      "lib/target/vf023/work-two/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf023/work-two/models/java/lang/Long$LongCache.class",
+      "lib/target/vf023/work-two/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf023/work-two/models/java/nio/charset/Charset.class",
+      "lib/target/vf023/work-two/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf023/work-two/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf023/work-two/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf023/work-two/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf023/work-two/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf023/work-two/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf023/work-two/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf023/work-two/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf023/work-two/models/java/util/ImmutableCollections.class",
+      "lib/target/vf023/work-two/models/java/util/List.class"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "04738c313a96bc402d1660b7c9bf3d4354840e15",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/04738c313a96bc402d1660b7c9bf3d4354840e15/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

@@ -2,6 +2,38 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that",
+      "title": "VF-023's diagnosis: why JBMC refutes that a one-element List.of from lib/models has size 1",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1.6s, peak 54.7 MiB (estimated 5m00s, 1.5 GiB); 94 output file(s) changed; signals: jvmcontract:holds×3",
+      "attention": [
+        "step 1 (VF-023 probes under JBMC) was held back 0.8s by its 1-CPU quota in 1.6s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "verification/triage/vf023.sh",
+          "lib/models/java/util/ImmutableCollections.java",
+          "llm-dlc/loops/application-core-values.md"
+        ]
+      },
+      "sourceCommit": "8ddb0f7417c659e0e5399a0ed988223b0bdaa126",
+      "finishedAt": "2026-11-08T08:26:06+00:00",
+      "wallSeconds": 1.6,
+      "peakMemoryBytes": 57393152,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1610612736,
+        "durationSeconds": 300.0,
+        "notes": "three JBMC runs over a three-line method each: seconds to a minute each; the corpus's list claims took under 10 s each under JBMC"
+      },
+      "host": "vm-1",
+      "result": "20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that/result.json"
+    },
+    {
       "id": "20261108-074116-application-core-objects-o2-a-replay-tha",
       "title": "application-core objects O2: a replay that cannot run one version reproduces nothing; lib/tests/integration.rs under JBMC, and VF-015's step 4 (example 109) replayed on a JVM",
       "status": "passed",

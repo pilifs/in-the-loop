@@ -31,6 +31,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   where the property holds, so the witness is spurious (JBMC's list model disagrees with the interpreter and the own
   checker), not a real violation. The `auto` run reports "a violation the JVM does not reproduce: the harness holds"
   and `--confirm` reports "the engines disagree, neither verdict stands". The other 82 cases were fine.
+- **Update 2026-11-08** (job `20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that`, at `8ddb0f7417c6`, passed): the
+  diagnosis probes (`one`, `oneAfterInit`, `two`: a one- and two-element `List.of` and the same after the model's
+  static initializer) all verified under JBMC 6.11.0 in about 0.2 s each, as the JVM says (1 1 2). So the minimal
+  probe does not reproduce the refutation; the cause is something the `listSizes`/`listChange` harnesses add (their
+  `assume` over `n`, or the loop over the list). The job passing only means the probes ran; it does not close this entry.
 - **Needs**: the values stream (application-core-values V2) decides whether the JBMC list model (or the witness
   replay) is at fault and fixes it, or marks these two cases as expected disagreements with a stated reason; then
   resubmits the job. I did not change the job.
