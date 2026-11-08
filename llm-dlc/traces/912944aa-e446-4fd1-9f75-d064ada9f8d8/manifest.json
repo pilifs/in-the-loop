@@ -1,0 +1,82 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "912944aa-e446-4fd1-9f75-d064ada9f8d8",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T09:11:12.151Z",
+  "ended": "2026-11-08T09:14:03.795Z",
+  "duration_seconds": 172,
+  "stats": {
+    "turns": 1,
+    "api_calls": 6,
+    "tool_calls": 8,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 42449,
+    "usage": {
+      "input_tokens": 12,
+      "output_tokens": 1917,
+      "cache_read_input_tokens": 172318,
+      "cache_creation_input_tokens": 29330
+    }
+  },
+  "tools": {
+    "Bash": 7,
+    "Edit": 1
+  },
+  "files_touched": [
+    "verification/findings.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T09:11:12.151Z",
+      "ended": "2026-11-08T09:14:03.795Z",
+      "turns": 1,
+      "api_calls": 6,
+      "usage": {
+        "input_tokens": 12,
+        "output_tokens": 1917,
+        "cache_read_input_tokens": 172318,
+        "cache_creation_input_tokens": 29330
+      },
+      "peak_context_tokens": 42449
+    }
+  ],
+  "log": {
+    "sha256": "b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d",
+    "bytes": 346035,
+    "lines": 80,
+    "gzip_bytes": 77470,
+    "path": "llm-dlc/traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/logs/b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "movksozlvuuzxlmluzqqpztqpwkrkzup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result for application-core values VF-023 second probe (passed)",
+      "body": "Collected job 20261108-091002-vf-023-s-second-probe-which-ingredient-o (passed, 5.8 s). Its probes show JBMC refutes exactly the list harnesses that call List.size() or isEmpty(), which JBMC stubs as returning any value; probes without those calls are proved. Recorded as an update to VF-023 (still open: the corpus job's step 2 has not been rerun).",
+      "log_sha256": "b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d"
+    }
+  ],
+  "logs": {
+    "b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d": {
+      "bytes": 346035,
+      "lines": 80,
+      "gzip_bytes": 77470,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

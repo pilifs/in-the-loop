@@ -1,0 +1,771 @@
+on the JVM:
+n=-2: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=-1: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=0: oneOrTwo 2, oneOrThree 3, emptyOrOne 0, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1, oneThenSwitch 1
+n=1: oneOrTwo 1, oneOrThree 1, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=2: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=3: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=4: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=5: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=6: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=7: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1
+n=8: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1, oneThenSwitch 1
+n=9: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 1, oneThenSwitch 1
+n=10: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 3, oneThenSwitch 1
+n=11: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 3
+n=12: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1, oneMadeFirst 1, changeNoSwitch 3
+on the JVM, the corpus: listSizes(1, 2, 3) = 10 20 30, listChange(0, 8) = 1 1
+-- corpusSizes: conformance.Conformance#listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: jvmcontract exit 1 in 414 ms
+note: JBMC reaches 2 constructs it approximates (its stubs and unlinked call sites, lib/target/vf023-choice/work-corpusSizes/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.isEmpty()Z@jdk-25.0.5: java.util.List.isEmpty() is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at conformance.Conformance.listSizes:194
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at conformance.Conformance.listSizes:194
+✗ conformance.Conformance#listSizes cannot be verified: JBMC's counterexample listSizes(n=1) does not reproduce: the method returns 10 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.isEmpty()Z@jdk-25.0.5, jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+corpusSizes (jbmc.log): FAILURE of java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 105 at java::PropertyHarness.check:(I)V:
+  the steps that touch a list, the sentinel, a class identifier or initialization:
+  :  EMPTY = "null"
+  :  EMPTY_LIST = "null"
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = false
+  java::PropertyHarness.check:(I)V:  input arg0i = ["1"]
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object.@class_identifier = ""
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object$0 = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object$0.@class_identifier = ""
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object$1 = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object$1.@class_identifier = ""
+  java::conformance.Conformance.listSizes:(I)I:192  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listSizes:(I)I:193  e1 = "dynamic_object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "s
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = ""
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.e0 = {"name": "pointer", "type": "struct java.lang.Object *"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.e1 = {"name": "pointer", "type": "struct java.lang.Object *"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  new_tmp0 = "dynamic_object$5"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$List12"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$5.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  function-call java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  this = "dynamic_object$5"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  this = "dynamic_object$5"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$5"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = true
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$6 = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$6.@class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:60  new_tmp0 = "dynamic_object$6"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$6.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.lang.Object.<init>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  this = "dynamic_object$6"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:60  EMPTY = "dynamic_object$6"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "s
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7.elements = {"name": "pointer", "type": "struct java::array[reference] *"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  new_tmp1 = "dynamic_object$7"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$ListN"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$7.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8 = {"members": [{"name": "@java.lang.Object", "value": {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}}, {"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@java.lang.Object = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@java.lang.Object.@class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.length = "-1"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.data = {"name": "pointer", "type": "void **"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@array_dimensions = "-1"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  newarray_tmp2 = "dynamic_object$8"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@java.lang.Object.@class_identifier = "java::array[reference]"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.@array_dimensions = "0"
+  :  dynamic_object$8.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  tmp_new_data_array = "dynamic_array$0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$8.data = "dynamic_array$0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_array$0 = {"elements": [], "name": "array"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  this = "dynamic_object$7"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  elements = "dynamic_object$8"
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  this = "dynamic_object$7"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$7"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:345  dynamic_object$7.elements = "dynamic_object$8"
+  :  function-return java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$7"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  o = "dynamic_object"
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$5.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$5.e1 = "dynamic_object$6"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::conformance.Conformance.listSizes:(I)I:194  function-call java::java.util.List.isEmpty:()Z
+  :  function-return java::java.util.List.isEmpty:()Z
+  :  dynamic_object$18 = {"members": [{"name": "@class_identifier", "value": {"data": "", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$18.@class_identifier = ""
+  :  dynamic_object$18.@class_identifier = "java::java.lang.AssertionError"
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 105
+  the last 40 steps:
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$5.e1 = "dynamic_object$6"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  :  function-return java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;
+  java::conformance.Conformance.listSizes:(I)I:193  return_tmp5 = "dynamic_object$5"
+  :  $stack_tmp4 = "dynamic_object$5"
+  :  l = {"name": "pointer", "type": "struct java.util.List *"}
+  java::conformance.Conformance.listSizes:(I)I:193  l = "dynamic_object$5"
+  java::conformance.Conformance.listSizes:(I)I:194  function-call java::java.util.List.size:()I
+  java::conformance.Conformance.listSizes:(I)I:194  this = "dynamic_object$5"
+  :  to_return = "-1"
+  :  function-return java::java.util.List.size:()I
+  java::conformance.Conformance.listSizes:(I)I:194  return_tmp8 = "-1"
+  java::conformance.Conformance.listSizes:(I)I:194  function-call java::java.util.List.isEmpty:()Z
+  java::conformance.Conformance.listSizes:(I)I:194  this = "dynamic_object$5"
+  :  to_return = "false"
+  :  function-return java::java.util.List.isEmpty:()Z
+  java::conformance.Conformance.listSizes:(I)I:194  return_tmp9 = "false"
+-- corpusChange: conformance.Conformance#listChange [assume n == 0 || n == 8; assert result == 1]: jvmcontract exit 1 in 404 ms
+note: JBMC's symbolic execution of the proof enters 6 stubs that its solver shows no path within the bounds and assumptions reaches, by the proof with an assertion of its own before each call (0.1 s, every one held, and every unwinding assertion), so no gaps: java.util.Iterator.remove(), java.util.List.add(java.lang.Object), java.util.List.addAll(java.util.Collection), java.util.List.clear(), java.util.List.iterator(), java.util.List.remove(java.lang.Object)
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-choice/work-corpusChange/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at conformance.Conformance.listChange:217
+✗ conformance.Conformance#listChange cannot be verified: JBMC's counterexample listChange(n=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+corpusChange (jbmc.log): FAILURE of java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103 at java::PropertyHarness.check:(I)V:
+  the steps that touch a list, the sentinel, a class identifier or initialization:
+  :  EMPTY = "null"
+  :  EMPTY_LIST = "null"
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = false
+  java::PropertyHarness.check:(I)V:  input arg0i = ["0"]
+  java::conformance.Conformance.listChange:(I)I:205  dynamic_object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::conformance.Conformance.listChange:(I)I:205  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listChange:(I)I:205  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listChange:(I)I:205  e1 = "dynamic_object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  new_tmp0 = "dynamic_object$0"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$List12"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  function-call java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  this = "dynamic_object$0"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  this = "dynamic_object$0"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$0"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = true
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$1 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  new_tmp0 = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.lang.Object.<init>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:60  EMPTY = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  new_tmp1 = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$ListN"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3 = {"members": [{"name": "@java.lang.Object", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], 
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.lang.Object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.lang.Object.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@array_dimensions = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  newarray_tmp2 = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.lang.Object.@class_identifier = "java::array[reference]"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@array_dimensions = "0"
+  :  dynamic_object$3.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  tmp_new_data_array = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.data = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_array = {"elements": [], "name": "array"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  this = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  elements = "dynamic_object$3"
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  this = "dynamic_object$2"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:345  dynamic_object$2.elements = "dynamic_object$3"
+  :  function-return java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  o = "dynamic_object"
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$0.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$0.e1 = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::conformance.Conformance.listChange:(I)I:206  dynamic_object$12 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::conformance.Conformance.listChange:(I)I:206  dynamic_object$12.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listChange:(I)I:206  dynamic_object$12.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listChange:(I)I:217  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::conformance.Conformance.listChange:(I)I:217  this = "dynamic_object$0"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  :  dynamic_object$24 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$24.@class_identifier = "java::java.lang.Object"
+  :  dynamic_object$24.@class_identifier = "java::java.lang.AssertionError"
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103
+  the last 40 steps:
+  java::conformance.Conformance.listChange:(I)I:205  l = "dynamic_object$0"
+  java::conformance.Conformance.listChange:(I)I:206  dynamic_object$12 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::conformance.Conformance.listChange:(I)I:206  dynamic_object$12.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listChange:(I)I:206  new_tmp7 = "dynamic_object$12"
+  java::conformance.Conformance.listChange:(I)I:206  dynamic_object$12.@class_identifier = "java::java.lang.Object"
+  java::conformance.Conformance.listChange:(I)I:206  function-call java::java.lang.Object.<init>:()V
+  java::conformance.Conformance.listChange:(I)I:206  this = "dynamic_object$12"
+  :  to_construct = "dynamic_object$12"
+  :  function-return java::java.lang.Object.<init>:()V
+  java::conformance.Conformance.listChange:(I)I:206  x = "dynamic_object$12"
+  java::conformance.Conformance.listChange:(I)I:217  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::conformance.Conformance.listChange:(I)I:217  this = "dynamic_object$0"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  java::conformance.Conformance.listChange:(I)I:217  return_tmp15 = "0"
+  :  function-return java::conformance.Conformance.listChange:(I)I
+  :  return_tmp3 = "0"
+  :  anonlocal::1i = "0"
+  :  $stack_tmp19 = "0"
+  :  dynamic_object$24 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+-- oneOrTwo: probe.Choice#oneOrTwo [assume n >= 1 && n <= 2; assert result == n]: jvmcontract exit 1 in 232 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-choice/work-oneOrTwo/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.oneOrTwo:12
+✗ probe.Choice#oneOrTwo cannot be verified: JBMC's counterexample oneOrTwo(n=1) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+oneOrTwo (jbmc.log): FAILURE of java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103 at java::PropertyHarness.check:(I)V:
+  the steps that touch a list, the sentinel, a class identifier or initialization:
+  :  EMPTY = "null"
+  :  EMPTY_LIST = "null"
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = false
+  java::PropertyHarness.check:(I)V:  input arg0i = ["1"]
+  java::probe.Choice.oneOrTwo:(I)I:10  dynamic_object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.oneOrTwo:(I)I:10  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrTwo:(I)I:10  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrTwo:(I)I:10  dynamic_object$0 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.oneOrTwo:(I)I:10  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrTwo:(I)I:10  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrTwo:(I)I:11  e1 = "dynamic_object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  new_tmp0 = "dynamic_object$1"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$List12"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$1.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  function-call java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  this = "dynamic_object$1"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = true
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$2 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$2.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  new_tmp0 = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$2.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.lang.Object.<init>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  this = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:60  EMPTY = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  new_tmp1 = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$ListN"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4 = {"members": [{"name": "@java.lang.Object", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], 
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.lang.Object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.lang.Object.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@array_dimensions = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  newarray_tmp2 = "dynamic_object$4"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.lang.Object.@class_identifier = "java::array[reference]"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@array_dimensions = "0"
+  :  dynamic_object$4.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  tmp_new_data_array = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.data = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_array = {"elements": [], "name": "array"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  this = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  elements = "dynamic_object$4"
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  this = "dynamic_object$3"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$3"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:345  dynamic_object$3.elements = "dynamic_object$4"
+  :  function-return java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$3"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  o = "dynamic_object"
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$1.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$1.e1 = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::probe.Choice.oneOrTwo:(I)I:12  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.oneOrTwo:(I)I:12  this = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  :  dynamic_object$9 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$9.@class_identifier = "java::java.lang.Object"
+  :  dynamic_object$9.@class_identifier = "java::java.lang.AssertionError"
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103
+  the last 40 steps:
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$1.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$1.e1 = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  :  function-return java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;
+  java::probe.Choice.oneOrTwo:(I)I:11  return_tmp2 = "dynamic_object$1"
+  :  $stack_tmp3 = "dynamic_object$1"
+  :  l = "null"
+  java::probe.Choice.oneOrTwo:(I)I:11  l = "dynamic_object$1"
+  java::probe.Choice.oneOrTwo:(I)I:12  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.oneOrTwo:(I)I:12  this = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.oneOrTwo:(I)I:12  return_tmp5 = "0"
+  :  function-return java::probe.Choice.oneOrTwo:(I)I
+  :  return_tmp3 = "0"
+  :  anonlocal::1i = "0"
+-- oneOrThree: probe.Choice#oneOrThree [assume n >= 1 && n <= 3; assert (n != 1 || result == 1) && (n == 1 || result == 3)]: jvmcontract exit 1 in 254 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-choice/work-oneOrThree/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.oneOrThree:18
+✗ probe.Choice#oneOrThree cannot be verified: JBMC's counterexample oneOrThree(n=1) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+oneOrThree (jbmc.log): FAILURE of java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 136 at java::PropertyHarness.check:(I)V:
+  the steps that touch a list, the sentinel, a class identifier or initialization:
+  :  EMPTY = "null"
+  :  EMPTY_LIST = "null"
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = false
+  java::PropertyHarness.check:(I)V:  input arg0i = ["1"]
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object$0 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object$1 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrThree:(I)I:16  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.oneOrThree:(I)I:17  e1 = "dynamic_object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  new_tmp0 = "dynamic_object$2"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$List12"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$2.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  function-call java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  this = "dynamic_object$2"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  this = "dynamic_object$2"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = true
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$3 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$3.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  new_tmp0 = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$3.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.lang.Object.<init>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  this = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:60  EMPTY = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  new_tmp1 = "dynamic_object$4"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$ListN"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$4.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5 = {"members": [{"name": "@java.lang.Object", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], 
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@java.lang.Object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@java.lang.Object.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@array_dimensions = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  newarray_tmp2 = "dynamic_object$5"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@java.lang.Object.@class_identifier = "java::array[reference]"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.@array_dimensions = "0"
+  :  dynamic_object$5.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  tmp_new_data_array = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$5.data = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_array = {"elements": [], "name": "array"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  this = "dynamic_object$4"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  elements = "dynamic_object$5"
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  this = "dynamic_object$4"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$4"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:345  dynamic_object$4.elements = "dynamic_object$5"
+  :  function-return java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$4"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  o = "dynamic_object"
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$2.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$2.e1 = "dynamic_object$3"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::probe.Choice.oneOrThree:(I)I:18  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.oneOrThree:(I)I:18  this = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  :  dynamic_object$11 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$11.@class_identifier = "java::java.lang.Object"
+  :  dynamic_object$11.@class_identifier = "java::java.lang.AssertionError"
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 136
+  the last 40 steps:
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$2.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$2.e1 = "dynamic_object$3"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  :  function-return java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;
+  java::probe.Choice.oneOrThree:(I)I:17  return_tmp3 = "dynamic_object$2"
+  :  $stack_tmp4 = "dynamic_object$2"
+  :  l = "null"
+  java::probe.Choice.oneOrThree:(I)I:17  l = "dynamic_object$2"
+  java::probe.Choice.oneOrThree:(I)I:18  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.oneOrThree:(I)I:18  this = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.oneOrThree:(I)I:18  return_tmp6 = "0"
+  :  function-return java::probe.Choice.oneOrThree:(I)I
+-- emptyOrOne: probe.Choice#emptyOrOne [assume n >= 0 && n <= 1; assert result == n]: jvmcontract exit 1 in 230 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-choice/work-emptyOrOne/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.emptyOrOne:24
+✗ probe.Choice#emptyOrOne cannot be verified: JBMC's counterexample emptyOrOne(n=0) does not reproduce: the method returns 0 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+emptyOrOne (jbmc.log): FAILURE of java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103 at java::PropertyHarness.check:(I)V:
+  the steps that touch a list, the sentinel, a class identifier or initialization:
+  :  EMPTY = "null"
+  :  EMPTY_LIST = "null"
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = false
+  java::PropertyHarness.check:(I)V:  input arg0i = ["0"]
+  :  function-call java::probe.Choice.emptyOrOne:(I)I
+  java::probe.Choice.emptyOrOne:(I)I:22  dynamic_object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.emptyOrOne:(I)I:22  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.emptyOrOne:(I)I:22  new_tmp0 = "dynamic_object"
+  java::probe.Choice.emptyOrOne:(I)I:22  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.emptyOrOne:(I)I:22  function-call java::java.lang.Object.<init>:()V
+  java::probe.Choice.emptyOrOne:(I)I:22  this = "dynamic_object"
+  java::probe.Choice.emptyOrOne:(I)I:22  a = "dynamic_object"
+  java::probe.Choice.emptyOrOne:(I)I:23  function-call java::java.util.List.of:()Ljava/util/List;
+  java::java.util.List.of:()Ljava/util/List;:70  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = true
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$0 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  new_tmp0 = "dynamic_object$0"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$0.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.lang.Object.<init>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  this = "dynamic_object$0"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:60  EMPTY = "dynamic_object$0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  new_tmp1 = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$ListN"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$1.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2 = {"members": [{"name": "@java.lang.Object", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], 
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.lang.Object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.lang.Object.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@array_dimensions = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  newarray_tmp2 = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.lang.Object.@class_identifier = "java::array[reference]"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@array_dimensions = "0"
+  :  dynamic_object$2.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  tmp_new_data_array = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.data = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_array = {"elements": [], "name": "array"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  elements = "dynamic_object$2"
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:345  dynamic_object$1.elements = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::probe.Choice.emptyOrOne:(I)I:23  return_tmp1 = "dynamic_object$1"
+  java::probe.Choice.emptyOrOne:(I)I:23  l = "dynamic_object$1"
+  java::probe.Choice.emptyOrOne:(I)I:24  function-call java::java.util.ImmutableCollections$List12.size:()I
+  java::probe.Choice.emptyOrOne:(I)I:24  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections$List12.size:()I:287  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections$List12.size:()I
+  java::probe.Choice.emptyOrOne:(I)I:24  return_tmp4 = "1"
+  :  function-return java::probe.Choice.emptyOrOne:(I)I
+  :  dynamic_object$7 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$7.@class_identifier = "java::java.lang.Object"
+  :  dynamic_object$7.@class_identifier = "java::java.lang.AssertionError"
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103
+  the last 40 steps:
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.List.of:()Ljava/util/List;
+  java::probe.Choice.emptyOrOne:(I)I:23  return_tmp1 = "dynamic_object$1"
+  :  $stack_tmp2 = "dynamic_object$1"
+  :  l = "null"
+  java::probe.Choice.emptyOrOne:(I)I:23  l = "dynamic_object$1"
+  java::probe.Choice.emptyOrOne:(I)I:24  function-call java::java.util.ImmutableCollections$List12.size:()I
+  java::probe.Choice.emptyOrOne:(I)I:24  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections$List12.size:()I:287  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  $stack_tmp0 = "1"
+  :  function-return java::java.util.ImmutableCollections$List12.size:()I
+  java::probe.Choice.emptyOrOne:(I)I:24  return_tmp4 = "1"
+  :  function-return java::probe.Choice.emptyOrOne:(I)I
+  :  return_tmp3 = "1"
+  :  anonlocal::1i = "1"
+  :  $stack_tmp19 = "0"
+  :  dynamic_object$7 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$7.@class_identifier = "java::java.lang.Object"
+  :  new_tmp20 = "dynamic_object$7"
+  :  dynamic_object$7.@class_identifier = "java::java.lang.AssertionError"
+  :  function-call java::java.lang.AssertionError.<init>:()V
+  :  this = "dynamic_object$7"
+  :  to_construct = "dynamic_object$7"
+  :  function-return java::java.lang.AssertionError.<init>:()V
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103
+  (full trace: lib/target/vf023-choice/work-emptyOrOne/jbmc.log)
+-- oneAssumed: probe.Choice#oneAssumed [assume n >= 1 && n <= 3; assert result == 1]: jvmcontract exit 0 in 169 ms
+note: JBMC's call graph reaches 1 stub that its symbolic execution of the proof (0.0 s, nothing solved) never enters, on no path within the bounds, so no gap: java.util.List.size()
+✓ probe.Choice#oneAssumed satisfies `result == 1` on every input where n >= 1 && n <= 3 (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: oneAssumed(n=1) reaches the calls
+oneAssumed (jbmc.log): no failed property in lib/target/vf023-choice/work-oneAssumed/jbmc.log
+-- oneMadeFirst: probe.Choice#oneMadeFirst [assume n >= 1 && n <= 3; assert result == 1]: jvmcontract exit 0 in 170 ms
+note: JBMC's call graph reaches 1 stub that its symbolic execution of the proof (0.0 s, nothing solved) never enters, on no path within the bounds, so no gap: java.util.List.size()
+✓ probe.Choice#oneMadeFirst satisfies `result == 1` on every input where n >= 1 && n <= 3 (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: oneMadeFirst(n=1) reaches the calls
+oneMadeFirst (jbmc.log): no failed property in lib/target/vf023-choice/work-oneMadeFirst/jbmc.log
+-- changeNoSwitch: probe.Choice#changeNoSwitch [assume n == 0 || n == 8; assert result == 1]: jvmcontract exit 1 in 230 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-choice/work-changeNoSwitch/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.changeNoSwitch:38
+✗ probe.Choice#changeNoSwitch cannot be verified: JBMC's counterexample changeNoSwitch(n=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+changeNoSwitch (jbmc.log): FAILURE of java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103 at java::PropertyHarness.check:(I)V:
+  the steps that touch a list, the sentinel, a class identifier or initialization:
+  :  EMPTY = "null"
+  :  EMPTY_LIST = "null"
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = false
+  java::PropertyHarness.check:(I)V:  input arg0i = ["0"]
+  java::probe.Choice.changeNoSwitch:(I)I:37  dynamic_object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::probe.Choice.changeNoSwitch:(I)I:37  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.changeNoSwitch:(I)I:37  dynamic_object.@class_identifier = "java::java.lang.Object"
+  java::probe.Choice.changeNoSwitch:(I)I:37  e1 = "dynamic_object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  new_tmp0 = "dynamic_object$0"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$List12"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e0 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  dynamic_object$0.e1 = "null"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  function-call java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  this = "dynamic_object$0"
+  java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;:74  e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:275  this = "dynamic_object$0"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$0"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  java$$java_util_ImmutableCollections$$clinit_already_run = true
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$1 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  new_tmp0 = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  dynamic_object$1.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.lang.Object.<init>:()V
+  java::java.util.ImmutableCollections.<clinit>:()V:60  this = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:60  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:60  EMPTY = "dynamic_object$1"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2 = {"members": [{"name": "@java.util.ImmutableCollections$AbstractImmutableList", "value": {"members": [{"name": "@java.util.AbstractCollection", "value": {"member
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList = {"members": [{"name": "@java.util.AbstractCollection", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  new_tmp1 = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.@java.util.ImmutableCollections$AbstractImmutableList.@java.util.AbstractCollection.@class_identifier = "java::java.util.ImmutableCollections$ListN"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$2.elements = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3 = {"members": [{"name": "@java.lang.Object", "value": {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], 
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.lang.Object = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.lang.Object.@class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@array_dimensions = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  newarray_tmp2 = "dynamic_object$3"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@java.lang.Object.@class_identifier = "java::array[reference]"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.data = "null"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@element_class_identifier = ""
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.@array_dimensions = "0"
+  :  dynamic_object$3.@element_class_identifier = "java::java.lang.Object"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.length = "0"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  tmp_new_data_array = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_object$3.data = "dynamic_array"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  dynamic_array = {"elements": [], "name": "array"}
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  this = "dynamic_object$2"
+  java::java.util.ImmutableCollections.<clinit>:()V:61  elements = "dynamic_object$3"
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  function-call java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:344  this = "dynamic_object$2"
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  function-call java::java.util.AbstractCollection.<init>:()V
+  java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V:117  this = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections$AbstractImmutableList.<init>:()V
+  java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V:345  dynamic_object$2.elements = "dynamic_object$3"
+  :  function-return java::java.util.ImmutableCollections$ListN.<init>:([Ljava/lang/Object;)V
+  java::java.util.ImmutableCollections.<clinit>:()V:61  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections.<clinit>:()V:61  EMPTY_LIST = "dynamic_object$2"
+  :  function-return java::java.util.ImmutableCollections.<clinit>:()V
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  function-call java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  o = "dynamic_object"
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$0.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$0.e1 = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  java::probe.Choice.changeNoSwitch:(I)I:38  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.changeNoSwitch:(I)I:38  this = "dynamic_object$0"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  :  dynamic_object$12 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$12.@class_identifier = "java::java.lang.Object"
+  :  dynamic_object$12.@class_identifier = "java::java.lang.AssertionError"
+  :  FAILURE java::PropertyHarness.check:(I)V.assertion.1: assertion at function java::PropertyHarness.check:(I)V bytecode-index 103
+  the last 40 steps:
+  :  function-return java::java.util.ImmutableCollections.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  return_tmp0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:276  dynamic_object$0.e0 = "dynamic_object"
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  function-call java::java.util.ImmutableCollections.<clinit_wrapper>
+  :  function-return java::java.util.ImmutableCollections.<clinit_wrapper>
+  java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V:277  dynamic_object$0.e1 = "dynamic_object$1"
+  :  function-return java::java.util.ImmutableCollections$List12.<init>:(Ljava/lang/Object;)V
+  :  function-return java::java.util.List.of:(Ljava/lang/Object;)Ljava/util/List;
+  java::probe.Choice.changeNoSwitch:(I)I:37  return_tmp1 = "dynamic_object$0"
+  :  $stack_tmp2 = "dynamic_object$0"
+  :  l = "null"
+  java::probe.Choice.changeNoSwitch:(I)I:37  l = "dynamic_object$0"
+  java::probe.Choice.changeNoSwitch:(I)I:38  function-call java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.changeNoSwitch:(I)I:38  this = "dynamic_object$0"
+  :  function-return java::java.util.ImmutableCollections$ListN.size:()I
+  java::probe.Choice.changeNoSwitch:(I)I:38  return_tmp7 = "0"
+  :  function-return java::probe.Choice.changeNoSwitch:(I)I
+  :  return_tmp3 = "0"
+  :  anonlocal::1i = "0"
+  :  $stack_tmp19 = "0"
+  :  dynamic_object$12 = {"members": [{"name": "@class_identifier", "value": {"data": "java::java.lang.Object", "name": "string"}}], "name": "struct"}
+  :  dynamic_object$12.@class_identifier = "java::java.lang.Object"
+-- oneThenSwitch: probe.Choice#oneThenSwitch [assume n == 0 || n == 8; assert result == 1]: jvmcontract exit 0 in 192 ms
+note: JBMC's call graph reaches 7 stubs that its symbolic execution of the proof (0.0 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Iterator.remove(), java.util.List.add(java.lang.Object), java.util.List.addAll(java.util.Collection), java.util.List.clear(), java.util.List.iterator(), java.util.List.remove(java.lang.Object), java.util.List.size()
+✓ probe.Choice#oneThenSwitch satisfies `result == 1` on every input where n == 0 || n == 8 (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: oneThenSwitch(n=0) reaches the calls
+oneThenSwitch (jbmc.log): no failed property in lib/target/vf023-choice/work-oneThenSwitch/jbmc.log

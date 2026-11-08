@@ -36,6 +36,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   static initializer) all verified under JBMC 6.11.0 in about 0.2 s each, as the JVM says (1 1 2). So the minimal
   probe does not reproduce the refutation; the cause is something the `listSizes`/`listChange` harnesses add (their
   `assume` over `n`, or the loop over the list). The job passing only means the probes ran; it does not close this entry.
+- **Update 2026-11-08** (job `20261108-091002-vf-023-s-second-probe-which-ingredient-o`, at `ec45c5dd40a2`, passed in
+  5.8 s: it only runs probes, so it does not close this entry): the cause is located. Every probe that calls
+  `List.size()` or `List.isEmpty()` on the list is refuted under JBMC 6.11.0 with a witness the interpreter replays as
+  holding: the corpus's `listSizes(n=1)` and `listChange(n=0)`, and the minimal `oneOrTwo`, `oneOrThree`, `emptyOrOne`
+  and `changeNoSwitch`. Each reports a `jbmc gap`: `java.util.List.size()` (and `isEmpty()`) is JBMC's stub, "returns any
+  int" / "either boolean", so the refutation is the stub's free value, not the list model (the list is built correctly,
+  `List12` with its elements). Probes that never call `size()` (`oneAssumed`, `oneMadeFirst`, `oneThenSwitch`) are
+  proved in 0.1-0.2 s. So the disagreement is the stub, not a wrong list model; the tool already notes the gap, but under
+  `--engine auto --confirm` it still reports "the engines disagree, neither verdict stands" for the own checker's proof.
 - **Needs**: the values stream (application-core-values V2) decides whether the JBMC list model (or the witness
   replay) is at fault and fixes it, or marks these two cases as expected disagreements with a stated reason; then
   resubmits the job. I did not change the job.
