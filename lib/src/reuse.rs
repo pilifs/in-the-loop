@@ -568,6 +568,7 @@ fn store(dir: &Path, options: &Options, outcome: &Outcome) -> Result<(), String>
 }
 
 pub mod footprint;
+pub mod preparation;
 
 /// R2: the summary of the read-only helper `helper` (an instance method, as a call names it, declared by the same
 /// class in both versions of `options`), from a proof of its own: each version's footprint is established

@@ -156,6 +156,11 @@ pub fn plan(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, ta
 /// module's documentation says which helpers are asked about). `prove` is asked once per candidate, in the order the
 /// calls sort in.
 pub fn plan_with(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, target: &MemberRef, plain: bool, prove: &mut Prover) -> Plan {
+    crate::reuse::preparation::span(crate::reuse::preparation::Stage::Plan, &target_of(target), || plan_untimed(before, after, before_target, target, plain, prove))
+}
+
+/// [`plan_with`], which a ledger of R3's measurement times ([`crate::reuse::preparation`]).
+fn plan_untimed(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, target: &MemberRef, plain: bool, prove: &mut Prover) -> Plan {
     let after_reach = reach(after, target);
     let before_reach = reach(before, before_target);
     let mut plan = Plan::default();

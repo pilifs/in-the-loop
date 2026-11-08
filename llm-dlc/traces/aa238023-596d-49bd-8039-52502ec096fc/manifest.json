@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T05:45:48.983Z",
-  "duration_seconds": 4283,
+  "ended": "2026-11-08T06:04:38.133Z",
+  "duration_seconds": 5413,
   "stats": {
-    "turns": 25,
-    "api_calls": 200,
-    "tool_calls": 202,
-    "tool_errors": 1,
-    "compactions": 5,
+    "turns": 30,
+    "api_calls": 250,
+    "tool_calls": 253,
+    "tool_errors": 2,
+    "compactions": 6,
     "peak_context_tokens": 203594,
     "usage": {
-      "input_tokens": 404,
-      "output_tokens": 229437,
-      "cache_read_input_tokens": 23097196,
-      "cache_creation_input_tokens": 750160
+      "input_tokens": 504,
+      "output_tokens": 284349,
+      "cache_read_input_tokens": 28748742,
+      "cache_creation_input_tokens": 908781
     }
   },
   "tools": {
-    "Bash": 170,
-    "Read": 15,
-    "Edit": 6,
-    "Write": 4,
+    "Bash": 217,
+    "Read": 16,
+    "Edit": 7,
+    "Write": 6,
     "SendMessage": 3,
     "ListAgents": 2,
     "ToolSearch": 2
@@ -41,6 +41,8 @@
     "lib/src/proof_cache.rs",
     "lib/src/reuse.rs",
     "lib/src/reuse/footprint.rs",
+    "lib/src/reuse/preparation.rs",
+    "lib/tests/preparation.rs",
     "lib/tests/reuse.rs",
     "lib/tests/reuse_summaries.rs",
     "llm-dlc/loops/application-core-reuse.md"
@@ -119,24 +121,38 @@
     {
       "index": 5,
       "started": "2026-11-08T05:26:54.554Z",
-      "ended": "2026-11-08T05:45:48.983Z",
-      "turns": 4,
-      "api_calls": 50,
+      "ended": "2026-11-08T05:46:14.370Z",
+      "turns": 5,
+      "api_calls": 53,
       "usage": {
-        "input_tokens": 100,
-        "output_tokens": 65553,
-        "cache_read_input_tokens": 6729814,
-        "cache_creation_input_tokens": 180620
+        "input_tokens": 106,
+        "output_tokens": 67237,
+        "cache_read_input_tokens": 7314459,
+        "cache_creation_input_tokens": 184550
       },
-      "peak_context_tokens": 193699
+      "peak_context_tokens": 197629
+    },
+    {
+      "index": 6,
+      "started": "2026-11-08T05:46:51.132Z",
+      "ended": "2026-11-08T06:04:38.133Z",
+      "turns": 4,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 94,
+        "output_tokens": 53228,
+        "cache_read_input_tokens": 5066901,
+        "cache_creation_input_tokens": 154691
+      },
+      "peak_context_tokens": 167770
     }
   ],
   "log": {
-    "sha256": "bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983",
-    "bytes": 6701375,
-    "lines": 2351,
-    "gzip_bytes": 1352359,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983.jsonl.gz"
+    "sha256": "178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815",
+    "bytes": 8125640,
+    "lines": 2923,
+    "gzip_bytes": 1602780,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -179,9 +195,23 @@
       "summary": "application-core reuse R2: a changed caller reuses a read-only helper's summary at each call, through adapters that read the receiver there",
       "body": "Under --cache and the own checker, shared::plan_with now asks for a summary of each changed instance method both versions of a regression target call, declared by the same class. proof_cache::Helpers sends such a method to reuse::application, which makes the summary (its lifted proof from the cache, or proved now) and two call-site adapters (reuse::footprint::adapters). shared::substitute then rewrites every call of the helper, in both versions, into a static call of that version's adapter. The adapter reads each footprint field from the actual receiver as its own version lays it out, and calls the new version's lifted helper, so both versions call one function of the same values. Because the summary's proof covers every value of the fields and arguments, reading them at the call discharges applicability on the actual pre-call state: a receiver mutated between two calls is read twice, and a write through an aliasing parameter is seen. The caller's claim carries the whole summary as an assumption of kind summary, basis proved, with its proof's key (J3's helper assumptions). A helper with no summary keeps its body in both versions, with a note saying why.\n\nVerified inline in lib/tests/reuse_summaries.rs (5 new tests, 10 in all, three runs). A tariff's rewritten fee is proved on its own, then reused by three changed callers, which are verified: one call, two calls around a mutation, and a write through another parameter with and without may_alias. A stale read after a mutation, and a read before an aliased write, are refuted with the summary applied, and their witnesses replay. A helper that reads an extra field, and helper versions that agree only on constructor-made receivers, get no summary. Their callers keep the body: the first is refuted, the second verified for a single call in the constructor domain and refuted, replayed, once a second call follows a lowered fee. On a JVM with -Xverify:all, the classes with the summary applied agree with the versions as written over a grid. Also passing: the 231 unit tests, reuse (11), application_core (14), summaries (40), compare, heap (49), effects (18), foundations (5) and observations (12). The contract's R2 row still stops at the objects stream's construction::receiver, since the quote's target is an instance method. That is for the merge.",
       "log_sha256": "bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983"
+    },
+    {
+      "change_id": "qszysnyorstwxxttpztzlwnmwnklzqqv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse R3: a small compare run timed stage by stage around the proof cache, cold, rerun and a defect (verification pending)",
+      "body": "R3 of llm-dlc/loops/application-core-reuse.md measures before it adds any cache of preparation. A new ledger (lib/src/reuse/preparation.rs) times, while a caller records one, the proof cache's own steps where they run, all in this stream's files: shared::plan_with, each helper's own proof, the claim key with both versions' closures digested, the lookup, the store, a witness replayed, and each proof's checker runs with their phases, read at the store. preparation::proofs splits a ledger into proofs and gives each the stretch before its first span, so that what no hook covers (relocating, decoding the target's classes, the layout, the harness) is placed proof by proof without a hook in another stream's file. Nothing is recorded without a ledger.\n\nThe benchmark lib/tests/preparation.rs (ignored inline) runs compare on the joint example's builds (examples 190, 191) cold, as an unchanged rerun, on the offset defect cold and as its rerun, in process under the ledger and as the compare process build.py runs. It also times one by one the stages a run repeats: javac per build, decoding and relocating a build, alignment, the specs, opening the JDK image, writing the models, the models' digest and the binary's digest. Queued as job 20261108-060410-application-core-reuse-r3-a-small-compar for the release figures, which come back as lib/benchmark/preparation/preparation.json and .md.\n\nA debug smoke run inline (1 repeat): a rerun of the 5 proofs took 810 ms, 726 ms of it before the lookups. Relocating took 0.8 ms and decoding the build 0.3 ms, while opening the JDK image took 31 ms each time, and every class path with the JDK opens it again. That is the likely repeated stage; the job decides. Verified inline: the ledger's 2 unit tests (233 in all), and reuse, reuse_summaries, compare, application_core, summaries, effects, heap, foundations and observations all pass. Also recorded under Progress: the integration check's conflict in lib/README.md (all four streams' additions), which is the merge's to take whole.",
+      "log_sha256": "178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815"
     }
   ],
   "logs": {
+    "178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815": {
+      "bytes": 8125640,
+      "lines": 2923,
+      "gzip_bytes": 1602780,
+      "url": null
+    },
     "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7": {
       "bytes": 5038890,
       "lines": 1725,

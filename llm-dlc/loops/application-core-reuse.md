@@ -331,6 +331,44 @@ measurement stays as recorded.
     Bounded reads of primitive arrays are not done (the brief puts them after the field-only case).
   - **Next**: R3, the measurement of preparation reuse as a queued job: a small `compare` run with several claims,
     and an unchanged rerun, timed by stage. J4 comes at the merge.
+- 2026-11-08, **R3, first part: the measurement, queued** (job `20261108-060410-application-core-reuse-r3-a-small-compar`):
+  - **The ledger** (`lib/src/reuse/preparation.rs`): while a caller records one, spans are timed at the proof cache's
+    own steps, all in this stream's files:
+    - `shared::plan_with`, each helper's own proof in `Helpers::prove`;
+    - the key, with both versions' closures digested;
+    - the lookup, the store, and a witness replayed;
+    - each proof's checker runs, with their own phases, read at the store.
+
+    `preparation::proofs` splits a ledger into proofs (a helper's own inside its caller's plan). It gives each proof
+    the stretch before its first span, so that what no hook covers (relocating, decoding the target's classes, the
+    layout, the harness, and the caller's steps between proofs) is placed proof by proof. No other stream's file has
+    a hook. Without a ledger nothing is recorded.
+  - **The benchmark** (`lib/tests/preparation.rs`, ignored inline): `compare` on the joint example's builds (190 and
+    191) in four scenarios: cold, an unchanged rerun, the `offset` defect cold, and its rerun (the stored witnesses
+    replayed). Each runs in process under the ledger, and as the `compare` process `build.py` runs. Apart from the
+    runs, the stages a run repeats are timed one by one: `javac` per build, decoding and relocating a build,
+    alignment, the specs, opening the JDK image, writing the models, the models' digest, and the binary's digest.
+    The report goes to `lib/benchmark/preparation/`.
+  - **The existing caches, read first**: the binary's and the JDK's identities are computed once per process
+    (`OnceLock`). A class path caches the classes it decoded, but each proof builds its own class paths. The models'
+    digest is computed again for each key. The verifier build is the runner's cache.
+  - **A debug smoke run inline** (1 repeat; the figures that decide are the job's, in release). A rerun of the 5
+    proofs took 810 ms in process, 726 ms of it before each proof's lookup, about 120 ms a proof. Relocating the old
+    build took 0.8 ms and decoding it 0.3 ms. Opening the JDK image took 31 ms each time, and every class path with
+    the JDK opens it again, several times a proof. That is the likely repeated stage. The binary's digest (160 MB in
+    debug) is 5 s once per process, and a few tens of ms in release.
+  - **Verified inline**: the ledger's 2 unit tests (233 unit tests in all), `reuse` (11), `reuse_summaries` (10),
+    `compare`, `application_core` (14), `summaries` (40), `effects` (18), `heap` (49), `foundations` (5) and
+    `observations` (12). The benchmark itself ran once, in debug, and passed.
+  - **Found, from the integration check** of 05:36: the four streams conflict in `lib/README.md` (each added its
+    paragraph), and in the generated `llm-dlc/README.md`, `llm-dlc/index.json`, `llm-dlc/traces/README.md` and
+    `traces/metrics.json`. `lib/README.md` takes additions only, so the conflict is the merge's to take all four;
+    nothing here works around it.
+  - **Next**: R3's decision once the job is back. If opening the JDK image is material in release, share one image
+    per JDK home within the process: an immutable product, keyed by the image's path and its `release` digest,
+    behind one hook in the class path. That hook is `classpath.rs`, not this stream's file, so it goes as an
+    interface request, or into this stream's own class paths. Otherwise, the finding that no preparation cache is
+    justified. J4 comes at the merge.
 - Status: working
 
 ## Loop settings

@@ -359,7 +359,9 @@ impl<'a> Regression<'a> {
             let configuration = crate::closure::Configuration::read(cp, &[]).map_err(|e| uncacheable(format!("its configuration could not be read: {e}")))?;
             Ok(crate::closure::version_digest(cp, roots, &configuration))
         };
-        let closures = VersionDigests { before: digest(self.before_cp, &before_roots)?, after: digest(self.after_cp, &after_roots)? };
+        let closures = crate::reuse::preparation::span(crate::reuse::preparation::Stage::Closures, &o.target, || -> Result<VersionDigests, Unsupported> {
+            Ok(VersionDigests { before: digest(self.before_cp, &before_roots)?, after: digest(self.after_cp, &after_roots)? })
+        })?;
 
         let mut observations = vec![Observation::Result, Observation::Exception];
         observations.extend(self.observations.arrays.iter().map(|a| Observation::ArrayParameter { parameter: a.clone() }));
@@ -425,7 +427,7 @@ impl<'a> Regression<'a> {
         let inert = Entry { place: None };
         let Some(dir) = self.options.cache.clone() else { return Ok((inert, None)) };
         let keying = Instant::now();
-        let key = match self.claim().and_then(|c| cache::key(&c)) {
+        let key = match crate::reuse::preparation::span(crate::reuse::preparation::Stage::Key, &self.options.target, || self.claim().and_then(|c| cache::key(&c))) {
             Ok(k) => k,
             Err(u) => {
                 let _ = writeln!(out, "note: the proof cache is not used: {}", u.what);
@@ -444,21 +446,24 @@ impl<'a> Regression<'a> {
         let mut place = Place { dir, key, replay, models: self.options.models, types: self.layout.types(), domain: self.shown.domain.to_string(), required, provenance, note: String::new() };
         let keyed = keying.elapsed();
         let looking = Instant::now();
-        let found = match cache::lookup_detail(&place.dir, &place.key) {
-            Ok(found) => found,
-            Err(u) => {
-                let _ = writeln!(out, "note: the proof cache is not used: {}", u.what);
-                return Ok((inert, None));
-            }
-        };
         let before = out.len();
-        let mut hit = match found {
-            None => {
-                let _ = writeln!(out, "note: the proof cache has no result for this claim ({}); proving", place.key.0);
-                None
-            }
-            Some((record, detail)) => self.reuse(&place, record, detail, out)?,
-        };
+        let found = crate::reuse::preparation::span(crate::reuse::preparation::Stage::Lookup, &self.options.target, || -> Result<Option<Option<Outcome>>, Error> {
+            let found = match cache::lookup_detail(&place.dir, &place.key) {
+                Ok(found) => found,
+                Err(u) => {
+                    let _ = writeln!(out, "note: the proof cache is not used: {}", u.what);
+                    return Ok(None);
+                }
+            };
+            Ok(Some(match found {
+                None => {
+                    let _ = writeln!(out, "note: the proof cache has no result for this claim ({}); proving", place.key.0);
+                    None
+                }
+                Some((record, detail)) => self.reuse(&place, record, detail, out)?,
+            }))
+        })?;
+        let Some(mut hit) = found else { return Ok((inert, None)) };
         // This run's own time with the cache, apart from the checker's: never stored, so a reuse names its own.
         let timing = format!(
             "note: the proof cache took {:.3} s to compute this claim's key (both versions' closures, the harness's digest and the tools') and {:.3} s to look it up{}\n",
@@ -529,6 +534,10 @@ impl Place {
     /// Whether the harness, run in the interpreter on `arguments`, refutes the statement: both versions as they are
     /// now disagree there.
     fn reproduces(&self, arguments: &[Argument]) -> bool {
+        crate::reuse::preparation::span(crate::reuse::preparation::Stage::Replay, "", || self.reproduces_untimed(arguments))
+    }
+
+    fn reproduces_untimed(&self, arguments: &[Argument]) -> bool {
         let Ok(cp) = witness::classpath(self.replay.iter().map(PathBuf::as_path)) else { return false };
         witness::fails_in_harness(&cp.with_models(self.models), harness::CLASS, &self.types, arguments) == Some(true)
     }
@@ -539,6 +548,18 @@ impl Entry {
     /// witness, read back as stored, reproduces; anything else is not. A note in the outcome's output says which.
     pub fn store(&self, outcome: &mut Outcome) {
         let Some(place) = &self.place else { return };
+        crate::reuse::preparation::span(crate::reuse::preparation::Stage::Store, &outcome.target.clone(), || {
+            let verdict = match outcome.verdict {
+                Verdict::Verified => "verified",
+                Verdict::Violation => "refuted",
+                Verdict::Unverifiable => "unresolved",
+            };
+            crate::reuse::preparation::solved(&outcome.target, verdict, outcome.search.as_ref());
+            self.store_at(place, outcome)
+        })
+    }
+
+    fn store_at(&self, place: &Place, outcome: &mut Outcome) {
         let note = |outcome: &mut Outcome, text: String| {
             let _ = writeln!(outcome.output, "note: {text}");
         };
@@ -654,6 +675,11 @@ impl<'a> Helpers<'a> {
         if !self.active() {
             return None;
         }
+        crate::reuse::preparation::span(crate::reuse::preparation::Stage::HelperProof, &crate::shared::target_of(callee), || self.prove_active(callee))
+    }
+
+    /// [`prove`](Self::prove), for a check that proves its helpers.
+    fn prove_active(&mut self, callee: &MemberRef) -> Option<crate::shared::Proved> {
         if self.is_instance(callee) {
             return self.summarize(callee);
         }
