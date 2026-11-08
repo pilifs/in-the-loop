@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T22:14:59.390Z",
-  "duration_seconds": 42750,
+  "ended": "2026-11-08T22:23:42.227Z",
+  "duration_seconds": 43273,
   "stats": {
-    "turns": 143,
-    "api_calls": 1389,
-    "tool_calls": 1392,
+    "turns": 144,
+    "api_calls": 1400,
+    "tool_calls": 1404,
     "tool_errors": 8,
     "compactions": 24,
     "peak_context_tokens": 292860,
     "usage": {
-      "input_tokens": 2848,
-      "output_tokens": 889073,
-      "cache_read_input_tokens": 193360756,
-      "cache_creation_input_tokens": 3960055
+      "input_tokens": 2872,
+      "output_tokens": 896401,
+      "cache_read_input_tokens": 195131366,
+      "cache_creation_input_tokens": 3986887
     }
   },
   "tools": {
-    "Bash": 1245,
-    "Read": 75,
-    "Edit": 37,
+    "Bash": 1252,
+    "Read": 76,
+    "Edit": 41,
     "Monitor": 10,
     "ToolSearch": 10,
     "Write": 8,
@@ -52,6 +52,7 @@
     "lib/tests/object_strings.rs",
     "lib/tests/string_literals.rs",
     "lib/tests/value_parameters.rs",
+    "llm-dlc/loops/application-core-acceptance.md",
     "llm-dlc/loops/application-core.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/application-core-loop-draft.md"
   ],
@@ -395,24 +396,24 @@
     {
       "index": 24,
       "started": "2026-11-08T20:15:00.238Z",
-      "ended": "2026-11-08T22:14:59.390Z",
-      "turns": 8,
-      "api_calls": 56,
+      "ended": "2026-11-08T22:23:42.227Z",
+      "turns": 9,
+      "api_calls": 67,
       "usage": {
-        "input_tokens": 118,
-        "output_tokens": 31254,
-        "cache_read_input_tokens": 6036927,
-        "cache_creation_input_tokens": 187475
+        "input_tokens": 142,
+        "output_tokens": 38582,
+        "cache_read_input_tokens": 7807537,
+        "cache_creation_input_tokens": 214307
       },
-      "peak_context_tokens": 149104
+      "peak_context_tokens": 175936
     }
   ],
   "log": {
-    "sha256": "d04e38f6a2bca016dc02652d3b6b69e5599549d9cd7cf193f17ea5f08ba313f0",
-    "bytes": 39251229,
-    "lines": 12924,
-    "gzip_bytes": 7744844,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/d04e38f6a2bca016dc02652d3b6b69e5599549d9cd7cf193f17ea5f08ba313f0.jsonl.gz"
+    "sha256": "eed5a24c586aefba47849231be24b0e246a6453be516f65ba0ccc07886745c08",
+    "bytes": 39540960,
+    "lines": 13026,
+    "gzip_bytes": 7803988,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/eed5a24c586aefba47849231be24b0e246a6453be516f65ba0ccc07886745c08.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -823,6 +824,14 @@
       "summary": "application-core Phase 5 done: the allocation-bounds job passed, so O2, V2 and J1 pass and every row of the for-review list passes",
       "body": "Job 20261108-214557 (recorded in zumxluqn) ran the joint acceptance, the contract and value_parameters in release at the commit that applied the user's allocation bounds (basket-first-claim 2, checked-claim 3): 6 of 6, 14 of 14 and 10 of 10, with no call of jbmc. checked-claim's alias-to-copy and basket-first-claim's copied-first are refuted on their identity as expected.json says, so O2, V2 and J1 pass. With them every row of llm-dlc/loops/application-core.md's for-review list passes (G0, O1-O3, V1, V2, E1, E2, R1, R2, J1-J4, and the stream items V3, E3 and R3), no job is pending and nothing needs the user. The brief's Progress records it and its status is done.\n\nOut of date in the brief outside Progress, as before: Phase 0's 'the claim key covers the label' holds of spec::cache::key only; the contract's rows leave out V3, E3 and R3; Where it starts from describes the state before the streams.",
       "log_sha256": "d04e38f6a2bca016dc02652d3b6b69e5599549d9cd7cf193f17ea5f08ba313f0"
+    },
+    {
+      "change_id": "tzxtvtksqukwwumxqpvkzymsvvtylpvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core brief: the three passages Phase 5 found out of date, rewritten now that the loop is done",
+      "body": "llm-dlc/loops/application-core.md: Phase 0's step 1 said the claim key covers a domain's label. That holds of spec::cache::key only; the regression key a heap check's proof is stored under keys the check the domain makes, so two domains making one check share a stored proof, each result stating its own domain, with the bound gates applied again. The sentence now says so. 'Where it starts from' is marked as the baseline before the streams, kept as the launch's record, and a new section, 'Where it stands after Phase 5', gives each of its areas' state at xwrxqmss (receivers, the constructor domain and plans, Strings, lists, effects, helpers, the proof cache, VF-015, the domain gate), with the rows that changed it, and names the three frozen fixtures the user's decisions changed.\n\nllm-dlc/loops/application-core-acceptance.md: its mandatory rows leave out V3, E3 and R3, which the stream briefs mark required. A paragraph after the table now names them, says they are judged by the brief's Done when per stream, and that all three passed at the merge. No row, expectation or criterion changed. The loops are finished, so the files' rule against edits while they run no longer applies.",
+      "log_sha256": "eed5a24c586aefba47849231be24b0e246a6453be516f65ba0ccc07886745c08"
     }
   ],
   "logs": {
@@ -1005,6 +1014,12 @@
       "lines": 4238,
       "gzip_bytes": 2380630,
       "url": "https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/e744ed94716ccda5785568d1b45dbba8cc08a8695f86f5a3156f166a5c1dd846.jsonl.gz"
+    },
+    "eed5a24c586aefba47849231be24b0e246a6453be516f65ba0ccc07886745c08": {
+      "bytes": 39540960,
+      "lines": 13026,
+      "gzip_bytes": 7803988,
+      "url": null
     },
     "f589179fc6ec9427b43cb331c7597d203a24f6ce0853034c739ecd76edd22b54": {
       "bytes": 8739600,

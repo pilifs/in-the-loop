@@ -71,6 +71,17 @@ primitive result or returns a chosen element.
 R4's local write summary is optional and never changes these rows. General verification of distributed models is not
 a row.
 
+**Required stream items that are not rows.** Three items each stream brief marks required have no row here:
+- **V3**, semantic evidence and end-to-end model registration ([values](application-core-values.md));
+- **E3**, constructor-made nullable return objects ([environment](application-core-environment.md));
+- **R3**, one improvement to preparation reuse, implemented only if the evidence calls for it
+  ([reuse](application-core-reuse.md)).
+
+They are judged by [`application-core.md`'s Done when](application-core.md#done-when), per stream, not by this
+table. Phase 5's for-review list, in that brief's Progress, reports them beside the rows. At the merge, all three
+passed: V3 and E3 on their tests, and R3 with its justified outcome (the JDK image's class table shared within a
+process).
+
 ## Adversarial checks of claim integrity
 
 - **Inputs and outputs**:

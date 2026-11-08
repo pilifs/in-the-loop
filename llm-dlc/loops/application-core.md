@@ -54,6 +54,10 @@ code and collected job results take precedence over it, and every claim it made 
 
 ## Where it starts from
 
+**This is the baseline before the streams, kept as the launch's record.** Since Phase 5 finished on 2026-11-08
+(`xwrxqmss`), most of its refusals no longer hold. [Where it stands after Phase 5](#where-it-stands-after-phase-5),
+below the table, says what each area does now. Read the code and `lib/README.md` for the current details.
+
 Drafted at `wwlnosom` (2026-11-07), while the cleanup streams still ran. Recounted at the merge, at `main`'s
 `yzpmxwnx` (commit `08d23149`, 2026-11-08), after the cleanup and stub-reachability loops
 ([launch prerequisite 2](#launch-prerequisites)). Every row still held there. Only line numbers moved, and they are
@@ -89,6 +93,31 @@ the recount's.
 
 None but VF-015 is in this loop's files. Both the foundations and the cleanup integration checks reported merge
 conflicts while their streams ran. That is why this brief gives shared files a [single writer](#streams).
+
+### Where it stands after Phase 5
+
+At `xwrxqmss` (2026-11-08), after the merge `loxnvssx` and Phase 5. Every mandatory row of the
+[acceptance contract](application-core-acceptance.md#mandatory-rows) passes on the merged revision, as do the stream
+items V3, E3 and R3 (Progress's for-review list has the jobs). What each area of the table above does now:
+
+| Area | Now | Rows |
+|---|---|---|
+| `compare` | Still the one composer. `compare --domains FILE` gives each kernel subject a declared `ObjectDomain`, which the heap check enforces or refuses. A declared `--environment` counts each modelled call as an assumption in the effort report. | O3, E1 |
+| Receivers in regression checks | An instance method is checked on a receiver made by its constructor (`construction::receiver`) or by a `--plan`. A constructor argument of an application interface is a dependency passed null, refused by name where the method reaches it. | O1, R2 |
+| Receivers in property checks | The same receivers, and `prove --cache --plan` caches a planned property with its setup methods in the key. A String inside an object is refused here by name. | O1, R1 |
+| The constructor domain | A construction plan (`lib/src/construction.rs`) chooses the constructor, shares nodes for aliasing, allows a null root, and takes bounded primitive arrays, Strings (a leaf, compared by content), dependencies and an adapted list root. A setup sequence of one or two calls is checked and replayed as a whole history. What a plan doesn't make is refused by name. | O1–O3 |
+| Strings | The own checker's Strings are bounded UTF-16 code units with content, literals read by their code units (an isolated surrogate included). A regression check takes a String parameter; JBMC is refused under `--engine jbmc` and not asked under `--confirm`. | V1, V3 |
+| Lists | The own checker runs the immutable-list models. A regression check takes a `List<E>` parameter of an application class, and a plan an adapted list root; a result is compared for identity with the list's elements. A list of Strings is refused by name. | V2, V3 |
+| Effects | A consumed result under a declared query model or a per-call choice, modelled failures checked or not, and a DTO response made by the construction plan, fresh, stable or null. A method's claim runs under an environment with its receiver and request made by their plan (`effects::check_planned`). An unmodelled used result is refused, naming the missing model. | E1–E3 |
+| Shared helpers | A read-only helper's footprint over its receiver's fields is proved from its bytecode, and its summary is reused at each call of a changed caller, within its bound. | R2 |
+| The proof cache | The native property cache; a regression claim with a setup sequence cached with its setup methods in the key; a claim's value domains resolved under this tool's models before its key. The JDK image's class table is built once per process (R3's measured outcome). | R1, R3, J3 |
+| The verifier build | Unchanged. | — |
+| Checked exceptions (VF-015) | The equivalence harness catches the checked exceptions the two versions declare (Phase 0's step 7). VF-015 stays open on its job's step 5, a JBMC class-initializer guard rather than the harness, deferred by the user. | Phase 0 |
+| Domain options | Phase 0's domain gate enforces or refuses every option of a claim's domain before a verdict, and the domain types refuse unknown fields. | G0 |
+
+Two frozen fixtures were changed by the user's decision, never by a stream: the throttle claims' allocation bound
+(0 to 1, O3), and `basket-first-claim`'s (0 to 2) and `checked-claim`'s (1 to 3), because the gate counts the
+exceptions a call may throw. `expected.json` is unchanged.
 
 ## How to work through it
 
@@ -205,7 +234,11 @@ The steps, each committed:
      ([above](#where-it-starts-from)). `calls` and `classes` can only be checked against the constructors the check
      actually makes its inputs with, which `equivalence::run` knows once its harness layout is built. So the check
      reports them, and `check_with` compares them before any verdict. `label` is the claim's own words: the result
-     states the check's domain, and the claim key covers the label.
+     states the check's domain. The claim key (`spec::cache::key`) covers the label. The regression key that a heap
+     check's proof is stored and reused under does not: it keys the check the domain makes, not the domain's label or
+     bounds. So two domains that make the same check (a constructor-only plan and no declared domain) share one stored
+     proof, each result stating its own domain, and the gates on bounds are applied again to a stored proof. That is
+     sound; Phase 5 found it (`compare --domains`, in Progress).
    - An unsupported `made_by`, field-by-field or invariant policy, factory choice, class, alias or allocation policy
      can never fall back to the constructor domain.
    - Don't redo what cleanup fixed.
