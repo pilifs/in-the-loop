@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T09:05:26.162Z",
-  "duration_seconds": 16261,
+  "ended": "2026-11-08T09:10:15.516Z",
+  "duration_seconds": 16550,
   "stats": {
-    "turns": 51,
-    "api_calls": 494,
-    "tool_calls": 489,
-    "tool_errors": 8,
-    "compactions": 9,
+    "turns": 56,
+    "api_calls": 524,
+    "tool_calls": 519,
+    "tool_errors": 9,
+    "compactions": 10,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 1008,
-      "output_tokens": 425036,
-      "cache_read_input_tokens": 66040448,
-      "cache_creation_input_tokens": 1517678
+      "input_tokens": 1070,
+      "output_tokens": 444358,
+      "cache_read_input_tokens": 68891946,
+      "cache_creation_input_tokens": 1628692
     }
   },
   "tools": {
-    "Bash": 451,
-    "Read": 18,
-    "Write": 7,
-    "Edit": 5,
+    "Bash": 474,
+    "Read": 22,
+    "Write": 8,
+    "Edit": 7,
     "ToolSearch": 4,
     "Monitor": 3,
     "TaskStop": 1
@@ -47,6 +47,7 @@
     "lib/tests/fixtures/values/values/Outside.java",
     "lib/tests/values.rs",
     "llm-dlc/loops/application-core-values.md",
+    "verification/triage/vf023-choice.sh",
     "verification/triage/vf023.sh"
   ],
   "context_windows": [
@@ -179,24 +180,38 @@
     {
       "index": 9,
       "started": "2026-11-08T08:24:09.946Z",
-      "ended": "2026-11-08T09:05:26.162Z",
-      "turns": 4,
-      "api_calls": 34,
+      "ended": "2026-11-08T09:05:54.381Z",
+      "turns": 5,
+      "api_calls": 37,
       "usage": {
-        "input_tokens": 70,
-        "output_tokens": 24829,
-        "cache_read_input_tokens": 3284898,
-        "cache_creation_input_tokens": 117038
+        "input_tokens": 78,
+        "output_tokens": 26305,
+        "cache_read_input_tokens": 3678230,
+        "cache_creation_input_tokens": 120135
       },
-      "peak_context_tokens": 130117
+      "peak_context_tokens": 133216
+    },
+    {
+      "index": 10,
+      "started": "2026-11-08T09:06:42.516Z",
+      "ended": "2026-11-08T09:10:15.516Z",
+      "turns": 4,
+      "api_calls": 27,
+      "usage": {
+        "input_tokens": 54,
+        "output_tokens": 17846,
+        "cache_read_input_tokens": 2458166,
+        "cache_creation_input_tokens": 107917
+      },
+      "peak_context_tokens": 120996
     }
   ],
   "log": {
-    "sha256": "259a3bdd8bb19321b486bd4fb72313e74efd4bece411929980f7db24e8751ad7",
-    "bytes": 14455642,
-    "lines": 5401,
-    "gzip_bytes": 2717839,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/259a3bdd8bb19321b486bd4fb72313e74efd4bece411929980f7db24e8751ad7.jsonl.gz"
+    "sha256": "8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4",
+    "bytes": 15637685,
+    "lines": 5728,
+    "gzip_bytes": 2997233,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -271,6 +286,14 @@
       "summary": "application-core values: the tiny bound sweep finds no String cliff up to 64 units and a list cliff at 6 to 7 elements; VF-023's probes refute the class-initialization guess",
       "body": "lib/tests/values.rs's a_tiny_sweep_over_the_string_and_list_bounds runs the own checker on one correct check and one planted defect per family, at a few bounds, under both search orders, and prints the times (the verdicts are asserted, the times never). Strings: vipRewritten proved, vipShortened refuted and equalsByUnits proved at bounds 1 to 64 (the content cap), each in 0.07 s or less. A check that loops over a String's units itself needs an unwinding bound past the String's; under the default --unwind 16 a 32-unit bound is the named unwinding limit, which the test asserts. Lists, through the list adapter's own Java: the basket's total proved and its duplicate-skipping defect refuted over lists of 1 to 5 lines in the suite (8 s for the whole file in the dev profile). Past that there is a cliff inside the adapter's bound of 10: 345 paths for 5 lines, 1,833 for 6 (4 s release, 40 s dev), and 7 lines do not finish. The cost is paths, not solving: the adapter's picks are n! alias patterns, each a chain of conditionals the checker forks on. Lists of 6, 7, 8 and 10 lines are the ignored reproducer the_list_sweep_past_five_lines, which fails today. Also found: the checker's 20 s time limit ended at 138 s, since the deadline is read every 256 steps.\n\nVF-023's diagnosis job 20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that passed: JBMC proves a one-element List.of's size 1, with or without List.of() first, so the class-initialization order is not the cause and the models are unchanged. The corpus's claims differ from the probes in choosing between lists of different classes, which the next probe isolates. No timebox attempt was spent. The brief's Progress records both, and what comes next.",
       "log_sha256": "259a3bdd8bb19321b486bd4fb72313e74efd4bece411929980f7db24e8751ad7"
+    },
+    {
+      "change_id": "uqrrztvwvwzpuyslwznnllrykzqlpupl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values: VF-023's second probe, nine JBMC proofs that isolate which ingredient of listSizes and listChange makes JBMC refute a one-element list's size (verification pending)",
+      "body": "The first probe showed JBMC proving a one-element List.of's size alone, so class initialization order is not VF-023's cause. verification/triage/vf023-choice.sh now runs the corpus's own two claims under JBMC alone, which must reproduce the refutation, then seven reductions, one ingredient each: a choice between two List12s, a List12 or a ListN, EMPTY_LIST or a List12, the assumption alone, objects made first, listChange's choice without its switch, and its switch without the choice. For each refutation it keeps JBMC's failed property and the trace steps that touch the lists. Checked inline: the script's JVM part (every claim holds for n from -2 to 12, and listSizes(1..3) and listChange(0, 8) give 10 20 30 and 1 1), its trace extractor on a made-up JBMC log, and the own checker proving all nine claims. Nothing in the models changes before the result.",
+      "log_sha256": "8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4"
     }
   ],
   "logs": {
@@ -302,6 +325,12 @@
       "bytes": 10154916,
       "lines": 3900,
       "gzip_bytes": 1846248,
+      "url": null
+    },
+    "8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4": {
+      "bytes": 15637685,
+      "lines": 5728,
+      "gzip_bytes": 2997233,
       "url": null
     },
     "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae": {

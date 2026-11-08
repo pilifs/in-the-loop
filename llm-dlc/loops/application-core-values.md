@@ -498,7 +498,20 @@ just to bring a gap count down.
     ("the engine did not finish within the time limit"), since the deadline is read every 256 steps
     (`bmc/mod.rs`), and a step over a large merged state can take long.
   - No job: the sweep is seconds inline (release: under 2 s for the Strings, about 3 s for lists of up to 5 lines).
-- **Next**: VF-023's second probe (above), as a job. Then the list encoding past five lines, with
+- 2026-11-08, **VF-023's second probe, a job** (`20261108-091002-vf-023-s-second-probe-which-ingredient-o`, this
+  commit): `verification/triage/vf023-choice.sh` runs nine property proofs under JBMC alone, one ingredient of the two
+  claims at a time. The first two are the corpus's own `listSizes` and `listChange` under their assumptions, which must
+  reproduce the refutation. The others are:
+  - a choice between two `List12`s (`oneOrTwo`), a `List12` or a `ListN` (`oneOrThree`), and `EMPTY_LIST` or a
+    `List12` (`emptyOrOne`);
+  - a one-element list under `listSizes`' assumption (`oneAssumed`), and after three objects are made (`oneMadeFirst`);
+  - `listChange`'s choice without its switch (`changeNoSwitch`), and its switch over one list without the choice
+    (`oneThenSwitch`).
+
+  For each refutation it keeps JBMC's failed property and trace steps. On the JVM every claim holds, and the own
+  checker proves all nine (both checked inline). Nothing is changed before its result, and the timebox attempt left
+  goes to a fix the trace supports.
+- **Next**: VF-023's second probe's result, when it comes. Meanwhile the list encoding past five lines, with
   `the_list_sweep_past_five_lines` as its reproducer, or the bound brought down to what is decided. Then the cache
   invalidation of the models' and domains' identities (R1's projection, with the reuse stream), and V3's wiring of
   model identity into claims.

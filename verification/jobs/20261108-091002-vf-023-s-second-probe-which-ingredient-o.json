@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-091002-vf-023-s-second-probe-which-ingredient-o",
+  "title": "VF-023's second probe: which ingredient of the corpus's listSizes and listChange makes JBMC refute a one-element list's size",
+  "description": "Values stream of llm-dlc/loops/application-core.md (llm-dlc/loops/application-core-values.md, acceptance row V2; finding VF-023 in verification/findings.md), at the commit that submits this job. Job 20261108-070211-… failed at step 2 because under --engine auto --confirm JBMC 6.11.0 refutes the conformance corpus's listSizes [assume n >= 1 && n <= 3; assert result == n * 10] with n=1 and listChange [assume n == 0 || n == 8; assert result == 1] with n=0, which the own checker proves and the JVM and the interpreter hold. The first probe (job 20261108-082244-…, passed) refuted the guess that class initialization order is the cause: JBMC proves List.of(new Object()).size() == 1 alone, after List.of(), and a two-element list's size 2. This job changes nothing. verification/triage/vf023-choice.sh runs nine property proofs with JBMC alone (jvmcontract prove --engine jbmc, the default unwind 16, timeout 300 s each, lib/models on JBMC's class path as always), one ingredient at a time: the corpus's own two methods (compiled from lib/tests/conformance/conformance/Conformance.java), then a choice between two List12s (oneOrTwo), between a List12 and a ListN (oneOrThree), between EMPTY_LIST and a List12 (emptyOrOne), a one-element list under listSizes' assumption (oneAssumed), with three objects made first (oneMadeFirst), listChange's choice of list without its switch (changeNoSwitch), and its switch over a one-element list without the choice (oneThenSwitch). From each refutation it keeps JBMC's failed property, its description, and the trace steps that assign a list's fields, ImmutableCollections' statics, a class identifier or an initialization flag, with the last 40 steps. Domain: one int n under each probe's assumption. Expected verdicts: corpusSizes and corpusChange refuted by JBMC with a witness the interpreter doesn't reproduce, so jvmcontract says the violation isn't reproduced (VF-023 reproduced); the seven others unknown, which is the question. On a JVM every claim holds (printed first, and checked inline), and the own checker proves all nine (checked inline). Expected process status: the script exits 0 (1 only if a probe fails to compile); matchesExpected is the script running to the end. The verdicts and traces in lib/target/vf023-choice/summary.txt are the evidence.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "verification/triage/vf023-choice.sh",
+      "lib/models/java/util/ImmutableCollections.java",
+      "lib/tests/conformance/conformance/Conformance.java",
+      "llm-dlc/loops/application-core-values.md"
+    ]
+  },
+  "expected": "exits 0, with summary.txt naming each of the nine probes' verdicts, and for each refutation JBMC's failed property and trace steps",
+  "submitted": {
+    "at": "2026-11-08T09:10:02+00:00",
+    "session": "b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f",
+    "by": "application-core-values stream (claude-opus-5-5)"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1.5G",
+    "duration": "10m",
+    "notes": "nine JBMC runs over methods of a few lines: the first probe's three took 0.2 s each, the corpus's list claims under 10 s each under JBMC"
+  },
+  "steps": [
+    {
+      "name": "VF-023 second probe under JBMC",
+      "run": "bash verification/triage/vf023-choice.sh",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/vf023-choice"
+  ]
+}
