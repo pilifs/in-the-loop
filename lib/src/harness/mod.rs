@@ -760,6 +760,19 @@ pub struct Layout {
     /// A correspondence's output relations for identity relations (H5's rest), each compared in place of "holds
     /// before iff it holds now" for its pair of [`Layout::identity_pairs`].
     pub identity_relations: Vec<IdentityRelation>,
+    /// The checked exceptions either version declares (`throws`), which the harness tells apart after
+    /// [`EXCEPTIONS`]: closing VF-015, under which a checked exception left the harness uncaught and no
+    /// equivalence over a method that throws one could be verified ([`Layout::exceptions`]).
+    pub checked: Vec<Checked>,
+}
+
+/// A checked exception class a version of the target declares in its `throws` clause.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Checked {
+    /// The internal name, `org/apache/commons/codec/DecoderException`.
+    pub class: String,
+    /// Whether it is an application class, which the previous version has under `before/` like every other.
+    pub application: bool,
 }
 
 /// How an object parameter made by its constructor may be made otherwise (step H2 of
@@ -806,7 +819,7 @@ pub fn alias_groups(pairs: &[(String, String)], order: &[String]) -> Vec<Vec<Str
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
     }
 
     /// Lets the object parameters `nullable` be null and those of each group of `groups` be one object (step H2):
@@ -1035,7 +1048,7 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
     }
 
     /// The flat parameters' types: the harness method's.
@@ -1088,6 +1101,19 @@ impl Layout {
     /// The receiver and the arguments that are records, the receiver first.
     pub fn records(&self) -> Vec<&Slot> {
         self.receiver.iter().chain(self.args.iter()).filter(|s| matches!(s, Slot::Record { .. })).collect()
+    }
+
+    /// The exception classes the harness tells apart, as internal names, in the order its handlers catch them:
+    /// a call's category is the index of the first that catches it, plus one. They are [`EXCEPTIONS`], then
+    /// [`Layout::checked`], which is empty for a target without a `throws` clause (so its harness, and the proofs
+    /// cached for it, are as before). The previous version's (`prefix`, `before`) has its application classes under
+    /// the prefix, as the relocated build does.
+    pub fn exceptions(&self, prefix: Option<&str>) -> Vec<String> {
+        let checked = self.checked.iter().map(|c| match prefix {
+            Some(p) if c.application => format!("{p}/{}", c.class),
+            _ => c.class.clone(),
+        });
+        EXCEPTIONS.iter().map(|e| e.to_string()).chain(checked).collect()
     }
 
     /// What the harness makes the inputs with: every constructor it calls, in a claim's words under the version
@@ -1989,7 +2015,9 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         }
         code.bind(try_end);
         code.goto(join);
-        for (i, exception) in EXCEPTIONS.iter().enumerate() {
+        // Each class the harness tells apart, the checked exceptions either version declares after the listed ones
+        // (VF-015), under the previous version's names for its call.
+        for (i, exception) in layout.exceptions(on_copies.then_some("before")).iter().enumerate() {
             let handler = code.label();
             code.bind(handler);
             code.op(0x57); // pop the exception
@@ -2726,7 +2754,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         }
         s.push_str(&format!("        int e{var} = 0;\n"));
         s.push_str(&format!("        try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
-        for (i, exception) in EXCEPTIONS.iter().enumerate() {
+        for (i, exception) in layout.exceptions((side == "before").then_some("before")).iter().enumerate() {
             s.push_str(&format!(" catch ({} t) {{ e{var} = {}; }}", exception.replace('/', "."), i + 1));
         }
         s.push('\n');
@@ -2991,7 +3019,7 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() };
+    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() };
     generate_property_over(class_internal, method, &layout, ret, assume, assertion, signals, max_array_length)
 }
 
@@ -3512,7 +3540,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
     }
 
     #[test]
@@ -3867,6 +3895,26 @@ mod tests {
                 assert!(pcs.contains(&t), "target {t} is not an instruction");
             }
         }
+    }
+
+    /// VF-015: the checked exceptions either version declares are told apart after the listed ones, the previous
+    /// version's application classes under `before/`; without any, the harness is as it was.
+    #[test]
+    fn generates_a_harness_that_catches_the_declared_checked_exceptions() {
+        let params = params(&["ch".into()], &[Type::Int]);
+        let mut layout = flat(&params);
+        assert_eq!(layout.exceptions(Some("before")), EXCEPTIONS.iter().map(|e| e.to_string()).collect::<Vec<_>>());
+        layout.checked = vec![Checked { class: "fixtures/BadDigit".into(), application: true }, Checked { class: "java/lang/Exception".into(), application: false }];
+        let harness = generate("fixtures/Digits", "toDigit", &layout, &Type::Int, None, 8, None).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let code = class.method(METHOD, "(I)V").unwrap().code.as_ref().unwrap().clone();
+        let n = EXCEPTIONS.len();
+        assert_eq!(code.exception_table.len(), 2 * (n + 2), "each call's listed handlers, then the declared one and Exception");
+        let caught: Vec<String> = code.exception_table.iter().map(|h| h.catch_type.clone().unwrap()).collect();
+        assert_eq!(caught[n..n + 2], ["before/fixtures/BadDigit", "java/lang/Exception"], "the previous version's call");
+        assert_eq!(caught[2 * n + 2..], ["fixtures/BadDigit", "java/lang/Exception"], "the new version's call");
+        assert!(harness.source.contains(&format!(" catch (java.lang.Error t) {{ ea = {n}; }} catch (before.fixtures.BadDigit t) {{ ea = {}; }} catch (java.lang.Exception t) {{ ea = {}; }}", n + 1, n + 2)), "{}", harness.source);
+        assert!(harness.source.contains(&format!(" catch (fixtures.BadDigit t) {{ eb = {}; }} catch (java.lang.Exception t) {{ eb = {}; }}", n + 1, n + 2)), "{}", harness.source);
     }
 
     #[test]

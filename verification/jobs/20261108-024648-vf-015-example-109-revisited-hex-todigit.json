@@ -1,0 +1,81 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-024648-vf-015-example-109-revisited-hex-todigit",
+  "title": "VF-015: example 109 revisited, Hex#toDigit's regression proof, after the equivalence harness catches checked exceptions; closes VF-015 when it passes",
+  "description": "Example 109 (apache/commons-codec commit 43a9aa66, Hex.toDigit restricted to ASCII): the regression proof between the old toDigit (Character.digit(ch, 16)) and the new one. The last run, 20261108-011411, passed steps 3 and 4 and failed step 5 with 'an unexpected property failed: java::EquivalenceHarness.check:(CI)V.1'. Triage found the cause: toDigit throws commons-codec's DecoderException, a checked exception, on a char that is no hex digit, and the equivalence harness's call handlers caught only the listed unchecked exceptions, RuntimeException and Error, so the checked one left the harness and JBMC's 'no uncaught exception' property failed. No equivalence over a method that throws a checked exception could be verified, and step 4's 'test $? -eq 1' passed only because it also accepts 'cannot be verified'. The fix (Phase 0 step 7 of llm-dlc/loops/application-core.md, decision 7 there): the harness tells apart, after the listed unchecked exceptions, the checked exceptions either version declares in its throws clause, most specific first (the previous version's application classes under before/), then java.lang.Exception; the interpreter's replay numbers them alike. A method without a throws clause gets the harness it had. This job runs the last one's steps unchanged except step 4, which is stricter, as VF-015's triage asks: instead of 'test $? -eq 1', it reads the --json outcome and checks the verdict is violation, the witness replayed (replay.reproduced), and the witness's ch a non-ASCII char (above 127). Revision: the commit that commits this job, the harness fix with its reproducers (lib/tests/integration.rs a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found, which failed before with 'an uncaught before.fixtures.BadDigit leaves the harness', and the harness unit test generates_a_harness_that_catches_the_declared_checked_exceptions). Domain: every char x int (step 4), and outside ch > 127 (step 5); engine: JBMC (jvmcontract's default), unwind 16, --gaps strict. This is VF-015's last attempt: it has no timebox attempt left, so a failure goes back to the user with the finding.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "jbmc:models",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "109"
+    ],
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/witness.rs",
+      "llm-dlc/loops/application-core.md"
+    ],
+    "jobs": [
+      "20261108-011411-vf-015-example-109-revisited-hex-todigit",
+      "20261107-165827-example-109-revisited-hex-todigit-s-regr"
+    ]
+  },
+  "expected": "step 3 (prove, old toDigit(0x0660) == 0) verified, exit 0; step 4 a violation, exit 1, whose witness has ch > 127 (a Unicode digit the old version decodes and the new one rejects with DecoderException) and is replayed (replay.reproduced true), the step exiting 0 once the JSON checks hold; step 5 (--unchanged-unless 'ch > 127') verified over every char x int, exit 0. matchesExpected is all three steps passing. Acceptance row: Phase 0's step 7 (G0's gate) of llm-dlc/loops/application-core.md.",
+  "submitted": {
+    "at": "2026-11-08T02:46:48+00:00",
+    "session": "3da21514-fe46-49d5-8200-08d3cf89ea17",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "git",
+    "javac",
+    "jbmc",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "10m",
+    "notes": "as 20261107-165827, whose clone, compile and step 3 took about 10 s at 100 MiB peak; the preflight now adds a probe run of the proof's size (about 0.1 s in the step 1 experiment)"
+  },
+  "steps": [
+    {
+      "name": "clone",
+      "run": "mkdir -p verification/.work-109 && cd verification/.work-109 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+      "cwd": "."
+    },
+    {
+      "name": "compile",
+      "run": "mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+      "cwd": "verification/.work-109"
+    },
+    {
+      "name": "old toDigit decodes the Arabic-Indic zero",
+      "run": "jvmcontract prove 'org.apache.commons.codec.binary.Hex#toDigit' --classes base-classes --assume 'ch == 1632' --assert 'result == 0' --timeout 300 --work work-old",
+      "cwd": "verification/.work-109"
+    },
+    {
+      "name": "the change, found, its witness non-ASCII and replayed",
+      "cwd": "verification/.work-109",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change --json > change.json; status=$?; python3 -c \"import json; o = json.load(open('change.json')); cx = o.get('counterexample') or {}; ch = [i['value'] for i in cx.get('inputs', []) if i['name'] == 'ch']; print('verdict', o['verdict'], 'input', cx.get('input'), 'before', cx.get('before'), 'after', cx.get('after'), 'replay', o.get('replay'), 'problem', o.get('problem')); assert o['verdict'] == 'violation', o['verdict']; assert (o.get('replay') or {}).get('reproduced'), o.get('replay'); assert ch and ch[0] > 127, ch\" && test $status -eq 1"
+    },
+    {
+      "name": "nothing else changed on ASCII",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --unchanged-unless 'ch > 127' --timeout 600 --work work-ascii",
+      "cwd": "verification/.work-109"
+    }
+  ],
+  "outputs": [
+    "verification/.work-109/work-old/jbmc.log",
+    "verification/.work-109/work-change",
+    "verification/.work-109/work-ascii",
+    "verification/.work-109/change.json"
+  ],
+  "supersedes": "20261108-011411-vf-015-example-109-revisited-hex-todigit"
+}

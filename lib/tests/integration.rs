@@ -3547,3 +3547,76 @@ fn confirm_applies_the_own_checkers_contracts_for_jbmc() {
     let c = o.search.as_ref().unwrap().confirmation.as_ref().expect("confirmation");
     assert_eq!(c.status, Confirmed::Confirmed, "{c:?}\n{}", o.output);
 }
+
+/// VF-015 (Phase 0 step 7 of `llm-dlc/loops/application-core.md`): a method that declares a checked exception,
+/// `toDigit(int ch) throws BadDigit`, as example 109's `Hex.toDigit` throws commons-codec's `DecoderException`.
+/// Before the fix, the equivalence harness caught only unchecked exceptions, the checked one left
+/// `EquivalenceHarness.check`, and no equivalence over such a method could be verified.
+const DIGITS_BEFORE: &str = r#"package fixtures;
+
+public class Digits {
+    public static int toDigit(int ch) throws BadDigit {
+        if (ch >= '0' && ch <= '9') {
+            return ch - '0';
+        }
+        if (ch >= 'a' && ch <= 'f') {
+            return ch - 'a' + 10;
+        }
+        throw new BadDigit();
+    }
+}
+
+class BadDigit extends Exception {
+}
+
+class OtherDigit extends Exception {
+}
+"#;
+
+fn compile_digits(name: &str, source: &str) -> Option<PathBuf> {
+    let dir = target_tmp().join(format!("digits-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join("Digits.java");
+    std::fs::write(&file, source).unwrap();
+    compile(&format!("digits-{name}"), &[file])
+}
+
+fn digits_run(before: &Path, after: &Path, name: &str) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, "fixtures.Digits#toDigit");
+    options.engine = jvmcontract::Engine::Native;
+    let work = target_tmp().join(format!("equivalence-digits-{name}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    equivalence::run(&options).unwrap()
+}
+
+#[test]
+fn a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found() {
+    let Some(before) = compile_digits("before", DIGITS_BEFORE) else { return };
+    // The same digits, by subtraction: verified, the checked exception compared by class.
+    let rewritten = DIGITS_BEFORE
+        .replace("if (ch >= '0' && ch <= '9') {\n            return ch - '0';", "int d = ch - '0';\n        if (d >= 0 && d < 10) {\n            return d;")
+        .replace("if (ch >= 'a' && ch <= 'f') {\n            return ch - 'a' + 10;", "d = ch - 'a';\n        if (d >= 0 && d < 6) {\n            return d + 10;");
+    let Some(after) = compile_digits("rewritten", &rewritten) else { return };
+    let o = digits_run(&before, &after, "rewritten");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.observations.exceptions.contains("then the checked exceptions either version declares, fixtures.BadDigit, java.lang.Exception"), "{}", stated.observations.exceptions);
+    // Nothing gets weaker. Each of these is refuted, on a witness the interpreter replays.
+    let refuted = |name: &str, source: String, before_does: &str, after_does: &str| {
+        let Some(after) = compile_digits(name, &source) else { return };
+        let o = digits_run(&before, &after, name);
+        assert_eq!(o.verdict, Verdict::Violation, "{name}: {}", o.output);
+        let cx = o.counterexample.as_ref().expect("a counterexample");
+        assert_eq!(cx.differs, ["exception"], "{name}: {}", o.output);
+        assert!(cx.before.contains(before_does) && cx.after.contains(after_does), "{name}: before {}, after {}", cx.before, cx.after);
+        assert!(o.replay.as_ref().is_some_and(|r| r.reproduced), "{name}: {}", o.output);
+    };
+    // The checked exception thrown on another input: 'f' is no digit any more.
+    refuted("narrower", DIGITS_BEFORE.replace("ch <= 'f'", "ch <= 'e'"), "15", "BadDigit");
+    // Another checked exception class, which the new version declares in its place.
+    refuted("other-class", DIGITS_BEFORE.replace("throws BadDigit", "throws OtherDigit").replace("throw new BadDigit()", "throw new OtherDigit()"), "BadDigit", "OtherDigit");
+    // No exception at all: -1 in its place, and no throws clause.
+    refuted("no-exception", DIGITS_BEFORE.replace(" throws BadDigit", "").replace("throw new BadDigit();", "return -1;"), "BadDigit", "-1");
+}

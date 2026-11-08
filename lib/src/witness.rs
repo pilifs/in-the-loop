@@ -295,8 +295,8 @@ pub struct Replayed {
     /// result, as `result`) read through its equations and labelled by the previous version's paths,
     /// `Quote{cents=5, quantity=3}`: two versions' views read alike exactly when the harness has the objects agree.
     pub views: Vec<(String, String)>,
-    /// The harness's category of the exception thrown: its index among [`crate::harness::EXCEPTIONS`], the first it
-    /// is an instance of, or their number for any other.
+    /// The harness's category of the exception thrown: its index among the classes the harness tells apart
+    /// ([`crate::harness::Layout::exceptions`]), the first it is an instance of, or their number for any other.
     pub category: Option<usize>,
     /// Each primitive field path of a returned object the layout reads by its fields, as the call left it
     /// (`amount.cents`), for a relation between the results (step H5); a path through null is absent.
@@ -564,7 +564,10 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         views.push(("result".to_string(), corresponding_view(&m, *v, &old.class, equations, prefix.is_some(), &flat)));
     }
     let category = match &outcome {
-        Err(Fault::Throw(r)) => Some(harness::EXCEPTIONS.iter().position(|e| m.is_instance(*r, e)).unwrap_or(harness::EXCEPTIONS.len())),
+        Err(Fault::Throw(r)) => {
+            let exceptions = layout.exceptions(prefix);
+            Some(exceptions.iter().position(|e| m.is_instance(*r, e)).unwrap_or(exceptions.len()))
+        }
         _ => None,
     };
     let result_fields_of = if prefix.is_some() { &layout.result_fields.1 } else { &layout.result_fields.0 };

@@ -420,6 +420,21 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Since then**: only the stub-reachability loop changed checker code, in the JBMC gap preflight, and its guard
     job `20261108-011441-…` passed.
   - Phase 0 is next.
+- 2026-11-08, Phase 0, by the planning session:
+  - **Step 1, the domain gate** (`wtvnuryt`): a domain made field by field or of invariants is refused by
+    `spec::heap::check_with`, and `equivalence::run` refuses, once its layout is built and before any helper proof,
+    cache lookup or proof, a domain whose `calls` or `classes` aren't exactly the ones its harness makes
+    (`spec::heap::made_with`). Its reproducer (`tests/heap.rs`) verified a field-by-field claim before. Four heap
+    tests had changed a reused kernel claim's classes but not its Quote constructors, and now name their own.
+  - **Step 7, VF-015**: the equivalence harness tells apart, after the listed unchecked exceptions, the checked
+    exceptions either version declares, most specific first, then `java.lang.Exception`
+    (`harness::Layout::checked`), and the replay numbers them alike. Reproducers: `tests/integration.rs`'s
+    `a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found` failed before with
+    "an uncaught before.fixtures.BadDigit leaves the harness". It now verifies a rewrite and refutes three defects
+    on the exception (thrown on another input, another class, no exception), each replayed. Also the harness unit
+    test `generates_a_harness_that_catches_the_declared_checked_exceptions`. A method without a `throws` clause
+    gets the harness it had. VF-015's closing job is `20261108-024648-vf-015-example-109-revisited-hex-todigit`,
+    with step 4 made stricter (a violation, replayed, on a char above 127). It has no timebox attempt left.
 - Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings

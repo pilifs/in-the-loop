@@ -465,6 +465,49 @@ pub(crate) fn confirmation_line(c: &Confirmation) -> String {
 /// implement either: then `--engine auto` does not ask JBMC, which has no bytecode for the call either, and whose
 /// stub is a gap of its own ([`crate::jbmc_gaps`]), refused or assumed as the own checker's is. A class
 /// initializer, and a call of a JDK class JBMC is given the bytecode of ([`JDK_CLASSES`]), are asked of it.
+/// The checked exception classes the target declares in its `throws` clause in either version (the previous
+/// version's first), for the harness to tell apart after [`harness::EXCEPTIONS`] (VF-015): most specific first, so
+/// that a declared subclass is told from its declared superclass, with `java/lang/Exception` among them to catch
+/// a checked exception neither declares. A declared unchecked class is caught by the listed ones already, and left
+/// out. With none declared, none: the harness is as it was.
+fn declared_checked(options: &Options, versions: [(&crate::classfile::ClassFile, &crate::classfile::Method); 2]) -> Result<Vec<harness::Checked>, Error> {
+    let with_jdk = |dir: &Path| -> Result<ClassPath, Error> {
+        let mut cp = ClassPath::new();
+        cp.add(dir)?;
+        for entry in &options.classpath {
+            if entry.exists() {
+                cp.add(entry)?;
+            }
+        }
+        Ok(cp.with_default_jdk())
+    };
+    // Only the previous version's own build is relocated under `before/`, not the class path's.
+    let mut relocated = ClassPath::new();
+    relocated.add(&options.before)?;
+    let mut found: Vec<(usize, harness::Checked)> = Vec::new();
+    for ((class, method), build) in versions.into_iter().zip([&options.before, &options.after]) {
+        let cp = with_jdk(build)?;
+        for name in method.declared_exceptions(&class.pool)? {
+            let supers = cp.superclasses(&name);
+            let unchecked = |c: &str| c == "java/lang/RuntimeException" || c == "java/lang/Error";
+            if unchecked(&name) || supers.iter().any(|s| unchecked(s)) || found.iter().any(|(_, c)| c.class == name) {
+                continue;
+            }
+            let application = relocated.application(&name)?.is_some();
+            found.push((supers.len(), harness::Checked { class: name, application }));
+        }
+    }
+    if found.is_empty() {
+        return Ok(Vec::new());
+    }
+    if !found.iter().any(|(_, c)| c.class == "java/lang/Exception") {
+        let depth = with_jdk(&options.after)?.superclasses("java/lang/Exception").len();
+        found.push((depth, harness::Checked { class: "java/lang/Exception".into(), application: false }));
+    }
+    found.sort_by(|a, b| b.0.cmp(&a.0).then(a.1.class.cmp(&b.1.class)));
+    Ok(found.into_iter().map(|(_, c)| c).collect())
+}
+
 pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
     result.gaps.iter().any(|g| g.treatment == Some(GapTreatment::Refused) && !g.jbmc)
 }
@@ -1125,6 +1168,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
     layout.result_fields = result_fields;
     layout.result_equations = result_equations;
+    layout.checked = declared_checked(options, [(&before_class, &before_method), (&class, &method)])?;
     // Object parameters that may be null or one object (step H2): a choice each, made by the harness's flags.
     if !options.nullable.is_empty() || !options.may_alias.is_empty() {
         let order: Vec<String> = std::iter::once("this".to_string()).chain(names.iter().cloned()).collect();
@@ -1183,6 +1227,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     );
     before_layout.result_fields = layout.result_fields.clone();
     before_layout.result_equations = layout.result_equations.clone();
+    before_layout.checked = layout.checked.clone();
     let before_layout = before_layout;
     let before_params = &before_layout.params;
     let previous = (!plain).then(|| harness::BeforeMethod {

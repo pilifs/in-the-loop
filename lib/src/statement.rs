@@ -523,7 +523,7 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
             _ => None,
         })
         .collect();
-    Observations { result, exceptions: exception_categories("the same in both versions"), arrays, objects, identities: Vec::new() }
+    Observations { result, exceptions: exception_categories("the same in both versions", &layout.checked), arrays, objects, identities: Vec::new() }
 }
 
 /// What a property proof observes: the result against the assertion, and an exception against the throws clauses.
@@ -532,11 +532,17 @@ pub fn property_observations(assertion: &str, throws_checked: &[String]) -> Obse
     Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new(), objects: Vec::new(), identities: Vec::new() }
 }
 
-/// How the regression harness tells exceptions apart: by class, among a fixed list.
-fn exception_categories(how: &str) -> String {
+/// How the regression harness tells exceptions apart: by class, among a fixed list, then the checked exceptions
+/// either version declares ([`harness::Layout::exceptions`]).
+fn exception_categories(how: &str, checked: &[harness::Checked]) -> String {
+    let declared = if checked.is_empty() {
+        String::new()
+    } else {
+        format!(", then the checked exception{} either version declares, {}", if checked.len() == 1 { "" } else { "s" }, checked.iter().map(|c| c.class.replace('/', ".")).collect::<Vec<_>>().join(", "))
+    };
     format!(
-        "whether it throws, and which of {} exception classes it throws ({} and the rest; another class counts as the first of them it is an instance of), {how}; the message and the exception's state are not compared",
-        harness::EXCEPTIONS.len(),
+        "whether it throws, and which of {} exception classes it throws ({} and the rest{declared}; another class counts as the first of them it is an instance of), {how}; the message and the exception's state are not compared",
+        harness::EXCEPTIONS.len() + checked.len(),
         harness::EXCEPTIONS.iter().take(3).map(|e| e.rsplit('/').next().unwrap_or(e)).collect::<Vec<_>>().join(", ")
     )
 }
