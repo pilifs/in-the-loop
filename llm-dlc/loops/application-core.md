@@ -463,6 +463,12 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     claim and under five plain regression checks. On JDK 25.0.5, `after` agrees with `before` on every case of the
     grids (30,240, 315 and 43), and each defect differs exactly in the methods its expectations name
     (`Conformance.java`). `tests/application_core.rs` starts with their round trips and compilation.
+  - **Step 4, the integration contract**, `lib/tests/application_core.rs`: one test per row a unit run reaches (G0,
+    O1–O3, V1, V2, E1, E2, R1, R2, J3), on the frozen fixtures, the native engine and no JBMC (J2's guard). Each
+    case must reach its `expected.json` verdict, or be refused in the words of a stream that owns its row.
+    Anything else fails, a refusal by another stream included. Today G0 reaches its verdicts (the gate refuses
+    each unsupported policy, and the kernel's own claim is verified), and every other row stops at its streams'
+    named refusals. `environment::check` is E1's and E2's entry point. The integration check passes on it.
 - Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings

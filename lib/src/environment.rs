@@ -17,6 +17,14 @@ pub fn check_model(call: &ModeledCall, model: &CallModel) -> Result<(), Unsuppor
     Err(Unsupported::new(Part::Environment, format!("a modelled call's model of its results ({short}): the environment stream builds it (llm-dlc/loops/application-core-environment.md)")))
 }
 
+/// Checks a method's claim whose environment models its dependencies' outcomes (the acceptance contract's Q:
+/// `quotes.QuoteService#quote` under a modelled `Rates.rate` and a recorded `Events.send`) between the builds
+/// `before` and `after`. The entry point of rows E1 and E2 (`tests/application_core.rs`).
+pub fn check(claim: &crate::spec::CanonicalClaim, before: &Path, after: &Path) -> Result<crate::spec::Outcome, Unsupported> {
+    let _ = (before, after);
+    Err(Unsupported::new(Part::Environment, format!("a claim of {} under an environment model of its dependencies' outcomes: the environment stream builds it (llm-dlc/loops/application-core-environment.md)", claim.contract.subject)))
+}
+
 /// Reads `--environment FILE` of `effects` and `compare`: the modelled calls a person declares, as a JSON list of
 /// [`ModeledCall`], each with its model; checked by [`check_model`].
 pub fn load(path: &Path) -> Result<Vec<ModeledCall>, Unsupported> {
