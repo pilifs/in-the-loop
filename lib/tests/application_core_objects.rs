@@ -562,3 +562,145 @@ fn o1_a_plans_array_leaf_is_the_constructors_argument() {
     let o = bounded("plan-buffer-null", &before, &defect, "buffers.Buffer#total", Some(plans(&nullable, &nullable)));
     assert!(o.problem.as_deref().unwrap_or_default().contains("may be null") && o.problem.as_deref().unwrap_or_default().contains("the objects stream builds it"), "{:?}", o.problem);
 }
+
+const CELLS: &str = r#"package cells;
+
+/** A mutable cell, made by its constructor. */
+public class Cell {
+    public int v;
+
+    public Cell(int v) {
+        this.v = v;
+    }
+}
+"#;
+
+const OPS: &str = r#"package cells;
+
+/** Methods over two cells, whose results depend on whether the two are one object. */
+public class Ops {
+    /** Reads b, writes a, and reads b again: the second read sees the write where a and b are one object. */
+    public static int twice(Cell a, Cell b) {
+        int x = b.v;
+        a.v = 7;
+        return x + b.v;
+    }
+
+    /** Hands back the first cell. */
+    public static Cell pick(Cell a, Cell b) {
+        return a;
+    }
+
+    /** A cell's value, or 0 for none. */
+    public static int value(Cell a) {
+        return a == null ? 0 : a.v;
+    }
+}
+"#;
+
+fn cells(name: &str, edit: impl Fn(&str) -> String) -> PathBuf {
+    compile(name, &[("cells/Cell.java", CELLS), ("cells/Ops.java", &edit(OPS))])
+}
+
+/// A plan of the roots `a` and `b`, two `Cell(int v)` nodes, `b`'s value given (JSON): `{"kind": "node", "id": 1}`
+/// for an object of its own, `"id": 0` for one object with `a`, or a choice (`"same_as": [0]`, `"nullable": true`).
+fn cell_plan(b: &str) -> String {
+    let cell = |id: u32, path: &str| format!(r#"{{"id": {id}, "class": "cells.Cell", "maker": {{"kind": "constructor", "descriptor": "(I)V"}}, "args": [{{"kind": "leaf", "path": "{path}.v", "type": "int"}}]}}"#);
+    let shared = b.contains(r#""id": 0"#);
+    let nodes = if shared { cell(0, "a") } else { format!("{}, {}", cell(0, "a"), cell(1, "b")) };
+    format!(r#"{{"nodes": [{nodes}], "roots": [{{"name": "a", "value": {{"kind": "node", "id": 0}}}}, {{"name": "b", "value": {b}}}],
+        "bounds": {{"nodes": {}, "max_array_length": 0, "setup_calls": 0}}}}"#, if shared { 1 } else { 2 })
+}
+
+/// O2's negative control of two parameters that were one object becoming distinct: a rewrite of `twice` that keeps
+/// the first read of `b` (right only where `a` and `b` are two objects) is verified over two nodes, and refuted
+/// where the plan makes them one node, or lets them be one; the witness names the one object, and the JVM run of
+/// the harness rebuilds it, so the difference reproduces there.
+#[test]
+fn o2_two_parameters_that_were_one_object_becoming_distinct_is_refuted() {
+    let before = cells("cells-before", |s| s.to_string());
+    let distinct = cells("cells-distinct", |s| s.replace("return x + b.v;", "return x + x;"));
+    let own = cell_plan(r#"{"kind": "node", "id": 1}"#);
+    let o = planned("twice-own", &before, &distinct, "cells.Ops#twice", plans(&own, &own));
+    assert_eq!(o.verdict, Verdict::Verified, "two objects of their own: {}", o.output);
+
+    let one = cell_plan(r#"{"kind": "node", "id": 0}"#);
+    let o = planned("twice-one", &before, &distinct, "cells.Ops#twice", plans(&one, &one));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap_or_default().contains("× b: the same object as a"), "the domain says the two are one: {:?}", o.domain);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("b=the same object as a"), "the witness names the one object: {}", c.input);
+    assert!(o.replay.as_ref().is_some_and(|r| r.reproduced), "{}", o.output);
+    assert!(c.jvm.is_some(), "the witness is run on a JVM, which rebuilds the one object: {}", o.output);
+
+    let may = cell_plan(r#"{"kind": "node", "id": 1, "same_as": [0]}"#);
+    let o = planned("twice-may", &before, &distinct, "cells.Ops#twice", plans(&may, &may));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap_or_default().contains("a and b may be the same object"), "{:?}", o.domain);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("b=the same object as a"), "the choice that shows it is one object: {}", c.input);
+    assert!(o.replay.as_ref().is_some_and(|r| r.reproduced) && c.jvm.is_some(), "{}", o.output);
+
+    // The versions are given the same choices.
+    let o = planned("twice-differ", &before, &distinct, "cells.Ops#twice", plans(&own, &one));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("choices of null and of one object differ"), "{:?}", o.problem);
+}
+
+/// The identities a plan makes are the ones compared: a rewrite of `pick` that hands back `b` is verified where the
+/// plan makes `a` and `b` one node, and refuted on identity where they are two objects.
+#[test]
+fn o2_a_plans_shared_node_is_one_object_in_the_identity_relations() {
+    let before = cells("pick-before", |s| s.to_string());
+    let other = cells("pick-other", |s| s.replace("        return a;\n", "        return b;\n"));
+    let one = cell_plan(r#"{"kind": "node", "id": 0}"#);
+    let o = planned("pick-one", &before, &other, "cells.Ops#pick", plans(&one, &one));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let own = cell_plan(r#"{"kind": "node", "id": 1}"#);
+    let o = planned("pick-own", &before, &other, "cells.Ops#pick", plans(&own, &own));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.differs.iter().any(|d| d.contains("identity")), "the result's identity with a differs: {:?}", c.differs);
+    assert!(o.replay.as_ref().is_some_and(|r| r.reproduced), "{}", o.output);
+}
+
+/// A plan's root that may be null: a rewrite of `value` that drops the null check is refuted on `a=null` where the
+/// plan lets `a` be null, replayed, and verified where it doesn't.
+#[test]
+fn o2_a_plans_nullable_root_is_a_choice_of_null() {
+    let before = cells("value-before", |s| s.to_string());
+    let unchecked = cells("value-unchecked", |s| s.replace("return a == null ? 0 : a.v;", "return a.v;"));
+    let plan = |a: &str| format!(r#"{{"nodes": [{{"id": 0, "class": "cells.Cell", "maker": {{"kind": "constructor", "descriptor": "(I)V"}}, "args": [{{"kind": "leaf", "path": "a.v", "type": "int"}}]}}],
+        "roots": [{{"name": "a", "value": {a}}}], "bounds": {{"nodes": 1, "max_array_length": 0, "setup_calls": 0}}}}"#);
+    let never = plan(r#"{"kind": "node", "id": 0}"#);
+    assert_eq!(planned("value-never", &before, &unchecked, "cells.Ops#value", plans(&never, &never)).verdict, Verdict::Verified);
+    let null = plan(r#"{"kind": "node", "id": 0, "nullable": true}"#);
+    let o = planned("value-null", &before, &unchecked, "cells.Ops#value", plans(&null, &null));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap_or_default().contains("or null"), "{:?}", o.domain);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("a=null"), "{}", c.input);
+    assert!(o.replay.as_ref().is_some_and(|r| r.reproduced) && c.jvm.is_some(), "{}", o.output);
+}
+
+/// The property check makes a plan's shared node one object too: `twice` on one cell of value 3 returns 10, which
+/// holds over one node and is refuted over two.
+#[test]
+fn o2_a_property_over_a_plans_shared_node() {
+    let classes = cells("cells-property", |s| s.to_string());
+    let with = |plan: &str, name: &str| {
+        let mut options = property::Options::new(&[classes.clone()], "cells.Ops#twice");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.assume = Some("b.v == 3".into());
+        options.assert = Some("result == 10".into());
+        options.plan = Some(plans(plan, plan));
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let o = with(&cell_plan(r#"{"kind": "node", "id": 0}"#), "twice-prop-one");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let o = with(&cell_plan(r#"{"kind": "node", "id": 1}"#), "twice-prop-own");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+}

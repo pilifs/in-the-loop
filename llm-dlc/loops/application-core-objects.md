@@ -247,6 +247,33 @@ Never relax the interface to unblock it.
     rebuilt on the JVM, and the remaining negative controls: two parameters that were one object becoming distinct,
     unsupported side effects in a constructor, and a narrower new constructor under an anchored domain. Then a
     shrinking check of the recipe's legality, and the claim roots. Optional: array fields in property expressions.
+- 2026-11-08, **O2's choices and shared nodes of a plan**, and the negative control of two parameters that were
+  one object becoming distinct.
+  - **What**: a plan's root node may be null (`nullable`), or one of other roots' objects (`same_as`), each a flag
+    of the harness made as `--nullable` and `--may-alias` make it (`construction::choices`, `Layout::choose`). One
+    node at two roots is one object, always, with no flag: `harness::Choice::always`, set by `Layout::share`, and
+    honoured by both harnesses' bytecode and source, `Layout::made` (so the witness, the interpreter replay and the
+    JVM run) and the domain (`b: the same object as a`). Both versions' plans must make the same choices, so that
+    their identity relations start alike. The claim key covers it through the harness's hash.
+  - **Refused by name**: a choice, or a node shared with a root or another argument, inside a nested object (the
+    recipe makes an inner object as its constructor's argument; the harness chooses only among the roots); a
+    shared node with a choice as well; a `same_as` naming itself or no root's node; a nullable receiver; plans whose
+    choices differ between the versions.
+  - **Verified inline** (native, no JBMC). Unit tests `a_plans_roots_may_be_null_or_one_object_…` (construction)
+    and `a_shared_object_is_the_earlier_roots_object_with_no_flag` (harness). `tests/application_core_objects.rs`
+    adds four tests:
+    - the negative control: `twice(a, b)` rewritten to keep its first read of `b` is verified over two nodes, and
+      refuted over one node and over a `same_as` choice, with `b=the same object as a` in the witness, replayed in
+      the interpreter and run on a JVM;
+    - `pick` rewritten to hand back `b`: verified over one node, refuted on identity over two;
+    - a nullable root: a dropped null check refuted on `a=null`, verified where the root isn't nullable;
+    - `prove` over a shared node: `twice` on one cell of 3 returns 10, verified over one node, refuted over two.
+    The lib tests (228) and every inline suite pass, except the contract's O3, which still waits on the fixture
+    finding of the second entry.
+  - **No job**: the harness changes apply only to a plan with a shared node, which no example or JBMC test has.
+  - **Next**: O2's remaining negative controls: unsupported side effects in a constructor, and a narrower new
+    constructor under an anchored domain. Then a shrinking check of the recipe's legality, and the claim roots.
+    Optional: array fields in property expressions.
 - Status: working
 
 ## Loop settings

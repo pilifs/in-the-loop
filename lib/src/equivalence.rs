@@ -1285,6 +1285,19 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
     }
+    // The plan's choices (O2): roots that may be null or one of other roots' objects, each a flag of the harness as
+    // `--nullable` and `--may-alias` make them, and a node at two roots, one object with no flag.
+    if let Some(c) = plan.map(|p| crate::construction::choices(&p.after)).filter(|c| !c.is_empty()) {
+        let order: Vec<String> = std::iter::once("this".to_string()).chain(names.iter().cloned()).collect();
+        if let Err(problem) = layout.choose(&c.nullable, &harness::alias_groups(&c.may_alias, &order)) {
+            return refuse(&mut out, line, format!("the plan's choices: {problem}"));
+        }
+        for (name, other) in &c.shared {
+            if let Err(problem) = layout.share(name, other) {
+                return refuse(&mut out, line, format!("the plan's node at the roots {other} and {name}: {problem}"));
+            }
+        }
+    }
     // Object parameters that may be null or one object (step H2): a choice each, made by the harness's flags.
     if !options.nullable.is_empty() || !options.may_alias.is_empty() {
         let order: Vec<String> = std::iter::once("this".to_string()).chain(names.iter().cloned()).collect();

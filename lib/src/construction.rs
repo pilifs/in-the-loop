@@ -31,10 +31,11 @@ pub struct Plans {
 /// What a check makes today: roots that are primitive leaves or objects, each object made once by the constructor
 /// its node names (an explicit choice among several), from primitive leaves named by their path from the root
 /// (`this.capacity`, `q.amount.cents`) and objects made so in turn; and a setup sequence of at most
-/// [`MAX_SETUP_CALLS`] calls on the receiver, of primitive leaves (`setup.0.n`), the same in both versions. What it
-/// doesn't make yet is refused by its stream's name, before any check: a bounded array, a node that may be null or
-/// one of several, one object at two paths, a factory, a dependency (the objects stream's), and an adapted String or
-/// list (the values stream's adapter).
+/// [`MAX_SETUP_CALLS`] calls on the receiver, of primitive leaves (`setup.0.n`), the same in both versions. A root
+/// may be null, or one of the objects of other roots, or the same node as another root, one object ([`choices`],
+/// the same in both versions). What it doesn't make yet is refused by its stream's name, before any check: such a
+/// choice or sharing inside a nested object, a null array, a factory, a dependency (the objects stream's), and an
+/// adapted String or list (the values stream's adapter).
 pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Result<(), Unsupported> {
     for (version, plan) in [("previous", before), ("new", after)] {
         if let Some(problem) = plan.shape_problem() {
@@ -48,8 +49,16 @@ pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Resul
                 return Err(unbuilt(&format!("the {version} version's plan makes node {} by the factory {method}, and a factory maker", node.id)));
             }
         }
-        for (at, value) in plan.roots.iter().map(|r| (r.name.clone(), &r.value)).chain(plan.nodes.iter().flat_map(|n| n.args.iter().map(move |a| (format!("node {}", n.id), a)))) {
-            supported(version, &at, value, &mut used)?;
+        // The objects inside others first: each made once, with no choice of its own (the recipe makes an inner object
+        // as its constructor's argument, and the harness chooses only among the roots).
+        for n in &plan.nodes {
+            for value in &n.args {
+                supported(version, &format!("node {}", n.id), value, &mut used)?;
+            }
+        }
+        let inner = used.clone();
+        for r in &plan.roots {
+            supported_root(version, plan, r, &inner)?;
         }
         // A leaf or an array is named by its path: one given at two places would be one value at two paths, which
         // the flat parameters can't be (an array shared by two objects is the shared arrays' case).
@@ -73,6 +82,9 @@ pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Resul
                 }
             }
         }
+        if plan.roots.iter().any(|r| r.name == "this" && matches!(r.value, PlanValue::Node { nullable: true, .. })) {
+            return Err(Unsupported::new(Part::Objects, format!("the {version} version's plan lets the receiver this be null: the receiver of an instance method is never null")));
+        }
         if !plan.setup.is_empty() && !plan.roots.iter().any(|r| r.name == "this") {
             return Err(Unsupported::new(Part::Objects, format!("the {version} version's plan has a setup sequence and no receiver: setup calls are made on this")));
         }
@@ -80,6 +92,9 @@ pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Resul
     let names = |p: &ConstructionPlan| p.roots.iter().map(|r| r.name.clone()).collect::<Vec<_>>();
     if names(before) != names(after) {
         return Err(Unsupported::new(Part::Objects, format!("the plans' roots differ: {} before, {} now; both versions are given the same inputs", names(before).join(", "), names(after).join(", "))));
+    }
+    if choices(before) != choices(after) {
+        return Err(Unsupported::new(Part::Objects, format!("the plans' choices of null and of one object differ: {} before, {} now; both versions are given the same choices, so that their identity relations start alike", choices(before), choices(after))));
     }
     let steps = |p: &ConstructionPlan| p.setup.iter().map(|c| format!("{}({})", c.method, c.args.iter().map(value_name).collect::<Vec<_>>().join(", "))).collect::<Vec<_>>();
     if steps(before) != steps(after) {
@@ -150,15 +165,94 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
         PlanValue::Dependency { path, class } => Err(unbuilt(&format!("the {version} version's {at} takes {path}, a dependency of {class} the environment model stands for, and a construction with dependencies"))),
         PlanValue::Node { id, nullable, same_as } => {
             if *nullable || !same_as.is_empty() {
-                return Err(unbuilt(&format!("the {version} version's {at} is node {id}, which may be null or one of several, and a plan's choice of null or of one object")));
+                return Err(unbuilt(&format!("the {version} version's {at} takes node {id}, which may be null or one of several: a choice inside a nested object, where the harness chooses only among the roots, and a plan's nested choices")));
             }
             if used.contains(id) {
-                return Err(unbuilt(&format!("the {version} version's {at} is node {id} again, one object at two paths, and a plan's shared nodes")));
+                return Err(unbuilt(&format!("the {version} version's {at} takes node {id} again, one object at two paths inside nested objects, and a plan's nested shared nodes")));
             }
             used.push(*id);
             Ok(())
         }
     }
+}
+
+/// Whether a check makes the root `r` of the `version` plan: a leaf or an array as [`supported`] says, or a node
+/// (O2) that may be null (`nullable`), or one of the objects of earlier roots (`same_as`, by their nodes' ids, each a
+/// node of the same class at another root), or a node another root is too (one object, always): never a node that is
+/// part of another (`inner`), and a node at two roots has no choice at either.
+fn supported_root(version: &str, plan: &ConstructionPlan, r: &crate::spec::plans::Root, inner: &[u32]) -> Result<(), Unsupported> {
+    let PlanValue::Node { id, nullable, same_as } = &r.value else { return supported(version, &r.name, &r.value, &mut Vec::new()) };
+    let gap = |what: String| Unsupported::new(Part::Objects, format!("the {version} version's root {}: {what}", r.name));
+    if inner.contains(id) {
+        return Err(unbuilt(&format!("the {version} version's root {} is node {id}, which is part of another node too: an object shared between a root and a nested object, and a plan's nested shared nodes", r.name)));
+    }
+    let class = |id: u32| plan.nodes.iter().find(|n| n.id == id).map(|n| n.class.clone());
+    let at = |id: u32| plan.roots.iter().filter(|x| matches!(x.value, PlanValue::Node { id: i, .. } if i == id)).map(|x| x.name.clone()).collect::<Vec<_>>();
+    if at(*id).len() > 1 && (*nullable || !same_as.is_empty() || plan.roots.iter().any(|x| matches!(&x.value, PlanValue::Node { id: i, nullable, same_as } if i == id && (*nullable || !same_as.is_empty())))) {
+        return Err(gap(format!("node {id} is the roots {}, one object, and may be null or another object as well: a shared object is its own, made by its constructor", at(*id).join(" and "))));
+    }
+    for other in same_as {
+        if other == id {
+            return Err(gap(format!("node {id} names itself among the objects it may be")));
+        }
+        let Some(names) = Some(at(*other)).filter(|n| !n.is_empty()) else {
+            return Err(gap(format!("node {id} may be node {other}, which is no root: a choice of one object is among the roots' objects")));
+        };
+        if class(*other) != class(*id) {
+            return Err(gap(format!("node {id}, a {}, may be node {other} ({}), a {}: objects of two classes are never one", class(*id).unwrap_or_default(), names.join(", "), class(*other).unwrap_or_default())));
+        }
+    }
+    Ok(())
+}
+
+/// The choices of a plan's roots (O2), by root name, as the harness makes them: the roots that may be null, the
+/// pairs that may be one object (`same_as`), and the pairs that are (a node at two roots, the later root and the
+/// first). Both versions' plans must make the same, so that their identity relations start alike.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Choices {
+    pub nullable: Vec<String>,
+    pub may_alias: Vec<(String, String)>,
+    pub shared: Vec<(String, String)>,
+}
+
+impl Choices {
+    pub fn is_empty(&self) -> bool {
+        self.nullable.is_empty() && self.may_alias.is_empty() && self.shared.is_empty()
+    }
+}
+
+impl std::fmt::Display for Choices {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut parts: Vec<String> = self.nullable.iter().map(|n| format!("{n} may be null")).collect();
+        parts.extend(self.may_alias.iter().map(|(a, b)| format!("{b} may be {a}")));
+        parts.extend(self.shared.iter().map(|(b, a)| format!("{b} is {a}")));
+        if parts.is_empty() {
+            write!(f, "none")
+        } else {
+            write!(f, "{}", parts.join(", "))
+        }
+    }
+}
+
+/// The choices of `plan`'s roots ([`Choices`]), in the order of its roots.
+pub fn choices(plan: &ConstructionPlan) -> Choices {
+    let mut out = Choices::default();
+    let node_of = |name: &str| plan.roots.iter().find(|r| r.name == name).and_then(|r| if let PlanValue::Node { id, .. } = r.value { Some(id) } else { None });
+    for (i, r) in plan.roots.iter().enumerate() {
+        let PlanValue::Node { id, nullable, same_as } = &r.value else { continue };
+        if *nullable {
+            out.nullable.push(r.name.clone());
+        }
+        for other in same_as {
+            for x in plan.roots.iter().filter(|x| x.name != r.name && node_of(&x.name) == Some(*other)) {
+                out.may_alias.push((x.name.clone(), r.name.clone()));
+            }
+        }
+        if let Some(first) = plan.roots[..i].iter().find(|x| node_of(&x.name) == Some(*id)) {
+            out.shared.push((r.name.clone(), first.name.clone()));
+        }
+    }
+    out
 }
 
 /// Every bounded array of a plan, by path, with its bound: the check bounds every array by one number, so a plan's
@@ -204,7 +298,11 @@ pub fn root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &st
             let t = java_type(element).map(|e| crate::classfile::Type::Array(Box::new(e))).ok_or_else(|| Unsupported::new(Part::Objects, format!("the plan's array {path} has elements of type {element}, which is no Java type")))?;
             Ok(Some(Rooted::Leaf(t)))
         }
-        PlanValue::Node { id, .. } => node(cp, plan, *id, name, &mut Vec::new()).map(|r| Some(Rooted::Object(r))),
+        // A node at two roots is one object, its leaves named from the first (O2).
+        PlanValue::Node { id, .. } => {
+            let first = plan.roots.iter().find(|r| matches!(r.value, PlanValue::Node { id: i, .. } if i == *id)).map(|r| r.name.as_str()).unwrap_or(name);
+            node(cp, plan, *id, first, &mut Vec::new()).map(|r| Some(Rooted::Object(r)))
+        }
         other => Err(Unsupported::new(Part::Objects, format!("the plan's root {name} is {}, which check_plans refuses", value_name(other)))),
     }
 }
@@ -386,5 +484,60 @@ mod tests {
         std::fs::write(&file, "{\"before\": 1}").unwrap();
         assert!(load(&file).unwrap_err().what.contains("--plan"));
         let _ = std::fs::remove_file(&file);
+    }
+
+    /// Two Money roots, `m` (node 0) and `n` (node `id`, 1 or 0 again) of the choice given, and a Pair of node 2.
+    fn two(n_value: PlanValue) -> ConstructionPlan {
+        let money = |id: u32, path: &str| Node { id, class: "shop.Money".into(), maker: Maker::Constructor { descriptor: "(J)V".into() }, args: vec![PlanValue::Leaf { path: format!("{path}.cents"), ty: "long".into() }] };
+        let mut p = plan(2);
+        p.nodes = vec![money(0, "m"), money(1, "n")];
+        p.roots.push(Root { name: "n".into(), value: n_value });
+        p
+    }
+
+    #[test]
+    fn a_plans_roots_may_be_null_or_one_object_and_the_same_choices_inside_a_nested_object_are_refused() {
+        let node = |id: u32, nullable: bool, same_as: Vec<u32>| PlanValue::Node { id, nullable, same_as };
+        // A root that may be null, one that may be another root's object, and one node at two roots.
+        let nullable = two(node(1, true, vec![]));
+        check_plans(&nullable, &nullable).unwrap();
+        assert_eq!(choices(&nullable), Choices { nullable: vec!["n".into()], ..Choices::default() });
+        let may = two(node(1, false, vec![0]));
+        check_plans(&may, &may).unwrap();
+        assert_eq!(choices(&may).may_alias, vec![("m".to_string(), "n".to_string())]);
+        let shared = two(node(0, false, vec![]));
+        check_plans(&shared, &shared).unwrap();
+        assert_eq!(choices(&shared).shared, vec![("n".to_string(), "m".to_string())]);
+        // Both versions make the same choices.
+        let what = check_plans(&may, &shared).unwrap_err().what;
+        assert!(what.contains("choices of null and of one object differ: n may be m before, n is m now"), "{what}");
+        // A shared node has no choice besides; a choice names another root's node of the same class.
+        assert!(check_plans(&two(node(0, true, vec![])), &two(node(0, true, vec![]))).unwrap_err().what.contains("a shared object is its own"));
+        assert!(check_plans(&two(node(1, false, vec![1])), &two(node(1, false, vec![1]))).unwrap_err().what.contains("names itself"));
+        let mut other_class = two(node(1, false, vec![0]));
+        other_class.nodes[1].class = "shop.Fee".into();
+        let what = check_plans(&other_class, &other_class).unwrap_err().what;
+        assert!(what.contains("which is not of its class shop.Fee"), "the shape names it first: {what}");
+        // The receiver is never null.
+        let mut this = plan(1);
+        this.roots[0] = Root { name: "this".into(), value: node(0, true, vec![]) };
+        assert!(check_plans(&this, &this).unwrap_err().what.contains("the receiver of an instance method is never null"));
+        // Inside a nested object: a choice, or a node shared with a root or another argument, is refused by name.
+        let pair = |args: Vec<PlanValue>, roots: Vec<Root>| {
+            let mut p = two(node(1, false, vec![]));
+            p.nodes.push(Node { id: 2, class: "shop.Pair".into(), maker: Maker::Constructor { descriptor: "(Lshop/Money;Lshop/Money;)V".into() }, args });
+            p.roots = roots;
+            p.bounds.nodes = 3;
+            p
+        };
+        let root = |name: &str, id: u32| Root { name: name.into(), value: node(id, false, vec![]) };
+        let nested_null = pair(vec![node(0, true, vec![]), node(1, false, vec![])], vec![root("p", 2)]);
+        assert!(check_plans(&nested_null, &nested_null).unwrap_err().what.contains("a choice inside a nested object"));
+        let nested_twice = pair(vec![node(0, false, vec![]), node(0, false, vec![])], vec![root("p", 2)]);
+        assert!(check_plans(&nested_twice, &nested_twice).unwrap_err().what.contains("a plan's nested shared nodes"));
+        let with_root = pair(vec![node(0, false, vec![]), node(1, false, vec![])], vec![root("p", 2), root("m", 0)]);
+        assert!(check_plans(&with_root, &with_root).unwrap_err().what.contains("shared between a root and a nested object"));
+        let ok = pair(vec![node(0, false, vec![]), node(1, false, vec![])], vec![root("p", 2)]);
+        check_plans(&ok, &ok).unwrap();
     }
 }

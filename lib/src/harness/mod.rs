@@ -823,6 +823,10 @@ pub struct Choice {
     /// For each earlier parameter it may be the same object as, that one's name and the flat parameter that makes it
     /// so (`b.same.a`).
     pub same: Vec<(String, usize)>,
+    /// The earlier parameter it always is, with no flag (O2 of `llm-dlc/loops/application-core-objects.md`): a
+    /// construction plan's node at two roots, one object and never two equal copies. That parameter has an object
+    /// of its own, never null; this one's leaves are unused.
+    pub always: Option<String>,
 }
 
 /// What a [`Choice`] made of a parameter on one input.
@@ -923,12 +927,45 @@ impl Layout {
                 }
             }
             if null.is_some() || !same.is_empty() {
-                choices.push(Choice { name: name.clone(), null, same });
+                choices.push(Choice { name: name.clone(), null, same, always: None });
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
         self.params = params(&flat_names, &flat_types);
         self.choices = choices;
+        Ok(())
+    }
+
+    /// Makes the object parameter `name` always the same object as `other` (O2 of
+    /// `llm-dlc/loops/application-core-objects.md`): a construction plan's node at two roots. Called after
+    /// [`Layout::choose`]; the later of the two in slot order is the one made the same, and neither may have a
+    /// choice of its own, so that the object they are is made by its constructor and never null.
+    pub fn share(&mut self, name: &str, other: &str) -> Result<(), String> {
+        let order: Vec<(String, String, Option<String>)> = self
+            .receiver
+            .iter()
+            .chain(self.args.iter())
+            .filter_map(|s| match s {
+                Slot::Record { name, record, before, .. } if record.is_made() => Some((name.clone(), record.class.clone(), before.as_ref().map(|b| b.class.clone()))),
+                _ => None,
+            })
+            .collect();
+        let at = |n: &str| order.iter().position(|(x, _, _)| x == n).ok_or_else(|| format!("{n} is no object parameter made by its constructor, which alone may be one object with another"));
+        let (i, j) = (at(name)?, at(other)?);
+        if i == j {
+            return Err(format!("{name} is shared with itself"));
+        }
+        if order[i].1 != order[j].1 || order[i].2 != order[j].2 {
+            return Err(format!("{name} and {other} are a {} and a {}, never one object", crate::classfile::simple_name_of(&order[i].1), crate::classfile::simple_name_of(&order[j].1)));
+        }
+        let (later, earlier) = if i > j { (&order[i].0, &order[j].0) } else { (&order[j].0, &order[i].0) };
+        if let Some(n) = [later, earlier].into_iter().find(|n| self.choice(n).is_some()) {
+            return Err(format!("{n} is one object with another and has a choice of null or of another object as well: a shared object of its own is supported"));
+        }
+        if self.choices.iter().any(|c| c.always.as_deref() == Some(later.as_str())) {
+            return Err(format!("{later} is the same object as {earlier}, and another parameter is the same as {later}: name the first of them"));
+        }
+        self.choices.push(Choice { name: later.clone(), null: None, same: Vec::new(), always: Some(earlier.clone()) });
         Ok(())
     }
 
@@ -944,6 +981,7 @@ impl Layout {
         for slot in self.receiver.iter().chain(self.args.iter()) {
             let Slot::Record { name, .. } = slot else { continue };
             let made = match self.choice(name) {
+                Some(Choice { always: Some(other), .. }) => Made::Same(other.clone()),
                 Some(c) if c.null.is_some_and(flag) => Made::Null,
                 Some(c) => c
                     .same
@@ -1220,6 +1258,8 @@ impl Layout {
                     let p = &self.params[*i];
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
+                // A plan's node at two roots (O2): the earlier root's object, which its own part describes.
+                Slot::Record { name, .. } if self.choice(name).is_some_and(|c| c.always.is_some()) => (format!("{name}: the same object as {}", self.choice(name).and_then(|c| c.always.clone()).unwrap_or_default()), false),
                 Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| !c.same_shape) => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
                 Slot::Record { name, record, .. } => (format!("{}{}{}", record.domain_part(name), arrays_of(record, max_array_length), self.or_null(name)), false),
             })
@@ -1914,6 +1954,14 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                 // A choice (step H2): null where its flag says so, or the same object as an earlier parameter that
                 // is not null, in both versions alike; otherwise an object of its own.
                 let done = code.label();
+                // A plan's node at two roots (O2): the same object as the earlier one, always, and no other choice.
+                let always = layout.choice(name).and_then(|c| c.always.as_ref());
+                if let Some(other) = always {
+                    let at = records.iter().position(|s| matches!(s, Slot::Record { name: n, .. } if n == other)).expect("an earlier object parameter");
+                    let (other_new, other_old) = object_slots(at);
+                    code.load(Kind::Ref, if prefix.is_some() { other_old } else { other_new });
+                    code.store(Kind::Ref, local);
+                }
                 if let Some(c) = layout.choice(name) {
                     if let Some(flag) = c.null {
                         let own = code.label();
@@ -1939,9 +1987,11 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                         code.bind(next);
                     }
                 }
-                let leaf_params = if prefix.is_some() { &copied_params } else { params };
-                emit_construct(&mut code, &mut writer.pool, made, prefix, leaf_params, &mut made.leaves(*first).into_iter());
-                code.store(Kind::Ref, local);
+                if always.is_none() {
+                    let leaf_params = if prefix.is_some() { &copied_params } else { params };
+                    emit_construct(&mut code, &mut writer.pool, made, prefix, leaf_params, &mut made.leaves(*first).into_iter());
+                    code.store(Kind::Ref, local);
+                }
                 code.bind(done);
             }
         }
@@ -2840,6 +2890,9 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     // A choice (step H2): null, or the same object as an earlier parameter that is not null.
                     let chosen = |side: &str, made: String| -> String {
                         let Some(c) = layout.choice(name) else { return made };
+                        if let Some(other) = &c.always {
+                            return format!("{other}_{side}");
+                        }
                         let mut text = made;
                         for (other, flag) in c.same.iter().rev() {
                             text = format!("{} && {other}_{side} != null ? {other}_{side} : {text}", params[*flag].name);
@@ -3279,6 +3332,13 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
             let Slot::Record { name, record, first, .. } = slot else { unreachable!("records() returns records") };
             let local = object_slot(i);
             let done = code.label();
+            // A plan's node at two roots (O2): the same object as the earlier one, always, and no other choice.
+            let always = layout.choice(name).and_then(|c| c.always.as_ref());
+            if let Some(other) = always {
+                let at = records.iter().position(|s| matches!(s, Slot::Record { name: n, .. } if n == other)).expect("an earlier object parameter");
+                code.load(Kind::Ref, object_slot(at));
+                code.store(Kind::Ref, local);
+            }
             if let Some(c) = layout.choice(name) {
                 if let Some(flag) = c.null {
                     let own = code.label();
@@ -3302,8 +3362,10 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
                     code.bind(next);
                 }
             }
-            emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaves(*first).into_iter());
-            code.store(Kind::Ref, local);
+            if always.is_none() {
+                emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaves(*first).into_iter());
+                code.store(Kind::Ref, local);
+            }
             code.bind(done);
         }
         // The setup sequence (O3), on the receiver as made: a history whose call throws reaches no state, and is
@@ -3671,6 +3733,9 @@ pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout,
         let name = &if name == "this" { "self".to_string() } else { name.clone() };
         let mut made = construction_source(record, "", &mut record.leaf_indices(*first).into_iter().map(|i| &flat[i]));
         if let Some(c) = layout.choice(name) {
+            if let Some(other) = &c.always {
+                made = if other == "this" { "self".to_string() } else { other.clone() };
+            }
             for (other, flag) in c.same.iter().rev() {
                 made = format!("{} && {other} != null ? {other} : {made}", flat[*flag].name);
             }
@@ -3724,6 +3789,39 @@ mod tests {
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
         Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+    }
+
+    /// A plan's node at two roots (O2): the later root is the earlier one's object, with no flag, in both versions and
+    /// both harnesses; a parameter with a choice, of another class, or not an object is refused.
+    #[test]
+    fn a_shared_object_is_the_earlier_roots_object_with_no_flag() {
+        let money = RecordType::made("m/Money", vec![("cents".into(), Type::Long)], Vec::new(), Fields { class: "m/Money".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] });
+        let fee = RecordType::made("m/Fee", vec![("cents".into(), Type::Long)], Vec::new(), Fields { class: "m/Fee".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] });
+        let names = ["a".to_string(), "b".to_string(), "n".to_string(), "f".to_string()];
+        let types = [Type::Object("m/Money".into()), Type::Object("m/Money".into()), Type::Int, Type::Object("m/Fee".into())];
+        let both = |r: &RecordType| Some((r.clone(), Some(r.clone())));
+        let layout_of = || Layout::new(None, &names, &types, &[both(&money), both(&money), None, both(&fee)], (None, None));
+        let mut layout = layout_of();
+        layout.choose(&[], &[]).unwrap();
+        layout.share("a", "b").unwrap();
+        assert_eq!(layout.choice("b").and_then(|c| c.always.clone()), Some("a".into()), "the later in slot order is the earlier's");
+        assert!(layout.flags().is_empty(), "no flag");
+        assert_eq!(layout.made(&|_| false).into_iter().map(|(_, m)| m).collect::<Vec<_>>(), vec![Made::Own, Made::Same("a".into()), Made::Own]);
+        assert!(layout.domain(8).contains("× b: the same object as a × n: int"), "{}", layout.domain(8));
+        let harness = generate("m/Kernel", "f", &layout, &Type::Void, None, 8, None).unwrap();
+        assert!(harness.source.contains("try { b_before = a_before; b_after = a_after; }"), "{}", harness.source);
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let code = class.method(METHOD, "(JJIJ)V").expect("check method, no flag").code.as_ref().unwrap();
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        assert!(insns.iter().all(|(_, i)| i.targets().iter().all(|t| pcs.contains(t))), "every target an instruction");
+        let property = generate_property_over("m/Kernel", "f", &layout, &Type::Void, None, Some("true"), &[], 8).unwrap();
+        assert!(property.source.contains("try { b = a; }"), "{}", property.source);
+        assert!(layout_of().share("a", "f").unwrap_err().contains("never one object"));
+        assert!(layout_of().share("a", "n").unwrap_err().contains("n is no object parameter"));
+        let mut chosen = layout_of();
+        chosen.choose(&["a".into()], &[]).unwrap();
+        assert!(chosen.share("b", "a").unwrap_err().contains("has a choice of null or of another object as well"));
     }
 
     #[test]

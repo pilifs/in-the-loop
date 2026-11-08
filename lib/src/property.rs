@@ -440,6 +440,19 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Ok(p) => p,
         Err(problem) => return refuse(&mut out, line, problem),
     };
+    // The plan's choices (O2), as in a regression check: flags for null and for one of other roots' objects, and a
+    // node at two roots one object with no flag.
+    if let Some(c) = plan.map(crate::construction::choices).filter(|c| !c.is_empty()) {
+        let order: Vec<String> = layout.receiver.iter().map(|_| "this".to_string()).chain(names.iter().cloned()).collect();
+        if let Err(problem) = layout.choose_in(&c.nullable, &harness::alias_groups(&c.may_alias, &order), true) {
+            return refuse(&mut out, line, format!("the plan's choices: {problem}"));
+        }
+        for (name, other) in &c.shared {
+            if let Err(problem) = layout.share(name, other) {
+                return refuse(&mut out, line, format!("the plan's node at the roots {other} and {name}: {problem}"));
+            }
+        }
+    }
     if !object_nullable.is_empty() || !object_pairs.is_empty() {
         let order: Vec<String> = layout.receiver.iter().map(|_| "this".to_string()).chain(names.iter().cloned()).collect();
         if let Err(problem) = layout.choose_in(&object_nullable, &harness::alias_groups(&object_pairs, &order), true) {
