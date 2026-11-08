@@ -274,6 +274,19 @@ Never relax the interface to unblock it.
   - **Next**: O2's remaining negative controls: unsupported side effects in a constructor, and a narrower new
     constructor under an anchored domain. Then a shrinking check of the recipe's legality, and the claim roots.
     Optional: array fields in property expressions.
+- 2026-11-08, **the integration check** (05:36, at this stream's `52f2c3e8`) stopped at the merge, on a 4-sided
+  conflict in `lib/README.md` and in the generated `llm-dlc/README.md`, `index.json` and `traces/` files.
+  - **The README**: this stream's paragraphs (an ordinary receiver, a construction plan and a setup sequence, a
+    plan's choices and shared nodes, arrays a constructor takes) were added after the application-core paragraph of
+    "The foundations IR", where reuse and, before it moved, values added theirs. This commit moves them, unchanged,
+    to the end of "How a regression proof works" (before "How a property proof works"), where no other stream adds.
+    Verified: the `skill` suite, which reads the README, passes.
+  - **The generated files** are `sync.py`'s, for the merge (every stream's commit regenerates them).
+  - **For the merge, not additive**: `lib/README.md`'s Limits still says "Property proofs (`prove`) are still over
+    static methods", which O1's receiver makes out of date. A stream takes additions only there, so it waits.
+  - **Next**: as the entry above: O2's remaining negative controls (unsupported side effects in a constructor, a
+    narrower new constructor under an anchored domain), a shrinking check of the recipe's legality, and the claim
+    roots.
 - Status: working
 
 ## Loop settings

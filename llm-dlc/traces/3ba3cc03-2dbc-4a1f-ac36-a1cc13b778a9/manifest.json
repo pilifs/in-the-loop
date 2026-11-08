@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.480Z",
-  "ended": "2026-11-08T05:55:44.596Z",
-  "duration_seconds": 4879,
+  "ended": "2026-11-08T05:58:28.869Z",
+  "duration_seconds": 5043,
   "stats": {
-    "turns": 15,
-    "api_calls": 243,
-    "tool_calls": 241,
+    "turns": 20,
+    "api_calls": 260,
+    "tool_calls": 257,
     "tool_errors": 0,
-    "compactions": 3,
+    "compactions": 4,
     "peak_context_tokens": 315218,
     "usage": {
-      "input_tokens": 492,
-      "output_tokens": 201769,
-      "cache_read_input_tokens": 41699711,
-      "cache_creation_input_tokens": 703088
+      "input_tokens": 526,
+      "output_tokens": 209223,
+      "cache_read_input_tokens": 43137502,
+      "cache_creation_input_tokens": 780874
     }
   },
   "tools": {
-    "Bash": 217,
-    "Read": 13,
+    "Bash": 230,
+    "Read": 15,
     "SendMessage": 4,
-    "Edit": 2,
+    "Edit": 3,
     "ListAgents": 2,
     "ToolSearch": 2,
     "Write": 1
@@ -87,24 +87,38 @@
     {
       "index": 3,
       "started": "2026-11-08T05:36:24.452Z",
-      "ended": "2026-11-08T05:55:44.596Z",
-      "turns": 4,
-      "api_calls": 52,
+      "ended": "2026-11-08T05:56:07.807Z",
+      "turns": 5,
+      "api_calls": 55,
       "usage": {
-        "input_tokens": 104,
-        "output_tokens": 44145,
-        "cache_read_input_tokens": 6199413,
-        "cache_creation_input_tokens": 156647
+        "input_tokens": 110,
+        "output_tokens": 45438,
+        "cache_read_input_tokens": 6712042,
+        "cache_creation_input_tokens": 160250
       },
-      "peak_context_tokens": 169726
+      "peak_context_tokens": 173329
+    },
+    {
+      "index": 4,
+      "started": "2026-11-08T05:57:03.057Z",
+      "ended": "2026-11-08T05:58:28.869Z",
+      "turns": 4,
+      "api_calls": 14,
+      "usage": {
+        "input_tokens": 28,
+        "output_tokens": 6161,
+        "cache_read_input_tokens": 925162,
+        "cache_creation_input_tokens": 74183
+      },
+      "peak_context_tokens": 87262
     }
   ],
   "log": {
-    "sha256": "199b094cac380c9ae68cca59703fc5f55b73076ca372cb615298b8ba8d6dc063",
-    "bytes": 6844856,
-    "lines": 2579,
-    "gzip_bytes": 1211462,
-    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/199b094cac380c9ae68cca59703fc5f55b73076ca372cb615298b8ba8d6dc063.jsonl.gz"
+    "sha256": "a561d8c873404340a46ad8c2d794d2a83c18451a42c9c51c2fdacf3da411e29c",
+    "bytes": 7718801,
+    "lines": 2820,
+    "gzip_bytes": 1431708,
+    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/a561d8c873404340a46ad8c2d794d2a83c18451a42c9c51c2fdacf3da411e29c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -139,6 +153,14 @@
       "summary": "application-core objects O2: a plan's root may be null or one of other roots' objects, one node at two roots is one object, and two parameters that were one object becoming distinct is refuted",
       "body": "A construction plan's root node may now be null (nullable) or one of the objects of other roots (same_as), each a boolean flag of the harness made as --nullable and --may-alias make it, and one node at two roots is one object, always, with no flag: harness::Choice::always, set by Layout::share and honoured by both harnesses' bytecode and source, by Layout::made (so the witness, the interpreter replay and the JVM run of the harness), and by the domain ('b: the same object as a'). Both versions' plans must make the same choices, so that their identity relations start alike. Inside a nested object a choice or a shared node stays refused by name, as do a shared node with a choice besides, a same_as naming no root's node, and a nullable receiver.\n\nVerified inline on the native engine without JBMC: new unit tests in construction and harness, and four tests in lib/tests/application_core_objects.rs. The negative control of O2: a rewrite of twice(a, b) that keeps its first read of b is verified over two nodes and refuted over one node and over a same_as choice, the witness naming b as the same object as a, replayed in the interpreter and run on a JVM. Also: identity of the result with a shared node, a nullable root refuting a dropped null check, and a property over a shared node. The lib tests (228) and the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill pass; application_core passes except O3, which still waits on the frozen throttle claims' allocation bound recorded for the coordinator in the brief's Progress. No job: no example or JBMC test has a plan with a shared node.",
       "log_sha256": "199b094cac380c9ae68cca59703fc5f55b73076ca372cb615298b8ba8d6dc063"
+    },
+    {
+      "change_id": "rzsloznpmsnzxtkumomkvmtwrswrvlov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core objects: move this stream's lib/README.md paragraphs out of the spot every stream appends to",
+      "body": "The integration check of 05:36 stopped at the merge on a 4-sided conflict in lib/README.md (and in the generated llm-dlc/README.md, index.json and traces files, which are sync.py's and wait for the merge). This stream's four paragraphs (an ordinary receiver; a construction plan and a setup sequence; a plan's choices and shared nodes; arrays a constructor takes) sat right after the application-core paragraph of 'The foundations IR', where reuse adds too. They move, unchanged, to the end of 'How a regression proof works', where no other stream adds, so the README's additions merge as their union. Verified with the skill suite, which reads the README. Progress records it, and a non-additive README edit for the merge: Limits still says property proofs are over static methods only, which O1's receiver made out of date.",
+      "log_sha256": "a561d8c873404340a46ad8c2d794d2a83c18451a42c9c51c2fdacf3da411e29c"
     }
   ],
   "logs": {
@@ -158,6 +180,12 @@
       "bytes": 4480535,
       "lines": 1670,
       "gzip_bytes": 779751,
+      "url": null
+    },
+    "a561d8c873404340a46ad8c2d794d2a83c18451a42c9c51c2fdacf3da411e29c": {
+      "bytes": 7718801,
+      "lines": 2820,
+      "gzip_bytes": 1431708,
       "url": null
     },
     "f2a72d8bf7720a04a5717514b603a3ed19ed9cec8b05c102d4f439271833eeb0": {
