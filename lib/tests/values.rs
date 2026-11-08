@@ -12,8 +12,8 @@ use jvmcontract::bmc::{self, Options, Outcome, Parameters};
 use jvmcontract::classfile::{MethodDescriptor, Type};
 use jvmcontract::classpath::ClassPath;
 use jvmcontract::interp::{Fault, Machine, Value};
-use jvmcontract::spec::plans::WitnessValue;
-use jvmcontract::values::{ListAdapter, Nodes, StringAdapter, ValueAdapter, Witnessed};
+use jvmcontract::spec::plans::{ValueDomain, ValueKind, WitnessValue};
+use jvmcontract::values::{self, ListAdapter, Nodes, StringAdapter, ValueAdapter, Witnessed};
 use jvmcontract::Verdict;
 
 fn has(program: &str) -> bool {
@@ -1121,4 +1121,112 @@ fn a_tiny_sweep_over_the_string_and_list_bounds() {
         }
     }
     sweep_lists(SWEPT_LENGTHS);
+}
+
+/// Every value domain of a claim (`kind: adapted`, in a construction plan or a modelled call's result) resolved
+/// under `models` ([`values::ValueModels::resolve`]), with how many of each family it holds.
+fn resolved_claim(claim: &serde_json::Value, models: &values::ValueModels) -> Result<(serde_json::Value, usize, usize), jvmcontract::spec::Unsupported> {
+    fn walk(v: &mut serde_json::Value, models: &values::ValueModels, counts: &mut (usize, usize)) -> Result<(), jvmcontract::spec::Unsupported> {
+        match v {
+            serde_json::Value::Object(map) => {
+                if map.get("kind").and_then(|k| k.as_str()) == Some("adapted") {
+                    let stated: ValueDomain = serde_json::from_value(map["domain"].clone()).expect("an adapted value's domain is a ValueDomain");
+                    match stated.kind {
+                        ValueKind::String => counts.0 += 1,
+                        ValueKind::List { .. } => counts.1 += 1,
+                    }
+                    map.insert("domain".into(), serde_json::to_value(models.resolve(&stated)?).unwrap());
+                }
+                map.values_mut().try_for_each(|x| walk(x, models, counts))
+            }
+            serde_json::Value::Array(items) => items.iter_mut().try_for_each(|x| walk(x, models, counts)),
+            _ => Ok(()),
+        }
+    }
+    let mut out = claim.clone();
+    let mut counts = (0, 0);
+    walk(&mut out, models, &mut counts)?;
+    Ok((out, counts.0, counts.1))
+}
+
+/// Every adapted domain's `max_length` lowered by one.
+fn shorter(claim: &serde_json::Value) -> serde_json::Value {
+    let mut out = claim.clone();
+    fn walk(v: &mut serde_json::Value) {
+        match v {
+            serde_json::Value::Object(map) => {
+                if map.get("kind").and_then(|k| k.as_str()) == Some("adapted") {
+                    let n = map["domain"]["max_length"].as_u64().unwrap();
+                    map.get_mut("domain").unwrap()["max_length"] = (n - 1).into();
+                }
+                map.values_mut().for_each(walk);
+            }
+            serde_json::Value::Array(items) => items.iter_mut().for_each(walk),
+            _ => {}
+        }
+    }
+    walk(&mut out);
+    out
+}
+
+/// The acceptance's "changing a String or list bound or a model's semantics invalidates the cached evidence it
+/// affects", on the frozen claims of `tests/fixtures/application-core/golden/`: each claim's value domains resolved
+/// under this tool's models carry their identity (the list model's with its bytecode's digest), so a change of the
+/// list model changes exactly the claims over a list, a change of the String model exactly those over a String,
+/// and a lower bound every claim with a value domain. "Changes" is checked on the claim the key digests whole (the
+/// reuse stream's projection), and on the key itself: two claims never get one key, and until the projection knows
+/// a planned domain, such a claim is uncacheable by the key's own refusal, never keyed without its domains.
+#[test]
+fn a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects() {
+    use jvmcontract::spec::{self, CanonicalClaim, Part};
+    let golden = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/golden");
+    let current = values::ValueModels::current();
+    let mut list_changed = current.clone();
+    list_changed.list.source = format!("{}; models sha256 {}", values::LIST_MODEL, "0".repeat(64));
+    let mut string_changed = current.clone();
+    string_changed.string.source = values::STRING_MODEL.replace("model 1", "model 2");
+    assert_ne!(string_changed.string, current.string, "the String model's identity names its version");
+    let differs = |what: &str, a: &serde_json::Value, b: &serde_json::Value| {
+        assert_ne!(spec::cache::canonical(a), spec::cache::canonical(b), "{what}: the same claim");
+        let (a, b): (CanonicalClaim, CanonicalClaim) = (serde_json::from_value(a.clone()).unwrap(), serde_json::from_value(b.clone()).unwrap());
+        match (spec::cache::key(&a), spec::cache::key(&b)) {
+            (Ok(x), Ok(y)) => assert_ne!(x, y, "{what}: the same key"),
+            (Err(u), _) | (_, Err(u)) => assert_eq!(u.part, Part::Summaries, "{what}: uncacheable, by the claim key's own refusal: {u}"),
+        }
+    };
+    let (mut strings, mut lists) = (0, 0);
+    let mut names: Vec<_> = std::fs::read_dir(&golden).unwrap().map(|e| e.unwrap().file_name().into_string().unwrap()).filter(|n| n.ends_with("-claim.json")).collect();
+    names.sort();
+    for name in &names {
+        let claim: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(golden.join(name)).unwrap()).unwrap();
+        let (resolved, s, l) = resolved_claim(&claim, &current).unwrap_or_else(|u| panic!("{name}: {u}"));
+        strings += s;
+        lists += l;
+        // The resolved claim is still the shared type, and resolving it again changes nothing.
+        let parsed: CanonicalClaim = serde_json::from_value(resolved.clone()).unwrap_or_else(|e| panic!("{name}: {e}"));
+        assert_eq!(serde_json::to_value(&parsed).unwrap(), resolved, "{name}");
+        assert_eq!(resolved_claim(&resolved, &current).unwrap().0, resolved, "{name}: resolving is idempotent");
+        let text = resolved.to_string();
+        assert!(!text.contains(values::STATED_STRING_MODEL) && !text.contains(values::STATED_LIST_MODEL), "{name}: a stated model left in");
+        assert_eq!(text.contains(values::STRING_MODEL), s > 0, "{name}: the String model's identity");
+        assert_eq!(text.contains(&values::list_model_digest()), l > 0, "{name}: the list models' digest");
+        // A change of a model reaches the claims over its family, and no other.
+        for (what, changed, affected) in [("the list model", &list_changed, l > 0), ("the String model", &string_changed, s > 0)] {
+            let after = resolved_claim(&claim, changed).unwrap().0;
+            if affected {
+                differs(&format!("{name}, {what} changed"), &resolved, &after);
+                // A claim resolved under the earlier model is never resolved under the new one.
+                let stale = resolved_claim(&resolved, changed).unwrap_err();
+                assert!(stale.what.contains("evidence of another model's semantics isn't this one's"), "{name}: {stale}");
+            } else {
+                assert_eq!(after, resolved, "{name}: {what} changed, which it doesn't use");
+            }
+        }
+        if s + l > 0 {
+            differs(&format!("{name}, a lower bound"), &resolved, &resolved_claim(&shorter(&claim), &current).unwrap().0);
+        }
+    }
+    // The frozen claims have both families: Q's codes are Strings, L's baskets lists.
+    assert!(strings > 0 && lists > 0, "{strings} String and {lists} list domains in {names:?}");
+    eprintln!("{} claims, {strings} String and {lists} list domains resolved", names.len());
 }

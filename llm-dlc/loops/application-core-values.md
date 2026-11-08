@@ -561,9 +561,69 @@ just to bring a gap count down.
     the models change, and job `20261108-070211-…`'s corpus steps resubmitted as the last attempt. If it doesn't, the
     goto dispatch says what to try, or VF-023 is left to the timebox with the finding (a JBMC dispatch issue outside
     this stream's files).
-- **Next**: the third probe's result, when it comes (job `20261108-093809-…`). Meanwhile, the tests that the cached
-  evidence a change of model or domain identity affects is invalidated (R1's projection, with the reuse stream). Then
-  V3's wiring of model identity into claims.
+- 2026-11-08, **VF-023's third probe came back** (job `20261108-093809-…`, passed at `b5fd6e15`) and **refutes the
+  hypothesis**. As the tool has the models, JBMC refutes five probes and proves `oneAssumed`. The job reproduced
+  that. It does the same with `List` re-declaring `Collection`'s 15 methods: the same five refuted, `oneAssumed`
+  proved. The goto program dispatches `size()` the same way in both variants. It tests the reference's class
+  identifier against `ImmutableCollections$ListN`, then `List12`, then falls through to `java.util.List.size()`'s stub.
+  That dispatch is right. So JBMC calling `ListN.size` on a `List12` (the second probe's trace) means it reads the
+  class identifier of a reference to one of two objects wrongly. That is JBMC's symbolic execution, not the models'
+  declarations. Nothing is changed on it, and no timebox attempt is spent. One attempt is left, for the next cycle to
+  decide:
+  - **a last attempt, in this stream's files**: a model where every immutable list is one class (as the interpreter
+    already names them), so that a class test has one answer whichever object JBMC reads. It would keep the JDK's
+    exceptions by length, record `getClass` as left out, bump `values::LIST_MODEL`, check `tests/values.rs` and the
+    corpus, and resubmit job `20261108-070211-…`'s corpus steps. About a cycle, and a job of seconds. Only a probe
+    first would tell whether it helps.
+  - **or the deferral**: VF-023 deferred by the timebox with the finding, a JBMC defect outside the briefs' scope (no
+    JBMC fork). `--confirm` already reports it as a disagreement, never as a wrong verdict.
+- **Found, for the for-review list** (the objects stream's `property.rs` and its replay): in the probe's declared
+  variant, the patched `java.util` classes on `--classpath` made the interpreter's replay fail (`could not replay:
+  <unsupported: …List12 extends the JDK class java.util.AbstractCollection…>`). Yet the tool printed "✗ Property …
+  violated" with the witness `oneOrTwo(n=1)`, exit 1. A witness that doesn't reproduce is "cannot be verified" (the
+  as-is variant). One that can't be replayed at all should be no stronger. This is the same kind of hole as VF-015's
+  half replay. The setup that reached it, JDK classes shadowed on the application class path, is unusual.
+- 2026-11-08, **V3 step 3, a claim's value domains are resolved under this tool's models** (this commit),
+  `values::resolve` and `values::ValueModels` in `lib/src/values.rs`:
+  - **The hole**: a claim states its String and list domains with its own words for the model. The frozen claims
+    say "the values stream's String model" or "…List.of/List.copyOf model", level `modelled`, and the JDK "computed by
+    cache::key". Nothing replaced those words: the reuse stream's projection digests a planned domain whole, as
+    written. So the key of a claim over a list didn't change when `values::LIST_MODEL` or the list models' bytecode
+    did. Only the binary's digest (`tools.binary`) did, which changes on every rebuild and isn't the claim's.
+  - **The change**: `resolve` gives a stated domain as the check runs it and the key digests it. It keeps the kind,
+    nullability and bound, and puts in the model's own evidence: its identity (`STRING_MODEL`, or `LIST_MODEL` with the
+    bytecode's SHA-256), JDK, level and omissions. It refuses by name, never resolving:
+    - a claim stated under another identity (an earlier model, other bytecode, the other family's words);
+    - another JDK;
+    - a level the model doesn't have (`proved` of a `tested` model, `tested` of a `modelled` one);
+    - a domain the adapters refuse.
+
+    This also settles the earlier question for the merge: the adapter's evidence is the record, and a claim may state
+    less. Resolving is idempotent. A claim resolved under one model is refused under the next, so a stored claim
+    never matches a new one.
+  - **Checks**: two unit tests (the frozen words resolve to the adapters' domains; each refusal) and
+    `tests/values.rs`'s `a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects`, over all 8 frozen
+    claims (6 String and 6 list domains):
+    - a resolved claim is still a `CanonicalClaim`, and carries the String model's identity exactly where it has a
+      String, and the list digest exactly where it has a list;
+    - a changed list model changes the basket claims and none of Q's or H's, and a changed String model changes Q's
+      and no other;
+    - a bound one lower changes every claim with a value domain;
+    - a stale resolved claim is refused.
+
+    Each change is checked on the canonical claim and on `spec::cache::key`: never one key for two claims. On this
+    branch the key refuses a planned domain as uncacheable. Merged with the reuse stream's `TYPED` registration, each
+    gets its own key. Sabotaging `resolve` to keep the stated evidence fails the test. The whole lib suite passes in
+    the dev profile (15 suites).
+  - **Interface request, for the merge** (the objects and reuse streams' files): resolve each `adapted` domain with
+    `values::resolve` before a check runs it and before `proof_cache` digests the claim: in
+    `construction::check_plans` (the planned domain) and where a modelled call's `Returned::Adapted` is read. A
+    refusal is the check's. Until then, `resolve` is called by the tests only.
+  - **Not covered**: a change of a snapshot rule. A witness's encoding (`WitnessValue`) is in no claim, so nothing
+    invalidates on it. It moves with the adapters' code, which `STRING_MODEL` and `LIST_MODEL` name, and should be
+    bumped with them.
+- **Next**: decide VF-023's last attempt or its deferral (above). Then V1's and V2's rows, which wait on the objects
+  stream's wiring (the interface requests above), and this step's request for the merge.
 - Status: working
 
 ## Loop settings

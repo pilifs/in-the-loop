@@ -38,6 +38,11 @@
 //! leaves out and its level (`tested`), with the boundary cases that sample it (`lib/tests/values.rs` runs them on
 //! the JVM, in the interpreter and in the own checker, and checks the record's exceptions against them).
 //!
+//! **A claim's value domain** is resolved under this tool's models before it is checked or keyed ([`resolve`]): its
+//! kind and bounds as stated, its evidence the model's own, so that a change of the String or list model's identity
+//! (or of the list models' bytecode) changes the claim of every check over that family, and no other. A claim stated
+//! under another model, JDK, or a level its model doesn't have is refused by name.
+//!
 //! Until a check takes an adapter's values (its harness declares the parameter, gives the checker the bound or the
 //! choices, and rebuilds the witness through the adapter's `read` and [`ValueAdapter::rebuild`]), [`adapter`]
 //! refuses, naming the values stream, and every call site keeps refusing the value it would have handled.
@@ -455,6 +460,84 @@ impl ValueAdapter for ListAdapter {
             }
             other => Err(gap(format!("{other:?}, not a list's"))),
         }
+    }
+}
+
+/// The words a claim uses for "the values stream's String model, whichever this tool has" (the frozen claims of
+/// `lib/tests/fixtures/application-core/golden/`), which [`resolve`] replaces with the model's identity.
+pub const STATED_STRING_MODEL: &str = "the values stream's String model";
+
+/// The same for the list model.
+pub const STATED_LIST_MODEL: &str = "the values stream's List.of/List.copyOf model";
+
+/// The words a claim uses for a part the tool computes (the frozen claims' `jdk`).
+pub const COMPUTED: &str = "computed by cache::key";
+
+/// The models a claim's value domains are resolved under: the tool's own ([`ValueModels::current`]), or, in a test,
+/// a changed one, to see which claims a change of model reaches.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ValueModels {
+    pub string: ModelEvidence,
+    pub list: ModelEvidence,
+}
+
+impl ValueModels {
+    /// This tool's: [`string_model`] and [`list_model`] (with its bytecode's digest).
+    pub fn current() -> ValueModels {
+        ValueModels { string: string_model(), list: list_model() }
+    }
+
+    /// `stated` (a String or list domain as a claim states it) as the check runs it and the claim key digests it:
+    /// its kind, nullability and bound as stated, and the evidence of the model behind it, this one's. So the key
+    /// of every claim over a String changes when the String model's identity does, the key of every claim over a
+    /// list when the list model's identity or bytecode does, and no other key.
+    ///
+    /// The claim's evidence must be this model's, or say which model in the words of [`STATED_STRING_MODEL`] and
+    /// [`STATED_LIST_MODEL`], with its JDK this model's or [`COMPUTED`]. Refused by name, never resolved to this
+    /// model:
+    /// - another identity: a claim made under another String or list model (an earlier one, or other bytecode)
+    ///   states semantics this tool doesn't have, and its evidence isn't this model's;
+    /// - another JDK;
+    /// - a level that claims more than the model has: `tested` of a model that isn't tested or proved, `proved` of
+    ///   one that isn't proved (sampled conformance is never relabelled a proof);
+    /// - a domain the adapters refuse: a list of Strings, a list longer than [`MAX_LIST_LENGTH`].
+    ///
+    /// What the claim says the model leaves out is replaced by what it does leave out: the model's record is the
+    /// evidence, and a claim that names less still runs under all of it.
+    pub fn resolve(&self, stated: &ValueDomain) -> Result<ValueDomain, Unsupported> {
+        let (model, words, family) = match &stated.kind {
+            ValueKind::String => (&self.string, STATED_STRING_MODEL, "String"),
+            ValueKind::List { element } => {
+                ListAdapter::new(element.clone(), stated.max_length, stated.nullable)?;
+                (&self.list, STATED_LIST_MODEL, "list")
+            }
+        };
+        let claimed = &stated.model;
+        if claimed.source != words && claimed.source != model.source {
+            return Err(Unsupported::new(Part::Values, format!("a {family} domain stated under the model \"{}\": this tool's {family} model is \"{}\", and evidence of another model's semantics isn't this one's; the claim is restated under this model (or as \"{words}\"), never run or reused under it", claimed.source, model.source)));
+        }
+        if claimed.jdk != COMPUTED && claimed.jdk != model.jdk {
+            return Err(Unsupported::new(Part::Values, format!("a {family} domain stated on JDK {}: this tool's {family} model was sampled on JDK {}", claimed.jdk, model.jdk)));
+        }
+        if strength(claimed.level) > strength(model.level) {
+            return Err(Unsupported::new(Part::Values, format!("a {family} domain stated as {:?}: this tool's {family} model is {:?}, and a claim never borrows a stronger level than its model has", claimed.level, model.level)));
+        }
+        Ok(ValueDomain { kind: stated.kind.clone(), nullable: stated.nullable, max_length: stated.max_length, model: model.clone() })
+    }
+}
+
+/// [`ValueModels::resolve`] under this tool's models.
+pub fn resolve(stated: &ValueDomain) -> Result<ValueDomain, Unsupported> {
+    ValueModels::current().resolve(stated)
+}
+
+/// What a level says of agreement with the JVM: nothing beyond a model's existence (implemented, modelled, trusted),
+/// sampled conformance (tested), or a proof.
+fn strength(level: EvidenceLevel) -> u8 {
+    match level {
+        EvidenceLevel::Implemented | EvidenceLevel::Modelled | EvidenceLevel::Trusted => 0,
+        EvidenceLevel::Tested => 1,
+        EvidenceLevel::Proved => 2,
     }
 }
 
@@ -950,5 +1033,63 @@ mod tests {
         assert!(a.encode(&m, mutable, &nodes).unwrap_err().what.contains("java.util.ArrayList"));
         let strict = ListAdapter::new(line(), 3, false).unwrap();
         assert!(strict.encode(&m, Value::Null, &nodes).is_err() && strict.rebuild(&mut m, &WitnessValue::Null, &nodes).is_err());
+    }
+
+    fn stated(kind: ValueKind, max_length: u32, source: &str, level: EvidenceLevel) -> ValueDomain {
+        let model = ModelEvidence { source: source.into(), jdk: COMPUTED.into(), level, leaves_out: vec!["the identity of an empty list".into()] };
+        ValueDomain { kind, nullable: true, max_length, model }
+    }
+
+    #[test]
+    fn a_claims_value_domain_resolves_to_this_tools_model_and_keeps_its_bounds() {
+        let list = ValueKind::List { element: line() };
+        // In the frozen claims' words: the adapter's domain, with the model's identity, JDK, level and omissions.
+        let s = resolve(&stated(ValueKind::String, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap();
+        assert_eq!(s, *StringAdapter::new(5, true).domain());
+        let l = resolve(&stated(list.clone(), 3, STATED_LIST_MODEL, EvidenceLevel::Modelled)).unwrap();
+        assert_eq!(l, *ListAdapter::new(line(), 3, true).unwrap().domain());
+        assert!(l.model.source.contains(&list_model_digest()) && l.model.source.starts_with(LIST_MODEL));
+        // A resolved domain resolves to itself, and the model's own level may be stated.
+        assert_eq!(resolve(&s).unwrap(), s);
+        assert_eq!(resolve(&l).unwrap(), l);
+        // A change of model reaches exactly the domains of its family.
+        let mut changed = ValueModels::current();
+        changed.list.source = format!("{LIST_MODEL}; models sha256 {}", "0".repeat(64));
+        let l2 = changed.resolve(&stated(list.clone(), 3, STATED_LIST_MODEL, EvidenceLevel::Modelled)).unwrap();
+        assert_ne!(l2, l);
+        assert_eq!(changed.resolve(&stated(ValueKind::String, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap(), s);
+        changed.string.source = STRING_MODEL.replace("model 1", "model 2");
+        assert_ne!(changed.resolve(&stated(ValueKind::String, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap(), s);
+    }
+
+    #[test]
+    fn a_claim_made_under_another_model_jdk_or_a_stronger_level_is_refused_never_resolved() {
+        let list = ValueKind::List { element: line() };
+        let refused = |d: ValueDomain, words: &str| {
+            let gap = resolve(&d).unwrap_err();
+            assert_eq!(gap.part, Part::Values);
+            assert!(gap.what.contains(words), "{gap}");
+        };
+        // Under an earlier list model, or the same model with other bytecode: a stored claim of it never matches.
+        refused(stated(list.clone(), 3, &LIST_MODEL.replace("model 2", "model 1"), EvidenceLevel::Tested), "this tool's list model is");
+        let other = format!("{LIST_MODEL}; models sha256 {}", "0".repeat(64));
+        refused(stated(list.clone(), 3, &other, EvidenceLevel::Tested), "evidence of another model's semantics isn't this one's");
+        // One family's words for the other's.
+        refused(stated(ValueKind::String, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "this tool's String model is");
+        refused(stated(list.clone(), 3, STATED_STRING_MODEL, EvidenceLevel::Tested), "this tool's list model is");
+        let mut jdk = stated(ValueKind::String, 3, STATED_STRING_MODEL, EvidenceLevel::Tested);
+        jdk.model.jdk = "21.0.2".into();
+        refused(jdk, "sampled on JDK 25.0.5");
+        refused(stated(ValueKind::String, 3, STRING_MODEL, EvidenceLevel::Proved), "never borrows a stronger level");
+        let mut proved = ValueModels::current();
+        proved.string.level = EvidenceLevel::Modelled;
+        assert!(proved.resolve(&stated(ValueKind::String, 3, STRING_MODEL, EvidenceLevel::Tested)).unwrap_err().what.contains("stated as Tested"));
+        // Weaker levels are the claim's to state; the model's evidence is what the domain carries.
+        for level in [EvidenceLevel::Implemented, EvidenceLevel::Modelled, EvidenceLevel::Trusted, EvidenceLevel::Tested] {
+            assert_eq!(resolve(&stated(ValueKind::String, 3, STRING_MODEL, level)).unwrap().model.level, EvidenceLevel::Tested);
+        }
+        // What the adapters refuse.
+        refused(stated(ValueKind::List { element: ElementKind::String }, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "a list of Strings");
+        refused(stated(list, MAX_LIST_LENGTH + 1, STATED_LIST_MODEL, EvidenceLevel::Tested), "array form is outside the family");
     }
 }
