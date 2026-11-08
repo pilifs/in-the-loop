@@ -92,6 +92,18 @@ public final class Operations {
         return "ab" == "a" + "b";
     }
 
+    /** A literal's isolated surrogates, which the class file keeps unit for unit, as it keeps a pair. */
+    static int literalLoneSurrogate(int i) {
+        return "\uDBFFa\uDC00\uD83D".charAt(i);
+    }
+
+    /** Two literals that differ only in an isolated surrogate are two Strings, of two contents. */
+    static int literalsOfLoneSurrogates() {
+        String high = "\uDBFF";
+        String other = "\uDBFE";
+        return (high == other ? 4 : 0) + (high.equals(other) ? 2 : 0) + (high == "\uDBFF" ? 1 : 0);
+    }
+
     // java.util.List: List.of, List.copyOf, size, isEmpty, get, the iterator and the changes they refuse
 
     /** An element: a mutable application object. */

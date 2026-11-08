@@ -153,7 +153,9 @@ struct Model {
     observed: Vec<Option<Vec<String>>>,
     bound: usize,
     exceptions: Vec<String>,
-    literals: Vec<String>,
+    /// Each literal's code units, an isolated surrogate included, so that the snapshot's `ldc` of it is the very
+    /// object a build's `ldc` loads.
+    literals: Vec<Vec<u16>>,
     /// The payload classes the call sites of either build pass, which a `.class` path's snapshot names by index.
     classes: Vec<String>,
     /// For each call, its model's table when its results are modelled ([`crate::environment::Lowered`]): the
@@ -875,8 +877,8 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             if let Ok(class) = ClassFile::parse(&bytes) {
                 for c in class.pool.entries() {
                     if let Constant::String { string_index } = c {
-                        if let Ok(s) = class.pool.utf8(*string_index) {
-                            literals.insert(s.to_string());
+                        if let Ok(units) = class.pool.utf16(*string_index) {
+                            literals.insert(units.into_owned());
                         }
                     }
                 }
@@ -1261,7 +1263,7 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
                     let units: Vec<u16> = (0..(*v).clamp(0, model.string_bound as i64) as usize).map(|u| word(at + model.block(j) + u) as u16).collect();
                     crate::witness::string_literal(&units)
                 } else {
-                    model.literals.get((*v as usize).wrapping_sub(1)).map(|s| format!("{s:?}")).unwrap_or_else(|| v.to_string())
+                    model.literals.get((*v as usize).wrapping_sub(1)).map(|u| String::from_utf16(u).map(|s| format!("{s:?}")).unwrap_or_else(|_| crate::witness::string_literal(u))).unwrap_or_else(|| v.to_string())
                 };
                 format!("{p}={value}")
             })
@@ -2130,7 +2132,7 @@ fn snapshot_leaf(code: &mut CodeBuilder, w: &mut ClassWriter, model: &Model, lea
             for (k, lit) in model.literals.iter().enumerate() {
                 let next = code.label();
                 code.load(Kind::Ref, tmp);
-                let s = w.pool.string(lit);
+                let s = w.pool.string_units(lit);
                 code.ldc(s);
                 code.if_acmpne(next);
                 let v = w.pool.long(k as i64 + 1);

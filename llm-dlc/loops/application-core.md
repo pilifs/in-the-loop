@@ -985,6 +985,41 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     property-cache paragraphs, and the docs of `reuse` and `property::Options::cache`.
   - **Next**: the rest of item 6: `compare` with a plan per subject, the class reader's `CONSTANT_Utf8` code units,
     and `ElementKind::String`'s bound. Then item 7.
+- 2026-11-08, **Phase 5 step 1, interface request 6 (the class reader's `CONSTANT_Utf8`): a string literal is read
+  by its code units**, an isolated surrogate in its source included.
+  - **The reproducers**, each failing before:
+    - the new `tests/string_literals.rs` (2 tests). `"\uDBFF".charAt(0)` rewritten to the constant `0xDBFF` was
+      refuted (`before: 65533`), and the JVM run "confirmed" it, because `relocate` had copied the old version's
+      literal as `"�"`. A cached proof was reused for a build whose literal differs only in its surrogate
+      (`"\uDBFE"`): the two bodies' shapes, and so the closures, were one.
+    - `tests/effects.rs`'s new `a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit`: a send
+      whose topic changed from `"q\uDBFF"` to `"q\uDBFE"` was **verified**, a wrong proof, since both builds' classes
+      held `"q�"`.
+    - the values corpus's new `literalLoneSurrogate` and `literalsOfLoneSurrogates` cases (JVM, interpreter, own
+      checker).
+  - **The change**:
+    - `classfile`: `Constant::Utf8` keeps the code units of an entry that isn't well-formed UTF-16, beside its text
+      (U+FFFD in its place, which names and descriptors are still read by). `ConstantPool::utf16` gives the units.
+      Such a String constant loads as the new `BootstrapArg::Units`; a reader that takes only `Str` refuses it.
+      `decode_modified_utf16`, `encode_modified_utf16`, and the writer's `string_units` are new.
+    - `relocate` keeps an entry's bytes unless renaming changes its text.
+    - The interpreter interns literals by code units (`ldc`, `ConstantValue`, a concatenation's recipe and
+      constants, a `typeSwitch` String label). The own checker's literal identity is its units (`ldc`,
+      `ConstantValue`, concatenation). The effect check's payload literals are units, and its snapshot `ldc`s them
+      as they are. `shared::shape`, and so a closure's digest, prints `Units([..])`, and a pure helper may load one.
+    - The ldc record of `values::OPERATIONS` admits isolated surrogates and leaves nothing out. That record is part
+      of the String model's identity, so every claim over the String model gets a new key: a cache miss, as a
+      change of the model should be.
+  - **Checks**:
+    - A sabotage, `relocate` copying the entry as text again, fails all three new tests.
+    - Inline: the library's unit tests 256 (2 new: `classfile`'s and `relocate`'s), `string_literals` 2, `values` 18,
+      `effects` 19, `value_parameters` 10; alignment 34, application_core_objects 22, conformance 10, environment
+      17, environment_quotes 4, environment_responses 8, heap 49, observations 12, reuse 12, reuse_summaries 14,
+      skill 1, summaries 40.
+    - The integration check passes: the contract 14 of 14, the unit tests 256, `compare` 1, `effects` 19,
+      `foundations` 5, and the Python suites.
+  - **Docs**: `lib/README.md`'s values paragraph, and `bmc`'s module table.
+  - **Next**: the rest of item 6, `ElementKind::String`'s bound and `compare` with a plan per subject. Then item 7.
 - Status: working
 
 ## Loop settings

@@ -12,36 +12,37 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T16:24:00.667Z",
-  "duration_seconds": 21692,
+  "ended": "2026-11-08T16:47:24.307Z",
+  "duration_seconds": 23095,
   "stats": {
-    "turns": 67,
-    "api_calls": 694,
-    "tool_calls": 693,
+    "turns": 73,
+    "api_calls": 779,
+    "tool_calls": 778,
     "tool_errors": 4,
-    "compactions": 11,
+    "compactions": 12,
     "peak_context_tokens": 292860,
     "usage": {
-      "input_tokens": 1420,
-      "output_tokens": 474754,
-      "cache_read_input_tokens": 101782973,
-      "cache_creation_input_tokens": 1989500
+      "input_tokens": 1594,
+      "output_tokens": 530179,
+      "cache_read_input_tokens": 112961725,
+      "cache_creation_input_tokens": 2173959
     }
   },
   "tools": {
-    "Bash": 635,
-    "Read": 29,
-    "Edit": 14,
-    "Monitor": 5,
-    "ToolSearch": 4,
-    "TaskStop": 3,
-    "Write": 3
+    "Bash": 711,
+    "Read": 33,
+    "Edit": 15,
+    "Monitor": 6,
+    "ToolSearch": 5,
+    "TaskStop": 4,
+    "Write": 4
   },
   "files_touched": [
     "lib/src/equivalence.rs",
     "lib/src/values.rs",
     "lib/tests/environment_quotes.rs",
     "lib/tests/environment_responses.rs",
+    "lib/tests/string_literals.rs",
     "lib/tests/value_parameters.rs",
     "llm-dlc/loops/application-core.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/application-core-loop-draft.md"
@@ -204,24 +205,38 @@
     {
       "index": 11,
       "started": "2026-11-08T16:16:15.306Z",
-      "ended": "2026-11-08T16:24:00.667Z",
-      "turns": 4,
-      "api_calls": 37,
+      "ended": "2026-11-08T16:24:21.755Z",
+      "turns": 5,
+      "api_calls": 39,
       "usage": {
-        "input_tokens": 74,
-        "output_tokens": 17324,
-        "cache_read_input_tokens": 3745790,
-        "cache_creation_input_tokens": 118537
+        "input_tokens": 78,
+        "output_tokens": 18472,
+        "cache_read_input_tokens": 4010842,
+        "cache_creation_input_tokens": 122048
       },
-      "peak_context_tokens": 131616
+      "peak_context_tokens": 135127
+    },
+    {
+      "index": 12,
+      "started": "2026-11-08T16:24:58.123Z",
+      "ended": "2026-11-08T16:47:24.307Z",
+      "turns": 5,
+      "api_calls": 83,
+      "usage": {
+        "input_tokens": 170,
+        "output_tokens": 54277,
+        "cache_read_input_tokens": 10913700,
+        "cache_creation_input_tokens": 180948
+      },
+      "peak_context_tokens": 194027
     }
   ],
   "log": {
-    "sha256": "287adbf477247b268599375420cda236981b95f1605ebc42500154f27daa8265",
-    "bytes": 19450221,
-    "lines": 6425,
-    "gzip_bytes": 3722400,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/287adbf477247b268599375420cda236981b95f1605ebc42500154f27daa8265.jsonl.gz"
+    "sha256": "f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245",
+    "bytes": 21439747,
+    "lines": 7171,
+    "gzip_bytes": 4071331,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -472,6 +487,14 @@
       "summary": "application-core Phase 5 step 1: prove --cache --plan, a planned property cached with its setup methods in the key, and a property result's reuse in its outcome",
       "body": "Interface request 6 of the merge, its property-cache part. property::run no longer refuses --cache with --plan: the reuse stream's property claim already reads the plan whole and roots its makers and setup calls in the code closure. property::Outcome gains a reuse field (Reuse::Exact with the key and provenance on a hit), and reuse::property_store takes &mut Outcome, so a result that can't be stored says why in the outcome's output instead of on the standard error.\n\nReproducer first: tests/reuse.rs's new a_planned_property_is_cached_and_an_edit_of_its_setup_method_alone_is_proved_again failed on the guard before. It now shows a planned property of a counter verified, stored and reused exactly; an edit of the setup method alone proved again and refuted with the whole history, the rerun reusing the refutation with it; a plan without the setup call keyed apart; and a cache that is a file noted in the output with the verdict unchanged. Taking the setup calls out of the key's roots makes it fail on a stale hit. reuse 12, application_core_objects 22, value_parameters 10 and summaries 40 pass, and so does the integration check (the contract 14 of 14, unit tests 254, compare 1, effects 18, foundations 5, the Python suites). prove --cache's help, lib/README.md and the module docs are updated.",
       "log_sha256": "287adbf477247b268599375420cda236981b95f1605ebc42500154f27daa8265"
+    },
+    {
+      "change_id": "vvlqvmonnwyvpzvuoqyomvqtnuyluwtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a string literal is read by its code units, an isolated surrogate included, so two literals that differ only in one are never one",
+      "body": "The values stream's request for the merge (interface request 6): the class reader decoded every CONSTANT_Utf8 as Rust text, so \"\\uDBFF\" and \"\\uDBFE\" both read as \"\\uFFFD\", for the interpreter, the own checker, the closure digests and the relocated classes the JVM runs alike. The reproducers failed before: a rewrite of \"\\uDBFF\".charAt(0) to the constant 0xDBFF was refuted, with the JVM run agreeing because relocate had rewritten the old version's literal; a cached proof was reused for a build whose literal differs only in its surrogate; and the effect check verified a send whose topic changed from \"q\\uDBFF\" to \"q\\uDBFE\", a wrong proof.\n\nConstant::Utf8 now keeps the code units of an entry that isn't well-formed UTF-16 (ConstantPool::utf16), and such a String constant loads as the new BootstrapArg::Units, which a reader that takes only Str refuses. relocate keeps an entry's bytes unless renaming changes its text. The interpreter interns literals by code units (ldc, ConstantValue, concatenation recipes and constants, typeSwitch labels); the own checker's literal identity is its units; the effect check's payload literals are units; shared::shape, and so a closure's digest, prints them. The String model's ldc evidence record admits isolated surrogates and leaves nothing out, which changes the String model's identity and so every String claim's key (cache misses, never a wrong reuse).\n\nVerified inline: the new tests/string_literals.rs (2), tests/effects.rs's payload-literal test, and the values corpus's lone-surrogate cases on the JVM, the interpreter and the own checker; a sabotage (relocate copying as text) fails all three new tests. The library's unit tests 256, and every test binary but integration.rs (JBMC) pass; the integration check passes (the contract 14 of 14). Progress updated; the rest of item 6 is ElementKind::String's bound and compare with a plan per subject.",
+      "log_sha256": "f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245"
     }
   ],
   "logs": {
@@ -551,6 +574,12 @@
       "bytes": 8739600,
       "lines": 2976,
       "gzip_bytes": 1579276,
+      "url": null
+    },
+    "f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245": {
+      "bytes": 21439747,
+      "lines": 7171,
+      "gzip_bytes": 4071331,
       "url": null
     }
   },

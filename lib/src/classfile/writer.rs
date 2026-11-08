@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use super::encode_modified_utf8;
+use super::encode_modified_utf16;
 use super::flags;
 use super::{Cond, Kind};
 
@@ -33,7 +33,12 @@ impl PoolBuilder {
     }
 
     pub fn utf8(&mut self, s: &str) -> u16 {
-        let encoded = encode_modified_utf8(s);
+        self.utf8_units(&s.encode_utf16().collect::<Vec<_>>())
+    }
+
+    /// A `CONSTANT_Utf8` of these code units, an isolated surrogate included.
+    pub fn utf8_units(&mut self, units: &[u16]) -> u16 {
+        let encoded = encode_modified_utf16(units);
         let mut entry = vec![1];
         entry.extend((encoded.len() as u16).to_be_bytes());
         entry.extend(encoded);
@@ -48,7 +53,12 @@ impl PoolBuilder {
     }
 
     pub fn string(&mut self, s: &str) -> u16 {
-        let utf = self.utf8(s);
+        self.string_units(&s.encode_utf16().collect::<Vec<_>>())
+    }
+
+    /// A String constant of these code units, an isolated surrogate included, as `"\uDBFF"` compiles.
+    pub fn string_units(&mut self, units: &[u16]) -> u16 {
+        let utf = self.utf8_units(units);
         let mut entry = vec![8];
         entry.extend(utf.to_be_bytes());
         self.add(entry, 1)
@@ -108,7 +118,7 @@ impl PoolBuilder {
         self.add(entry, 1)
     }
 
-    fn finish(&self) -> Vec<u8> {
+    pub(crate) fn finish(&self) -> Vec<u8> {
         let mut out = self.count.to_be_bytes().to_vec();
         out.extend_from_slice(&self.bytes);
         out

@@ -612,7 +612,7 @@ fn local_facts(cp: &ClassPath, class: &ClassFile, method: &Method, root: bool, c
     for (_, insn) in code.instructions().ok()? {
         match insn {
             Insn::Ldc(i) => {
-                if !matches!(pool.loadable(i).ok()?, BootstrapArg::Int(_) | BootstrapArg::Float(_) | BootstrapArg::Long(_) | BootstrapArg::Double(_) | BootstrapArg::Str(_)) {
+                if !matches!(pool.loadable(i).ok()?, BootstrapArg::Int(_) | BootstrapArg::Float(_) | BootstrapArg::Long(_) | BootstrapArg::Double(_) | BootstrapArg::Str(_) | BootstrapArg::Units(_)) {
                     return None;
                 }
             }

@@ -92,7 +92,7 @@ pub struct Machine<'a> {
     pub heap: Heap,
     statics: HashMap<String, BTreeMap<String, Value>>,
     init: HashMap<String, InitState>,
-    interned: HashMap<String, Ref>,
+    interned: HashMap<Vec<u16>, Ref>,
     class_objects: HashMap<Type, Ref>,
     boxes: HashMap<(String, i64), Ref>,
     codes: HashMap<(String, String, String), Rc<Code>>,
@@ -216,14 +216,20 @@ impl<'a> Machine<'a> {
 
     /// The interned string object for a literal.
     pub fn intern(&mut self, s: &str) -> Value {
-        if let Some(&r) = self.interned.get(s) {
+        self.intern_units(&s.encode_utf16().collect::<Vec<_>>())
+    }
+
+    /// The interned string object for a literal of these code units, an isolated surrogate included: one object
+    /// per content, as the JVM interns them (JLS §3.10.5).
+    pub fn intern_units(&mut self, units: &[u16]) -> Value {
+        if let Some(&r) = self.interned.get(units) {
             return Value::Ref(r);
         }
         let saved = self.clinit_depth;
         self.clinit_depth += 1; // literals are global state, not the case's own
-        let r = self.alloc(Object::Native(Native::String(JStr::from(s))));
+        let r = self.alloc(Object::Native(Native::String(JStr::from_units(units.to_vec()))));
         self.clinit_depth = saved;
-        self.interned.insert(s.to_string(), r);
+        self.interned.insert(units.to_vec(), r);
         Value::Ref(r)
     }
 
@@ -324,6 +330,7 @@ impl<'a> Machine<'a> {
                         Ok(crate::classfile::BootstrapArg::Float(v)) => Value::Float(v),
                         Ok(crate::classfile::BootstrapArg::Double(v)) => Value::Double(v),
                         Ok(crate::classfile::BootstrapArg::Str(s)) => self.intern(&s),
+                        Ok(crate::classfile::BootstrapArg::Units(units)) => self.intern_units(&units),
                         _ => value,
                     };
                 }
@@ -715,6 +722,7 @@ impl<'a> Machine<'a> {
                     crate::classfile::BootstrapArg::Float(v) => Value::Float(v),
                     crate::classfile::BootstrapArg::Double(v) => Value::Double(v),
                     crate::classfile::BootstrapArg::Str(s) => self.intern(&s),
+                    crate::classfile::BootstrapArg::Units(units) => self.intern_units(&units),
                     crate::classfile::BootstrapArg::Class(name) => {
                         let t = if name.starts_with('[') { Type::parse(&name).map_err(|e| Fault::Unsupported(e.to_string()))? } else { Type::Object(name) };
                         self.class_object(&t)

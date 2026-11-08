@@ -63,7 +63,10 @@ fn err<T>(message: impl Into<String>) -> Result<T> {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Constant {
     Unused,
-    Utf8(String),
+    /// Its text, and its code units when they aren't well-formed UTF-16 (an isolated surrogate, which a Rust
+    /// `String` can't hold, so the text has U+FFFD in its place). Names and descriptors are read by the text; a
+    /// String constant by its code units ([`ConstantPool::utf16`], [`BootstrapArg::Units`]).
+    Utf8(String, Option<Vec<u16>>),
     Integer(i32),
     Float(f32),
     Long(i64),
@@ -87,7 +90,7 @@ impl Constant {
     pub fn tag(&self) -> u8 {
         match self {
             Constant::Unused => 0,
-            Constant::Utf8(_) => 1,
+            Constant::Utf8(..) => 1,
             Constant::Integer(_) => 3,
             Constant::Float(_) => 4,
             Constant::Long(_) => 5,
@@ -151,12 +154,28 @@ pub enum BootstrapArg {
     Float(f32),
     Long(i64),
     Double(f64),
+    /// A String constant whose code units are well-formed UTF-16.
     Str(String),
+    /// A String constant whose code units aren't well-formed UTF-16 (an isolated surrogate, `"\uDBFF"`), kept
+    /// unit for unit, since a Rust `String` can't hold them. A reader that takes only [`BootstrapArg::Str`]
+    /// refuses it; never read it as the U+FFFD a lossy decoding gives, which would make two literals one.
+    Units(Vec<u16>),
     Class(String),
     MethodHandle(MethodHandle),
     MethodType(String),
     /// A `Dynamic` constant: an enum description for `enumSwitch`, say. Left unresolved.
     Dynamic { bootstrap_method_attr_index: u16, name: String, descriptor: String },
+}
+
+impl BootstrapArg {
+    /// The code units of a String constant, well-formed or not; `None` for any other constant.
+    pub fn string_units(&self) -> Option<std::borrow::Cow<'_, [u16]>> {
+        match self {
+            BootstrapArg::Str(s) => Some(std::borrow::Cow::Owned(s.encode_utf16().collect())),
+            BootstrapArg::Units(units) => Some(std::borrow::Cow::Borrowed(units)),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -192,7 +211,16 @@ impl ConstantPool {
 
     pub fn utf8(&self, index: u16) -> Result<&str> {
         match self.get(index)? {
-            Constant::Utf8(s) => Ok(s),
+            Constant::Utf8(s, _) => Ok(s),
+            other => err(format!("constant pool index {index} is not Utf8 but tag {}", other.tag())),
+        }
+    }
+
+    /// The code units of a `CONSTANT_Utf8` entry, kept as the class file has them, an isolated surrogate included.
+    pub fn utf16(&self, index: u16) -> Result<std::borrow::Cow<'_, [u16]>> {
+        match self.get(index)? {
+            Constant::Utf8(_, Some(units)) => Ok(std::borrow::Cow::Borrowed(units)),
+            Constant::Utf8(s, None) => Ok(std::borrow::Cow::Owned(s.encode_utf16().collect())),
             other => err(format!("constant pool index {index} is not Utf8 but tag {}", other.tag())),
         }
     }
@@ -254,7 +282,10 @@ impl ConstantPool {
             Constant::Float(v) => BootstrapArg::Float(*v),
             Constant::Long(v) => BootstrapArg::Long(*v),
             Constant::Double(v) => BootstrapArg::Double(*v),
-            Constant::String { string_index } => BootstrapArg::Str(self.utf8(*string_index)?.to_string()),
+            Constant::String { string_index } => match self.get(*string_index)? {
+                Constant::Utf8(_, Some(units)) => BootstrapArg::Units(units.clone()),
+                _ => BootstrapArg::Str(self.utf8(*string_index)?.to_string()),
+            },
             Constant::Class { name_index } => BootstrapArg::Class(self.utf8(*name_index)?.to_string()),
             Constant::MethodHandle { .. } => BootstrapArg::MethodHandle(self.method_handle(index)?),
             Constant::MethodType { descriptor_index } => BootstrapArg::MethodType(self.utf8(*descriptor_index)?.to_string()),
@@ -758,7 +789,11 @@ fn read_pool(r: &mut Reader) -> Result<ConstantPool> {
         let entry = match tag {
             1 => {
                 let len = r.u16()? as usize;
-                Constant::Utf8(decode_modified_utf8(r.bytes(len)?))
+                let units = decode_modified_utf16(r.bytes(len)?);
+                match String::from_utf16(&units) {
+                    Ok(text) => Constant::Utf8(text, None),
+                    Err(_) => Constant::Utf8(String::from_utf16_lossy(&units), Some(units)),
+                }
             }
             3 => Constant::Integer(r.u32()? as i32),
             4 => Constant::Float(f32::from_bits(r.u32()?)),
@@ -859,8 +894,16 @@ fn parse_method_parameters(data: &[u8], pool: &ConstantPool) -> Result<Vec<Strin
     Ok(out)
 }
 
-/// Decodes the JVM's "modified UTF-8" (JVMS 4.4.7): `C0 80` for NUL, and surrogate pairs as two 3-byte sequences.
+/// Decodes the JVM's "modified UTF-8" (JVMS 4.4.7) as text: [`decode_modified_utf16`], with U+FFFD for each
+/// isolated surrogate, which a Rust `String` can't hold. Right for names and descriptors; a String constant is read
+/// by its code units.
 pub fn decode_modified_utf8(bytes: &[u8]) -> String {
+    String::from_utf16_lossy(&decode_modified_utf16(bytes))
+}
+
+/// Decodes the JVM's "modified UTF-8" (JVMS 4.4.7) into its UTF-16 code units, as the JVM reads them: `C0 80` for
+/// NUL, each surrogate as a 3-byte sequence of its own, paired or not. A malformed byte gives U+FFFD.
+pub fn decode_modified_utf16(bytes: &[u8]) -> Vec<u16> {
     let mut units: Vec<u16> = Vec::with_capacity(bytes.len());
     let mut i = 0;
     while i < bytes.len() {
@@ -879,13 +922,18 @@ pub fn decode_modified_utf8(bytes: &[u8]) -> String {
             i += 1;
         }
     }
-    String::from_utf16_lossy(&units)
+    units
 }
 
 /// Encodes a string as modified UTF-8, the inverse of [`decode_modified_utf8`].
 pub fn encode_modified_utf8(s: &str) -> Vec<u8> {
-    let mut out = Vec::with_capacity(s.len());
-    for unit in s.encode_utf16() {
+    encode_modified_utf16(&s.encode_utf16().collect::<Vec<_>>())
+}
+
+/// Encodes code units as modified UTF-8, an isolated surrogate included: the inverse of [`decode_modified_utf16`].
+pub fn encode_modified_utf16(units: &[u16]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(units.len());
+    for &unit in units {
         match unit {
             0x0001..=0x007F => out.push(unit as u8),
             0x0000 | 0x0080..=0x07FF => {
@@ -1010,6 +1058,31 @@ mod tests {
             assert_eq!(decode_modified_utf8(&encode_modified_utf8(s)), s);
         }
         assert_eq!(encode_modified_utf8("\0"), vec![0xC0, 0x80]);
+    }
+
+    /// An isolated surrogate is a code unit of its own, as the JVM reads it, never U+FFFD: the text a name is read
+    /// by has U+FFFD in its place, but a String constant keeps the unit, so two literals that differ only in one
+    /// stay two (the class reader's lossy `CONSTANT_Utf8`, a request of `application-core-values.md`).
+    #[test]
+    fn a_string_constant_keeps_an_isolated_surrogate_unit_for_unit() {
+        for units in [vec![0xDBFF], vec![0x61, 0xDC00, 0x62], vec![0xDC00, 0xD800], vec![0xD83D, 0xDE00, 0xD83D]] {
+            let bytes = encode_modified_utf16(&units);
+            assert_eq!(decode_modified_utf16(&bytes), units);
+            assert_eq!(bytes.len(), 3 * units.iter().filter(|&&u| u >= 0x800).count() + units.iter().filter(|&&u| u < 0x80).count());
+        }
+        let mut w = writer::PoolBuilder::new();
+        let lone = w.string_units(&[0xDBFF]);
+        let other = w.string_units(&[0xDBFE]);
+        let pair = w.string_units(&[0xD83D, 0xDE00]);
+        let pool = read_pool(&mut Reader { bytes: &w.finish(), pos: 0 }).unwrap();
+        assert_eq!(pool.loadable(lone).unwrap(), BootstrapArg::Units(vec![0xDBFF]));
+        assert_eq!(pool.loadable(other).unwrap(), BootstrapArg::Units(vec![0xDBFE]));
+        assert_eq!(pool.loadable(pair).unwrap(), BootstrapArg::Str("😀".into()), "a pair is well-formed text");
+        let Ok(Constant::String { string_index }) = pool.get(lone) else { panic!() };
+        assert_eq!(pool.utf8(*string_index).unwrap(), "\u{FFFD}", "names are read by the text");
+        assert_eq!(&*pool.utf16(*string_index).unwrap(), &[0xDBFF]);
+        assert_eq!(BootstrapArg::Units(vec![0xDBFF]).string_units().as_deref(), Some(&[0xDBFF][..]));
+        assert_eq!(BootstrapArg::Str("ab".into()).string_units().as_deref(), Some(&[0x61, 0x62][..]));
     }
 
     #[test]

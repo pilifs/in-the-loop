@@ -64,7 +64,7 @@
 //! | `invokevirtual` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)` and `startsWith(String)` on a String whose content the engine holds ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
-//! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content (the class reader's `CONSTANT_Utf8` is decoded lossily, so an isolated surrogate in a literal is U+FFFD there) |
+//! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
@@ -592,10 +592,11 @@ enum ClassState {
     Erroneous,
 }
 
-/// A string or class literal, the identity of what an `ldc` of it loads.
+/// A string or class literal, the identity of what an `ldc` of it loads: a string by its code units, an isolated
+/// surrogate included, so that two literals are one object exactly when the JVM interns them as one.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 enum Literal {
-    Str(String),
+    Str(Vec<u16>),
     Class(String),
 }
 
@@ -2237,6 +2238,12 @@ impl<'a> Engine<'a> {
             }
             Insn::FConst(_) | Insn::DConst(_) => return unsupported("floating point"),
             Insn::Ldc(index) => match class.pool.loadable(index).map_err(|e| Stop::Unsupported(e.to_string()))? {
+                // One object per distinct content, as the JVM interns strings (JLS §3.10.5).
+                loaded @ (BootstrapArg::Str(_) | BootstrapArg::Units(_)) => {
+                    let units = loaded.string_units().expect("a String constant").into_owned();
+                    let o = self.literal(path, Literal::Str(units), "java/lang/String");
+                    self.push(path, Val::R(Some(o)));
+                }
                 BootstrapArg::Int(v) => {
                     let c = self.b.constant(i64::from(v), 32);
                     self.push(path, Val::I(c));
@@ -2245,12 +2252,7 @@ impl<'a> Engine<'a> {
                     let c = self.b.constant(v, 64);
                     self.push(path, Val::J(c));
                 }
-                // One object per distinct literal, as the JVM interns strings (JLS §3.10.5) and has one `Class`
-                // object per class.
-                BootstrapArg::Str(text) => {
-                    let o = self.literal(path, Literal::Str(text), "java/lang/String");
-                    self.push(path, Val::R(Some(o)));
-                }
+                // One object per class literal, as the JVM has one `Class` object per class.
                 BootstrapArg::Class(name) => {
                     let o = self.literal(path, Literal::Class(name), "java/lang/Class");
                     self.push(path, Val::R(Some(o)));
@@ -2883,9 +2885,9 @@ impl<'a> Engine<'a> {
         let with_constants = bootstrap.filter(|b| b.method.member.owner == "java/lang/invoke/StringConcatFactory" && b.method.member.name == "makeConcatWithConstants");
         match with_constants {
             Some(b) => {
-                let Some(BootstrapArg::Str(recipe)) = b.args.first() else { return unsupported("a concatenation with no recipe") };
+                let Some(recipe) = b.args.first().and_then(BootstrapArg::string_units) else { return unsupported("a concatenation with no recipe") };
                 let mut constants = b.args[1..].iter();
-                for unit in recipe.encode_utf16() {
+                for &unit in recipe.iter() {
                     match unit {
                         1 => {
                             if let Some(why) = argument(self, path, &mut pieces)? {
@@ -2893,7 +2895,7 @@ impl<'a> Engine<'a> {
                             }
                         }
                         2 => match constants.next() {
-                            Some(BootstrapArg::Str(text)) => pieces.push(Piece::Units(text.encode_utf16().collect())),
+                            Some(c @ (BootstrapArg::Str(_) | BootstrapArg::Units(_))) => pieces.push(Piece::Units(c.string_units().expect("a String constant").into_owned())),
                             Some(BootstrapArg::Int(v)) => pieces.push(Piece::Units(v.to_string().encode_utf16().collect())),
                             Some(BootstrapArg::Long(v)) => pieces.push(Piece::Units(v.to_string().encode_utf16().collect())),
                             _ => {
@@ -3126,8 +3128,9 @@ impl<'a> Engine<'a> {
         Some(match constant {
             Some(BootstrapArg::Int(v)) => Ok(Val::I(self.b.constant(i64::from(v), 32))),
             Some(BootstrapArg::Long(v)) => Ok(Val::J(self.b.constant(v, 64))),
-            Some(BootstrapArg::Str(text)) => {
-                let o = self.literal(path, Literal::Str(text), "java/lang/String");
+            Some(loaded @ (BootstrapArg::Str(_) | BootstrapArg::Units(_))) => {
+                let units = loaded.string_units().expect("a String constant").into_owned();
+                let o = self.literal(path, Literal::Str(units), "java/lang/String");
                 Ok(Val::R(Some(o)))
             }
             Some(_) => unsupported("floating point"),
@@ -3141,8 +3144,8 @@ impl<'a> Engine<'a> {
             return o;
         }
         let o = match &literal {
-            Literal::Str(text) => {
-                let units: Vec<u16> = text.encode_utf16().collect();
+            Literal::Str(units) => {
+                let units = units.clone();
                 self.string(path, &units)
             }
             Literal::Class(_) => self.alloc(path, class),

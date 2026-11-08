@@ -1658,11 +1658,11 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
     let method = bootstrap.method.member.name.as_str();
     match (owner, method) {
         ("java/lang/invoke/StringConcatFactory", "makeConcatWithConstants") => {
-            let Some(BootstrapArg::Str(recipe)) = bootstrap.args.first() else { return unsupported("concat recipe") };
+            let Some(recipe) = bootstrap.args.first().and_then(BootstrapArg::string_units) else { return unsupported("concat recipe") };
             let mut constants = bootstrap.args[1..].iter();
             let mut args = args.into_iter().zip(descriptor.params.iter());
             let mut out = JStr::new();
-            for c in recipe.encode_utf16() {
+            for &c in recipe.iter() {
                 match c {
                     1 => {
                         let (v, t) = args.next().ok_or_else(|| Fault::Unsupported("concat arity".into()))?;
@@ -1670,6 +1670,7 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                     }
                     2 => match constants.next() {
                         Some(BootstrapArg::Str(s)) => out.push_str(s),
+                        Some(BootstrapArg::Units(units)) => units.iter().for_each(|&u| out.push_unit(u)),
                         Some(BootstrapArg::Int(v)) => out.push_str(&v.to_string()),
                         Some(BootstrapArg::Long(v)) => out.push_str(&v.to_string()),
                         Some(BootstrapArg::Float(v)) => out.push_str(&float_to_string(*v)),
@@ -1703,6 +1704,7 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                             m.heap.string(selector) == Some(&JStr::from(s))
                         }
                     }
+                    BootstrapArg::Units(units) if method == "typeSwitch" => m.heap.string(selector).is_some_and(|s| s.units() == &units[..]),
                     BootstrapArg::Int(v) => matches!(m.heap.get(selector), Object::Native(Native::Boxed { value: Value::Int(x), .. }) if x == v),
                     BootstrapArg::Dynamic { bootstrap_method_attr_index, .. } => {
                         let (enum_class, constant) = resolve_enum_label(&bootstraps, *bootstrap_method_attr_index)?;

@@ -335,6 +335,28 @@ fn controller(fields: &str, parameters: &str, extra: &str) -> String {
     after.replace("        if (total > 0) kafka.send(\"quotes\", new QuoteEvent(total, quantity));\n", extra)
 }
 
+/// A payload literal with an isolated surrogate is snapshotted as the very object the build loads, unit for unit:
+/// the same topic in two builds is preserved, and one that differs only in its surrogate is refuted, naming each.
+/// Before, the class reader read both as `"q\u{FFFD}"`, so the snapshot's own literal was neither object, and the
+/// trace was unresolved either way.
+#[test]
+fn a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit() {
+    let send = |topic: &str| controller("", "", &format!("        if (total > 0) kafka.send(\"{topic}\", new QuoteEvent(total, quantity));\n"));
+    let Some(high) = build_with("topic-high", Some(&send("q\\uDBFF"))) else { return };
+    let Some(again) = build_with("topic-high-again", Some(&send("q\\uDBFF"))) else { return };
+    let Some(other) = build_with("topic-other", Some(&send("q\\uDBFE"))) else { return };
+    let compare = |a: &Path, b: &Path| effects::check(&claim(), &quotes(a, "POST /quotes"), &quotes(b, "POST /quotes"), a, b).unwrap_or_else(|u| panic!("{u}"));
+    let same = compare(&high, &again);
+    assert_eq!(same.outcome.verdict, Verdict::Verified, "{same:?}");
+    assert_eq!(state(&same, SEND), ObservationState::Preserved);
+    let changed = compare(&high, &other);
+    assert_eq!(changed.outcome.verdict, Verdict::Refuted, "{changed:?}");
+    assert_eq!(state(&changed, SEND), ObservationState::Refuted);
+    let witness = changed.outcome.witness.as_deref().unwrap();
+    assert!(witness.contains("Replayed on a JVM"), "{witness}");
+    assert!(witness.contains("send(topic=\"q\\udbff\"") && witness.contains("send(topic=\"q\\udbfe\""), "each topic by its units: {witness}");
+}
+
 #[test]
 fn a_null_dependency_called_through_a_supertype_leaves_the_result_unresolved_where_reached() {
     // javac names `kafka.hashCode()` `Object.hashCode`, which no stub can tell from any other call: the null

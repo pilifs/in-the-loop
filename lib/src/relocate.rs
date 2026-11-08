@@ -10,7 +10,7 @@
 use std::collections::BTreeSet;
 use std::path::Path;
 
-use crate::classfile::{decode_modified_utf8, encode_modified_utf8, flags};
+use crate::classfile::{decode_modified_utf16, decode_modified_utf8, encode_modified_utf8, flags};
 use crate::Error;
 
 /// Copies every class under `input` to `output/<prefix>/...`, renamed. Returns the relocated class names.
@@ -63,8 +63,17 @@ pub fn class_file(bytes: &[u8], own: &BTreeSet<String>, prefix: &str) -> Result<
             1 => {
                 let len_bytes = take(2)?;
                 let len = u16::from_be_bytes([len_bytes[0], len_bytes[1]]) as usize;
-                let text = decode_modified_utf8(take(len)?);
-                let renamed = encode_modified_utf8(&rename(&text, own, prefix));
+                let original = take(len)?;
+                // Only a name changes, and a name is well-formed text. So an entry that isn't (a String constant
+                // with an isolated surrogate, which the text reads as U+FFFD), or that renaming leaves as it was,
+                // keeps its bytes.
+                let renamed = match String::from_utf16(&decode_modified_utf16(original)) {
+                    Ok(text) => match rename(&text, own, prefix) {
+                        renamed if renamed == text => original.to_vec(),
+                        renamed => encode_modified_utf8(&renamed),
+                    },
+                    Err(_) => original.to_vec(),
+                };
                 out.extend((renamed.len() as u16).to_be_bytes());
                 out.extend(renamed);
             }
@@ -240,6 +249,25 @@ mod tests {
         assert_eq!(opened.pool.len(), original.pool.len());
         assert_eq!(opened.methods.iter().map(|m| m.code.as_ref().map(|c| c.bytes.clone())).collect::<Vec<_>>(), original.methods.iter().map(|m| m.code.as_ref().map(|c| c.bytes.clone())).collect::<Vec<_>>());
         assert!(referenced_classes(&bytes).unwrap().contains(&"shop/Money".to_string()));
+    }
+
+    /// A String constant with an isolated surrogate keeps its code units through the copy, as the JVM and JBMC then
+    /// read them: decoded as text and encoded again, `"\uDBFF"` would become `"\uFFFD"` in both versions.
+    #[test]
+    fn a_string_constant_that_is_not_well_formed_keeps_its_bytes() {
+        use crate::classfile::writer::ClassWriter;
+        use crate::classfile::{BootstrapArg, ClassFile, Constant};
+        let mut w = ClassWriter::new("a/B");
+        w.pool.string_units(&[0xDBFF]);
+        w.pool.string("a/B");
+        let own: BTreeSet<String> = ["a/B".to_string()].into_iter().collect();
+        let copied = ClassFile::parse(&class_file(&w.to_bytes(), &own, "before").unwrap()).unwrap();
+        assert_eq!(copied.name, "before/a/B");
+        let strings: Vec<BootstrapArg> = (1..copied.pool.len() as u16)
+            .filter(|&i| matches!(copied.pool.get(i), Ok(Constant::String { .. })))
+            .map(|i| copied.pool.loadable(i).unwrap())
+            .collect();
+        assert_eq!(strings, [BootstrapArg::Units(vec![0xDBFF]), BootstrapArg::Str("before/a/B".into())]);
     }
 
     #[test]
