@@ -192,8 +192,10 @@ enum Command {
         /// rewritten builds' closures, recording stubs included) and stored once decided. Local; never commit it.
         #[arg(long)]
         cache: Option<PathBuf>,
-        /// The modelled calls a person declares, as JSON (a list of `ModeledCall`, each with its `model`): the
-        /// environment stream's (llm-dlc/loops/application-core-environment.md). Refused until it builds them.
+        /// The modelled calls a person declares, as JSON (a list of `ModeledCall`, each with its `model`): each
+        /// replaces the spec's call of that method, and both builds are checked under it. A query or a per-call
+        /// choice of primitive or String keys, answering a primitive, a nullable DTO made by a construction plan,
+        /// or a declared exception (`lib/README.md`); a model the check can't enforce is refused by name.
         #[arg(long)]
         environment: Option<PathBuf>,
         /// Print JSON (one check per entry point, with its outcome, assumptions and traces) instead of text.
@@ -229,8 +231,9 @@ enum Command {
         /// The longest array a proof considers.
         #[arg(long, default_value_t = 8)]
         max_array_length: u32,
-        /// The modelled calls a person declares, as JSON (a list of `ModeledCall`, each with its `model`): the
-        /// environment stream's (llm-dlc/loops/application-core-environment.md). Refused until it builds them.
+        /// The modelled calls a person declares, as JSON (a list of `ModeledCall`, each with its `model`), for every
+        /// entry point's effect check, as `effects --environment` takes them. Each counts in the effort report as
+        /// an environment assumption a person made.
         #[arg(long)]
         environment: Option<PathBuf>,
         /// Print the report as JSON instead of text.
@@ -509,9 +512,10 @@ struct EquivalenceArgs {
     /// parameter is an object of its own.
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
-    /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, the objects stream's
-    /// `construction::Plans` of llm-dlc/loops/application-core.md): the receiver, parameters, shared objects,
-    /// bounded arrays and setup calls the check makes its inputs by. Refused until that stream builds it.
+    /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, `construction::Plans`):
+    /// the receiver, parameters, shared objects, bounded arrays, adapted lists and setup calls the check makes its
+    /// inputs by. What a check can't make by it (a factory, a cycle, an adapted value inside an object) is refused by
+    /// name, never made otherwise (`lib/README.md`).
     #[arg(long)]
     plan: Option<PathBuf>,
     /// Further class path entries (PATH-separated or repeatable).
@@ -658,13 +662,16 @@ struct ProveArgs {
     /// takes arrays that may be one.
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
-    /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, the objects stream's
-    /// `construction::Plans` of llm-dlc/loops/application-core.md): the receiver, parameters, shared objects,
-    /// bounded arrays and setup calls the check makes its inputs by. Refused until that stream builds it.
+    /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, `construction::Plans`):
+    /// the receiver, parameters, shared objects, bounded arrays, adapted lists and setup calls the check makes its
+    /// inputs by. What a check can't make by it (a factory, a cycle, an adapted value inside an object) is refused by
+    /// name, never made otherwise (`lib/README.md`).
     #[arg(long)]
     plan: Option<PathBuf>,
-    /// A local proof cache directory, never committed: the reuse stream's property projection of the claim
-    /// (llm-dlc/loops/application-core-reuse.md, R1). Refused until that stream builds it.
+    /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
+    /// claim's key (both versions' code closures, the assertion, the assumptions, the domain, the bounds, the models,
+    /// the JDK and this binary's digest), and a later run of the same claim is that result, marked as reused, a
+    /// refutation only once its witness fails the stored harness again. Not yet with `--plan`.
     #[arg(long)]
     cache: Option<PathBuf>,
     /// A working directory for the harness and JBMC logs (a temporary one by default).

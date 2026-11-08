@@ -102,12 +102,11 @@ pub struct Options {
     /// Pairs of array parameters that may be one array (`--may-alias a,b`), closed under transitivity: any two of
     /// a group may be; every other parameter is an array of its own. Only the own checker takes such a domain.
     pub may_alias: Vec<(String, String)>,
-    /// A local proof cache directory (`prove --cache`): the reuse stream's property projection of the claim (R1 of
-    /// `llm-dlc/loops/application-core-reuse.md`), through `reuse::property_lookup` and `reuse::property_store`.
-    /// Until the stream builds it, a check given one is refused.
+    /// A local proof cache directory (`prove --cache`): the property claim's key and its stored result, through
+    /// `reuse::property_lookup` and `reuse::property_store`.
     pub cache: Option<PathBuf>,
-    /// The construction plan of `prove --plan FILE` (its `after`): the objects stream's. Until it builds it, a check
-    /// given one is refused.
+    /// The construction plan of `prove --plan FILE` (its `after`, [`crate::construction::Plans`]): the receiver and
+    /// parameters the check makes. What it can't make is refused by name.
     pub plan: Option<crate::construction::Plans>,
 }
 
@@ -227,8 +226,8 @@ pub const WIDENED_DOMAIN: &str = "widened-domain";
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
     crate::phases::begin();
-    // The proof cache, the reuse stream's (R1): a stored result for the same property claim is the result, and a
-    // verified or refuted one is stored. Until the stream builds it, `--cache` is refused, never ignored.
+    // The proof cache (`reuse::property_lookup`, `reuse::property_store`): a stored result for the same property
+    // claim is the result, and a verified or refuted one is stored.
     // The property claim's key doesn't read a construction plan (its constructors, its setup sequence), so a plan's
     // check under the cache is refused by name, never stored under another plan's key.
     if options.cache.is_some() && options.plan.is_some() {

@@ -935,6 +935,26 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Docs**: `lib/README.md` (a new paragraph, the String key in the modelled-results paragraph, E2's sentence),
     the module docs of `environment` and `effects`.
   - **Next**: item 6's smaller requests, then item 7's README sentences. Then step 2's joint acceptance as jobs.
+- 2026-11-08, **Phase 5 step 1, interface request 6 (its first part): a declared environment counted as a person's
+  decision, and the stale help and docs**. The rest of item 6 is the next cycles.
+  - **The reproducer**: `tests/environment.rs`'s new `compare_counts_a_declared_environment_as_a_persons_decision`.
+    It failed before: under one modelled call, `compare`'s effort report counted 0 environment assumptions.
+  - **The change**:
+    - `compare::run` counts each modelled call of `Options::environment` as one environment assumption a person made.
+      The other categories stay 0, and a run without one still counts none.
+    - The help of `effects --environment` and `compare --environment` no longer says "Refused until it builds them":
+      it says what a model may be and that the rest is refused by name. The same goes for `--plan` (`equivalence`,
+      `prove`) and `prove --cache`, which says what the key covers and "not yet with `--plan`". The docs of
+      `compare::Options::environment`, `property::Options::{cache, plan}`, `equivalence::Options::plan`, and the
+      comment at `property::run`'s cache hook, are updated the same way.
+    - The effect check's replay error no longer blames "the JVM runner's 16 words": `jvm_witness::run` sizes its
+      stack from the arguments since item 1. `lib/README.md`'s E2 sentence about it is replaced, and the effort
+      paragraph says how a declared environment counts.
+  - **Checks**: `environment` 17 of 17, and the integration check passes (the contract 14 of 14, the unit tests 254,
+    `compare` 1, `effects` 18, `foundations` 5, the Python suites).
+  - **Next**: item 6's property cache, `reuse::property_store` taking `&mut Outcome`, a `reuse` field on
+    `property::Outcome`, and `prove --cache --plan`'s guard lifted with an end-to-end test. Then `compare` with a
+    plan per subject, the class reader's `CONSTANT_Utf8` code units and `ElementKind::String`'s bound. Then item 7.
 - Status: working
 
 ## Loop settings

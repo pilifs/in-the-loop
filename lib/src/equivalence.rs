@@ -142,8 +142,8 @@ pub struct Options {
     /// before any proof or cache lookup, unless it makes its inputs with exactly the domain's constructors and
     /// classes (`spec::heap::made_with`).
     pub object_domain: Option<crate::spec::ObjectDomain>,
-    /// The construction plans of `--plan FILE` ([`crate::construction::Plans`]): the objects stream's. Until it
-    /// builds them, a check given them is refused.
+    /// The construction plans of `--plan FILE` ([`crate::construction::Plans`]): the inputs the check makes, each
+    /// version by its own plan. What a check can't make by them is refused by name (`construction::check_plans`).
     pub plan: Option<crate::construction::Plans>,
     /// The builds `before` and `after` were made from, when they are copies of them (the effect-trace proof's
     /// rewritten builds, [`crate::effects`]): the run a stored result's provenance names. None names `before` and

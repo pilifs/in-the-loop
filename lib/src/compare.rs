@@ -15,8 +15,9 @@
 //!    the entry points' effect-trace proofs ([`crate::effects::check_with`], keyed on the rewritten builds, recording
 //!    stubs included) as the kernel's checks, and a changed pure helper is proved once and taken as one function in
 //!    its callers.
-//! 4. **Effort.** Every decision a person made, by category, and every question the run leaves for one. This run
-//!    takes no person's input, so the decisions are none; what it asks, it lists.
+//! 4. **Effort.** Every decision a person made, by category, and every question the run leaves for one. The only
+//!    input of a person's this run takes is a declared environment (`compare --environment`): each modelled call in it
+//!    is an environment assumption a person made. What it asks, it lists.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -41,8 +42,9 @@ pub struct Options {
     /// runs them without it.
     pub cache: Option<PathBuf>,
     pub bounds: ClaimBounds,
-    /// The modelled calls a person declares (`compare --environment`), each with its model: the environment
-    /// stream's ([`crate::environment::declared`]), refused until it builds them.
+    /// The modelled calls a person declares (`compare --environment`), each with its model
+    /// ([`crate::environment::declared`]): every entry point's effect check takes them in place of its spec's calls,
+    /// and each counts as one of the person's environment assumptions in the effort report.
     pub environment: Vec<crate::spec::ModeledCall>,
 }
 
@@ -134,6 +136,8 @@ pub fn run(options: &Options) -> Result<Report, Unsupported> {
     }
 
     let mut effort = Effort { decisions: CATEGORIES.iter().map(|c| (c.to_string(), 0)).collect(), ..Default::default() };
+    // Each modelled call a person declares is a decision of theirs: what the dependency may answer.
+    *effort.decisions.get_mut("environment assumption").expect("a category") += options.environment.len();
     for o in &obligations {
         let decide = match o.change {
             Change::Removed => format!("{} is gone from the new build: approve its {} as removed, or it stays unresolved", o.entry, o.observation),

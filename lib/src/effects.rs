@@ -971,12 +971,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             ];
             let run = match crate::jvm_witness::run(&work.join("jvm"), crate::harness::CLASS, &new_version.params, &slots, &arguments, &calls, &entries) {
                 Ok(run) => run,
-                Err(e) => {
-                    // The JVM runner's main passes the arguments on an operand stack of 16 words.
-                    let words: usize = new_version.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum();
-                    let why = if words > 16 { format!(" (its {words} words of arguments, the handler's and the environment's tables, are more than the JVM runner's 16: a smaller bound, or an int result, fits)") } else { String::new() };
-                    return Ok(Checked { proof, ..unresolved(format!("the witness {shown} could not be replayed on a JVM{why}: {e}")) });
-                }
+                Err(e) => return Ok(Checked { proof, ..unresolved(format!("the witness {shown} could not be replayed on a JVM: {e}")) }),
             };
             let logs: Vec<Option<Vec<i64>>> = run.calls.iter().map(|r| r.result_array.as_ref().map(|a| a.iter().map(|v| match v { Value::Long(x) => *x, Value::Int(x) => i64::from(*x), _ => 0 }).collect())).collect();
             let (Some(Some(b)), Some(Some(a))) = (logs.first(), logs.get(1)) else {

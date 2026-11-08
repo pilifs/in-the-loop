@@ -482,3 +482,27 @@ fn reading_more_of_a_modelled_failure_than_its_class_is_refused() {
     let gap = r.expect_err("UncheckedIOException has no constructor without arguments");
     assert!(gap.what.contains("the modelled failure java.io.UncheckedIOException in the old build: it has no public constructor without arguments"), "{gap}");
 }
+
+/// `compare --environment FILE`: each modelled call a person declares is a decision of theirs, counted in the effort
+/// report as an environment assumption, and the entry point is checked under it.
+#[test]
+fn compare_counts_a_declared_environment_as_a_persons_decision() {
+    let wrong = "        long total = rates.rate(code + 1) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
+    let (Some(b), Some(w)) = (build("compare-before", BEFORE), build("compare-wrong", wrong)) else { return };
+    let options = |after: &Path, environment: Vec<ModeledCall>| jvmcontract::compare::Options {
+        before: b.clone(),
+        after: after.to_path_buf(),
+        cache: None,
+        bounds: ClaimBounds { unwind: 8, max_array_length: 4 },
+        environment,
+    };
+    let declared = jvmcontract::compare::run(&options(&w, vec![query(1)])).unwrap_or_else(|u| panic!("{u}"));
+    assert_eq!(declared.effort.decisions.get("environment assumption"), Some(&1), "{:?}", declared.effort.decisions);
+    assert!(declared.effort.decisions.iter().filter(|(c, _)| *c != "environment assumption").all(|(_, n)| *n == 0), "{:?}", declared.effort.decisions);
+    let entry = declared.entries.iter().find(|e| e.entry == "POST /price").expect("POST /price is checked");
+    assert_eq!(entry.checked.as_ref().map(|c| c.outcome.verdict), Some(Verdict::Refuted), "{entry:?}");
+    assert!(jvmcontract::compare::render(&declared).contains("environment assumption 1"), "{}", jvmcontract::compare::render(&declared));
+    // Without one, no person decided anything.
+    let plain = jvmcontract::compare::run(&options(&b, Vec::new())).unwrap_or_else(|u| panic!("{u}"));
+    assert!(plain.effort.decisions.values().all(|n| *n == 0), "{:?}", plain.effort.decisions);
+}
