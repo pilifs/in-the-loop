@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-195650-application-core-phase-5-step-3-deliveri",
+  "title": "application-core Phase 5 step 3: Deliveries' examples 170-172 rerun at the merged revision, each with its recorded verdict",
+  "description": "build.py on examples 170, 171 and 172 (a retry route refactored over Crosscut's kernels; jvmcontract effects on the deliveries app, engine native, no declared environment, the effect check's own bounds). Expected: 170 verified, 171 violation, 172 violation, each step printing 'as expected' and exiting 0. The code is this job's commit (application-core Phase 5 step 3), whose parent is 4d6c6279 (yrlkzqvw, a String inside an object); it descends from c99d01a3 (szqvvxuv), whose relocate::opened_with opens package-private and protected instance methods for the JVM run of a witness, so every JVM replay here runs with it, as the brief's Progress asks. The environment stream changed the effect check (modelled results and failures, DTO responses, String keys and payloads, a planned subject); these examples take its unplanned path, which must keep its verdicts. Every step runs even if one fails. Acceptance: llm-dlc/loops/application-core.md, Phase 5 step 3 (the existing examples keep their expected outcomes, part of Phase 5's done-when criterion), after the merge of the four application-core streams (loxnvssx) and Phase 5's interface requests. Each example last passed at the cleanup merge (job 20261107-215001-...); no example's files changed since, only the checker, the result schema and build.py.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:effects",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "170",
+      "171",
+      "172"
+    ]
+  },
+  "expected": "example 170 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 171 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 172 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-08T19:56:50+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "10m",
+    "notes": "as job 20261107-215001-cleanup-merge-deliveries-examples-170-17: 137 s for all three at 1 CPU"
+  },
+  "steps": [
+    {
+      "name": "example 170 (B9)",
+      "run": "python3 examples/tools/build.py 170",
+      "cwd": "."
+    },
+    {
+      "name": "example 171 (B9)",
+      "run": "python3 examples/tools/build.py 171",
+      "cwd": "."
+    },
+    {
+      "name": "example 172 (B9)",
+      "run": "python3 examples/tools/build.py 172",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent",
+    "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace",
+    "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice"
+  ]
+}

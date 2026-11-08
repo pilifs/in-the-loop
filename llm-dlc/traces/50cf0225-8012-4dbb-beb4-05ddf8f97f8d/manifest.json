@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "50cf0225-8012-4dbb-beb4-05ddf8f97f8d",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T19:54:03.056Z",
+  "ended": "2026-11-08T19:54:21.202Z",
+  "duration_seconds": 18,
+  "stats": {
+    "turns": 1,
+    "api_calls": 4,
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 30060,
+    "usage": {
+      "input_tokens": 8,
+      "output_tokens": 578,
+      "cache_read_input_tokens": 96485,
+      "cache_creation_input_tokens": 18676
+    }
+  },
+  "tools": {
+    "Bash": 4
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T19:54:03.056Z",
+      "ended": "2026-11-08T19:54:21.202Z",
+      "turns": 1,
+      "api_calls": 4,
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 578,
+        "cache_read_input_tokens": 96485,
+        "cache_creation_input_tokens": 18676
+      },
+      "peak_context_tokens": 30060
+    }
+  ],
+  "log": {
+    "sha256": "d5b934b078b2de486ce531619aac1ecdfc0da6520930d4b1661cfcb4d1bf6d33",
+    "bytes": 260117,
+    "lines": 48,
+    "gzip_bytes": 68081,
+    "path": "llm-dlc/traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/logs/d5b934b078b2de486ce531619aac1ecdfc0da6520930d4b1661cfcb4d1bf6d33.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uvlkwpnzlxtptnnzmtqtmpvquqysnwzx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 3: the existing examples at the merged revision, one job per app (verification pending)",
+      "body": "Queues Phase 5 step 3 of llm-dlc/loops/application-core.md as four jobs. Each runs at this commit, which has relocate::opened_with (the JVM run's opening of package-private and protected instance methods) and every Phase 5 piece so far. Shop's 190-196 run under compare (expected 190 and 195 verified, 191-194 violation, 196 unverifiable). Crosscut's 150-152 and 160-161 run under equivalence --gaps strict (150, 152 and 160 verified, 151 and 161 violation). Deliveries' 170-172 run under effects (170 verified, 171 and 172 violation). lib/tests/integration.rs runs as it is: 65 tests, JBMC's included, which no inline check ran on the merged code. These are the cleanup merge's reruns plus 190-196. No example's files changed since the cleanup merge, only examples/schema and examples/tools, so the streams touched no example.\n\nJobs: 20261108-195650-application-core-phase-5-step-3-shop-s-e, 20261108-195650-application-core-phase-5-step-3-crosscut, 20261108-195650-application-core-phase-5-step-3-deliveri, 20261108-195703-application-core-phase-5-step-3-lib-test. They validate (pipeline.py validate: 0 problems), and the integration test binary compiles at this commit.\n\nThe brief is out of date in one place. Example 196's notes, which the brief's Q fixture list points at, say the regression check takes static methods only, and the objects stream changed that. The job results will show whether any shop run now checks a part the notes call unresolved; that note belongs in the examples' example.json.",
+      "log_sha256": "d5b934b078b2de486ce531619aac1ecdfc0da6520930d4b1661cfcb4d1bf6d33"
+    }
+  ],
+  "logs": {
+    "d5b934b078b2de486ce531619aac1ecdfc0da6520930d4b1661cfcb4d1bf6d33": {
+      "bytes": 260117,
+      "lines": 48,
+      "gzip_bytes": 68081,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

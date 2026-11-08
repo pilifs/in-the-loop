@@ -1329,6 +1329,30 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Next**: step 3's examples with `lib/tests/integration.rs`, one job per app, at a revision that has the JVM
     run's opening of instance methods. Then J4 and the for-review list. Two user decisions are open, the allocation
     bounds of `basket-first-claim` and `checked-claim`; neither blocks the rest.
+- 2026-11-08, **Phase 5 step 3: the existing examples at the merged revision, as four jobs** (verification pending),
+  one per app as the cleanup merge's reruns were, at this commit. It has `relocate::opened_with` (`szqvvxuv`) and every
+  Phase 5 piece so far.
+  - **Which examples**: 190–196 and the cleanup merge's reruns (150–152, 160–161, 170–172). The streams touched none.
+    No file under `examples/` changed since the cleanup merge but `examples/schema/` and `examples/tools/`, so "the
+    examples the streams touched" adds none.
+  - **The jobs**, each step running even if one fails:
+    - `20261108-195650-application-core-phase-5-step-3-shop-s-e`: build.py on 190–196 (`compare`, native, a fresh
+      proof cache). Expected: 190 and 195 verified, 191–194 violation, 196 unverifiable.
+    - `20261108-195650-application-core-phase-5-step-3-crosscut`: 150–152 and 160–161 (`equivalence`, native,
+      `--gaps strict`). Expected: 150, 152 and 160 verified, 151 and 161 violation.
+    - `20261108-195650-application-core-phase-5-step-3-deliveri`: 170–172 (`effects`, native). Expected: 170 verified,
+      171 and 172 violation.
+    - `20261108-195703-application-core-phase-5-step-3-lib-test`: `lib/tests/integration.rs` as it is, 65 tests, none
+      ignored, JBMC's included. The merge's and the later cycles' inline checks ran every other binary, never this
+      one. It compiles at this commit.
+  - **To read with the results**: the shop examples' notes say what stays unresolved in each run ("the instance method
+    `Quote#quantity`", string concatenation). The streams widened what `compare`'s kernel claims check, so a part
+    other than the subject may now be checked. The subject's verdict is what must hold. A changed part is a note to
+    update in that example's `example.json`, not a failure.
+  - **Next**: step 4, J4's cost report. The reuse stream reported J4's figures from job `20261108-114325` (`tvrqpusw`)
+    at its own commit, so this checks what holds at the merge before running anything new. Then step 5's for-review
+    list, with the step 3 jobs and `20261108-195222` read once they are collected. The two allocation-bound decisions
+    are still open.
 - Status: working
 
 ## Loop settings

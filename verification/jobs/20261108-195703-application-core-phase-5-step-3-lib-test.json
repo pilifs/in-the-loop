@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-195703-application-core-phase-5-step-3-lib-test",
+  "title": "application-core Phase 5 step 3: lib/tests/integration.rs at the merged revision, JBMC's tests included",
+  "description": "Runs lib/tests/integration.rs as it is (65 tests, none ignored), several of which run JBMC (stock jbmc, --engine jbmc or auto, with --confirm) and replay witnesses on a JVM. Nothing has run these tests on the merged code of the four application-core streams and Phase 5's interface requests: the merge's and every later cycle's inline checks ran every other test binary, but not this one, whose tests run JBMC. It last passed at the cleanup merge (job 20261107-215001-cleanup-merge-lib-tests-integration-rs-a, 64 tests). Since then: the checked-exception harness test (Phase 0 step 7, VF-015) was added, and the String parameter test now expects --engine jbmc refused by name (it never reaches JBMC). The code is this job's commit (application-core Phase 5 step 3), whose parent is 4d6c6279 (yrlkzqvw, a String inside an object); it descends from c99d01a3 (szqvvxuv), whose relocate::opened_with opens package-private and protected instance methods for the JVM run of a witness. Domains, engines and bounds are each test's own. Expected: every test passes and cargo exits 0. Acceptance: llm-dlc/loops/application-core.md, Phase 5 step 3 (the existing examples and lib/tests/integration.rs keep their expected outcomes); a JBMC timeout here would be VF-018's kind, which doesn't block native feature work.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "native:probes"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/integration.rs"
+    ]
+  },
+  "expected": "cargo test --test integration exits 0: 65 passed, 0 failed",
+  "submitted": {
+    "at": "2026-11-08T19:57:03+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "as job 20261107-215001-cleanup-merge-lib-tests-integration-rs-a: 159 s with a clean debug build of lib's tests at 4 jobs; inline here the test binary compiled in 5 s on a warm target"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

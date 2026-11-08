@@ -1,0 +1,85 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
+  "title": "application-core Phase 5 step 3: Shop's examples 190-196 rerun at the merged revision, each with its recorded verdict",
+  "description": "build.py on examples 190 to 196 (a quote's amount made a value object; jvmcontract compare on the shop app, engine native, under a fresh proof cache in build/proof-cache, the verdict read from the rerun; the domains and bounds are each example's own, as build.py runs it). Expected: 190 verified, 191 violation, 192 violation, 193 violation, 194 violation, 195 verified, 196 unverifiable, each step printing 'as expected' and exiting 0. The code is this job's commit (application-core Phase 5 step 3), whose parent is 4d6c6279 (yrlkzqvw, a String inside an object); it descends from c99d01a3 (szqvvxuv), whose relocate::opened_with opens package-private and protected instance methods for the JVM run of a witness, so every JVM replay here runs with it, as the brief's Progress asks. The streams widened what compare's kernel claims check (instance methods on constructor-made receivers, Strings, receivers with dependencies), so a part of a run other than the subject may now be checked where the examples' notes say it stays unresolved; the subject's verdict is what must hold. Every step runs even if one fails. Acceptance: llm-dlc/loops/application-core.md, Phase 5 step 3 (the existing examples keep their expected outcomes, part of Phase 5's done-when criterion), after the merge of the four application-core streams (loxnvssx) and Phase 5's interface requests. Each example last passed at the cleanup merge (job 20261107-215001-...); no example's files changed since, only the checker, the result schema and build.py.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:compare",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "190",
+      "191",
+      "192",
+      "193",
+      "194",
+      "195",
+      "196"
+    ]
+  },
+  "expected": "example 190 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 191 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 192 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 193 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 194 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 195 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 196 gives its expected verdict, unverifiable: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-08T19:56:50+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "12m",
+    "notes": "as job 20261107-215001-cleanup-merge-shop-s-examples-190-196-re: 48.7 s and 145 MiB for all seven at 1 CPU, held back by its quota (a JVM needs 2); a release build of jvmcontract if the runner has none at this lib/ tree"
+  },
+  "steps": [
+    {
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": "."
+    },
+    {
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": "."
+    },
+    {
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": "."
+    },
+    {
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": "."
+    },
+    {
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": "."
+    },
+    {
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": "."
+    },
+    {
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written",
+    "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it",
+    "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone",
+    "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends",
+    "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order",
+    "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes",
+    "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried"
+  ]
+}
