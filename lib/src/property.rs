@@ -317,6 +317,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if !options.nullable.is_empty() || !options.may_alias.is_empty() {
                 return refuse(&mut out, 1, "--nullable or --may-alias with a construction plan: the plan's nodes say which inputs may be null or one object".into());
             }
+            if let Some(problem) = crate::construction::array_bound_problem(&plans.after, options.max_array_length) {
+                return refuse(&mut out, 1, problem);
+            }
             Some(&plans.after)
         }
         None => None,
@@ -515,7 +518,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             .chain(crate::statement::checker_assumptions(last))
             .collect(),
         observations: observations.clone(),
-        bounds: crate::statement::Bounds { setup_calls: (!layout.setup.is_empty()).then_some(layout.setup.len() as u32), ..crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete) },
+        bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
         models: crate::statement::models(options.models),
         checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),

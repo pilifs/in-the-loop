@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.480Z",
-  "ended": "2026-11-08T05:19:28.412Z",
-  "duration_seconds": 2703,
+  "ended": "2026-11-08T05:34:58.103Z",
+  "duration_seconds": 3633,
   "stats": {
-    "turns": 9,
-    "api_calls": 158,
-    "tool_calls": 157,
+    "turns": 10,
+    "api_calls": 188,
+    "tool_calls": 186,
     "tool_errors": 0,
     "compactions": 2,
-    "peak_context_tokens": 260541,
+    "peak_context_tokens": 312338,
     "usage": {
-      "input_tokens": 320,
-      "output_tokens": 126427,
-      "cache_read_input_tokens": 25832708,
-      "cache_creation_input_tokens": 491766
+      "input_tokens": 380,
+      "output_tokens": 156385,
+      "cache_read_input_tokens": 34560565,
+      "cache_creation_input_tokens": 543563
     }
   },
   "tools": {
-    "Bash": 138,
-    "Read": 9,
-    "SendMessage": 3,
+    "Bash": 165,
+    "Read": 10,
+    "SendMessage": 4,
     "Edit": 2,
     "ListAgents": 2,
     "ToolSearch": 2,
@@ -73,24 +73,24 @@
     {
       "index": 2,
       "started": "2026-11-08T04:53:20.156Z",
-      "ended": "2026-11-08T05:19:28.412Z",
-      "turns": 3,
-      "api_calls": 87,
+      "ended": "2026-11-08T05:34:58.103Z",
+      "turns": 4,
+      "api_calls": 117,
       "usage": {
-        "input_tokens": 178,
-        "output_tokens": 80773,
-        "cache_read_input_tokens": 14278639,
-        "cache_creation_input_tokens": 247462
+        "input_tokens": 238,
+        "output_tokens": 110731,
+        "cache_read_input_tokens": 23006496,
+        "cache_creation_input_tokens": 299259
       },
-      "peak_context_tokens": 260541
+      "peak_context_tokens": 312338
     }
   ],
   "log": {
-    "sha256": "62438d21834e0f7e53152a008ab6119d60b2d964ca39c10365a53adcc778f03b",
-    "bytes": 4480535,
-    "lines": 1670,
-    "gzip_bytes": 779751,
-    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/62438d21834e0f7e53152a008ab6119d60b2d964ca39c10365a53adcc778f03b.jsonl.gz"
+    "sha256": "6165fac44ea742c036f028b896813199c92f3f4adfc53dd9caa16c2a7c0088ed",
+    "bytes": 5086106,
+    "lines": 1967,
+    "gzip_bytes": 867602,
+    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/6165fac44ea742c036f028b896813199c92f3f4adfc53dd9caa16c2a7c0088ed.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -109,9 +109,23 @@
       "summary": "application-core objects O1 and O3: a construction plan chooses the constructor, and a setup sequence of one or two calls is checked and replayed as a whole history",
       "body": "equivalence --plan, prove --plan and a planned claim (spec::heap::check) now make their inputs by the plan: construction::root builds each root by the constructor descriptor its node names, which is how one of several constructors is chosen. construction::setup_calls gives one or two void calls on the receiver, which the regression harness calls in both versions before the target. A setup call that throws ends that version's history, and its exception, a category of its step's own, is the outcome compared, so an input one version's setup rejects is a difference and is never dropped. The property harness skips such a history, as it skips a rejected construction. The interpreter replay runs the history, the JVM run gets it by running the harness, and the witness reads 'allows(this=new Throttle(...), n=...), after the setup this.take(setup.0.n=...)'. The statement gains the setup assumption and setupCalls; a planned claim's result names its label and restrictions; the domain gate compares a plan's classes with the claim's. What a plan can't make yet is refused by its stream's name: arrays, nullable or shared nodes, factories, dependencies, adapted values, setup calls that return a value, more than two setup calls, plans that differ between versions. A setup claim runs uncached (its key wouldn't root the setup methods), and prove --cache --plan is refused (the property key doesn't read the plan).\n\nVerified inline, native engine and no JBMC: four new tests in lib/tests/application_core_objects.rs. (1) O3 on the frozen throttle claims, with only their allocation bound raised to 1: after-setup is verified with no setup, labelled for that domain, and refuted after one take, the whole history in the witness and run on a JVM; one-short is refuted and after verified under both claims. (2) A plan choosing one of Window's two constructors, verified and refuted, with a missing constructor and a misnamed leaf refused. (3) A setup rejection in one version only, refuted on exception. (4) prove over the states one setup call reaches. The lib tests, heap (its Phase 0 placeholder test for a planned domain now checks the plan instead), foundations, compare, effects, observations, alignment, summaries, conformance and skill all pass.\n\nFound, and recorded for the coordinator under the brief's Progress: the frozen throttle claims bound allocations at 0, while allows and take each allocate the IllegalArgumentException they throw. Now that plans are checked, the allocation gate counts it, so the contract's O3 (tests/application_core.rs) is unresolved where expected.json says verified or refuted, and the integration check fails on O3 until the fixture is corrected. The gate is left as it is. Interface requests to reuse (root setup methods in the regression key; read the plan in the property key and in spec::cache::key) and to the coordinator (a setup field in witness::Call and its stored form; a plan input for compare) are recorded too. No new job: the harness changes apply only to layouts with setup calls, which no example or JBMC test has; the pending job 20261108-045000-application-core-objects-o1-lib-tests-in still covers the integration tests and examples 190-196.",
       "log_sha256": "62438d21834e0f7e53152a008ab6119d60b2d964ca39c10365a53adcc778f03b"
+    },
+    {
+      "change_id": "rukolrmuswxnlktptlprywrvpmyopnzt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core objects O1 and O2: a constructor may take a bounded primitive array, kept apart between the versions, and a leaked defensive copy is refuted",
+      "body": "A construction's leaves are now primitives or arrays of integral or boolean elements (harness::is_leaf), with a plan or without one (equivalence::made_of), so a receiver or parameter such as Buffer(int[] data) needs no adapter of the application's. The previous version's object is made from the harness's copy of the array, so the two versions' heaps are apart, while within a version the object and the caller share the array the caller passed. The caller's array is compared after the call (array:this.data), in the harness and in the interpreter replay. The domain says each array of the construction is bounded, not null and its own, and construction::stated_bounds states the array bound, which the shared Domain::has_arrays doesn't see for an array inside an object. A plan's array values are roots or constructor arguments; their max_length must equal the check's array bound, and a null array or one value given at two paths is refused by name. A property's expressions still can't read an object's array field, refused by name as before.\n\nVerified inline (native engine, no JBMC), with three new tests in lib/tests/application_core_objects.rs. A Buffer receiver: total rewritten is verified and a defect refuted and run on a JVM; a rewrite of bump, which writes into the receiver's own array, is verified, which it wouldn't be if both versions shared the array; prove verifies size() <= 3 and refutes total() >= 0. O2's negative control: a constructor that keeps the caller's array where the previous version copied it is refuted on array:this.data alone, the receivers' fields agreeing, replayed on a JVM. A plan's array leaf is checked, and a mismatched bound and a null array are refused. The lib tests and every inline suite pass, except the contract's O3, which still fails on the frozen throttle claims' allocation bound recorded in the previous commit. No job: apart from the quote fixture's QuoteRequest, whose String argument is still refused, no example or fixture class has a constructor that takes a primitive array, so no example's result changes.",
+      "log_sha256": "6165fac44ea742c036f028b896813199c92f3f4adfc53dd9caa16c2a7c0088ed"
     }
   ],
   "logs": {
+    "6165fac44ea742c036f028b896813199c92f3f4adfc53dd9caa16c2a7c0088ed": {
+      "bytes": 5086106,
+      "lines": 1967,
+      "gzip_bytes": 867602,
+      "url": null
+    },
     "62438d21834e0f7e53152a008ab6119d60b2d964ca39c10365a53adcc778f03b": {
       "bytes": 4480535,
       "lines": 1670,

@@ -780,7 +780,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
     let mut inner = Vec::new();
     for (n, pt) in names.iter().zip(&descriptor.params) {
         match pt {
-            pt if pt.is_primitive() => {}
+            pt if harness::is_leaf(pt) => {}
             Type::Object(class) if cp.application(class)?.is_some() => match made_of(cp, class, within)? {
                 Ok(r) => inner.push(r),
                 Err(gap) => {
@@ -790,7 +790,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
             },
             other => {
                 within.pop();
-                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives or objects made by their constructors", other.java_name())));
+                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives, arrays of integral or boolean elements, or objects made by their constructors", other.java_name())));
             }
         }
         params.push((n.clone(), pt.clone()));
@@ -921,6 +921,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
             if !options.nullable.is_empty() || !options.may_alias.is_empty() {
                 return refuse(&mut out, 1, "--nullable or --may-alias with a construction plan: the plan's nodes say which inputs may be null or one object".into());
+            }
+            if let Some(problem) = [&plans.before, &plans.after].into_iter().find_map(|p| crate::construction::array_bound_problem(p, options.max_array_length)) {
+                return refuse(&mut out, 1, problem);
             }
             Some(plans)
         }
@@ -1431,7 +1434,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         domain: stated_domain.clone(),
         assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
         observations: observations.clone(),
-        bounds: crate::statement::Bounds { setup_calls: (!layout.setup.is_empty()).then_some(layout.setup.len() as u32), ..crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete) },
+        bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
         models: crate::statement::models(options.models && last.is_some()),
         checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),

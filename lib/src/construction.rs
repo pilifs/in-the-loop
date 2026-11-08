@@ -51,6 +51,17 @@ pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Resul
         for (at, value) in plan.roots.iter().map(|r| (r.name.clone(), &r.value)).chain(plan.nodes.iter().flat_map(|n| n.args.iter().map(move |a| (format!("node {}", n.id), a)))) {
             supported(version, &at, value, &mut used)?;
         }
+        // A leaf or an array is named by its path: one given at two places would be one value at two paths, which
+        // the flat parameters can't be (an array shared by two objects is the shared arrays' case).
+        let mut paths: Vec<&str> = Vec::new();
+        for value in plan.roots.iter().map(|r| &r.value).chain(plan.nodes.iter().flat_map(|n| n.args.iter())).chain(plan.setup.iter().flat_map(|c| c.args.iter())) {
+            if let PlanValue::Leaf { path, .. } | PlanValue::Array { path, .. } = value {
+                if paths.contains(&path.as_str()) {
+                    return Err(unbuilt(&format!("the {version} version's plan gives {path} twice, one value at two paths, and a plan's shared values")));
+                }
+                paths.push(path);
+            }
+        }
         if plan.setup.len() > MAX_SETUP_CALLS {
             return Err(Unsupported::new(Part::Objects, format!("the {version} version's setup sequence has {} calls: a selected sequence of at most {MAX_SETUP_CALLS} is supported, and a longer history is outside this wave", plan.setup.len())));
         }
@@ -97,6 +108,17 @@ fn java_type(name: &str) -> Option<crate::classfile::Type> {
     })
 }
 
+/// A statement's bounds, with what a construction adds: the setup sequence's length (O3), and the array bound where
+/// an object's construction takes an array (O1), which the statement's parameters alone don't show.
+pub fn stated_bounds(layout: &crate::harness::Layout, bounds: crate::statement::Bounds, max_array_length: u32) -> crate::statement::Bounds {
+    let arrays = layout.params.iter().any(|p| matches!(p.ty, crate::classfile::Type::Array(_)));
+    crate::statement::Bounds {
+        setup_calls: (!layout.setup.is_empty()).then_some(layout.setup.len() as u32),
+        max_array_length: if arrays { Some(max_array_length) } else { bounds.max_array_length },
+        ..bounds
+    }
+}
+
 /// The longest setup sequence a plan may have (O3): one or two calls, never a search over histories.
 pub const MAX_SETUP_CALLS: usize = 2;
 
@@ -115,7 +137,15 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
             Some(t) if t.is_primitive() => Ok(()),
             _ => Err(Unsupported::new(Part::Objects, format!("the {version} version's leaf {path} has type {ty}, and a leaf is a primitive"))),
         },
-        PlanValue::Array { path, .. } => Err(unbuilt(&format!("the {version} version's {at} takes the bounded array {path}, and a construction of arrays"))),
+        PlanValue::Array { path, element, nullable, .. } => {
+            if !java_type(element).is_some_and(|e| crate::harness::is_leaf(&crate::classfile::Type::Array(Box::new(e)))) {
+                return Err(Unsupported::new(Part::Objects, format!("the {version} version's array {path} has elements of type {element}: an array leaf is of integral or boolean elements")));
+            }
+            if *nullable {
+                return Err(unbuilt(&format!("the {version} version's array {path} may be null, and a plan's null array")));
+            }
+            Ok(())
+        }
         PlanValue::Adapted { path, .. } => Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, an adapted value: the values stream builds it (llm-dlc/loops/application-core-values.md)"))),
         PlanValue::Dependency { path, class } => Err(unbuilt(&format!("the {version} version's {at} takes {path}, a dependency of {class} the environment model stands for, and a construction with dependencies"))),
         PlanValue::Node { id, nullable, same_as } => {
@@ -129,6 +159,21 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
             Ok(())
         }
     }
+}
+
+/// Every bounded array of a plan, by path, with its bound: the check bounds every array by one number, so a plan's
+/// arrays must be bounded by the check's (`array_bound_problem`).
+pub fn arrays(plan: &ConstructionPlan) -> Vec<(String, u32)> {
+    plan.roots.iter().map(|r| &r.value).chain(plan.nodes.iter().flat_map(|n| n.args.iter())).filter_map(|v| match v {
+        PlanValue::Array { path, max_length, .. } => Some((path.clone(), *max_length)),
+        _ => None,
+    }).collect()
+}
+
+/// Why a plan's arrays are bounded otherwise than the check's `max_array_length`, if they are: a bound that
+/// differs would make the check about other arrays than the claim's.
+pub fn array_bound_problem(plan: &ConstructionPlan, max_array_length: u32) -> Option<String> {
+    arrays(plan).into_iter().find(|(_, n)| *n != max_array_length).map(|(path, n)| format!("the plan bounds the array {path} at {n} elements, and the check bounds every array at {max_array_length}: a bound of each array's own is not supported yet"))
 }
 
 /// What a plan makes a root: a primitive leaf of its type, or an object.
@@ -150,6 +195,13 @@ pub fn root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &st
                 return Err(Unsupported::new(Part::Objects, format!("the plan's root {name} is the leaf {path}: a primitive root's leaf is named as the root")));
             }
             let t = java_type(ty).ok_or_else(|| Unsupported::new(Part::Objects, format!("the plan's leaf {path} has type {ty}, which is no Java type")))?;
+            Ok(Some(Rooted::Leaf(t)))
+        }
+        PlanValue::Array { path, element, .. } => {
+            if path != name {
+                return Err(Unsupported::new(Part::Objects, format!("the plan's root {name} is the array {path}: an array root is named as the root")));
+            }
+            let t = java_type(element).map(|e| crate::classfile::Type::Array(Box::new(e))).ok_or_else(|| Unsupported::new(Part::Objects, format!("the plan's array {path} has elements of type {element}, which is no Java type")))?;
             Ok(Some(Rooted::Leaf(t)))
         }
         PlanValue::Node { id, .. } => node(cp, plan, *id, name, &mut Vec::new()).map(|r| Some(Rooted::Object(r))),
@@ -191,6 +243,14 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
                 }
                 if java_type(ty).as_ref() != Some(pt) {
                     return Err(gap(format!("node {id}'s argument {pname} is the leaf {leaf} of type {ty}, and the constructor takes a {}", pt.java_name())));
+                }
+            }
+            PlanValue::Array { path: leaf, element, .. } => {
+                if leaf != &at {
+                    return Err(gap(format!("node {id}'s argument {pname} is the array {leaf}, which the check names {at}: a leaf is named by its path from the root")));
+                }
+                if java_type(element).map(|e| crate::classfile::Type::Array(Box::new(e))).as_ref() != Some(pt) {
+                    return Err(gap(format!("node {id}'s argument {pname} is the array {leaf} of {element} elements, and the constructor takes a {}", pt.java_name())));
                 }
             }
             PlanValue::Node { id: inner_id, .. } => {
@@ -308,7 +368,13 @@ mod tests {
             p
         };
         let array = with_arg(PlanValue::Array { path: "m.cents".into(), element: "long".into(), max_length: 0, nullable: false });
-        assert!(check_plans(&array, &array).unwrap_err().what.contains("the objects stream builds it"));
+        check_plans(&array, &array).unwrap();
+        let null_array = with_arg(PlanValue::Array { path: "m.cents".into(), element: "long".into(), max_length: 0, nullable: true });
+        assert!(check_plans(&null_array, &null_array).unwrap_err().what.contains("the objects stream builds it"));
+        let twice = |p: &mut ConstructionPlan| p.nodes[0].args.push(PlanValue::Leaf { path: "m.cents".into(), ty: "long".into() });
+        let mut doubled = plan(1);
+        twice(&mut doubled);
+        assert!(check_plans(&doubled, &doubled).unwrap_err().what.contains("one value at two paths"));
         let dependency = with_arg(PlanValue::Dependency { path: "m.rates".into(), class: "shop.Rates".into() });
         assert!(check_plans(&dependency, &dependency).unwrap_err().what.contains("dependency"));
         let mut factory = plan(1);

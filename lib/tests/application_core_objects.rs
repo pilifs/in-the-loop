@@ -408,7 +408,7 @@ fn o3_an_input_one_versions_setup_rejects_is_a_difference() {
     let o = planned("setup-differ", &before, &rewrite, "counters.Counter#count", plans(&plan, &counter_plan(&[])));
     assert!(o.problem.as_deref().unwrap_or_default().contains("the setup sequences differ"), "{:?}", o.problem);
     // Three calls are past the sequence a plan may have.
-    let three = counter_plan(&[ADD, ADD, ADD]);
+    let three = counter_plan(&[ADD, &ADD.replace("setup.0.n", "setup.1.n"), &ADD.replace("setup.0.n", "setup.2.n")]);
     let o = planned("setup-three", &before, &rewrite, "counters.Counter#count", plans(&three, &three));
     assert!(o.problem.as_deref().unwrap_or_default().contains("at most 2"), "{:?}", o.problem);
 }
@@ -441,4 +441,124 @@ fn o3_a_property_over_the_states_a_setup_call_reaches() {
     // steps not to overflow; without the assumption the property is refuted on the overflow of 4 * this.step).
     let o = with(&one, "prop-bound", Some("this.step < 1000"), "result <= 4 * this.step && result >= 0");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+}
+
+const BUFFER: &str = r#"package buffers;
+
+/** A buffer over an int array its constructor takes: an ordinary receiver of a primitive-array constructor. */
+public class Buffer {
+    private final int[] data;
+
+    public Buffer(int[] data) {
+        if (data.length > 3) {
+            throw new IllegalArgumentException("more than 3 values");
+        }
+        this.data = data.clone();
+    }
+
+    public int total() {
+        int sum = 0;
+        for (int i = 0; i < data.length; i++) {
+            sum += data[i];
+        }
+        return sum;
+    }
+
+    public int size() {
+        return data.length;
+    }
+
+    /** Raises the first value: a mutation of the receiver's own array. */
+    public void bump() {
+        if (data.length > 0) {
+            data[0]++;
+        }
+    }
+}
+"#;
+
+fn buffer(name: &str, edit: impl Fn(&str) -> String) -> PathBuf {
+    compile(name, &[("buffers/Buffer.java", &edit(BUFFER))])
+}
+
+fn bounded(name: &str, before: &Path, after: &Path, target: &str, plan: Option<jvmcontract::construction::Plans>) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, target);
+    options.engine = jvmcontract::Engine::Native;
+    options.jbmc = NO_JBMC.into();
+    options.max_array_length = 4;
+    options.plan = plan;
+    let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    equivalence::run(&options).unwrap()
+}
+
+/// O1's arrays: a receiver whose constructor takes an int array is made with no adapter of the application's, its
+/// array a bounded leaf (`this.data`), stated in the domain and the bounds. The two versions' arrays are apart: a
+/// rewrite of a method that writes into the receiver's own array is verified, which it would not be if both
+/// versions' objects were made from one array. A rewrite of `total` is verified and a defect refuted, replayed on a
+/// JVM; a property over it is proved and a false one refuted.
+#[test]
+fn o1_a_receiver_of_a_primitive_array_constructor_needs_no_adapter() {
+    let before = buffer("buffer-before", |s| s.to_string());
+    let after = buffer("buffer-after", |s| s.replace("for (int i = 0; i < data.length; i++) {\n            sum += data[i];\n        }", "for (int v : data) {\n            sum += v;\n        }"));
+    let o = bounded("buffer-total", &before, &after, "buffers.Buffer#total", None);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let domain = o.domain.as_deref().unwrap_or_default();
+    assert!(domain.contains("Buffer(data: int[])") && domain.contains("each array of its construction of length ≤ 4, not null"), "{domain}");
+    assert_eq!(o.stated.as_ref().unwrap().bounds.max_array_length, Some(4));
+    let defect = buffer("buffer-defect", |s| s.replace("sum += data[i];", "sum += i == 2 ? 0 : data[i];"));
+    let o = bounded("buffer-total-defect", &before, &defect, "buffers.Buffer#total", None);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("this=new Buffer(["), "{}", c.input);
+    assert!(c.jvm.is_some() && o.replay.as_ref().is_some_and(|r| r.reproduced), "{}", o.output);
+    // The receiver's own array, written by both versions: apart, so a rewrite of bump is verified.
+    let rewrite = buffer("buffer-bump", |s| s.replace("data[0]++;", "data[0] = data[0] + 1;"));
+    assert_eq!(bounded("buffer-bump", &before, &rewrite, "buffers.Buffer#bump", None).verdict, Verdict::Verified);
+    // A property over the receiver made from its array: every array the constructor accepts has at most 3 values.
+    // (The assertion can't read the array field itself yet: `this.data` is refused by name.)
+    let o = prove("buffer-property", &before, "buffers.Buffer#size", None, "result <= 3");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let o = prove("buffer-property-field", &before, "buffers.Buffer#size", Some("this.data.length == 0"), "result == 0");
+    assert!(o.problem.as_deref().unwrap_or_default().contains("does not read an object's array fields yet"), "{:?}", o.problem);
+    let o = prove("buffer-property-false", &before, "buffers.Buffer#total", None, "result >= 0");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+}
+
+/// O2's negative control: an array defensively copied before, and leaked after. The new constructor keeps the
+/// caller's array, so `bump` writes into it: the caller's array as the call leaves it (`array:this.data`) differs,
+/// though the receivers' fields agree. Refuted on that alone, and replayed on a JVM.
+#[test]
+fn o2_an_array_defensively_copied_before_but_leaked_after_is_refuted() {
+    let before = buffer("leak-before", |s| s.to_string());
+    let leaked = buffer("leak-after", |s| s.replace("this.data = data.clone();", "this.data = data;"));
+    let o = bounded("leak-bump", &before, &leaked, "buffers.Buffer#bump", None);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.differs.iter().any(|d| d == "array:this.data"), "the caller's array differs: {:?}", c.differs);
+    assert!(!c.differs.iter().any(|d| d.starts_with("field:")), "the receivers' fields agree: {:?}", c.differs);
+    assert!(c.jvm.is_some() && o.replay.as_ref().is_some_and(|r| r.reproduced), "{}", o.output);
+    // total reads the array and writes nothing: the leak is no difference to it.
+    assert_eq!(bounded("leak-total", &before, &leaked, "buffers.Buffer#total", None).verdict, Verdict::Verified);
+}
+
+/// O1's arrays through a plan: `this`, a `Buffer([I)V` of the bounded array `this.data`. Its bound must be the
+/// check's, and a null or a doubly used array is refused by name until it is built.
+#[test]
+fn o1_a_plans_array_leaf_is_the_constructors_argument() {
+    let before = buffer("plan-buffer-before", |s| s.to_string());
+    let defect = buffer("plan-buffer-defect", |s| s.replace("sum += data[i];", "sum += i == 2 ? 0 : data[i];"));
+    let plan = |array: &str| format!(r#"{{"nodes": [{{"id": 0, "class": "buffers.Buffer", "maker": {{"kind": "constructor", "descriptor": "([I)V"}}, "args": [{array}]}}],
+        "roots": [{{"name": "this", "value": {{"kind": "node", "id": 0}}}}], "bounds": {{"nodes": 1, "max_array_length": 8, "setup_calls": 0}}}}"#);
+    let four = plan(r#"{"kind": "array", "path": "this.data", "element": "int", "max_length": 4}"#);
+    let o = bounded("plan-buffer", &before, &defect, "buffers.Buffer#total", Some(plans(&four, &four)));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.counterexample.as_ref().is_some_and(|c| c.jvm.is_some()), "{}", o.output);
+    let eight = plan(r#"{"kind": "array", "path": "this.data", "element": "int", "max_length": 8}"#);
+    let o = bounded("plan-buffer-eight", &before, &defect, "buffers.Buffer#total", Some(plans(&eight, &eight)));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("bounds the array this.data at 8 elements, and the check bounds every array at 4"), "{:?}", o.problem);
+    let nullable = plan(r#"{"kind": "array", "path": "this.data", "element": "int", "max_length": 4, "nullable": true}"#);
+    let o = bounded("plan-buffer-null", &before, &defect, "buffers.Buffer#total", Some(plans(&nullable, &nullable)));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("may be null") && o.problem.as_deref().unwrap_or_default().contains("the objects stream builds it"), "{:?}", o.problem);
 }

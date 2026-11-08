@@ -217,6 +217,36 @@ Never relax the interface to unblock it.
     has. The job above, `20261108-045000-…`, still covers the JBMC integration tests and examples 190–196.
   - **Next**: O2. Bounded primitive arrays as constructor leaves (`PlanValue::Array`), kept apart between the
     versions; then nullable and shared nodes; then the five negative controls.
+- 2026-11-08, **O1's arrays: a bounded primitive array as a constructor's argument**, with or without a plan, and
+  O2's negative control of an array copied before and leaked after.
+  - **What**: `harness::is_leaf`, a primitive or an array of integral or boolean elements, is what a construction
+    takes as a symbolic leaf. That covers `RecordType::made`, `emit_construct`, the interpreter's `construct` and
+    `equivalence::made_of`, so `Buffer(int[] data)` needs no adapter.
+    - **The two heaps apart**: the previous version's object is made from the harness's copy of the array, as an
+      array parameter's call is. Within a version, the object and the caller share the array the caller passed.
+    - **The caller's array**: compared after the call (`array:this.data`), and in the interpreter replay too.
+    - **The domain and the bounds**: the domain says `each array of its construction of length ≤ N, not null, and
+      no two the same array`. `construction::stated_bounds` states the array bound, which the shared
+      `Domain::has_arrays` doesn't see for an array inside an object.
+    - **A plan**: its `array` values are roots or constructor arguments. Their `max_length` must equal the check's
+      bound, or they are refused by name.
+  - **Refused by name**: a null array, one value given at two paths (`check_plans`), and a property's reading of an
+    object's array field (`this.data`, `harness/expr.rs`, unchanged).
+  - **Verified inline** (native, no JBMC). `tests/application_core_objects.rs` adds three tests:
+    - a `Buffer` receiver made with no adapter: `total` rewritten is verified and a defect refuted, run on a JVM. A
+      rewrite of `bump`, which writes into the receiver's own array, is verified, so the versions' arrays are apart.
+      `prove`'s `size() <= 3` is verified and `total() >= 0` refuted;
+    - the leak, refuted on `array:this.data` alone, the receivers' fields agreeing, and replayed on a JVM; `total`
+      over the leak is verified;
+    - a plan's array leaf, with its bound and a null array refused.
+    The lib tests (226) and every inline suite pass, except the contract's O3, which still waits on the fixture
+    finding above.
+  - **No job**: no example has an application class whose constructor takes a primitive array except the quote
+    fixture's `QuoteRequest`, whose String is still refused, so no example's result changes.
+  - **Next**: O2. Nullable and shared nodes of a plan (`same_as`, a node at two paths), the identities they make
+    rebuilt on the JVM, and the remaining negative controls: two parameters that were one object becoming distinct,
+    unsupported side effects in a constructor, and a narrower new constructor under an anchored domain. Then a
+    shrinking check of the recipe's legality, and the claim roots. Optional: array fields in property expressions.
 - Status: working
 
 ## Loop settings

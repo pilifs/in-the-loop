@@ -492,12 +492,14 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             })
             .collect()
     };
+    // Every array among the flat parameters: an array argument, or an array leaf of an object's construction (O1),
+    // which the caller still holds.
     let arrays: Vec<(u16, Ref)> = layout
-        .args
+        .params
         .iter()
-        .zip(&values)
-        .filter_map(|(slot, v)| match (slot, v) {
-            (Slot::Plain(i), Value::Ref(r)) if matches!(m.heap.get(*r), Object::Array { .. }) => Some((layout.params[*i].slot, *r)),
+        .zip(&flat)
+        .filter_map(|(p, v)| match v {
+            Value::Ref(r) if matches!(p.ty, Type::Array(_)) && matches!(m.heap.get(*r), Object::Array { .. }) => Some((p.slot, *r)),
             _ => None,
         })
         .collect();
@@ -756,7 +758,7 @@ fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Optio
     let mut nested = record.inner.iter();
     let mut args = Vec::new();
     for (_, t) in &record.params {
-        if t.is_primitive() {
+        if crate::harness::is_leaf(t) {
             args.push(match leaves.next().expect("a leaf for each primitive argument") {
                 crate::harness::Leaf::Flat(i) => flat[i],
                 // An expression over the new version's leaves (H5's rest), as the harness computes it; one that

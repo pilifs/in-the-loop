@@ -500,6 +500,13 @@ impl Fields {
     }
 }
 
+/// Whether a constructor's argument of type `t` is a leaf of its construction, a symbolic parameter of the harness:
+/// a primitive, or a bounded array of integral or boolean elements (O1 of `llm-dlc/loops/application-core-objects.md`),
+/// which the previous version is given its own copy of, as an array parameter is.
+pub fn is_leaf(t: &Type) -> bool {
+    t.is_primitive() || expr::element_ty(t).is_some()
+}
+
 impl RecordType {
     /// A record of primitive components, made by its canonical constructor.
     pub fn record(class: &str, components: Vec<(String, Type)>) -> RecordType {
@@ -512,7 +519,7 @@ impl RecordType {
         let mut components = Vec::new();
         let mut nested = inner.iter();
         for (name, t) in &params {
-            if t.is_primitive() {
+            if is_leaf(t) {
                 components.push((name.clone(), t.clone()));
             } else if let Some(made) = nested.next() {
                 components.extend(made.components.iter().map(|(c, t)| (format!("{name}.{c}"), t.clone())));
@@ -1214,7 +1221,7 @@ impl Layout {
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
                 Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| !c.same_shape) => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
-                Slot::Record { name, record, .. } => (format!("{}{}", record.domain_part(name), self.or_null(name)), false),
+                Slot::Record { name, record, .. } => (format!("{}{}{}", record.domain_part(name), arrays_of(record, max_array_length), self.or_null(name)), false),
             })
             .collect();
         let mut text = domain(parts, max_array_length);
@@ -1250,6 +1257,16 @@ impl Layout {
         let pairs: Vec<(String, String)> = self.choices.iter().flat_map(|c| c.same.iter().map(|(o, _)| (o.clone(), c.name.clone()))).collect();
         let order: Vec<String> = self.receiver.iter().chain(self.args.iter()).filter_map(|s| if let Slot::Record { name, .. } = s { Some(name.clone()) } else { None }).collect();
         alias_groups(&pairs, &order)
+    }
+}
+
+/// `, each array of length ≤ 4, not null, its own` for an object whose construction takes arrays (O1), each a leaf
+/// of its own; empty for one that takes none.
+fn arrays_of(record: &RecordType, max_array_length: u32) -> String {
+    if record.components.iter().any(|(_, t)| matches!(t, Type::Array(_))) {
+        format!(", each array of its construction of length ≤ {max_array_length}, not null, and no two the same array")
+    } else {
+        String::new()
     }
 }
 
@@ -1878,7 +1895,12 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     }
 
     // The records, from their components, in both versions; an input a constructor rejects is outside the
-    // statement, and skipped as the scope skips an input.
+    // statement, and skipped as the scope skips an input. An array leaf of the previous version's object is its
+    // copy, so that the two versions' heaps are apart, while each version's objects share what its arrays are.
+    let copied_params: Vec<Param> = params.iter().map(|p| match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
+        Some((_, copy, _)) => Param { slot: *copy, ..p.clone() },
+        None => p.clone(),
+    }).collect();
     if !records.is_empty() {
         let build_start = code.label();
         let build_end = code.label();
@@ -1917,7 +1939,8 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                         code.bind(next);
                     }
                 }
-                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut made.leaves(*first).into_iter());
+                let leaf_params = if prefix.is_some() { &copied_params } else { params };
+                emit_construct(&mut code, &mut writer.pool, made, prefix, leaf_params, &mut made.leaves(*first).into_iter());
                 code.store(Kind::Ref, local);
                 code.bind(done);
             }
@@ -2647,7 +2670,7 @@ fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     code.op(0x59); // dup
     let mut nested = record.inner.iter();
     for (_, t) in &record.params {
-        if t.is_primitive() {
+        if is_leaf(t) {
             match leaves.next().expect("a leaf for each primitive argument") {
                 Leaf::Flat(leaf) => code.load(kind_of(t), params[leaf].slot),
                 // An expression over the new version's leaves (H5's rest), compiled over their locals; one that
