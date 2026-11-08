@@ -297,7 +297,7 @@ fn a_helpers_summary_rests_on_its_own_proof_and_a_helper_reading_an_extra_field_
     assert_eq!(summary.helper, "quotes.QuoteService#fee(I)J");
     assert_eq!(summary.reads, ["this.feeCents", "arg0"]);
     assert!(summary.facts.is_empty() && summary.depends_on.is_empty(), "{summary:?}");
-    assert_eq!((summary.relation.clone(), summary.effects.clone()), (OutcomeRelation::Equal, Effects::ReadOnly));
+    assert_eq!((summary.relation.clone(), summary.effects.clone()), (OutcomeRelation::Equal {}, Effects::ReadOnly {}));
     assert!(summary.domain.contains("every value of the fields it reads (this.feeCents) and of its arguments"), "{}", summary.domain);
     let hex = summary.proof.strip_prefix("sha256:").expect("a claim key");
     let stored: serde_json::Value = serde_json::from_slice(&std::fs::read(cache.join("claims").join(&hex[..2]).join(format!("{hex}.json"))).unwrap()).unwrap();

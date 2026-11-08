@@ -11,7 +11,9 @@
 //! | [`Summary`] | the pre-state and read footprint a helper's proof needs, its alias facts, domain and bounds, the relation between outcomes, its effects, and the keys of the proofs it depends on | reuse ([`crate::reuse`]); then the checker and claim reporting |
 //!
 //! Every struct here refuses an unknown field, and every enum an unknown variant, so that what one stream adds is
-//! never read as absent by another. The file is the planning session's: a stream asks for a change under its
+//! never read as absent by another. A variant without fields is an empty struct variant (`Query {}`), never a unit
+//! one: serde's `deny_unknown_fields` doesn't reach a unit variant of an internally tagged enum, which took
+//! `{"kind": "per-call", "results": [0, 1]}` as a per-call choice with its script dropped. The file is the planning session's: a stream asks for a change under its
 //! Progress, or makes a purely additive one in a block marked with its name. Until a stream implements its part,
 //! its module returns [`super::Unsupported`] naming it, and the claim that needs it is refused.
 
@@ -215,7 +217,7 @@ pub struct ValueDomain {
 #[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum ValueKind {
     /// UTF-16 code units, any of them: surrogates alone, an embedded NUL. Content equality is not identity.
-    String,
+    String {},
     /// One bounded immutable-list family (`List.of`, `List.copyOf`), its elements of `element`.
     List { element: ElementKind },
 }
@@ -226,7 +228,8 @@ pub enum ValueKind {
 pub enum ElementKind {
     /// Objects of an application class, made as the construction plan makes one.
     Object { class: String },
-    String,
+    /// Strings of at most `max_length` UTF-16 code units each: a bound of its own, apart from the list's length.
+    String { max_length: u32 },
 }
 
 /// What a model's behaviour rests on.
@@ -257,7 +260,7 @@ pub enum EvidenceLevel {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum WitnessValue {
-    Null,
+    Null {},
     /// Its UTF-16 code units, never a Rust string, so that no content is lost or made well-formed.
     String { units: Vec<u16> },
     /// The elements, in order: a node at two indices is one object.
@@ -289,7 +292,7 @@ pub struct CallModel {
 pub enum Coupling {
     /// A deterministic read-only query of one declared snapshot: equal keys get equal results, and different keys
     /// independent ones, never by the call's position. Stateless: no read after a write.
-    Query,
+    Query {},
     /// A declared nondeterministic or fallible operation, under an occurrence policy.
     Choice { policy: Occurrence },
 }
@@ -299,7 +302,7 @@ pub enum Coupling {
 pub enum Occurrence {
     /// Each call chooses among the results; corresponding calls of the two versions (same id, key and occurrence
     /// of that key) get the same choice.
-    PerCall,
+    PerCall {},
     /// A finite script, by index into the results, in order of calls.
     Script { results: Vec<u32> },
 }
@@ -318,7 +321,7 @@ pub enum ModelledResult {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum Returned {
-    Void,
+    Void {},
     /// A symbolic value of a primitive Java type, integral or boolean.
     Primitive {
         #[serde(rename = "type")]
@@ -368,7 +371,7 @@ pub struct Summary {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum OutcomeRelation {
-    Equal,
+    Equal {},
     /// A relation over `old.` and `new.` a person stated.
     Stated { holds: String },
 }
@@ -378,7 +381,7 @@ pub enum OutcomeRelation {
 #[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum Effects {
     /// It reads its footprint and nothing else: no write, allocation, external call, or exception it makes.
-    ReadOnly,
+    ReadOnly {},
     /// It writes this fixed footprint of primitive fields of the receiver, and nothing else (the optional R4).
     Writes { fields: Vec<String> },
 }
@@ -470,10 +473,38 @@ mod tests {
         refused::<Summary>({ let mut s = summary(); s["effects"] = json!({"kind": "anything"}); s }, "unknown variant `anything`");
     }
 
+    /// A variant without fields refuses one as every other variant does: serde's `deny_unknown_fields` doesn't reach
+    /// a unit variant of an internally tagged enum, which would take `{"kind": "per-call", "results": [0, 1]}` as a
+    /// per-call choice with its script dropped, or a list of Strings' element bound as no bound at all.
+    #[test]
+    fn a_variant_without_fields_refuses_one() {
+        refused::<ValueKind>(json!({"kind": "string", "max_length": 4}), "unknown field `max_length`");
+        refused::<ElementKind>(json!({"kind": "string", "class": "shop.Line"}), "unknown field `class`");
+        refused::<WitnessValue>(json!({"kind": "null", "units": [97]}), "unknown field `units`");
+        refused::<Coupling>(json!({"kind": "query", "policy": {"kind": "per-call"}}), "unknown field `policy`");
+        refused::<Occurrence>(json!({"kind": "per-call", "results": [0, 1]}), "unknown field `results`");
+        refused::<Returned>(json!({"kind": "void", "type": "int"}), "unknown field `type`");
+        refused::<OutcomeRelation>(json!({"kind": "equal", "holds": "old.r <= new.r"}), "unknown field `holds`");
+        refused::<Effects>(json!({"kind": "read-only", "fields": ["count"]}), "unknown field `fields`");
+        // And each still reads as itself.
+        let _: Coupling = round_trips(json!({"kind": "query"}));
+        let _: Occurrence = round_trips(json!({"kind": "per-call"}));
+        let _: Returned = round_trips(json!({"kind": "void"}));
+        let _: OutcomeRelation = round_trips(json!({"kind": "equal"}));
+        let _: Effects = round_trips(json!({"kind": "read-only"}));
+        let _: WitnessValue = round_trips(json!({"kind": "null"}));
+        let _: ValueKind = round_trips(json!({"kind": "string"}));
+    }
+
     #[test]
     fn values_and_witnesses_round_trip_with_every_code_unit() {
         let list: ValueDomain = round_trips(json!({"kind": {"kind": "list", "element": {"kind": "object", "class": "shop.Line"}}, "nullable": true, "max_length": 3, "model": evidence()}));
         assert_eq!(list.model.level, EvidenceLevel::Tested);
+        // A list of Strings bounds its elements' code units, apart from the list's own length; a bound left out is
+        // refused, never taken as some default.
+        let strings: ValueDomain = round_trips(json!({"kind": {"kind": "list", "element": {"kind": "string", "max_length": 4}}, "nullable": false, "max_length": 3, "model": evidence()}));
+        assert_eq!(strings.kind, ValueKind::List { element: ElementKind::String { max_length: 4 } });
+        refused::<ValueDomain>(json!({"kind": {"kind": "list", "element": {"kind": "string"}}, "nullable": false, "max_length": 3, "model": evidence()}), "missing field `max_length`");
         // An isolated surrogate and an embedded NUL are code units like any other.
         let w: WitnessValue = round_trips(json!({"kind": "list", "elements": [{"kind": "string", "units": [0xD800, 0, 97]}, {"kind": "node", "id": 4}, {"kind": "node", "id": 4}, {"kind": "null"}]}));
         let WitnessValue::List { elements } = w else { panic!() };
@@ -489,7 +520,7 @@ mod tests {
             "results": [{"kind": "returns", "value": {"kind": "primitive", "type": "long"}}, {"kind": "throws", "class": "java.io.IOException"}],
             "bound": 2
         }));
-        assert_eq!(rates.coupling, Coupling::Query);
+        assert_eq!(rates.coupling, Coupling::Query {});
         let mut dto = quote_plan();
         dto["setup"] = json!([]);
         dto.as_object_mut().unwrap().remove("setup");
@@ -519,6 +550,6 @@ mod tests {
     #[test]
     fn a_summary_round_trips() {
         let s: Summary = round_trips(summary());
-        assert_eq!((s.relation, s.effects), (OutcomeRelation::Equal, Effects::ReadOnly));
+        assert_eq!((s.relation, s.effects), (OutcomeRelation::Equal {}, Effects::ReadOnly {}));
     }
 }

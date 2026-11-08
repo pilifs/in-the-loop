@@ -206,7 +206,7 @@ pub enum Witnessed {
 
 impl StringAdapter {
     pub fn new(max_length: u32, nullable: bool) -> StringAdapter {
-        StringAdapter { domain: ValueDomain { kind: ValueKind::String, nullable, max_length, model: string_model() } }
+        StringAdapter { domain: ValueDomain { kind: ValueKind::String {}, nullable, max_length, model: string_model() } }
     }
 
     /// The bound, as the own checker takes it. Whether a String parameter may be null, or one object with another,
@@ -227,7 +227,7 @@ impl StringAdapter {
         let gap = |what: String| Unsupported::new(Part::Values, format!("the witness's String in slot {slot}: {what}"));
         match raw_arrays.get(&slot) {
             None => Err(gap("the witness has none".into())),
-            Some(None) if self.domain.nullable => Ok(Witnessed::Value(WitnessValue::Null)),
+            Some(None) if self.domain.nullable => Ok(Witnessed::Value(WitnessValue::Null {})),
             Some(None) => Err(gap("null, outside a domain that isn't nullable".into())),
             Some(Some(raw)) => {
                 let units = string_units(raw).map_err(gap)?;
@@ -253,7 +253,7 @@ impl ValueAdapter for StringAdapter {
     fn encode(&self, machine: &Machine<'_>, value: Value, _: &Nodes) -> Result<WitnessValue, Unsupported> {
         let gap = |what: String| Unsupported::new(Part::Values, format!("a String to encode: {what}"));
         match value {
-            Value::Null if self.domain.nullable => Ok(WitnessValue::Null),
+            Value::Null if self.domain.nullable => Ok(WitnessValue::Null {}),
             Value::Null => Err(gap("null, outside a domain that isn't nullable".into())),
             Value::Ref(_) => {
                 let Some(s) = machine.units_of(value) else {
@@ -269,8 +269,8 @@ impl ValueAdapter for StringAdapter {
     fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue, _: &Nodes) -> Result<Value, Unsupported> {
         let gap = |what: String| Unsupported::new(Part::Values, format!("a String to rebuild: {what}"));
         match witness {
-            WitnessValue::Null if self.domain.nullable => Ok(Value::Null),
-            WitnessValue::Null => Err(gap("null, outside a domain that isn't nullable".into())),
+            WitnessValue::Null {} if self.domain.nullable => Ok(Value::Null),
+            WitnessValue::Null {} => Err(gap("null, outside a domain that isn't nullable".into())),
             WitnessValue::String { units } => {
                 self.within(units.len()).map_err(gap)?;
                 Ok(new_string(machine, units))
@@ -323,7 +323,7 @@ pub fn list_model() -> ModelEvidence {
         leaves_out: vec![
             "every List implementation but the JDK's immutable List12, ListN and its one empty list: a list made otherwise (an ArrayList) is refused as an input, and copyOf of one reaches its JDK calls, named gaps".into(),
             format!("List.of's array form, for more than {MAX_LIST_LENGTH} elements: no harness makes one"),
-            "lists of Strings: the shared ElementKind::String has no bound for its elements' code units yet".into(),
+            "lists of Strings (ElementKind::String, with its elements' bound): the adapter makes lists of an application class's objects only, and refuses a list of Strings by name".into(),
             "the models' methods beyond the calls values::OPERATIONS samples (contains, indexOf, equals, hashCode, toArray, addAll, sort, the array form of List.of and the like): the own checker meets each as the JDK call it is, a named gap, though JBMC runs the models' bytecode for them".into(),
             "the interpreter's getClass of a list of one or two elements, which names ListN where the JVM's is List12".into(),
         ],
@@ -347,11 +347,12 @@ pub struct ListAdapter {
 
 impl ListAdapter {
     /// A list of objects of `element` (an `ElementKind::Object`'s Java class name), of at most `max_length`. A
-    /// list of Strings, or one longer than [`MAX_LIST_LENGTH`], is refused by name.
+    /// list of Strings, or one longer than [`MAX_LIST_LENGTH`], is refused by name: the domain bounds a list of
+    /// Strings' elements, but no acceptance case needs one, so no harness, witness or replay makes it.
     pub fn new(element: ElementKind, max_length: u32, nullable: bool) -> Result<ListAdapter, Unsupported> {
         let class = match &element {
             ElementKind::Object { class } => class.clone(),
-            ElementKind::String => return Err(Unsupported::new(Part::Values, "a list of Strings: the shared ElementKind::String has no bound for its elements' code units yet, so the adapter can't bound them (an interface request of the values stream, for the merge)")),
+            ElementKind::String { max_length: units } => return Err(Unsupported::new(Part::Values, format!("a list of Strings, each of at most {units} code units: the list adapter makes lists of an application class's objects only, and no acceptance case needs a list of Strings, so no harness, witness or replay makes one"))),
         };
         if max_length > MAX_LIST_LENGTH {
             return Err(Unsupported::new(Part::Values, format!("a list of up to {max_length} elements: the adapter makes lists by List.of's fixed forms, of at most {MAX_LIST_LENGTH}, and its array form is outside the family")));
@@ -429,7 +430,7 @@ impl ListAdapter {
         let mut rest = choices;
         if self.domain.nullable {
             match rest[0] {
-                1 => return Ok(WitnessValue::Null),
+                1 => return Ok(WitnessValue::Null {}),
                 0 => {}
                 other => return Err(gap(format!("the null choice {other}, not 0 or 1"))),
             }
@@ -468,7 +469,7 @@ impl ValueAdapter for ListAdapter {
     fn encode(&self, machine: &Machine<'_>, value: Value, nodes: &Nodes) -> Result<WitnessValue, Unsupported> {
         let gap = |what: String| Unsupported::new(Part::Values, format!("a list to encode: {what}"));
         let r = match value {
-            Value::Null if self.domain.nullable => return Ok(WitnessValue::Null),
+            Value::Null if self.domain.nullable => return Ok(WitnessValue::Null {}),
             Value::Null => return Err(gap("null, outside a domain that isn't nullable".into())),
             Value::Ref(r) => r,
             other => return Err(gap(format!("{other:?}, not a reference"))),
@@ -493,8 +494,8 @@ impl ValueAdapter for ListAdapter {
     fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue, nodes: &Nodes) -> Result<Value, Unsupported> {
         let gap = |what: String| Unsupported::new(Part::Values, format!("a list to rebuild: {what}"));
         match witness {
-            WitnessValue::Null if self.domain.nullable => Ok(Value::Null),
-            WitnessValue::Null => Err(gap("null, outside a domain that isn't nullable".into())),
+            WitnessValue::Null {} if self.domain.nullable => Ok(Value::Null),
+            WitnessValue::Null {} => Err(gap("null, outside a domain that isn't nullable".into())),
             WitnessValue::List { elements } => {
                 self.within(elements.len()).map_err(gap)?;
                 let values = elements
@@ -555,7 +556,7 @@ impl ValueModels {
     /// evidence, and a claim that names less still runs under all of it.
     pub fn resolve(&self, stated: &ValueDomain) -> Result<ValueDomain, Unsupported> {
         let (model, words, family) = match &stated.kind {
-            ValueKind::String => (&self.string, STATED_STRING_MODEL, "String"),
+            ValueKind::String {} => (&self.string, STATED_STRING_MODEL, "String"),
             ValueKind::List { element } => {
                 ListAdapter::new(element.clone(), stated.max_length, stated.nullable)?;
                 (&self.list, STATED_LIST_MODEL, "list")
@@ -958,7 +959,7 @@ mod tests {
     fn a_string_has_its_adapter_and_a_list_is_refused_by_name_where_its_element_class_is_unknown() {
         let string = adapter(&Type::Object(STRING.into()), 8).expect("a regression check takes a String");
         let d = string.domain();
-        assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::String, false, 8));
+        assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::String {}, false, 8));
         assert_eq!(d.model, string_model());
         let ty = Type::Object(LIST.into());
         assert!(is_adapted(&ty));
@@ -979,7 +980,7 @@ mod tests {
     fn a_strings_domain_states_its_bound_and_its_models_evidence() {
         let a = StringAdapter::new(5, true);
         let d = a.domain();
-        assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::String, true, 5));
+        assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::String {}, true, 5));
         assert_eq!(d.model.level, EvidenceLevel::Tested, "sampled conformance is tested, never proved");
         assert_eq!(d.model.jdk, STRING_MODEL_JDK);
         assert!(d.model.leaves_out.iter().any(|l| l.contains("MAX_STRING_CONTENT")));
@@ -1001,7 +1002,7 @@ mod tests {
         let arrays = BTreeMap::from([(0, raw(&[0xD800, 0, 0xDE00])), (1, None), (3, raw(&[1, 2, 3, 4])), (4, Some(vec!["65536".into()]))]);
         let same = BTreeMap::from([(2, 0)]);
         assert_eq!(a.read(&arrays, &same, 0).unwrap(), Witnessed::Value(WitnessValue::String { units: vec![0xD800, 0, 0xDE00] }));
-        assert_eq!(a.read(&arrays, &same, 1).unwrap(), Witnessed::Value(WitnessValue::Null));
+        assert_eq!(a.read(&arrays, &same, 1).unwrap(), Witnessed::Value(WitnessValue::Null {}));
         assert_eq!(a.read(&arrays, &same, 2).unwrap(), Witnessed::SameAs(0));
         let long = a.read(&arrays, &same, 3).unwrap_err();
         assert!(long.what.contains("4 code units, beyond the domain's bound of 3"), "{long}");
@@ -1023,8 +1024,8 @@ mod tests {
             assert_eq!(m.units_of(v).unwrap().units(), &units[..]);
             assert_eq!(a.encode(&m, v, &none).unwrap(), w);
         }
-        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null, &none).unwrap(), Value::Null);
-        assert_eq!(a.encode(&m, Value::Null, &none).unwrap(), WitnessValue::Null);
+        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null {}, &none).unwrap(), Value::Null);
+        assert_eq!(a.encode(&m, Value::Null, &none).unwrap(), WitnessValue::Null {});
         let five = WitnessValue::String { units: vec![1; 5] };
         assert!(a.rebuild(&mut m, &five, &none).unwrap_err().what.contains("beyond the domain's bound of 4"));
         let long = m.new_string(JStr::from_units(vec![1; 5]));
@@ -1032,7 +1033,7 @@ mod tests {
         assert!(a.encode(&m, Value::Int(3), &none).is_err());
         assert!(a.rebuild(&mut m, &WitnessValue::Node { id: 1 }, &none).is_err());
         let strict = StringAdapter::new(4, false);
-        assert!(strict.encode(&m, Value::Null, &none).is_err() && strict.rebuild(&mut m, &WitnessValue::Null, &none).is_err());
+        assert!(strict.encode(&m, Value::Null, &none).is_err() && strict.rebuild(&mut m, &WitnessValue::Null {}, &none).is_err());
     }
 
     fn line() -> ElementKind {
@@ -1054,7 +1055,7 @@ mod tests {
         let json = serde_json::to_value(d).unwrap();
         assert_eq!(serde_json::from_value::<ValueDomain>(json).unwrap(), *d);
         // Lists of Strings, and lists past List.of's fixed forms, are refused by name.
-        assert!(ListAdapter::new(ElementKind::String, 3, false).unwrap_err().what.contains("no bound for its elements"));
+        assert!(ListAdapter::new(ElementKind::String { max_length: 4 }, 3, false).unwrap_err().what.contains("a list of Strings, each of at most 4 code units"));
         assert!(ListAdapter::new(line(), MAX_LIST_LENGTH + 1, false).unwrap_err().what.contains("array form"));
         assert!(ListAdapter::new(line(), MAX_LIST_LENGTH, false).is_ok());
     }
@@ -1085,7 +1086,7 @@ mod tests {
         let made = [7, 8, 9];
         let node = |id| WitnessValue::Node { id };
         let list = |ids: &[u32]| WitnessValue::List { elements: ids.iter().map(|&i| node(i)).collect() };
-        assert_eq!(a.read(&[1, 0, 0, 0], &made).unwrap(), WitnessValue::Null);
+        assert_eq!(a.read(&[1, 0, 0, 0], &made).unwrap(), WitnessValue::Null {});
         assert_eq!(a.read(&[0, 0, 1, 2], &made).unwrap(), list(&[]));
         assert_eq!(a.read(&[0, 3, 0, 0], &made).unwrap(), list(&[7, 7, 7]), "duplicates: one object three times");
         assert_eq!(a.read(&[0, 3, 1, 1], &made).unwrap(), list(&[7, 8, 8]));
@@ -1128,8 +1129,8 @@ mod tests {
         }
         let again = a.rebuild(&mut m, &WitnessValue::List { elements: vec![] }, &nodes).unwrap();
         assert_eq!(again, empties[0], "the one empty list, as List.of() gives");
-        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null, &nodes).unwrap(), Value::Null);
-        assert_eq!(a.encode(&m, Value::Null, &nodes).unwrap(), WitnessValue::Null);
+        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null {}, &nodes).unwrap(), Value::Null);
+        assert_eq!(a.encode(&m, Value::Null, &nodes).unwrap(), WitnessValue::Null {});
         // Outside the domain: refused, never cut, copied or invented.
         let four = WitnessValue::List { elements: vec![node(4); 4] };
         assert!(a.rebuild(&mut m, &four, &nodes).unwrap_err().what.contains("beyond the domain's bound of 3"));
@@ -1137,14 +1138,14 @@ mod tests {
         let long = m.immutable_list(vec![o; 4]);
         assert!(a.encode(&m, long, &nodes).unwrap_err().what.contains("never cut"));
         assert!(a.rebuild(&mut m, &WitnessValue::List { elements: vec![node(9)] }, &nodes).unwrap_err().what.contains("hasn't made"));
-        assert!(a.rebuild(&mut m, &WitnessValue::List { elements: vec![WitnessValue::Null] }, &nodes).is_err());
+        assert!(a.rebuild(&mut m, &WitnessValue::List { elements: vec![WitnessValue::Null {}] }, &nodes).is_err());
         let stranger = m.new_string(JStr::from_units(vec![1]));
         let with_stranger = m.immutable_list(vec![stranger]);
         assert!(a.encode(&m, with_stranger, &nodes).unwrap_err().what.contains("no object of the construction plan"));
         let mutable = Value::Ref(m.alloc_native(Native::List { elements: vec![o], mutable: true }));
         assert!(a.encode(&m, mutable, &nodes).unwrap_err().what.contains("java.util.ArrayList"));
         let strict = ListAdapter::new(line(), 3, false).unwrap();
-        assert!(strict.encode(&m, Value::Null, &nodes).is_err() && strict.rebuild(&mut m, &WitnessValue::Null, &nodes).is_err());
+        assert!(strict.encode(&m, Value::Null, &nodes).is_err() && strict.rebuild(&mut m, &WitnessValue::Null {}, &nodes).is_err());
     }
 
     fn stated(kind: ValueKind, max_length: u32, source: &str, level: EvidenceLevel) -> ValueDomain {
@@ -1156,7 +1157,7 @@ mod tests {
     fn a_claims_value_domain_resolves_to_this_tools_model_and_keeps_its_bounds() {
         let list = ValueKind::List { element: line() };
         // In the frozen claims' words: the adapter's domain, with the model's identity, JDK, level and omissions.
-        let s = resolve(&stated(ValueKind::String, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap();
+        let s = resolve(&stated(ValueKind::String {}, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap();
         assert_eq!(s, *StringAdapter::new(5, true).domain());
         let l = resolve(&stated(list.clone(), 3, STATED_LIST_MODEL, EvidenceLevel::Modelled)).unwrap();
         assert_eq!(l, *ListAdapter::new(line(), 3, true).unwrap().domain());
@@ -1169,9 +1170,9 @@ mod tests {
         changed.list.source = format!("{LIST_MODEL}; models sha256 {}", "0".repeat(64));
         let l2 = changed.resolve(&stated(list.clone(), 3, STATED_LIST_MODEL, EvidenceLevel::Modelled)).unwrap();
         assert_ne!(l2, l);
-        assert_eq!(changed.resolve(&stated(ValueKind::String, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap(), s);
+        assert_eq!(changed.resolve(&stated(ValueKind::String {}, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap(), s);
         changed.string.source = STRING_MODEL.replace("model 1", "model 2");
-        assert_ne!(changed.resolve(&stated(ValueKind::String, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap(), s);
+        assert_ne!(changed.resolve(&stated(ValueKind::String {}, 5, STATED_STRING_MODEL, EvidenceLevel::Modelled)).unwrap(), s);
     }
 
     #[test]
@@ -1187,21 +1188,21 @@ mod tests {
         let other = format!("{LIST_MODEL}; models sha256 {}", "0".repeat(64));
         refused(stated(list.clone(), 3, &other, EvidenceLevel::Tested), "evidence of another model's semantics isn't this one's");
         // One family's words for the other's.
-        refused(stated(ValueKind::String, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "this tool's String model is");
+        refused(stated(ValueKind::String {}, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "this tool's String model is");
         refused(stated(list.clone(), 3, STATED_STRING_MODEL, EvidenceLevel::Tested), "this tool's list model is");
-        let mut jdk = stated(ValueKind::String, 3, STATED_STRING_MODEL, EvidenceLevel::Tested);
+        let mut jdk = stated(ValueKind::String {}, 3, STATED_STRING_MODEL, EvidenceLevel::Tested);
         jdk.model.jdk = "21.0.2".into();
         refused(jdk, "sampled on JDK 25.0.5");
-        refused(stated(ValueKind::String, 3, &string_model().source, EvidenceLevel::Proved), "never borrows a stronger level");
+        refused(stated(ValueKind::String {}, 3, &string_model().source, EvidenceLevel::Proved), "never borrows a stronger level");
         let mut proved = ValueModels::current();
         proved.string.level = EvidenceLevel::Modelled;
-        assert!(proved.resolve(&stated(ValueKind::String, 3, &string_model().source, EvidenceLevel::Tested)).unwrap_err().what.contains("stated as Tested"));
+        assert!(proved.resolve(&stated(ValueKind::String {}, 3, &string_model().source, EvidenceLevel::Tested)).unwrap_err().what.contains("stated as Tested"));
         // Weaker levels are the claim's to state; the model's evidence is what the domain carries.
         for level in [EvidenceLevel::Implemented, EvidenceLevel::Modelled, EvidenceLevel::Trusted, EvidenceLevel::Tested] {
-            assert_eq!(resolve(&stated(ValueKind::String, 3, &string_model().source, level)).unwrap().model.level, EvidenceLevel::Tested);
+            assert_eq!(resolve(&stated(ValueKind::String {}, 3, &string_model().source, level)).unwrap().model.level, EvidenceLevel::Tested);
         }
         // What the adapters refuse.
-        refused(stated(ValueKind::List { element: ElementKind::String }, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "a list of Strings");
+        refused(stated(ValueKind::List { element: ElementKind::String { max_length: 4 } }, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "a list of Strings");
         refused(stated(list, MAX_LIST_LENGTH + 1, STATED_LIST_MODEL, EvidenceLevel::Tested), "array form is outside the family");
     }
 
@@ -1255,7 +1256,7 @@ mod tests {
                     }
                 }
                 for (adapter, label) in [(&a, "nullable"), (&strict, "not nullable")] {
-                    let rebuilt = adapter.rebuild(&mut m, &WitnessValue::Null, &nodes).map_or("refused".to_string(), |v| format!("{v:?}"));
+                    let rebuilt = adapter.rebuild(&mut m, &WitnessValue::Null {}, &nodes).map_or("refused".to_string(), |v| format!("{v:?}"));
                     out.push(format!("null, {label}: encoded {}, rebuilt {rebuilt}", shown(adapter.encode(&m, Value::Null, &nodes))));
                 }
                 out.push(format!("rebuild a list's witness: {}", a.rebuild(&mut m, &WitnessValue::List { elements: vec![] }, &nodes).map_or("refused", |_| "taken")));
@@ -1303,7 +1304,7 @@ mod tests {
                 out.push(format!("encode a list of an object the plan didn't make: {}", shown(a.encode(&m, with_stranger, &nodes))));
                 out.push(format!("rebuild a String's witness as an element: {}", a.rebuild(&mut m, &WitnessValue::List { elements: vec![WitnessValue::String { units: vec![] }] }, &nodes).map_or("refused", |_| "taken")));
                 for (adapter, label) in [(&a, "nullable"), (&strict, "not nullable")] {
-                    let rebuilt = adapter.rebuild(&mut m, &WitnessValue::Null, &nodes).map_or("refused".to_string(), |v| format!("{v:?}"));
+                    let rebuilt = adapter.rebuild(&mut m, &WitnessValue::Null {}, &nodes).map_or("refused".to_string(), |v| format!("{v:?}"));
                     out.push(format!("null, {label}: encoded {}, rebuilt {rebuilt}", shown(adapter.encode(&m, Value::Null, &nodes))));
                 }
             }

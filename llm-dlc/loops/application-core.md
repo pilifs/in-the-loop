@@ -1020,6 +1020,40 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
       `foundations` 5, and the Python suites.
   - **Docs**: `lib/README.md`'s values paragraph, and `bmc`'s module table.
   - **Next**: the rest of item 6, `ElementKind::String`'s bound and `compare` with a plan per subject. Then item 7.
+- 2026-11-08, **Phase 5 step 1, interface request 6 (`ElementKind::String`'s bound): a list of Strings bounds its
+  elements**, and no variant of the shared interfaces drops a field it doesn't have.
+  - **The reproducers**, each failing before:
+    - `spec::plans`' `values_and_witnesses_round_trip_with_every_code_unit`: a list of Strings stated with its
+      elements' bound (`{"kind": "string", "max_length": 4}`) read back **without** it. The unit variant
+      `ElementKind::String` took the field and dropped it, though the enum denies unknown fields.
+    - The new `a_variant_without_fields_refuses_one`: every unit variant of `spec/plans.rs` did the same, all eight
+      (`ValueKind::String`, `ElementKind::String`, `WitnessValue::Null`, `Coupling::Query`, `Occurrence::PerCall`,
+      `Returned::Void`, `OutcomeRelation::Equal`, `Effects::ReadOnly`). serde's `deny_unknown_fields` doesn't reach a
+      unit variant of an internally tagged enum. So `{"kind": "per-call", "results": [0, 1]}` in an `--environment`
+      file was a per-call choice with its script dropped, and `{"kind": "read-only", "fields": [...]}` a read-only
+      summary: a mode stated and not read, which Phase 0's gate and the contract's adversarial checks forbid.
+    - `tests/value_parameters.rs`' list refusals: a `List<String>` parameter was refused as "java.lang.String, which
+      is no application class", not as a list of Strings.
+  - **The change**:
+    - `ElementKind::String { max_length }`: the elements' code units, bounded apart from the list's length. A bound
+      left out is refused.
+    - Each unit variant of `spec/plans.rs` is an empty struct variant (`Query {}`), which `deny_unknown_fields`
+      reaches. The JSON is the same, so no frozen fixture or claim key changes for it.
+    - `values::ListAdapter` still refuses a list of Strings by name, now for what is true: it makes lists of an
+      application class's objects only, and no acceptance case needs a list of Strings, so no harness, witness or
+      replay makes one. The list model's record says the same. That record is part of the list model's identity, so
+      every list claim gets a new key, a cache miss.
+    - A regression check's `List<String>` parameter is refused in the adapter's words, its elements bounded as a
+      String parameter is (`--max-array-length`).
+  - **Checks**: the library's unit tests 257; `values` 18, `value_parameters` 10, `reuse` 12, `environment` 17,
+    `environment_responses` 8, `environment_quotes` 4, `reuse_summaries` 14, `application_core_objects` 22, `heap`
+    49, `string_literals` 2, `alignment` 34, `conformance` 10, `observations` 12, `summaries` 40, `skill` 1. The
+    integration check passes: the contract 14 of 14 (every frozen claim still reads), the unit tests, `compare` 1,
+    `effects` 19, `foundations` 5, and the Python suites.
+  - **For the for-review list**: a list of Strings stays refused by name. Its domain can now say its bound, but
+    building it would be a capability of its own (harness, witness, replay), and no row needs it.
+  - **Docs**: `lib/README.md`'s list paragraph and its interfaces paragraph, and the module doc of `spec::plans`.
+  - **Next**: the last of item 6, `compare` with a plan per subject. Then item 7.
 - Status: working
 
 ## Loop settings

@@ -777,7 +777,10 @@ fn record_of(cp: &ClassPath, t: &Type) -> Result<Option<harness::RecordType>, Er
 /// components, whose construction takes primitives only and whose fields are primitive, so that the harness's
 /// comparison of its fields after the call is all there is to an element (no array, no inner object, no identity
 /// among references). Anything else, a raw `List`, a wildcard or a type variable included, is refused by name.
-fn list_element(cp: &ClassPath, method: &crate::classfile::Method, pool: &crate::classfile::ConstantPool, index: usize) -> Result<Result<harness::RecordType, String>, Error> {
+/// The element class of the list parameter `index` of `method`, as a regression check makes its elements. A list of
+/// Strings is refused by the list adapter's words, its elements bounded as a String parameter is, at `string_units`
+/// code units (`--max-array-length`).
+fn list_element(cp: &ClassPath, method: &crate::classfile::Method, pool: &crate::classfile::ConstantPool, index: usize, string_units: u32) -> Result<Result<harness::RecordType, String>, Error> {
     use crate::classfile::signature::{method_parts, parse_type, Sig};
     let part = method.generic_signature(pool).and_then(|s| method_parts(&s)).and_then(|(params, _)| params.get(index).cloned());
     let element = match part.as_deref().and_then(parse_type) {
@@ -787,6 +790,10 @@ fn list_element(cp: &ClassPath, method: &crate::classfile::Method, pool: &crate:
         },
         _ => return Ok(Err("its generic signature doesn't name the elements' class (a raw List), which the list adapter makes".into())),
     };
+    if element == "java/lang/String" {
+        let refused = crate::values::ListAdapter::new(crate::spec::plans::ElementKind::String { max_length: string_units }, 0, false).err().map(|u| u.what);
+        return Ok(Err(refused.expect("the list adapter refuses a list of Strings")));
+    }
     let t = Type::Object(element.clone());
     let record = match object_of(cp, &t)? {
         Ok(Some(r)) => r,
@@ -1068,7 +1075,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() || options.correspondence.as_ref().is_some_and(|c| !c.inputs.is_empty() || !c.outputs.is_empty()) {
                 return refuse(&mut out, line, format!("parameter {name} is a list: a list parameter with --before-target, --before-arguments, --results-agree-when or a correspondence is not supported yet; both versions are given the same list's elements"));
             }
-            let element = match list_element(&after_cp, &method, &class.pool, i)? {
+            let element = match list_element(&after_cp, &method, &class.pool, i, options.max_array_length)? {
                 Ok(e) => e,
                 Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}: {gap}", t.java_name())),
             };
@@ -1417,7 +1424,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             None => None,
             Some(after) => {
                 let name = &names[i];
-                match list_element(&before_cp, &before_method, &before_class.pool, i)? {
+                match list_element(&before_cp, &before_method, &before_class.pool, i, options.max_array_length)? {
                     Ok(b) if b.same_shape(after) => Some(harness::ListParam { element: after.clone(), before: Some(b), max_length: list_bounds[i] }),
                     Ok(b) => return refuse(&mut out, line, format!("parameter {name}'s elements are made differently in the two versions: {} before, {} now; elements of another construction or other fields are not supported yet", b.describe(), after.describe())),
                     Err(gap) => return refuse(&mut out, line, format!("in the previous version, parameter {name}: {gap}")),

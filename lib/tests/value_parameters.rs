@@ -251,7 +251,7 @@ fn kernels() -> &'static Path {
             std::fs::create_dir_all(&src).unwrap();
             std::fs::write(src.join("Item.java"), format!("package l;\npublic final class Item {{\n    int n;\n    public Item(int n) {{\n        {item}\n    }}\n}}\n")).unwrap();
             std::fs::write(src.join("Box.java"), "package l;\npublic final class Box {\n    int[] cells;\n    public Box(int n) {\n        cells = new int[] {n};\n    }\n}\n").unwrap();
-            std::fs::write(src.join("Kernels.java"), "package l;\nimport java.util.List;\npublic final class Kernels {\n    public static int count(List<Item> xs) { int c = 0; for (Item x : xs) { c += x.n; } return c; }\n    @SuppressWarnings(\"rawtypes\") public static int raw(List xs) { return xs.size(); }\n    public static int wild(List<? extends Item> xs) { return xs.size(); }\n    public static int boxes(List<Box> xs) { return xs.size(); }\n    public static Item firstOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n    public static Object anyOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n}\n").unwrap();
+            std::fs::write(src.join("Kernels.java"), "package l;\nimport java.util.List;\npublic final class Kernels {\n    public static int count(List<Item> xs) { int c = 0; for (Item x : xs) { c += x.n; } return c; }\n    @SuppressWarnings(\"rawtypes\") public static int raw(List xs) { return xs.size(); }\n    public static int wild(List<? extends Item> xs) { return xs.size(); }\n    public static int boxes(List<Box> xs) { return xs.size(); }\n    public static Item firstOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n    public static Object anyOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n    public static int names(List<String> xs) { return xs.size(); }\n}\n").unwrap();
             javac(&root.join(name), &[src.join("Item.java"), src.join("Box.java"), src.join("Kernels.java")]);
         }
         root
@@ -296,7 +296,7 @@ fn a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.problem.as_deref().unwrap_or_default().contains("java.util.List"), "{}", o.output);
 
-    for (target, words) in [("raw", "a raw List"), ("wild", "not a wildcard"), ("boxes", "a field of an array or an object"), ("anyOf", "an identity it couldn't observe")] {
+    for (target, words) in [("raw", "a raw List"), ("wild", "not a wildcard"), ("boxes", "a field of an array or an object"), ("anyOf", "an identity it couldn't observe"), ("names", "a list of Strings")] {
         let o = equivalence::run(&kernel_options("after", &format!("l.Kernels#{target}"), target)).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{target}: {}", o.output);
         assert!(o.problem.as_deref().unwrap_or_default().contains(words), "{target}: {}", o.output);
@@ -405,7 +405,7 @@ fn a_planned_list_roots_unsupported_forms_are_refused_by_name() {
         }
     }
     refused("a null list", &|c| both(c, &|d| d.nullable = true), "a list that may be null");
-    refused("a String root", &|c| both(c, &|d| d.kind = jvmcontract::spec::plans::ValueKind::String), "an adapted String root");
+    refused("a String root", &|c| both(c, &|d| d.kind = jvmcontract::spec::plans::ValueKind::String {}), "an adapted String root");
     refused("another model", &|c| both(c, &|d| d.model.source = "an earlier list model".into()), "evidence of another model's semantics isn't this one's");
     refused("a stronger level", &|c| both(c, &|d| d.model.level = jvmcontract::spec::plans::EvidenceLevel::Proved), "never borrows a stronger level");
     refused("too long", &|c| both(c, &|d| d.max_length = 11), "of at most 10");

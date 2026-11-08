@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T16:47:24.307Z",
-  "duration_seconds": 23095,
+  "ended": "2026-11-08T17:04:27.001Z",
+  "duration_seconds": 24118,
   "stats": {
-    "turns": 73,
-    "api_calls": 779,
-    "tool_calls": 778,
-    "tool_errors": 4,
-    "compactions": 12,
+    "turns": 80,
+    "api_calls": 839,
+    "tool_calls": 835,
+    "tool_errors": 5,
+    "compactions": 13,
     "peak_context_tokens": 292860,
     "usage": {
-      "input_tokens": 1594,
-      "output_tokens": 530179,
-      "cache_read_input_tokens": 112961725,
-      "cache_creation_input_tokens": 2173959
+      "input_tokens": 1722,
+      "output_tokens": 556860,
+      "cache_read_input_tokens": 119600749,
+      "cache_creation_input_tokens": 2303857
     }
   },
   "tools": {
-    "Bash": 711,
-    "Read": 33,
-    "Edit": 15,
-    "Monitor": 6,
-    "ToolSearch": 5,
-    "TaskStop": 4,
+    "Bash": 761,
+    "Read": 36,
+    "Edit": 16,
+    "Monitor": 7,
+    "ToolSearch": 6,
+    "TaskStop": 5,
     "Write": 4
   },
   "files_touched": [
@@ -219,24 +219,38 @@
     {
       "index": 12,
       "started": "2026-11-08T16:24:58.123Z",
-      "ended": "2026-11-08T16:47:24.307Z",
-      "turns": 5,
-      "api_calls": 83,
+      "ended": "2026-11-08T16:47:44.998Z",
+      "turns": 6,
+      "api_calls": 85,
       "usage": {
-        "input_tokens": 170,
-        "output_tokens": 54277,
-        "cache_read_input_tokens": 10913700,
-        "cache_creation_input_tokens": 180948
+        "input_tokens": 176,
+        "output_tokens": 55160,
+        "cache_read_input_tokens": 11303301,
+        "cache_creation_input_tokens": 183616
       },
-      "peak_context_tokens": 194027
+      "peak_context_tokens": 196697
+    },
+    {
+      "index": 13,
+      "started": "2026-11-08T16:48:23.547Z",
+      "ended": "2026-11-08T17:04:27.001Z",
+      "turns": 6,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 25798,
+        "cache_read_input_tokens": 6249423,
+        "cache_creation_input_tokens": 127230
+      },
+      "peak_context_tokens": 140309
     }
   ],
   "log": {
-    "sha256": "f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245",
-    "bytes": 21439747,
-    "lines": 7171,
-    "gzip_bytes": 4071331,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245.jsonl.gz"
+    "sha256": "4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136",
+    "bytes": 22813379,
+    "lines": 7697,
+    "gzip_bytes": 4345370,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -495,6 +509,14 @@
       "summary": "application-core Phase 5 step 1: a string literal is read by its code units, an isolated surrogate included, so two literals that differ only in one are never one",
       "body": "The values stream's request for the merge (interface request 6): the class reader decoded every CONSTANT_Utf8 as Rust text, so \"\\uDBFF\" and \"\\uDBFE\" both read as \"\\uFFFD\", for the interpreter, the own checker, the closure digests and the relocated classes the JVM runs alike. The reproducers failed before: a rewrite of \"\\uDBFF\".charAt(0) to the constant 0xDBFF was refuted, with the JVM run agreeing because relocate had rewritten the old version's literal; a cached proof was reused for a build whose literal differs only in its surrogate; and the effect check verified a send whose topic changed from \"q\\uDBFF\" to \"q\\uDBFE\", a wrong proof.\n\nConstant::Utf8 now keeps the code units of an entry that isn't well-formed UTF-16 (ConstantPool::utf16), and such a String constant loads as the new BootstrapArg::Units, which a reader that takes only Str refuses. relocate keeps an entry's bytes unless renaming changes its text. The interpreter interns literals by code units (ldc, ConstantValue, concatenation recipes and constants, typeSwitch labels); the own checker's literal identity is its units; the effect check's payload literals are units; shared::shape, and so a closure's digest, prints them. The String model's ldc evidence record admits isolated surrogates and leaves nothing out, which changes the String model's identity and so every String claim's key (cache misses, never a wrong reuse).\n\nVerified inline: the new tests/string_literals.rs (2), tests/effects.rs's payload-literal test, and the values corpus's lone-surrogate cases on the JVM, the interpreter and the own checker; a sabotage (relocate copying as text) fails all three new tests. The library's unit tests 256, and every test binary but integration.rs (JBMC) pass; the integration check passes (the contract 14 of 14). Progress updated; the rest of item 6 is ElementKind::String's bound and compare with a plan per subject.",
       "log_sha256": "f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245"
+    },
+    {
+      "change_id": "rntvlrrvovlknmxroottkvnznlrpxzws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a list of Strings bounds its elements' code units, and no variant of the shared interfaces drops a field it doesn't have",
+      "body": "Interface request 6's ElementKind::String bound: ElementKind::String is now { max_length }, the elements' code units bounded apart from the list's length, and a bound left out is refused. The reproducer: a list of Strings stated with that bound read back without it, because serde's deny_unknown_fields doesn't reach a unit variant of an internally tagged enum. All eight unit variants of lib/src/spec/plans.rs had the same hole (a new unit test probes each), so {\"kind\": \"per-call\", \"results\": [0, 1]} in an environment file was a per-call choice with its script dropped. Each is now an empty struct variant (Query {}), with the same JSON, so no frozen fixture or claim key changes for it.\n\nThe list adapter still refuses a list of Strings by name, now for the true reason: it makes lists of an application class's objects only, and no acceptance case needs a list of Strings. A regression check's List<String> parameter is refused in those words (before: 'java.lang.String, which is no application class'). The list model's record says the same; it is part of the model's identity, so list claims get new keys, a cache miss.\n\nVerified inline: the library's unit tests 257, values 18, value_parameters 10, reuse 12, environment 17, environment_responses 8, environment_quotes 4, reuse_summaries 14, application_core_objects 22, heap 49, string_literals 2, alignment 34, conformance 10, observations 12, summaries 40, skill 1; the integration check passes (the contract 14 of 14). Docs: lib/README.md's list and interfaces paragraphs, spec::plans' module doc. The brief's Progress records it; the rest of the brief is current.",
+      "log_sha256": "4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136"
     }
   ],
   "logs": {
@@ -526,6 +548,12 @@
       "bytes": 566559,
       "lines": 143,
       "gzip_bytes": 137395,
+      "url": null
+    },
+    "4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136": {
+      "bytes": 22813379,
+      "lines": 7697,
+      "gzip_bytes": 4345370,
       "url": null
     },
     "4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c": {

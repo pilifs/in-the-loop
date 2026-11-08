@@ -312,7 +312,7 @@ fn a_model_the_check_does_not_encode_is_refused_by_name() {
     let before = build("before").unwrap();
     let mut claim = claim();
     let call = &mut claim.environment.as_mut().unwrap().calls[0];
-    call.model = Some(CallModel { id: "send".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Void }], bound: 4 });
+    call.model = Some(CallModel { id: "send".into(), key: vec!["arg0".into()], coupling: Coupling::Query {}, results: vec![ModelledResult::Returns { value: Returned::Void {} }], bound: 4 });
     let err = effects::check(&claim, &quotes(&before, "POST /quotes"), &quotes(&after, "POST /quotes"), &before, &after).unwrap_err();
     assert_eq!(err.part, jvmcontract::spec::Part::Environment, "{err}");
     assert!(err.what.contains("modelled call's model") && err.what.contains("a result of type void, where the call returns java.lang.Object"), "{err}");

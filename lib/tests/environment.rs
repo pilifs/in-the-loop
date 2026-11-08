@@ -136,14 +136,14 @@ fn spec(dir: &Path) -> EntryPointSpec {
 
 /// `Rates.rate` as a deterministic read-only query of its code, `bound` calls per trace.
 fn query(bound: u32) -> ModeledCall {
-    let model = CallModel { id: "rates.rate".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Primitive { ty: "long".into() } }], bound };
+    let model = CallModel { id: "rates.rate".into(), key: vec!["arg0".into()], coupling: Coupling::Query {}, results: vec![ModelledResult::Returns { value: Returned::Primitive { ty: "long".into() } }], bound };
     ModeledCall { call: RATE.into(), outcomes: vec!["returns".into()], model: Some(model) }
 }
 
 /// `Rates.rate` as a declared nondeterministic operation of its code, chosen per call, `bound` calls per trace.
 fn choice(bound: u32) -> ModeledCall {
     let mut call = query(bound);
-    call.model.as_mut().unwrap().coupling = Coupling::Choice { policy: Occurrence::PerCall };
+    call.model.as_mut().unwrap().coupling = Coupling::Choice { policy: Occurrence::PerCall {} };
     call
 }
 

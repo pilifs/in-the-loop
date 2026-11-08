@@ -234,7 +234,7 @@ fn adapted_root(whose: &str, name: &str, path: &str, domain: &crate::spec::plans
         return Err(Unsupported::new(Part::Objects, format!("{whose} root {name} is the adapted value {path}: an adapted root is named as the root")));
     }
     // A list of Strings is named by `values::ListAdapter::new`, through `resolve`.
-    if domain.kind == crate::spec::plans::ValueKind::String {
+    if matches!(domain.kind, crate::spec::plans::ValueKind::String {}) {
         return Err(gap("an adapted String root: the String adapter takes a String parameter of a check without a plan, and a plan's String root is not made yet".into()));
     }
     if domain.nullable {
@@ -471,7 +471,7 @@ pub fn flat_roots(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, nam
                 PlanValue::Adapted { path, domain } => {
                     named(path)?;
                     let domain = crate::values::resolve(domain).map_err(|u| Unsupported::new(u.part, format!("the plan's {path}: {}", u.what)))?;
-                    if domain.kind != crate::spec::plans::ValueKind::String || !crate::values::is_string(pt) {
+                    if !matches!(domain.kind, crate::spec::plans::ValueKind::String {}) || !crate::values::is_string(pt) {
                         return Err(Unsupported::new(Part::Values, format!("the plan's {path} is an adapted value other than a String argument: the effect check takes a String of the values stream's adapter")));
                     }
                     if domain.nullable {

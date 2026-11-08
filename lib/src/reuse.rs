@@ -676,8 +676,8 @@ fn summarized(options: &crate::equivalence::Options, helper: &MemberRef, work: &
             if after.fields.is_empty() { "no field".to_string() } else { read(&after) },
         ),
         bounds: ClaimBounds { unwind: options.unwind, max_array_length: options.max_array_length },
-        relation: crate::spec::plans::OutcomeRelation::Equal,
-        effects: crate::spec::plans::Effects::ReadOnly,
+        relation: crate::spec::plans::OutcomeRelation::Equal {},
+        effects: crate::spec::plans::Effects::ReadOnly {},
         depends_on,
     };
     let found = matches!(outcome.reuse, Some(cache::Reuse::Exact { .. }));

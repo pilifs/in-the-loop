@@ -293,8 +293,8 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
         return Err(refused(call, "a model needs a stable id, the same in both versions"));
     }
     let per_call = match &model.coupling {
-        Coupling::Query => false,
-        Coupling::Choice { policy: Occurrence::PerCall } => true,
+        Coupling::Query {} => false,
+        Coupling::Choice { policy: Occurrence::PerCall {} } => true,
         Coupling::Choice { policy: Occurrence::Script { .. } } => return Err(refused(call, "a finite script of responses (occurrence `script`): the brief's optional work, not built; a per-call choice or a query is checked")),
     };
     if model.bound == 0 || model.bound > MAX_BOUND {
@@ -349,7 +349,7 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
             ModelledResult::Returns { value } => {
                 let t = match value {
                     Returned::Primitive { ty } => ty.as_str(),
-                    Returned::Void => "void",
+                    Returned::Void {} => "void",
                     Returned::Object { plan, nullable, identity } => {
                         if ret.is_some() {
                             return Err(refused(call, "two normal results: a call returns one value of one type"));
@@ -522,7 +522,7 @@ mod tests {
     const RATE: &str = "shop/Rates#rate(I)J";
 
     fn query(key: &[&str], ty: &str, bound: u32) -> CallModel {
-        CallModel { id: "rates".into(), key: key.iter().map(|k| k.to_string()).collect(), coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Primitive { ty: ty.into() } }], bound }
+        CallModel { id: "rates".into(), key: key.iter().map(|k| k.to_string()).collect(), coupling: Coupling::Query {}, results: vec![ModelledResult::Returns { value: Returned::Primitive { ty: ty.into() } }], bound }
     }
 
     fn call(call: &str, model: &CallModel) -> ModeledCall {
@@ -551,7 +551,7 @@ mod tests {
     #[test]
     fn a_per_call_choice_is_lowered_to_the_same_table_each_entry_used_once() {
         let mut model = query(&["arg0"], "long", 2);
-        model.coupling = Coupling::Choice { policy: Occurrence::PerCall };
+        model.coupling = Coupling::Choice { policy: Occurrence::PerCall {} };
         let lowered = lower(&call(RATE, &model), &model).unwrap();
         assert!(lowered.per_call);
         assert_eq!(lowered.entries(), 4);
@@ -582,8 +582,8 @@ mod tests {
         let words = lowered.assumption("Rates.rate");
         assert!(words.contains("any long, or a throw of java.io.IOException or shop.Unavailable (made with no arguments: its class, and no message or cause)"), "{words}");
         // A call that returns nothing may be modelled by its failures alone: only the outcome is chosen.
-        let mut send = CallModel { results: vec![ModelledResult::Returns { value: Returned::Void }, ModelledResult::Throws { class: "java.io.IOException".into() }], ..query(&["arg0"], "void", 1) };
-        send.coupling = Coupling::Choice { policy: Occurrence::PerCall };
+        let mut send = CallModel { results: vec![ModelledResult::Returns { value: Returned::Void {} }, ModelledResult::Throws { class: "java.io.IOException".into() }], ..query(&["arg0"], "void", 1) };
+        send.coupling = Coupling::Choice { policy: Occurrence::PerCall {} };
         let lowered = lower(&call("shop/Events#send(I)V", &send), &send).unwrap();
         assert_eq!(lowered.inputs(), [Type::Int, Type::Int, Type::Int, Type::Int, Type::Int]);
         assert_eq!(lowered.input_names()[..2], ["rates[0].arg0", "rates[0].outcome"]);
@@ -608,7 +608,7 @@ mod tests {
             (refusal(RATE, query(&["arg0", "arg0"], "long", 1)), "twice"),
             (refusal(RATE, query(&["arg2"], "long", 1)), "1 parameters"),
             (refusal("shop/Rates#rate(I)D", query(&["arg0"], "double", 1)), "integral or boolean"),
-            (refusal("shop/Events#send(I)V", CallModel { results: vec![ModelledResult::Returns { value: Returned::Void }], ..query(&["arg0"], "void", 1) }), "its recording stub is the model"),
+            (refusal("shop/Events#send(I)V", CallModel { results: vec![ModelledResult::Returns { value: Returned::Void {} }], ..query(&["arg0"], "void", 1) }), "its recording stub is the model"),
         ];
         for (gap, words) in cases {
             assert_eq!(gap.part, Part::Environment);

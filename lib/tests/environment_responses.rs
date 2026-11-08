@@ -137,7 +137,7 @@ fn offer_plan() -> ConstructionPlan {
 /// `Offers.find` as a deterministic read-only query of its code: an `Offer` of [`offer_plan`], or null when
 /// `nullable`, of the identity `identity`, `bound` calls per trace.
 fn finding(nullable: bool, identity: Identity, bound: u32) -> ModeledCall {
-    let model = CallModel { id: "offers.find".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Object { plan: offer_plan(), nullable, identity } }], bound };
+    let model = CallModel { id: "offers.find".into(), key: vec!["arg0".into()], coupling: Coupling::Query {}, results: vec![ModelledResult::Returns { value: Returned::Object { plan: offer_plan(), nullable, identity } }], bound };
     ModeledCall { call: FIND.into(), outcomes: vec!["returns".into()], model: Some(model) }
 }
 
@@ -303,7 +303,7 @@ fn a_dto_responses_plan_and_identity_are_in_the_claim_key() {
 fn a_response_plan_beyond_one_dto_of_primitive_leaves_is_refused() {
     let lower = |m: &ModeledCall| jvmcontract::environment::lower(m, m.model.as_ref().unwrap()).expect_err("refused");
     let mut per_call = finding(true, Identity::Stable, 1);
-    per_call.model.as_mut().unwrap().coupling = Coupling::Choice { policy: Occurrence::PerCall };
+    per_call.model.as_mut().unwrap().coupling = Coupling::Choice { policy: Occurrence::PerCall {} };
     let with = |f: &dyn Fn(&mut ConstructionPlan)| {
         let mut m = finding(true, Identity::Fresh, 1);
         let ModelledResult::Returns { value: Returned::Object { plan, .. } } = &mut m.model.as_mut().unwrap().results[0] else { unreachable!() };

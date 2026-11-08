@@ -275,7 +275,7 @@ fn witness(out: &Outcome, params: &[Type], parameters: &Parameters) -> Vec<Arg> 
                 let adapter = StringAdapter::new(parameters.max_string_length.expect("a bound"), parameters.nullable.contains(&slot));
                 match adapter.read(&out.raw_arrays, &out.raw_same, slot).unwrap_or_else(|u| panic!("the witness's String in slot {slot}: {u}")) {
                     Witnessed::SameAs(first) => Arg::Same(index_of[&first]),
-                    Witnessed::Value(WitnessValue::Null) => Arg::Null,
+                    Witnessed::Value(WitnessValue::Null {}) => Arg::Null,
                     Witnessed::Value(WitnessValue::String { units }) => Arg::Str(units),
                     Witnessed::Value(other) => panic!("not a String's witness: {other:?}"),
                 }
@@ -732,7 +732,7 @@ fn the_list_adapter_makes_reads_and_rebuilds_lists_that_keep_order_duplicates_an
     let Some(WitnessValue::Node { id }) = twice else { panic!() };
     assert!(args[3 + 2 * *id as usize + 1] > 0, "with a quantity to clear: {args:?}");
     let (none, _) = adapted_refuted(&cp, &classes, by("neverNull"));
-    assert_eq!(none, WitnessValue::Null);
+    assert_eq!(none, WitnessValue::Null {});
 }
 
 // The evidence records of the modelled operations (V3 step 1, `values::OPERATIONS`), checked against the boundary
@@ -1137,7 +1137,7 @@ fn resolved_claim(claim: &serde_json::Value, models: &values::ValueModels) -> Re
                 if map.get("kind").and_then(|k| k.as_str()) == Some("adapted") {
                     let stated: ValueDomain = serde_json::from_value(map["domain"].clone()).expect("an adapted value's domain is a ValueDomain");
                     match stated.kind {
-                        ValueKind::String => counts.0 += 1,
+                        ValueKind::String {} => counts.0 += 1,
                         ValueKind::List { .. } => counts.1 += 1,
                     }
                     map.insert("domain".into(), serde_json::to_value(models.resolve(&stated)?).unwrap());
@@ -1382,13 +1382,13 @@ fn a_claims_value_domains_are_resolved_before_its_key_and_its_checks() {
     assert!(refused.what.contains("the values stream builds it"), "{refused}");
     // A modelled call whose result is a String: refused for the model first, then for the stubs.
     let string_domain = |models: &values::ValueModels, stated: bool| ValueDomain {
-        kind: ValueKind::String,
+        kind: ValueKind::String {},
         nullable: false,
         max_length: 3,
         model: if stated { jvmcontract::spec::plans::ModelEvidence { source: values::STATED_STRING_MODEL.into(), jdk: values::COMPUTED.into(), level: EvidenceLevel::Tested, leaves_out: vec![] } } else { models.string.clone() },
     };
     let call = |domain: ValueDomain| {
-        let model = CallModel { id: "rates.currency".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Adapted { domain } }], bound: 1 };
+        let model = CallModel { id: "rates.currency".into(), key: vec!["arg0".into()], coupling: Coupling::Query {}, results: vec![ModelledResult::Returns { value: Returned::Adapted { domain } }], bound: 1 };
         (ModeledCall { call: "quotes/Rates#currency(J)Ljava/lang/String;".into(), outcomes: vec!["returns".into()], model: Some(model.clone()) }, model)
     };
     for (what, domain, expected) in [

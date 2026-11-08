@@ -398,7 +398,7 @@ fn every_semantic_part_of_a_plan_or_a_model_changes_the_key() {
     // Never keyed: a domain the values models don't resolve.
     let refused: &[(Change, &str)] = &[
         (("quote-claim", "a String model stated as proved", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["model"]["level"] = "proved".into()), "never borrows a stronger level"),
-        (("basket-total-claim", "a list of Strings", |v| v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["kind"]["element"] = serde_json::json!({"kind": "string"})), "a list of Strings"),
+        (("basket-total-claim", "a list of Strings", |v| v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["kind"]["element"] = serde_json::json!({"kind": "string", "max_length": 4})), "a list of Strings"),
     ];
     for ((name, what, change), why) in refused {
         let mut changed = golden_claim(name);
