@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T11:43:58.947Z",
-  "duration_seconds": 25773,
+  "ended": "2026-11-08T11:54:37.577Z",
+  "duration_seconds": 26412,
   "stats": {
-    "turns": 48,
-    "api_calls": 398,
-    "tool_calls": 402,
+    "turns": 55,
+    "api_calls": 426,
+    "tool_calls": 430,
     "tool_errors": 4,
-    "compactions": 9,
+    "compactions": 10,
     "peak_context_tokens": 285390,
     "usage": {
-      "input_tokens": 802,
-      "output_tokens": 416167,
-      "cache_read_input_tokens": 48150813,
-      "cache_creation_input_tokens": 1372440
+      "input_tokens": 860,
+      "output_tokens": 433375,
+      "cache_read_input_tokens": 50438661,
+      "cache_creation_input_tokens": 1471846
     }
   },
   "tools": {
-    "Bash": 345,
-    "Read": 24,
-    "Edit": 20,
+    "Bash": 369,
+    "Read": 26,
+    "Edit": 22,
     "Write": 6,
     "SendMessage": 3,
     "ListAgents": 2,
@@ -179,24 +179,38 @@
     {
       "index": 9,
       "started": "2026-11-08T11:36:48.360Z",
-      "ended": "2026-11-08T11:43:58.947Z",
-      "turns": 4,
-      "api_calls": 35,
+      "ended": "2026-11-08T11:44:48.770Z",
+      "turns": 6,
+      "api_calls": 41,
       "usage": {
-        "input_tokens": 70,
-        "output_tokens": 28926,
-        "cache_read_input_tokens": 3318642,
-        "cache_creation_input_tokens": 122501
+        "input_tokens": 84,
+        "output_tokens": 31653,
+        "cache_read_input_tokens": 4149104,
+        "cache_creation_input_tokens": 130004
       },
-      "peak_context_tokens": 135580
+      "peak_context_tokens": 143083
+    },
+    {
+      "index": 10,
+      "started": "2026-11-08T11:45:30.011Z",
+      "ended": "2026-11-08T11:54:37.577Z",
+      "turns": 5,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 14481,
+        "cache_read_input_tokens": 1457386,
+        "cache_creation_input_tokens": 91903
+      },
+      "peak_context_tokens": 104982
     }
   ],
   "log": {
-    "sha256": "c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0",
-    "bytes": 12561694,
-    "lines": 4545,
-    "gzip_bytes": 2507514,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0.jsonl.gz"
+    "sha256": "616933b37430a98a301c4e270a515468f1b682d14bda3a46eebc2f34cb8cae1a",
+    "bytes": 13617215,
+    "lines": 4872,
+    "gzip_bytes": 2750070,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/616933b37430a98a301c4e270a515468f1b682d14bda3a46eebc2f34cb8cae1a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -287,6 +301,14 @@
       "summary": "application-core reuse J4: the cost benchmark gets an unrelated edit and a safe helper rewrite, the contract's last two cases (verification pending)",
       "body": "lib/tests/preparation.rs, the ignored benchmark of R3, timed a cold compare run on the joint example's builds (examples 190 and 191), an unchanged rerun, the real defect offset and its rerun. The acceptance contract's measurement also asks for an unrelated edit and a safe rewrite of a helper, and the reuse brief asks the report to tell exact hits, helper evidence and preparation reuse apart. Two overlays on after, in a new lib/tests/fixtures/preparation/ with a README, are now run from a copy of the proof cache a cold run of after leaves: unrelated-edit adds a class nothing reaches, and helper-rewrite rewrites Pricing.discount again. The report lists, per subject, whether it was an exact hit or proved, and which helper proofs it was proved on. The benchmark asserts that the unrelated edit proves nothing again, and that in the helper rewrite total is proved again on a new proof of discount while withQuantity is an exact hit. No library code changed.\n\nVerified with a debug smoke run inline (1 repeat, 58 s, passed): the unrelated edit gave 5 exact hits; the helper rewrite gave 1 exact hit and 4 proofs (the route, discount as a subject and as total's helper, and total on the new helper proof). The route is proved again because its effect proof's closure holds the helper's body. The release figures are job 20261108-114325-application-core-reuse-j4-the-small-comp, which writes lib/benchmark/preparation/j4.json and .md.",
       "log_sha256": "c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0"
+    },
+    {
+      "change_id": "tvrqpuswknzkzmwrzklrsxxsoolvorqv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse J4: the cost report's figures with all five cases, read from job 20261108-114325; the stream is done",
+      "body": "Job 20261108-114325 (passed at 283aa75d, 3m37s, peak 1.7 GiB) ran lib/tests/preparation.rs in release with the acceptance contract's five cases on the joint example: cold, an unchanged rerun, an unrelated edit, a safe rewrite of the helper Pricing.discount, and the offset defect cold and rerun. Every repeat and the process reached the expected verdicts, and every assertion held. Medians of 7, as a process: cold 127.0 ms, rerun 62.5, unrelated edit 64.4 (5 exact hits), helper rewrite 138.7 (1 exact hit, 4 proved: total on the helper's new proof, named by key, and the route again because its effect proof's closure holds the helper's body), defect cold 1687.6 (1364 ms solving) and its rerun 83.7. The edited build's javac, about 400 ms, is 74-87% of every scenario with compilation except the defect's cold run. So the gain is to a rerun's preparation, not a whole build's, and helper evidence is reused by key, not made cheaper to obtain. The runner committed the reports (lib/benchmark/preparation/j4.*) in the default workspace; they reach this branch at the merge.\n\nThe brief's Progress records the figures, the three kinds of reuse apart, and two items for the main loop's for-review list: effect proofs don't use helper evidence, and the R2 contract row still stops at the objects stream's construction::receiver until the merge. lib/README.md's preparation paragraph gives the two new cases. Verified by reading the job's report, its log and j4.json's verdicts in full; the README change is prose only. The stream's items are done (R1, R2, R3's justified outcome, J3, and J4's report), with R4 left out as the brief allows, so the status is done. J4's rerun on the merged revision is the main loop's Phase 5, and the interface requests recorded under R1 wait for the merge.",
+      "log_sha256": "616933b37430a98a301c4e270a515468f1b682d14bda3a46eebc2f34cb8cae1a"
     }
   ],
   "logs": {
@@ -306,6 +328,12 @@
       "bytes": 10409122,
       "lines": 3834,
       "gzip_bytes": 2020616,
+      "url": null
+    },
+    "616933b37430a98a301c4e270a515468f1b682d14bda3a46eebc2f34cb8cae1a": {
+      "bytes": 13617215,
+      "lines": 4872,
+      "gzip_bytes": 2750070,
       "url": null
     },
     "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7": {

@@ -507,7 +507,49 @@ measurement stays as recorded.
     at the objects stream's `construction::receiver` until the merge. It never changes a row.
   - **Next**: job `20261108-114325`'s figures, read into this record. J4 itself comes at the merge, on the merged
     revision.
-- Status: waiting on jobs 20261108-114325-application-core-reuse-j4-the-small-comp
+- 2026-11-08, **J4's figures**, from job `20261108-114325` (passed at `283aa75d`, 3m37s, peak 1.7 GiB, on vm-1 like
+  both R3 jobs; its reports `lib/benchmark/preparation/j4.json` and `.md` are committed in the default workspace by
+  the runner, `tvwtmzkx`, and reach this branch at the merge):
+  - **The verdicts**, every repeat and the process alike: `after`, the unrelated edit and the helper rewrite verify
+    `POST /quotes`, `discount`, `total` and `withQuantity`, with `POST /quotes/text` unresolved and `Money#cents` and
+    `Quote#quantity` unsupported; `offset` refutes the route and `total`, cold and rerun. Every assertion of the
+    benchmark held.
+  - **The runs**, medians of 7, in release; "with javac" adds the edited build's own compilation (the before build
+    and the Spring stand-ins, 397 and 608 ms, are compiled once):
+
+    | Scenario | exact hits / proved | in process (ms) | as a process (ms) | solving (ms) | with javac (ms) |
+    |---|---|---|---|---|---|
+    | cold (`after`) | 0 / 5 | 71.5 | 127.0 | 50.0 | 546 |
+    | unchanged rerun | 5 / 0 | 9.5 | 62.5 | 0 | 481 |
+    | unrelated edit | 5 / 0 | 8.9 | 64.4 | 0 | 461 |
+    | safe helper rewrite | 1 / 4 | 79.2 | 138.7 | 59.0 | 534 |
+    | defect, cold (`offset`) | 0 / 5 | 1450.7 | 1687.6 | 1364.0 | 2085 |
+    | defect, rerun | 5 / 0 | 31.7 | 83.7 | 0 | 482 |
+
+    An open of the JDK image builds its table in 8.63 ms and shares it in 0.07 ms; the binary's digest is 37.7 ms
+    once per process; no other repeated stage is above a millisecond.
+  - **The three kinds of reuse, apart**:
+    - *exact hits*: the reruns and the unrelated edit prove nothing again. The added class changes no claim, since
+      closures are digested per method;
+    - *helper evidence*: in the helper rewrite, `total` is proved on the new proof of `discount`, by key
+      (`sha256:54af4a93…`, the cold run's `sha256:776dae08…`). `total`'s claim names that proof, and `discount` is
+      proved twice: as a kernel subject, and as `total`'s helper, a claim without the kernel's correspondence. It
+      doesn't make the rewrite cheaper: the route's effect proof holds the helper's body in its closure and is proved
+      again, so the rewrite costs a cold run's time, 4 proofs of 5;
+    - *preparation reuse*: the shared image table, in every scenario, cold included.
+  - **With compilation**, the edited build's `javac` (about 400 ms) is 74–87% of every scenario but the defect's cold
+    run, so the cut to preparation is a rerun's, never a whole build's. The figures are for these fixtures only.
+  - **Also**: `lib/README.md`'s preparation paragraph gives the two new cases.
+  - **Verified**: the job's report, its log and `j4.json`'s verdicts read in full. The README change is prose only.
+  - **For the for-review list**:
+    - the helper rewrite's route is proved again, because effect proofs don't use helper evidence. Reusing it there
+      would be later work, not this wave's;
+    - the R2 contract row still stops at the objects stream's `construction::receiver`. At the merge it should reach
+      `fee`'s summary, and a caller's reuse of it is J1's.
+  - **The stream's items**: R1, R2 (unit level, with array reads), R3 (one cache, justified and measured), J3, and
+    J4's report with all five cases are done. R4 is left out, as the brief allows. J4's rerun on the merged revision
+    is the main loop's Phase 5. The interface requests under R1 wait for the merge.
+- Status: done
 
 ## Loop settings
 

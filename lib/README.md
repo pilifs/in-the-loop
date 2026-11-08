@@ -520,7 +520,12 @@ Resources are still read from the file opened, and the proof cache's keys are un
 `20261108-063259`, the same verdicts), an open that builds the table takes 7.9 ms and one that shares it 0.06 ms; the
 rerun takes 8.6 ms in process and 66 ms as a process, the cold run 66 ms and 125 ms, and the defect's cold run 1.58 s,
 1.48 s of it solving. A whole build still compiles first: `javac` takes about 0.4 s per build. These are a rerun's
-preparation, not a cheaper proof of a changed method.
+preparation, not a cheaper proof of a changed method. With the acceptance contract's other two cases added (job
+`20261108-114325`, the edits in [`fixtures/preparation`](tests/fixtures/preparation/README.md)), an unrelated edit
+is 5 exact hits, 64 ms as a process, like an unchanged rerun's 63 ms. A safe rewrite of the helper `discount` proves
+4 of its 5 proofs again, 139 ms against a cold run's 127 ms: its caller `total` is proved on the helper's new proof,
+named by key, and the route's effect proof holds the helper's body, so only `withQuantity` is an exact hit. Helper
+evidence is reused by key, not made cheaper to obtain.
 
 `impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
 invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as
