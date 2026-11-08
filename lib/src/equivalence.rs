@@ -137,6 +137,10 @@ pub struct Options {
     /// Pairs of object parameters of one class that may be the same object (`--may-alias a,b`), closed under chains;
     /// every other is an object of its own.
     pub may_alias: Vec<(String, String)>,
+    /// A claim's object domain (`spec::heap::check_with`'s): the check is refused, once its layout is built and
+    /// before any proof or cache lookup, unless it makes its inputs with exactly the domain's constructors and
+    /// classes (`spec::heap::made_with`).
+    pub object_domain: Option<crate::spec::ObjectDomain>,
     /// The builds `before` and `after` were made from, when they are copies of them (the effect-trace proof's
     /// rewritten builds, [`crate::effects`]): the run a stored result's provenance names. None names `before` and
     /// `after` themselves.
@@ -179,6 +183,7 @@ impl Options {
             correspondence: None,
             nullable: Vec::new(),
             may_alias: Vec::new(),
+            object_domain: None,
             copied_from: None,
         }
     }
@@ -1149,6 +1154,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
     }
     let layout = layout;
+    // The domain gate: a claim's domain made with other constructors or classes than these inputs are is refused
+    // here, before a helper's proof, the cache's lookup, or the check's own proof.
+    if let Some(problem) = options.object_domain.as_ref().and_then(|d| crate::spec::heap::made_with(&layout, d)) {
+        return refuse(&mut out, line, problem);
+    }
     let params = &layout.params;
     let flat_types = layout.types();
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));

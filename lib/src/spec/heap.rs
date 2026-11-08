@@ -28,7 +28,9 @@ const DEADLINE_SECONDS: u64 = 300;
 /// derivation ([`anchored`]). A construction that needs more input objects than a version's bound leaves the result unresolved
 /// rather than proving something outside the claim, and so does code that may make more objects in one call than a
 /// version's allocation bound ([`allocations`]). A contract input that isn't one of the subject's parameters
-/// ([`foreign_inputs`]) is refused, since the claim would anchor nothing the method receives. Claims about effects (an environment model) are the
+/// ([`foreign_inputs`]) is refused, since the claim would anchor nothing the method receives. So is a domain whose
+/// constructors or classes aren't the ones the check makes its inputs with, or that is made otherwise than by
+/// constructors ([`made_with`], the domain gate), before any proof. Claims about effects (an environment model) are the
 /// observations stream's, and refused.
 pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
     check_with(claim, before, after, None, &mut Reused::default())
@@ -68,6 +70,11 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
     if let Some(gap) = claim.correspondence.as_ref().and_then(|c| anchored(c, &claim.contract)) {
         return Err(unsupported(gap));
     }
+    // The domain gate: a domain made otherwise than by constructors is refused here, and one whose constructors or
+    // classes aren't the check's by `equivalence::run` once its layout is built ([`made_with`]), before any proof.
+    if let Some(d) = claim.domain.as_ref().filter(|d| !matches!(d.made_by, super::Construction::Constructors { .. })) {
+        return Err(unsupported(unbuilt(&d.made_by)));
+    }
     let mut options = crate::equivalence::Options::new(before, after, subject);
     options.engine = crate::Engine::Native;
     options.gaps = if strict { crate::bmc::gaps::GapMode::Strict } else { crate::bmc::gaps::GapMode::Assume };
@@ -84,6 +91,7 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
         }
         options.nullable = d.nullable.clone();
         options.may_alias = d.may_alias.clone();
+        options.object_domain = Some(d.clone());
     }
     let required = &claim.contract.required;
     let unresolved_all = |domain: String, problem: String| Outcome {
@@ -185,6 +193,72 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
             Ok(Outcome { verdict: Verdict::Refuted, domain, accounting, witness: Some(witness), problem: None })
         }
         crate::Verdict::Unverifiable => Ok(unresolved_all(domain, checked.problem.unwrap_or_else(|| "no verdict".into()))),
+    }
+}
+
+/// Why the inputs `layout` makes are not the ones `domain` says, if they aren't (the domain gate, Phase 0 step 1 of
+/// `llm-dlc/loops/application-core.md`). `equivalence::run` asks it once the layout is built, before any proof or
+/// cache lookup, so that a claim about other inputs never runs as the constructor domain the check makes.
+///
+/// The domain's constructors are compared with the ones the harness calls, as a set for each version, and its
+/// classes with the classes they make, over both versions. A constructor is written in the claim as
+/// `before: shop.Quote(long cents, int quantity)`: the version, then the class and its parameters' types and names,
+/// spacing aside. Each side must name exactly what the other does. A constructor the domain names and the check
+/// doesn't call (a factory, another constructor) would leave its inputs out; one the check calls and the domain
+/// doesn't name would bring others in. A domain not made by constructors is refused: no other construction is
+/// built.
+pub(crate) fn made_with(layout: &crate::harness::Layout, domain: &super::ObjectDomain) -> Option<String> {
+    let calls = match &domain.made_by {
+        super::Construction::Constructors { calls } => calls,
+        other => return Some(unbuilt(other)),
+    };
+    let squeeze = |c: &str| {
+        let spaced = c.split_whitespace().collect::<Vec<_>>().join(" ");
+        spaced.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ,", ",").replace(", ", ",")
+    };
+    if let Some(c) = calls.iter().find(|c| !(c.trim_start().starts_with("before:") || c.trim_start().starts_with("after:"))) {
+        return Some(format!("the domain's constructor {c} names no version: a claim writes each one under before: or after:, the version that makes its objects with it"));
+    }
+    let (made, classes) = layout.made_with();
+    let claimed: Vec<String> = calls.iter().map(|c| squeeze(c)).collect();
+    let makes: Vec<String> = made.iter().map(|c| squeeze(c)).collect();
+    let mut problems = Vec::new();
+    let unnamed: Vec<&String> = made.iter().zip(&makes).filter(|(_, m)| !claimed.contains(m)).map(|(c, _)| c).collect();
+    if !unnamed.is_empty() {
+        problems.push(format!("the check calls {}, which the domain doesn't name", unnamed.iter().map(|c| c.as_str()).collect::<Vec<_>>().join("; ")));
+    }
+    let uncalled: Vec<&String> = calls.iter().zip(&claimed).filter(|(_, c)| !makes.contains(c)).map(|(c, _)| c).collect();
+    if !uncalled.is_empty() {
+        problems.push(format!("the domain names {}, which the check doesn't call (only the constructors a parameter's class has are made yet: no factory, and no choice among constructors)", uncalled.iter().map(|c| c.trim()).collect::<Vec<_>>().join("; ")));
+    }
+    let foreign: Vec<&String> = classes.iter().filter(|k| !domain.classes.iter().any(|d| d.trim() == k.as_str())).collect();
+    if !foreign.is_empty() {
+        problems.push(format!("the check makes objects of {}, a class the domain doesn't name", foreign.iter().map(|k| k.as_str()).collect::<Vec<_>>().join(", ")));
+    }
+    let absent: Vec<&String> = domain.classes.iter().filter(|d| !classes.iter().any(|k| k == d.trim())).collect();
+    if !absent.is_empty() {
+        problems.push(format!("the domain names {}, a class the check makes no object of", absent.iter().map(|k| k.trim()).collect::<Vec<_>>().join(", ")));
+    }
+    if problems.is_empty() {
+        return None;
+    }
+    let shown = |v: &[String]| if v.is_empty() { "nothing".to_string() } else { v.join("; ") };
+    Some(format!(
+        "the claim's domain says its inputs are made with {} (classes {}), and the check makes them with {} (classes {}): {}. A check of other inputs than the claim's would be about inputs outside it",
+        shown(calls),
+        shown(&domain.classes),
+        shown(&made),
+        shown(&classes),
+        problems.join("; ")
+    ))
+}
+
+/// The refusal of a domain made otherwise than by constructors, which no check builds yet.
+fn unbuilt(made_by: &super::Construction) -> String {
+    match made_by {
+        super::Construction::Constructors { .. } => unreachable!("constructors are built"),
+        super::Construction::FieldByField => "the domain is made field by field, which includes states no constructor makes; only a domain made by constructors is built, and a check over constructor-made objects would be about other inputs than the claim's".into(),
+        super::Construction::Invariant { invariants } => format!("the domain is made of the states that satisfy the invariant{} {}, which no check builds; only a domain made by constructors is, and a check over constructor-made objects would be about other inputs than the claim's", if invariants.len() == 1 { "" } else { "s" }, invariants.join("; ")),
     }
 }
 

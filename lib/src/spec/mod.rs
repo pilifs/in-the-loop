@@ -105,8 +105,12 @@ pub struct ObjectDomain {
     /// Pairs of parameter or field paths that may be the same object.
     #[serde(default)]
     pub may_alias: Vec<(String, String)>,
+    /// How they are made. A check makes them exactly so or refuses the claim (the domain gate,
+    /// `heap::made_with`): constructors named otherwise than the check calls them, or another construction, never
+    /// run as the constructor domain the check makes.
     pub made_by: Construction,
-    /// The domain as a result states it: "objects made by these constructors, under these argument constraints".
+    /// The domain in the claim's own words: "objects made by these constructors, under these argument constraints".
+    /// Nothing checks them; a result states the domain its check had, and the claim key covers the label.
     pub label: String,
 }
 

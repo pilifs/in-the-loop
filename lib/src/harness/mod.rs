@@ -578,6 +578,26 @@ impl RecordType {
         out
     }
 
+    /// [`RecordType::constructors`] in a claim's words ([`crate::spec::Construction::Constructors`]), each with its
+    /// parameters' types and names: `shop.Quote(shop.Money amount, int quantity)`, then `shop.Money(long cents)`.
+    pub fn calls(&self) -> Vec<String> {
+        let params = self.params.iter().map(|(n, t)| format!("{} {n}", t.java_name())).collect::<Vec<_>>().join(", ");
+        let mut out = vec![format!("{}({params})", self.java_name())];
+        for r in &self.inner {
+            out.extend(r.calls());
+        }
+        out
+    }
+
+    /// The classes of the objects making it makes, this one's and every inner one's, as Java names.
+    pub fn classes(&self) -> Vec<String> {
+        let mut out = vec![self.java_name()];
+        for r in &self.inner {
+            out.extend(r.classes());
+        }
+        out
+    }
+
     pub fn java_name(&self) -> String {
         self.class.replace('/', ".")
     }
@@ -1068,6 +1088,24 @@ impl Layout {
     /// The receiver and the arguments that are records, the receiver first.
     pub fn records(&self) -> Vec<&Slot> {
         self.receiver.iter().chain(self.args.iter()).filter(|s| matches!(s, Slot::Record { .. })).collect()
+    }
+
+    /// What the harness makes the inputs with: every constructor it calls, in a claim's words under the version
+    /// that calls it (`before: shop.Quote(long cents, int quantity)`, `after: shop.Money(long cents)`), and the
+    /// classes of the objects they make, each sorted and once. A record the previous version is not given (its
+    /// components passed by `--before-arguments`) is the new version's alone.
+    pub fn made_with(&self) -> (Vec<String>, Vec<String>) {
+        let mut calls = std::collections::BTreeSet::new();
+        let mut classes = std::collections::BTreeSet::new();
+        for slot in self.records() {
+            let Slot::Record { record, before, .. } = slot else { continue };
+            for (version, r) in [("before", before.as_ref()), ("after", Some(record))] {
+                let Some(r) = r else { continue };
+                calls.extend(r.calls().into_iter().map(|c| format!("{version}: {c}")));
+                classes.extend(r.classes());
+            }
+        }
+        (calls.into_iter().collect(), classes.into_iter().collect())
     }
 
     pub fn has_records(&self) -> bool {

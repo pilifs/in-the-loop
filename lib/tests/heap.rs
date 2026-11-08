@@ -562,6 +562,12 @@ fn kernel_claim(subject: &str, extra: &[jvmcontract::spec::Observation]) -> jvmc
     claim
 }
 
+/// A domain made by the constructors `calls`, in a claim's words: the kernel claim's are the Quote's, and a claim
+/// over another kernel names that kernel's, or the domain gate refuses it.
+fn made_by(calls: &[&str]) -> jvmcontract::spec::Construction {
+    jvmcontract::spec::Construction::Constructors { calls: calls.iter().map(|c| c.to_string()).collect() }
+}
+
 fn kernel_check(build: &str, claim: &jvmcontract::spec::CanonicalClaim) -> Option<Result<jvmcontract::spec::Outcome, jvmcontract::spec::Unsupported>> {
     let root = kernel_builds()?;
     Some(jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)))
@@ -605,6 +611,39 @@ fn a_claim_whose_domain_lets_a_parameter_be_null_is_checked_over_null_too_and_a_
     let Some(r) = kernel_check("after", &claim) else { return };
     let gap = r.expect_err("a field path is not made yet");
     assert!(gap.what.contains("the domain's q.amount is a field path"), "{gap:?}");
+}
+
+/// The domain gate (Phase 0 step 1 of `llm-dlc/loops/application-core.md`): every way a claim's domain says its
+/// objects are made is the check's, or the claim is refused. Before the gate, each of these ran as the constructor
+/// domain the check happens to make, and the kernel's total was verified under a claim about other inputs.
+#[test]
+fn a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_runs_as_the_constructor_domain() {
+    use jvmcontract::spec::{CanonicalClaim, Construction, Verdict as V};
+    let total = || kernel_claim("shop.Pricing#total", &[]);
+    // The golden claim's own constructors and classes are the check's: it is verified, as above.
+    let Some(r) = kernel_check("after", &total()) else { return };
+    assert_eq!(r.expect("supported").verdict, V::Verified);
+    let refused = |what: &str, change: &dyn Fn(&mut CanonicalClaim), says: &[&str]| {
+        let mut claim = total();
+        change(&mut claim);
+        let gap = kernel_check("after", &claim).unwrap().expect_err(what);
+        for s in says {
+            assert!(gap.what.contains(s), "{what}: {}", gap.what);
+        }
+    };
+    let made_by = |m: Construction| move |c: &mut CanonicalClaim| c.domain.as_mut().unwrap().made_by = m.clone();
+    refused("a domain made field by field", &made_by(Construction::FieldByField), &["field by field"]);
+    refused("a domain of invariants", &made_by(Construction::Invariant { invariants: vec!["q.quantity > 0".into()] }), &["invariant", "q.quantity > 0"]);
+    // A factory in place of the constructor, a constructor left out, and one the check doesn't call.
+    let calls = |calls: &[&str]| made_by(Construction::Constructors { calls: calls.iter().map(|c| c.to_string()).collect() });
+    let check_makes = ["before: shop.Quote(long cents, int quantity)", "after: shop.Quote(shop.Money amount, int quantity)", "after: shop.Money(long cents)"];
+    refused("a factory", &calls(&["before: shop.Quote(long cents, int quantity)", "after: shop.Quote.of(long cents, int quantity)"]), &["shop.Quote.of(long cents, int quantity)", check_makes[1], check_makes[2]]);
+    refused("a constructor left out", &calls(&check_makes[..2]), &[check_makes[2]]);
+    refused("another constructor", &calls(&[check_makes[0], check_makes[1], check_makes[2], "after: shop.Money(long cents, int scale)"]), &["shop.Money(long cents, int scale)"]);
+    refused("no version named", &calls(&["shop.Quote(long cents, int quantity)", check_makes[1], check_makes[2]]), &["before: or after:"]);
+    // Classes the check doesn't make, or leaves out.
+    refused("another class", &|c: &mut CanonicalClaim| c.domain.as_mut().unwrap().classes.push("shop.Discount".into()), &["shop.Discount"]);
+    refused("a class left out", &|c: &mut CanonicalClaim| c.domain.as_mut().unwrap().classes.retain(|k| k != "shop.Money"), &["shop.Money"]);
 }
 
 #[test]
@@ -1189,6 +1228,7 @@ fn price_claim(subject: &str, c: jvmcontract::spec::Correspondence) -> jvmcontra
     claim.contract.inputs = vec![ExternalInput { name: "p".into(), ty: "prices.Price".into(), derivation: Derivation::Identity }, ExternalInput { name: int.into(), ty: "int".into(), derivation: Derivation::Identity }];
     let domain = claim.domain.as_mut().unwrap();
     domain.classes = vec!["prices.Price".into()];
+    domain.made_by = made_by(&["before: prices.Price(long cents)", "after: prices.Price(long dollars, int cents)"]);
     domain.bounds.after.input_objects = 1;
     claim.correspondence = Some(c);
     claim
@@ -1521,6 +1561,7 @@ fn a_claim_over_an_equation_that_reads_a_parameter_is_refused_where_the_contract
         claim.contract.inputs = vec![ExternalInput { name: "l".into(), ty: "lines.Line".into(), derivation }, ExternalInput { name: "n".into(), ty: "int".into(), derivation: Derivation::Identity }];
         let domain = claim.domain.as_mut().unwrap();
         domain.classes = vec!["lines.Line".into()];
+        domain.made_by = made_by(&["before: lines.Line(long total)", "after: lines.Line(long price)"]);
         domain.bounds.after.input_objects = 1;
         claim.correspondence = Some(unit_price());
         claim
@@ -1708,6 +1749,7 @@ fn a_claim_over_an_equation_that_reads_another_object_is_checked_where_a_person_
         claim.contract.inputs = vec![ExternalInput { name: "l".into(), ty: "orders.Line".into(), derivation }, ExternalInput { name: "o".into(), ty: "orders.Order".into(), derivation: Derivation::Identity }];
         let domain = claim.domain.as_mut().unwrap();
         domain.classes = vec!["orders.Line".into(), "orders.Order".into()];
+        domain.made_by = made_by(&["before: orders.Line(long total)", "before: orders.Order(int count)", "after: orders.Line(long price)", "after: orders.Order(int count)"]);
         domain.bounds.before.input_objects = 2;
         domain.bounds.after.input_objects = 2;
         claim.correspondence = Some(order_price());
@@ -1927,6 +1969,7 @@ fn bump_claim(c: jvmcontract::spec::Correspondence) -> jvmcontract::spec::Canoni
     claim.contract.inputs = vec![ExternalInput { name: "l".into(), ty: "objects.Line".into(), derivation: Derivation::Identity }];
     let domain = claim.domain.as_mut().unwrap();
     domain.classes = vec!["objects.Line".into(), "objects.Money".into()];
+    domain.made_by = made_by(&["before: objects.Line(objects.Money price, int quantity)", "before: objects.Money(long cents)", "after: objects.Line(objects.Money price, int quantity)", "after: objects.Money(long cents)"]);
     domain.bounds.before.input_objects = 2;
     domain.bounds.after.input_objects = 2;
     claim.correspondence = Some(c);

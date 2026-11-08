@@ -411,6 +411,16 @@ the subject doesn't take (by name and type; the receiver is `this`) is refused a
 parameters: a claim anchors only what its subject receives. A claim the check refuses before a statement (a
 named gap) is `Unsupported` with the gap's words; one about effects or an entry point is the observations stream's.
 
+**The domain gate.** Every option of a claim's object domain is enforced or refused, never run as whatever
+constructor domain the check happens to make. A domain made field by field, or of invariants, is refused: neither is
+built. A constructor domain's `calls` (each `before: shop.Quote(long cents, int quantity)`, the version, then the
+class and its parameters' types and names) and `classes` are compared, once `equivalence::run` has built its harness
+layout and before any helper proof, cache lookup or proof, with the constructors the harness calls in each version and
+the classes they make. Each side must name exactly what the other does, so a factory, a constructor left out, another
+constructor, a class left out or another class is refused as `Unsupported`, naming both lists. `nullable` and
+`may_alias` (parameters only) and both bounds are enforced as above. The `label` is the claim's own words: the result
+states the check's domain, and the claim key covers the label.
+
 A target's **code closure** ([`closure`](src/closure.rs)) is what a proof of it reads in one build, as parts, each
 with a digest: every application method it may run (static and special calls by resolution, virtual and interface
 calls through every class a call may dispatch to, lambda bodies, the initializers of the classes involved), every

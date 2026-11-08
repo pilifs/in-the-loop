@@ -146,6 +146,12 @@ fn a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused() {
     }
     let mut claim: CanonicalClaim = golden("kernel-claim");
     claim.contract.subject = "shop.Pricing#discount".into();
+    // Under the kernel's object domain, the domain gate refuses it first: discount's inputs are made with no
+    // constructor at all.
+    let gap = heap::check(&claim, build("before"), build("after")).expect_err("the kernel's domain is not discount's");
+    assert!(gap.what.contains("the check makes them with nothing"), "{gap}");
+    // Without it, the input it names is refused.
+    claim.domain = None;
     match heap::check(&claim, build("before"), build("after")) {
         Ok(o) => panic!("checked under an input discount doesn't have: {:?}", o.verdict),
         Err(u) => {
