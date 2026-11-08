@@ -123,8 +123,11 @@ fn regression_holds(what: &str, o: &equivalence::Outcome, expected: &str, stream
     }
 }
 
-fn regression(family: &str, build_name: &str, target: &str) -> equivalence::Outcome {
+fn regression(family: &str, build_name: &str, target: &str, bound: Option<u32>) -> equivalence::Outcome {
     let mut options = equivalence::Options::new(&build(family, "before"), &build(family, build_name), target);
+    if let Some(b) = bound {
+        options.max_array_length = b;
+    }
     options.engine = jvmcontract::Engine::Native;
     options.jbmc = NO_JBMC.into();
     let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-work").join(format!("{}-{build_name}", target.replace(['#', '.'], "-")));
@@ -135,8 +138,13 @@ fn regression(family: &str, build_name: &str, target: &str) -> equivalence::Outc
 
 /// Every build a family's expectations name for `target`, checked against `before`.
 fn regressions(family: &str, target: &str, streams: &[&str]) {
+    regressions_within(family, target, streams, None);
+}
+
+/// [`regressions`] under the bound `bound` (`--max-array-length`) where one is given.
+fn regressions_within(family: &str, target: &str, streams: &[&str], bound: Option<u32>) {
     for (name, verdict) in cases("regressions", target) {
-        let o = regression(family, &name, target);
+        let o = regression(family, &name, target, bound);
         regression_holds(&format!("{target} {name}"), &o, verdict.as_str().unwrap(), streams);
     }
 }
@@ -263,8 +271,10 @@ fn v1_a_symbolic_string_crosses_the_proof_boundary() {
 /// V2: a bounded immutable list as input: order, duplicates and identity kept.
 #[test]
 fn v2_a_bounded_supported_list_as_input() {
-    regressions("basket", "basket.Basket#total", &["values"]);
-    regressions("basket", "basket.Basket#clearAll", &["values"]);
+    // The list parameter is wired at the merge (Phase 5 step 1): no stream's refusal is accepted any more for the
+    // plain checks, under the frozen claims' list bound of 3 (`basket-*-claim.json`'s `max_length`).
+    regressions_within("basket", "basket.Basket#total", &[], Some(3));
+    regressions_within("basket", "basket.Basket#clearAll", &[], Some(3));
     for claim in ["basket-total-claim", "basket-first-claim", "basket-clear-claim"] {
         claims("basket", claim, &[Part::Objects, Part::Values], spec::heap::check);
     }

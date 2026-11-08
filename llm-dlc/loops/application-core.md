@@ -642,6 +642,54 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Docs**: `lib/README.md` (the String adapter's paragraph), `--max-array-length`'s help, and the schema's
     description of a witness value (`{"kind": "string", "units": [...]}`).
   - **Next**: item 1's list half (V2's rows, the basket's regressions and planned claims), then items 2–7.
+- 2026-11-08, **Phase 5 step 1, interface request 1 (its list half, for plain regression checks): a list parameter
+  of a regression check**, for V2's two `regressions` rows. The planned claims' adapted list root is the next cycle.
+  - **The reproducer**: the contract's V2 regressions accepted the values stream's refusal. They now accept none
+    (`regressions_within("basket", …, &[], Some(3))`, under the frozen claims' list bound of 3), and they failed
+    before the wiring.
+  - **The wiring**:
+    - A `List<E>` parameter, its element class read from the method's generic signature, is a new
+      `harness::Slot::List` of at most `--max-array-length` elements (10 at most), never null.
+    - The element is an application object made by its constructor, or a record. Its construction and fields must
+      be primitive, and of the same shape in both versions.
+    - The harness makes `max_length` objects (`lines.m0` …) in each version from the same leaves. It builds each
+      version's list from the adapter's int choices (`ListAdapter::choices`) in the shape `ListAdapter::java`
+      writes, and skips what `admitted` doesn't admit before anything is made.
+    - `List.of` is called through a branchless helper class of version 52 (`harness::LISTS_CLASS`). The harness's
+      own version 49 has no `invokestatic` of an interface method.
+    - The objects' fields are compared after the calls, as an object parameter's are.
+    - The witness stays flat ints and leaves, so the reader, shrinker, cache and JVM run take it unchanged.
+    - Its list is read by `ListAdapter::read`, rendered as `List.of(new Line(1, 1), the same object as lines[0])`,
+      typed as a list of nodes, and rebuilt over each version's objects by `rebuild` for the replay.
+    - It is also run on a JVM. `jvm_witness` now sizes `max_stack` from the arguments' widths, the JVM-run part of
+      item 6: an 8-line witness failed with "Stack size too large" before.
+    - The statement states `java.util.List<E>` as a value with its bound, `Bounds::max_value_length`, the list
+      model, and one constructor assumption for the objects.
+    - The claim key covers the list model, the elements' constructors (as roots) and the helper's digest.
+    - JBMC is not asked: `--engine jbmc` is refused (VF-023), and `--confirm` records `not-asked`.
+  - **Checks**:
+    - The contract passes 14 of 14. V2's regressions reach `expected.json`'s ten verdicts: `total` and `clearAll`
+      proved; `duplicate-skipped` and `alias-blind` refuted on a witness whose second element is the first's
+      object, replayed in the interpreter and on JDK 25.0.5.
+    - At the default bound of 8, `clearAll`'s proof takes 27 s in a release build, and about 100 s in debug.
+    - `tests/value_parameters.rs` has 3 new tests (7 in all):
+      - the correct cases and the two defects, with the statement and the typed list;
+      - the named refusals;
+      - a cached proof reused exactly, but not under another bound or after an edit of the element's constructor.
+    - Two sabotages fail them: the harness ignoring the picks, and the replay rebuilding distinct elements.
+    - The integration check passes, and so does every other test binary but `integration.rs` (JBMC).
+  - **Still refused by name** (for the for-review list):
+    - a raw list, a wildcard's or a type variable's;
+    - elements made from arrays or objects, or holding one;
+    - an object result, which could be an element (`Basket#first`: an identity not observed yet);
+    - a list with `--before-target`, `--before-arguments`, `--results-agree-when` or a correspondence;
+    - `--nullable` or `--may-alias` of a list, a plan's adapted list root, and a list parameter of a property check.
+    - Every made object is constructed whether the list holds it or not, so a version that rejects an unused
+      object's leaves is a difference. This is sound but stricter than the list alone.
+  - **Docs**: `lib/README.md` (the list adapter's paragraph and a new one), `--max-array-length`'s help, and the
+    schema's description of a witness value (the list of nodes).
+  - **Next**: item 1's last part, the planned domain's adapted list root (the three `basket-*-claim`s through
+    `spec::heap::check`, `first`'s `identity:result==lines[0]` included); then items 2–7.
 - Status: working
 
 ## Loop settings

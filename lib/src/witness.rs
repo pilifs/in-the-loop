@@ -14,6 +14,8 @@ use crate::harness::{self, Layout, Param, Slot};
 use crate::interp::{render, Fault, Machine, Object, Ref, Value};
 use crate::jbmc::Argument;
 use crate::shrink::{self, Shrunk};
+use crate::spec::plans::WitnessValue;
+use crate::values::ValueAdapter;
 use crate::Error;
 
 /// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `"VI\u0000"`, `null`; the same object as
@@ -120,6 +122,31 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
             let components = record.components.iter().zip(&witnesses[*first..]).map(|((c, _), w)| format!("{c}={w}")).collect::<Vec<_>>().join(", ");
             format!("{name}={}[{components}]", record.simple_name())
         }
+        // A list (V2): its elements in order, each object made by its constructor where it first appears, and a
+        // later element that is one object with an earlier one named so.
+        Slot::List { name, elements, .. } => match list_of(s, &|k| scalar_int(arguments.get(k))) {
+            Ok(WitnessValue::List { elements: picked }) => {
+                let mut first_at: Vec<(u32, usize)> = Vec::new();
+                let shown: Vec<String> = picked
+                    .iter()
+                    .enumerate()
+                    .map(|(i, e)| {
+                        let WitnessValue::Node { id } = e else { return "?".to_string() };
+                        if let Some((_, j)) = first_at.iter().find(|(m, _)| m == id) {
+                            return format!("the same object as {name}[{j}]");
+                        }
+                        first_at.push((*id, i));
+                        match elements.get(*id as usize) {
+                            Some(Slot::Record { record, first, .. }) => recipe(record, &mut witnesses[*first..].iter()),
+                            _ => "?".to_string(),
+                        }
+                    })
+                    .collect();
+                format!("{name}=List.of({})", shown.join(", "))
+            }
+            Ok(other) => format!("{name}={other:?}"),
+            Err(what) => format!("{name}=<{what}>"),
+        },
     };
     let mut rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
     // The setup sequence (O3), which the call comes after.
@@ -128,6 +155,26 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
         rendered = format!("{rendered}, after the setup {}", calls.join(" then "));
     }
     (rendered, witnesses)
+}
+
+/// The list a [`Slot::List`] is on a witness, as its adapter reads it (`values::ListAdapter::read`): its elements as
+/// the nodes of its objects, `{name}.m{i}` node `i`, from the choices `int_at` gives for its flat parameters. Refused,
+/// in the adapter's words, for choices outside its domain.
+pub fn list_of(slot: &Slot, int_at: &dyn Fn(usize) -> Option<i64>) -> Result<WitnessValue, String> {
+    let (Slot::List { choices, max_length, .. }, Some(adapter)) = (slot, slot.list_adapter()) else { return Err("no list".into()) };
+    let count = adapter.choices("").len();
+    let values: Option<Vec<i64>> = (0..count).map(|k| int_at(choices + k)).collect();
+    let values = values.ok_or_else(|| "a list's choice that isn't an int".to_string())?;
+    let made: Vec<u32> = (0..*max_length).collect();
+    adapter.read(&values, &made).map_err(|u| u.what)
+}
+
+/// An int flat parameter's value on a witness.
+fn scalar_int(a: Option<&Argument>) -> Option<i64> {
+    match a {
+        Some(Argument::Scalar(Value::Int(v))) => Some(i64::from(*v)),
+        _ => None,
+    }
 }
 
 /// How an object made by its constructor is made, as Java writes it, from the renderings of its leaves in order:
@@ -255,6 +302,23 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
                 Some(harness::Made::Same(other)) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::json!({ "same": other })), components: None, from: None },
                 _ => typed_made(name, record, arguments, &source, &mut record.leaves(*first).into_iter()),
             }
+        }
+        // A list (V2): its value the shared witness form's list of nodes, node `i` the object `{name}.m{i}`, each of
+        // which is a component, typed as an object made by its constructor.
+        Slot::List { name, element, elements, .. } => {
+            let value = list_of(s, &|k| scalar_int(arguments.get(k))).ok().and_then(|w| serde_json::to_value(w).ok());
+            let components = elements
+                .iter()
+                .filter_map(|e| match e {
+                    Slot::Record { name: m, record, before: previous, first } => {
+                        let record = if before { previous.as_ref().unwrap_or(record) } else { record };
+                        Some(typed_made(m, record, arguments, &source, &mut record.leaves(*first).into_iter()))
+                    }
+                    _ => None,
+                })
+                .collect();
+            let element = if before { format!("before.{element}") } else { element.clone() };
+            Typed { name: name.clone(), ty: format!("java.util.List<{element}>"), value, components: Some(components), from: None }
         }
     };
     Call {
@@ -464,6 +528,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     let build = |m: &mut Machine, slot: &Slot, built: &[(String, Value)]| -> Result<Value, Fault> {
         match slot {
             Slot::Plain(i) => Ok(flat[*i]),
+            Slot::List { .. } => unreachable!("a list is made from its objects where it is met"),
             Slot::Record { name, record, before, first } => {
                 match chosen.iter().find(|(n, _)| n == name).map(|(_, c)| c) {
                     Some(harness::Made::Null) => return Ok(Value::Null),
@@ -483,7 +548,46 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     let mut rejected = None;
     // Each object made by its constructor, with its fields as made, to tell what the call changed.
     let mut objects: Vec<(String, Value, crate::harness::Fields, String)> = Vec::new();
+    // A list's objects among them, whose paths name a difference as an object parameter's do.
+    let mut list_objects: Vec<(String, Value, crate::harness::Fields)> = Vec::new();
     for slot in layout.receiver.iter().chain(layout.args.iter()) {
+        // A list (V2): its objects made in order, as the harness makes them, then the list its choices pick among
+        // them, by the adapter's own rules (`ListAdapter::read`, then `rebuild` by this version's `List.of`).
+        if let (Slot::List { elements, .. }, Some(adapter)) = (slot, slot.list_adapter()) {
+            let mut nodes = crate::values::Nodes::new();
+            for (id, e) in elements.iter().enumerate() {
+                match build(&mut m, e, &built) {
+                    Ok(v) => {
+                        nodes.insert(id as u32, v);
+                        if let Slot::Record { name, record, before, .. } = e {
+                            built.push((name.clone(), v));
+                            let made = if prefix.is_some() { before.as_ref().unwrap_or(record) } else { record };
+                            if let Some(fields) = &made.fields {
+                                let shown = object_fields(&m, v, fields);
+                                objects.push((name.clone(), v, fields.clone(), shown));
+                                list_objects.push((name.clone(), v, fields.clone()));
+                            }
+                        }
+                    }
+                    Err(f) => {
+                        rejected = Some(f);
+                        break;
+                    }
+                }
+            }
+            if rejected.is_some() {
+                break;
+            }
+            let flat_int = |k: usize| match flat.get(k) {
+                Some(Value::Int(v)) => Some(i64::from(*v)),
+                _ => None,
+            };
+            match list_of(slot, &flat_int).and_then(|w| adapter.rebuild(&mut m, &w, &nodes).map_err(|u| u.what)) {
+                Ok(list) => values.push(list),
+                Err(what) => return Replayed { outcome: format!("<outside the list's domain: {what}>"), returned: None, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+            }
+            continue;
+        }
         match build(&mut m, slot, &built) {
             Ok(v) => {
                 if let Slot::Record { name, .. } = slot {
@@ -611,6 +715,9 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 object_paths.push((name.clone(), primitive_paths(&m, *v, if prefix.is_some() { old } else { new })));
             }
         }
+    }
+    for (name, v, fields) in &list_objects {
+        object_paths.push((name.clone(), primitive_paths(&m, *v, fields)));
     }
     if let (Some(equations), Some(old), Ok(Some(v))) = (&layout.result_equations, &layout.result_fields.1, &outcome) {
         views.push(("result".to_string(), corresponding_view(&m, *v, &old.class, equations, prefix.is_some(), &flat)));

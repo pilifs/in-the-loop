@@ -93,7 +93,9 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     // passed to a direct call, one per parameter.
     let first_array_local = 3u16;
     main.max_locals = first_array_local + types.len() as u16 * 2 + 2;
-    main.max_stack = 16;
+    // Every argument is on the stack at the call, a long's two slots each, with room above them for making the
+    // last (a String's `new`, `dup` and array): a wide witness (a list's objects' leaves) needs more than 16.
+    main.max_stack = 16 + types.iter().map(Type::slots).sum::<u16>();
 
     // The harness's check.
     {

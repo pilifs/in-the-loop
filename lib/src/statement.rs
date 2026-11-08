@@ -365,6 +365,19 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
                 max_length: None,
                 components: record.components.iter().map(|(c, t)| format!("{c}: {}", t.java_name())).collect(),
             },
+            // A list is a value of the values stream's list adapter, of at most its bound in elements, each an
+            // object of the element class made by its constructor.
+            Slot::List { name, element, max_length, elements, .. } => Parameter {
+                name: name.clone(),
+                ty: format!("java.util.List<{element}>"),
+                kind: ParameterKind::Value,
+                null: false,
+                max_length: Some(*max_length),
+                components: match elements.first() {
+                    Some(Slot::Record { record, .. }) => record.components.iter().map(|(c, t)| format!("element.{c}: {}", t.java_name())).collect(),
+                    _ => Vec::new(),
+                },
+            },
         })
         .collect();
     let made: Vec<(u32, u32)> = layout
@@ -457,7 +470,23 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
     if let Some(s) = unchanged_unless {
         out.push(Assumption { kind: AssumptionKind::IntendedInputs, text: format!("!({s}): the input is not among those the change is meant for"), basis: Basis::Stated, id: None });
     }
+    // A list's objects are made alike, so one assumption says it for all of them.
+    let list_objects: Vec<&Slot> = layout.lists().into_iter().flat_map(|l| if let Slot::List { elements, .. } = l { elements.iter().collect() } else { Vec::new() }).collect();
+    for slot in layout.lists() {
+        let (Slot::List { name, max_length, elements, .. }, Some(Slot::Record { record, before, .. })) = (slot, slot_first(slot)) else { continue };
+        let versions = if before.is_some() { "either version's" } else { "the new version's" };
+        let (what, rule) = if layout.compares_admission() { ("an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception", "both versions can build, and that they can build the same ones") } else { ("an input it rejects is skipped", "both versions can build") };
+        out.push(Assumption {
+            kind: AssumptionKind::Constructible,
+            text: format!("{versions} constructor {} accepts the arguments of each of the {max_length} objects the elements of {name} are picked among ({}): {what}, so the statement is about the lists of objects {rule}; every object is made, whether the list holds it or not", record.describe(), elements.iter().filter_map(|e| if let Slot::Record { name, .. } = e { Some(name.as_str()) } else { None }).collect::<Vec<_>>().join(", ")),
+            basis: Basis::Harness,
+            id: None,
+        });
+    }
     for slot in layout.records() {
+        if list_objects.contains(&slot) {
+            continue;
+        }
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
             if let Some(c) = previous.corresponds.as_ref().filter(|c| !c.same_shape) {
                 out.push(Assumption {
@@ -498,6 +527,14 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
     out
 }
 
+/// A list's first object, which every other is made as.
+fn slot_first(slot: &Slot) -> Option<&Slot> {
+    match slot {
+        Slot::List { elements, .. } => elements.first(),
+        _ => None,
+    }
+}
+
 /// A property's assumptions from how its harness makes its inputs (step H2 of `llm-dlc/loops/foundations-heap.md`):
 /// each object parameter made by its constructor, which skips an input it rejects.
 pub fn property_assumptions(layout: &Layout) -> Vec<Assumption> {
@@ -511,7 +548,7 @@ pub fn property_assumptions(layout: &Layout) -> Vec<Assumption> {
                 basis: Basis::Harness,
                 id: None,
             }),
-            Slot::Plain(_) => None,
+            Slot::Plain(_) | Slot::List { .. } => None,
         })
         .collect()
 }

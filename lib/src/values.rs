@@ -52,8 +52,12 @@
 //! `llm-dlc/loops/application-core.md`): its harness passes the parameter to both versions as the one String it
 //! is, the own checker makes it of at most the bound's code units ([`StringAdapter::bound`]), the witness is read
 //! by the rule [`StringAdapter::read`] applies ([`string_units`]) and rebuilt for a replay by the one
-//! [`ValueAdapter::rebuild`] applies ([`new_string`]), and the statement states the bound and the model. Until a
-//! check takes a list, [`adapter`] refuses one, naming the values stream, and every call site keeps refusing it.
+//! [`ValueAdapter::rebuild`] applies ([`new_string`]), and the statement states the bound and the model. It takes a
+//! list parameter too (`harness::Slot::List`): its harness makes `max_length` objects of the element class in each
+//! version, by their constructor, and the list from the adapter's choices in the shape [`ListAdapter::java`] writes
+//! (in bytecode, `List.of` called through `harness::LISTS_CLASS`), skipping what [`ListAdapter::admitted`] doesn't
+//! admit; the witness's list is read by [`ListAdapter::read`] and rebuilt over each version's objects by
+//! [`ValueAdapter::rebuild`]. Anywhere else, [`adapter`] refuses a list, naming the values stream.
 
 use std::collections::BTreeMap;
 
@@ -107,16 +111,22 @@ impl Nodes {
 /// is added to the check's.
 ///
 /// A String's is the [`StringAdapter`], not nullable, as an array parameter of a regression check isn't null. A
-/// list's is built ([`ListAdapter`]), but no check's harness makes a list from the adapter's choices or rebuilds its
-/// witness yet, so the hook still refuses one, rather than let a check say it has an adapter it can't use.
+/// list's adapter needs its elements' class, which the type alone doesn't name: a regression check makes a
+/// [`ListAdapter`] of the class its parameter's generic signature names, and every other place a list is met (a
+/// property's parameter, a result, a field, a payload) is refused here, by name.
 pub fn adapter(ty: &Type, max_length: u32) -> Result<Box<dyn ValueAdapter>, Unsupported> {
     if is_string(ty) {
         return Ok(Box::new(StringAdapter::new(max_length, false)));
     }
-    if matches!(ty, Type::Object(name) if name == LIST) {
-        return Err(Unsupported::new(Part::Values, "a java.util.List in this check: its value adapter is built (values::ListAdapter, an immutable list of List.of over the plan's objects), and the values stream builds it into the checks once their harness makes the list from the adapter's choices (ListAdapter::java) and rebuilds its witness in the replay (llm-dlc/loops/application-core-values.md)"));
+    if is_list(ty) {
+        return Err(Unsupported::new(Part::Values, "a java.util.List in this check: a regression check takes a list parameter (values::ListAdapter, an immutable List.of of objects it makes by their constructor, its element class from the parameter's generic signature), and no other place a list is met takes one yet"));
     }
     Err(Unsupported::new(Part::Values, format!("a value adapter for {}: the values stream builds it (llm-dlc/loops/application-core-values.md)", ty.java_name())))
+}
+
+/// Whether `ty` is `java.util.List`.
+pub fn is_list(ty: &Type) -> bool {
+    matches!(ty, Type::Object(name) if name == LIST)
 }
 
 /// Whether `ty` is `java.lang.String`.
@@ -887,17 +897,20 @@ mod tests {
     }
 
     #[test]
-    fn a_string_has_its_adapter_and_a_list_is_refused_by_name_until_a_check_takes_one() {
+    fn a_string_has_its_adapter_and_a_list_is_refused_by_name_where_its_element_class_is_unknown() {
         let string = adapter(&Type::Object(STRING.into()), 8).expect("a regression check takes a String");
         let d = string.domain();
         assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::String, false, 8));
         assert_eq!(d.model, string_model());
         let ty = Type::Object(LIST.into());
         assert!(is_adapted(&ty));
-        let list = adapter(&ty, 8).err().expect("no check takes a list yet");
+        // A regression check makes its list parameter's adapter from the element class its signature names; the
+        // type alone names none, so everywhere else a list is refused.
+        let list = adapter(&ty, 8).err().expect("a list's adapter needs its element class");
         assert_eq!(list.part, Part::Values);
-        assert!(list.what.contains("the values stream builds it"), "{list}");
-        assert!(list.what.contains("values::ListAdapter") && list.what.contains("ListAdapter::java"), "{list}");
+        assert!(list.what.contains("a regression check takes a list parameter") && list.what.contains("values::ListAdapter"), "{list}");
+        assert!(list.what.contains("no other place a list is met takes one yet"), "{list}");
+        assert!(is_list(&ty) && !is_list(&Type::Object(STRING.into())));
         assert!(is_adapted(&Type::Object(STRING.into())) && is_string(&Type::Object(STRING.into())));
         assert!(!is_adapted(&Type::Int) && !is_adapted(&Type::Object("shop/Quote".into())));
         assert_eq!(string_units(&["86".into(), "55296".into()]), Ok(vec![86, 0xd800]));

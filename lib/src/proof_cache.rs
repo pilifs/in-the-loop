@@ -393,6 +393,11 @@ impl<'a> Regression<'a> {
         if self.domain.parameters.iter().any(|p| p.kind == crate::statement::ParameterKind::Value && p.ty == "java.lang.String") {
             assumptions.push(format!("value model: {}", json(&crate::values::string_model())));
         }
+        // A list parameter's: the list models' bytecode and the adapter's snapshot rule. Its bound is the domain's,
+        // and its elements' constructors are among the roots above.
+        if self.domain.parameters.iter().any(|p| p.kind == crate::statement::ParameterKind::Value && p.ty.starts_with("java.util.List")) {
+            assumptions.push(format!("value model: {}", json(&crate::values::list_model())));
+        }
         assumptions.push(format!("observed: {}", json(self.observations)));
         assumptions.push(format!("before target: {}", self.options.before_target.as_deref().unwrap_or("the target's")));
         // The heap stream's options, named although the harness and the domain already carry what they change: a
@@ -404,6 +409,10 @@ impl<'a> Regression<'a> {
         let harness_file = self.harness.join(format!("{}.class", harness::CLASS));
         let harness_bytes = std::fs::read(&harness_file).map_err(|e| uncacheable(format!("its harness {} could not be read: {e}", harness_file.display())))?;
         assumptions.push(format!("harness: sha256:{}", sha256_hex(&harness_bytes)));
+        // The class a list is made through, when the harness has one.
+        if let Ok(lists) = std::fs::read(self.harness.join(format!("{}.class", harness::LISTS_CLASS))) {
+            assumptions.push(format!("lists: sha256:{}", sha256_hex(&lists)));
+        }
 
         let contracts = match &o.contracts {
             Some(p) => format!("sha256:{}", sha256_hex(&std::fs::read(p).map_err(|e| uncacheable(format!("its contracts {} could not be read: {e}", p.display())))?)),

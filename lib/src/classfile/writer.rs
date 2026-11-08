@@ -349,6 +349,9 @@ pub struct ClassWriter {
     pub fields: Vec<FieldWriter>,
     pub methods: Vec<MethodWriter>,
     pub source_file: Option<String>,
+    /// The class file's major version: 49 (Java 5) by default, which needs no `StackMapTable`. A class of no
+    /// branch may be 52, which `invokestatic` of an interface's static method needs.
+    pub major: u16,
 }
 
 impl ClassWriter {
@@ -361,6 +364,7 @@ impl ClassWriter {
             fields: Vec::new(),
             methods: Vec::new(),
             source_file: None,
+            major: 49,
         }
     }
 
@@ -391,7 +395,7 @@ impl ClassWriter {
         let mut out = Vec::new();
         out.extend(0xCAFE_BABEu32.to_be_bytes());
         out.extend(0u16.to_be_bytes()); // minor
-        out.extend(49u16.to_be_bytes()); // major: Java 5, no StackMapTable needed
+        out.extend(self.major.to_be_bytes()); // major: Java 5 unless chosen, no StackMapTable needed
         out.extend(self.pool.finish());
         out.extend(self.access.to_be_bytes());
         out.extend(this.to_be_bytes());

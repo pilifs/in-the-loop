@@ -28,6 +28,7 @@ pub use expr::{CallArg, Callee, Expr, Param};
 
 /// The harness class name (default package), and its method.
 pub const CLASS: &str = "EquivalenceHarness";
+const LIST: &str = "java/util/List";
 pub const METHOD: &str = "check";
 /// The class of a property harness.
 pub const PROPERTY_CLASS: &str = "PropertyHarness";
@@ -741,7 +742,41 @@ pub enum Slot {
     /// and `before` in the previous one (the same components, under `before/`), or none when the previous version
     /// takes the components themselves (a static method the components are passed to by expressions).
     Record { name: String, record: RecordType, before: Option<RecordType>, first: usize },
+    /// A list parameter (V2 of `llm-dlc/loops/application-core-values.md`, taken by a regression check at the
+    /// merge): one of the JDK's immutable lists, made by `List.of`, of at most `max_length` objects of the
+    /// application class `element` (its Java name in the new version, `basket.Line`), as [`crate::values::ListAdapter`]
+    /// says. The adapter's int choices are the flat parameters from `choices` on, in the order and under the names
+    /// of `ListAdapter::choices`, and they pick each element among `elements`: `max_length` objects, each a
+    /// [`Slot::Record`] named `{name}.m{i}` made by its constructor in both versions, so that any two elements may
+    /// be one object. Each version's list is made of its own objects, from the same choices; an input outside what
+    /// `ListAdapter::admitted` admits is skipped before anything is made.
+    List { name: String, element: String, max_length: u32, choices: usize, elements: Vec<Slot> },
 }
+
+impl Slot {
+    /// The values stream's adapter of a [`Slot::List`], whose rules make, read and rebuild its list.
+    pub fn list_adapter(&self) -> Option<crate::values::ListAdapter> {
+        match self {
+            Slot::List { element, max_length, .. } => crate::values::ListAdapter::new(crate::spec::plans::ElementKind::Object { class: element.clone() }, *max_length, false).ok(),
+            _ => None,
+        }
+    }
+}
+
+/// A list parameter for [`Layout::with_lists`]: the elements' class as each version makes it (the previous
+/// version's under its own names, unprefixed, as an object parameter's is), and the list's bound.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ListParam {
+    pub element: RecordType,
+    pub before: Option<RecordType>,
+    pub max_length: u32,
+}
+
+/// The class the harness calls `java.util.List.of` through, generated beside it ([`list_helper`]): the harness's
+/// class file version (49) has no `invokestatic` of an interface's method, so each `of` of `0` to `k` elements is
+/// a static method of a class of version 52 that only passes its arguments on, with no branch, so that it needs no
+/// `StackMapTable` either.
+pub const LISTS_CLASS: &str = "EquivalenceLists";
 
 /// How the target's receiver and arguments are made from the harness's flat parameters, which are the symbolic
 /// inputs the checker chooses: a record's components under `name.component`, `this.component` for the receiver's.
@@ -877,7 +912,7 @@ impl Layout {
             .iter()
             .map(|s| match s {
                 Slot::Plain(i) => self.params[*i].name.clone(),
-                Slot::Record { name, .. } => name.clone(),
+                Slot::Record { name, .. } | Slot::List { name, .. } => name.clone(),
             })
             .collect();
         let object = |name: &str, flag: &str| -> Result<(String, String), String> {
@@ -889,6 +924,7 @@ impl Layout {
                 Slot::Record { record, before: None, .. } if property && record.is_made() => Ok((record.class.clone(), record.class.clone())),
                 Slot::Record { record, before: None, .. } if record.is_made() => Err(format!("{flag} {name}: the previous version is given {name} by --before-arguments, which a choice of null or of the same object would not reach")),
                 Slot::Record { record, .. } => Err(format!("{flag} {name}: {name} is a {}, a record of primitive components, which a regression check compares as a value; only an object made by its constructor may be null or the same as another here", record.simple_name())),
+                Slot::List { .. } => Err(format!("{flag} {name}: {name} is a list, never null here, whose elements are the same object or not by its adapter's own choices; only an array parameter or an object made by its constructor may be null or the same as another")),
                 Slot::Plain(i) if property => Err(format!("{flag} {name}: {name} is a {}, and only an array parameter or an object made by its constructor may be null or the same as another", self.params[*i].ty.java_name())),
                 Slot::Plain(i) => {
                     let t = &self.params[*i].ty;
@@ -1051,7 +1087,9 @@ impl Layout {
                         field_refs(&mut out, name, at, Root::Arg(i), fields);
                     }
                 }
-                Slot::Plain(_) => {}
+                // A list's elements are picked by the same choices in both versions, and have no reference fields
+                // (`equivalence` refuses an element class with any): no identity relation among them can differ.
+                Slot::Plain(_) | Slot::List { .. } => {}
             }
         }
         out
@@ -1088,6 +1126,12 @@ impl Layout {
     /// parameters, of which `records[i]` says which are records (new, and previous when it has one), flattening
     /// each record into its components.
     pub fn new(receiver: Option<(RecordType, Option<RecordType>)>, names: &[String], types: &[Type], records: &[Option<(RecordType, Option<RecordType>)>], result: (Option<RecordType>, Option<RecordType>)) -> Layout {
+        Layout::with_lists(receiver, names, types, records, &[], result)
+    }
+
+    /// As [`Layout::new`], with the list parameters `lists[i]` names ([`Slot::List`]): each laid out as the
+    /// adapter's choices, then its `max_length` objects' leaves, as an object parameter's.
+    pub fn with_lists(receiver: Option<(RecordType, Option<RecordType>)>, names: &[String], types: &[Type], records: &[Option<(RecordType, Option<RecordType>)>], lists: &[Option<ListParam>], result: (Option<RecordType>, Option<RecordType>)) -> Layout {
         let mut flat: Vec<(String, Type)> = Vec::new();
         let flatten = |flat: &mut Vec<(String, Type)>, name: &str, record: &RecordType| {
             for (c, t) in &record.components {
@@ -1099,8 +1143,22 @@ impl Layout {
             Slot::Record { name: "this".into(), record, before, first: 0 }
         });
         let mut args = Vec::new();
-        for ((name, t), record) in names.iter().zip(types).zip(records) {
+        for (i, ((name, t), record)) in names.iter().zip(types).zip(records).enumerate() {
             let first = flat.len();
+            if let Some(Some(list)) = lists.get(i) {
+                let element = list.element.java_name();
+                let adapter = crate::values::ListAdapter::new(crate::spec::plans::ElementKind::Object { class: element.clone() }, list.max_length, false);
+                flat.extend(adapter.map(|a| a.choices(name)).unwrap_or_default().into_iter().map(|c| (c, Type::Int)));
+                let mut elements = Vec::new();
+                for m in 0..list.max_length {
+                    let at = flat.len();
+                    let made = format!("{name}.m{m}");
+                    flatten(&mut flat, &made, &list.element);
+                    elements.push(Slot::Record { name: made, record: list.element.clone(), before: list.before.clone(), first: at });
+                }
+                args.push(Slot::List { name: name.clone(), element, max_length: list.max_length, choices: first, elements });
+                continue;
+            }
             match record {
                 Some((record, before)) => {
                     flatten(&mut flat, name, record);
@@ -1172,6 +1230,7 @@ impl Layout {
             .map(|s| match s {
                 Slot::Plain(i) => self.params[*i].ty.clone(),
                 Slot::Record { record, .. } => Type::Object(record.class.clone()),
+                Slot::List { .. } => Type::Object(LIST.into()),
             })
             .collect()
     }
@@ -1209,7 +1268,20 @@ impl Layout {
 
     /// The receiver and the arguments that are records, the receiver first.
     pub fn records(&self) -> Vec<&Slot> {
-        self.receiver.iter().chain(self.args.iter()).filter(|s| matches!(s, Slot::Record { .. })).collect()
+        self.receiver
+            .iter()
+            .chain(self.args.iter())
+            .flat_map(|s| match s {
+                Slot::Record { .. } => vec![s],
+                Slot::List { elements, .. } => elements.iter().collect(),
+                Slot::Plain(_) => Vec::new(),
+            })
+            .collect()
+    }
+
+    /// The list parameters ([`Slot::List`]), in order.
+    pub fn lists(&self) -> Vec<&Slot> {
+        self.args.iter().filter(|s| matches!(s, Slot::List { .. })).collect()
     }
 
     /// Whether the regression harness compares the two versions' admission of an input (O2's negative control of
@@ -1316,6 +1388,10 @@ impl Layout {
                 Slot::Record { name, .. } if self.choice(name).is_some_and(|c| c.always.is_some()) => (format!("{name}: the same object as {}", self.choice(name).and_then(|c| c.always.clone()).unwrap_or_default()), false),
                 Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| !c.same_shape) => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
                 Slot::Record { name, record, .. } => (format!("{}{}{}", record.domain_part(name), arrays_of(record, max_array_length), self.or_null(name)), false),
+                Slot::List { name, max_length, elements, .. } => match elements.first() {
+                    Some(Slot::Record { record, .. }) => (list_part(name, *max_length, record), false),
+                    _ => (format!("{name}: the empty List.of(), not null"), false),
+                },
             })
             .collect();
         let mut text = domain(parts, max_array_length);
@@ -1376,6 +1452,13 @@ fn arrays_of(record: &RecordType, max_array_length: u32) -> String {
 /// (`values::StringAdapter`'s domain, its bound the check's).
 pub fn string_part(name: &str, max_length: u32) -> String {
     format!("{name}: String of ≤ {max_length} code units, not null")
+}
+
+/// A list parameter's part of a domain ([`Slot::List`], `values::ListAdapter`'s domain): `lines: an immutable
+/// List.of of ≤ 3 elements, not null, each a Line made by its constructor, Line(unitCents: long, quantity: int),
+/// from any arguments it accepts, any two of them possibly one object`.
+pub fn list_part(name: &str, max_length: u32, element: &RecordType) -> String {
+    format!("{name}: an immutable List.of of ≤ {max_length} elements, not null, each a {} made by its constructor, {}, from any arguments it accepts, any two of them possibly one object", element.simple_name(), element.describe())
 }
 
 pub fn domain(parts: Vec<(String, bool)>, max_array_length: u32) -> String {
@@ -1608,6 +1691,7 @@ impl BeforeMethod {
                 .map(|a| match a {
                     Slot::Plain(i) => params[*i].ty.clone(),
                     Slot::Record { record, before, .. } => Type::Object(before.as_ref().unwrap_or(record).class.clone()),
+                    Slot::List { .. } => Type::Object(LIST.into()),
                 })
                 .collect();
             if new != self.params {
@@ -1769,6 +1853,7 @@ impl BeforeMethod {
                     }
                     None => return Err(Error::new(format!("the result relation reads {shown}, which is not an object the previous version gets made by its constructor"))),
                 },
+                Some(Slot::List { .. }) => return Err(Error::new(format!("the result relation reads {shown}, a list, which it has no terms for"))),
                 None => return Err(Error::new(format!("the result relation reads {shown}, which is not a parameter of the previous version ({})", self.names.join(", ")))),
             }
         }
@@ -1929,9 +2014,16 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     // previous one's.
     let objects = index + 1;
     let object_slots = |i: usize| (objects + 2 * i as u16, objects + 2 * i as u16 + 1);
+    // Each list parameter's list in each version, the new one's then the previous one's, then the elements one is
+    // made of, picked.
+    let lists = layout.lists();
+    let list_locals = objects + 2 * records.len() as u16;
+    let list_slot = |l: usize, previous: bool| list_locals + 2 * l as u16 + u16::from(previous);
+    let picked = list_locals + 2 * lists.len() as u16;
+    let widest = lists.iter().map(|s| if let Slot::List { max_length, .. } = s { *max_length as u16 } else { 0 }).max().unwrap_or(0);
     // The previous version's arguments, when they are expressions: computed into locals after the objects, with a
     // quantifier's variable after those.
-    let temps = objects + 2 * records.len() as u16;
+    let temps = picked + widest;
     let before_args = match before {
         Some(b) => b.parse_arguments(params, &layout.args, temps + b.argument_types().iter().map(Type::slots).sum::<u16>())?,
         None => None,
@@ -1974,6 +2066,31 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         code.if_zero(Cond::Eq, proceed);
         code.return_(None);
         code.bind(proceed);
+    }
+
+    // A list's choices outside what its adapter admits (`ListAdapter::admitted`: the length within the bound, each
+    // pick an object made so far) are no list of the domain, and skipped before anything is made.
+    for slot in &lists {
+        let Slot::List { max_length, choices, .. } = slot else { continue };
+        let (skip, admitted) = (code.label(), code.label());
+        let length = params[*choices].slot;
+        code.load(Kind::Int, length);
+        code.if_zero(Cond::Lt, skip);
+        code.load(Kind::Int, length);
+        code.iconst(*max_length as i32);
+        code.if_icmp(Cond::Gt, skip);
+        for i in 1..*max_length as usize {
+            let pick = params[choices + i].slot;
+            code.load(Kind::Int, pick);
+            code.if_zero(Cond::Lt, skip);
+            code.load(Kind::Int, pick);
+            code.iconst(i as i32);
+            code.if_icmp(Cond::Gt, skip);
+        }
+        code.goto(admitted);
+        code.bind(skip);
+        code.return_(None);
+        code.bind(admitted);
     }
 
     // The copies: as long as the array, filled by a loop of at most the bound's iterations.
@@ -2208,6 +2325,52 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         None => (class_internal, method, layout.before_descriptor(&layout.target_types(), ret)),
     };
     let before_owner = format!("before/{before_class}");
+    // Each list, in each version, from its choices over that version's objects, in the shape `ListAdapter::java`
+    // writes: element 0 the first object, element i the object its pick names among the first i + 1; then
+    // `List.of` over the first `length` of them, through [`LISTS_CLASS`].
+    for (l, slot) in lists.iter().enumerate() {
+        let Slot::List { max_length, choices, elements, .. } = slot else { continue };
+        let k = *max_length as usize;
+        for previous in [false, true] {
+            let made = |j: usize| {
+                let at = records.iter().position(|r| *r == &elements[j]).expect("a list's object is a record");
+                let (new_local, old_local) = object_slots(at);
+                if previous { old_local } else { new_local }
+            };
+            for i in 0..k {
+                code.load(Kind::Ref, made(i));
+                code.store(Kind::Ref, picked + i as u16);
+                for j in 0..i {
+                    let next = code.label();
+                    code.load(Kind::Int, params[choices + i].slot);
+                    code.iconst(j as i32);
+                    code.if_icmp(Cond::Ne, next);
+                    code.load(Kind::Ref, made(j));
+                    code.store(Kind::Ref, picked + i as u16);
+                    code.bind(next);
+                }
+            }
+            let done = code.label();
+            for n in 0..=k {
+                let next = code.label();
+                if n < k {
+                    code.load(Kind::Int, params[*choices].slot);
+                    code.iconst(n as i32);
+                    code.if_icmp(Cond::Ne, next);
+                }
+                for i in 0..n {
+                    code.load(Kind::Ref, picked + i as u16);
+                }
+                let of = writer.pool.method_ref(LISTS_CLASS, "of", &list_of_descriptor(n));
+                code.op_u16(0xb8, of); // invokestatic
+                code.store(Kind::Ref, list_slot(l, previous));
+                code.goto(done);
+                code.bind(next);
+            }
+            code.bind(done);
+        }
+    }
+    code.max_locals = code.max_locals.max(temps);
     // The probe: every input that gets this far fails it, and the calls below are never reached.
     if probe {
         emit_failure(&mut code, &mut writer.pool);
@@ -2290,6 +2453,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                         }
                     }
                     Slot::Record { .. } => code.load(Kind::Ref, object_of(arg).expect("an argument record")),
+                    Slot::List { .. } => code.load(Kind::Ref, list_slot(lists.iter().position(|l| *l == arg).expect("a list parameter"), on_copies)),
                 }
             }
         }
@@ -2926,7 +3090,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                 p.name.clone()
             }
         }
-        Slot::Record { name, .. } => format!("{name}_{side}"),
+        Slot::Record { name, .. } | Slot::List { name, .. } => format!("{name}_{side}"),
     };
     let args = layout.args.iter().map(|s| argument(s, "after")).collect::<Vec<_>>().join(", ");
     let pass_through = layout.args.iter().map(|s| argument(s, "before")).collect::<Vec<_>>().join(", ");
@@ -2940,7 +3104,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                 // A record's components are named as the parameters are, `this_component` for `this.component`.
                 let given = records.iter().fold(given, |e, slot| match slot {
                     Slot::Record { name, .. } => e.replace(&format!("{name}."), &format!("{name}_")),
-                    Slot::Plain(_) => e,
+                    Slot::Plain(_) | Slot::List { .. } => e,
                 });
                 let value = match params.iter().find(|p| p.name == given && is_array(p)) {
                     Some(p) => format!("{}_before", p.name),
@@ -3049,6 +3213,20 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             s.push_str("        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept\n");
         }
     }
+    // Each list as `ListAdapter::java` writes it, over each version's objects; the class file makes it in the same
+    // shape, and skips the choices its adapter doesn't admit before anything is made.
+    for slot in layout.lists() {
+        let (Slot::List { name, element, elements, .. }, Some(adapter)) = (slot, slot.list_adapter()) else { continue };
+        s.push_str(&format!("        if (!({})) {{ return; }} // the list's choices its adapter admits, checked first\n", adapter.admitted(name)));
+        for (side, class) in [("before", format!("before.{element}")), ("after", element.clone())] {
+            let made: Vec<String> = elements.iter().filter_map(|e| if let Slot::Record { name: m, .. } = e { Some(format!("{m}_{side}")) } else { None }).collect();
+            if let Ok(java) = adapter.java(name, &format!("{name}_{side}"), &class, &made) {
+                for l in java.lines() {
+                    s.push_str(&format!("        {l}\n"));
+                }
+            }
+        }
+    }
     if !mapping.is_empty() {
         s.push_str("        // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.\n");
         s.push_str(&format!("        {}\n", mapping.join(" ")));
@@ -3101,7 +3279,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             let position = before.and_then(|b| b.names.iter().position(|n| *n == old));
             let named = match position.and_then(|i| layout.args.get(i)) {
                 Some(Slot::Plain(k)) => params[*k].name.clone(),
-                Some(Slot::Record { name, .. }) => format!("{name}_before"),
+                Some(Slot::Record { name, .. } | Slot::List { name, .. }) => format!("{name}_before"),
                 None => return text,
             };
             replace_word(&text, &format!("{BEFORE}{old}"), &named)
@@ -3408,6 +3586,7 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
                     objects.push((name.clone(), fields.clone()));
                 }
             }
+            Slot::List { name, .. } => return Err(Error::new(format!("{name} is a list, which a property's harness doesn't make"))),
         }
     }
     // What the assumption and the throws clauses read: the receiver, then the arguments.
@@ -3750,6 +3929,34 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     Ok(PropertyHarness { bytes: writer.to_bytes(), probe: Vec::new(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: arg_names, old })
 }
 
+/// `(Ljava/lang/Object;…)Ljava/util/List;` of `n` elements: `List.of`'s, erased.
+fn list_of_descriptor(n: usize) -> String {
+    format!("({})L{LIST};", "Ljava/lang/Object;".repeat(n))
+}
+
+/// The class [`LISTS_CLASS`]: for each `n` up to `max_length`, `static List of(Object…)` of `n` arguments, which
+/// calls `java.util.List.of` on them and returns its list. Written beside a harness that takes a list parameter.
+pub fn list_helper(max_length: u32) -> Vec<u8> {
+    let mut writer = ClassWriter::new(LISTS_CLASS);
+    writer.major = 52;
+    writer.source_file = Some(format!("{LISTS_CLASS}.java"));
+    writer.default_constructor();
+    for n in 0..=max_length as usize {
+        let descriptor = list_of_descriptor(n);
+        let of = writer.pool.interface_method_ref(LIST, "of", &descriptor);
+        let mut code = CodeBuilder::new();
+        for i in 0..n {
+            code.load(Kind::Ref, i as u16);
+        }
+        code.op_u16(0xb8, of); // invokestatic, of an interface's method
+        code.return_(Some(Kind::Ref));
+        code.max_stack = n.max(1) as u16;
+        code.max_locals = n as u16;
+        writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: "of".into(), descriptor, code: Some(code) });
+    }
+    writer.to_bytes()
+}
+
 /// The `newarray` type code of a primitive element type.
 fn newarray_code(element: &Type) -> u8 {
     match element {
@@ -3848,7 +4055,7 @@ pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout,
         .iter()
         .map(|s| match s {
             Slot::Plain(i) => flat[*i].name.clone(),
-            Slot::Record { name, .. } => name.clone(),
+            Slot::Record { name, .. } | Slot::List { name, .. } => name.clone(),
         })
         .collect();
     let plain: Vec<Param> = args.iter().map(|a| Param { name: a.clone(), ty: Type::Int, slot: 0 }).collect();

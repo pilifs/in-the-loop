@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T12:36:00.474Z",
-  "duration_seconds": 8012,
+  "ended": "2026-11-08T13:24:47.351Z",
+  "duration_seconds": 10938,
   "stats": {
-    "turns": 12,
-    "api_calls": 164,
-    "tool_calls": 167,
-    "tool_errors": 1,
-    "compactions": 2,
-    "peak_context_tokens": 223597,
+    "turns": 17,
+    "api_calls": 261,
+    "tool_calls": 265,
+    "tool_errors": 2,
+    "compactions": 3,
+    "peak_context_tokens": 283272,
     "usage": {
-      "input_tokens": 328,
-      "output_tokens": 90908,
-      "cache_read_input_tokens": 21531531,
-      "cache_creation_input_tokens": 456463
+      "input_tokens": 524,
+      "output_tokens": 177725,
+      "cache_read_input_tokens": 40737837,
+      "cache_creation_input_tokens": 730489
     }
   },
   "tools": {
-    "Bash": 149,
-    "Read": 10,
-    "Edit": 7,
+    "Bash": 244,
+    "Read": 12,
+    "Edit": 8,
     "Write": 1
   },
   "files_touched": [
@@ -71,24 +71,38 @@
     {
       "index": 2,
       "started": "2026-11-08T12:11:52.929Z",
-      "ended": "2026-11-08T12:36:00.474Z",
-      "turns": 4,
-      "api_calls": 97,
+      "ended": "2026-11-08T12:36:22.570Z",
+      "turns": 5,
+      "api_calls": 99,
       "usage": {
-        "input_tokens": 194,
-        "output_tokens": 58292,
-        "cache_read_input_tokens": 15119238,
-        "cache_creation_input_tokens": 210518
+        "input_tokens": 200,
+        "output_tokens": 59231,
+        "cache_read_input_tokens": 15568987,
+        "cache_creation_input_tokens": 214351
       },
-      "peak_context_tokens": 223597
+      "peak_context_tokens": 227432
+    },
+    {
+      "index": 3,
+      "started": "2026-11-08T12:37:06.944Z",
+      "ended": "2026-11-08T13:24:47.351Z",
+      "turns": 4,
+      "api_calls": 95,
+      "usage": {
+        "input_tokens": 190,
+        "output_tokens": 85878,
+        "cache_read_input_tokens": 18756557,
+        "cache_creation_input_tokens": 270193
+      },
+      "peak_context_tokens": 283272
     }
   ],
   "log": {
-    "sha256": "4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c",
-    "bytes": 4385326,
-    "lines": 1494,
-    "gzip_bytes": 868432,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c.jsonl.gz"
+    "sha256": "a13da12cf945399228b493897158649c9892856f0d76a7c60fb2e76334e1d408",
+    "bytes": 6916101,
+    "lines": 2353,
+    "gzip_bytes": 1273482,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/a13da12cf945399228b493897158649c9892856f0d76a7c60fb2e76334e1d408.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -259,6 +273,14 @@
       "summary": "application-core Phase 5 step 1: a String parameter of a regression check, so the contract's V1 row reaches its verdicts",
       "body": "The values stream's interface request for V1, applied at the merge. values::adapter now gives the regression check the String adapter (at most --max-array-length code units, never null). equivalence passes the bound to the own checker, reads the witness's String as a new jbmc::Argument::String by the adapter's own rule (values::string_units), rebuilds it for the replay by rebuild's rule (values::new_string), shrinks it, renders it as an escaped Java literal, and also runs it on a JVM as new String(char[]). The statement states a ParameterKind::Value with its bound, Bounds::max_value_length and Models::values, and the regression cache's claim key covers the bound and the String model's identity. JBMC is refused under --engine jbmc and not asked under --confirm, since its Strings are its own model.\n\nVerified inline: the contract's V1 row now accepts no stream's refusal (it failed before) and passes, with Codes#vip's rewrite proved and wrong-prefix refuted on vip(\"VI\"), replayed in the interpreter and on JDK 25.0.5. The new lib/tests/value_parameters.rs has 4 tests: the correct case and the defect, an isolated surrogate crossing to the JVM unit for unit (a sabotage of the JVM's units fails it), the named refusals, and a cached proof reused exactly and proved again under another bound. The integration check passes (contract 14/14, 254 unit tests), as does every other test binary but integration.rs, whose String test now expects the JBMC refusal and was run inline. Still refused by name: a String in a property check, a String result (Objects.equals is a gap), a String plan root, a null String. The list half of the request is next.",
       "log_sha256": "4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c"
+    },
+    {
+      "change_id": "xyurpwspppywozqvluptzyxrrozkpnty",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a list parameter of a regression check, so the contract's V2 regressions reach their verdicts",
+      "body": "Interface request 1's list half, for plain regression checks. A java.util.List<E> parameter whose generic signature names one element class is now a harness slot of its own (harness::Slot::List), of at most --max-array-length elements, never null. The harness makes that many objects of E by their constructor in each version from the same leaves, and each version's list from the values adapter's int choices in the shape ListAdapter::java writes, skipping what ListAdapter::admitted doesn't admit, so any two elements may be one object. List.of is called through a small branchless class file of version 52 written beside the harness (harness::LISTS_CLASS), since the harness's version 49 can't invokestatic an interface's method. The objects' fields are compared after the calls. The witness stays flat ints and leaves; its list is read by ListAdapter::read, rendered as List.of(new Line(1, 1), the same object as lines[0]), typed as a list of nodes, rebuilt over each version's objects for the interpreter's replay, and run on a JVM. jvm_witness now sizes max_stack from the arguments' widths (part of interface request 6): an eight-line witness failed with 'Stack size too large' before. The statement states the list as a value with its bound and the list model, and the cache key covers the model, the elements' constructors and the helper class. JBMC is not asked (--engine jbmc refused, --confirm not-asked, per VF-023).\n\nThe reproducer: the contract's V2 regressions accepted the values stream's refusal and now accept none, under the frozen claims' list bound of 3; they failed before. Verified: the integration check passes (contract 14/14, lib 254, foundations, compare, effects, the Python suites), and so does every other test binary but integration.rs (JBMC). V2's ten regression cases reach expected.json's verdicts, and the defects duplicate-skipped and alias-blind are refuted on witnesses replayed on JDK 25.0.5. tests/value_parameters.rs gains three tests: correct cases and defects with the statement, the named refusals (raw or wildcard lists, elements holding arrays or objects, an object result that could be an element, JBMC, a property's list), and cached evidence that moves with the bound and with an edit of the element's constructor. Two sabotages (the harness ignoring picks, the replay rebuilding distinct elements) fail them. The planned claims' adapted list root is the next cycle. The brief is not out of date here: interface request 1 asked for ListAdapter::java's shape, which the bytecode harness follows.",
+      "log_sha256": "a13da12cf945399228b493897158649c9892856f0d76a7c60fb2e76334e1d408"
     }
   ],
   "logs": {
@@ -278,6 +300,12 @@
       "bytes": 2185440,
       "lines": 606,
       "gzip_bytes": 505282,
+      "url": null
+    },
+    "a13da12cf945399228b493897158649c9892856f0d76a7c60fb2e76334e1d408": {
+      "bytes": 6916101,
+      "lines": 2353,
+      "gzip_bytes": 1273482,
       "url": null
     }
   },

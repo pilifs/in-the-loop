@@ -14,3 +14,5 @@ After each commit the session decides whether to go on:
 
 - cycle 1, 2026-11-08 12:10:58, `loxnvssxwqtu`: Merge the four application-core streams: objects, values, environment and reuse
   - decided to continue: The loop should go on. The reconcile is committed (`loxnvssx`), with the integration check passing and 0 errors, so Phase 5 is next and none of it is done yet. Its first step is the seven groups of interface requests now in Progress, starting with the String and list parameter wiring. That work needs no one but this loop, and the status is still `working`.
+- cycle 2, 2026-11-08 12:36:14, `lznmnzxvquru`: application-core Phase 5 step 1: a String parameter of a regression check, so the contract's V1 row reaches its verdicts
+  - decided to continue: The loop should go on. The merge is committed, and of Phase 5's first step only the String half of the first interface request is done (`lznmnzxv`). The list half for V2 comes next, then requests 2–7 and the joint acceptance jobs, and all of that needs only this loop. Progress still ends `Status: working`, and nothing waits on jobs or the user.

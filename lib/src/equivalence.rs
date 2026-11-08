@@ -760,6 +760,36 @@ fn record_of(cp: &ClassPath, t: &Type) -> Result<Option<harness::RecordType>, Er
 /// and whose fields are primitives, arrays of primitives, or references to objects of application classes whose
 /// fields are so in turn; or none, for a type that is not an application class. An application class outside that
 /// is a named gap: `Err` says why.
+/// The element class of `method`'s list parameter `index`, from its generic signature (`List<Line>`), as a list
+/// adapter's element: an object of an application class made by its constructor, or a record of primitive
+/// components, whose construction takes primitives only and whose fields are primitive, so that the harness's
+/// comparison of its fields after the call is all there is to an element (no array, no inner object, no identity
+/// among references). Anything else, a raw `List`, a wildcard or a type variable included, is refused by name.
+fn list_element(cp: &ClassPath, method: &crate::classfile::Method, pool: &crate::classfile::ConstantPool, index: usize) -> Result<Result<harness::RecordType, String>, Error> {
+    use crate::classfile::signature::{method_parts, parse_type, Sig};
+    let part = method.generic_signature(pool).and_then(|s| method_parts(&s)).and_then(|(params, _)| params.get(index).cloned());
+    let element = match part.as_deref().and_then(parse_type) {
+        Some(Sig::Class { name, args }) if name == "java/util/List" => match args.as_slice() {
+            [Sig::Class { name, args }] if args.is_empty() => name.clone(),
+            _ => return Ok(Err("a list's element type must be one class, not a wildcard, a type variable or a generic class: List<Line>".into())),
+        },
+        _ => return Ok(Err("its generic signature doesn't name the elements' class (a raw List), which the list adapter makes".into())),
+    };
+    let t = Type::Object(element.clone());
+    let record = match object_of(cp, &t)? {
+        Ok(Some(r)) => r,
+        Ok(None) => return Ok(Err(format!("its elements are {}, which is no application class a regression check makes by its constructor", element.replace('/', ".")))),
+        Err(gap) => return Ok(Err(format!("its elements are {}, which is outside the objects a regression check makes: {gap}", element.replace('/', ".")))),
+    };
+    if !record.components.iter().all(|(_, t)| t.is_primitive()) || !record.inner.is_empty() {
+        return Ok(Err(format!("its elements are {}, whose construction takes an array or an object: a list's elements are made of primitives only, for now", record.describe())));
+    }
+    if record.fields.as_ref().is_some_and(|f| f.fields.iter().any(|(_, k)| !matches!(k, harness::FieldKind::Value(_)))) {
+        return Ok(Err(format!("its elements are {}, which has a field of an array or an object: a list's elements have primitive fields only, for now, since the identity relations among the references they hold aren't observed", record.simple_name())));
+    }
+    Ok(Ok(record))
+}
+
 fn object_of(cp: &ClassPath, t: &Type) -> Result<Result<Option<harness::RecordType>, String>, Error> {
     if let Some(record) = record_of(cp, t)? {
         return Ok(Ok(Some(record)));
@@ -1006,7 +1036,29 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // A String parameter is a value of the values stream's adapter (`values::StringAdapter`): of at most
     // --max-array-length code units, never null, the one object both versions are passed.
     let mut strings: Option<Box<dyn crate::values::ValueAdapter>> = None;
-    for (name, t) in names.iter().zip(&descriptor.params) {
+    // A list parameter is a value of the values stream's list adapter (`values::ListAdapter`, V2): one of the JDK's
+    // immutable lists, by `List.of`, of at most --max-array-length objects of the element class its generic
+    // signature names, each made by its constructor, any two possibly one object.
+    let mut list_elements: Vec<Option<harness::RecordType>> = vec![None; names.len()];
+    for (i, (name, t)) in names.iter().zip(&descriptor.params).enumerate() {
+        if crate::values::is_list(t) {
+            if plan.is_some_and(|p| p.after.roots.iter().any(|r| r.name == *name)) {
+                return refuse(&mut out, line, format!("the plan has a root {name}, a list parameter: a plan's adapted list root is not taken by this check yet; without a plan, the check makes the list by the values stream's list adapter"));
+            }
+            if options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() || options.correspondence.as_ref().is_some_and(|c| !c.inputs.is_empty() || !c.outputs.is_empty()) {
+                return refuse(&mut out, line, format!("parameter {name} is a list: a list parameter with --before-target, --before-arguments, --results-agree-when or a correspondence is not supported yet; both versions are given the same list's elements"));
+            }
+            let element = match list_element(&after_cp, &method, &class.pool, i)? {
+                Ok(e) => e,
+                Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}: {gap}", t.java_name())),
+            };
+            if let Err(u) = crate::values::ListAdapter::new(crate::spec::plans::ElementKind::Object { class: element.java_name() }, options.max_array_length, false) {
+                return refuse(&mut out, line, format!("parameter {name} is a list of at most {} elements (--max-array-length): {}", options.max_array_length, u.what));
+            }
+            list_elements[i] = Some(element);
+            records.push(None);
+            continue;
+        }
         if crate::values::is_string(t) {
             match crate::values::adapter(t, options.max_array_length) {
                 Ok(a) => strings = Some(a),
@@ -1044,6 +1096,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if strings.is_some() && options.engine == crate::Engine::Jbmc {
         return refuse(&mut out, line, format!("{method_name} takes a String, which the tool's own checker takes under the stated bound of {} code units (--engine native or auto); JBMC's Strings are its own model, not this one, so --engine jbmc wouldn't check the same claim", options.max_array_length));
     }
+    // The same for a list: JBMC runs the list models' bytecode its own way (VF-023: it refutes that a one-element
+    // List.of has size 1), and its fallback or confirmation would be another claim.
+    let lists_taken = list_elements.iter().any(Option::is_some);
+    if lists_taken && options.engine == crate::Engine::Jbmc {
+        return refuse(&mut out, line, format!("{method_name} takes a java.util.List, which the tool's own checker takes under the stated bound of {} elements (--engine native or auto); JBMC runs the list models its own way (VF-023), so --engine jbmc wouldn't check the same claim", options.max_array_length));
+    }
     let mut checker_parameters = crate::bmc::Parameters::default();
     if let Some(a) = &strings {
         checker_parameters.max_string_length = Some(a.domain().max_length);
@@ -1053,6 +1111,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, format!("the plan's root {} is no parameter of {method_name}, whose parameters are {}", extra.name, names.join(", ")));
     }
     let result_record = record_of(&after_cp, &descriptor.ret)?;
+    // A list's elements are compared by their fields after the call, and picked alike in both versions; an object
+    // result could be one of them, an identity this check doesn't observe yet (the planned claim's
+    // `identity:result==lines[0]`), so it is refused rather than compared by its fields alone.
+    if lists_taken && matches!(descriptor.ret, Type::Object(_)) && result_record.is_none() {
+        return refuse(&mut out, line, format!("{method_name} takes a list and returns a {}: whether the result is one of the list's elements is an identity this check doesn't observe yet, so it is not compared by its fields alone", descriptor.ret.java_name()));
+    }
 
     // The previous version: the target under the same name with the same parameters, or the method named by
     // --before-target, called with the arguments --before-arguments gives.
@@ -1318,7 +1382,22 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             _ => (None, None),
         }
     };
-    let mut layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
+    // Each list parameter's elements as the previous version makes them: the same parameter's, of the same shape.
+    let mut list_params: Vec<Option<harness::ListParam>> = Vec::new();
+    for (i, element) in list_elements.iter().enumerate() {
+        list_params.push(match element {
+            None => None,
+            Some(after) => {
+                let name = &names[i];
+                match list_element(&before_cp, &before_method, &before_class.pool, i)? {
+                    Ok(b) if b.same_shape(after) => Some(harness::ListParam { element: after.clone(), before: Some(b), max_length: options.max_array_length }),
+                    Ok(b) => return refuse(&mut out, line, format!("parameter {name}'s elements are made differently in the two versions: {} before, {} now; elements of another construction or other fields are not supported yet", b.describe(), after.describe())),
+                    Err(gap) => return refuse(&mut out, line, format!("in the previous version, parameter {name}: {gap}")),
+                }
+            }
+        });
+    }
+    let mut layout = harness::Layout::with_lists(before_receiver, &names, &descriptor.params, &both_records, &list_params, result);
     layout.result_fields = result_fields;
     layout.result_equations = result_equations;
     layout.checked = declared_checked(options, [(&before_class, &before_method), (&class, &method)])?;
@@ -1467,6 +1546,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let harness_dir = work.join("harness");
     std::fs::create_dir_all(&harness_dir)?;
     std::fs::write(harness_dir.join(format!("{}.class", harness::CLASS)), &harness.bytes)?;
+    // A harness that makes a list calls `List.of` through a class of its own, beside it.
+    if let Some(widest) = list_params.iter().flatten().map(|l| l.max_length).max() {
+        std::fs::write(harness_dir.join(format!("{}.class", harness::LISTS_CLASS)), harness::list_helper(widest))?;
+    }
     let statement = harness_dir.join(format!("{}.java", harness::CLASS));
     std::fs::write(&statement, &harness.source)?;
     let restriction = options.unchanged_unless.as_deref().map(|s| format!(" where !({s})")).unwrap_or_default();
@@ -1501,7 +1584,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
         observations: observations.clone(),
         bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
-        models: crate::statement::Models { values: strings.iter().map(|a| a.domain().model.clone()).collect(), ..crate::statement::models(options.models && last.is_some()) },
+        models: crate::statement::Models { values: strings.iter().map(|a| a.domain().model.clone()).chain(lists_taken.then(crate::values::list_model)).collect(), ..crate::statement::models(options.models && last.is_some()) },
         checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
@@ -1644,12 +1727,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let budget = own_budget(&deadline, options.engine);
         let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &checker_parameters, &work)?;
         runs.push(Run::of(&result, "proof", budget));
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) || strings.is_some() {
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) || strings.is_some() || lists_taken {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                if refuses_gaps(&result) || strings.is_none() {
+                if refuses_gaps(&result) || (strings.is_none() && !lists_taken) {
                     let _ = writeln!(out, "{}", NOT_JBMC);
-                } else {
+                } else if strings.is_some() {
                     let _ = writeln!(out, "note: the tool's own checker gave no verdict, and JBMC is not asked: it takes a String parameter, which JBMC models its own way");
+                } else {
+                    let _ = writeln!(out, "note: the tool's own checker gave no verdict, and JBMC is not asked: it takes a list parameter, whose models JBMC runs its own way (VF-023)");
                 }
             }
             stages.clear();
@@ -1996,6 +2081,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         if strings.is_some() {
             let reason = "a String parameter: JBMC's Strings are its own model, not the own checker's bounded one, and its witness's String isn't read, so it wouldn't check the same claim".to_string();
             (Some(Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }), None)
+        } else if lists_taken {
+            let reason = "a list parameter: JBMC runs the list models' bytecode its own way (VF-023: it refutes that a one-element List.of has size 1), so it wouldn't check the same claim".to_string();
+            (Some(Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }), None)
         } else {
             let (c, refuting) = confirm(&last, &run, Some(contracts), &reproduces)?;
             (Some(c), refuting)
@@ -2097,13 +2185,20 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 if !layout.records().is_empty() {
                     ways.push("rejected by a record's constructor");
                 }
+                if lists_taken {
+                    ways.push("a list's choices outside what its adapter admits");
+                }
                 if layout.records().iter().any(|s| matches!(s, harness::Slot::Record { before: Some(b), .. } if b.corresponds.as_ref().is_some_and(|c| !c.same_shape))) {
                     ways.push("outside the correspondence's input equations");
                 }
                 if previous.as_ref().is_some_and(|b| b.arguments.is_some()) {
                     ways.push("without arguments for the previous version (--before-arguments throws on it)");
                 }
+                // The harness's directory after the probe's, for the class a list is made through.
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
+                if lists_taken {
+                    entries.insert(0, harness_dir.clone());
+                }
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
                 let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &checker_parameters, &work, &ways.join(" or "), &render, &mut search)?;
@@ -2237,7 +2332,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // values stream's model, sampled against the JVM, not proved. The JVM is the reference: where its harness
             // finds the versions agreeing, the interpreter was wrong and nothing is reported.
             let mut jvm_note = None;
-            if on_jvm.is_none() && (observes_objects(&layout, &differs) || strings.is_some()) {
+            if on_jvm.is_none() && (observes_objects(&layout, &differs) || strings.is_some() || lists_taken) {
                 let mut entries = vec![harness_dir.clone(), options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
                 let slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();
