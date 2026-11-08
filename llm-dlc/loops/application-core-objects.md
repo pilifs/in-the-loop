@@ -287,6 +287,35 @@ Never relax the interface to unblock it.
   - **Next**: as the entry above: O2's remaining negative controls (unsupported side effects in a constructor, a
     narrower new constructor under an anchored domain), a shrinking check of the recipe's legality, and the claim
     roots.
+- 2026-11-08, **O2's negative control of unsupported side effects in a constructor**. The integration report is
+  still the 05:36 one (the README conflict, fixed by the entry above).
+  - **What**: `construction::side_effect` finds a write to a static field in a constructor, or in an application
+    method it reaches (`purity`'s walk, of which only that violation counts). Before, such a constructor was taken
+    as it is: the checks make each object from the classes' initial state, so a `made++` in the constructor gave a
+    verdict about the first object made only (a regression refuted, `before: 1`, on a JVM run from a fresh
+    class). Now it is refused by name wherever a check makes the object:
+    - `equivalence::made_of` (receivers and parameters, inner objects included, both checks);
+    - a plan's node (`construction::node`);
+    - a setup call that writes a static field, its effect being outside every observation.
+    The regression check's previous-version parameter no longer drops the reason (it said only "not a record").
+    Calls into the JDK with an effect (`System.out`, `nanoTime`, `Math.random`) were already refused by the
+    engines, wherever they are, and still are.
+  - **Verified inline** (native, no JBMC): `tests/application_core_objects.rs`'s
+    `o2_a_constructors_side_effect_outside_its_object_is_refused_by_name`: refused for a receiver in either version
+    and in `prove`, a plan's node, a setup call, and a parameter's constructor that calls a static helper writing a
+    registry (regression and `prove`); `System.out` refused; a constructor reading a constant and calling a method
+    that writes its own field still verified. 17 pass and 1 ignored there; the lib tests and the inline suites
+    `heap`, `foundations`, `compare`, `effects`, `application_core` (except O3, the fixture finding),
+    `observations`, `alignment`, `summaries`, `conformance` and `skill` pass. `lib/README.md` has a paragraph of
+    its own for it, after this stream's others.
+  - **No job**: no example or fixture constructor writes a static field (the Java sources under `examples/` and
+    `lib/tests/fixtures/` have mutable statics only in the JBMC initializer fixtures, outside constructors).
+  - **Found, for the for-review list**: a regression check doesn't observe the target's own writes to static
+    fields. `f(x)` that does `calls++` before and nothing after is verified ("behaves as before on every input").
+    Static state is outside the observation contract today (environment's `spec/observe.rs` decides what is
+    observed), but neither `lib/README.md` nor the domain says so. Not changed here.
+  - **Next**: O2's last negative control, a narrower new constructor under an externally anchored domain; then a
+    shrinking check of the recipe's legality, and the claim roots.
 - Status: working
 
 ## Loop settings

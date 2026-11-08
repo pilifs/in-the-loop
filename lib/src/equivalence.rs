@@ -773,6 +773,10 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
         [] => return Ok(Err(format!("{java} has no constructor a caller can use"))),
         many => return Ok(Err(format!("{java} has {} constructors; an object made by one of several is not supported yet", many.len()))),
     };
+    // O2 of `llm-dlc/loops/application-core-objects.md`: a constructor that changes state outside its object.
+    if let Some(effect) = crate::construction::side_effect(cp, name, "<init>", &constructor.descriptor) {
+        return Ok(Err(format!("{java}'s constructor has a side effect outside the object it makes, which is not supported: {effect}, so each object it makes would depend on those made before it")));
+    }
     let descriptor = constructor.parsed_descriptor()?;
     let names = constructor.parameter_names(&cf.pool);
     within.push(name.to_string());
@@ -1145,6 +1149,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 Err(gap) => return refuse(&mut out, line, format!("in the previous version, {gap}")),
             },
             Some(r) if components_passed => Some((r.clone(), None)),
+            // The previous version's class outside the objects made by their constructor says why (O2's side
+            // effects among them), not only that it isn't a record.
+            Some(r) if r.is_made() && matches!(object_of(&before_cp, t)?, Err(_)) => {
+                let gap = object_of(&before_cp, t)?.expect_err("checked");
+                return refuse(&mut out, line, format!("in the previous version, parameter {name} has type {}, which is outside the objects a regression check makes: {gap}", t.java_name()));
+            }
             Some(r) => match object_of(&before_cp, t)?.ok().flatten() {
                 // Under a correspondence's input equations about it, the previous version's object is made from
                 // the new one's leaves as they say, of whatever shape.

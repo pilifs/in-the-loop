@@ -704,3 +704,58 @@ fn o2_a_property_over_a_plans_shared_node() {
     let o = with(&cell_plan(r#"{"kind": "node", "id": 1}"#), "twice-prop-own");
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
+
+/// O2's negative control of unsupported side effects in a constructor: an object whose constructor writes a static
+/// field, itself or through a method it calls, is refused by name wherever a check would make it (a receiver, a
+/// parameter, a plan's node, in either version), since the checks make each object from the classes' initial state
+/// and so would check only the first one made. A setup call that writes one is refused the same way, its effect
+/// being outside every observation. A constructor's call into the JDK with an effect (`System.out`) is refused by
+/// the engine, as anywhere. A constructor that reads a constant and calls a method writing its own fields is
+/// still made, and its check verified.
+#[test]
+fn o2_a_constructors_side_effect_outside_its_object_is_refused_by_name() {
+    let counted = |s: &str| s.replace("    private int count;\n", "    private int count;\n    static int made;\n").replace("        this.step = step;\n", "        this.step = step;\n        made++;\n");
+    let plain = counter("effect-plain", |s| s.to_string());
+    let effect = counter("effect-static", counted);
+    let refused = |o: &equivalence::Outcome, what: &str| {
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        let problem = o.problem.as_deref().unwrap_or_default();
+        assert!(problem.contains("has a side effect outside the object it makes") && problem.contains(what), "{problem}");
+    };
+    // The receiver, in the previous version, the new one, and the property check.
+    refused(&regression("effect-before", &effect, &plain, "counters.Counter#count"), "writes the static field counters.Counter.made");
+    refused(&regression("effect-after", &plain, &effect, "counters.Counter#count"), "writes the static field counters.Counter.made");
+    let o = prove("effect-prove", &effect, "counters.Counter#count", None, "result == 0");
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("writes the static field counters.Counter.made"), "{}", o.output);
+
+    // A plan's node, and a setup call that writes a static field.
+    let o = planned("effect-plan", &effect, &effect, "counters.Counter#count", plans(&counter_plan(&[]), &counter_plan(&[])));
+    refused(&o, "node 0's constructor (I)V of counters.Counter");
+    let adds = counter("effect-setup", |s| s.replace("    private int count;\n", "    private int count;\n    static int adds;\n").replace("        count += n * step;\n", "        count += n * step;\n        adds++;\n"));
+    let o = planned("effect-setup", &adds, &adds, "counters.Counter#count", plans(&counter_plan(&[ADD]), &counter_plan(&[ADD])));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("the setup call add(I)V has a side effect outside the receiver") && o.problem.as_deref().unwrap_or_default().contains("counters.Counter.adds"), "{:?}", o.problem);
+
+    // A parameter's inner constructor writing a static field through a method it calls, in the previous version.
+    let registry = "package cells;\n\npublic class Registry {\n    static int cells;\n\n    static void note() {\n        cells++;\n    }\n}\n";
+    let noted = CELLS.replace("        this.v = v;\n", "        this.v = v;\n        Registry.note();\n");
+    let before = compile("effect-cell", &[("cells/Cell.java", &noted), ("cells/Ops.java", OPS), ("cells/Registry.java", registry)]);
+    let after = cells("effect-cell-plain", |s| s.to_string());
+    let o = regression("effect-cell", &before, &after, "cells.Ops#value");
+    refused(&o, "cells.Registry.note");
+    assert!(o.problem.as_deref().unwrap_or_default().contains("in the previous version, parameter a"), "{:?}", o.problem);
+    let o = prove("effect-cell", &before, "cells.Ops#value", None, "result == a.v");
+    assert!(o.problem.as_deref().unwrap_or_default().contains("writes the static field cells.Registry.cells"), "{}", o.output);
+
+    // A call into the JDK with an effect, refused by the engine.
+    let printed = counter("effect-print", |s| s.replace("        this.step = step;\n", "        this.step = step;\n        System.out.println(step);\n"));
+    let o = regression("effect-print", &printed, &plain, "counters.Counter#count");
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("System.out"), "{}", o.output);
+
+    // What isn't a side effect: a constant read, and a method writing the object's own field.
+    let own = |s: &str| s.replace("    private int count;\n", "    private int count;\n    static final int START = 0;\n").replace("        this.step = step;\n", "        this.step = step;\n        reset();\n").replace("    public int count() {", "    private void reset() {\n        count = START;\n    }\n\n    public int count() {");
+    let o = regression("effect-own", &counter("effect-own", own), &plain, "counters.Counter#count");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+}

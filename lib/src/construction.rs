@@ -324,6 +324,9 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
     let Some(constructor) = cf.methods.iter().find(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic() && m.descriptor == *descriptor) else {
         return Err(gap(format!("node {id}'s class {} has no constructor {descriptor} a caller can use; it has {}", n.class, if constructors.is_empty() { "none".to_string() } else { constructors.join(", ") })));
     };
+    if let Some(effect) = side_effect(cp, &class, "<init>", descriptor) {
+        return Err(gap(format!("node {id}'s constructor {descriptor} of {} has a side effect outside the object it makes, which is not supported: {effect}, so each object it makes would depend on those made before it", n.class)));
+    }
     let parsed = constructor.parsed_descriptor().map_err(|e| gap(format!("node {id}'s constructor {descriptor}: {e}")))?;
     let names = constructor.parameter_names(&cf.pool);
     if parsed.params.len() != n.args.len() {
@@ -386,6 +389,9 @@ pub fn setup_calls(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, cl
         if m.is_static() || m.is_constructor() {
             return Err(gap(format!("the setup call {} is not an instance method of {java}, called on the receiver", call.method)));
         }
+        if let Some(effect) = side_effect(cp, class, &name, &descriptor) {
+            return Err(gap(format!("the setup call {} has a side effect outside the receiver, which is not supported: {effect}, an effect neither version's observations compare", call.method)));
+        }
         let parsed = m.parsed_descriptor().map_err(|e| gap(format!("the setup call {}: {e}", call.method)))?;
         if parsed.ret != crate::classfile::Type::Void {
             return Err(unbuilt(&format!("the setup call {} returns {}, and comparing a setup call's result", call.method, parsed.ret.java_name())));
@@ -409,6 +415,18 @@ pub fn setup_calls(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, cl
         out.push((name, descriptor, args));
     }
     Ok(out)
+}
+
+/// A side effect of `class`'s method `name(descriptor)` that a construction or a setup call may not have (O2): a
+/// write to a static field, in it or in an application method it reaches ([`crate::purity`]'s walk). The checks make
+/// each object from the classes' initial state, so an object whose constructor changes state outside itself, a count
+/// of the objects made or a registry, would be checked as the first one made only, and a static a setup call writes
+/// is an effect outside every observation of the check. Calls into the JDK are not judged here: the engines refuse
+/// what they don't implement (`System.out`, a clock), wherever it is. `None` where there is no such write.
+pub(crate) fn side_effect(cp: &crate::classpath::ClassPath, class: &str, name: &str, descriptor: &str) -> Option<String> {
+    let result = crate::purity::Purity::new(cp).analyse(class, name, descriptor);
+    let write = result.violations.iter().find_map(|v| v.split_once(" writes static field ").filter(|(_, rest)| !rest.contains(' ')))?;
+    Some(format!("{} writes the static field {}", write.0, write.1))
 }
 
 /// The construction of an ordinary receiver (O1): `this`, an object of `class` (an internal name) made by its
