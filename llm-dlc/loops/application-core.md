@@ -514,12 +514,14 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
 
   The integration check's last report (09:36) merged the four `@-` and conflicts only in generated files
   (`llm-dlc/README.md`, `index.json`, `traces/README.md`, `traces/metrics.json`), which `sync.py` regenerates.
-- Status: blocked: three streams stopped with `Status: working` (objects, environment, reuse; above), which isn't
-  finished for the reconcile. Set this status back to `working` and run `FEATURE_LOOP_MEMORY_MAX=4G
-  CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh application-core` again: it reruns only those three, which can
-  each record their last results and a status, then this loop. Or decide that they count as finished, and set
-  this status back to `working` alone, for the merge to take what they committed. O3's allocation bound also needs
-  your decision.
+- 2026-11-08, **why the three stopped, and the rerun**: each session answered `LOOP: stop` in `feature-loop.sh`'s
+  decision turn, which may not edit or commit, and wrote there the status it meant (objects and reuse
+  `waiting on jobs ...`, environment `blocked: ...`); no cycle had been asked to keep the status line current. The
+  user had the loop tooling fixed (`kppsnzyn`, and the same files committed in each of the three workspaces:
+  objects `umqkzwlp`, environment `wvournln`, reuse `ropyotpk`): a stop that leaves a status `working` now gets a
+  turn to set it, and `run-streams.sh` reruns such a stop instead of counting it done. The user restarted
+  `run-streams.sh`, which reruns the three streams, then this loop. O3's allocation bound still needs the user.
+- Status: working
 
 ## Loop settings
 
