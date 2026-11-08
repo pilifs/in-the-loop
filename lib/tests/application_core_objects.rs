@@ -294,15 +294,15 @@ fn throttle_in(name: &str, build: &str) -> PathBuf {
     compile(name, &[("throttle/Throttle.java", &std::fs::read_to_string(file).unwrap())])
 }
 
-/// A frozen throttle claim, with its allocation bound at 1 in both versions: the frozen claims say 0, while
-/// `allows` (and `take`) make the `IllegalArgumentException` they throw, which the domain gate counts (a finding
-/// for the coordinator, under the stream's Progress). Nothing else is changed.
+/// A frozen throttle claim. Its allocation bound is 1 in both versions: `allows` makes the
+/// `IllegalArgumentException` it throws, which the domain gate counts, as `checked-claim` counts its own. The bound
+/// is the target call's; the setup call's allocations aren't counted, since `setup_calls` bounds the history and its
+/// outcomes are compared (the user's decision of 2026-11-08, which raised the frozen 0).
 fn throttle_claim(name: &str) -> jvmcontract::spec::CanonicalClaim {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("tests/fixtures/application-core/golden/{name}.json"));
-    let mut claim: jvmcontract::spec::CanonicalClaim = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
-    let bounds = &mut claim.domain.as_mut().unwrap().bounds;
-    bounds.before.allocations = 1;
-    bounds.after.allocations = 1;
+    let claim: jvmcontract::spec::CanonicalClaim = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    let bounds = &claim.domain.as_ref().unwrap().bounds;
+    assert_eq!((bounds.before.allocations, bounds.after.allocations), (1, 1), "{name}: the exception allows throws is counted");
     claim
 }
 

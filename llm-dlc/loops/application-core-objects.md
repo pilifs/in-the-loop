@@ -510,16 +510,16 @@ Never relax the interface to unblock it.
   - **For the merge** (the entries above): un-ignore `an_inner_objects_constructor_is_part_of_the_cached_claim`; once
     reuse roots `Regression::claim` at `construction_roots`, drop the uncached guard for setup sequences in
     `equivalence.rs`; `lib/README.md`'s Limits line and the old "either version rejects" sentence.
-- Status: blocked: O2's String adapter waits for the merge (values' `nlkuyptr`), and O3's contract row on a decision about the frozen throttle claims' allocation bound of 0
-
-## Loop settings
-
-- session: 3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9
-- model: claude-opus-5-5
-- effort: high
-- memory: 4G
-- workspace: application-core-objects
-- fork: 3da21514-fe46-49d5-8200-08d3cf89ea17
+- 2026-11-08, **O3's allocation bound, decided by the user**: both frozen throttle claims are bounded at 1 in each
+  version, not 0, since `allows` makes the `IllegalArgumentException` it throws and the gate counts it, as
+  `checked-claim` already counts its own. The bound is the target call's: the setup calls' allocations aren't
+  counted, because `setup_calls` bounds the history and their outcomes are compared. Applied in the fixture
+  (`golden/throttle-constructed-claim.json`, `golden/throttle-setup-claim.json`), and `throttle_claim` in
+  `tests/application_core_objects.rs` now asserts the bound instead of raising it. `expected.json` is unchanged.
+  - **Verified inline**: `tests/application_core.rs` 14 of 14 (O3 included), `tests/application_core_objects.rs`
+    21 passed, 1 ignored (the cache test that waits on reuse, as before).
+  - **O3** now passes the contract. What's left of this stream is O2's String adapter, after the merge.
+- Status: blocked: O2's String adapter waits for the merge (values' `nlkuyptr`)
 
 ## Loop until
 

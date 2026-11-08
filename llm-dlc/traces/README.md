@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 11:35 UTC |
-| Prompts | 1,659 |
-| Model calls | 16,529 |
-| Tool calls | 17,521 (308 failed) |
-| Compactions | 247 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 11:38 UTC |
+| Prompts | 1,665 |
+| Model calls | 16,542 |
+| Tool calls | 17,530 (308 failed) |
+| Compactions | 248 |
 | Subagents | 10 |
-| Tokens written | 17,876,576 |
-| Tokens read | 2,689,841,256 (97.9% from cache) |
-| Commits with a trace | 498 |
-| Log snapshots | 605 (1377.7 MB gzipped, 593 uploaded) |
+| Tokens written | 17,884,101 |
+| Tokens read | 2,691,061,856 (97.9% from cache) |
+| Commits with a trace | 499 |
+| Log snapshots | 606 (1381.2 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | open | 7 h 1 min | `claude-opus-5-5` | 57 | 599 | 600 | 2 | 11 | 315,218 | 13 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | open | 7 h 4 min | `claude-opus-5-5` | 63 | 612 | 609 | 2 | 12 | 315,218 | 14 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,13 +165,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 403,462 | 1,212 | 1,697,826 | 79,650,297 | 97.9% | 202 |
+| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 410,987 | 1,240 | 1,740,803 | 80,827,892 | 97.9% | 201 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 15,337 | 87.5% | 65 |
+| `Bash` | 15,346 | 87.5% | 65 |
 | `Read` | 811 | 4.6% | 34 |
 | `Edit` | 667 | 3.8% | 34 |
 | `Write` | 409 | 2.3% | 30 |
@@ -692,6 +692,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 496 | change `nqpqroqp` | application-core objects O2: a replay that cannot run one version reproduces nothing, and its witness is run on a JVM (verification pending) | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/af875994b6b3482546eb0cfe3ecca41d0abf9ef7940e21e852c49c5f870e0acf.jsonl.gz)) |
 | 497 | change `umqkzwlp` | Loops record why they stop (the default workspace's kppsnzyn, copied here for the rerun) | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/d824296d902ea6015641e28ddb5ac3fe03378014030d77e6a5b366cabf241322.jsonl.gz)) |
 | 498 | change `lolztnxs` | application-core objects: O2's last jobs recorded as passed, and the stream's status set to blocked on the merge and on O3's frozen allocation bound | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/d824296d902ea6015641e28ddb5ac3fe03378014030d77e6a5b366cabf241322.jsonl.gz)) |
+| 499 | change `tzsluzns` | application-core objects O3: the frozen throttle claims bound allocations at 1, the user's decision, so the contract's O3 passes | [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) ([log](https://terminalvalue.net/raw-traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/ecb1f48696ccaf23948e27d8fe5f57948386a8c84695d822a430cd3ac2006863.jsonl.gz)) |
 
 ## Logs
 
@@ -763,7 +764,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 12 | 0 | 22.4 MB | `d824296d902e`, not uploaded |
+| [`3ba3cc03`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/summary.md) | 13 | 0 | 25.9 MB | `ecb1f48696cc`, not uploaded |
 
 ## Session notes
 
