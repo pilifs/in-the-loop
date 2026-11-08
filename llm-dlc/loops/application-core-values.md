@@ -212,11 +212,46 @@ just to bring a gap count down.
     checks are seconds, run inline as unit tests.
   - **Not yet**: no proof entry point takes a String parameter. `equivalence` and `property` refuse it through
     `values::adapter`, which is next.
-- **Next**: `values::adapter` for a String (`lib/src/values.rs`): its `ValueDomain` (kind string, nullable, the bound,
-  the model's evidence), `encode` from the interpreter's `JStr`, `rebuild` for a replay, and the witness's units
-  read from the checker's `raw_arrays`. Then an interface note for the objects stream: pass the bound as
-  `bmc::Parameters::max_string_length`, and rebuild a String argument through the adapter in replay
-  (`jbmc::JbmcResult::arguments` reads a String slot as a scalar today).
+- 2026-11-08, **V1 step 3, the String value adapter** (this commit), `values::StringAdapter` in `lib/src/values.rs`:
+  - **Its domain** is the shared `spec::plans::ValueDomain`: kind `string`, the bound, whether null is a value,
+    and the model's evidence (`values::string_model`): its identity (`values::STRING_MODEL`, to be bumped whenever
+    the semantics change, for V3's claim key), the JDK sampled (25.0.5), the level `tested`, and what it leaves
+    out (every other method a named gap, numeric formatting, the content cap, `hashCode` and `intern`).
+  - **Its functions**, for the checks that take a String: `bound` (the checker's
+    `bmc::Parameters::max_string_length`), `read` (a String argument out of the checker's witness, `raw_arrays` and
+    `raw_same`: its units, null, or the same object as an earlier argument), and `encode` and `rebuild` between
+    the interpreter's `JStr` and a witness's units (a snapshot of a result, field or payload; a replay). A String
+    outside the domain (longer than the bound, null where it isn't nullable, not code units) is refused by each,
+    never cut or widened.
+  - **Checks**: four unit tests (the domain round-trips as the shared type; units, null, an earlier argument, a
+    String too long and a malformed unit read; rebuilt Strings with surrogates, NUL and the empty one encode as the
+    same units). `tests/values.rs` now reads every refutation's witness through `read` and rebuilds each String in
+    the interpreter's replay through `rebuild`, checked to encode back as its witness. The whole lib suite passes,
+    the contract included (one timing test of `bmc::bits`, untouched, failed once under load and passed alone and
+    on the rerun).
+  - **Not registered yet**: `values::adapter`, which the regression and property checks ask about a String
+    parameter, still refuses it, now saying that the adapter is built and what the check lacks. Returning it
+    would make `equivalence::adapted_refusal` say "a value adapter is built for it, but this check doesn't take
+    one yet", and the contract's V1 row (`v1_a_symbolic_string_crosses_the_proof_boundary`, which accepts only
+    the values stream's refusal) would fail on a wiring that is in other streams' files.
+- **Interface request, to the objects stream** (its files: `harness/`, `equivalence.rs`, `property.rs`,
+  `jbmc.rs`'s `arguments`, the replay), for V1's row: for a String parameter of a regression or property check,
+  1. take it in the layout and declare it in the harness as the String it is (`harness/mod.rs` makes a
+     non-primitive parameter `Object` today);
+  2. give the own checker its bound with `StringAdapter::bound` (equivalence passes `bmc::Parameters::default()`
+     today), and its nullability and aliasing as an array's;
+  3. read the witness's String with `StringAdapter::read` (`jbmc::JbmcResult::arguments` reads a String slot as a
+     scalar today), and rebuild it for the replay with `ValueAdapter::rebuild`;
+  4. state the bound in the statement (`statement::Bounds::max_value_length`) and the model's evidence
+     (`Models::values`, `values::string_model`).
+
+  When that lands, `values::adapter` returns the adapter (one line here), and the contract's V1 row reaches its
+  verdicts (`Codes#vip`: the rewrite verified, `short-prefix` refuted). The environment stream's String payload
+  snapshot (`effects.rs`, a literal only today) can use `encode`. Until then V1's row waits on that wiring.
+- **Next**: V2, the bounded immutable list. First its audit: what `lib/models`' `List.of`/`copyOf` and
+  `ImmutableCollections` models do, which of their bytecode the own checker can run faithfully
+  (`models::CHECKER_RUNS`, `classpath.rs`), and what the L fixture (`basket`) and its claims need; then a
+  reproducer.
 - Status: working
 
 ## Loop settings

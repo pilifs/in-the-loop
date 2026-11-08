@@ -11,7 +11,9 @@ use std::sync::OnceLock;
 use jvmcontract::bmc::{self, Options, Outcome, Parameters};
 use jvmcontract::classfile::{MethodDescriptor, Type};
 use jvmcontract::classpath::ClassPath;
-use jvmcontract::interp::{Fault, JStr, Machine, Value};
+use jvmcontract::interp::{Fault, Machine, Value};
+use jvmcontract::spec::plans::WitnessValue;
+use jvmcontract::values::{StringAdapter, ValueAdapter, Witnessed};
 use jvmcontract::Verdict;
 
 fn has(program: &str) -> bool {
@@ -260,27 +262,32 @@ enum Arg {
     Number(i64),
 }
 
-/// The witness's arguments, in parameter order.
-fn witness(out: &Outcome, params: &[Type]) -> Vec<Arg> {
+/// The witness's arguments, in parameter order, each String read through the values adapter
+/// (`values::StringAdapter::read`) under the check's domain: its bound, and whether its slot may be null.
+fn witness(out: &Outcome, params: &[Type], parameters: &Parameters) -> Vec<Arg> {
     let mut args = Vec::new();
     let mut index_of = std::collections::BTreeMap::new();
     for (slot, t) in params.iter().enumerate() {
         let slot = slot as u32;
         index_of.insert(slot, args.len());
         args.push(match t {
-            Type::Object(_) => match (out.raw_same.get(&slot), out.raw_arrays.get(&slot)) {
-                (Some(first), _) => Arg::Same(index_of[first]),
-                (None, Some(None)) => Arg::Null,
-                (None, Some(Some(units))) => Arg::Str(units.iter().map(|u| u.parse().expect("a code unit")).collect()),
-                (None, None) => panic!("no witness for the String in slot {slot}"),
-            },
+            Type::Object(_) => {
+                let adapter = StringAdapter::new(parameters.max_string_length.expect("a bound"), parameters.nullable.contains(&slot));
+                match adapter.read(&out.raw_arrays, &out.raw_same, slot).unwrap_or_else(|u| panic!("the witness's String in slot {slot}: {u}")) {
+                    Witnessed::SameAs(first) => Arg::Same(index_of[&first]),
+                    Witnessed::Value(WitnessValue::Null) => Arg::Null,
+                    Witnessed::Value(WitnessValue::String { units }) => Arg::Str(units),
+                    Witnessed::Value(other) => panic!("not a String's witness: {other:?}"),
+                }
+            }
             _ => Arg::Number(out.raw_inputs.get(&slot).map(|v| v.parse().unwrap()).unwrap_or(0)),
         });
     }
     args
 }
 
-/// What the witness does on the JVM and in the interpreter, in the runner's form.
+/// What the witness does on the JVM and in the interpreter, in the runner's form; in the interpreter, each String
+/// is rebuilt through the values adapter (`ValueAdapter::rebuild`), which encodes it back as the same units.
 fn replayed(cp: &ClassPath, method: &str, args: &[Arg]) -> (String, String) {
     let text: Vec<String> = args
         .iter()
@@ -298,7 +305,13 @@ fn replayed(cp: &ClassPath, method: &str, args: &[Arg]) -> (String, String) {
     let mut values: Vec<Value> = Vec::new();
     for a in args {
         values.push(match a {
-            Arg::Str(units) => m.new_string(JStr::from_units(units.clone())),
+            Arg::Str(units) => {
+                let adapter = StringAdapter::new(units.len() as u32, false);
+                let w = WitnessValue::String { units: units.clone() };
+                let v = adapter.rebuild(&mut m, &w).unwrap();
+                assert_eq!(adapter.encode(&m, v).unwrap(), w, "a rebuilt String encodes as its witness");
+                v
+            }
             Arg::Null => Value::Null,
             Arg::Same(i) => values[*i],
             Arg::Number(n) => Value::Int(*n as i32),
@@ -319,7 +332,7 @@ fn refuted(cp: &ClassPath, method: &str, parameters: Parameters) -> Vec<Arg> {
     for merge_after in [0, u64::MAX] {
         let out = checked(cp, method, parameters.clone(), merge_after);
         assert_eq!(out.verdict, Verdict::Violation, "{method} (merging after {merge_after}): {:?}", out.problem);
-        let args = witness(&out, &params);
+        let args = witness(&out, &params, &parameters);
         let (jvm, interpreter) = replayed(cp, method, &args);
         assert_eq!(jvm, "throws java.lang.AssertionError", "{method}{args:?} on the JVM");
         assert_eq!(interpreter, jvm, "{method}{args:?} in the interpreter");
