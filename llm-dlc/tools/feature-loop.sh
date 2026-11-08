@@ -120,12 +120,16 @@ case "$PROMPT" in
 esac
 case "$PROMPT" in
   *.md)
-    # Found from the caller's directory or the repo's, and named relative to the
-    # repo when it is inside it, which is where the loop runs.
-    if [[ -f "$PROMPT" ]]; then
-      BRIEF=$(realpath "$PROMPT")
-    elif [[ -f "$ROOT/$PROMPT" ]]; then
+    # Found in this script's repo first, then from the caller's directory, and
+    # named relative to the repo when it is inside it, which is where the loop
+    # runs. The repo comes first because run-streams.sh starts each stream's copy
+    # from the default workspace: found from there, a stream's brief was the
+    # default workspace's copy, whose Progress no stream edits, so the session was
+    # pointed at it and its status read from it (until 2026-11-08).
+    if [[ "$PROMPT" != /* && -f "$ROOT/$PROMPT" ]]; then
       BRIEF=$(realpath "$ROOT/$PROMPT")
+    elif [[ -f "$PROMPT" ]]; then
+      BRIEF=$(realpath "$PROMPT")
     else
       echo "feature-loop.sh: no brief at $PROMPT" >&2
       exit 2

@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 74, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 11:32 UTC |
-| Prompts | 1,626 |
-| Model calls | 16,085 |
-| Tool calls | 17,066 (313 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 11:42 UTC |
+| Prompts | 1,627 |
+| Model calls | 16,114 |
+| Tool calls | 17,094 (313 failed) |
 | Compactions | 238 |
 | Subagents | 10 |
-| Tokens written | 17,533,600 |
-| Tokens read | 2,617,226,655 (97.9% from cache) |
-| Commits with a trace | 497 |
-| Log snapshots | 617 (1360.2 MB gzipped, 593 uploaded) |
+| Tokens written | 17,554,929 |
+| Tokens read | 2,621,166,182 (97.9% from cache) |
+| Commits with a trace | 498 |
+| Log snapshots | 618 (1360.4 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -100,7 +100,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 7 | 8 | 0 | 0 | 44,014 | 1 |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 43,064 | 1 |
 | 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | ended | 3 min | `claude-opus-5-5` | 6 | 20 | 19 | 0 | 1 | 73,369 | 1 |
-| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 6 min | `claude-opus-5-5` | 2 | 35 | 35 | 2 | 0 | 114,477 | 3 |
+| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 15 min | `claude-opus-5-5` | 3 | 64 | 63 | 2 | 0 | 157,556 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -183,19 +183,19 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2,917 | 14 | 30,895 | 214,765 | 87.4% | 84 |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 3,151 | 20 | 29,945 | 311,967 | 91.2% | 109 |
 | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 10,646 | 40 | 79,929 | 963,371 | 92.3% | 98 |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 23,912 | 72 | 86,950 | 2,897,627 | 97.1% | 125 |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 45,241 | 132 | 130,029 | 6,794,015 | 98.1% | 153 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,938 | 87.5% | 74 |
+| `Bash` | 14,965 | 87.5% | 74 |
 | `Read` | 779 | 4.6% | 35 |
 | `Edit` | 650 | 3.8% | 35 |
 | `Write` | 408 | 2.4% | 29 |
 | `ToolSearch` | 100 | 0.6% | 26 |
 | `Monitor` | 72 | 0.4% | 26 |
-| `AskUserQuestion` | 30 | 0.2% | 9 |
+| `AskUserQuestion` | 31 | 0.2% | 10 |
 | `TaskStop` | 28 | 0.2% | 12 |
 | `WebFetch` | 27 | 0.2% | 7 |
 | `Agent` | 10 | 0.1% | 5 |
@@ -708,6 +708,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 495 | change `ozlqzqow` | application-core: the reconcile's first check, three streams not finished (blocked) | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/3ece423b8d7dff4f86d5e6d9ed15e06a39344be7f0174dffe541ff1efe1004cf.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz)) |
 | 496 | change `kppsnzyn` | Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz)) |
 | 497 | change `yymlmpzw` | application-core: status back to working, for the rerun of the three unfinished streams | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a9d699c703217048e09e4d9aecb6b92996b78fc18e97441d628da415ccff2b91.jsonl.gz)) |
+| 498 | change `unwrvwqw` | feature-loop.sh finds a brief in its own workspace first, so a stream reads and is pointed at its own copy | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz)) |
 
 ## Logs
 
@@ -788,7 +789,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2 | 0 | 0.2 MB | `9171325d7b0a`, not uploaded |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 2 | 0 | 0.2 MB | `001bb75a2eb3`, not uploaded |
 | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 2 | 0 | 0.4 MB | `09c8eb16a0e7`, not uploaded |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 3 | 0 | 0.5 MB | `a9d699c70321`, not uploaded |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 4 | 0 | 0.7 MB | `4b7b18b3c08d`, not uploaded |
 
 ## Session notes
 
