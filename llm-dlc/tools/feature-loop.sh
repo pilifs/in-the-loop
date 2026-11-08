@@ -57,6 +57,14 @@
 # which the session applies UNTIL to what it has done and ends its reply with
 # "LOOP: continue" or "LOOP: stop". A stop ends the loop after that cycle like
 # running out of cycles does; a reply with neither stops it as needing attention.
+# A brief whose Progress ends with a "- Status:" line (see run-streams.sh) has the
+# cycle keep it current. If the session decides to stop while it still says
+# working, one more turn, before the compact, sets the status that says why
+# (waiting on jobs, done or blocked) and commits it; the decision turn itself
+# can't, since it only decides. A status still working after that turn ends the
+# loop as needing attention. (Until 2026-11-08 a stop left it working, and
+# run-streams.sh counted three application-core streams as done that were waiting
+# on jobs or blocked.)
 #
 # While it runs, the number of cycles left can be changed by typing in its
 # terminal (see HELP below): +N, -N, =N, inf, or 0 or stop to end after the
@@ -67,8 +75,8 @@
 # out the session's own summary of the run, written for the person reading it.
 #
 # Exits 0 when the cycles run out or the session decides to stop, 1 when a cycle
-# made no commit, the session's decision was unclear, the brief changed or the
-# scope cannot start, 2 for a bad argument, and 130 if interrupted.
+# made no commit, the session's decision was unclear, a stop left the brief's
+# status working, the brief changed or the scope cannot start, 2 for a bad argument, and 130 if interrupted.
 
 set -uo pipefail
 
@@ -255,7 +263,7 @@ brief_hash() {
 }
 if [[ -n "$BRIEF" ]]; then
   BRIEF_HASH=$(brief_hash) || exit 1
-  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. First run \`jj status\` and judge what a change in the working copy is. Another session may be at work in this repository at the same time (the verification loop collects job results and commits them, for one), and its uncommitted files are not yours. A change that belongs to the brief's current work (the step its \`## Progress\` section or your own last turn left in progress) is a cycle that was interrupted: finish, verify and commit it first. Anything else is another session's: leave it alone, never finish, revert or discard it, and keep it out of your commit by moving it below yours and back, as step 5 of \`.claude/skills/run-verification/SKILL.md\` shows. Finishing an interrupted step is this cycle's piece of work. Otherwise take the next piece of work the brief calls for that is not done yet, by its \`## Progress\` section if it has one (it carries over from earlier runs of this loop) and by the commits since (\`jj log -r '$START..@-'\` lists this run's), finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next. If the rest of the brief is wrong or out of date, say so in the commit message."
+  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. First run \`jj status\` and judge what a change in the working copy is. Another session may be at work in this repository at the same time (the verification loop collects job results and commits them, for one), and its uncommitted files are not yours. A change that belongs to the brief's current work (the step its \`## Progress\` section or your own last turn left in progress) is a cycle that was interrupted: finish, verify and commit it first. Anything else is another session's: leave it alone, never finish, revert or discard it, and keep it out of your commit by moving it below yours and back, as step 5 of \`.claude/skills/run-verification/SKILL.md\` shows. Finishing an interrupted step is this cycle's piece of work. Otherwise take the next piece of work the brief calls for that is not done yet, by its \`## Progress\` section if it has one (it carries over from earlier runs of this loop) and by the commits since (\`jj log -r '$START..@-'\` lists this run's), finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next, and if it ends with a \`- Status:\` line, keep that line current there too: \`working\` while a piece of work that needs only you is left, otherwise the status the brief's \`## Loop until\` gives for stopping (\`waiting on jobs ID ...\` with the job ids, \`done\`, or \`blocked: ...\` with what needs the user or another stream). If the rest of the brief is wrong or out of date, say so in the commit message."
 fi
 {
   echo "# Feature loop: $PROMPT"
@@ -426,7 +434,7 @@ decide() {
   log "cycle $cycle: asking whether to go on"
   run_claude "Cycle $cycle of the feature loop is committed. Before the next cycle starts, decide whether the loop should go on, by these instructions from the user: $UNTIL
 
-Weigh them against what this run has done so far (\`jj log -r '$START..@-'\` lists its commits) and what is left. Reply with two or three sentences on why, then a last line that is exactly \`LOOP: continue\` or \`LOOP: stop\`. This turn only decides: don't edit files, commit, push or submit jobs." "$stream" ||
+Weigh them against what this run has done so far (\`jj log -r '$START..@-'\` lists its commits) and what is left. Reply with two or three sentences on why, then a last line that is exactly \`LOOP: continue\` or \`LOOP: stop\`. A status such as \`waiting on jobs ...\` or \`blocked: ...\` is never the last line: when one applies, the answer is \`LOOP: stop\`, and if the brief's status line doesn't say so yet, the loop gives you a turn to record it after this one. This turn only decides: don't edit files, commit, push or submit jobs." "$stream" ||
     log "cycle $cycle: decision turn exited with status $?"
   answer=$(result_text "$stream") || answer=
   rm -f "$stream"
@@ -438,6 +446,42 @@ Weigh them against what this run has done so far (\`jj log -r '$START..@-'\` lis
   esac
   log "cycle $cycle: the session says $decision"
   note "  - decided to $decision: $(printf '%s' "$answer" | sed '/^[[:space:]`*_]*LOOP:/Id' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//')"
+}
+
+# The last "- Status:" line under the brief's "## Progress", without the label
+# (as run-streams.sh reads it), and whether the brief has one at all.
+brief_status() {
+  awk '/^## / { inside = ($0 ~ /^## +Progress[[:space:]]*$/); next }
+       inside && /^[-*] +Status: */ { s = $0 }
+       END { sub(/^[-*] +Status: */, "", s); gsub(/`/, "", s); print s }' "$BRIEF"
+}
+has_status() {
+  [[ -n "$BRIEF" ]] && awk '/^## / { inside = ($0 ~ /^## +Progress[[:space:]]*$/); next }
+    inside && /^[-*] +Status: */ { found = 1 } END { exit !found }' "$BRIEF"
+}
+
+# After a decision to stop: a status that still says working tells run-streams.sh
+# nothing about why, so the session, which still has the cycle in context, sets
+# and commits the one the brief's Loop until gives. Sets $closed to ok or failed.
+close_status() {
+  local before_close status
+  closed=ok
+  has_status || return 0
+  status=$(brief_status)
+  [[ "$status" == working* ]] || return 0
+  log "cycle $cycle: the session decided to stop, but the brief's status says working: asking it to record why"
+  before_close=$(last_change) || { closed=failed; return; }
+  run_claude "You decided that the loop stops after this cycle, but the status line at the end of the \`## Progress\` section of \`$BRIEF\` still says \`working\`. That tells whoever runs the loop nothing about why it stopped: a loop that waits on jobs is run again once they are back, and one that is done or blocked is finished. Set that line now to the status the brief's \`## Loop until\` gives for where the work stands: \`waiting on jobs ID ...\` with each job id, \`done\`, or \`blocked: ...\` with what needs the user or another stream. Make sure Progress records what the status depends on. Change nothing else in the brief or anywhere, then commit it as CLAUDE.md describes, keeping any other session's uncommitted files out of your commit." ||
+    log "cycle $cycle: the status turn exited with status $?"
+  status=$(brief_status)
+  if [[ "$(last_change)" == "$before_close" || "$status" == working* || -z "$status" ]]; then
+    closed=failed
+    log "cycle $cycle: the brief's status is still ${status:-missing}, or wasn't committed; session $SESSION_ID needs attention"
+    note "  - the stop left the brief's status ${status:-missing}, or uncommitted; session $SESSION_ID needs attention"
+    return
+  fi
+  log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
+  note "  - recorded the status \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $status"
 }
 
 # `sync.py commit` finishes @ and starts an empty change, so a commit moves @-.
@@ -527,6 +571,8 @@ while :; do
     note; note "Stopped $(date '+%F %T'): after cycle $cycle the session gave no clear LOOP: continue or LOOP: stop; session $SESSION_ID needs attention."
     exit 1
   fi
+  closed=ok
+  [[ "$decision" == stop ]] && close_status
 
   log "cycle $cycle: compact"
   run_claude "/compact" || log "cycle $cycle: compact exited with status $?"
@@ -535,7 +581,16 @@ while :; do
   if [[ "$decision" == stop ]]; then
     log "the session decided to stop: stopping after cycle $cycle"
     summarize
-    note; note "Ended $(date '+%F %T') after $cycle cycle(s): the session decided the work was done."
+    if [[ "$closed" == failed ]]; then
+      note; note "Stopped $(date '+%F %T') after $cycle cycle(s): the session decided to stop, but the brief's status still says $(brief_status); session $SESSION_ID needs attention."
+      log "record of the run: $SUMMARY"
+      exit 1
+    fi
+    if has_status; then
+      note; note "Ended $(date '+%F %T') after $cycle cycle(s): the session decided to stop; the brief says $(brief_status)."
+    else
+      note; note "Ended $(date '+%F %T') after $cycle cycle(s): the session decided the work was done."
+    fi
     log "record of the run: $SUMMARY"
     exit 0
   fi
