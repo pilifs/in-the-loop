@@ -464,10 +464,44 @@ just to bring a gap count down.
     a fix the trace supports. That might be a sentinel the model needn't read from a static (`List12` rejects a null
     element, so a null `e1` can mean one element), with `values::LIST_MODEL` and its digest bumped, or a reason
     recorded for leaving it.
-- **Next**: the tiny bound sweep (a String's bound and a list's length, for an encoding cliff: a few sizes of one
-  check each, timed inline if seconds, a job otherwise), while the VF-023 job runs. Then the cache invalidation of
-  the models' and domains' identities (R1's projection, with the reuse stream), and V3's wiring of model identity
-  into claims.
+- 2026-11-08, **VF-023's diagnosis came back** (job `20261108-082244-…`, passed at `8ddb0f74`): it **refutes my guess**.
+  JBMC proves all three probes: `List.of(new Object()).size() == 1`, the same after `List.of()`, and two elements' size
+  2 (each in 0.1 s, 2 properties). A one-element `List12` alone is no problem for JBMC, so the class's initialization
+  order isn't the cause, and nothing in the models is changed on it. What the corpus's two claims have and the probes
+  don't is a choice between lists of different classes: `listSizes` picks `List.of()`, a one-, two- or three-element
+  list by `n` and then calls `size()` and `isEmpty()` on the merged reference; `listChange` picks a `List12` or (for
+  `n >= 10`, excluded by the assumption but in the program) a `ListN`. So the next probe is that choice: the
+  corpus's methods as they are under their assumptions, then `n == 1 ? List.of(a) : List.of(a, b)` and
+  `n == 1 ? List.of(a) : List.of(a, b, c)`, each with JBMC's failed property and trace kept. No timebox attempt is
+  spent: nothing was fixed.
+- 2026-11-08, **the tiny bound sweep** (this commit), `tests/values.rs`'s `a_tiny_sweep_over_the_string_and_list_bounds`:
+  the own checker on one correct check and one planted defect per family, at a few bounds, under both search orders,
+  timed. Times are printed (`--nocapture`), never asserted; the verdicts are.
+  - **Strings: no cliff up to the content cap.** `vipRewritten` proved, `vipShortened` refuted (from 2 units: "VI"),
+    and `equalsByUnits` proved at bounds 1, 2, 4, 8, 16, 32 and 64. Every check takes 0.07 s or less (release),
+    `equalsByUnits` growing from 0.00 s to 0.07 s. One thing the sweep shows: a check that loops over a String's units
+    itself needs an unwinding bound past the String's. Under the default `--unwind 16`, `equalsByUnits` at 32 is the
+    named limit "a loop was not fully unwound with --unwind 16", no verdict. That is right (two bounds, each
+    explicit), and the sweep asserts it.
+  - **Lists: a cliff at 6 to 7 elements**, inside the adapter's bound (`values::MAX_LIST_LENGTH`, 10). Merging from the
+    start (release): 90 paths for 4 lines (0.1 s), 345 for 5 (0.2 s), 1,833 for 6 (4 s; 40 s in the dev profile), and 7
+    doesn't finish (`total7` gave up at 138 s, under a 20 s limit). Never merging, 5 lines take 13 s. The solver
+    isn't the cost (0.1 s of solving at 6 and at 7); the paths are. The adapter's picks give `n!` alias patterns
+    (`ListAdapter::choices`: element `i` any of the `i + 1` objects made so far), and each pick is a chain of
+    conditionals, which the checker forks on. The suite sweeps 1 to 5 lines (8 s for the whole file, dev profile).
+    Lists of 6, 7, 8 and 10 lines are the reproducer `the_list_sweep_past_five_lines`, `#[ignore]`d because it fails
+    today. The fix would be an encoding that doesn't fork, such as `made[pick]` over an array of the made objects (a
+    symbolic index is a formula, not a branch), perhaps with picks kept to the first unused object (Bell numbers of
+    patterns, not `n!`). Or the bound comes down to what the checker decides. The basket's bound is 3, so no frozen
+    claim is near it.
+  - **Found, for the for-review list**: the checker's time limit overshoots. `total7`'s 20 s limit ended at 138.68 s
+    ("the engine did not finish within the time limit"), since the deadline is read every 256 steps
+    (`bmc/mod.rs`), and a step over a large merged state can take long.
+  - No job: the sweep is seconds inline (release: under 2 s for the Strings, about 3 s for lists of up to 5 lines).
+- **Next**: VF-023's second probe (above), as a job. Then the list encoding past five lines, with
+  `the_list_sweep_past_five_lines` as its reproducer, or the bound brought down to what is decided. Then the cache
+  invalidation of the models' and domains' identities (R1's projection, with the reuse stream), and V3's wiring of
+  model identity into claims.
 - Status: working
 
 ## Loop settings
