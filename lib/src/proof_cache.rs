@@ -815,8 +815,10 @@ impl Helpers<'_> {
         let key = a.summary.proof.clone();
         let _ = writeln!(
             self.notes,
-            "note: {name}, changed, is applied by its summary at each call in both versions: its two versions, lifted over the fields it reads ({}), have the same outcome on every value of them and of its arguments, {how} (claim {key}); each call reads them from its actual receiver",
-            a.summary.reads.join(", ")
+            "note: {name}, changed, is applied by its summary at each call in both versions: its two versions, lifted over the fields it reads ({}), have the same outcome on every value of them and of its arguments{}, {how} (claim {key}); each call reads them from its actual receiver{}",
+            a.summary.reads.join(", "),
+            if a.summary.facts.is_empty() { String::new() } else { format!(" where {}", a.summary.facts.join(" and ")) },
+            if a.summary.facts.is_empty() { "" } else { ", and a call where they don't hold keeps the helper's body" }
         );
         let json = serde_json::to_string(&a.summary).expect("a summary serializes");
         self.assumptions.push(Assumption {

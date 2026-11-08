@@ -369,6 +369,47 @@ measurement stays as recorded.
     behind one hook in the class path. That hook is `classpath.rs`, not this stream's file, so it goes as an
     interface request, or into this stream's own class paths. Otherwise, the finding that no preparation cache is
     justified. J4 comes at the merge.
+- 2026-11-08, **R2, third part: bounded reads of primitive arrays**, after the field-only case, in
+  `lib/src/reuse/footprint.rs` and `reuse::summarized`, with the R3 job still queued:
+  - **The footprint**: a helper may now read a field holding a one-dimensional array of a non-floating primitive
+    type, by its length and its elements. A flow over every path of the helper's own code, its locals included,
+    shows that every reference it handles is its receiver or such an array. An array is kept only in a local other
+    than the receiver's, and used only by `arraylength` and an element load of its own type. Each of these is refused
+    by name: a write, passing an array to a callee, comparing it or testing it for null, two arrays meeting where
+    paths join, arrays of floating point, of references or of arrays. A static callee still handles no reference.
+  - **Not total, said so**: a read out of bounds throws the JVM's `ArrayIndexOutOfBoundsException`. That is an
+    outcome like a result, and the summary's proof compares it. This departs from the brief's "total" for the field
+    case, for review. A division by a value that may be zero is still refused.
+  - **The summary's facts and domain**: the lifted helper takes the array itself. The proof's harness makes no
+    `null` array and none longer than the claim's array bound, so the summary carries
+    `facts: ["this.tiers != null", "this.tiers.length <= 8"]`, and its domain says so.
+  - **Applicability at each call**: each version's adapter first checks those facts on the actual receiver. Where one
+    fails (a `null` array, or one longer than the bound), it calls its own version's helper on that receiver, the
+    body as written, instead of the lifted helper. No alias fact is needed: the helper writes no array, so two arrays
+    being one changes nothing it reads.
+  - **Each version's adapter is now a class of its own**, in that version's package (`before/a/…$Call` and
+    `a/…$Call`), so it reads package-private fields and calls a package-private helper as that package may. A
+    private helper outside the domain is called by `invokespecial` from another class: valid for the checker, which
+    is the only one that runs these classes, though a JVM would refuse it.
+  - **Verified inline**, `tests/reuse_summaries.rs`, 4 new tests (14 in all, three runs):
+    - eight new refusals by name, and a for-each read accepted;
+    - a lifted array helper agrees with the helper on a JVM over 72 cases, 54 of them out of bounds;
+    - a for-each rewrite of `Rates.fee` gets the summary with its facts, and five changed callers reuse it:
+      - a tier changed between two calls, through the field and through the caller's own alias of the array, each
+        verified, and refuted, replayed, in a defect that reuses the earlier fee;
+      - an array of 10 and a `null` one are verified, through the body kept at the call;
+    - a helper charging one tier more has no summary, and its caller is refuted with its body kept;
+    - a helper whose versions differ only past the bound (`i < 8`) gets a summary, since its proof covers arrays up
+      to 8. A caller on 10 elements is refuted, replayed, because the adapter keeps the body there. With the guard
+      taken out for a check, that caller was verified: the defect hidden;
+    - on a JVM with `-Xverify:all`, the classes with the summary applied give what the versions as written give,
+      over arrays up to 10 elements and `null`.
+
+    Also passing: the 233 unit tests, `reuse` (11), `summaries` (40), `application_core` (14), `compare`, `heap`
+    (49), `effects` (18) and `foundations` (5).
+  - **Next**: R3's decision. Job `20261108-060410` is back, passed, in the runner's workspace: read its release
+    figures, then cache the JDK image per process if they show it is material, or record that no preparation cache
+    is justified. J4 comes at the merge.
 - Status: working
 
 ## Loop settings

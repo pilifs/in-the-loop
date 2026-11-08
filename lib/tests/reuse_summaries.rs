@@ -127,7 +127,17 @@ public class Probe {
     long overridden(int n) { return rate; }
     long recursive(int n) { return Scale.down(n) + rate; }
     long escapes(int n) { return Scale.weigh(this, n); }
-    long arrayRead(int n) { return table[0]; }
+    long arrayRead(int n) { long s = 0; for (long v : table) { s += v; } return s + table.length; }
+    long indexed(int n) { return table[n] + rate; }
+    long[] other = new long[1]; double[] weights = new double[1]; String[] names = new String[1]; int[][] grid = new int[1][1];
+    long arrayWrite(int n) { table[0] = n; return rate; }
+    long arrayPassed(int n) { return Scale.first(table); }
+    long arrayCompared(int n) { return table == other ? 1 : 0; }
+    long arrayNull(int n) { return table == null ? 0 : table[0]; }
+    long arrayJoined(int n) { long[] t = n > 0 ? table : other; return t[0]; }
+    long floatArray(int n) { return (long) weights[0]; }
+    long refArray(int n) { return names.length; }
+    long gridRead(int n) { return grid[0][0]; }
     long divides(int n) { return rate / n; }
     long instanceCall(int n) { return ok(n) + 1; }
     long peerRead(int n) { return peer.rate; }
@@ -145,7 +155,7 @@ fn probe() -> PathBuf {
         &[
             ("h/Probe.java", PROBE),
             ("h/Sub.java", "package h; public class Sub extends Probe { public Sub() { super(0, 0); } long overridden(int n) { return 0; } }"),
-            ("h/Scale.java", "package h; public class Scale { public static long of(int n) { return n < 0 ? -n : n; } static long down(int n) { return n <= 0 ? 0 : down(n - 1); } static long weigh(Probe p, int n) { return n; } }"),
+            ("h/Scale.java", "package h; public class Scale { public static long of(int n) { return n < 0 ? -n : n; } static long down(int n) { return n <= 0 ? 0 : down(n - 1); } static long weigh(Probe p, int n) { return n; } static long first(long[] t) { return t[0]; } }"),
             ("h/Statics.java", "package h; public class Statics { static int k = 3; }"),
         ],
     )
@@ -160,6 +170,10 @@ fn each_kind_of_helper_outside_the_category_is_refused_by_name() {
     let ok = footprint::footprint(&cp, &MemberRef::new("h/Probe", "ok", "(I)J")).unwrap();
     assert_eq!(read_names(&ok), ["count", "floor", "rate"]);
     assert_eq!(ok.calls.iter().map(|c| format!("{}.{}", c.owner, c.name)).collect::<Vec<_>>(), ["java/lang/Math.max", "h/Scale.of"]);
+    // A field's primitive array, kept in a local by a for-each loop and read by its length and its elements.
+    let arrays = footprint::footprint(&cp, &MemberRef::new("h/Probe", "arrayRead", "(I)J")).unwrap();
+    assert_eq!(read_names(&arrays), ["table"]);
+    assert!(arrays.fields[0].is_array());
     for (method, descriptor, says) in [
         ("writes", "(I)J", "writes a field: not read-only"),
         ("allocates", "(I)J", "allocates"),
@@ -169,7 +183,14 @@ fn each_kind_of_helper_outside_the_category_is_refused_by_name() {
         ("overridden", "(I)J", "h.Sub overrides it"),
         ("recursive", "(I)J", "is recursive, through h.Scale#down(I)J"),
         ("escapes", "(I)J", "calls h.Scale#weigh(Lh/Probe;I)J, which takes a h.Probe"),
-        ("arrayRead", "(I)J", "reads the array field h.Probe.table: bounded primitive arrays come after the field-only case"),
+        ("arrayWrite", "(I)J", "writes an array: not read-only"),
+        ("arrayPassed", "(I)J", "calls h.Scale#first([J)J, which takes a long[]"),
+        ("arrayCompared", "(I)J", "tests or casts a reference"),
+        ("arrayNull", "(I)J", "tests or casts a reference"),
+        ("arrayJoined", "(I)J", "meets two different references, or a reference and a value, where its paths join"),
+        ("floatArray", "(I)J", "reads the floating-point array field h.Probe.weights"),
+        ("refArray", "(I)J", "reads the array field h.Probe.names, whose elements are references"),
+        ("gridRead", "(I)J", "reads the array field h.Probe.grid, whose elements are references"),
         ("divides", "(I)J", "divides by a value that may be zero"),
         ("instanceCall", "(I)J", "calls h.Probe#ok(I)J on an object"),
         ("peerRead", "(I)J", "reads the reference field h.Probe.peer"),
@@ -607,4 +628,287 @@ fn java_class_files(dir: &Path) -> Vec<PathBuf> {
         }
     }
     out
+}
+
+/// A helper reading an array its receiver's field holds, lifted over it, is the helper as a function of its argument,
+/// the field's value and the array's elements: on a real JVM, over arrays of several lengths, it gives what the helper
+/// gives, the `ArrayIndexOutOfBoundsException` of a read out of bounds included. Tested, not proved.
+#[test]
+fn an_array_helper_lifted_agrees_with_the_helper_on_the_jvm_out_of_bounds_included() {
+    let classes = probe();
+    let cp = class_path(&classes);
+    let indexed = footprint::footprint(&cp, &MemberRef::new("h/Probe", "indexed", "(I)J")).unwrap();
+    assert_eq!(read_names(&indexed), ["rate", "table"]);
+    let lifted = footprint::lift(&cp, &indexed, &indexed.fields).unwrap();
+    assert_eq!(lifted.method.descriptor, "(IJ[J)J", "its argument, then rate and the table");
+    let run = tmp("lifted-array-run");
+    let _ = std::fs::remove_dir_all(&run);
+    std::fs::create_dir_all(run.join("h")).unwrap();
+    std::fs::write(run.join("h/Probe$Footprint$indexed.class"), &lifted.bytes).unwrap();
+    let driver = r#"package h;
+public class ArrayDriver {
+    static String outcome(java.util.concurrent.Callable<Object> c) {
+        try { return String.valueOf(c.call()); } catch (Exception e) { Throwable t = e instanceof java.lang.reflect.InvocationTargetException ? e.getCause() : e; return t.getClass().getName(); }
+    }
+    public static void main(String[] args) throws Exception {
+        java.lang.reflect.Method lifted = Class.forName("h.Probe$Footprint$indexed").getMethod("indexed", int.class, long.class, long[].class);
+        long[][] tables = {{}, {7}, {-1, Long.MAX_VALUE}, {3, 0, -9}};
+        long[] rates = {-2, 0, 5};
+        int[] ns = {Integer.MIN_VALUE, -1, 0, 1, 2, 3};
+        int cases = 0, thrown = 0;
+        for (long[] table : tables) for (long rate : rates) for (int n : ns) {
+            Probe p = new Probe(rate, 0);
+            p.table = table;
+            String want = outcome(() -> p.indexed(n));
+            String got = outcome(() -> lifted.invoke(null, n, rate, table));
+            if (!want.equals(got)) { System.out.println("differs at n=" + n + ": " + want + " != " + got); System.exit(1); }
+            if (want.contains("OutOfBounds")) thrown++;
+            cases++;
+        }
+        System.out.println("agrees on " + cases + ", " + thrown + " out of bounds");
+    }
+}
+"#;
+    let src = tmp("lifted-array-driver");
+    let _ = std::fs::remove_dir_all(&src);
+    std::fs::create_dir_all(src.join("h")).unwrap();
+    std::fs::write(src.join("h/ArrayDriver.java"), driver).unwrap();
+    let cp_arg = format!("{}:{}", classes.display(), run.display());
+    let status = Command::new("javac").args(["-proc:none", "-nowarn", "-cp", &cp_arg, "-d"]).arg(&run).arg(src.join("h/ArrayDriver.java")).status().expect("javac");
+    assert!(status.success());
+    let out = Command::new("java").args(["-Xverify:all", "-cp", &cp_arg, "h.ArrayDriver"]).output().expect("the test needs java");
+    let printed = String::from_utf8_lossy(&out.stdout);
+    assert!(out.status.success() && printed.contains("agrees on 72, 54 out of bounds"), "{printed}{}", String::from_utf8_lossy(&out.stderr));
+}
+
+const RATES_BEFORE: &str = "package a;
+public class Rates {
+    long base;
+    int[] tiers;
+    public Rates(long base, int[] tiers) { this.base = base; this.tiers = tiers; }
+    long fee(int lines) {
+        long s = base;
+        for (int i = 0; i < tiers.length; i++) {
+            if (lines > i) { s += tiers[i]; }
+        }
+        return s;
+    }
+}
+";
+/// A safe rewrite: a for-each loop, which keeps the array in a local.
+const RATES_AFTER: &str = "package a;
+public class Rates {
+    long base;
+    int[] tiers;
+    public Rates(long base, int[] tiers) { this.base = base; this.tiers = tiers; }
+    long fee(int lines) {
+        long s = base;
+        int i = 0;
+        for (int t : tiers) {
+            if (i < lines) { s += t; }
+            i++;
+        }
+        return s;
+    }
+}
+";
+/// A defect: one tier more is charged.
+const RATES_EXTRA: &str = "package a;
+public class Rates {
+    long base;
+    int[] tiers;
+    public Rates(long base, int[] tiers) { this.base = base; this.tiers = tiers; }
+    long fee(int lines) {
+        long s = base;
+        for (int i = 0; i < tiers.length; i++) {
+            if (lines >= i) { s += tiers[i]; }
+        }
+        return s;
+    }
+}
+";
+/// A defect only past the proofs' array bound (8): no tier after the eighth is charged. Its two versions agree on
+/// every array of at most 8 elements, which is the summary's whole domain.
+const RATES_CAPPED: &str = "package a;
+public class Rates {
+    long base;
+    int[] tiers;
+    public Rates(long base, int[] tiers) { this.base = base; this.tiers = tiers; }
+    long fee(int lines) {
+        long s = base;
+        for (int i = 0; i < tiers.length && i < 8; i++) {
+            if (lines > i) { s += tiers[i]; }
+        }
+        return s;
+    }
+}
+";
+const RATES_BILL: &str = "package a;
+public class Bill {
+    static long total(int[] t, long base, int lines) { return new Rates(base, t).fee(lines) + 1; }
+    static long twice(int[] t, long base, int lines) { Rates r = new Rates(base, t); long x = r.fee(lines); if (r.tiers.length > 0) { r.tiers[0]++; } return x + r.fee(lines); }
+    static long shared(int[] t, long base, int lines) { Rates r = new Rates(base, t); long x = r.fee(lines); if (t.length > 0) { t[0] = t[0] + 5; } return x + r.fee(lines); }
+    static long wide(long base, int lines) { int[] t = new int[10]; for (int i = 0; i < 10; i++) { t[i] = i + 1; } return new Rates(base, t).fee(lines); }
+    static long none(long base, int lines) { return new Rates(base, null).fee(lines); }
+}
+";
+/// Defects of the callers: the fee read before a tier changed, through the receiver's field or through the caller's
+/// own reference to the same array, is reused.
+const RATES_BILL_STALE: &str = "package a;
+public class Bill {
+    static long total(int[] t, long base, int lines) { return new Rates(base, t).fee(lines) + 1; }
+    static long twice(int[] t, long base, int lines) { Rates r = new Rates(base, t); long x = r.fee(lines); if (r.tiers.length > 0) { r.tiers[0]++; } return x + x; }
+    static long shared(int[] t, long base, int lines) { Rates r = new Rates(base, t); long x = r.fee(lines); if (t.length > 0) { t[0] = t[0] + 5; } return x + x; }
+    static long wide(long base, int lines) { int[] t = new int[10]; for (int i = 0; i < 10; i++) { t[i] = i + 1; } return new Rates(base, t).fee(lines); }
+    static long none(long base, int lines) { return new Rates(base, null).fee(lines); }
+}
+";
+
+fn rates(build: &str) -> PathBuf {
+    let (rates, bill) = match build {
+        "before" => (RATES_BEFORE, RATES_BILL),
+        "after" => (RATES_AFTER, RATES_BILL),
+        "stale" => (RATES_AFTER, RATES_BILL_STALE),
+        "extra" => (RATES_EXTRA, RATES_BILL),
+        "capped" => (RATES_CAPPED, RATES_BILL),
+        _ => unreachable!(),
+    };
+    compile_text(&format!("rates-{build}"), &[("a/Rates.java", rates), ("a/Bill.java", bill)])
+}
+
+fn rates_fee() -> MemberRef {
+    MemberRef::new("a/Rates", "fee", "(I)J")
+}
+
+fn rated(after: &str, target: &str, cache: &Path, run: &str) -> jvmcontract::equivalence::Outcome {
+    let mut o = options(&rates("before"), &rates(after), cache, run);
+    o.target = format!("a.Bill#{target}");
+    jvmcontract::equivalence::run(&o).unwrap()
+}
+
+/// R2's bounded reads of primitive arrays. The tiers' `fee`, rewritten as a for-each loop, has a summary over its
+/// base, its tiers' array and its argument, proved for every array of at most 8 elements, and it says so in its
+/// facts. Changed callers reuse it: a call made after a tier changed, through the receiver's field or through the
+/// caller's own reference to the same array (an alias of the field), is a new input, read at that call. A call on an
+/// array longer than the bound, or on none, is outside the summary's domain, and keeps the helper's body there.
+#[test]
+fn a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact() {
+    let cache = fresh("rates-cache");
+    let o = options(&rates("before"), &rates("after"), &cache, "rates-helper");
+    let before = footprint::footprint(&class_path(&rates("before")), &rates_fee()).unwrap();
+    let after = footprint::footprint(&class_path(&rates("after")), &rates_fee()).unwrap();
+    assert_eq!((read_names(&before), read_names(&after)), (vec!["base", "tiers"], vec!["base", "tiers"]));
+    let summary = reuse::summarize(&o, &rates_fee(), &tmp("rates-helper")).unwrap();
+    assert_eq!(summary.reads, ["this.base", "this.tiers", "arg0"]);
+    assert_eq!(summary.facts, ["this.tiers != null", "this.tiers.length <= 8"]);
+    assert!(summary.domain.contains("for every array of at most 8 elements") && summary.domain.contains("keeps the helper's body"), "{}", summary.domain);
+
+    for target in ["total", "twice", "shared", "wide", "none"] {
+        let o = rated("after", target, &cache, &format!("rates-{target}"));
+        assert_eq!(o.verdict, jvmcontract::Verdict::Verified, "{target}: {}", o.output);
+        let used = summaries_used(&o);
+        assert_eq!(used.iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>(), [summary.proof.as_str()], "{target}: {}", o.output);
+        assert_eq!(carried(&used[0].1), summary, "{target}: the claim carries the whole summary, its facts included");
+    }
+    for target in ["twice", "shared"] {
+        let o = rated("stale", target, &cache, &format!("rates-stale-{target}"));
+        assert!(reproduced(&o), "{target}: {}", o.output);
+        assert_eq!(summaries_used(&o).len(), 1, "{target}: refuted with the summary applied: {}", o.output);
+    }
+}
+
+/// A helper that charges one tier more has no summary (lifted over the array, its versions differ), so its caller
+/// keeps its body and is refuted. A helper whose versions differ only on arrays longer than the bound has one, since
+/// its proof covers arrays of at most 8 elements: a caller on such arrays is verified with it, and one on an array of
+/// 10 is refuted, replayed, because the summary's adapter keeps the helper's body at a call outside its domain. Applied
+/// there, the summary would have hidden the defect.
+#[test]
+fn an_array_summary_is_not_applied_past_its_bound_and_an_extra_read_has_none() {
+    let cache = fresh("rates-defects-cache");
+    let extra = rated("extra", "total", &cache, "rates-extra-total");
+    assert!(extra.output.contains("Rates.fee, changed, keeps its body in both versions") && extra.output.contains("its two versions differ"), "{}", extra.output);
+    assert!(summaries_used(&extra).is_empty());
+    assert!(reproduced(&extra), "{}", extra.output);
+
+    let summary = reuse::summarize(&options(&rates("before"), &rates("capped"), &cache, "rates-capped-helper"), &rates_fee(), &tmp("rates-capped-helper")).unwrap();
+    assert_eq!(summary.facts, ["this.tiers != null", "this.tiers.length <= 8"]);
+    for target in ["total", "none"] {
+        let o = rated("capped", target, &cache, &format!("rates-capped-{target}"));
+        assert_eq!(o.verdict, jvmcontract::Verdict::Verified, "{target}: {}", o.output);
+        assert_eq!(summaries_used(&o).len(), 1, "{target}");
+    }
+    let wide = rated("capped", "wide", &cache, "rates-capped-wide");
+    assert!(reproduced(&wide), "the tenth tier: {}", wide.output);
+    assert_eq!(summaries_used(&wide).len(), 1, "the summary is in the claim, and its adapter kept the body at the call: {}", wide.output);
+}
+
+/// The classes a caller's proof runs with an array summary applied (the adapters' bound and null checks, and their
+/// calls of the body outside the domain, included) give, on a real JVM, what the versions as written give: on the
+/// capped helper, over arrays up to 10 elements and none. Tested, not proved.
+#[test]
+fn an_array_summarys_adapters_agree_with_the_versions_as_written_on_the_jvm() {
+    let cache = fresh("rates-jvm-cache");
+    let wide = rated("capped", "wide", &cache, "rates-jvm-wide");
+    assert_eq!(summaries_used(&wide).len(), 1, "{}", wide.output);
+    let run = tmp("rates-jvm-run");
+    let _ = std::fs::remove_dir_all(&run);
+    let open = |from: &Path, to: &Path| {
+        for f in java_class_files(from) {
+            let target = to.join(f.strip_prefix(from).unwrap());
+            std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+            std::fs::write(&target, jvmcontract::relocate::opened(&std::fs::read(&f).unwrap()).unwrap()).unwrap();
+        }
+    };
+    let applied = run.join("applied");
+    let written = run.join("written");
+    for (dir, with) in [(&applied, true), (&written, false)] {
+        open(&rates("capped"), dir);
+        open(&wide.work.join("before-classes"), dir);
+        if with {
+            open(&wide.work.join("substituted-classes"), dir);
+        }
+    }
+    assert!(applied.join("a/Rates$Footprint$fee$Call.class").exists());
+    let driver = r#"package drv;
+public class Driver {
+    static String outcome(java.lang.reflect.Method m, Object... args) {
+        try { return String.valueOf(m.invoke(null, args)); } catch (Exception e) { return e.getCause().getClass().getName(); }
+    }
+    public static void main(String[] args) throws Exception {
+        int[][] arrays = {null, {}, {4}, {1, -2, 3}, {1, 2, 3, 4, 5, 6, 7, 8}, {1, 2, 3, 4, 5, 6, 7, 8, 9}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
+        int[] lines = {-1, 0, 2, 8, 9, 12};
+        StringBuilder out = new StringBuilder();
+        for (String version : new String[] {"before.a", "a"}) {
+            Class<?> bill = Class.forName(version + ".Bill");
+            java.lang.reflect.Method total = bill.getDeclaredMethod("total", int[].class, long.class, int.class);
+            java.lang.reflect.Method twice = bill.getDeclaredMethod("twice", int[].class, long.class, int.class);
+            java.lang.reflect.Method wide = bill.getDeclaredMethod("wide", long.class, int.class);
+            java.lang.reflect.Method none = bill.getDeclaredMethod("none", long.class, int.class);
+            for (java.lang.reflect.Method m : new java.lang.reflect.Method[] {total, twice, wide, none}) m.setAccessible(true);
+            for (int[] a : arrays) for (int n : lines) {
+                out.append(outcome(total, a == null ? null : a.clone(), 5L, n)).append(' ').append(outcome(twice, a == null ? null : a.clone(), 5L, n)).append(' ');
+                out.append(outcome(wide, 5L, n)).append(' ').append(outcome(none, 5L, n)).append('\n');
+            }
+        }
+        System.out.print(out);
+    }
+}
+"#;
+    let src = run.join("src/drv");
+    std::fs::create_dir_all(&src).unwrap();
+    std::fs::write(src.join("Driver.java"), driver).unwrap();
+    let classes = run.join("driver");
+    assert!(Command::new("javac").args(["-proc:none", "-nowarn", "-d"]).arg(&classes).arg(src.join("Driver.java")).status().expect("javac").success());
+    let output = |dir: &Path| {
+        let out = Command::new("java").args(["-Xverify:all", "-cp"]).arg(format!("{}:{}", classes.display(), dir.display())).arg("drv.Driver").output().expect("the test needs java");
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8(out.stdout).unwrap()
+    };
+    let (with, without) = (output(&applied), output(&written));
+    assert_eq!(with.lines().count(), 2 * 7 * 6, "{with}");
+    assert!(with.contains("java.lang.NullPointerException"), "a null array still throws: {with}");
+    assert_eq!(with, without);
+    // The previous version's tenth tier is charged, the capped one's is not: the two versions differ on `wide`.
+    let halves: Vec<&str> = with.lines().collect();
+    assert_ne!(halves[..42], halves[42..], "the versions differ past the bound");
 }

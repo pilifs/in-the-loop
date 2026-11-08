@@ -38,7 +38,9 @@
 //! of the helper in both versions goes to an adapter that reads the footprint from the actual receiver at that call
 //! and calls the new version's lifted helper. The proof is of the lifted function, positional in the fields' values;
 //! which field is which parameter is the summary's `reads`, established again from each version's bytecode whenever a
-//! summary is made, so a claim that uses one carries the whole summary, not only its proof's key. [`summaries`], the
+//! summary is made, so a claim that uses one carries the whole summary, not only its proof's key. A helper may read
+//! the primitive arrays its receiver's fields hold, by length and element: the summary's facts bound them, and the
+//! adapter keeps the body at a call outside them. [`summaries`], the
 //! Phase 0 hook for a caller that asks by name, still offers none: a summary is made for a caller's own two builds.
 
 use std::fmt::Write as _;
@@ -576,8 +578,11 @@ pub mod preparation;
 /// helpers are proved to have the same result on every input under `options`' cache, engine, bounds and tools
 /// ([`crate::proof_cache::lifted_proof`]), worked on under `work`. The summary names that proof's claim key, the
 /// fields and arguments it reads, the proofs it rests on, and the domain it holds over: every value of those fields
-/// and arguments, on any receiver of the class, whatever else it holds. It needs no alias or null fact: only the
-/// receiver is dereferenced, and a call on `null` throws before the helper runs.
+/// and arguments, on any receiver of the class, whatever else it holds. Of primitive fields it needs no alias or null
+/// fact: only the receiver is dereferenced, and a call on `null` throws before the helper runs. An array field's value
+/// is its length and elements, and the proof's harness makes every array of at most the claim's array bound and no
+/// `null` one, so the summary's `facts` say so (`this.tiers != null`, `this.tiers.length <= 8`). No alias fact is
+/// needed of arrays either: the helper writes none, so whether two of them are one array changes nothing it reads.
 ///
 /// Refused, by name: a helper either version doesn't establish a footprint for; a field one version reads that the
 /// other's receiver doesn't declare alike (a change of layout, for which no representation adapter is established);
@@ -595,6 +600,8 @@ struct Summarized {
     found: bool,
     /// The new version's footprint, and the fields both versions' lifted helpers take.
     after: footprint::Footprint,
+    /// Whether the previous version's helper is private.
+    before_private: bool,
     fields: Vec<footprint::FieldRead>,
     lifted: footprint::Lifted,
 }
@@ -646,15 +653,24 @@ fn summarized(options: &crate::equivalence::Options, helper: &MemberRef, work: &
     let (key, outcome, from) = crate::proof_cache::lifted_proof(options, &lifted_after.target(), &dir.join("before"), &dir.join("after"), &dir.join("proof")).map_err(&refuse)?;
     let depends_on = outcome.stated.iter().flat_map(|s| &s.assumptions).filter(|a| a.kind == crate::statement::AssumptionKind::Callee).filter_map(|a| a.id.clone()).collect();
     let read = |fp: &footprint::Footprint| fp.fields.iter().map(|f| f.name.as_str()).collect::<Vec<_>>().join(", ");
+    let arrays: Vec<&footprint::FieldRead> = fields.iter().filter(|f| f.is_array()).collect();
     let summary = Summary {
         helper: footprint::helper_name(&after.helper),
         proof: key.0,
         reads: footprint::Footprint::reads(&fields, &after.params),
-        facts: Vec::new(),
+        facts: arrays.iter().flat_map(|f| [format!("this.{} != null", f.name), format!("this.{}.length <= {}", f.name, options.max_array_length)]).collect(),
         domain: format!(
-            "every value of the fields it reads ({}) and of its arguments, on any receiver of {} whatever else it holds; read before: {}; read after: {}",
+            "every value of the fields it reads ({}) and of its arguments, on any receiver of {} whatever else it holds{}; read before: {}; read after: {}",
             if fields.is_empty() { "none".to_string() } else { fields.iter().map(|f| format!("this.{}", f.name)).collect::<Vec<_>>().join(", ") },
             after.helper.owner.replace('/', "."),
+            if arrays.is_empty() {
+                String::new()
+            } else {
+                format!(
+                    ", an array field's value being its length and elements, for every array of at most {} elements (its facts): a call where one is null or longer keeps the helper's body",
+                    options.max_array_length
+                )
+            },
             if before.fields.is_empty() { "no field".to_string() } else { read(&before) },
             if after.fields.is_empty() { "no field".to_string() } else { read(&after) },
         ),
@@ -664,7 +680,7 @@ fn summarized(options: &crate::equivalence::Options, helper: &MemberRef, work: &
         depends_on,
     };
     let found = matches!(outcome.reuse, Some(cache::Reuse::Exact { .. }));
-    Ok(Summarized { summary, from, found, after, fields, lifted: lifted_after })
+    Ok(Summarized { summary, from, found, before_private: before.private, after, fields, lifted: lifted_after })
 }
 
 /// A helper's summary as a changed caller applies it at its calls (R2), under the tool's own checker: each call of
@@ -673,9 +689,11 @@ fn summarized(options: &crate::equivalence::Options, helper: &MemberRef, work: &
 /// versions so call one function of the same values, which the checker's hashing makes one circuit per arguments,
 /// as it does for a pure helper proved equivalent ([`crate::shared`]).
 ///
-/// **Why every call is in the summary's domain.** The summary's proof shows the two versions' lifted helpers equal on
+/// **Why a call is in the summary's domain.** The summary's proof shows the two versions' lifted helpers equal on
 /// every value of the fields and arguments, so it needs nothing of a call beyond those values: no precondition, no
-/// alias or null fact (`facts` is empty), and no state a constructor made. The adapter reads them from the receiver
+/// alias fact, and no state a constructor made. Its `facts`, an array field's being an array within the bound, are
+/// checked by the adapter at each call on the receiver it has, and a call where one fails runs its version's helper
+/// as written instead: outside its domain, the summary is not applied, and the body stays. The adapter reads them from the receiver
 /// the call has, after whatever the caller did to it, and the footprint ([`footprint::footprint`], established again
 /// for both versions here) shows they are all the helper reads. The previous version's adapter reads its own
 /// version's layout, field by field, and passes the values on: the representation adapter is explicit, never a
@@ -705,9 +723,9 @@ thread_local! {
 /// application is kept for [`applied`].
 pub fn application(options: &crate::equivalence::Options, helper: &MemberRef, work: &Path) -> Result<Application, Unsupported> {
     let s = summarized(options, helper, work)?;
-    let adapters = footprint::adapters(&s.after.helper, &s.after.params, &s.after.result, &s.fields, &s.lifted.method, "before")?;
+    let adapters = footprint::adapters(&s.after.helper, &s.after.params, &s.after.result, &s.fields, &s.lifted.method, "before", options.max_array_length, (s.before_private, s.after.private))?;
     let application = Application {
-        classes: vec![(s.lifted.method.owner.clone(), s.lifted.bytes.clone()), (adapters.after.owner.clone(), adapters.bytes.clone())],
+        classes: vec![(s.lifted.method.owner.clone(), s.lifted.bytes.clone()), (adapters.before.owner.clone(), adapters.before_bytes.clone()), (adapters.after.owner.clone(), adapters.after_bytes.clone())],
         summary: s.summary,
         from: s.from,
         found: s.found,

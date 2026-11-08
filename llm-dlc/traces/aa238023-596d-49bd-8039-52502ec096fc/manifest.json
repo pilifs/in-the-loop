@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T06:04:38.133Z",
-  "duration_seconds": 5413,
+  "ended": "2026-11-08T06:19:51.275Z",
+  "duration_seconds": 6326,
   "stats": {
-    "turns": 30,
-    "api_calls": 250,
-    "tool_calls": 253,
+    "turns": 32,
+    "api_calls": 293,
+    "tool_calls": 295,
     "tool_errors": 2,
     "compactions": 6,
-    "peak_context_tokens": 203594,
+    "peak_context_tokens": 280456,
     "usage": {
-      "input_tokens": 504,
-      "output_tokens": 284349,
-      "cache_read_input_tokens": 28748742,
-      "cache_creation_input_tokens": 908781
+      "input_tokens": 592,
+      "output_tokens": 343676,
+      "cache_read_input_tokens": 38559336,
+      "cache_creation_input_tokens": 1021467
     }
   },
   "tools": {
-    "Bash": 217,
-    "Read": 16,
-    "Edit": 7,
+    "Bash": 257,
+    "Read": 17,
+    "Edit": 8,
     "Write": 6,
     "SendMessage": 3,
     "ListAgents": 2,
@@ -135,24 +135,24 @@
     {
       "index": 6,
       "started": "2026-11-08T05:46:51.132Z",
-      "ended": "2026-11-08T06:04:38.133Z",
-      "turns": 4,
-      "api_calls": 47,
+      "ended": "2026-11-08T06:19:51.275Z",
+      "turns": 6,
+      "api_calls": 90,
       "usage": {
-        "input_tokens": 94,
-        "output_tokens": 53228,
-        "cache_read_input_tokens": 5066901,
-        "cache_creation_input_tokens": 154691
+        "input_tokens": 182,
+        "output_tokens": 112555,
+        "cache_read_input_tokens": 14877495,
+        "cache_creation_input_tokens": 267377
       },
-      "peak_context_tokens": 167770
+      "peak_context_tokens": 280456
     }
   ],
   "log": {
-    "sha256": "178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815",
-    "bytes": 8125640,
-    "lines": 2923,
-    "gzip_bytes": 1602780,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815.jsonl.gz"
+    "sha256": "ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5",
+    "bytes": 9124752,
+    "lines": 3365,
+    "gzip_bytes": 1742713,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -203,6 +203,14 @@
       "summary": "application-core reuse R3: a small compare run timed stage by stage around the proof cache, cold, rerun and a defect (verification pending)",
       "body": "R3 of llm-dlc/loops/application-core-reuse.md measures before it adds any cache of preparation. A new ledger (lib/src/reuse/preparation.rs) times, while a caller records one, the proof cache's own steps where they run, all in this stream's files: shared::plan_with, each helper's own proof, the claim key with both versions' closures digested, the lookup, the store, a witness replayed, and each proof's checker runs with their phases, read at the store. preparation::proofs splits a ledger into proofs and gives each the stretch before its first span, so that what no hook covers (relocating, decoding the target's classes, the layout, the harness) is placed proof by proof without a hook in another stream's file. Nothing is recorded without a ledger.\n\nThe benchmark lib/tests/preparation.rs (ignored inline) runs compare on the joint example's builds (examples 190, 191) cold, as an unchanged rerun, on the offset defect cold and as its rerun, in process under the ledger and as the compare process build.py runs. It also times one by one the stages a run repeats: javac per build, decoding and relocating a build, alignment, the specs, opening the JDK image, writing the models, the models' digest and the binary's digest. Queued as job 20261108-060410-application-core-reuse-r3-a-small-compar for the release figures, which come back as lib/benchmark/preparation/preparation.json and .md.\n\nA debug smoke run inline (1 repeat): a rerun of the 5 proofs took 810 ms, 726 ms of it before the lookups. Relocating took 0.8 ms and decoding the build 0.3 ms, while opening the JDK image took 31 ms each time, and every class path with the JDK opens it again. That is the likely repeated stage; the job decides. Verified inline: the ledger's 2 unit tests (233 in all), and reuse, reuse_summaries, compare, application_core, summaries, effects, heap, foundations and observations all pass. Also recorded under Progress: the integration check's conflict in lib/README.md (all four streams' additions), which is the merge's to take whole.",
       "log_sha256": "178ac2140a0f95e8013993a9c349ba48e0e9433ad6e7f98e0dfe469b73c20815"
+    },
+    {
+      "change_id": "xrxnwkqtkxukyukwtsyqqzxltsmkpstp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse R2: a read-only helper's summary over the primitive arrays its receiver's fields hold, applied only within its bound",
+      "body": "R2's bounded reads of primitive arrays, after the field-only case (llm-dlc/loops/application-core-reuse.md). The footprint (lib/src/reuse/footprint.rs) now accepts a field holding a one-dimensional non-floating primitive array, read by its length and elements. A flow over every path of the helper's code, locals included, proves every reference it handles is its receiver or such an array, kept only in a local and used only by arraylength and an element load of its own type. A write, passing it on, comparing or null-testing it, two arrays meeting at a join, and arrays of floats, references or arrays are each refused by name. A read out of bounds throws ArrayIndexOutOfBoundsException, an outcome the summary's proof compares: this departs from the brief's 'total' for the field case, recorded for review.\n\nThe lifted helper takes the array itself. Since the proof's harness makes no null array and none over the claim's bound, the summary carries facts (this.tiers != null, this.tiers.length <= 8). Each version's adapter checks them on the actual receiver at each call and, where one fails, calls its own version's helper as written instead. Each adapter is now a class of its own in its version's package, so it reaches package-private members legally.\n\nVerified inline in tests/reuse_summaries.rs, 4 new tests (14 in all, three runs): eight refusals; a lifted array helper agreeing with the helper on a JVM over 72 cases, 54 out of bounds; a for-each rewrite's summary reused by five changed callers, through a tier mutated via the field and via the caller's alias (each verified, and refuted and replayed in a stale defect), and through a 10-element and a null array, where the body is kept; a helper charging one tier more refused, its caller refuted; and a helper whose versions differ only past the bound, whose caller on 10 elements is refuted and replayed. With the guard taken out for a check, that caller was verified, the defect hidden. On a JVM with -Xverify:all, the applied classes agree with the versions as written. The 233 unit tests and reuse, summaries, application_core, compare, heap, effects and foundations pass. R3's job 20261108-060410 has come back passed; deciding R3 from it is next.",
+      "log_sha256": "ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5"
     }
   ],
   "logs": {
@@ -222,6 +230,12 @@
       "bytes": 3560994,
       "lines": 1176,
       "gzip_bytes": 768523,
+      "url": null
+    },
+    "ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5": {
+      "bytes": 9124752,
+      "lines": 3365,
+      "gzip_bytes": 1742713,
       "url": null
     },
     "bc9aa0450064232ed23f89ed22d9561a4991a0e835a1a07e8cff7c606c44b87c": {

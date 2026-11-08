@@ -1,9 +1,10 @@
 //! R2's first part: the read footprint of a read-only heap helper, proved from its bytecode, and the helper lifted
 //! over it, the explicit representation adapter its own proof and a caller's reuse stand on.
 //!
-//! **The category** is the brief's one conservative one: an instance method of an application class, total,
-//! deterministic and read-only, over primitive fields of its receiver and primitive arguments, with a primitive
-//! result. [`footprint`] establishes it from the bytecode, and refuses by name what it doesn't establish:
+//! **The category** is the brief's one conservative one: an instance method of an application class, deterministic
+//! and read-only, over primitive fields of its receiver, one-dimensional primitive arrays its receiver's fields hold,
+//! and primitive arguments, with a primitive result. [`footprint`] establishes it from the bytecode, and refuses by
+//! name what it doesn't establish:
 //!
 //! | Refused | Why |
 //! |---|---|
@@ -11,8 +12,8 @@
 //! | a static field read, a call into the JDK beyond its arithmetic classes, an interface or dynamic call | state or code outside its footprint |
 //! | a call of a method on an object (its receiver's included), a class that overrides it | dispatch that the class path doesn't fix |
 //! | recursion, through static callees too | its proof would need an unbounded unwinding |
-//! | a reference other than the receiver: a reference parameter, field, constant or `null`, a cast, a reference test | an escaping or aliased reference |
-//! | an array | bounded primitive arrays come after the field-only case |
+//! | a reference other than the receiver and the arrays its fields hold: a reference parameter, field, constant or `null`, a cast, a reference test | an escaping or aliased reference |
+//! | an array used other than by its length and its elements' reads (written, passed on, returned, compared), an array of references, floating point or arrays, an array allocated | not read-only, or an escaping reference |
 //! | a division or remainder by anything but a non-zero constant | it may throw: not total |
 //! | `float` and `double` | outside this wave |
 //!
@@ -25,10 +26,21 @@
 //! the fields it reads and of its arguments, and nothing else of the receiver or the heap can change it. It throws
 //! nothing: no instruction it has can throw on a receiver that isn't `null` (a call on `null` throws before it runs).
 //!
+//! **Arrays** (the brief's bounded reads of primitive arrays, after the field-only case). A field holding a
+//! one-dimensional array of a non-floating primitive type may be read too, and its array read by its length and its
+//! elements. A flow of the helper's own code (over every path, its locals included) shows that every
+//! reference it handles is its receiver or an array one of those fields held: an array is stored only in a local
+//! other than the receiver's, and used only by `arraylength` and an element load of its own type. No instruction
+//! writes an array, so the array's length and elements hold the same values at every read during one call, the
+//! values they held at the call, and the outcome is a function of those and of the other values above. A read out
+//! of bounds throws the JVM's `ArrayIndexOutOfBoundsException`, so a helper reading arrays is not total: that
+//! exception is an outcome like a result, and the summary's proof compares it. A static callee still handles no
+//! reference.
+//!
 //! **The lifted helper** ([`lift`]) is that function: a static method of a class of its own, in the helper's package,
-//! whose parameters are the helper's, then the values of the fields it reads, in the order given. Its code is the
-//! helper's, with each `aload_0; getfield` pair replaced by a load of the field's parameter and every other local
-//! moved past them. Lifted over the same fields in both versions (their union), the two versions' lifted helpers have
+//! whose parameters are the helper's, then the values of the fields it reads, in the order given (an array field's
+//! value is the array). Its code is the helper's, with each `aload_0; getfield` pair replaced by a load of the field's
+//! parameter and every other local moved past them. Lifted over the same fields in both versions (their union), the two versions' lifted helpers have
 //! one signature, and a regression proof of them is a proof that the helper's two versions have the same outcome on
 //! every receiver whose read fields hold the same values, given the same arguments, whatever else the receivers hold.
 
@@ -37,6 +49,7 @@ use std::collections::{HashMap, HashSet};
 use serde::Serialize;
 
 use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+use crate::classfile::bytecode::ArrayKind;
 use crate::classfile::{flags, ArithOp, BootstrapArg, ClassFile, Insn, Kind, MemberRef, Method, MethodDescriptor, Narrow, Type};
 use crate::classpath::ClassPath;
 use crate::spec::{Part, Unsupported};
@@ -55,7 +68,12 @@ pub struct FieldRead {
 
 impl FieldRead {
     pub fn ty(&self) -> Type {
-        Type::parse(&self.descriptor).expect("a field read was checked to have a primitive type")
+        Type::parse(&self.descriptor).expect("a field read was checked to have a primitive type, or to be an array of one")
+    }
+
+    /// Whether it holds an array, of a primitive type.
+    pub fn is_array(&self) -> bool {
+        self.descriptor.starts_with('[')
     }
 }
 
@@ -70,6 +88,8 @@ pub struct Footprint {
     pub fields: Vec<FieldRead>,
     /// The static methods it reaches, as declared, each accepted under the same rules with no reference at all.
     pub calls: Vec<MemberRef>,
+    /// Whether it is private: a call of it is an `invokespecial`.
+    pub private: bool,
 }
 
 impl Footprint {
@@ -122,7 +142,7 @@ pub fn footprint(cp: &ClassPath, helper: &MemberRef) -> Result<Footprint, Unsupp
     let mut fields = walk.fields;
     fields.sort();
     fields.dedup();
-    Ok(Footprint { helper: declared, params: descriptor.params, result: descriptor.ret, fields, calls: walk.calls })
+    Ok(Footprint { helper: declared, params: descriptor.params, result: descriptor.ret, fields, calls: walk.calls, private: method.is_private() })
 }
 
 /// Primitive parameters and a primitive result, none of them floating point.
@@ -183,6 +203,8 @@ impl Walk<'_> {
                     i += 2;
                     continue;
                 }
+                // An array a field of the receiver holds, kept in a local: what the flow below follows.
+                Insn::Load(Kind::Ref, s) | Insn::Store(Kind::Ref, s) if root && *s != 0 => {}
                 Insn::Load(Kind::Ref, _) | Insn::Store(Kind::Ref, _) | Insn::AConstNull => return Err(at("handles a reference other than its receiver")),
                 Insn::Load(Kind::Float | Kind::Double, _) | Insn::Store(Kind::Float | Kind::Double, _) | Insn::FConst(_) | Insn::DConst(_) => return Err(at("computes in floating point, outside this wave")),
                 Insn::Load(_, 0) | Insn::Store(_, 0) | Insn::IInc(0, _) if root => return Err(at("reuses its receiver's local")),
@@ -219,7 +241,11 @@ impl Walk<'_> {
                 Insn::GetField(_) => return Err(at("reads a field of an object other than its receiver")),
                 Insn::New(c) if pool.class_name(*c).is_ok_and(|n| self.cp.is_subtype(n, "java/lang/Throwable")) => return Err(at("creates an exception of its own: not total")),
                 Insn::New(_) | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::MultiANewArray(..) => return Err(at("allocates")),
-                Insn::ArrayLoad(_) | Insn::ArrayStore(_) | Insn::ArrayLength => return Err(at("reads an array: bounded primitive arrays come after the field-only case")),
+                Insn::ArrayLoad(ArrayKind::Float | ArrayKind::Double) => return Err(at("computes in floating point, outside this wave")),
+                Insn::ArrayLoad(ArrayKind::Ref) => return Err(at("reads an array of references")),
+                Insn::ArrayLoad(_) | Insn::ArrayLength if root => {}
+                Insn::ArrayLoad(_) | Insn::ArrayLength => return Err(at("reads an array, which only the helper itself may, from its receiver's fields")),
+                Insn::ArrayStore(_) => return Err(at("writes an array: not read-only")),
                 Insn::AThrow => return Err(at("throws an exception of its own: not total")),
                 Insn::CheckCast(_) | Insn::InstanceOf(_) | Insn::IfACmp(..) | Insn::IfNull(_) | Insn::IfNonNull(_) => return Err(at("tests or casts a reference")),
                 Insn::MonitorEnter | Insn::MonitorExit => return Err(at("synchronizes")),
@@ -227,7 +253,13 @@ impl Walk<'_> {
             }
             i += 1;
         }
-        misuse.map_or(Ok(()), Err)
+        if let Some(m) = misuse {
+            return Err(m);
+        }
+        if root {
+            flow(class, method, &insns).map_err(|e| at(&e))?;
+        }
+        Ok(())
     }
 
     /// A `getfield` on the receiver: an instance field of a primitive, non-floating type, declared by its class or
@@ -235,10 +267,12 @@ impl Walk<'_> {
     fn field(&mut self, field: &MemberRef) -> Result<(), String> {
         let ty = Type::parse(&field.descriptor).map_err(|e| e.to_string())?;
         let name = format!("{}.{}", field.owner.replace('/', "."), field.name);
-        if matches!(ty, Type::Array(_)) {
-            return Err(format!("reads the array field {name}: bounded primitive arrays come after the field-only case"));
+        match &ty {
+            Type::Array(inner) if matches!(**inner, Type::Float | Type::Double) => return Err(format!("reads the floating-point array field {name}, outside this wave")),
+            Type::Array(inner) if !inner.is_primitive() => return Err(format!("reads the array field {name}, whose elements are references: only arrays of primitives are read")),
+            _ => {}
         }
-        if !ty.is_primitive() {
+        if !ty.is_primitive() && !matches!(ty, Type::Array(_)) {
             return Err(format!("reads the reference field {name}: only primitive fields are in the footprint"));
         }
         if matches!(ty, Type::Float | Type::Double) {
@@ -313,6 +347,224 @@ fn nonzero_constant(class: &ClassFile, insn: &Insn) -> bool {
         Insn::Ldc(c) => matches!(class.pool.loadable(*c), Ok(BootstrapArg::Int(v)) if v != 0) || matches!(class.pool.loadable(*c), Ok(BootstrapArg::Long(v)) if v != 0),
         _ => false,
     }
+}
+
+/// What a slot of the helper's frame holds, as [`flow`] follows it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum Tag {
+    /// A slot of a primitive value (a `long` takes two).
+    Word,
+    /// Its receiver.
+    Receiver,
+    /// The array a field of the receiver held, by the field's name and descriptor.
+    Array(String, String),
+    /// A local nothing was stored in on some path, or two different values were.
+    Unset,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Frame {
+    stack: Vec<Tag>,
+    locals: Vec<Tag>,
+}
+
+/// The helper's code followed over every path, each slot of its stack and its locals tagged ([`Tag`]): every
+/// reference it handles is its receiver, which only a `getfield` consumes, or an array one of its receiver's fields
+/// held, which is only kept in a local, duplicated or popped, read by `arraylength` or loaded from by an element load
+/// of its own type. A reference used any other way (passed to a call, returned, compared, written through), or two
+/// different references meeting where paths join, refuses it. [`Walk::method`] has already refused every instruction
+/// outside the category, so the ones left here are the ones followed.
+fn flow(class: &ClassFile, method: &Method, insns: &[(u32, Insn)]) -> Result<(), String> {
+    let code = method.code.as_ref().ok_or("it has no code")?;
+    let descriptor = method.parsed_descriptor().map_err(|e| e.to_string())?;
+    let mut locals = vec![Tag::Unset; usize::from(code.max_locals.max(1))];
+    locals[0] = Tag::Receiver;
+    let mut slot = 1;
+    for p in &descriptor.params {
+        for _ in 0..p.slots() {
+            if let Some(l) = locals.get_mut(slot) {
+                *l = Tag::Word;
+            }
+            slot += 1;
+        }
+    }
+    let index: HashMap<u32, usize> = insns.iter().enumerate().map(|(i, (at, _))| (*at, i)).collect();
+    let mut frames: Vec<Option<Frame>> = vec![None; insns.len()];
+    frames[0] = Some(Frame { stack: Vec::new(), locals });
+    let mut work = vec![0usize];
+    let lost = || "has a stack this check can't follow".to_string();
+    while let Some(i) = work.pop() {
+        let mut f = frames[i].clone().expect("a frame is set before its instruction is queued");
+        let insn = &insns[i].1;
+        let word = |f: &mut Frame, n: usize| -> Result<(), String> {
+            for _ in 0..n {
+                match f.stack.pop().ok_or_else(lost)? {
+                    Tag::Word => {}
+                    Tag::Receiver => return Err("uses its receiver other than to read one of its fields".into()),
+                    Tag::Array(name, _) => return Err(format!("uses the array of this.{name} other than to read its length or an element: it escapes, or is compared")),
+                    Tag::Unset => return Err(lost()),
+                }
+            }
+            Ok(())
+        };
+        let push = |f: &mut Frame, n: usize| f.stack.extend(std::iter::repeat_n(Tag::Word, n));
+        let slots = |k: Kind| if k == Kind::Long { 2 } else { 1 };
+        let pick = |f: &mut Frame, n: usize| -> Result<Vec<Tag>, String> {
+            let at = f.stack.len().checked_sub(n).ok_or_else(lost)?;
+            Ok(f.stack.split_off(at))
+        };
+        let mut next = true;
+        match insn {
+            Insn::Load(Kind::Ref, s) => {
+                let t = f.locals.get(usize::from(*s)).cloned().ok_or_else(lost)?;
+                if !matches!(t, Tag::Receiver | Tag::Array(..)) {
+                    return Err(format!("loads local {s} as a reference where it holds no array of its receiver's on every path"));
+                }
+                f.stack.push(t);
+            }
+            Insn::Load(k, _) => push(&mut f, slots(*k)),
+            Insn::Store(Kind::Ref, s) => {
+                let t = f.stack.pop().ok_or_else(lost)?;
+                if !matches!(t, Tag::Array(..)) {
+                    return Err(format!("stores {} in local {s}", if t == Tag::Receiver { "its receiver" } else { "a value that is no array of its receiver's" }));
+                }
+                let s = usize::from(*s);
+                *f.locals.get_mut(s).ok_or_else(lost)? = t;
+            }
+            Insn::Store(k, s) => {
+                word(&mut f, slots(*k))?;
+                let s = usize::from(*s);
+                for j in s..s + slots(*k) {
+                    *f.locals.get_mut(j).ok_or_else(lost)? = Tag::Word;
+                }
+            }
+            Insn::IInc(..) | Insn::Nop => {}
+            Insn::IConst(_) => push(&mut f, 1),
+            Insn::LConst(_) => push(&mut f, 2),
+            Insn::Ldc(c) => push(&mut f, if matches!(class.pool.loadable(*c), Ok(BootstrapArg::Long(_))) { 2 } else { 1 }),
+            Insn::GetField(m) => {
+                let field = class.pool.member(*m).map_err(|e| e.to_string())?;
+                match f.stack.pop().ok_or_else(lost)? {
+                    Tag::Receiver => {}
+                    _ => return Err("reads a field of an object other than its receiver".into()),
+                }
+                let ty = Type::parse(&field.descriptor).map_err(|e| e.to_string())?;
+                if matches!(ty, Type::Array(_)) {
+                    f.stack.push(Tag::Array(field.name.clone(), field.descriptor.clone()));
+                } else {
+                    push(&mut f, ty.slots().into());
+                }
+            }
+            Insn::ArrayLength => {
+                if !matches!(f.stack.pop().ok_or_else(lost)?, Tag::Array(..)) {
+                    return Err("takes the length of an array that is no field's of its receiver".into());
+                }
+                push(&mut f, 1);
+            }
+            Insn::ArrayLoad(kind) => {
+                word(&mut f, 1)?;
+                let Tag::Array(name, descriptor) = f.stack.pop().ok_or_else(lost)? else { return Err("loads an element of an array that is no field's of its receiver".into()) };
+                let fits = matches!(
+                    (kind, &descriptor[1..]),
+                    (ArrayKind::Int, "I") | (ArrayKind::Long, "J") | (ArrayKind::Byte, "B" | "Z") | (ArrayKind::Char, "C") | (ArrayKind::Short, "S")
+                );
+                if !fits {
+                    return Err(format!("loads an element of this.{name} ({descriptor}) by an instruction of another type"));
+                }
+                push(&mut f, if *kind == ArrayKind::Long { 2 } else { 1 });
+            }
+            Insn::Arith(op, k) => {
+                let n = slots(*k);
+                match op {
+                    ArithOp::Neg => word(&mut f, n)?,
+                    ArithOp::Shl | ArithOp::Shr | ArithOp::Ushr => word(&mut f, 1 + n)?,
+                    _ => word(&mut f, 2 * n)?,
+                }
+                push(&mut f, n);
+            }
+            Insn::Convert(from, to) => {
+                word(&mut f, slots(*from))?;
+                push(&mut f, if *to == Narrow::To(Kind::Long) { 2 } else { 1 });
+            }
+            Insn::Cmp(_) => {
+                word(&mut f, 4)?;
+                push(&mut f, 1);
+            }
+            Insn::If(..) => word(&mut f, 1)?,
+            Insn::IfICmp(..) => word(&mut f, 2)?,
+            Insn::Goto(_) => next = false,
+            Insn::Return(Some(k)) => {
+                word(&mut f, slots(*k))?;
+                next = false;
+            }
+            Insn::InvokeStatic(m) => {
+                let callee = class.pool.member(*m).map_err(|e| e.to_string())?;
+                let d = MethodDescriptor::parse(&callee.descriptor).map_err(|e| e.to_string())?;
+                word(&mut f, d.params.iter().map(|p| usize::from(p.slots())).sum())?;
+                push(&mut f, d.ret.slots().into());
+            }
+            Insn::Pop => drop(pick(&mut f, 1)?),
+            Insn::Pop2 => drop(pick(&mut f, 2)?),
+            Insn::Dup => {
+                let v = pick(&mut f, 1)?;
+                f.stack.extend(v.clone().into_iter().chain(v));
+            }
+            Insn::Dup2 => {
+                let v = pick(&mut f, 2)?;
+                f.stack.extend(v.clone().into_iter().chain(v));
+            }
+            Insn::DupX1 | Insn::DupX2 | Insn::Dup2X1 | Insn::Dup2X2 => {
+                let (top, under) = match insn {
+                    Insn::DupX1 => (1, 1),
+                    Insn::DupX2 => (1, 2),
+                    Insn::Dup2X1 => (2, 1),
+                    _ => (2, 2),
+                };
+                let v = pick(&mut f, top)?;
+                let u = pick(&mut f, under)?;
+                f.stack.extend(v.clone().into_iter().chain(u).chain(v));
+            }
+            Insn::Swap => {
+                let v = pick(&mut f, 2)?;
+                f.stack.extend([v[1].clone(), v[0].clone()]);
+            }
+            other => return Err(format!("has the instruction {other:?}, which this check doesn't follow")),
+        }
+        let mut successors: Vec<usize> = insn.targets().iter().map(|t| index.get(t).copied().ok_or_else(lost)).collect::<Result<_, _>>()?;
+        if next {
+            successors.push(i + 1);
+        }
+        for j in successors {
+            if j >= insns.len() {
+                return Err(lost());
+            }
+            let merged = match &frames[j] {
+                None => f.clone(),
+                Some(old) => {
+                    if old.stack.len() != f.stack.len() {
+                        return Err(lost());
+                    }
+                    let mut m = old.clone();
+                    for (a, b) in m.stack.iter_mut().zip(&f.stack) {
+                        if a != b {
+                            return Err("meets two different references, or a reference and a value, where its paths join".into());
+                        }
+                    }
+                    for (a, b) in m.locals.iter_mut().zip(&f.locals) {
+                        if a != b {
+                            *a = Tag::Unset;
+                        }
+                    }
+                    m
+                }
+            };
+            if frames[j].as_ref() != Some(&merged) {
+                frames[j] = Some(merged);
+                work.push(j);
+            }
+        }
+    }
+    Ok(())
 }
 
 /// A helper lifted over its footprint: [`lift`]'s result.
@@ -431,6 +683,15 @@ pub fn lift(cp: &ClassPath, footprint: &Footprint, fields: &[FieldRead]) -> Resu
                 let index = w.pool.method_ref(&callee.owner, &callee.name, &callee.descriptor);
                 b.op_u16(0xb8, index);
             }
+            Insn::ArrayLength => b.op(0xbe),
+            Insn::ArrayLoad(k) => b.op(match k {
+                ArrayKind::Int => 0x2e,
+                ArrayKind::Long => 0x2f,
+                ArrayKind::Byte => 0x33,
+                ArrayKind::Char => 0x34,
+                ArrayKind::Short => 0x35,
+                _ => return Err(refuse(format!("its array load {k:?} has no lifted form"))),
+            }),
             other => return Err(refuse(format!("its instruction {other:?} has no lifted form"))),
         }
         i += 1;
@@ -442,40 +703,67 @@ pub fn lift(cp: &ClassPath, footprint: &Footprint, fields: &[FieldRead]) -> Resu
     Ok(Lifted { method: MemberRef::new(&lifted_class, &helper.name, &lifted_descriptor), bytes: w.to_bytes() })
 }
 
-/// The suffix of the class holding a summary's call-site adapters: `quotes/QuoteService$Footprint$fee$Call`.
+/// The suffix of the classes holding a summary's call-site adapters: `quotes/QuoteService$Footprint$fee$Call`, and
+/// `before/quotes/QuoteService$Footprint$fee$Call` for the previous version.
 pub const CALL: &str = "$Call";
 
-/// A summary's adapters at the call site ([`adapters`]): one static method per version, which takes what a call of
-/// the helper leaves on the stack (the receiver, then the arguments), reads the footprint's fields from that
-/// receiver as its own version lays them out, and calls the one lifted helper both versions share.
+/// A summary's adapters at the call site ([`adapters`]): one static method per version, each in a class of its own in
+/// its version's package, which takes what a call of the helper leaves on the stack (the receiver, then the
+/// arguments), reads the footprint's fields from that receiver as its own version lays them out, and calls the one
+/// lifted helper both versions share.
 #[derive(Debug, Clone)]
 pub struct Adapters {
-    /// The previous version's adapter: `quotes/QuoteService$Footprint$fee$Call`, `before`,
+    /// The previous version's adapter: `before/quotes/QuoteService$Footprint$fee$Call`, `before`,
     /// `(Lbefore/quotes/QuoteService;I)J`.
     pub before: MemberRef,
-    /// The new version's: `after`, `(Lquotes/QuoteService;I)J`.
+    /// The new version's: `quotes/QuoteService$Footprint$fee$Call`, `after`, `(Lquotes/QuoteService;I)J`.
     pub after: MemberRef,
-    /// Their class file.
-    pub bytes: Vec<u8>,
+    /// Their class files: the previous version's, and the new one's.
+    pub before_bytes: Vec<u8>,
+    pub after_bytes: Vec<u8>,
 }
 
-/// The adapters of the helper `helper` (as the new version declares it, with `params` and `result`) lifted over
-/// `fields` into `lifted`, the new version's lifted helper; the previous version's classes are relocated under
-/// `prefix` (`before`), its receiver class and the classes declaring its fields included. Each adapter loads the
+/// The adapters of the helper `helper` (as the new version declares it, with `params` and `result`; `private` in the
+/// previous version and the new one, or not)
+/// lifted over `fields` into `lifted`, the new version's lifted helper; the previous version's classes are relocated
+/// under `prefix` (`before`), its receiver class and the classes declaring its fields included. Each adapter loads the
 /// arguments, then each field of `fields` from the actual receiver (its first read throws the `NullPointerException`
 /// a call on `null` throws, before anything else runs, as the call would), and returns the lifted helper's outcome.
 /// So a call through an adapter reads the receiver's state at that call, never an earlier one. `fields` must not be
 /// empty: with nothing read, the receiver's null check would be left out.
-pub fn adapters(helper: &MemberRef, params: &[Type], result: &Type, fields: &[FieldRead], lifted: &MemberRef, prefix: &str) -> Result<Adapters, Unsupported> {
+///
+/// **An array field** is in the summary's domain only when it holds an array, of at most `bound` elements: the lifted
+/// proof's harness makes no `null` array and none longer. So each adapter first checks every array field of the
+/// actual receiver, and where one is `null` or longer it calls its own version's helper on the receiver, its body as
+/// written, instead of the lifted helper: the summary is applied only at a call whose state its domain covers, and
+/// elsewhere the body stays. (The adapters are the checker's classes, never run on a JVM for a witness: a private
+/// helper is called by `invokespecial` from the adapter's class as the checker resolves it.)
+pub fn adapters(helper: &MemberRef, params: &[Type], result: &Type, fields: &[FieldRead], lifted: &MemberRef, prefix: &str, bound: u32, private: (bool, bool)) -> Result<Adapters, Unsupported> {
     if fields.is_empty() {
         return Err(refused(helper, "it reads no field of its receiver, so an adapter would leave out the null check of its call"));
     }
-    let class = format!("{}{LIFTED}{}{CALL}", helper.owner, helper.name);
-    let mut w = ClassWriter::new(&class);
     let ret = kind_of(result);
-    let method = |w: &mut ClassWriter, name: &str, owner: &dyn Fn(&str) -> String| -> MemberRef {
+    // In its version's package, so that it reads a package-private field, and calls a package-private helper outside
+    // the domain, as a class of that package may.
+    let method = |name: &str, owner: &dyn Fn(&str) -> String, private: bool| -> (MemberRef, Vec<u8>) {
+        let class = owner(&format!("{}{LIFTED}{}{CALL}", helper.owner, helper.name));
+        let mut w = ClassWriter::new(&class);
         let descriptor = MethodDescriptor::new(std::iter::once(Type::Object(owner(&helper.owner))).chain(params.iter().cloned()).collect(), result.clone()).descriptor();
         let mut b = CodeBuilder::new();
+        let body = b.label();
+        let arrays: Vec<&FieldRead> = fields.iter().filter(|f| f.is_array()).collect();
+        for f in &arrays {
+            let index = w.pool.field_ref(&owner(&f.declared_by), &f.name, &f.descriptor);
+            b.load(Kind::Ref, 0);
+            b.op_u16(0xb4, index); // getfield
+            b.if_null(body);
+            b.load(Kind::Ref, 0);
+            b.op_u16(0xb4, index);
+            b.op(0xbe); // arraylength
+            let limit = w.pool.integer(i32::try_from(bound).unwrap_or(i32::MAX));
+            b.ldc(limit);
+            b.if_icmp(crate::classfile::Cond::Gt, body);
+        }
         let mut slot = 1u16;
         for p in params {
             b.load(kind_of(p), slot);
@@ -491,14 +779,27 @@ pub fn adapters(helper: &MemberRef, params: &[Type], result: &Type, fields: &[Fi
         let index = w.pool.method_ref(&lifted.owner, &lifted.name, &lifted.descriptor);
         b.op_u16(0xb8, index); // invokestatic
         b.return_(Some(ret));
-        b.max_stack = (stack + 1).max(result.slots());
+        if !arrays.is_empty() {
+            // Outside the domain: the version's own helper, on the receiver, as the call was.
+            b.bind(body);
+            b.load(Kind::Ref, 0);
+            let mut s = 1u16;
+            for p in params {
+                b.load(kind_of(p), s);
+                s += p.slots();
+            }
+            let index = w.pool.method_ref(&owner(&helper.owner), &helper.name, &helper.descriptor);
+            b.op_u16(if private { 0xb7 } else { 0xb6 }, index); // invokespecial, invokevirtual
+            b.return_(Some(ret));
+        }
+        b.max_stack = (stack + 1).max(result.slots()).max(2).max(slot);
         b.max_locals = slot;
         w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: name.to_string(), descriptor: descriptor.clone(), code: Some(b) });
-        MemberRef::new(&class, name, &descriptor)
+        (MemberRef::new(&class, name, &descriptor), w.to_bytes())
     };
-    let before = method(&mut w, "before", &|c: &str| format!("{prefix}/{c}"));
-    let after = method(&mut w, "after", &|c: &str| c.to_string());
-    Ok(Adapters { before, after, bytes: w.to_bytes() })
+    let (before, before_bytes) = method("before", &|c: &str| format!("{prefix}/{c}"), private.0);
+    let (after, after_bytes) = method("after", &|c: &str| c.to_string(), private.1);
+    Ok(Adapters { before, after, before_bytes, after_bytes })
 }
 
 /// Whether `method`'s own code calls `callee` (a static method, as declared or as named).
