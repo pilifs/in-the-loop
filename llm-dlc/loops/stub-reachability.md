@@ -147,6 +147,28 @@ Settled by the user on 2026-11-07:
     - The probe goes immediately before each call site of the stub, in every class the listing shows calling it
       (`redirect_calls_directory` over the class path). A stub leaves the gaps only when every one of its probes holds.
   - Next: step 3, the probe in `jbmc_gaps.rs` after `symbolic`, with its reproducer first.
+- **Step 3: the probe is the preflight's third step.** After `symbolic`, the stubs it still enters are probed in one
+  run (`probe`, `place`, `probe_command`, `probed`):
+  - Each call site (the listing's `bytecode-index`) is rewritten to a method `p<k>` of `jvmcontract.StubProbe`. It
+    fails an assertion behind `CProver.nondetBoolean()`, and otherwise makes the call. The rewrite uses a new
+    `shared::redirect_calls_at`, which also passes where the call site is.
+  - A stub is left out (`Found::solved`, and also in `Found::unreached`) only when every one of its probes holds and
+    every unwinding assertion holds.
+  - It stays a gap when the run is out of time, has no verdict or can't be read. It also stays one when a call site
+    has no index, the instruction there doesn't call the stub, or the caller has no class file.
+  - `Preflight::probes` records the run, and the note names the reason.
+  - The reproducers:
+    - unit tests on step 2's recorded case output, and on its control and failure variants;
+    - a placement test with two stubs in sequence;
+    - a live test, `a_stub_behind_a_condition_only_the_solver_decides_is_no_gap`, on the new `P.sequenced`. Two
+      stubs are in sequence, and a third sits behind `n * n == 7`. With the step reduced to a no-op, the old
+      behaviour, it fails with the third a gap; with it, it passes. Its JBMC output shows the second stub's probe
+      failing past the first's, and confirms step 2's remembered lowering
+      (`aborting path on assume(false)` in `StubProbe.p0`).
+  - The module doc, `lib/README.md`'s gap section and `Preflight::paths`' doc are updated. The unit suite (215) passes.
+  - Next: step 4. Resubmit VF-015's job with the title naming "closes VF-015 when it passes". Submit the guard job:
+    the gap tests in `lib/tests/integration.rs` (`jbmc_own_approximations_are_gaps_in_the_same_modes`, the advised and
+    contract ones), and the conformance corpus under `--engine jbmc`.
 - Status: working
 
 ## Loop settings

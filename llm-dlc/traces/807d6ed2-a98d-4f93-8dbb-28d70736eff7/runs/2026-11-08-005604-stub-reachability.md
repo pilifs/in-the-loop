@@ -12,3 +12,5 @@ After each commit the session decides whether to go on:
 
 ## Commits
 
+- cycle 1, 2026-11-08 00:57:50, `mwzqmlswqxyq`: Stub reachability, step 2: the probe at the call site is chosen, since JBMC 6.11 has no --cover
+  - decided to continue: This run has made one commit (`mwzqmlsw`), which settled step 2: the probe at the call site is correct on both the case and the control, and cheaper than the proof, so the `blocked:` condition isn't met. Step 4's criterion is still far off: step 3 and VF-015's resubmitted job are both outstanding, and nothing needs the user. Step 3 is code and unit tests in `jbmc_gaps.rs` that can run inline without waiting on any job, so the next cycle has real work to do.

@@ -805,6 +805,13 @@ pub enum Invoke {
 /// code's offsets are unchanged. The class is no longer one a verifier accepts when a constructor's receiver,
 /// still uninitialized, is passed on; JBMC, the one checker that runs such classes, verifies nothing.
 pub fn redirect_calls(bytes: &[u8], lookup: &dyn Fn(Invoke, &MemberRef) -> Option<MemberRef>) -> Result<Option<Vec<u8>>, Error> {
+    redirect_calls_at(bytes, &|_, _, invoke, m| lookup(invoke, m))
+}
+
+/// [`redirect_calls`], for a `lookup` that also sees where the call site is: the method it is in, and the
+/// instruction's place in that method's code, counted from 0 (how JBMC's goto listing numbers it as its
+/// `bytecode-index`).
+pub fn redirect_calls_at(bytes: &[u8], lookup: &dyn Fn(&crate::classfile::Method, u32, Invoke, &MemberRef) -> Option<MemberRef>) -> Result<Option<Vec<u8>>, Error> {
     let class = ClassFile::parse(bytes)?;
     let (pool_end, mut count) = pool_extent(bytes)?;
     let code_offsets = code_offsets(bytes, &class.pool, pool_end)?;
@@ -824,7 +831,7 @@ pub fn redirect_calls(bytes: &[u8], lookup: &dyn Fn(Invoke, &MemberRef) -> Optio
     };
     for (method, offset) in class.methods.iter().zip(&code_offsets) {
         let (Some(code), Some(offset)) = (&method.code, offset) else { continue };
-        for (pc, insn) in code.instructions()? {
+        for (place, (pc, insn)) in code.instructions()?.into_iter().enumerate() {
             let (invoke, i) = match insn {
                 Insn::InvokeStatic(i) => (Invoke::Static, i),
                 Insn::InvokeSpecial(i) => (Invoke::Special, i),
@@ -833,7 +840,7 @@ pub fn redirect_calls(bytes: &[u8], lookup: &dyn Fn(Invoke, &MemberRef) -> Optio
                 _ => continue,
             };
             let Ok(callee) = class.pool.member(i) else { continue };
-            let Some(target) = lookup(invoke, &callee) else { continue };
+            let Some(target) = lookup(method, place as u32, invoke, &callee) else { continue };
             let key = (target.owner.clone(), target.name.clone(), target.descriptor.clone());
             let index = match refs.get(&key) {
                 Some(index) => *index,

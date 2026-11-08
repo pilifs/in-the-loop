@@ -17,7 +17,13 @@
 //! instructions JBMC made no `lambda_synthetic_class$` for is the zero fallback, and a function reached that
 //! synchronizes is a `monitor` gap. The call graph takes every branch, so a stub it reaches may be on no path: when
 //! it reaches one, the preflight runs JBMC's symbolic execution of the proof too ([`symbolic_command`]), which follows
-//! the paths the bounds allow, and a stub it never enters is no gap ([`entered`]). Two more kinds of stub are not gaps:
+//! the paths the bounds allow, and a stub it never enters is no gap ([`entered`]). Symbolic execution drops a branch
+//! only when it simplifies the condition to false, so it still enters a stub behind a condition only a solver decides
+//! (one an `--assume` makes false). For those, the preflight runs the proof once more, with a probe before each call
+//! site of each ([`probe`]): a method of its own that, on a branch of its own, fails an assertion, and otherwise makes
+//! the call, so no path is cut. A stub whose every probe holds, in a run whose unwinding assertions all hold, is on no
+//! path within the bounds and assumptions, and is no gap either; a run that cannot tell (out of time, no verdict, a
+//! call site no probe can be placed at) leaves the stubs gaps. Two more kinds of stub are not gaps:
 //!
 //! - calls JBMC's stub reproduces exactly, as the own checker's [`gaps::exact_jdk_call`] says, and a JDK
 //!   constructor whose bytecode only calls such a constructor of its superclass (`Number.<init>()`);
@@ -57,6 +63,9 @@ pub struct Function {
     /// Its instructions' location numbers, unique in the program, each with the text of its comment after the number
     /// (`file F line L function G bytecode-index K`, or `no location`): how JBMC's symbolic execution names its steps.
     pub locations: BTreeMap<u32, String>,
+    /// The functions it calls at an instruction the listing gives no bytecode index, where no probe can be placed
+    /// ([`probe`]).
+    pub unplaced: BTreeSet<String>,
 }
 
 /// JBMC's goto program as `--show-goto-functions` prints it: each function under its id (`java::pkg.C.m:(I)V`).
@@ -69,8 +78,9 @@ pub struct Program {
 /// at a line of `^`; within it, a comment `// N file F line L function G bytecode-index K` says where the next
 /// instructions come from.
 pub fn parse_goto(text: &str) -> Program {
-    let mut raw: Vec<(String, Vec<(String, Option<u16>)>, Function)> = Vec::new();
-    let mut current: Option<(String, Vec<(String, Option<u16>)>, Function)> = None;
+    type Calls = Vec<(String, Option<u16>, bool)>;
+    let mut raw: Vec<(String, Calls, Function)> = Vec::new();
+    let mut current: Option<(String, Calls, Function)> = None;
     let (mut bci, mut line): (Option<u32>, Option<u16>) = (None, None);
     for l in text.lines() {
         if l.starts_with('^') {
@@ -105,7 +115,7 @@ pub fn parse_goto(text: &str) -> Program {
         if let Some(callee) = insn.strip_prefix("CALL ") {
             // `CALL lhs := f(args)` in some versions, `CALL f(args)` in 6.11.
             let callee = callee.split_once(" := ").map(|(_, f)| f).unwrap_or(callee);
-            calls.push((callee.to_string(), line));
+            calls.push((callee.to_string(), line, bci.is_some()));
         }
         if let Some(k) = bci {
             let entry = function.at.entry(k).or_default();
@@ -117,16 +127,22 @@ pub fn parse_goto(text: &str) -> Program {
     let ids: BTreeSet<String> = raw.iter().map(|(id, _, _)| id.clone()).collect();
     let mut program = Program::default();
     for (id, calls, mut f) in raw {
-        for (text, line) in calls {
-            // The callee is the longest function id the call's text starts with, followed by its arguments.
-            let callee = ids.iter().filter(|c| text.starts_with(c.as_str()) && text[c.len()..].starts_with('(')).max_by_key(|c| c.len());
-            if let Some(c) = callee {
+        for (text, line, placed) in calls {
+            if let Some(c) = callee(&ids, &text) {
                 f.calls.entry(c.clone()).or_insert(line);
+                if !placed {
+                    f.unplaced.insert(c.clone());
+                }
             }
         }
         program.functions.insert(id, f);
     }
     program
+}
+
+/// The callee of a call's text (`f(args)`): the longest function id it starts with, followed by its arguments.
+fn callee<'a>(ids: &'a BTreeSet<String>, text: &str) -> Option<&'a String> {
+    ids.iter().filter(|c| text.starts_with(c.as_str()) && text[c.len()..].starts_with('(')).max_by_key(|c| c.len())
 }
 
 /// The value after `word ` in a goto comment: `line 5` gives `5`.
@@ -221,9 +237,13 @@ pub struct Found {
     pub exact: BTreeMap<String, usize>,
     /// Where JBMC runs the bytecode otherwise than the JVM, whatever is on its class path ([`Defect`]).
     pub defects: Vec<Defect>,
-    /// The stubs the call graph reaches but JBMC's symbolic execution of the proof never enters, as calls: on no
-    /// path within the proof's bounds, so not gaps ([`entered`]).
+    /// The stubs the call graph reaches but no path within the proof's bounds and assumptions enters, as calls, so
+    /// not gaps: those JBMC's symbolic execution of the proof never enters ([`entered`]), and those of
+    /// [`Found::solved`].
     pub unreached: Vec<String>,
+    /// Of [`Found::unreached`], the stubs JBMC's symbolic execution enters but its solver shows no path reaches, as
+    /// calls: a probe at each of their call sites held ([`probe`]).
+    pub solved: Vec<String>,
 }
 
 /// A place where JBMC 6.11.0 runs a method's bytecode otherwise than the JVM: not an approximation of a call it has
@@ -711,12 +731,13 @@ fn throwing_initializers(program: &Program, cp: &ClassPath, harness: &str, tells
 /// execution of the proof enters ([`entered`]), a stub it does not enter is no gap: the call graph reaches it, but no
 /// path within the bounds does. The call sites JBMC does not link, the monitors and the defects are the call graph's.
 pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>, entered: Option<&BTreeSet<String>>) -> Result<Found, Error> {
-    find_told(program, class, method, jbmc_cp, jdk, entered, true)
+    find_told(program, class, method, jbmc_cp, jdk, entered, &BTreeSet::new(), true)
 }
 
-/// [`find`], for a harness whose assertion tells one exception's class from another where `tells`
-/// ([`JbmcRun::tells_exceptions`]).
-fn find_told(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>, entered: Option<&BTreeSet<String>>, tells: bool) -> Result<Found, Error> {
+/// [`find`], with the stubs JBMC's solver shows no path reaches, by function id (`solved`, from [`probe`]), and for
+/// a harness whose assertion tells one exception's class from another where `tells` ([`JbmcRun::tells_exceptions`]).
+#[allow(clippy::too_many_arguments)]
+fn find_told(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>, entered: Option<&BTreeSet<String>>, solved: &BTreeSet<String>, tells: bool) -> Result<Found, Error> {
     let prefix = format!("java::{}.{method}:", class.replace('/', "."));
     let roots: Vec<&String> = program.functions.keys().filter(|id| id.starts_with(&prefix)).collect();
     if roots.is_empty() {
@@ -774,6 +795,10 @@ fn find_told(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, 
             }
             Body::Exact => *found.exact.entry(gaps_call(&owner, &name, &descriptor)).or_default() += 1,
             Body::Stub(_) if entered.is_some_and(|e| !e.contains(id)) => found.unreached.push(gaps_call(&owner, &name, &descriptor)),
+            Body::Stub(_) if solved.contains(id) => {
+                found.unreached.push(gaps_call(&owner, &name, &descriptor));
+                found.solved.push(gaps_call(&owner, &name, &descriptor));
+            }
             Body::Stub(kind) => {
                 found.gaps.entry(Gap { kind, owner, name, descriptor }).or_default().insert(site(caller));
             }
@@ -1048,6 +1073,262 @@ fn symbolic(run: &JbmcRun, program: &Program, out: &Path, budget: Duration) -> R
     read
 }
 
+/// The class of the probes the preflight's third step places ([`probe`]).
+pub const PROBES: &str = "jvmcontract/StubProbe";
+
+/// The probes placed for a probe run: for each stub probed, by function id, the numbers of the probes at its call
+/// sites (probe `k` is the method `p<k>` of [`PROBES`], its assertion a property of its own).
+#[derive(Debug, Default)]
+struct Placed {
+    stubs: BTreeMap<String, BTreeSet<usize>>,
+    /// The probes written, each with the call it makes.
+    probes: usize,
+}
+
+/// Places a probe at every call site of each stub of `stubs` (function ids) in JBMC's `program`: the class of each
+/// function that calls it, as JBMC's class path `cp` has it, is written into `dir` with the call redirected to a
+/// method of [`PROBES`] that takes what the call left on the stack. On a branch of its own, chosen by
+/// `CProver.nondetBoolean()`, the method fails an assertion of its own (`throw new AssertionError()`, which JBMC takes
+/// as an assertion, and as the end of that branch); on the other it makes the call, and returns what the call
+/// returns, so every path of the proof goes on as before and a stub reached only after another's probe is still
+/// reached. A stub is probed only when every call site of it is: a call the listing gives no bytecode index, an
+/// instruction there that is not a call of it, a caller that is no Java method, or one whose class file JBMC's class
+/// path lacks, leaves it out.
+fn place(program: &Program, cp: &ClassPath, stubs: &BTreeSet<String>, dir: &Path) -> Result<Placed, Error> {
+    use crate::classfile::writer::ClassWriter;
+    use crate::shared::Invoke;
+    // The call sites of each class, by method and instruction, with the stubs each calls.
+    type Sites = BTreeMap<(String, String), BTreeMap<u32, BTreeSet<String>>>;
+    let mut sites: BTreeMap<String, Sites> = BTreeMap::new();
+    let mut unprobed: BTreeSet<String> = BTreeSet::new();
+    let ids: BTreeSet<String> = program.functions.keys().cloned().collect();
+    for (caller, f) in &program.functions {
+        let called: Vec<&String> = f.calls.keys().filter(|c| stubs.contains(*c)).collect();
+        if called.is_empty() {
+            continue;
+        }
+        let Some((owner, name, descriptor)) = method_of(caller) else {
+            unprobed.extend(called.into_iter().cloned());
+            continue;
+        };
+        let mut placed: BTreeSet<&String> = BTreeSet::new();
+        for (index, text) in &f.at {
+            for insn in text.lines() {
+                let Some(call) = insn.strip_prefix("CALL ") else { continue };
+                let call = call.split_once(" := ").map(|(_, c)| c).unwrap_or(call);
+                if let Some(stub) = callee(&ids, call).filter(|c| stubs.contains(*c)) {
+                    sites.entry(owner.clone()).or_default().entry((name.clone(), descriptor.clone())).or_default().entry(*index).or_default().insert(stub.clone());
+                    placed.insert(stub);
+                }
+            }
+        }
+        unprobed.extend(called.into_iter().filter(|c| f.unplaced.contains(*c) || !placed.contains(c)).cloned());
+    }
+    if dir.exists() {
+        std::fs::remove_dir_all(dir)?;
+    }
+    std::fs::create_dir_all(dir)?;
+    let mut w = ClassWriter::new(PROBES);
+    w.source_file = Some("StubProbe.java".into());
+    let mut out = Placed::default();
+    for (owner, methods) in &sites {
+        let Some((_, bytes)) = cp.resources(&format!("{owner}.class"))?.into_iter().next() else {
+            unprobed.extend(methods.values().flat_map(|m| m.values().flatten().cloned()));
+            continue;
+        };
+        // Each site rewritten, with its probe's number.
+        let done: std::cell::RefCell<BTreeMap<(String, String, u32), usize>> = Default::default();
+        let failed: std::cell::RefCell<Option<Error>> = Default::default();
+        let writer = std::cell::RefCell::new(&mut w);
+        let next = std::cell::Cell::new(out.probes);
+        let lookup = |method: &crate::classfile::Method, place: u32, invoke: Invoke, m: &crate::classfile::MemberRef| -> Option<crate::classfile::MemberRef> {
+            let called = methods.get(&(method.name.clone(), method.descriptor.clone()))?.get(&place)?;
+            // The instruction there calls the stub: its method, or one of its name and descriptor JBMC dispatches to it.
+            let calls = |stub: &String| method_of(stub).is_some_and(|(owner, name, descriptor)| name == m.name && descriptor == m.descriptor && (owner == m.owner || matches!(invoke, Invoke::Virtual | Invoke::Interface)));
+            if !called.iter().any(calls) {
+                return None;
+            }
+            let k = next.get();
+            match forwarder(&mut writer.borrow_mut(), k, invoke, m) {
+                Ok(descriptor) => {
+                    next.set(k + 1);
+                    done.borrow_mut().insert((method.name.clone(), method.descriptor.clone(), place), k);
+                    Some(crate::classfile::MemberRef::new(PROBES, &format!("p{k}"), &descriptor))
+                }
+                Err(e) => {
+                    failed.borrow_mut().get_or_insert(e);
+                    None
+                }
+            }
+        };
+        let patched = crate::shared::redirect_calls_at(&bytes, &lookup)?;
+        if let Some(e) = failed.into_inner() {
+            return Err(e);
+        }
+        out.probes = next.get();
+        let done = done.into_inner();
+        for ((name, descriptor), at) in methods {
+            for (place, called) in at {
+                match done.get(&(name.clone(), descriptor.clone(), *place)) {
+                    Some(k) => called.iter().for_each(|stub| {
+                        out.stubs.entry(stub.clone()).or_default().insert(*k);
+                    }),
+                    None => unprobed.extend(called.iter().cloned()),
+                }
+            }
+        }
+        if let Some(patched) = patched {
+            let target = dir.join(format!("{owner}.class"));
+            std::fs::create_dir_all(target.parent().expect("a class file's directory"))?;
+            std::fs::write(target, patched)?;
+        }
+    }
+    out.stubs.retain(|stub, _| !unprobed.contains(stub));
+    if out.probes > 0 {
+        let target = dir.join(format!("{PROBES}.class"));
+        std::fs::create_dir_all(target.parent().expect("a package"))?;
+        std::fs::write(target, w.to_bytes())?;
+    }
+    Ok(out)
+}
+
+/// Adds probe `k` to `w`, for a call site that invokes `m` so, and returns its descriptor: the call's, with the
+/// receiver first for any call but a static one.
+fn forwarder(w: &mut crate::classfile::writer::ClassWriter, k: usize, invoke: crate::shared::Invoke, m: &crate::classfile::MemberRef) -> Result<String, Error> {
+    use crate::classfile::writer::{CodeBuilder, MethodWriter};
+    use crate::classfile::{flags, Cond, Kind};
+    use crate::shared::Invoke;
+    let kind = |t: &Type| match t {
+        Type::Long => Kind::Long,
+        Type::Float => Kind::Float,
+        Type::Double => Kind::Double,
+        Type::Object(_) | Type::Array(_) => Kind::Ref,
+        _ => Kind::Int,
+    };
+    let d = MethodDescriptor::parse(&m.descriptor).map_err(|e| Error::new(format!("{}.{}{}: {e}", m.owner, m.name, m.descriptor)))?;
+    let receiver = match invoke {
+        Invoke::Static => String::new(),
+        _ if m.owner.starts_with('[') => m.owner.clone(),
+        _ => format!("L{};", m.owner),
+    };
+    let ret = &m.descriptor[m.descriptor.rfind(')').map(|i| i + 1).unwrap_or(m.descriptor.len())..];
+    let descriptor = format!("({receiver}{}){ret}", d.params.iter().map(Type::descriptor).collect::<String>());
+    let mut code = CodeBuilder::new();
+    let nondet = w.pool.method_ref("org/cprover/CProver", "nondetBoolean", "()Z");
+    code.op_u16(0xb8, nondet); // invokestatic
+    let call = code.label();
+    code.if_zero(Cond::Eq, call);
+    let error = w.pool.class("java/lang/AssertionError");
+    let init = w.pool.method_ref("java/lang/AssertionError", "<init>", "()V");
+    code.op_u16(0xbb, error); // new
+    code.op(0x59); // dup
+    code.op_u16(0xb7, init); // invokespecial
+    code.op(0xbf); // athrow
+    code.bind(call);
+    let mut slot = 0u16;
+    if invoke != Invoke::Static {
+        code.load(Kind::Ref, 0);
+        slot = 1;
+    }
+    for t in &d.params {
+        code.load(kind(t), slot);
+        slot += t.slots();
+    }
+    let target = if m.interface { w.pool.interface_method_ref(&m.owner, &m.name, &m.descriptor) } else { w.pool.method_ref(&m.owner, &m.name, &m.descriptor) };
+    match invoke {
+        Invoke::Static => code.op_u16(0xb8, target),
+        Invoke::Special => code.op_u16(0xb7, target),
+        Invoke::Virtual => code.op_u16(0xb6, target),
+        Invoke::Interface => {
+            code.op_u16(0xb9, target);
+            code.op(slot as u8);
+            code.op(0);
+        }
+    }
+    code.return_(if d.ret == Type::Void { None } else { Some(kind(&d.ret)) });
+    code.max_locals = slot;
+    code.max_stack = slot.max(2) + 2;
+    w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: format!("p{k}"), descriptor: descriptor.clone(), code: Some(code) });
+    Ok(descriptor)
+}
+
+/// The command of the preflight's third step: the proof's, with its bounds and solver, over every input, on its
+/// class path behind the probes' classes in `dir` ([`place`]). It solves, as the proof does, and prints each
+/// property's outcome without a trace.
+pub fn probe_command(run: &JbmcRun, dir: &Path) -> Vec<String> {
+    let probed = JbmcRun { classpath: std::iter::once(dir.to_path_buf()).chain(run.classpath.iter().cloned()).collect(), ..run.clone() };
+    let unwind = run.unwind.to_string();
+    let mut cmd = program_command(&probed, &["--unwind", &unwind, "--unwinding-assertions"]);
+    if let Some(solver) = &run.sat_solver {
+        cmd.extend(["--sat-solver".into(), solver.clone()]);
+    }
+    cmd
+}
+
+/// The stubs of `placed` the probe run's `output` shows no path within the bounds reaches, by function id: those all
+/// of whose probes' assertions hold. The run tells only when it finished with a verdict and every unwinding
+/// assertion held, so that no path was cut at the bound; an `Err` says why it cannot tell. A probe whose outcome the
+/// output lacks does not hold.
+fn probed(output: &str, placed: &Placed) -> Result<BTreeSet<String>, String> {
+    if let Some(line) = output.lines().find(|l| l.contains("did not finish within") || l.contains(crate::tla::KILLED_BY_SIGNAL)) {
+        return Err(line.trim_start_matches("Error: ").trim().to_string());
+    }
+    if !output.lines().any(|l| l == "VERIFICATION SUCCESSFUL" || l == "VERIFICATION FAILED") {
+        return Err("it gave no verdict".into());
+    }
+    // Each property's outcome, by id: `[id] description: SUCCESS`.
+    let mut holds: BTreeMap<&str, bool> = BTreeMap::new();
+    for line in output.lines() {
+        let Some(rest) = line.strip_prefix('[') else { continue };
+        let Some((id, rest)) = rest.split_once("] ") else { continue };
+        let Some((description, outcome)) = rest.rsplit_once(": ") else { continue };
+        let held = outcome == "SUCCESS";
+        if description.contains("unwinding assertion") && !held {
+            return Err(format!("its unwinding assertion {id} is {outcome}: paths past the bound were cut"));
+        }
+        holds.insert(id, held);
+    }
+    let held = |k: usize| {
+        let prefix = format!("java::{}.p{k}:", PROBES.replace('/', "."));
+        let mine: Vec<bool> = holds.iter().filter(|(id, _)| id.starts_with(&prefix) && id.contains(".assertion.")).map(|(_, h)| *h).collect();
+        !mine.is_empty() && mine.iter().all(|h| *h)
+    };
+    Ok(placed.stubs.iter().filter(|(_, probes)| !probes.is_empty() && probes.iter().all(|k| held(*k))).map(|(stub, _)| stub.clone()).collect())
+}
+
+/// The preflight's third step, for the stubs JBMC's symbolic execution still enters (`stubs`, function ids): the
+/// proof with a probe at each of their call sites ([`place`], [`probe_command`]), within `budget`, its output in
+/// `run`'s directory. `None` when no stub could be probed; otherwise the stubs the solver shows no path reaches
+/// ([`probed`]), or why it cannot tell.
+fn probe(run: &JbmcRun, program: &Program, cp: &ClassPath, stubs: &BTreeSet<String>, budget: Duration) -> Option<Result<BTreeSet<String>, String>> {
+    let dir = run.log.with_file_name("jbmc-probes");
+    let placed = match place(program, cp, stubs, &dir) {
+        Ok(placed) if placed.stubs.is_empty() => return None,
+        Ok(placed) => placed,
+        Err(e) => return Some(Err(format!("its probes cannot be placed: {e}"))),
+    };
+    if budget < Duration::from_secs(1) {
+        return Some(Err("the listing and the symbolic execution left it no time".into()));
+    }
+    let started = std::time::Instant::now();
+    let cwd = run.log.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
+    let memory = crate::jbmc::memory_limit_mb();
+    let mut output = match crate::tla::run_with_timeout(&crate::jbmc::limited(probe_command(run, &dir), memory), &cwd, budget) {
+        Ok(output) => output,
+        Err(e) => return Some(Err(format!("it cannot be run: {e}"))),
+    };
+    if run.sat_solver.is_some() && output.contains("unknown solver '") {
+        // This JBMC was built without the solver asked for: its own default will do, within what is left.
+        let fallback = JbmcRun { sat_solver: None, ..run.clone() };
+        output = match crate::tla::run_with_timeout(&crate::jbmc::limited(probe_command(&fallback, &dir), memory), &cwd, budget.saturating_sub(started.elapsed())) {
+            Ok(output) => output,
+            Err(e) => return Some(Err(format!("it cannot be run: {e}"))),
+        };
+    }
+    let _ = std::fs::write(run.log.with_file_name("jbmc-probes.txt"), &output);
+    Some(probed(&output, &placed))
+}
+
 /// What the preflight of a JBMC proof found, or why it could not tell.
 #[derive(Debug, Clone)]
 pub struct Preflight {
@@ -1058,8 +1339,14 @@ pub struct Preflight {
     pub seconds: f64,
     /// When the call graph reaches a stub, what JBMC's symbolic execution of the proof told of it: `Ok` with the
     /// seconds it took, the stubs it never enters then left out of the gaps ([`Found::unreached`]), or `Err` with why
-    /// it could not tell, the gaps then the call graph's.
+    /// it could not tell, the gaps then the call graph's. Symbolic execution drops a branch only when it simplifies
+    /// its condition to false, so a stub behind a condition the solver would decide (an `--assume`) is entered:
+    /// [`Preflight::probes`] says more of those.
     pub paths: Option<Result<f64, String>>,
+    /// When the symbolic execution still enters a stub that a probe can be placed at every call site of, what the
+    /// proof with those probes told ([`probe`]): `Ok` with the seconds it took, each stub whose every probe held then
+    /// left out of the gaps ([`Found::solved`]), or `Err` with why it could not tell, the stubs then gaps.
+    pub probes: Option<Result<f64, String>>,
 }
 
 /// Runs the preflight for `run` (its log next to the run's), within `budget`.
@@ -1071,14 +1358,14 @@ fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error
     let log = run.log.with_file_name("jbmc-goto.txt");
     let started = std::time::Instant::now();
     if !crate::jbmc::available(&run.executable) {
-        return Ok(Preflight { found: None, problem: Some(format!("jbmc is not installed ({} not found)", run.executable)), log, seconds: 0.0, paths: None });
+        return Ok(Preflight { found: None, problem: Some(format!("jbmc is not installed ({} not found)", run.executable)), log, seconds: 0.0, paths: None, probes: None });
     }
     let cwd = run.log.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
     let output = crate::tla::run_with_timeout(&crate::jbmc::limited(command(run), crate::jbmc::memory_limit_mb()), &cwd, budget.min(Duration::from_secs(PREFLIGHT_SECONDS)))?;
     std::fs::write(&log, &output)?;
     let seconds = started.elapsed().as_secs_f64();
     if output.contains("did not finish within") {
-        return Ok(Preflight { found: None, problem: Some(format!("listing JBMC's program did not finish within {} s", crate::deadline::seconds(budget.min(Duration::from_secs(PREFLIGHT_SECONDS))))), log, seconds, paths: None });
+        return Ok(Preflight { found: None, problem: Some(format!("listing JBMC's program did not finish within {} s", crate::deadline::seconds(budget.min(Duration::from_secs(PREFLIGHT_SECONDS))))), log, seconds, paths: None, probes: None });
     }
     let mut cp = ClassPath::new().with_models(false).with_default_jdk();
     for entry in &run.classpath {
@@ -1088,25 +1375,49 @@ fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error
     }
     let program = parse_goto(&output);
     let jdk = gaps::jdk_release();
-    let mut found = match find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), None, run.tells_exceptions) {
+    let none = BTreeSet::new();
+    let mut found = match find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), None, &none, run.tells_exceptions) {
         Ok(found) => found,
-        Err(e) => return Ok(Preflight { found: None, problem: Some(e.to_string()), log, seconds, paths: None }),
+        Err(e) => return Ok(Preflight { found: None, problem: Some(e.to_string()), log, seconds, paths: None, probes: None }),
     };
     // The call graph takes every branch: a stub the program calls only where a condition the bounds decide is false
     // is reached there too. JBMC's symbolic execution of the proof says which it enters.
-    let mut paths = None;
-    if found.gaps.keys().any(|g| !matches!(g.kind, GapKind::Monitor | GapKind::InvokeDynamic)) {
-        let left = budget.min(Duration::from_secs(PREFLIGHT_SECONDS)).saturating_sub(started.elapsed());
+    let stub = |g: &Gap| !matches!(g.kind, GapKind::Monitor | GapKind::InvokeDynamic);
+    let cap = budget.min(Duration::from_secs(PREFLIGHT_SECONDS));
+    let (mut paths, mut probes) = (None, None);
+    if found.gaps.keys().any(stub) {
         let begun = std::time::Instant::now();
-        paths = Some(match symbolic(run, &program, &run.log.with_file_name("jbmc-symex.txt"), left) {
+        paths = Some(match symbolic(run, &program, &run.log.with_file_name("jbmc-symex.txt"), cap.saturating_sub(started.elapsed())) {
             Ok(entered) => {
-                found = find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), Some(&entered), run.tells_exceptions)?;
-                Ok(begun.elapsed().as_secs_f64())
+                found = find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), Some(&entered), &none, run.tells_exceptions)?;
+                let seconds = begun.elapsed().as_secs_f64();
+                // Symbolic execution keeps a branch whose condition only the solver decides: the proof with a probe
+                // at each call site of the stubs it still enters says which no path reaches.
+                let stubs: BTreeSet<String> = program
+                    .functions
+                    .keys()
+                    .filter(|id| method_of(id).is_some_and(|(owner, name, descriptor)| found.gaps.keys().any(|g| stub(g) && g.owner == owner && g.name == name && g.descriptor == descriptor)))
+                    .cloned()
+                    .collect();
+                if !stubs.is_empty() {
+                    let begun = std::time::Instant::now();
+                    probes = match probe(run, &program, &cp, &stubs, cap.saturating_sub(started.elapsed())) {
+                        Some(Ok(solved)) => {
+                            if !solved.is_empty() {
+                                found = find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), Some(&entered), &solved, run.tells_exceptions)?;
+                            }
+                            Some(Ok(begun.elapsed().as_secs_f64()))
+                        }
+                        Some(Err(why)) => Some(Err(why)),
+                        None => None,
+                    };
+                }
+                Ok(seconds)
             }
             Err(why) => Err(why),
         });
     }
-    Ok(Preflight { found: Some(found), problem: None, log, seconds: started.elapsed().as_secs_f64(), paths })
+    Ok(Preflight { found: Some(found), problem: None, log, seconds: started.elapsed().as_secs_f64(), paths, probes })
 }
 
 impl Preflight {
@@ -1125,20 +1436,38 @@ impl Preflight {
         match (&self.found, &self.problem) {
             (Some(f), _) => {
                 let mut out = String::new();
+                let never: Vec<&str> = f.unreached.iter().filter(|c| !f.solved.contains(c)).map(String::as_str).collect();
                 match &self.paths {
-                    Some(Ok(seconds)) if !f.unreached.is_empty() => {
-                        let n = f.unreached.len();
+                    Some(Ok(seconds)) if !never.is_empty() => {
+                        let n = never.len();
                         let _ = writeln!(
                             out,
                             "note: JBMC's call graph reaches {n} stub{} that its symbolic execution of the proof ({:.1} s, nothing solved) never enters, on no path within the bounds, so no gap{}: {}",
                             if n == 1 { "" } else { "s" },
                             seconds,
                             if n == 1 { "" } else { "s" },
-                            f.unreached.join(", ")
+                            never.join(", ")
                         );
                     }
                     Some(Err(why)) => {
                         let _ = writeln!(out, "note: which stubs JBMC's paths reach is not known, since its symbolic execution of the proof could not tell ({why}): the gaps are those of its call graph");
+                    }
+                    _ => {}
+                }
+                match &self.probes {
+                    Some(Ok(seconds)) if !f.solved.is_empty() => {
+                        let n = f.solved.len();
+                        let _ = writeln!(
+                            out,
+                            "note: JBMC's symbolic execution of the proof enters {n} stub{} that its solver shows no path within the bounds and assumptions reaches, by the proof with an assertion of its own before each call ({:.1} s, every one held, and every unwinding assertion), so no gap{}: {}",
+                            if n == 1 { "" } else { "s" },
+                            seconds,
+                            if n == 1 { "" } else { "s" },
+                            f.solved.join(", ")
+                        );
+                    }
+                    Some(Err(why)) => {
+                        let _ = writeln!(out, "note: whether a path reaches the stubs JBMC's symbolic execution enters is not known, since the proof with a probe at their calls could not tell ({why}): they stay gaps");
                     }
                     _ => {}
                 }
@@ -1491,7 +1820,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         for (method, class) in [("boomTwice", "Boom"), ("enumBroken", "Broken")] {
             let program = parse_goto(&std::fs::read_to_string(fixtures.join(format!("{method}-goto.txt"))).unwrap());
             for tells in [false, true] {
-                let found = find_told(&program, "PropertyHarness", "check", &cp, None, None, tells).unwrap();
+                let found = find_told(&program, "PropertyHarness", "check", &cp, None, None, &BTreeSet::new(), tells).unwrap();
                 let named: Vec<&Defect> = found.defects.iter().filter(|d| d.kind == "throwing-initializer").collect();
                 assert_eq!(named.iter().map(|d| d.site.as_str()).collect::<Vec<_>>(), [format!("conformance.Conformance${class}.<clinit>")], "{method} tells={tells}: {:?}", found.defects);
                 let what = &named[0].what;
@@ -1507,7 +1836,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     #[test]
     fn a_proof_through_a_defect_is_refused_under_every_mode_and_a_counterexample_is_left_to_the_replay() {
         let defect = Defect { kind: "return-past-handler", site: "p.D.returned:7".into(), what: "raises it after it leaves the try block".into() };
-        let pre = Preflight { found: Some(Found { defects: vec![defect], ..Found::default() }), problem: None, log: PathBuf::from("jbmc-goto.txt"), seconds: 0.0, paths: None };
+        let pre = Preflight { found: Some(Found { defects: vec![defect], ..Found::default() }), problem: None, log: PathBuf::from("jbmc-goto.txt"), seconds: 0.0, paths: None, probes: None };
         let result = |verdict: Verdict| crate::jbmc::JbmcResult {
             verdict,
             version: "6.11.0".into(),
@@ -1651,5 +1980,214 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         };
         assert_eq!(defects("later"), [("extra-initializer".to_string(), "p.D.later:27".to_string())]);
         assert_eq!(defects("apart"), []);
+    }
+
+    /// A listing of a class `S` whose `two` calls two stubs in sequence, at its second and fifth instructions, and
+    /// whose `three` calls one at an instruction that calls another method (its fifth) and one where the listing
+    /// gives no bytecode index.
+    const PROBED_GOTO: &str = r#"S.two(int) /* java::S.two:(I)Ljava/lang/String; */
+        // 1 file S.java line 3 function java::S.two:(I)Ljava/lang/String; bytecode-index 1
+        CALL java::java.lang.Integer.toHexString:(I)Ljava/lang/String;(arg0i)
+        // 2 file S.java line 4 function java::S.two:(I)Ljava/lang/String; bytecode-index 4
+     2: CALL java::java.lang.Integer.toOctalString:(I)Ljava/lang/String;(arg0i)
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S.three(int) /* java::S.three:(I)V */
+        // 3 file S.java line 7 function java::S.three:(I)V bytecode-index 4
+        CALL java::java.lang.Integer.toBinaryString:(I)Ljava/lang/String;(arg0i)
+        // 4 no location
+        CALL java::java.lang.Integer.toUnsignedString:(I)Ljava/lang/String;(arg0i)
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java.lang.Integer.toHexString(int) /* java::java.lang.Integer.toHexString:(I)Ljava/lang/String; */
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java.lang.Integer.toOctalString(int) /* java::java.lang.Integer.toOctalString:(I)Ljava/lang/String; */
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java.lang.Integer.toBinaryString(int) /* java::java.lang.Integer.toBinaryString:(I)Ljava/lang/String; */
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java.lang.Integer.toUnsignedString(int) /* java::java.lang.Integer.toUnsignedString:(I)Ljava/lang/String; */
+        END_FUNCTION
+"#;
+
+    /// `S` of [`PROBED_GOTO`], as bytecode.
+    fn probed_class() -> Vec<u8> {
+        use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+        use crate::classfile::{flags, Kind};
+        let mut w = ClassWriter::new("S");
+        let method = |w: &mut ClassWriter, name: &str, descriptor: &str, calls: &[&str], ret: Option<Kind>| {
+            let mut code = CodeBuilder::new();
+            for (k, call) in calls.iter().enumerate() {
+                let m = w.pool.method_ref("java/lang/Integer", call, "(I)Ljava/lang/String;");
+                code.load(Kind::Int, 0);
+                code.op_u16(0xb8, m);
+                if k + 1 < calls.len() || ret.is_none() {
+                    code.op(0x57); // pop
+                }
+            }
+            code.return_(ret);
+            code.max_stack = 1;
+            w.methods.push(MethodWriter { access: flags::STATIC, name: name.into(), descriptor: descriptor.into(), code: Some(code) });
+        };
+        method(&mut w, "two", "(I)Ljava/lang/String;", &["toHexString", "toOctalString"], Some(Kind::Ref));
+        method(&mut w, "three", "(I)V", &["toBinaryString", "toUnsignedString"], None);
+        w.to_bytes()
+    }
+
+    /// The probes of the preflight's third step: each call site of a stub goes to a method of its own that fails an
+    /// assertion on a branch of its own and makes the call on the other, so the second of two stubs in sequence is
+    /// still reached past the first's probe. A stub with a call site no probe can be placed at is not probed.
+    #[test]
+    fn a_probe_before_each_call_site_fails_on_a_branch_of_its_own_and_makes_the_call() {
+        let p = parse_goto(PROBED_GOTO);
+        assert_eq!(p.functions["java::S.three:(I)V"].unplaced.iter().collect::<Vec<_>>(), ["java::java.lang.Integer.toUnsignedString:(I)Ljava/lang/String;"]);
+        let classes = tempfile::tempdir().unwrap();
+        std::fs::write(classes.path().join("S.class"), probed_class()).unwrap();
+        let mut cp = ClassPath::new().with_models(false);
+        cp.add(classes.path()).unwrap();
+        let stubs: BTreeSet<String> = p.functions.keys().filter(|id| id.starts_with("java::java.lang.Integer.")).cloned().collect();
+        let dir = tempfile::tempdir().unwrap();
+        let placed = place(&p, &cp, &stubs, dir.path()).unwrap();
+        let hex = "java::java.lang.Integer.toHexString:(I)Ljava/lang/String;";
+        let octal = "java::java.lang.Integer.toOctalString:(I)Ljava/lang/String;";
+        assert_eq!(placed.stubs, BTreeMap::from([(hex.to_string(), BTreeSet::from([0])), (octal.to_string(), BTreeSet::from([1]))]));
+        assert_eq!(placed.probes, 2);
+
+        // The calls of `two` go to the probes, and `three`'s are as they were.
+        let s = crate::classfile::ClassFile::parse(&std::fs::read(dir.path().join("S.class")).unwrap()).unwrap();
+        let calls = |class: &crate::classfile::ClassFile, name: &str| -> Vec<String> {
+            let code = class.methods.iter().find(|m| m.name == name).and_then(|m| m.code.as_ref()).unwrap();
+            code.instructions().unwrap().into_iter().filter_map(|(_, insn)| match insn {
+                Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) => class.pool.member(i).ok().map(|m| format!("{}.{}", m.owner, m.name)),
+                Insn::New(_) => Some("new".into()),
+                Insn::AThrow => Some("athrow".into()),
+                Insn::If(..) => Some("if".into()),
+                _ => None,
+            }).collect()
+        };
+        assert_eq!(calls(&s, "two"), ["jvmcontract/StubProbe.p0", "jvmcontract/StubProbe.p1"]);
+        assert_eq!(calls(&s, "three"), ["java/lang/Integer.toBinaryString", "java/lang/Integer.toUnsignedString"]);
+        let probes = crate::classfile::ClassFile::parse(&std::fs::read(dir.path().join("jvmcontract/StubProbe.class")).unwrap()).unwrap();
+        assert_eq!(calls(&probes, "p1"), ["org/cprover/CProver.nondetBoolean", "if", "new", "java/lang/AssertionError.<init>", "athrow", "java/lang/Integer.toOctalString"]);
+        assert_eq!(probes.methods.iter().find(|m| m.name == "p1").map(|m| m.descriptor.as_str()), Some("(I)Ljava/lang/String;"));
+
+        // A probe run that shows the second unreached leaves out that one alone.
+        let output = "[java::jvmcontract.StubProbe.p0:(I)Ljava/lang/String;.assertion.1] assertion at function java::jvmcontract.StubProbe.p0:(I)Ljava/lang/String; bytecode-index 7: FAILURE\n[java::jvmcontract.StubProbe.p1:(I)Ljava/lang/String;.assertion.1] assertion at function java::jvmcontract.StubProbe.p1:(I)Ljava/lang/String; bytecode-index 7: SUCCESS\nVERIFICATION FAILED\n";
+        assert_eq!(probed(output, &placed).unwrap(), BTreeSet::from([octal.to_string()]));
+    }
+
+    /// The results of the probe run of step 2 of `llm-dlc/loops/stub-reachability.md` (job
+    /// `20261107-233000-stub-reachability-step-1-can-jbmc-s-solv`), on VF-015's proof of `Hex#toDigit` under
+    /// `--assume 'ch == 1632'`, with its probe, there `Reach.reach`, renamed to the preflight's.
+    const PROBED_CASE: &str = "\
+Runtime decision procedure: 0.0277424s
+
+** Results:
+function java::PropertyHarness.check:(CI)V
+[java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 93: SUCCESS
+[java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS
+
+function java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+[java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;.assertion.1] assertion at function java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; bytecode-index 7: SUCCESS
+
+** 0 of 3 failed (1 iterations)
+VERIFICATION SUCCESSFUL
+";
+
+    /// The reproducer of VF-015's refusal: the symbolic execution of `Hex#toDigit`'s proof under `ch == 1632` enters
+    /// the stub of `String.format`, on the exception path the assumption closes, and the probe at its one call site
+    /// holds, so the stub is no gap. The same run without the assumption (the step's control), a probe whose outcome
+    /// the output lacks, a stub one of whose probes fails, an unwinding assertion that fails, a run that ends without
+    /// a verdict or out of time: none shows the stub unreached.
+    #[test]
+    fn a_stub_whose_every_probe_holds_is_unreached_and_nothing_else_tells() {
+        let format = "java::java.lang.String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;".to_string();
+        let one = Placed { stubs: BTreeMap::from([(format.clone(), BTreeSet::from([0]))]), probes: 1 };
+        assert_eq!(probed(PROBED_CASE, &one).unwrap(), BTreeSet::from([format.clone()]));
+        let control = PROBED_CASE.replace("bytecode-index 7: SUCCESS", "bytecode-index 7: FAILURE").replace("VERIFICATION SUCCESSFUL", "VERIFICATION FAILED");
+        assert_eq!(probed(&control, &one).unwrap(), BTreeSet::new());
+        let absent = Placed { stubs: BTreeMap::from([(format.clone(), BTreeSet::from([3]))]), probes: 4 };
+        assert_eq!(probed(PROBED_CASE, &absent).unwrap(), BTreeSet::new());
+        let two = Placed { stubs: BTreeMap::from([(format.clone(), BTreeSet::from([0, 1]))]), probes: 2 };
+        let second = "[java::jvmcontract.StubProbe.p1:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;.assertion.1] assertion at function java::jvmcontract.StubProbe.p1:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; bytecode-index 7: FAILURE\n";
+        assert_eq!(probed(&PROBED_CASE.replace("\n** 0 of", &format!("{second}\n** 0 of")), &two).unwrap(), BTreeSet::new());
+        let cut = PROBED_CASE.replace("\n** 0 of", "[java::org.apache.commons.codec.binary.Hex.decodeHex:([C[B)I.unwind.0] file Hex.java line 120 unwinding assertion loop 0: FAILURE\n\n** 0 of");
+        assert!(probed(&cut, &one).unwrap_err().contains("unwinding assertion java::org.apache.commons.codec.binary.Hex.decodeHex:([C[B)I.unwind.0 is FAILURE"), "{:?}", probed(&cut, &one));
+        let held = PROBED_CASE.replace("\n** 0 of", "[java::org.apache.commons.codec.binary.Hex.decodeHex:([C[B)I.unwind.0] file Hex.java line 120 unwinding assertion loop 0: SUCCESS\n\n** 0 of");
+        assert_eq!(probed(&held, &one).unwrap(), BTreeSet::from([format.clone()]));
+        assert!(probed(&PROBED_CASE.replace("VERIFICATION SUCCESSFUL", ""), &one).unwrap_err().contains("no verdict"));
+        let late = format!("{}\nError: jbmc did not finish within 3 s\n", PROBED_CASE.replace("VERIFICATION SUCCESSFUL\n", ""));
+        assert_eq!(probed(&late, &one).unwrap_err(), "jbmc did not finish within 3 s");
+    }
+
+    /// A stub the solver shows no path reaches is no gap, and the note names why, apart from the stubs symbolic
+    /// execution never enters.
+    #[test]
+    fn a_stub_the_solver_shows_unreached_is_no_gap_and_the_note_says_why() {
+        let p = parse_goto(GOTO);
+        let cp = ClassPath::new().with_models(false).with_default_jdk();
+        if !cp.has_jdk() {
+            return;
+        }
+        let entered: BTreeSet<String> = ["java::H.check:(I)V", "java::p.K.m:(I)I", "java::java.util.ArrayList.<init>:(I)V"].map(String::from).into();
+        let solved = BTreeSet::from(["java::java.util.ArrayList.<init>:(I)V".to_string()]);
+        let found = find_told(&p, "H", "check", &cp, Some("25"), Some(&entered), &solved, true).unwrap();
+        assert_eq!(found.records.iter().map(|r| r.id.as_str()).collect::<Vec<_>>(), ["missing-body:p.K.m(I)I"]);
+        assert_eq!((found.unreached.as_slice(), found.solved.as_slice()), (["java.util.ArrayList.<init>(int)".to_string()].as_slice(), ["java.util.ArrayList.<init>(int)".to_string()].as_slice()));
+        let pre = Preflight { found: Some(found), problem: None, log: PathBuf::from("jbmc-goto.txt"), seconds: 0.2, paths: Some(Ok(0.1)), probes: Some(Ok(0.1)) };
+        let note = pre.note();
+        assert!(note.contains("its solver shows no path within the bounds and assumptions reaches") && note.contains("so no gap: java.util.ArrayList.<init>(int)") && !note.contains("never enters"), "{note}");
+        let failed = Preflight { probes: Some(Err("it gave no verdict".into())), ..pre };
+        assert!(failed.note().contains("could not tell (it gave no verdict): they stay gaps"), "{}", failed.note());
+    }
+
+    /// `tests/fixtures/jbmc-paths/P.java`'s `sequenced` through the preflight on JBMC 6.11.0: its first two stubs are
+    /// called in sequence on every path, and the third only where `n * n == 7`, which no `int` meets (a square is 0,
+    /// 1 or 4 modulo 8) and which symbolic execution, which does not solve, keeps. The probe of the first does not
+    /// cut the path to the second, and the solver shows the third unreached.
+    #[test]
+    fn a_stub_behind_a_condition_only_the_solver_decides_is_no_gap() {
+        let Some((dir, _cp)) = defect_fixture() else { return };
+        if !crate::jbmc::available("jbmc") {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            return;
+        }
+        let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/jbmc-paths/P.java");
+        let status = std::process::Command::new("javac").args(["-g", "-d"]).arg(dir.path()).arg(&source).status().unwrap();
+        assert!(status.success(), "the fixture compiles");
+        let run = JbmcRun {
+            executable: "jbmc".into(),
+            class: "P".into(),
+            function: "sequenced".into(),
+            classpath: vec![dir.path().to_path_buf(), Path::new(env!("CARGO_MANIFEST_DIR")).join("models/classes")],
+            unwind: 5,
+            timeout: Duration::from_secs(60),
+            stage: None,
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
+            log: dir.path().join("sequenced.log"),
+            extra_args: Vec::new(),
+            tells_exceptions: true,
+        };
+        let pre = preflight(&run, Duration::from_secs(60)).unwrap();
+        let found = pre.found.as_ref().unwrap_or_else(|| panic!("{:?}", pre.problem));
+        assert!(matches!(pre.paths, Some(Ok(_))) && matches!(pre.probes, Some(Ok(_))), "{:?} {:?}\n{}", pre.paths, pre.probes, std::fs::read_to_string(dir.path().join("jbmc-probes.txt")).unwrap_or_default());
+        let ids: Vec<&str> = found.records.iter().map(|r| r.id.as_str()).collect();
+        assert!(ids.iter().any(|id| id.starts_with("jdk-static-method:java.lang.Integer.toHexString(I)")) && ids.iter().any(|id| id.starts_with("jdk-static-method:java.lang.Integer.toOctalString(I)")), "{ids:?}\n{}", pre.note());
+        assert!(!ids.iter().any(|id| id.contains("toBinaryString")), "{ids:?}");
+        assert!(found.solved.contains(&"java.lang.Integer.toBinaryString(int)".to_string()), "{:?}\n{}", found.solved, pre.note());
+        assert!(pre.note().contains("its solver shows no path"), "{}", pre.note());
     }
 }
