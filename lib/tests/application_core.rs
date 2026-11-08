@@ -237,12 +237,9 @@ fn o1_an_ordinary_receiver_in_the_regression_and_property_checks() {
     options.assume = Some("n >= 0".into());
     options.assert = Some("result || n > 0".into());
     options.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-work/o1-property"));
+    // The receiver is wired since the objects stream's O1: no refusal is accepted (the joint acceptance's finding).
     let o = property::run(&options).unwrap();
-    match o.verdict {
-        Verdict::Verified => {}
-        Verdict::Unverifiable => assert!(o.problem.as_deref().unwrap_or_default().contains("the objects stream builds it"), "{}", o.output),
-        Verdict::Violation => panic!("allows(0) holds of every throttle: {}", o.output),
-    }
+    assert_eq!(o.verdict, Verdict::Verified, "allows(0) holds of every throttle: {}", o.output);
 }
 
 /// O2: an array-valued constructor, faithful to identity: `checked` hands back the caller's request, made with its
@@ -322,10 +319,10 @@ fn r1_the_native_property_cache() {
         options.assert = Some("quantities.length > 0 || result == 0".into());
         options.cache = Some(cache.clone());
         options.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join(format!("application-core-work/r1-{run}")));
-        match property::run(&options) {
-            Err(e) => assert!(e.to_string().contains("the reuse stream builds it"), "{run}: {e}"),
-            Ok(o) => assert_eq!(o.verdict, Verdict::Verified, "{run}: {}", o.output),
-        }
+        // The property cache is built (R1): no refusal is accepted, and the rerun is the stored result.
+        let o = property::run(&options).unwrap_or_else(|e| panic!("{run}: {e}"));
+        assert_eq!(o.verdict, Verdict::Verified, "{run}: {}", o.output);
+        assert_eq!(o.reuse.is_some(), run == "rerun", "{run}: {}", o.output);
     }
 }
 

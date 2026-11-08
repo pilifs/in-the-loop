@@ -1146,6 +1146,65 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     new native claims with JBMC unavailable), and the H and L families, each correct change proved, each defect
     refuted with its witness replayed, and exact reuse, helper reuse and invalidation shown. Then step 3's examples
     with `lib/tests/integration.rs`, J4 and the for-review list.
+- 2026-11-08, **Phase 5 step 2: the joint acceptance at the merge, as a job** (verification pending), and a gap it
+  found.
+  - **The test**: the new `lib/tests/application_core_joint.rs`, one test per row:
+    - J1, the quote family: `quote-claim` and `offer-claim` through the planned effect check, `Codes#vip` as a plain
+      regression, `fee`'s read-only summary, and `units`' property under the cache;
+    - H, the throttle: both frozen claims, `allows` as a regression and as a property;
+    - L, the basket: the three frozen claims, `total` and `clearAll` as regressions within 3;
+    - J2: the native claims under `--engine auto` with JBMC unavailable.
+
+    Unlike the integration contract, it accepts no refusal:
+    - every case must reach `expected.json`'s verdict;
+    - each refutation must be on the observation it names, its witness replayed;
+    - each verified result must have every observation of its claim preserved.
+
+    Each frozen claim and plain regression runs twice under one proof cache:
+    - the rerun must be the stored result under the same key;
+    - every build whose verdict differs from `after`'s must have another key, never answered by a stored result.
+
+    Invalidation is shown three ways, each another key, checked again: a modelled outcome less (`quote-claim`
+    without `RateUnavailable`), a smaller list bound (`basket-total-claim` within 2), and another assertion.
+
+    J2's `--confirm` must be explicit: `allows` left unconfirmed ("jbmc is not installed"), and `vip` and `total`
+    not asked (a String, a list). Each run prints its evidence record (`evidence: {json}`) into the job's log.
+    `basket-first-claim`'s `copied-first` is held to the allocation gate's outcome, as in the contract, until the
+    user decides.
+  - **The job**: `20261108-180246-application-core-phase-5-step-2-the-join`, at this commit. One step per row, then
+    J2's guard: every step runs with a `jbmc` first on `PATH` that records being called, and the last step fails if
+    it was. That covers the claim checks, which take no `jbmc` option.
+  - **Run inline first**, so that a bug of the test's own costs no attempt:
+    - H passed in 12 s, L in 14 s and J2 in 7 s (debug), and the recording `jbmc` was never called.
+    - J1 was run in two parts. The planned claims and `vip`'s regressions took 55 s, and the invalidation, the
+      summary and the property cache 62 s.
+    - Two assertions of the test's own were wrong and were fixed:
+      - a confirmation JBMC was asked for names it as `JBMC`, with no version;
+      - the heap check stores the proof and applies the allocation gate again to a stored one, so an unresolved
+        rerun may be a hit.
+  - **Found: J1's O2 and R2 parts are refused on the quote family**, which the contract hid by accepting the
+    streams' refusals. `checked-claim` is refused by the heap check ("a construction with dependencies"), and `fee`
+    as a plain regression by the regression check ("only a concrete class made by its constructor"). The receiver's
+    constructor takes the service's three interface dependencies, which neither method reaches. Only the effect
+    check's planned harness makes such a receiver: each dependency null, reached only through the stubs.
+    - Both are in the test's `j1_o2_and_r2_a_receiver_with_dependencies`, ignored with that reason and not in the
+      job. It is the reproducer of the next piece of work.
+    - O2 and R2 pass on their streams' own fixtures (receivers without dependencies), so on Q they are **partial**
+      until then.
+    - The refusal's own words are stale too ("the objects stream builds it").
+  - **The contract tightened** (`tests/application_core.rs`): O1's property and R1's cache now reach their verdicts,
+    so they accept no refusal; R1's rerun must be the stored result. O2's claim and R2's regression still accept
+    theirs, until the gap above is closed.
+  - **For the J4 report**: under the cache, an edit outside a claim's closure is answered by `after`'s stored
+    result. Six of `offer-claim`'s eight builds were, seven of `vip`'s, and three or four of each basket claim's.
+  - **Stale help**, the same kind as item 7: `--engine`'s help (`equivalence`, `prove`) said the own checker was for
+    "integers, arrays of them and records". It now names constructor- and plan-made objects, bounded Strings and
+    short immutable lists, as `lib/README.md`'s Limits do.
+  - **Checks**: the integration check passes, and so does the tightened contract.
+  - **Next**: make a receiver whose constructor takes dependencies in the heap and regression checks, each
+    dependency null and refused by name where the method's closure reaches it, so that `checked-claim` and `fee`
+    reach their verdicts. The ignored test is un-ignored and goes in a job of its own. Then step 3's examples with
+    `lib/tests/integration.rs`, J4 and the for-review list, with this job's results read once they are collected.
 - Status: working
 
 ## Loop settings

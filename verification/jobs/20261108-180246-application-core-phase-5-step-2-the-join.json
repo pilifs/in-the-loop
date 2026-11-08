@@ -1,0 +1,72 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-180246-application-core-phase-5-step-2-the-join",
+  "title": "application-core Phase 5 step 2: the joint acceptance at the merge (J1, J2, H, L), on the own checker with no JBMC",
+  "description": "The joint acceptance of llm-dlc/loops/application-core.md (Phase 5 step 2) at the revision that commits this job, after the merge of the four streams and step 1's interface requests. It runs lib/tests/application_core_joint.rs, one step per row: J1 (the quote family composing O, V, E and R), H (the throttle), L (the basket) and J2 (the new native claims with JBMC unavailable), on the frozen fixtures of lib/tests/fixtures/application-core/ and the verdicts golden/expected.json fixes. Unlike the integration contract, it accepts no refusal: every case must reach its expected verdict, each refutation on the observation it names with its witness replayed, each verified result with every observation of its claim preserved. Each frozen claim and plain regression runs twice under one proof cache: the rerun must be the stored result under the same key, and every build whose verdict differs from after's has another key and is never answered by a stored result; a change of the environment model (quote-claim without RateUnavailable), of the list bound (basket-total-claim within 2) and of a property's assertion is another key, checked again; fee's read-only summary rests on its own proof and is the stored one when asked again. Domains and bounds are the frozen claims' (Strings of at most 4 code units, at most 4 quantities, lists of at most 3 lines, one setup call for the throttle) and --max-array-length 8 for the plain checks (3 for the basket's). Engine: the tool's own checker (CaDiCaL); the equivalence and property checks get --jbmc /nonexistent/jbmc, and every step runs with a jbmc first on PATH that records being called, which the last step checks was never called (J2's guard). basket-first-claim's copied-first is held to the allocation gate's unresolved outcome until the user decides its bound (the brief's Progress). checked-claim and fee as a plain regression (J1's O2 and R2 parts on the quote family) are refused at this revision, a receiver whose constructor takes dependencies, and are an ignored test, not part of this job. Each run prints an evidence record (evidence: {json}) in the step's log.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "jvmcontract:effects",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/application_core_joint.rs",
+      "lib/tests/fixtures/application-core",
+      "llm-dlc/loops/application-core.md"
+    ]
+  },
+  "expected": "every step exits 0: the four tests pass (J1, H, L, J2), and the last step finds no call of jbmc",
+  "submitted": {
+    "at": "2026-11-08T18:02:46+00:00",
+    "session": "6ca21bdf-4743-4500-90ea-7fe6280624b2",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "notes": "inline debug runs on this machine: J1 about 2 min, H 12 s, L 14 s, J2 7 s; plus a release build of the test binary"
+  },
+  "steps": [
+    {
+      "name": "build the joint acceptance test and the recording jbmc",
+      "run": "cd lib && rm -rf target/joint-shim && mkdir -p target/joint-shim/bin && printf \"#!/bin/sh\\ntouch %s/target/joint-shim/jbmc-called\\nexit 127\\n\" \"$PWD\" > target/joint-shim/bin/jbmc && chmod +x target/joint-shim/bin/jbmc && cargo test --release --test application_core_joint --no-run",
+      "cwd": "."
+    },
+    {
+      "name": "J1: the quote family composes O, V, E and R",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/joint-shim/bin:$PATH\" cargo test --release --test application_core_joint j1_the_quote_family_composes_the_four_streams -- --exact --nocapture 2>&1 | tee target/joint-j1.log",
+      "cwd": "."
+    },
+    {
+      "name": "H: the throttle family",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/joint-shim/bin:$PATH\" cargo test --release --test application_core_joint h_the_throttle_family -- --exact --nocapture 2>&1 | tee target/joint-h.log",
+      "cwd": "."
+    },
+    {
+      "name": "L: the basket family",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/joint-shim/bin:$PATH\" cargo test --release --test application_core_joint l_the_basket_family -- --exact --nocapture 2>&1 | tee target/joint-l.log",
+      "cwd": "."
+    },
+    {
+      "name": "J2: the native claims without JBMC",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/joint-shim/bin:$PATH\" cargo test --release --test application_core_joint j2_the_native_claims_without_jbmc -- --exact --nocapture 2>&1 | tee target/joint-j2.log",
+      "cwd": "."
+    },
+    {
+      "name": "J2's guard: no check called jbmc",
+      "run": "cd lib && test ! -e target/joint-shim/jbmc-called && echo \"no check called jbmc\"",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
