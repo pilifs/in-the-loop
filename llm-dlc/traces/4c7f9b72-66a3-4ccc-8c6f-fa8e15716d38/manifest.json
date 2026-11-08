@@ -64,7 +64,7 @@
   "commits": [
     {
       "change_id": "tukutwvnpzsrovtqpnkmmqksrrwkuokw",
-      "commit_id": null,
+      "commit_id": "749578ed50e6c8b29950df06e1ac663055f8384b",
       "immutable": false,
       "summary": "application-core Phase 0 step 2: the four interfaces as types in spec/plans.rs, each refused until its stream builds it",
       "body": "The application-core streams meet at four interfaces, now types in lib/src/spec/plans.rs that extend the foundations IR rather than compete with it: a construction plan (ConstructionPlan: a bounded DAG of constructor- or factory-made nodes with stable ids, shared nodes for aliasing, typed leaves, bounded arrays, adapted values, dependencies the environment stands for, the roots, an optional short setup sequence and the domain's restrictions; shape_problem names a cycle, a duplicate, a dangling id, a choice of another class or a bound exceeded), carried by a new Construction::Planned domain; a value domain (ValueDomain, with its model's evidence level, from implemented to proved) and the witness value a replay rebuilds (WitnessValue, UTF-16 code units); a modelled call's CallModel (stable id, argument key, query or choice coupling, permitted results or exceptions, bound), carried by ModeledCall's new optional model; and a helper's Summary (read footprint, alias and null facts, domain, bounds, relation, effects, dependency proofs). Every struct refuses unknown fields and every enum unknown variants. Part gains Objects, Values, Environment and Reuse.\n\nNothing gets read as absent: a planned domain is refused by the heap check (Part::Objects) and a call's model by the effect check (Part::Environment) until those streams build them, and neither is among the claim key's known fields, so a claim with one is uncacheable. Tests: plans.rs's unit tests (round trips, every interface refusing an unknown field or variant, the plan's shape problems), tests/heap.rs a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_builds_it, tests/effects.rs a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it; the spec unit tests and the heap, effects, foundations and summaries suites pass inline. Docs: lib/README.md, and the brief's Progress.",
@@ -72,11 +72,19 @@
     },
     {
       "change_id": "ponxovxryktlvxtmnlrrmplprowxozwk",
-      "commit_id": null,
+      "commit_id": "6044b03adf7e8c4718b81fa300b138930d17d36e",
       "immutable": false,
       "summary": "VF-015: the rerun at eea1a8a8 gets past the exception property and is refused on throwing initializers",
       "body": "Job 20261108-024648-vf-015-example-109-revisited-hex-todigit: steps 3 and 4 pass (step 4 now finds the change with a replayed witness), step 5 is refused by jvmcontract for 4 throwing-initializer defects. Its results/ files were already swept into the application-core Phase 0 step 2 commit by another session's commit; this commit holds only the VF-015 entry update in verification/findings.md.",
       "log_sha256": "f97d087c6efc12911c1ae539eb88a1de9625af5aa2d804c05b3a13d323966366"
+    },
+    {
+      "change_id": "rqxxpmqtolylqxyzywktllvwonxstvoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f"
     }
   ],
   "logs": {
@@ -84,19 +92,19 @@
       "bytes": 332247,
       "lines": 67,
       "gzip_bytes": 78865,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/7a73088622dbb9b699c950bc1184cf67bd20b83ee4d4fcf6362efcf0dede3ee3.jsonl.gz"
     },
     "81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f": {
       "bytes": 400107,
       "lines": 106,
       "gzip_bytes": 86988,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz"
     },
     "f97d087c6efc12911c1ae539eb88a1de9625af5aa2d804c05b3a13d323966366": {
       "bytes": 390575,
       "lines": 100,
       "gzip_bytes": 85079,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/f97d087c6efc12911c1ae539eb88a1de9625af5aa2d804c05b3a13d323966366.jsonl.gz"
     }
   },
   "redaction_policy": 4,

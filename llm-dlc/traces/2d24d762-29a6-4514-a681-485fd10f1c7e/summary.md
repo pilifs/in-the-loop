@@ -209,7 +209,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### application-core: the user's decisions settled, and VF-015 brought in scope as Phase 0's step 7
 
-change `tnnytrlwlsql` · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
+[`aec5636c8d34`](https://github.com/pilifs/in-the-loop/commit/aec5636c8d3485b614f49feca17bc761b3320218) · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
 
 The user settled the brief's six proposed decisions as drafted: the four streams as scoped, with optional work never blocking a row; verification with the pipeline; one writer for shared files; Phase 0 in the planning session; 4 GB per stream and about 24 GB for the runner; claude-opus-5-5 at high effort. They added a seventh: VF-015 is in scope. The stub-reachability loop's timebox deferred VF-015 to a person on 2026-11-08, after finding its cause: the equivalence harness's call handlers (harness::EXCEPTIONS) catch only unchecked exceptions and Error, so commons-codec's checked DecoderException leaves EquivalenceHarness.check uncaught, and no equivalence over a method that throws a checked exception can be verified.
 
@@ -217,13 +217,13 @@ It goes in Phase 0, not a stream: the fix is in harness/, the objects stream's f
 
 ### application-core, prerequisite 2: the starting point recounted at the merge, and the contracts pass there
 
-change `xvvulqqymyqm` · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
+[`c0fd50ba73f8`](https://github.com/pilifs/in-the-loop/commit/c0fd50ba73f8b64779f1bcd74f906ec9dd758300) · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
 
 Where it starts from was recounted at main's yzpmxwnx (08d23149), after the cleanup and stub-reachability loops. Every row still holds, with line numbers moved. ObjectDomain's made_by, classes, allocations and label are still read by nothing outside the cache key's projection, and no production path fills Statement.spec. lib/tests/foundations.rs, compare.rs and effects.rs pass inline (23 tests). The cleanup merge's four reruns (20261107-215001-...: examples 150-152 and 160-161, 170-172, 190-196, lib/tests/integration.rs) passed. Since then only the gap preflight changed, and its guard job passed. The fixture notes and the cleanup leftovers are updated: VF-016 and VF-017 are closed, and VF-002, VF-015, VF-018 and VF-020 are open. Phase 0 is next.
 
 ### application-core: the domain-options row corrected, since the allocation bound is enforced
 
-change `vlnommrurvpv` · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
+[`42b4c4264052`](https://github.com/pilifs/in-the-loop/commit/42b4c42640522846187a73ea27a06414a4bd014c) · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
 
 The recount's grep missed it: spec/heap.rs:125-135 checks bounds.before/after.allocations against what each version's code makes in one call, a cleanup-loop fix, and gives an unresolved result over the bound. The row now names what check_with enforces (nullable, may_alias, both bounds) and what is unread: made_by's kind and calls, classes and label. Phase 0's step 1 says how calls and classes get enforced. equivalence::run reports the constructors its harness layout uses, and check_with compares them with the claim before any verdict. label stays the claim's words, covered by the key.
 

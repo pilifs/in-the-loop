@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### application-core Phase 0 step 2: the four interfaces as types in spec/plans.rs, each refused until its stream builds it
 
-change `tukutwvnpzsr` · [log `7a73088622db`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/7a73088622dbb9b699c950bc1184cf67bd20b83ee4d4fcf6362efcf0dede3ee3.jsonl.gz)
+[`749578ed50e6`](https://github.com/pilifs/in-the-loop/commit/749578ed50e6c8b29950df06e1ac663055f8384b) · [log `7a73088622db`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/7a73088622dbb9b699c950bc1184cf67bd20b83ee4d4fcf6362efcf0dede3ee3.jsonl.gz)
 
 The application-core streams meet at four interfaces, now types in lib/src/spec/plans.rs that extend the foundations IR rather than compete with it: a construction plan (ConstructionPlan: a bounded DAG of constructor- or factory-made nodes with stable ids, shared nodes for aliasing, typed leaves, bounded arrays, adapted values, dependencies the environment stands for, the roots, an optional short setup sequence and the domain's restrictions; shape_problem names a cycle, a duplicate, a dangling id, a choice of another class or a bound exceeded), carried by a new Construction::Planned domain; a value domain (ValueDomain, with its model's evidence level, from implemented to proved) and the witness value a replay rebuilds (WitnessValue, UTF-16 code units); a modelled call's CallModel (stable id, argument key, query or choice coupling, permitted results or exceptions, bound), carried by ModeledCall's new optional model; and a helper's Summary (read footprint, alias and null facts, domain, bounds, relation, effects, dependency proofs). Every struct refuses unknown fields and every enum unknown variants. Part gains Objects, Values, Environment and Reuse.
 
@@ -28,9 +28,15 @@ Nothing gets read as absent: a planned domain is refused by the heap check (Part
 
 ### VF-015: the rerun at eea1a8a8 gets past the exception property and is refused on throwing initializers
 
-change `ponxovxryktl` · [log `f97d087c6efc`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/f97d087c6efc12911c1ae539eb88a1de9625af5aa2d804c05b3a13d323966366.jsonl.gz)
+[`6044b03adf7e`](https://github.com/pilifs/in-the-loop/commit/6044b03adf7e8c4718b81fa300b138930d17d36e) · [log `f97d087c6efc`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/f97d087c6efc12911c1ae539eb88a1de9625af5aa2d804c05b3a13d323966366.jsonl.gz)
 
 Job 20261108-024648-vf-015-example-109-revisited-hex-todigit: steps 3 and 4 pass (step 4 now finds the change with a replayed witness), step 5 is refused by jvmcontract for 4 throwing-initializer defects. Its results/ files were already swept into the application-core Phase 0 step 2 commit by another session's commit; this commit holds only the VF-015 entry update in verification/findings.md.
+
+### Record session traces
+
+change `rqxxpmqtolyl` · [log `81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

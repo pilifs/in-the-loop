@@ -211,7 +211,7 @@
     },
     {
       "change_id": "tnnytrlwlsqlpmryvyutxrusuktnwmyy",
-      "commit_id": null,
+      "commit_id": "aec5636c8d3485b614f49feca17bc761b3320218",
       "immutable": false,
       "summary": "application-core: the user's decisions settled, and VF-015 brought in scope as Phase 0's step 7",
       "body": "The user settled the brief's six proposed decisions as drafted: the four streams as scoped, with optional work never blocking a row; verification with the pipeline; one writer for shared files; Phase 0 in the planning session; 4 GB per stream and about 24 GB for the runner; claude-opus-5-5 at high effort. They added a seventh: VF-015 is in scope. The stub-reachability loop's timebox deferred VF-015 to a person on 2026-11-08, after finding its cause: the equivalence harness's call handlers (harness::EXCEPTIONS) catch only unchecked exceptions and Error, so commons-codec's checked DecoderException leaves EquivalenceHarness.check uncaught, and no equivalence over a method that throws a checked exception can be verified.\n\nIt goes in Phase 0, not a stream: the fix is in harness/, the objects stream's file; the environment stream's E2 (modelled failures, catch and propagation) needs it; and it is small. Step 7 has a reproducer first. The handlers then catch each class in either version's throws clause, then java.lang.Exception, comparing by class, and a checked exception that only one version throws is refuted. The closing job is VF-015's resubmitted with step 4 made stricter: the change must be found with its witness replayed, where test $? -eq 1 also accepted 'cannot be verified'. It has no timebox attempt left, so a failure goes back to the user. The starting-point table, prerequisites 1 and 5, Phase 0's Done-when row and Progress are updated, and E2's brief points at step 7. The status stays blocked on Phase 0.",
@@ -229,7 +229,7 @@
       "bytes": 5304362,
       "lines": 1778,
       "gzip_bytes": 1037267,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/33b0d4189500c1b2a63ce746e67647d84838bad6d5a47bb4d6a2b70ae5cd22f3.jsonl.gz"
     },
     "3ef513ae0efd9ae9135b00377ac2b5198e817600261ea030c169c48db8ebce83": {
       "bytes": 931895,

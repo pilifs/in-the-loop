@@ -96,7 +96,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### application-core: the user's decisions settled, and VF-015 brought in scope as Phase 0's step 7
 
-change `tnnytrlwlsql` · [log `33b0d4189500`](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/33b0d4189500c1b2a63ce746e67647d84838bad6d5a47bb4d6a2b70ae5cd22f3.jsonl.gz)
+[`aec5636c8d34`](https://github.com/pilifs/in-the-loop/commit/aec5636c8d3485b614f49feca17bc761b3320218) · [log `33b0d4189500`](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/33b0d4189500c1b2a63ce746e67647d84838bad6d5a47bb4d6a2b70ae5cd22f3.jsonl.gz)
 
 The user settled the brief's six proposed decisions as drafted: the four streams as scoped, with optional work never blocking a row; verification with the pipeline; one writer for shared files; Phase 0 in the planning session; 4 GB per stream and about 24 GB for the runner; claude-opus-5-5 at high effort. They added a seventh: VF-015 is in scope. The stub-reachability loop's timebox deferred VF-015 to a person on 2026-11-08, after finding its cause: the equivalence harness's call handlers (harness::EXCEPTIONS) catch only unchecked exceptions and Error, so commons-codec's checked DecoderException leaves EquivalenceHarness.check uncaught, and no equivalence over a method that throws a checked exception can be verified.
 
