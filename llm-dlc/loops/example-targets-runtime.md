@@ -33,7 +33,7 @@ them, for Gradle only (there is no Maven path); the verifier already generates h
 version's classes and records statements, so reuse it through the current commands; application-core's construction
 and value adapters still refuse what they don't support, so a Spring receiver or String isn't proof-ready because it
 compiles; a one-sided replay no longer counts as reproduced (`witness.rs:779-786`). Temurin JDKs 8, 11, 17, 21 and 25 are installed
-(25 the default and main target; the main brief's JDK rule).
+(21 and 25 the main targets, 25 the default; the main brief's JDK rule).
 
 ## Your items
 
@@ -89,7 +89,8 @@ implementation.
 
 ### R4. Independent concrete controls
 
-Each relevant revision runs in its own JVM and classpath. The case's independently authored oracle checks the security
+Each relevant revision runs in its own JVM and classpath, on JDKs 21 and 25 wherever its artifacts do, and otherwise on
+the JDK it needs. The case's independently authored oracle checks the security
 or preservation statement; it never uses the implementation under test as its expected-value function. Record complete
 normal or exceptional outcomes, inputs, relevant mutations and identities, and process completion, before a witness is
 called reproduced.

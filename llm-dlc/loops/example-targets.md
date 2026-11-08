@@ -105,10 +105,13 @@ The [standing rules](brief-template.md#standing-rules), the [timebox](brief-temp
 **Verification with the pipeline** ([decision 5](#decisions)), not `verification: separate`. Every job names the
 exact revision, task and claim, expected semantic verdict, process expectation, bounds, engine and resource estimate.
 
-**JDKs** ([decision 3](#decisions)). JDK 25 is the default, and the most relevant for Java development today: everything
-this wave writes (adapters, drivers, the targets modules, fixtures) targets it, and a revision's concrete controls run on
-it wherever its pinned artifacts do. An older JDK (8, 11, 17 or 21) is used where a revision's build or runtime needs
-it, never by default, and selected by its full path, not by changing sdkman's default. Each preparation and replay
+**JDKs** ([decision 3](#decisions)). JDKs 25 and 21, the two current LTS releases and the most relevant for Java
+development today, are the main targets, and 25 stays sdkman's default. Everything this wave writes (adapters, drivers,
+fixtures, the Java parts of the targets modules) is compiled with `--release 21`, so it runs on both. A revision's
+concrete controls run on 21 and on 25 wherever its pinned artifacts do, as two JVM identities whose outcomes are compared
+and recorded separately; a disagreement between them is a finding, never averaged away. An older JDK (8, 11 or 17) is
+used where a revision's build or runtime needs it, never by default, selected by its full path, not by changing
+sdkman's default. Each preparation and replay
 records the JDK it used, from its `release` file and `java -version`; a different JDK is a different identity.
 
 **Downloads** ([decision 1](#decisions)) are allowed in jobs and in loops, from `github.com` and Maven Central
@@ -429,8 +432,8 @@ Settled by the user on 2026-11-08:
    fixtures, and this brief's own loop runs the original-JVM replays and the calibration after the merge (gates A3–A5).
 3. **Older JDKs installed**, so each revision is built with its own build tool and a JDK it supports: Temurin 8, 11 and
    17, installed by the planning session on 2026-11-08 beside 21 and 25 ([Where it starts from](#where-it-starts-from)).
-   JDK 25 stays the default and the main target, as the most relevant for Java development today ([How to work through
-   it](#how-to-work-through-it)). The artifact routes are the outside plan's two: a published artifact, or a pinned
+   JDKs 25 and 21 are the main targets, as the most relevant for Java development today, and 25 stays the default ([How
+   to work through it](#how-to-work-through-it)). The artifact routes are the outside plan's two: a published artifact, or a pinned
    upstream build.
 4. **The archived registry** is supplied by the user, and committed with its sha256 checked (prerequisite 3).
 

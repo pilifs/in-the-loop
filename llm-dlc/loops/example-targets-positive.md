@@ -38,7 +38,7 @@ in their relevant semantics, not in every input type.
 
 The outside review inspected the patches and parents; nothing was built, replayed or proved. These are commit pairs
 with no published JARs, so they take runtime's pinned upstream build route, with the JDK each revision's build supports
-(8, 11, 17, 21 and 25 are installed; controls run on 25 wherever the artifacts do). Check every SHA and parent against upstream before relying on it.
+(8, 11, 17, 21 and 25 are installed; controls run on 21 and 25 wherever the artifacts do). Check every SHA and parent against upstream before relying on it.
 
 ## Your items
 
