@@ -1571,7 +1571,18 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **The job**: `20261108-214557-application-core-phase-5-the-user-s-allo`, the whole joint acceptance, the contract
     and value_parameters in release, with the recording `jbmc` guard. When it passes, O2, V2 and J1 pass, every row
     of the for-review list passes, and the status is `done`.
-- Status: waiting on jobs 20261108-214557-application-core-phase-5-the-user-s-allo
+- 2026-11-08, **the allocation-bounds job passed** (`20261108-214557-…`, at `47358229`, recorded in `zumxluqn`): all
+  5 steps in 5m57s, peak 1.9 GiB, in release on the own checker. The joint acceptance passes 6 of 6 (J1 with its R2
+  and O2 parts, H, L, J2), the contract 14 of 14 with no case held, and `tests/value_parameters.rs` 10 of 10; the
+  recording `jbmc` was never called.
+  - **O2, V2 and J1 pass**: `checked-claim`'s `alias-to-copy` and `basket-first-claim`'s `copied-first` are refuted on
+    their identity, as `expected.json` says. So every row of the for-review list passes: G0, O1–O3, V1, V2, E1, E2,
+    R1, R2 and J1–J4, and the stream items V3, E3 and R3.
+  - No job is pending, and nothing needs the user. Phase 5 is done.
+  - The brief outside Progress is out of date as recorded above: Phase 0's "the claim key covers the label" holds of
+    `spec::cache::key` only, the contract's rows leave out V3, E3 and R3, and Where it starts from describes the
+    state before the streams.
+- Status: done
 
 ## Loop settings
 
