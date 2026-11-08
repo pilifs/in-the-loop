@@ -1,0 +1,163 @@
+   Compiling libc v0.2.191
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling proc-macro2 v1.0.107
+   Compiling object v0.39.1
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling jobserver v0.1.35
+   Compiling memchr v2.8.3
+   Compiling cc v1.10.0
+   Compiling cfg-if v1.0.5
+   Compiling syn v3.0.9
+   Compiling ar_archive_writer v0.5.3
+   Compiling serde_core v1.0.229
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling psm v0.1.32
+   Compiling zmij v1.0.23
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling crc32fast v1.5.3
+   Compiling anstream v1.0.0
+   Compiling aho-corasick v1.1.5
+   Compiling stacker v0.1.25
+   Compiling cadical v0.1.16
+   Compiling adler2 v2.0.1
+   Compiling regex-syntax v0.8.11
+   Compiling strsim v0.11.1
+   Compiling clap_lex v1.1.1
+   Compiling serde v1.0.229
+   Compiling heck v0.5.0
+   Compiling serde_json v1.0.154
+   Compiling simd-adler32 v0.3.10
+   Compiling miniz_oxide v0.9.1
+   Compiling clap_derive v4.6.7
+   Compiling regex-automata v0.4.18
+   Compiling clap_builder v4.6.7
+   Compiling serde_derive v1.0.229
+   Compiling itoa v1.0.18
+   Compiling getrandom v0.4.3
+   Compiling rustix v1.1.6
+   Compiling flate2 v1.1.10
+   Compiling regex v1.13.1
+   Compiling clap v4.6.7
+   Compiling bitflags v2.13.2
+   Compiling linux-raw-sys v0.12.1
+   Compiling once_cell v1.21.4
+   Compiling fastrand v2.5.0
+   Compiling tempfile v3.27.0
+   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-060410-application-core-reuse-r3-a-small-compar/lib)
+    Finished `release` profile [optimized] target(s) in 2m 52s
+     Running tests/preparation.rs (target/release/deps/preparation-1a273dcfc5e5da58)
+
+running 1 test
+test where_a_compare_runs_time_goes_stage_by_stage has been running for over 60 seconds
+# R3: a small compare run's time by stage
+
+The joint example's builds (examples 190, 191), medians of 7 repeats, a release build; for these fixtures only.
+
+## Compilation (javac)
+
+| Build | ms |
+|---|---|
+| the Spring stand-ins | 636.4 |
+| before | 403.2 |
+| after | 429.3 |
+| offset | 412.9 |
+
+## Repeated stages, one by one
+
+| Stage | ms |
+|---|---|
+| decoding every class file of the old build (4 files, 4988 bytes) | 0.03 |
+| relocating the old build into package before/ (each proof does once) | 0.14 |
+| loading both builds for alignment (compare does once) | 0.09 |
+| aligning the two builds (compare does once) | 0.22 |
+| reading both builds' entry points' observation specs (compare does once) | 12.76 |
+| opening the JDK's image, lib/modules (each class path with the JDK does: several per proof) | 6.26 |
+| writing the models' 17 class files into a work directory (each proof does once, after its lookup) | 0.32 |
+| the models' digest (each claim key takes it) | 0.09 |
+| the binary's digest (12900080 bytes; once per process) | 35.69 |
+
+## The runs
+
+### cold (`after`)
+
+5 proofs, 0 exact hits; in process 460.6 ms, as a process 496.1 ms (medians of 7)
+
+| Stage | ms |
+|---|---|
+| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 207.8 |
+| plan: both versions' reach and closures compared | 0.8 |
+| key: the claim and its digest | 1.3 |
+| key's closures: both versions' closures digested | 1.5 |
+| lookup: reading the store | 0.1 |
+| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
+| checker runs: exploring, encoding and solving | 55.0 |
+| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 161.7 |
+| store: writing the result, a refutation's witness replayed first | 1.0 |
+| replay of a stored or new witness (inside lookup and store) | 0.0 |
+| outside every proof: compare's own steps after the last proof | 31.2 |
+
+### unchanged rerun (`after`)
+
+5 proofs, 5 exact hits; in process 209.8 ms, as a process 290.3 ms (medians of 7)
+
+| Stage | ms |
+|---|---|
+| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 185.4 |
+| plan: both versions' reach and closures compared | 0.8 |
+| key: the claim and its digest | 1.2 |
+| key's closures: both versions' closures digested | 1.5 |
+| lookup: reading the store | 0.3 |
+| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
+| checker runs: exploring, encoding and solving | 0.0 |
+| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
+| store: writing the result, a refutation's witness replayed first | 0.0 |
+| replay of a stored or new witness (inside lookup and store) | 0.0 |
+| outside every proof: compare's own steps after the last proof | 20.4 |
+
+### defect, cold (`offset`)
+
+5 proofs, 0 exact hits; in process 2217.2 ms, as a process 2215.9 ms (medians of 7)
+
+| Stage | ms |
+|---|---|
+| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 245.3 |
+| plan: both versions' reach and closures compared | 0.9 |
+| key: the claim and its digest | 1.3 |
+| key's closures: both versions' closures digested | 1.5 |
+| lookup: reading the store | 0.0 |
+| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
+| checker runs: exploring, encoding and solving | 1723.0 |
+| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 197.5 |
+| store: writing the result, a refutation's witness replayed first | 15.6 |
+| replay of a stored or new witness (inside lookup and store) | 14.4 |
+| outside every proof: compare's own steps after the last proof | 29.9 |
+
+### defect, rerun (`offset`)
+
+5 proofs, 5 exact hits; in process 265.3 ms, as a process 491.1 ms (medians of 7)
+
+| Stage | ms |
+|---|---|
+| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 222.5 |
+| plan: both versions' reach and closures compared | 0.9 |
+| key: the claim and its digest | 1.4 |
+| key's closures: both versions' closures digested | 1.5 |
+| lookup: reading the store | 0.4 |
+| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
+| checker runs: exploring, encoding and solving | 0.0 |
+| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
+| store: writing the result, a refutation's witness replayed first | 0.0 |
+| replay of a stored or new witness (inside lookup and store) | 13.8 |
+| outside every proof: compare's own steps after the last proof | 23.1 |
+
+written to benchmark/preparation/preparation.json and benchmark/preparation/preparation.md
+test where_a_compare_runs_time_goes_stage_by_stage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 64.19s
+

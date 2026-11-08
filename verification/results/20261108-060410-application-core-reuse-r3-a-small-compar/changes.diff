@@ -1,0 +1,927 @@
+--- /dev/null
++++ b/lib/benchmark/preparation/preparation.json
+@@ -0,0 +1,820 @@
++{
++  "compilation_ms": [
++    {
++      "build": "the Spring stand-ins",
++      "ms": 636.433
++    },
++    {
++      "build": "before",
++      "ms": 403.193
++    },
++    {
++      "build": "after",
++      "ms": 429.258
++    },
++    {
++      "build": "offset",
++      "ms": 412.93
++    }
++  ],
++  "jvmcontract": "0.1.0",
++  "profile": "release",
++  "repeats": 7,
++  "scenarios": [
++    {
++      "after": "after",
++      "hits": 0,
++      "in_process_ms": 460.572,
++      "in_process_ms_each": [
++        497.731,
++        447.74,
++        456.544,
++        494.21,
++        460.572,
++        471.859,
++        457.113
++      ],
++      "process_ms": 496.127,
++      "process_ms_each": [
++        496.127,
++        465.425,
++        465.818,
++        474.079,
++        512.474,
++        513.179,
++        508.462
++      ],
++      "proofs": 5,
++      "scenario": "cold",
++      "stages_ms": [
++        {
++          "ms": 207.85,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.848,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.312,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.549,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.08,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 55.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 161.719,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 1.043,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.0,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 31.223,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 78.683,
++          "before_ms": 70.295,
++          "cache": "miss",
++          "closures_ms": 0.877,
++          "helpers_ms": 17.646,
++          "inside": null,
++          "key_ms": 1.112,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.014,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.398,
++          "replay_ms": 0.0,
++          "runs_ms": 48.0,
++          "store_ms": 0.225,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 27.787,
++          "before_ms": 36.637,
++          "cache": "miss",
++          "closures_ms": 0.086,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.352,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.016,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.066,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.203,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 40.809,
++          "before_ms": 31.947,
++          "cache": "miss",
++          "closures_ms": 0.29,
++          "helpers_ms": 65.209,
++          "inside": null,
++          "key_ms": 0.549,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.012,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.169,
++          "replay_ms": 0.0,
++          "runs_ms": 4.0,
++          "store_ms": 0.223,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 30.305,
++          "before_ms": 27.222,
++          "cache": "miss",
++          "closures_ms": 0.089,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.343,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.014,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.072,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.244,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 40.765,
++          "before_ms": 37.243,
++          "cache": "miss",
++          "closures_ms": 0.117,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.39,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.015,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.074,
++          "replay_ms": 0.0,
++          "runs_ms": 2.0,
++          "store_ms": 0.196,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Verified"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "after",
++      "hits": 5,
++      "in_process_ms": 209.84,
++      "in_process_ms_each": [
++        211.818,
++        210.191,
++        209.84,
++        207.221,
++        221.743,
++        205.602,
++        205.189
++      ],
++      "process_ms": 290.317,
++      "process_ms_each": [
++        324.894,
++        311.017,
++        290.317,
++        296.297,
++        271.025,
++        269.199,
++        286.49
++      ],
++      "proofs": 5,
++      "scenario": "unchanged rerun",
++      "stages_ms": [
++        {
++          "ms": 185.434,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.777,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.175,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.454,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.317,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 0.0,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.0,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.0,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 20.379,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 64.138,
++          "cache": "hit",
++          "closures_ms": 0.855,
++          "helpers_ms": 15.736,
++          "inside": null,
++          "key_ms": 1.07,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.066,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.393,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 33.967,
++          "cache": "hit",
++          "closures_ms": 0.085,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.325,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.061,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.058,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 27.682,
++          "cache": "hit",
++          "closures_ms": 0.247,
++          "helpers_ms": 30.461,
++          "inside": null,
++          "key_ms": 0.47,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.053,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.232,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 28.042,
++          "cache": "hit",
++          "closures_ms": 0.083,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.335,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.065,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.058,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 31.932,
++          "cache": "hit",
++          "closures_ms": 0.116,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.382,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.072,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.063,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Verified"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "offset",
++      "hits": 0,
++      "in_process_ms": 2217.185,
++      "in_process_ms_each": [
++        2250.594,
++        2219.084,
++        2217.185,
++        2378.795,
++        1973.226,
++        1903.437,
++        2009.163
++      ],
++      "process_ms": 2215.88,
++      "process_ms_each": [
++        2010.695,
++        2215.88,
++        2063.914,
++        2292.107,
++        2397.782,
++        2390.35,
++        2201.648
++      ],
++      "proofs": 5,
++      "scenario": "defect, cold",
++      "stages_ms": [
++        {
++          "ms": 245.309,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.861,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.292,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.518,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.0,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 1723.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 197.521,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 15.56,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 14.364,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 29.913,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 115.053,
++          "before_ms": 66.169,
++          "cache": "miss",
++          "closures_ms": 0.834,
++          "helpers_ms": 14.968,
++          "inside": null,
++          "key_ms": 1.058,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.016,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.426,
++          "replay_ms": 6.131,
++          "runs_ms": 78.0,
++          "store_ms": 6.432,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 28.071,
++          "before_ms": 85.976,
++          "cache": "miss",
++          "closures_ms": 0.099,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.402,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.028,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.067,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.223,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 1712.857,
++          "before_ms": 32.82,
++          "cache": "miss",
++          "closures_ms": 0.338,
++          "helpers_ms": 60.783,
++          "inside": null,
++          "key_ms": 0.575,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.008,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.209,
++          "replay_ms": 10.057,
++          "runs_ms": 1641.0,
++          "store_ms": 10.427,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 27.456,
++          "before_ms": 26.503,
++          "cache": "miss",
++          "closures_ms": 0.093,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.377,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.02,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.091,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.162,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 37.084,
++          "before_ms": 33.84,
++          "cache": "miss",
++          "closures_ms": 0.145,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.454,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.02,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.07,
++          "replay_ms": 0.0,
++          "runs_ms": 2.0,
++          "store_ms": 0.212,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Refuted"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Refuted"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "offset",
++      "hits": 5,
++      "in_process_ms": 265.297,
++      "in_process_ms_each": [
++        256.823,
++        266.45,
++        248.997,
++        253.531,
++        265.297,
++        290.794,
++        413.701
++      ],
++      "process_ms": 491.079,
++      "process_ms_each": [
++        550.996,
++        491.079,
++        473.262,
++        548.201,
++        492.507,
++        462.536,
++        444.886
++      ],
++      "proofs": 5,
++      "scenario": "defect, rerun",
++      "stages_ms": [
++        {
++          "ms": 222.533,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.87,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.411,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.54,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.386,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 0.0,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.0,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 13.806,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 23.064,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 71.375,
++          "cache": "hit",
++          "closures_ms": 0.95,
++          "helpers_ms": 16.958,
++          "inside": null,
++          "key_ms": 1.196,
++          "loading_ms": 0.0,
++          "lookup_ms": 7.117,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.454,
++          "replay_ms": 7.019,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 58.235,
++          "cache": "hit",
++          "closures_ms": 0.091,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.382,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.065,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.073,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 31.112,
++          "cache": "hit",
++          "closures_ms": 0.267,
++          "helpers_ms": 33.089,
++          "inside": null,
++          "key_ms": 0.511,
++          "loading_ms": 0.0,
++          "lookup_ms": 6.865,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.194,
++          "replay_ms": 6.787,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 29.235,
++          "cache": "hit",
++          "closures_ms": 0.09,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.383,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.064,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.079,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 32.575,
++          "cache": "hit",
++          "closures_ms": 0.156,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.551,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.084,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.099,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Refuted"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Refuted"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    }
++  ],
++  "units_ms": [
++    {
++      "ms": 0.028,
++      "stage": "decoding every class file of the old build (4 files, 4988 bytes)"
++    },
++    {
++      "ms": 0.14,
++      "stage": "relocating the old build into package before/ (each proof does once)"
++    },
++    {
++      "ms": 0.093,
++      "stage": "loading both builds for alignment (compare does once)"
++    },
++    {
++      "ms": 0.223,
++      "stage": "aligning the two builds (compare does once)"
++    },
++    {
++      "ms": 12.759,
++      "stage": "reading both builds' entry points' observation specs (compare does once)"
++    },
++    {
++      "ms": 6.257,
++      "stage": "opening the JDK's image, lib/modules (each class path with the JDK does: several per proof)"
++    },
++    {
++      "ms": 0.324,
++      "stage": "writing the models' 17 class files into a work directory (each proof does once, after its lookup)"
++    },
++    {
++      "ms": 0.088,
++      "stage": "the models' digest (each claim key takes it)"
++    },
++    {
++      "ms": 35.686,
++      "stage": "the binary's digest (12900080 bytes; once per process)"
++    }
++  ],
++  "what": "R3 of llm-dlc/loops/application-core-reuse.md: a small compare run's time by stage, on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191), for these fixtures only"
++}
+\ No newline at end of file
+--- /dev/null
++++ b/lib/benchmark/preparation/preparation.md
+@@ -0,0 +1,100 @@
++# R3: a small compare run's time by stage
++
++The joint example's builds (examples 190, 191), medians of 7 repeats, a release build; for these fixtures only.
++
++## Compilation (javac)
++
++| Build | ms |
++|---|---|
++| the Spring stand-ins | 636.4 |
++| before | 403.2 |
++| after | 429.3 |
++| offset | 412.9 |
++
++## Repeated stages, one by one
++
++| Stage | ms |
++|---|---|
++| decoding every class file of the old build (4 files, 4988 bytes) | 0.03 |
++| relocating the old build into package before/ (each proof does once) | 0.14 |
++| loading both builds for alignment (compare does once) | 0.09 |
++| aligning the two builds (compare does once) | 0.22 |
++| reading both builds' entry points' observation specs (compare does once) | 12.76 |
++| opening the JDK's image, lib/modules (each class path with the JDK does: several per proof) | 6.26 |
++| writing the models' 17 class files into a work directory (each proof does once, after its lookup) | 0.32 |
++| the models' digest (each claim key takes it) | 0.09 |
++| the binary's digest (12900080 bytes; once per process) | 35.69 |
++
++## The runs
++
++### cold (`after`)
++
++5 proofs, 0 exact hits; in process 460.6 ms, as a process 496.1 ms (medians of 7)
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 207.8 |
++| plan: both versions' reach and closures compared | 0.8 |
++| key: the claim and its digest | 1.3 |
++| key's closures: both versions' closures digested | 1.5 |
++| lookup: reading the store | 0.1 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 55.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 161.7 |
++| store: writing the result, a refutation's witness replayed first | 1.0 |
++| replay of a stored or new witness (inside lookup and store) | 0.0 |
++| outside every proof: compare's own steps after the last proof | 31.2 |
++
++### unchanged rerun (`after`)
++
++5 proofs, 5 exact hits; in process 209.8 ms, as a process 290.3 ms (medians of 7)
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 185.4 |
++| plan: both versions' reach and closures compared | 0.8 |
++| key: the claim and its digest | 1.2 |
++| key's closures: both versions' closures digested | 1.5 |
++| lookup: reading the store | 0.3 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 0.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
++| store: writing the result, a refutation's witness replayed first | 0.0 |
++| replay of a stored or new witness (inside lookup and store) | 0.0 |
++| outside every proof: compare's own steps after the last proof | 20.4 |
++
++### defect, cold (`offset`)
++
++5 proofs, 0 exact hits; in process 2217.2 ms, as a process 2215.9 ms (medians of 7)
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 245.3 |
++| plan: both versions' reach and closures compared | 0.9 |
++| key: the claim and its digest | 1.3 |
++| key's closures: both versions' closures digested | 1.5 |
++| lookup: reading the store | 0.0 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 1723.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 197.5 |
++| store: writing the result, a refutation's witness replayed first | 15.6 |
++| replay of a stored or new witness (inside lookup and store) | 14.4 |
++| outside every proof: compare's own steps after the last proof | 29.9 |
++
++### defect, rerun (`offset`)
++
++5 proofs, 5 exact hits; in process 265.3 ms, as a process 491.1 ms (medians of 7)
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 222.5 |
++| plan: both versions' reach and closures compared | 0.9 |
++| key: the claim and its digest | 1.4 |
++| key's closures: both versions' closures digested | 1.5 |
++| lookup: reading the store | 0.4 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 0.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
++| store: writing the result, a refutation's witness replayed first | 0.0 |
++| replay of a stored or new witness (inside lookup and store) | 13.8 |
++| outside every proof: compare's own steps after the last proof | 23.1 |
