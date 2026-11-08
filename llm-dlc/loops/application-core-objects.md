@@ -438,6 +438,47 @@ Never relax the interface to unblock it.
     JBMC, 65 of 65 expected. It closes VF-022 when it passes. The verification loop owns the finding's entry.
   - **Next**: as the entry above, `witness::differences` must not count a replay that couldn't run one version as
     reproduced, with a reproducer first.
+- 2026-11-08, **O2's replay: a replay that cannot run one version reproduces nothing** (the main brief's Phase 0
+  finding on VF-015's step 4). The integration report is still 06:36's (the generated files only); job
+  `20261108-072230-…` is still pending.
+  - **The reproducer**, native with no JBMC: `Digits.value(ch)` returns `ch - 48`, and the new version calls
+    `"…".formatted()`, which the interpreter refuses ("String.format depends on the default locale"), under
+    `--gaps assume`.
+    - Where the new version throws at `ch = 1655`, the refutation was `reproduced` by the interpreter, its new outcome
+      `<could not replay: …>`, VF-015's step 4 exactly.
+    - Where it reads `a.toString() != a` of a formatted string, the checker's approximation (a new object) takes a
+      path the JVM never takes, since the JVM's `String.toString` returns the string itself. It was a **false
+      refutation**: `before: 1607`, `after: <could not replay: …>`, `reproduced: true`. A JBMC stub can do the same.
+    - The property check had the same hole: `reproduced` on an unrun method.
+  - **What**:
+    - `witness::differences` names no difference where either replay couldn't run its version: an unknown outcome
+      differs from nothing.
+    - In both checks, such a witness is run on a JVM, with or without contracts: before, only a witness through a
+      contract was (`equivalence::unreplayed`, beside `unconfirmed_through_contracts`).
+      - The harness fails there: a violation, `replay.by` `jvm`. The differences are the JVM's, from each version
+        alone where it runs them (static methods of plain parameters), otherwise none, which leaves a heap claim
+        unresolved.
+      - The JVM finds the versions agreeing, or the property holding, or can't run it: *unverifiable*, with the
+        cause. `unreproduced_cause` now names the gaps assumed under `--gaps assume`.
+    - The proof line no longer says "where the contracts stood" when there were none.
+  - **Verified inline** (native, no JBMC):
+    - `tests/application_core_objects.rs`'s `o2_a_replay_that_cannot_run_one_version_is_no_reproduction`, which
+      failed before. Regression: the throw refuted on a JVM, `after: throws IllegalArgumentException("not a
+      digit")`, `differs` `exception`; `toString` unverifiable. Property: the same pair.
+    - The unit test `a_replay_that_could_not_run_one_version_differs_in_nothing` (witness).
+    - The lib tests (230). In the stream's file, 21 pass and 1 is ignored.
+    - The suites `heap`, `foundations`, `compare`, `effects`, `observations`, `alignment`, `summaries`,
+      `conformance` and `skill` pass. `application_core` passes except O3, which waits on the fixture's allocation
+      bound (the second entry).
+  - **Job** `20261108-074116-application-core-objects-o2-a-replay-tha` (pending), two parts:
+    - `lib/tests/integration.rs` under JBMC, whose stubs are where an unreplayable outcome comes from;
+    - VF-015's step 4 on example 109, made stricter: the change found, replayed on a JVM (`replay.by` `jvm`), the
+      new outcome the JVM's `DecoderException`, never `could not replay`.
+
+    It doesn't close VF-015, whose step 5 is the user's (deferred).
+  - `lib/README.md`: a paragraph **A replay that cannot run a version reproduces nothing**.
+  - **Next**: O2's String adapter waits for the merge (values' `nlkuyptr`). Optional: array fields in property
+    expressions. Everything else left waits on jobs, another stream or the coordinator (see the entries above).
 - Status: working
 
 ## Loop settings

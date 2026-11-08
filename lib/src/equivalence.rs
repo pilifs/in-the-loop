@@ -544,6 +544,10 @@ pub(crate) fn unreproduced_cause(result: &JbmcResult) -> String {
     if !stubs.is_empty() {
         return format!("The path to it probably goes through what JBMC approximates ({}): a stub returns any value of its type, which may be one the JDK's call never returns", stubs.join(", "));
     }
+    let assumed: Vec<&str> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Assumed)).map(|g| g.id.as_str()).collect();
+    if !assumed.is_empty() {
+        return format!("The path to it goes through what the tool's own checker approximates under --gaps assume ({}): an approximation says less of the call than the JDK's code does", assumed.join(", "));
+    }
     "A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value".into()
 }
 
@@ -564,6 +568,15 @@ pub(crate) fn unconfirmed_through_contracts(result: &JbmcResult, rendered: &str,
         verb = if applied.len() == 1 { "s" } else { "" },
         list = applied.join(", ")
     ))
+}
+
+/// Why a counterexample of a run that applied no contract is no reproduction when the interpreter cannot run
+/// `which` (`the new version`, `the method`) on it (`replay` is what it said): that outcome is unknown, so it
+/// differs from nothing, and the witness is run on a JVM, which decides (O2, after VF-015's step 4, where an
+/// outcome the interpreter could not produce counted as a difference).
+pub(crate) fn unreplayed(result: &JbmcResult, rendered: &str, replay: &str, which: &str) -> String {
+    let why = replay.trim_start_matches("<could not replay: ").replace(['<', '>'], "");
+    format!("{}'s counterexample {rendered} is no reproduction in the interpreter, which cannot run {which} on it ({why})", checker_name(result))
 }
 
 /// Why a witness through contracts that a JVM ran is no verdict: on the JVM, with the JDK's own calls where the
@@ -598,8 +611,13 @@ fn checker_name(result: &JbmcResult) -> &'static str {
 }
 
 /// How a witness was confirmed when the interpreter could not run it and a JVM did.
-pub(crate) fn run_on_jvm_words(jdk: &str) -> String {
-    format!("run on a JVM (JDK {jdk}) with the JDK's own calls where the contracts stood, since the interpreter cannot run it")
+/// `contracts`: whether the run applied any, which the JVM's own calls stand in for.
+pub(crate) fn run_on_jvm_words(jdk: &str, contracts: bool) -> String {
+    if contracts {
+        format!("run on a JVM (JDK {jdk}) with the JDK's own calls where the contracts stood, since the interpreter cannot run it")
+    } else {
+        format!("run on a JVM (JDK {jdk}), since the interpreter cannot run it")
+    }
 }
 
 /// The verdict's words for the contracts a verified run rests on (`--contracts`), `, relying on 2 contracts for
@@ -2072,12 +2090,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Verdict::Violation => {
             let found = last.arguments(&flat_types)?;
             let mut replays = replay_both(&found);
-            replay = Some(Replay { by: "interpreter".into(), reproduced: !replays.agree });
-            let unreplayed = [&replays.before, &replays.after].into_iter().find(|t| t.starts_with("<could not replay"));
-            let mut unconfirmed = unreplayed.and_then(|t| unconfirmed_through_contracts(&last, &witness::call_in(&method_name, &layout, &found).0, t));
-            // A witness through a contract that the interpreter cannot run is run on a JVM: the harness on it, with
-            // the JDK's real calls where the contracts stood, then each version alone when both are static
-            // methods of the harness's parameters, for what each did.
+            let unreplayed = [(&replays.before, "the previous version"), (&replays.after, "the new version")].into_iter().find(|(t, _)| t.starts_with("<could not replay"));
+            replay = Some(Replay { by: "interpreter".into(), reproduced: !replays.agree && unreplayed.is_none() });
+            // A replay that could not run a version reproduces nothing: that outcome is unknown (O2, after VF-015's
+            // step 4). Through a contract or not, the witness is the JVM's to decide.
+            let through_contracts = unreplayed.and_then(|(t, _)| unconfirmed_through_contracts(&last, &witness::call_in(&method_name, &layout, &found).0, t));
+            let contracted = through_contracts.is_some();
+            let mut unconfirmed = through_contracts.or_else(|| unreplayed.map(|(t, which)| self::unreplayed(&last, &witness::call_in(&method_name, &layout, &found).0, t, which)));
+            // A witness the interpreter cannot run is run on a JVM: the harness on it, with the JDK's real calls
+            // where any contracts stood, then each version alone when both are static methods of the harness's
+            // parameters, for what each did, and what they differ in.
             let mut on_jvm: Option<String> = None;
             let mut on_jvm_too: Option<String> = None;
             let mut jvm_ran = false;
@@ -2098,11 +2120,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 match crate::jvm_witness::run(&work.join("jvm-witness"), harness::CLASS, &flat_types, &slots, &found, &calls, &entries) {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
                         let alone_words = "<not run alone on the JVM, which the harness's assertion fails on>".to_string();
-                        let (before, after) = match run.calls.as_slice() {
-                            [b, a] => (b.with_leftovers(params, &found), a.with_leftovers(params, &found)),
-                            _ => (if replays.before.starts_with("<could not replay") { alone_words.clone() } else { replays.before.clone() }, if replays.after.starts_with("<could not replay") { alone_words } else { replays.after.clone() }),
+                        // What the two differ in is the JVM's to say where it ran each version; otherwise it is
+                        // unknown (the interpreter's replays, one unrun, differ in nothing).
+                        let (before, after, differs) = match run.calls.as_slice() {
+                            [b, a] => (b.with_leftovers(params, &found), a.with_leftovers(params, &found), witness::differences(b, a, params, &found, &iff_pairs)),
+                            _ => (if replays.before.starts_with("<could not replay") { alone_words.clone() } else { replays.before.clone() }, if replays.after.starts_with("<could not replay") { alone_words } else { replays.after.clone() }, replays.differs.clone()),
                         };
-                        replays = Replays { before, after, agree: false, relation_note: None, differs: replays.differs.clone() };
+                        replays = Replays { before, after, agree: false, relation_note: None, differs };
                         on_jvm = Some(run.jdk);
                         unconfirmed = None;
                     }
@@ -2112,7 +2136,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                             [b, a] => format!("the previous version gives {} and the new one {} there, which the harness holds to agree", b.with_leftovers(params, &found), a.with_leftovers(params, &found)),
                             _ => "the harness finds the two versions agreeing there".to_string(),
                         };
-                        unconfirmed = Some(not_reproduced_on_jvm(&last, &rendered, &run.jdk, &what, true));
+                        unconfirmed = Some(if contracted { not_reproduced_on_jvm(&last, &rendered, &run.jdk, &what, true) } else { format!("{p}; on a JVM (JDK {}), {what}, so it is no counterexample. {}", run.jdk, unreproduced_cause(&last)) });
                     }
                     Ok(run) => {
                         jvm_ran = true;
@@ -2223,7 +2247,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let stage = last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default();
             let shrinking = if shrunk { format!(" as {rendered_found}, shrunk to the input above in {shrink_runs} interpreter runs") } else { String::new() };
             let replayed_by = match (&on_jvm, &jvm_note) {
-                (Some(jdk), _) => run_on_jvm_words(jdk),
+                (Some(jdk), _) => run_on_jvm_words(jdk, contracted),
                 (None, Some(note)) => format!("replayed in the interpreter {note}"),
                 (None, None) => "replayed in the interpreter".into(),
             };

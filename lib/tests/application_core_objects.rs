@@ -923,3 +923,79 @@ fn o2_a_shrunk_witness_reproduces_the_same_failure() {
     assert_eq!(c.found.as_deref(), Some(found.input.as_str()), "{}", o.output);
     assert!(o.replay.as_ref().is_some_and(|r| r.by == "jvm" && r.reproduced), "{}", o.output);
 }
+
+const DIGITS: &str = r#"package digits;
+
+/** A digit's value. Its edits below call `String.formatted`, which the interpreter cannot run. */
+public class Digits {
+    public static int value(int ch) {
+        return ch - 48;
+    }
+}
+"#;
+
+/// `Digits` with `edit` before its return: `formats` throws, with a message `String.format` makes, where it was a
+/// value; `same` reads the identity of a formatted string's `toString`, which the checker approximates under
+/// `--gaps assume` as a new object, and which the JVM gives as the string itself, so that it changes nothing.
+fn digits(name: &str, edit: &str) -> PathBuf {
+    compile(name, &[("digits/Digits.java", &DIGITS.replace("        return ch - 48;", &format!("        {edit}\n        return ch - 48;")))])
+}
+
+const FORMATS: &str = "if (ch == 1655) { throw new IllegalArgumentException(\"not a digit\".formatted()); }";
+const SAME: &str = "String a = \"x\".formatted(); if (ch == 1655 && a.toString() != a) { return -1; }";
+
+/// A replay that cannot run one version is no reproduction (the main brief's Phase 0 finding on VF-015's step 4,
+/// where an outcome the interpreter could not produce counted as a difference). The counterexample is run on a JVM,
+/// the reference, as one through a contract is: a refutation where the harness fails there, with the JVM's
+/// outcomes and their difference; none where the versions agree there. The same holds for a property's witness.
+#[test]
+fn o2_a_replay_that_cannot_run_one_version_is_no_reproduction() {
+    let run = |name: &str, after: &Path| {
+        let before = digits("unreplayed-before", "");
+        let mut options = equivalence::Options::new(&before, after, "digits.Digits#value");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.gaps = jvmcontract::bmc::gaps::GapMode::Assume;
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        equivalence::run(&options).unwrap()
+    };
+    // A real difference: the new version throws where the previous one returned 1607.
+    let o = run("unreplayed-formats", &digits("unreplayed-formats", FORMATS));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| r.by == "jvm" && r.reproduced), "reproduced on a JVM, not by the interpreter's half a replay: {:?}\n{}", o.replay, o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.jvm.is_some(), "{}", o.output);
+    assert!(!c.after.contains("could not replay") && c.after.contains("IllegalArgumentException"), "the new version's outcome is the JVM's: {}", c.after);
+    assert_eq!(c.differs, vec!["exception".to_string()], "{}", o.output);
+
+    // No difference on a JVM: the checker's approximation of `toString` took the method down a path the JVM never
+    // does. That was a refutation, `reproduced`, with the new version's outcome unknown.
+    let o = run("unreplayed-same", &digits("unreplayed-same", SAME));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| !r.reproduced), "{:?}", o.replay);
+    let problem = o.problem.as_deref().unwrap_or_default();
+    assert!(problem.contains("cannot run the new version") && problem.contains("on a JVM"), "{problem}");
+
+    // The property check: the method's own outcome, unknown to the interpreter, is the JVM's.
+    let prove_on = |name: &str, classes: &Path| {
+        let mut options = property::Options::new(&[classes.to_path_buf()], "digits.Digits#value");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.gaps = jvmcontract::bmc::gaps::GapMode::Assume;
+        options.assert = Some("result == ch - 48".into());
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let o = prove_on("unreplayed-prove-formats", &digits("unreplayed-prove-formats", FORMATS));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| r.by == "jvm" && r.reproduced), "{:?}\n{}", o.replay, o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(!c.outcome.contains("could not replay") && c.outcome.contains("IllegalArgumentException"), "{}", c.outcome);
+    let o = prove_on("unreplayed-prove-same", &digits("unreplayed-prove-same", SAME));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| !r.reproduced), "{:?}", o.replay);
+}

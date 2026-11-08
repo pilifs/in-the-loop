@@ -644,8 +644,15 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
 /// view under one), `array:a` for an array parameter as left, `field:q` for an object parameter as left (its view
 /// under a correspondence, with `field:q.cents` for each previous version's path the views read differently, or
 /// each primitive path read differently of an object of the same shape compared without one), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
+///
+/// None where either replay could not run its version ([`Replayed::could_not_replay`]): an outcome the interpreter
+/// could not produce is unknown, and differs from nothing (O2, after VF-015's step 4). The caller runs such a
+/// witness on a JVM, whose outcomes it compares in its place.
 pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> Vec<String> {
     let mut out = Vec::new();
+    if before.could_not_replay() || after.could_not_replay() {
+        return out;
+    }
     let view = |r: &Replayed, name: &str| r.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
     if before.category != after.category || before.thrown.is_some() != after.thrown.is_some() {
         out.push("exception".to_string());
@@ -901,6 +908,24 @@ mod tests {
     use super::*;
     use crate::harness::RecordType;
     use serde_json::json;
+
+    /// A replay of `outcome` alone, as a call that returned (`returned`) or could not be run.
+    fn replayed(outcome: &str, returned: Option<Value>) -> Replayed {
+        Replayed { outcome: outcome.into(), returned, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() }
+    }
+
+    /// VF-015's step 4: the previous version returned 7 and the new one could not be replayed. Its outcome is
+    /// unknown, so the two differ in nothing the replay knows, never in `result`.
+    #[test]
+    fn a_replay_that_could_not_run_one_version_differs_in_nothing() {
+        let params = [crate::harness::expr::Param { name: "ch".into(), ty: Type::Char, slot: 0 }];
+        let arguments = [Argument::Scalar(Value::Int(0x667))];
+        let seven = replayed("7", Some(Value::Int(7)));
+        let unknown = replayed("<could not replay: <unsupported: String.format depends on the default locale>>", None);
+        assert_eq!(differences(&seven, &replayed("8", Some(Value::Int(8))), &params, &arguments, &[]), vec!["result".to_string()], "the premise: two outcomes that ran differ in the result");
+        assert!(differences(&seven, &unknown, &params, &arguments, &[]).is_empty());
+        assert!(differences(&unknown, &seven, &params, &arguments, &[]).is_empty());
+    }
 
     #[test]
     fn values_are_exact_for_their_type() {

@@ -837,11 +837,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 }
                 harness::expr::eval_with(&harness.assertion, &locals, &arrays)
             };
-            // A witness through a contract that the interpreter cannot run (a JDK call outside it) is run on a JVM:
-            // the harness on the witness, with the JDK's real calls where the contracts stood. It is a
-            // counterexample when the property fails there, and none when the JVM's calls do not take the method
-            // where the contracts let the checker suppose.
-            let mut unconfirmed = Some(&replayed).filter(|r| r.could_not_replay()).and_then(|r| crate::equivalence::unconfirmed_through_contracts(&last, &render(&found).0, &r.outcome));
+            // A witness that the interpreter cannot run (a JDK call outside it) is run on a JVM: the harness on the
+            // witness, with the JDK's real calls where any contracts stood. It is a counterexample when the property
+            // fails there, and none when the JVM's calls do not take the method where the checker supposed. Without
+            // a contract too: an outcome the interpreter could not produce reproduces nothing (O2, after VF-015).
+            let unreplayed = Some(&replayed).filter(|r| r.could_not_replay()).map(|r| r.outcome.clone());
+            let through_contracts = unreplayed.as_deref().and_then(|t| crate::equivalence::unconfirmed_through_contracts(&last, &render(&found).0, t));
+            let contracted = through_contracts.is_some();
+            let mut unconfirmed = through_contracts.or_else(|| unreplayed.as_deref().map(|t| crate::equivalence::unreplayed(&last, &render(&found).0, t, "the method")));
             if let Some(p) = &unconfirmed {
                 let mut entries = vec![harness_dir.clone()];
                 entries.extend(options.classes.iter().cloned());
@@ -860,7 +863,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
                         jvm_ran = true;
                         let did = run.calls.first().map(|r| if r.thrown.is_some() || r.outcome == "void" { r.with_leftovers(&flat, &found) } else { format!("returns {}", r.with_leftovers(&flat, &found)) }).unwrap_or_default();
-                        unconfirmed = Some(crate::equivalence::not_reproduced_on_jvm(&last, &rendered, &run.jdk, &format!("the method {did} there and the property holds on it"), false));
+                        let what = format!("the method {did} there and the property holds on it");
+                        unconfirmed = Some(if contracted { crate::equivalence::not_reproduced_on_jvm(&last, &rendered, &run.jdk, &what, false) } else { format!("{p}; on a JVM (JDK {}), {what}, so it is no counterexample. {}", run.jdk, crate::equivalence::unreproduced_cause(&last)) });
                     }
                     Ok(run) => {
                         jvm_ran = true;
@@ -978,7 +982,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 String::new()
             };
             let replayed_by = match (&on_jvm, &jvm_note) {
-                (Some(jdk), _) => crate::equivalence::run_on_jvm_words(jdk),
+                (Some(jdk), _) => crate::equivalence::run_on_jvm_words(jdk, contracted),
                 (None, Some((_, note))) => format!("replayed in the interpreter {note}"),
                 (None, None) => "replayed in the interpreter".into(),
             };

@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-074116-application-core-objects-o2-a-replay-tha",
+  "title": "application-core objects O2: a replay that cannot run one version reproduces nothing; lib/tests/integration.rs under JBMC, and VF-015's step 4 (example 109) replayed on a JVM",
+  "description": "Revision: the objects stream's commit that commits this job, row O2 of llm-dlc/loops/application-core-acceptance.md (replays are faithful), after the main brief's Phase 0 finding on VF-015's step 4: job 20261108-024648-... refuted Hex#toDigit with the new version's replay '<could not replay: String.format depends on the default locale>', and still reported replay.reproduced true, an outcome the interpreter could not produce counting as a difference. The change: witness::differences names no difference where a replay could not run its version, and equivalence and prove run such a witness on a JVM with or without contracts (before, only through a contract). It is a violation where the harness fails there (replay.by jvm, the differences the JVM's, from each version run alone for static methods), unverifiable where the JVM finds the versions agreeing or the property holding. Inline, native, a reproducer shows both: a real throw refuted on a JVM, and a false refutation under --gaps assume (a formatted string's toString approximated as a new object) now unverifiable. Step 1 runs lib/tests/integration.rs under JBMC, whose stubs are where unreplayable outcomes come from: no test may change verdict. Steps 2-4 rerun VF-015's step 4 (commons-codec 87f6aa28 vs 43a9aa66, Hex#toDigit, default engine, JBMC, every char x int), made stricter: the change found with ch > 127, replayed on a JVM, the new version's outcome the JVM's DecoderException, differs exactly [exception]. This does not close VF-015, whose step 5 (the throwing-initializer refusal) the user deferred.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/witness.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/property.rs",
+      "lib/tests/integration.rs"
+    ],
+    "examples": [
+      "109"
+    ]
+  },
+  "expected": "step 1: every non-ignored integration test passes (exit 0), 65 of 65. Steps 2-3 (clone, compile) exit 0. Step 4: verdict violation (jvmcontract exit 1), the witness's ch > 127 (a Unicode digit the old toDigit decodes and the new one rejects), replay {by: jvm, reproduced: true}, before a digit's value and after 'throws DecoderException(...)' with no 'could not replay', differs ['exception']; the step exits 0 once those checks hold. Any other outcome is a finding about this change.",
+  "submitted": {
+    "at": "2026-11-08T07:41:16+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc",
+    "git",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "3G",
+    "duration": "15m",
+    "timeout": "60m",
+    "notes": "step 1 as 20261108-063512 and -064305 (3-4 min at 2.1 GiB, under a 2-CPU quota); steps 2-4 as 20261108-024648 (about 10 s for its step 4, 100 MiB peak, plus the clone)"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    },
+    {
+      "name": "clone 109",
+      "run": "mkdir -p verification/.work-109-o2 && cd verification/.work-109-o2 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+      "cwd": "."
+    },
+    {
+      "name": "compile 109",
+      "run": "cd verification/.work-109-o2 && mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+      "cwd": "."
+    },
+    {
+      "name": "109: the change found and replayed on a JVM",
+      "run": "cd verification/.work-109-o2 && jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change --json > change.json; status=$?; python3 -c \"import json; o = json.load(open('change.json')); cx = o.get('counterexample') or {}; ch = [i['value'] for i in cx.get('inputs', []) if i['name'] == 'ch']; r = o.get('replay') or {}; print('verdict', o['verdict'], 'input', cx.get('input'), 'before', cx.get('before'), 'after', cx.get('after'), 'differs', cx.get('differs'), 'jvm', cx.get('jvm'), 'replay', r, 'problem', o.get('problem')); assert o['verdict'] == 'violation', o['verdict']; assert r.get('reproduced') and r.get('by') == 'jvm', r; assert ch and ch[0] > 127, ch; assert 'could not replay' not in (cx.get('before') or '') + (cx.get('after') or ''), cx; assert 'DecoderException' in (cx.get('after') or ''), cx.get('after'); assert cx.get('differs') == ['exception'], cx.get('differs')\" && test $status -eq 1",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
