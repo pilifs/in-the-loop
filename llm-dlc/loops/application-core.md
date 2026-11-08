@@ -499,7 +499,27 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
       objects stream's replay plumbing).
 - 2026-11-08, **VF-015 deferred by the user**: the streams launch without it. Other ways of proving step 5 are for
   later; the options above stand. The planning session pushed (prerequisite 6) and set this status (prerequisite 7).
-- Status: working
+- 2026-11-08, **the reconcile's step 1, checked at `ntyolumk`: three streams aren't finished**, so nothing was merged.
+  Every stream's loop has stopped (no `feature-loop-application-core-*` scope but this loop's, the integration
+  check's included), and the queue is empty (298 collected, none pending). But only values ends `blocked: ...`
+  (at `pymxzpyu`). Objects (`nqpqroqp`), environment (`xlxxtpul`) and reuse (`womryvut`) still end
+  `- Status: working`: each session decided to stop without setting its status, and `run-streams.sh` counts such a
+  stop as done ("its status doesn't say why"). Each still has work of its own:
+  - **objects**: record O2's job `20261108-074116-…`, now passed and collected (`d3739c98`), then a status: it
+    waits on the merge for O2's String adapter (values' `nlkuyptr`), and on a decision about O3's frozen
+    allocation bound of 0, under which `application_core`'s O3 is unresolved rather than `expected.json`'s verdict;
+  - **environment**: E3 and the Q integration wait on the objects stream's construction plan and the values
+    stream's String adapter, so `blocked: ...` by its own account, which its last turn couldn't write;
+  - **reuse**: read job `20261108-063259`'s figures (collected) into R3's record, which closes R3. R4 is optional.
+
+  The integration check's last report (09:36) merged the four `@-` and conflicts only in generated files
+  (`llm-dlc/README.md`, `index.json`, `traces/README.md`, `traces/metrics.json`), which `sync.py` regenerates.
+- Status: blocked: three streams stopped with `Status: working` (objects, environment, reuse; above), which isn't
+  finished for the reconcile. Set this status back to `working` and run `FEATURE_LOOP_MEMORY_MAX=4G
+  CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh application-core` again: it reruns only those three, which can
+  each record their last results and a status, then this loop. Or decide that they count as finished, and set
+  this status back to `working` alone, for the merge to take what they committed. O3's allocation bound also needs
+  your decision.
 
 ## Loop settings
 

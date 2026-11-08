@@ -1,0 +1,14 @@
+# Feature loop: application-core
+
+Started 2026-11-08 10:22:28 UTC, no limit on cycles, session 6ca21bdf-4743-4500-90ea-7fe6280624b2, claude-opus-5-5 at high effort, after change ntyolumkwzuozwvnvtmnwypupkztnmqu.
+
+> Work on the brief in `llm-dlc/loops/application-core.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. First run `jj status` and judge what a change in the working copy is. Another session may be at work in this repository at the same time (the verification loop collects job results and commits them, for one), and its uncommitted files are not yours. A change that belongs to the brief's current work (the step its `## Progress` section or your own last turn left in progress) is a cycle that was interrupted: finish, verify and commit it first. Anything else is another session's: leave it alone, never finish, revert or discard it, and keep it out of your commit by moving it below yours and back, as step 5 of `.claude/skills/run-verification/SKILL.md` shows. Finishing an interrupted step is this cycle's piece of work. Otherwise take the next piece of work the brief calls for that is not done yet, by its `## Progress` section if it has one (it carries over from earlier runs of this loop) and by the commits since (`jj log -r 'ntyolumkwzuozwvnvtmnwypupkztnmqu..@-'` lists this run's), finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its `## Progress` section; if it has one, update it in the same commit with what this piece did and what comes next. If the rest of the brief is wrong or out of date, say so in the commit message.
+
+Brief `llm-dlc/loops/application-core.md` at sha256 110388b2d9056090e619c2d4b0e63019ced34264a1b247c218b6cc1cb3449651.
+
+After each commit the session decides whether to go on:
+
+> The reconcile comes first. Don't stop before the merge is committed, unless a stream is unfinished or the merge needs the user. Then Phase 5. Keep the last line of Progress a status: `working`, `waiting on jobs ID ...`, `done`, or `blocked: ...` with what needs the user. Stop with `done` once Phase 5's criterion is met and the for-review list names every row's state. A missing core result is recorded as partial or blocked, never as done. Don't turn optional work into a second project. Items deferred by the timebox count as recorded deferrals, never as a reason to keep going.
+
+## Commits
+
