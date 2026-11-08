@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T02:07:50.621Z",
-  "duration_seconds": 25919,
+  "ended": "2026-11-08T02:08:56.321Z",
+  "duration_seconds": 25985,
   "stats": {
     "turns": 17,
-    "api_calls": 134,
-    "tool_calls": 134,
+    "api_calls": 142,
+    "tool_calls": 142,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 321718,
+    "peak_context_tokens": 336918,
     "usage": {
-      "input_tokens": 296,
-      "output_tokens": 137840,
-      "cache_read_input_tokens": 26972428,
-      "cache_creation_input_tokens": 679319
+      "input_tokens": 312,
+      "output_tokens": 142988,
+      "cache_read_input_tokens": 29594180,
+      "cache_creation_input_tokens": 694519
     }
   },
   "tools": {
-    "Bash": 115,
+    "Bash": 123,
     "Write": 11,
     "ToolSearch": 3,
     "Read": 2,
@@ -54,24 +54,24 @@
     {
       "index": 0,
       "started": "2026-11-07T18:55:51.567Z",
-      "ended": "2026-11-08T02:07:50.621Z",
+      "ended": "2026-11-08T02:08:56.321Z",
       "turns": 17,
-      "api_calls": 134,
+      "api_calls": 142,
       "usage": {
-        "input_tokens": 296,
-        "output_tokens": 137840,
-        "cache_read_input_tokens": 26972428,
-        "cache_creation_input_tokens": 679319
+        "input_tokens": 312,
+        "output_tokens": 142988,
+        "cache_read_input_tokens": 29594180,
+        "cache_creation_input_tokens": 694519
       },
-      "peak_context_tokens": 321718
+      "peak_context_tokens": 336918
     }
   ],
   "log": {
-    "sha256": "886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058",
-    "bytes": 3448895,
-    "lines": 1132,
-    "gzip_bytes": 650258,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058.jsonl.gz"
+    "sha256": "13b7d65abc80b63f58ac0f7f8e21e4c778df685bac0cb7daddbdb9e43055b92c",
+    "bytes": 3605288,
+    "lines": 1197,
+    "gzip_bytes": 672153,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/13b7d65abc80b63f58ac0f7f8e21e4c778df685bac0cb7daddbdb9e43055b92c.jsonl.gz"
   },
   "subagents": [
     {
@@ -278,9 +278,23 @@
       "summary": "application-core, prerequisite 2: the starting point recounted at the merge, and the contracts pass there",
       "body": "Where it starts from was recounted at main's yzpmxwnx (08d23149), after the cleanup and stub-reachability loops. Every row still holds, with line numbers moved. ObjectDomain's made_by, classes, allocations and label are still read by nothing outside the cache key's projection, and no production path fills Statement.spec. lib/tests/foundations.rs, compare.rs and effects.rs pass inline (23 tests). The cleanup merge's four reruns (20261107-215001-...: examples 150-152 and 160-161, 170-172, 190-196, lib/tests/integration.rs) passed. Since then only the gap preflight changed, and its guard job passed. The fixture notes and the cleanup leftovers are updated: VF-016 and VF-017 are closed, and VF-002, VF-015, VF-018 and VF-020 are open. Phase 0 is next.",
       "log_sha256": "886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058"
+    },
+    {
+      "change_id": "vlnommrurvpvzzwxqrqlosqkvnquorut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core: the domain-options row corrected, since the allocation bound is enforced",
+      "body": "The recount's grep missed it: spec/heap.rs:125-135 checks bounds.before/after.allocations against what each version's code makes in one call, a cleanup-loop fix, and gives an unresolved result over the bound. The row now names what check_with enforces (nullable, may_alias, both bounds) and what is unread: made_by's kind and calls, classes and label. Phase 0's step 1 says how calls and classes get enforced. equivalence::run reports the constructors its harness layout uses, and check_with compares them with the claim before any verdict. label stays the claim's words, covered by the key.",
+      "log_sha256": "13b7d65abc80b63f58ac0f7f8e21e4c778df685bac0cb7daddbdb9e43055b92c"
     }
   ],
   "logs": {
+    "13b7d65abc80b63f58ac0f7f8e21e4c778df685bac0cb7daddbdb9e43055b92c": {
+      "bytes": 3605288,
+      "lines": 1197,
+      "gzip_bytes": 672153,
+      "url": null
+    },
     "1fb300437e32f3109982d950f53ff6527594b87698e71209af981a9251662197": {
       "bytes": 2886500,
       "lines": 894,

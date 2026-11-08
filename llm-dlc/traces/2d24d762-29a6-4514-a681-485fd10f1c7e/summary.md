@@ -221,6 +221,12 @@ change `xvvulqqymyqm` · [log `78e28d952eab`](https://terminalvalue.net/raw-trac
 
 Where it starts from was recounted at main's yzpmxwnx (08d23149), after the cleanup and stub-reachability loops. Every row still holds, with line numbers moved. ObjectDomain's made_by, classes, allocations and label are still read by nothing outside the cache key's projection, and no production path fills Statement.spec. lib/tests/foundations.rs, compare.rs and effects.rs pass inline (23 tests). The cleanup merge's four reruns (20261107-215001-...: examples 150-152 and 160-161, 170-172, 190-196, lib/tests/integration.rs) passed. Since then only the gap preflight changed, and its guard job passed. The fixture notes and the cleanup leftovers are updated: VF-016 and VF-017 are closed, and VF-002, VF-015, VF-018 and VF-020 are open. Phase 0 is next.
 
+### application-core: the domain-options row corrected, since the allocation bound is enforced
+
+change `vlnommrurvpv` · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
+
+The recount's grep missed it: spec/heap.rs:125-135 checks bounds.before/after.allocations against what each version's code makes in one call, a cleanup-loop fix, and gives an unresolved result over the bound. The row now names what check_with enforces (nullable, may_alias, both bounds) and what is unread: made_by's kind and calls, classes and label. Phase 0's step 1 says how calls and classes get enforced. equivalence::run reports the constructors its harness layout uses, and check_with compares them with the claim before any verdict. label stays the claim's words, covered by the key.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz) has every step in between: reasoning, tool calls and their results.
