@@ -89,6 +89,14 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/util/ImmutableCollections$ListN",
 ];
 
+/// Whether a class is one of the immutable-list models the own checker runs ([`CHECKER_RUNS`]): `java.util.List`
+/// and `java.util.ImmutableCollections` with its list classes. A call into one of them from outside them runs only
+/// where an evidence record of the values stream samples it ([`crate::values::samples_list_call`]); any other is the
+/// JDK call it names, a gap ([`crate::bmc::gaps::outside_the_list_records`]).
+pub fn of_the_list_family(name: &str) -> bool {
+    name == "java/util/List" || name == "java/util/ImmutableCollections" || name.starts_with("java/util/ImmutableCollections$")
+}
+
 /// The model of a class, by internal name, whichever engines run it.
 pub fn find(name: &str) -> Option<&'static Model> {
     MODELS.iter().find(|m| m.name == name)

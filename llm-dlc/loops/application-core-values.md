@@ -400,10 +400,46 @@ just to bring a gap count down.
       `IndexOutOfBoundsException` then leaves the generated check).
 
     No job: seconds, inline. The whole lib suite passes.
-- **Next**: V3 step 2, the strict gap detection: an operation outside the models (a String method other than the
-  five, a list method no record samples) is a named gap under the strict engine, and workloads without Strings keep
-  their results. Then the tiny bound sweep, and the cache invalidation of the models' and domains' identities (R1's
-  projection, with the reuse stream).
+- 2026-11-08, **V3 step 2, strict gap detection** (this commit):
+  - **The audit**: a String method other than the five was already the JDK call it is, a named gap (`toUpperCase`,
+    `indexOf`, `hashCode`, `substring`, `compareTo`, `equals` through `Object`, `length` through `CharSequence`,
+    `String.valueOf`). A list method was not. Since V2 step 1 the checker ran every method the list models
+    implement, so claims over `equals`, `hashCode`, `toArray`, `addAll`, `remove(Object)`, `sort` and `List.of(E...)`
+    were proved on bytecode no record samples. `contains`, `indexOf` and `lastIndexOf` stopped at an element's
+    `equals` inside the models, not at the call. The gap scan also walked the models' `equals` and `hashCode` for any
+    `Object.equals` or `hashCode` call.
+  - **The change**: each record names its calls (`OperationEvidence::calls`). A call from outside the list models
+    into them that no list record names (`values::samples_list_call`) is the JDK call it names, for the engine and
+    the scan alike (`gaps::outside_the_list_records`, `models::of_the_list_family`): a gap of its kind, or a refusal
+    for `toArray`'s array result. The models' calls among themselves are unchanged. `values::LIST_MODEL` is bumped to
+    2, since the checker's list semantics changed. The docs move with it: the engine's table, the scan's module docs,
+    `lib/models/README.md`, and a `lib/README.md` paragraph.
+  - **Reproducer and checks**: `tests/values.rs`'s `an_operation_outside_the_values_models_is_a_named_gap_under_strict`
+    runs 20 checks (`tests/fixtures/values/values/Outside.java`), each reaching one such operation. Every claim holds
+    on the JVM. Under strict, merging from the start and never, each must end with no verdict, naming its gap (its id
+    up to the JDK), and the scan must report the same gap and walk none of the models' unsampled methods. Before the
+    fix, 37 of its 60 checks failed. A unit test holds each record's calls to the models (each implemented with code)
+    and to the String methods the checker models. Two sabotages fail the test: dropping the rule from the engine's
+    dispatch (20 operations), and from the scan's walk of overrides (11).
+  - **Workloads without Strings keep their results**: the whole lib suite passes unchanged, apart from four list
+    claims of the conformance corpus. Those reach the array form `List.of(E...)` on the paths in question, and go back
+    to `U`, the verdict they had before this stream: `listNull`'s proof, both of `listCopySame`'s, and
+    `listOfArray`'s refutation. `lib/benchmark/conformance.json` is re-blessed (4 `nativeStrict` values). One
+    assertion is narrowed to a single named claim and its exact gaps (`ADVISED_ON_EXCLUDED_PATHS`): strict still
+    proves `listChange` under `n == 0 || n == 8`, pruning the paths to `remove(Object)` and `addAll`, while `--gaps
+    advised`, deciding from the static scan, stops on those two gaps. The scan's documented imprecision, not a wrong
+    verdict. The benchmark's 27 Python tests pass.
+
+    Evidence level: unchanged (`tested`). No job: seconds, inline. The corpus's JBMC tests (`auto` now falls back to
+    JBMC on those four claims, as before V2 step 1) are covered by the next job that runs them. Job
+    `20261108-070211-…` is of V2 step 1's revision.
+  - **Found, for the for-review list**: the array form is sampled by the corpus on the JVM (`listOfArray`, and
+    `the_models_only_jbmc_runs_agree_with_the_jvm`), but by no record. If a fixture needs it, a record with boundary
+    cases in `Operations.java` would bring those four claims back. That is the optional "one list method", and no
+    fixture needs it now.
+- **Next**: the tiny bound sweep (a String's bound and a list's length, for an encoding cliff: a few sizes of one
+  check each, timed inline if seconds, a job otherwise). Then the cache invalidation of the models' and domains'
+  identities (R1's projection, with the reuse stream), and V3's wiring of model identity into claims.
 - Status: working
 
 ## Loop settings

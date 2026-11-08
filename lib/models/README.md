@@ -51,7 +51,12 @@ as a class path entry for any other tool.
   two fields of its objects there, and since 2026-11-08 `List.of`, `List.copyOf` and the immutable lists, a list's
   elements being fields of its objects (`List12`'s two, `ListN`'s array) and `ImmutableCollections`' initializer run
   as an application class's (`ClassPath::checker_class`: the one empty list and the sentinel of a list of one). It
-  dispatches an interface call on a list or its iterator to the model's method. Every step is the models' own, with
+  dispatches an interface call on a list or its iterator to the model's method, but only for the calls an evidence
+  record of `values::OPERATIONS` samples (`List.of`'s fixed forms, `copyOf`, `size`, `isEmpty`, `get`, the
+  iterator's path and the changes `add`, `set`, `remove(int)`, `clear`, the iterator's `remove`). Any other method
+  the models implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort`, `List.of(E...)` …),
+  called from outside them, is the JDK call it names, a named gap (`gaps::outside_the_list_records`); JBMC runs
+  their bytecode all the same. Every step is the models' own, with
   no JDK call, but `AbstractCollection()`'s empty constructor, which the checker reproduces exactly; `copyOf` of
   another implementation (an `ArrayList`) reaches that implementation's methods, which stay JDK gaps. Before, the
   checker met `List.of` as the gap `jdk-static-method`. The values stream's `lib/tests/values.rs` checks the

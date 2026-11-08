@@ -235,7 +235,7 @@ impl ValueAdapter for StringAdapter {
 /// The list model's identity, to be bumped whenever its semantics change outside the models' bytecode (the
 /// interpreter's natives, which replay, or how the checker runs the models); [`list_model`] adds the digest of the
 /// bytecode itself.
-pub const LIST_MODEL: &str = "jvmcontract list model 1: lib/models (java.util.List, java.util.ImmutableCollections and its list classes, run by the own checker and JBMC), lib/src/interp (Machine::immutable_list, which replays)";
+pub const LIST_MODEL: &str = "jvmcontract list model 2: lib/models (java.util.List, java.util.ImmutableCollections and its list classes, run by the own checker and JBMC, the checker only for the calls values::OPERATIONS samples), lib/src/interp (Machine::immutable_list, which replays)";
 
 /// The JDK whose immutable lists the models were written after and sampled against (`lib/tests/values.rs`,
 /// `lib/tests/conformance.rs`, on the JVM).
@@ -249,7 +249,7 @@ pub const MAX_LIST_LENGTH: u32 = 10;
 /// `java.util.ImmutableCollections` the own checker runs.
 pub fn list_model_digest() -> String {
     let mut bytes = Vec::new();
-    for model in crate::models::MODELS.iter().filter(|m| crate::models::CHECKER_RUNS.contains(&m.name) && (m.name == LIST || m.name.starts_with("java/util/ImmutableCollections"))) {
+    for model in crate::models::MODELS.iter().filter(|m| crate::models::CHECKER_RUNS.contains(&m.name) && crate::models::of_the_list_family(m.name)) {
         bytes.extend_from_slice(model.name.as_bytes());
         bytes.push(0);
         bytes.extend_from_slice(&(model.bytes.len() as u64).to_be_bytes());
@@ -270,7 +270,7 @@ pub fn list_model() -> ModelEvidence {
             "every List implementation but the JDK's immutable List12, ListN and its one empty list: a list made otherwise (an ArrayList) is refused as an input, and copyOf of one reaches its JDK calls, named gaps".into(),
             format!("List.of's array form, for more than {MAX_LIST_LENGTH} elements: no harness makes one"),
             "lists of Strings: the shared ElementKind::String has no bound for its elements' code units yet".into(),
-            "the models' methods beyond construction, size, isEmpty, get, the iterator and the changes they refuse (contains, indexOf, equals, hashCode and the like): run as their bytecode is written, sampled only by the conformance corpus".into(),
+            "the models' methods beyond the calls values::OPERATIONS samples (contains, indexOf, equals, hashCode, toArray, addAll, sort, the array form of List.of and the like): the own checker meets each as the JDK call it is, a named gap, though JBMC runs the models' bytecode for them".into(),
             "the interpreter's getClass of a list of one or two elements, which names ListN where the JVM's is List12".into(),
         ],
     }
@@ -487,6 +487,11 @@ pub struct OperationEvidence {
     pub level: EvidenceLevel,
     /// The methods of `values.Operations` whose cases sample it.
     pub sampled_by: &'static [&'static str],
+    /// The calls it is, as the bytecode names them, `name` and descriptor (`get(I)Ljava/lang/Object;`), on its
+    /// family's classes: a list call from outside the list models that none of the list records names is outside the
+    /// models, and the own checker meets it as the JDK call it is, a named gap ([`samples_list_call`]). None for an
+    /// instruction (a literal, a concatenation).
+    pub calls: &'static [&'static str],
 }
 
 impl OperationEvidence {
@@ -523,6 +528,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["a literal with an isolated surrogate in its source, which the class reader decodes as U+FFFD (classfile::decode_modified_utf8) for every engine alike: an interface request for the merge"],
         level: EvidenceLevel::Tested,
         sampled_by: &["literalUnit", "literalInterned"],
+        calls: &[],
     },
     OperationEvidence {
         operation: "invokedynamic makeConcatWithConstants (java.lang.invoke.StringConcatFactory)",
@@ -536,6 +542,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         ],
         level: EvidenceLevel::Tested,
         sampled_by: &["concatenated", "withChar"],
+        calls: &[],
     },
     OperationEvidence {
         operation: "java.lang.String.length()I",
@@ -546,6 +553,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &[],
         level: EvidenceLevel::Tested,
         sampled_by: &["length"],
+        calls: &["length()I"],
     },
     OperationEvidence {
         operation: "java.lang.String.isEmpty()Z",
@@ -556,6 +564,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &[],
         level: EvidenceLevel::Tested,
         sampled_by: &["isEmpty"],
+        calls: &["isEmpty()Z"],
     },
     OperationEvidence {
         operation: "java.lang.String.charAt(I)C",
@@ -566,6 +575,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["the exception's message"],
         level: EvidenceLevel::Tested,
         sampled_by: &["charAt"],
+        calls: &["charAt(I)C"],
     },
     OperationEvidence {
         operation: "java.lang.String.equals(Ljava/lang/Object;)Z",
@@ -576,6 +586,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["a String argument with no content (a number made into a String), which is a named gap"],
         level: EvidenceLevel::Tested,
         sampled_by: &["equalsContent", "equalsItself", "equalsAnotherClass", "equalNotSame"],
+        calls: &["equals(Ljava/lang/Object;)Z"],
     },
     OperationEvidence {
         operation: "java.lang.String.startsWith(Ljava/lang/String;)Z",
@@ -586,6 +597,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["startsWith(String, int)"],
         level: EvidenceLevel::Tested,
         sampled_by: &["startsWith"],
+        calls: &["startsWith(Ljava/lang/String;)Z"],
     },
     OperationEvidence {
         operation: "java.util.List.of: its fixed forms, () to (E, E, E, E, E, E, E, E, E, E)",
@@ -599,6 +611,19 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         ],
         level: EvidenceLevel::Tested,
         sampled_by: &["ofWithNull", "ofKeepsDuplicates", "elementsAreTheObjects", "emptyIsShared", "otherwiseFresh"],
+        calls: &[
+            "of()Ljava/util/List;",
+            "of(Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+            "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
+        ],
     },
     OperationEvidence {
         operation: "java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;",
@@ -609,6 +634,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["every other Collection: copyOf of one (an ArrayList) reaches its JDK calls, named gaps"],
         level: EvidenceLevel::Tested,
         sampled_by: &["copyOfIsTheList"],
+        calls: &["copyOf(Ljava/util/Collection;)Ljava/util/List;"],
     },
     OperationEvidence {
         operation: "java.util.List.size()I",
@@ -619,6 +645,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &[],
         level: EvidenceLevel::Tested,
         sampled_by: &["size"],
+        calls: &["size()I"],
     },
     OperationEvidence {
         operation: "java.util.List.isEmpty()Z",
@@ -629,6 +656,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &[],
         level: EvidenceLevel::Tested,
         sampled_by: &["isEmptyList"],
+        calls: &["isEmpty()Z"],
     },
     OperationEvidence {
         operation: "java.util.List.get(I)Ljava/lang/Object;",
@@ -639,6 +667,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["the exception's message", "the interpreter's getClass of a list of one or two, which names ListN (the replay's, not the checker's)"],
         level: EvidenceLevel::Tested,
         sampled_by: &["get"],
+        calls: &["get(I)Ljava/lang/Object;"],
     },
     OperationEvidence {
         operation: "java.util.List.iterator()Ljava/util/Iterator; with Iterator.hasNext()Z and next()Ljava/lang/Object;",
@@ -649,6 +678,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["listIterator, forEach and the other ways of walking a list"],
         level: EvidenceLevel::Tested,
         sampled_by: &["iterated", "nextPastTheEnd"],
+        calls: &["iterator()Ljava/util/Iterator;", "hasNext()Z", "next()Ljava/lang/Object;"],
     },
     OperationEvidence {
         operation: "java.util.List's changes: add(Ljava/lang/Object;)Z, set(ILjava/lang/Object;)Ljava/lang/Object;, remove(I)Ljava/lang/Object;, clear()V, Iterator.remove()V",
@@ -659,8 +689,24 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         leaves_out: &["the other changes (addAll, removeIf, sort and the like), which the models refuse as written but no case samples"],
         level: EvidenceLevel::Tested,
         sampled_by: &["add", "set", "removeAt", "clear", "iteratorRemove"],
+        calls: &[
+            "add(Ljava/lang/Object;)Z",
+            "set(ILjava/lang/Object;)Ljava/lang/Object;",
+            "remove(I)Ljava/lang/Object;",
+            "clear()V",
+            "remove()V",
+        ],
     },
 ];
+
+/// Whether a call `name(descriptor)` into the list models, from outside them, is one a list record of [`OPERATIONS`]
+/// samples. Any other the models implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort`,
+/// `List.of(E...)` …) is outside the models: the own checker and its gap scan meet it as the JDK call it is, a
+/// named gap under strict ([`crate::bmc::gaps::outside_the_list_records`]), instead of running bytecode no case
+/// samples. The models' own calls among themselves (`contains` calling `indexOf`, `next` calling `get`) are theirs.
+pub fn samples_list_call(name: &str, descriptor: &str) -> bool {
+    OPERATIONS.iter().filter(|r| r.family == Family::List).flat_map(|r| r.calls).any(|c| c.strip_prefix(name).is_some_and(|d| d == descriptor))
+}
 
 #[cfg(test)]
 mod tests {
@@ -682,6 +728,40 @@ mod tests {
         }
         assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 7);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
+    }
+
+    /// The calls a record names are its own: a String record's is its operation, each a method the checker models
+    /// on content; a list record's are methods the list models implement with code. A list call runs on the models
+    /// only where a record names it, and only from outside them is any other one a gap.
+    #[test]
+    fn a_list_call_runs_on_the_models_only_where_a_record_samples_it() {
+        for record in OPERATIONS {
+            match (record.family, record.operation.strip_prefix("java.lang.String.")) {
+                (Family::String, Some(member)) => {
+                    assert_eq!(record.calls, [member], "{}", record.operation);
+                    let (name, descriptor) = member.split_at(member.find('(').unwrap());
+                    assert!(crate::bmc::models_string_method(STRING, name, descriptor), "{member}");
+                }
+                (Family::String, None) => assert!(record.calls.is_empty(), "{}: an instruction", record.operation),
+                (Family::List, _) => assert!(!record.calls.is_empty(), "{}", record.operation),
+            }
+        }
+        let models: Vec<crate::classfile::ClassFile> = crate::models::MODELS.iter().filter(|m| crate::models::of_the_list_family(m.name)).map(|m| crate::models::class(m.name).unwrap().unwrap()).collect();
+        assert_eq!(models.len(), 6, "List, ImmutableCollections and its four list classes");
+        for call in OPERATIONS.iter().filter(|r| r.family == Family::List).flat_map(|r| r.calls) {
+            let (name, descriptor) = call.split_at(call.find('(').unwrap());
+            assert!(models.iter().any(|cf| cf.method(name, descriptor).is_some_and(|m| m.code.is_some())), "{call}: no list model implements it");
+            assert!(samples_list_call(name, descriptor), "{call}");
+        }
+        let object = "Ljava/lang/Object;";
+        assert!(samples_list_call("of", &format!("({})Ljava/util/List;", object.repeat(10))));
+        for (name, descriptor) in [("contains", "(Ljava/lang/Object;)Z"), ("indexOf", "(Ljava/lang/Object;)I"), ("equals", "(Ljava/lang/Object;)Z"), ("hashCode", "()I"), ("remove", "(Ljava/lang/Object;)Z"), ("addAll", "(Ljava/util/Collection;)Z"), ("sort", "(Ljava/util/Comparator;)V"), ("toArray", "()[Ljava/lang/Object;"), ("of", "([Ljava/lang/Object;)Ljava/util/List;"), ("length", "()I"), ("get", "(J)Ljava/lang/Object;")] {
+            assert!(!samples_list_call(name, descriptor), "{name}{descriptor}");
+            assert!(crate::bmc::gaps::outside_the_list_records("shop/Basket", "java/util/ImmutableCollections$AbstractImmutableList", name, descriptor));
+            assert!(!crate::bmc::gaps::outside_the_list_records("java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections$AbstractImmutableList", name, descriptor), "the models' own calls");
+            assert!(!crate::bmc::gaps::outside_the_list_records("shop/Basket", "shop/Line", name, descriptor), "an application method");
+        }
+        assert!(!crate::bmc::gaps::outside_the_list_records("shop/Basket", "java/util/ImmutableCollections$ListN", "get", "(I)Ljava/lang/Object;"));
     }
 
     #[test]

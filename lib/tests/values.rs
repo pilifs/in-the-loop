@@ -930,3 +930,73 @@ fn every_modelled_operation_has_a_record_its_boundary_cases_hold_on_the_jvm_the_
     }
     assert!(wrong.is_empty(), "the own checker differs from the JVM:\n{}", wrong.join("\n"));
 }
+
+const OUTSIDE: &str = "values/Outside";
+
+/// The checks of [`OUTSIDE`], each reaching one operation outside the values models, with the gap the strict engine
+/// must name for it (its id up to the JDK's version), or the words of its refusal: `java.util.List.toArray()` has
+/// an array result, which the engine refuses for any JDK call. A list method the models implement is outside them
+/// when no record of `values::OPERATIONS` samples it.
+const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
+    ("upper", "jdk-reference-method:java.lang.String.toUpperCase()Ljava/lang/String;"),
+    ("indexOf", "jdk-primitive-method:java.lang.String.indexOf(I)I"),
+    ("hashCodeOf", "jdk-primitive-method:java.lang.String.hashCode()I"),
+    ("substring", "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;"),
+    ("compareTo", "jdk-primitive-method:java.lang.String.compareTo(Ljava/lang/String;)I"),
+    ("equalsAsObject", "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z"),
+    ("lengthAsCharSequence", "jdk-primitive-method:java.lang.CharSequence.length()I"),
+    ("valueOf", "jdk-static-method:java.lang.String.valueOf(I)Ljava/lang/String;"),
+    ("contains", "jdk-primitive-method:java.util.List.contains(Ljava/lang/Object;)Z"),
+    ("indexOfElement", "jdk-primitive-method:java.util.List.indexOf(Ljava/lang/Object;)I"),
+    ("lastIndexOf", "jdk-primitive-method:java.util.List.lastIndexOf(Ljava/lang/Object;)I"),
+    ("equalLists", "jdk-primitive-method:java.util.List.equals(Ljava/lang/Object;)Z"),
+    ("emptyHashCode", "jdk-primitive-method:java.util.List.hashCode()I"),
+    ("hashCodeAsObject", "jdk-primitive-method:java.lang.Object.hashCode()I"),
+    ("toArray", "outside the fragment: java.util.List.toArray on an object the engine does not model"),
+    ("addAll", "jdk-primitive-method:java.util.List.addAll(Ljava/util/Collection;)Z"),
+    ("removeElement", "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z"),
+    ("sort", "jdk-void-method:java.util.List.sort(Ljava/util/Comparator;)V"),
+    ("arrayForm", "jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"),
+    ("elevenElements", "jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"),
+];
+
+/// V3's strict gap detection: an operation outside the values models is a named gap under the strict engine, never
+/// a verdict. Every claim of [`OUTSIDE`] holds on the JVM, so a verdict could only rest on semantics no record
+/// vouches for: a String method other than the five modelled on content, or a list method or form the list models
+/// implement (`contains`, `equals`, `hashCode`, `addAll`, `List.of(E...)` …) that no record samples. Each run, merging
+/// from the start and never, has no verdict and names the operation's gap (or its refusal), and the gap scan reports
+/// the same gap and walks none of the models' unsampled methods. Before, the own checker ran every method the list
+/// models implement, so `contains`, `indexOf`, `equals`, `hashCode`, `addAll`, `sort` and the array form were proved.
+#[test]
+fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
+    let Some(cp) = checker_classes() else { return };
+    let class = cp.application(OUTSIDE).unwrap().expect("the checks");
+    let lines: Vec<String> = OUTSIDE_THE_MODELS
+        .iter()
+        .map(|(method, _)| {
+            let m = class.methods.iter().find(|m| m.name == *method).unwrap_or_else(|| panic!("{method}"));
+            let arg = if MethodDescriptor::parse(&m.descriptor).unwrap().params[0] == Type::Int { "7" } else { "s:97,98" };
+            format!("values.Outside {method} {arg}")
+        })
+        .collect();
+    let jvm = run_on_jvm(compiled().unwrap(), &lines);
+    let mut wrong = Vec::new();
+    for ((method, expected), on_jvm) in OUTSIDE_THE_MODELS.iter().zip(&jvm) {
+        assert_eq!(on_jvm, "null", "{method}: its claim holds on the JVM");
+        for merge_after in [0, u64::MAX] {
+            let out = bmc::check(&cp, OUTSIDE, method, &Options { parameters: bounded(3), merge_after, ..Options::default() }).unwrap();
+            let problem = out.problem.clone().unwrap_or_default();
+            let named = if expected.starts_with("outside") { problem.contains(expected) } else { out.gaps.iter().any(|g| g.id.starts_with(&format!("{expected}@")) && g.treatment == Some(bmc::gaps::GapTreatment::Refused)) };
+            if out.verdict != Verdict::Unverifiable || !named {
+                wrong.push(format!("{method} (merging after {merge_after}): {:?}, {problem}; gaps {:?}", out.verdict, out.gaps.iter().map(|g| &g.id).collect::<Vec<_>>()));
+            }
+        }
+        let scan = bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &[format!("values.Outside#{method}")]).unwrap()).unwrap();
+        let reported = if expected.starts_with("outside") { scan.refused.values().any(|r| r.first.starts_with("java.util.List.toArray")) } else { scan.gaps.keys().any(|g| g.id(bmc::gaps::jdk_release().as_deref()).starts_with(&format!("{expected}@"))) };
+        let unsampled: Vec<&String> = scan.methods.iter().filter(|m| m.starts_with("java.util.ImmutableCollections") && [".contains", ".indexOf", ".lastIndexOf", ".equals", ".hashCode", ".toArray", ".addAll", ".remove(Ljava/lang/Object;)", ".sort", ".listFromArray"].iter().any(|n| m.contains(n))).collect();
+        if !reported || !unsampled.is_empty() {
+            wrong.push(format!("{method}: the scan reports {:?} {:?}, and walks {unsampled:?}", scan.gaps.keys().map(|g| g.id(None)).collect::<Vec<_>>(), scan.refused));
+        }
+    }
+    assert!(wrong.is_empty(), "{} operations outside the models not named as gaps:\n{}", wrong.len(), wrong.join("\n"));
+}

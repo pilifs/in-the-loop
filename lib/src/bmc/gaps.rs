@@ -32,7 +32,12 @@
 //! `Record.<init>`, the constructors of the JDK's exceptions that take no argument or a message (and a cause),
 //! which change nothing the proof observes, and the static JDK methods it models ([`super::models_jdk_static`]).
 //! Nor are the String methods it models on a String's content ([`super::models_string_method`]): on a String whose
-//! content it doesn't hold (a number's digits) it meets the call as the gap it was, where it runs it.
+//! content it doesn't hold (a number's digits) it meets the call as the gap it was, where it runs it. Nor are the
+//! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples (`List.of`'s fixed forms,
+//! `copyOf`, `size`, `isEmpty`, `get`, the iterator's path and the changes they refuse), which it runs as the
+//! models' bytecode; any other method the models implement, called from outside them (`contains`, `equals`,
+//! `hashCode`, `addAll`, `List.of(E...)` …), is outside the values models, and both the engine and the scan take it
+//! for the JDK call it names ([`outside_the_list_records`]), a gap of its kind.
 //! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
 //! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
@@ -494,6 +499,16 @@ fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &st
     classes.iter().filter(|(n, cf)| !cf.is_interface() && cp.is_subtype(n, owner)).all(|(n, _)| cp.checker_method(n, name, descriptor).is_some_and(|(c, m)| cp.checker_runs(&c.name) && m.code.is_some()))
 }
 
+/// Whether a call from code of class `caller` into `callee`, one of the immutable-list models the engine runs
+/// ([`crate::models::of_the_list_family`]), is outside the values models: no evidence record samples
+/// `name(descriptor)` ([`crate::values::samples_list_call`]: `contains`, `equals`, `hashCode`, `toArray`, `addAll`,
+/// `sort`, `List.of(E...)` …). The engine and the scan then take the call for the JDK call it names, a gap (or a
+/// refusal, for an array result), and don't run or walk the model's method. The models' calls among themselves
+/// are theirs, never outside.
+pub fn outside_the_list_records(caller: &str, callee: &str, name: &str, descriptor: &str) -> bool {
+    crate::models::of_the_list_family(callee) && !crate::models::of_the_list_family(caller) && !crate::values::samples_list_call(name, descriptor)
+}
+
 /// What the engine does with an instance call (or a constructor) that resolves to no application method with code.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum JdkCall {
@@ -938,7 +953,7 @@ impl<'a> Walker<'a> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
-                    } else if let Some((c, _)) = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, m)| self.cp.checker_runs(&member.owner) && self.cp.checker_runs(&c.name) && m.code.is_some()) {
+                    } else if let Some((c, _)) = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, m)| self.cp.checker_runs(&member.owner) && self.cp.checker_runs(&c.name) && m.code.is_some() && !outside_the_list_records(&cf.name, &c.name, &member.name, &member.descriptor)) {
                         // A model the engine runs although it is only for JBMC's class path (`List.of`), as it does.
                         self.initialise(&c.name, &site);
                         self.enqueue(&c.name, &member.name, &member.descriptor);
@@ -958,8 +973,11 @@ impl<'a> Walker<'a> {
                         *self.scan.exact.entry("array.clone()".into()).or_default() += 1;
                         continue;
                     }
-                    let resolved = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, _)| self.cp.checker_runs(&c.name));
-                    let overrides = if special { Vec::new() } else { self.overrides(&member.owner, &member.name, &member.descriptor) };
+                    // A list model's method no evidence record samples is the JDK call it names, called from
+                    // outside the models: neither resolved to nor walked ([`outside_the_list_records`]).
+                    let outside = |class: &str| outside_the_list_records(&cf.name, class, &member.name, &member.descriptor);
+                    let resolved = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, _)| self.cp.checker_runs(&c.name) && !outside(&c.name));
+                    let overrides: Vec<String> = if special { Vec::new() } else { self.overrides(&member.owner, &member.name, &member.descriptor).into_iter().filter(|o| !outside(o)).collect() };
                     for o in &overrides {
                         self.enqueue(o, &member.name, &member.descriptor);
                     }

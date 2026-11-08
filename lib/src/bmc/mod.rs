@@ -58,7 +58,7 @@
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
-//! | `invokestatic` of `List.of` (every arity) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the methods the immutable lists they make define (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, every change; the model's others too, whose calls of an element's `equals` or `hashCode` are the element's own) ([`ClassPath::checker_runs`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
+//! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
 //! | `invokevirtual` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)` and `startsWith(String)` on a String whose content the engine holds ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
@@ -2527,8 +2527,10 @@ impl<'a> Engine<'a> {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
-                // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method.
-                let runs_model = !self.cp.is_application(&member.owner) && self.cp.checker_runs(&member.owner) && self.cp.checker_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some());
+                // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
+                // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names
+                // ([`gaps::outside_the_list_records`]).
+                let runs_model = !self.cp.is_application(&member.owner) && self.cp.checker_runs(&member.owner) && self.cp.checker_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some() && !gaps::outside_the_list_records(&class.name, &cf.name, &member.name, &member.descriptor));
                 if runs_model || (self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS) {
                     // The class that declares the method is initialized first (JVMS §5.5), the arguments still on
                     // the stack, so that the instruction can run again once its initializer returns.
@@ -2579,7 +2581,7 @@ impl<'a> Engine<'a> {
                 let receiver_at = path.frames.last().expect("a frame").stack.len() - 1 - descriptor.params.len();
                 if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
                     let owner = if matches!(insn, Insn::InvokeSpecial(_)) { member.owner.clone() } else { path.objects[o].class.clone() };
-                    let application = self.cp.checker_method(&owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some());
+                    let application = self.cp.checker_method(&owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some() && !gaps::outside_the_list_records(&class.name, &cf.name, &member.name, &member.descriptor));
                     if !application {
                         for depth in 0..descriptor.params.len() {
                             if let Some(step) = self.concrete_ref(path, depth) {
@@ -2611,8 +2613,10 @@ impl<'a> Engine<'a> {
                     }
                 }
                 let owner = if special { member.owner.clone() } else { path.objects[o].class.clone() };
-                // An application method, or one of `java.lang.Enum`'s, which its model runs ([`ClassPath::checker_runs`]).
-                if let Some((cf, m)) = self.cp.checker_method(&owner, &member.name, &member.descriptor).filter(|(cf, _)| self.cp.checker_runs(&cf.name)) {
+                // An application method, or one of `java.lang.Enum`'s or the immutable lists', which their models run
+                // ([`ClassPath::checker_runs`]); a list model's method no evidence record samples is the JDK call it
+                // names, called from outside the models ([`gaps::outside_the_list_records`]).
+                if let Some((cf, m)) = self.cp.checker_method(&owner, &member.name, &member.descriptor).filter(|(cf, _)| self.cp.checker_runs(&cf.name) && !gaps::outside_the_list_records(&class.name, &cf.name, &member.name, &member.descriptor)) {
                     if m.code.is_some() {
                         let mut full = vec![Val::R(Some(o))];
                         full.extend(args);

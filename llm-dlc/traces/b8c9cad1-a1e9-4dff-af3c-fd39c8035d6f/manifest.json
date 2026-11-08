@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T07:39:48.659Z",
-  "duration_seconds": 11123,
+  "ended": "2026-11-08T08:16:29.861Z",
+  "duration_seconds": 13324,
   "stats": {
-    "turns": 36,
-    "api_calls": 354,
-    "tool_calls": 349,
+    "turns": 41,
+    "api_calls": 415,
+    "tool_calls": 410,
     "tool_errors": 5,
-    "compactions": 6,
+    "compactions": 7,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 722,
-      "output_tokens": 314933,
-      "cache_read_input_tokens": 48707600,
-      "cache_creation_input_tokens": 1068131
+      "input_tokens": 846,
+      "output_tokens": 370292,
+      "cache_read_input_tokens": 57767647,
+      "cache_creation_input_tokens": 1267512
     }
   },
   "tools": {
-    "Bash": 324,
-    "Read": 10,
-    "Write": 5,
+    "Bash": 381,
+    "Read": 13,
+    "Write": 6,
     "Edit": 4,
     "Monitor": 3,
     "ToolSearch": 3
@@ -43,6 +43,7 @@
     "lib/tests/fixtures/values/values/Checks.java",
     "lib/tests/fixtures/values/values/Lists.java",
     "lib/tests/fixtures/values/values/Operations.java",
+    "lib/tests/fixtures/values/values/Outside.java",
     "lib/tests/values.rs",
     "llm-dlc/loops/application-core-values.md"
   ],
@@ -134,24 +135,38 @@
     {
       "index": 6,
       "started": "2026-11-08T07:23:48.251Z",
-      "ended": "2026-11-08T07:39:48.659Z",
-      "turns": 4,
-      "api_calls": 27,
+      "ended": "2026-11-08T07:40:11.701Z",
+      "turns": 5,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 54,
-        "output_tokens": 33200,
-        "cache_read_input_tokens": 2499807,
-        "cache_creation_input_tokens": 119355
+        "input_tokens": 62,
+        "output_tokens": 34434,
+        "cache_read_input_tokens": 2899535,
+        "cache_creation_input_tokens": 121937
       },
-      "peak_context_tokens": 132434
+      "peak_context_tokens": 135018
+    },
+    {
+      "index": 7,
+      "started": "2026-11-08T07:40:59.527Z",
+      "ended": "2026-11-08T08:16:29.861Z",
+      "turns": 4,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 116,
+        "output_tokens": 54125,
+        "cache_read_input_tokens": 8660319,
+        "cache_creation_input_tokens": 196799
+      },
+      "peak_context_tokens": 209878
     }
   ],
   "log": {
-    "sha256": "6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37",
-    "bytes": 10154916,
-    "lines": 3900,
-    "gzip_bytes": 1846248,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37.jsonl.gz"
+    "sha256": "c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152",
+    "bytes": 12019508,
+    "lines": 4555,
+    "gzip_bytes": 2200545,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -202,6 +217,14 @@
       "summary": "application-core values V3 step 1: an evidence record per modelled String and list operation, checked against boundary cases on the JVM, the interpreter and the own checker",
       "body": "values::OPERATIONS holds one record (values::OperationEvidence) for each of the 14 operations the values models implement: for Strings the literal, the compiler's concatenation, length, isEmpty, charAt, equals and startsWith; for lists List.of's fixed forms, copyOf, size, isEmpty, get, the iterator's path, and the changes the lists refuse. Each record has its model family, what implements it in the own checker, the interpreter and for JBMC, the JDK it was sampled on (25.0.5), the inputs it admits, the exceptions it was seen to throw, what it leaves out, and its level, which is tested and never proved.\n\nThe new fixture lib/tests/fixtures/values/values/Operations.java has 86 boundary cases. lib/tests/values.rs runs each one on the JVM, in the interpreter, and in the own checker through a generated method that asserts the JVM's outcome: a String by its code units, an exception by its exact class. The test fails unless all three agree, unless the exceptions each record's cases throw are exactly the ones it lists, and unless every String method the checker models on content has a record. All three engines agreed on every case. Three sabotages each fail the test: a missing exception in a record, 42 wrong expected values, and the wrong exception class for a List12's get. The whole lib suite passes. Strict gap detection and the bound sweep are next.",
       "log_sha256": "6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37"
+    },
+    {
+      "change_id": "wsqpmvxmnlwrvmnuutrorxpmyurkpxur",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values V3 step 2: an operation outside the values models is a named gap under strict, never a verdict",
+      "body": "V3's strict gap detection. String methods other than the five the own checker models on content were already named gaps; list methods were not. Since V2 step 1 the checker ran every method the immutable-list models implement, so claims over a list's equals, hashCode, toArray, addAll, remove(Object), sort and List.of's array form were proved on bytecode no evidence record samples, and contains/indexOf stopped at a gap inside the models rather than at the call. Each record of values::OPERATIONS now names its calls (OperationEvidence::calls). A call from outside the list models into them that no list record names (values::samples_list_call) is the JDK call it names, for the engine and the gap scan alike (bmc::gaps::outside_the_list_records): a gap of its kind, or a refusal for toArray's array result. The models' calls among themselves are unchanged. values::LIST_MODEL goes to 2, since the checker's list semantics changed. The engine's table, the scan's module docs, lib/models/README.md and lib/README.md say so.\n\nReproducer: lib/tests/values.rs's an_operation_outside_the_values_models_is_a_named_gap_under_strict runs 20 harness-shaped checks (tests/fixtures/values/values/Outside.java), each reaching one such operation with a claim the JVM upholds. Each must end, merging from the start and never, with no verdict and its gap named, and the scan must report the same gap without walking the models' unsampled methods. Before the fix, 37 of its 60 checks failed. A unit test holds each record's calls to the models and to the String methods the checker models. Removing the rule from the engine's dispatch fails the test (20 operations), and so does removing it from the scan's walk (11).\n\nWorkloads without Strings keep their results. The whole lib suite passes, and the benchmark's Python tests pass. Only four list claims of the conformance corpus change: they reach List.of's array form, and go back to the U they had before this stream (listNull's proof, both of listCopySame's, listOfArray's refutation). lib/benchmark/conformance.json is re-blessed. One corpus assertion is narrowed to a single named claim with its exact gaps (ADVISED_ON_EXCLUDED_PATHS). Strict still proves listChange under n == 0 || n == 8, since the engine prunes the paths to remove(Object) and addAll. --gaps advised decides from the static scan and stops on those two gaps: the scan's documented imprecision, not a wrong verdict. Evidence level unchanged (tested). No job: seconds, inline. Found, for review: the corpus samples the array form on the JVM, but no record does; a record would bring those four claims back if a fixture needed it.",
+      "log_sha256": "c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152"
     }
   ],
   "logs": {
@@ -227,6 +250,12 @@
       "bytes": 4231436,
       "lines": 1751,
       "gzip_bytes": 735168,
+      "url": null
+    },
+    "c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152": {
+      "bytes": 12019508,
+      "lines": 4555,
+      "gzip_bytes": 2200545,
       "url": null
     },
     "e0c1ceae0ea7ef5b6d37ad79027360d66a828f00ee9bc0703afbd076e59f5972": {

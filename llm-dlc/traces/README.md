@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 07:39 UTC |
-| Prompts | 1,638 |
-| Model calls | 16,284 |
-| Tool calls | 17,270 (311 failed) |
-| Compactions | 242 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 08:16 UTC |
+| Prompts | 1,643 |
+| Model calls | 16,345 |
+| Tool calls | 17,331 (311 failed) |
+| Compactions | 243 |
 | Subagents | 10 |
-| Tokens written | 17,788,047 |
-| Tokens read | 2,658,268,374 (97.9% from cache) |
-| Commits with a trace | 491 |
-| Log snapshots | 599 (1362.1 MB gzipped, 593 uploaded) |
+| Tokens written | 17,843,406 |
+| Tokens read | 2,667,527,926 (97.9% from cache) |
+| Commits with a trace | 492 |
+| Log snapshots | 600 (1364.3 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 3 h 5 min | `claude-opus-5-5` | 36 | 354 | 349 | 5 | 6 | 253,307 | 6 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 3 h 42 min | `claude-opus-5-5` | 41 | 415 | 410 | 5 | 7 | 253,307 | 7 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,16 +165,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 314,933 | 722 | 1,068,131 | 48,707,600 | 97.9% | 158 |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 370,292 | 846 | 1,267,512 | 57,767,647 | 97.9% | 159 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 15,131 | 87.6% | 65 |
-| `Read` | 786 | 4.6% | 34 |
+| `Bash` | 15,188 | 87.6% | 65 |
+| `Read` | 789 | 4.6% | 34 |
 | `Edit` | 651 | 3.8% | 34 |
-| `Write` | 413 | 2.4% | 30 |
+| `Write` | 414 | 2.4% | 30 |
 | `ToolSearch` | 102 | 0.6% | 26 |
 | `Monitor` | 68 | 0.4% | 23 |
 | `AskUserQuestion` | 30 | 0.2% | 9 |
@@ -684,6 +684,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 489 | change `qmtpnxsu` | application-core values V2 step 1: the own checker runs the immutable-list models, keeping order, duplicates and aliases (verification pending) | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548.jsonl.gz)) |
 | 490 | change `qxpvnsml` | application-core values V2 step 2: the list value adapter, its domain and model digest, the harness's Java, witness reader, encoding and rebuilding | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff.jsonl.gz)) |
 | 491 | change `soumrxsl` | application-core values V3 step 1: an evidence record per modelled String and list operation, checked against boundary cases on the JVM, the interpreter and the own checker | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37.jsonl.gz)) |
+| 492 | change `wsqpmvxm` | application-core values V3 step 2: an operation outside the values models is a named gap under strict, never a verdict | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152.jsonl.gz)) |
 
 ## Logs
 
@@ -755,7 +756,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 6 | 0 | 6.8 MB | `6a3c9bc013b3`, not uploaded |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 7 | 0 | 9.0 MB | `c47a95d8b209`, not uploaded |
 
 ## Session notes
 
