@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 64, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 04:29 UTC |
-| Prompts | 1,602 |
-| Model calls | 15,930 |
-| Tool calls | 16,921 (306 failed) |
-| Compactions | 236 |
+| Sessions | 65, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 04:52 UTC |
+| Prompts | 1,607 |
+| Model calls | 15,997 |
+| Tool calls | 16,989 (306 failed) |
+| Compactions | 237 |
 | Subagents | 10 |
-| Tokens written | 17,473,114 |
-| Tokens read | 2,608,491,921 (97.9% from cache) |
-| Commits with a trace | 485 |
-| Log snapshots | 593 (1355.3 MB gzipped, 593 uploaded) |
+| Tokens written | 17,548,661 |
+| Tokens read | 2,618,639,506 (97.9% from cache) |
+| Commits with a trace | 486 |
+| Log snapshots | 594 (1355.6 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,6 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | open | 18 min | `claude-opus-5-5` | 5 | 67 | 68 | 0 | 1 | 223,523 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -164,15 +165,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
+| [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 75,547 | 132 | 233,132 | 9,914,321 | 97.7% | 134 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,807 | 87.5% | 64 |
-| `Read` | 776 | 4.6% | 33 |
-| `Edit` | 647 | 3.8% | 33 |
-| `Write` | 408 | 2.4% | 29 |
+| `Bash` | 14,868 | 87.5% | 65 |
+| `Read` | 780 | 4.6% | 34 |
+| `Edit` | 648 | 3.8% | 34 |
+| `Write` | 410 | 2.4% | 30 |
 | `ToolSearch` | 99 | 0.6% | 25 |
 | `Monitor` | 65 | 0.4% | 22 |
 | `AskUserQuestion` | 30 | 0.2% | 9 |
@@ -676,6 +678,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 483 | [`67ee1398`](https://github.com/pilifs/in-the-loop/commit/67ee1398d84fd1a330839da91c5fb4ce5e216ad5) | Record verification results for 2 jobs: stub-reachability step 4 passed, VF-015 now fails at step 5 (ASCII equivalence) | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/47a300443a9f8580a7ef4890001164f930c0b02c426e75d2f61059e26134f1de.jsonl.gz)), [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) ([log](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318.jsonl.gz)) |
 | 484 | [`ccb88911`](https://github.com/pilifs/in-the-loop/commit/ccb889119227b6b60fd4c6bc23df31a1aec7f28e) | Stub reachability, step 4 done: the guard passed, and VF-015 is deferred by the timebox on an uncaught checked exception in the equivalence harness | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/47a300443a9f8580a7ef4890001164f930c0b02c426e75d2f61059e26134f1de.jsonl.gz)), [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) ([log](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz)) |
 | 485 | [`e09fe452`](https://github.com/pilifs/in-the-loop/commit/e09fe452fe38995b5daad72cd5e104471714bc62) | Stub reachability brief: step 4's expectation for VF-015 now names the failure the job actually hit | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/0929f809f90a15030edc0fe0df686a12dc87107d041bb21d93c975435c3544df.jsonl.gz)) |
+| 486 | change `ulzwwxvs` | application-core environment E1: a consumed primitive return under a deterministic query model | [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) ([log](https://terminalvalue.net/raw-traces/73918f92-0381-4271-b3bb-48ca4e45803b/c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07.jsonl.gz)) |
 
 ## Logs
 
@@ -747,6 +750,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
+| [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 1 | 0 | 0.3 MB | `c7582d7129a1`, not uploaded |
 
 ## Session notes
 

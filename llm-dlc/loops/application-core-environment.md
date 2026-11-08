@@ -135,8 +135,53 @@ entry points, not proof that a dependency's contract is right.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
-  Phase 0 included.
+- Forked 2026-11-08 after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
+  Phase 0 included. No integration report yet; no open finding is in this stream's files.
+- 2026-11-08, **E1, first part: the coupling policy, and a consumed primitive return under a query**:
+  - **The policy, defined first** (`lib/src/environment.rs`'s documentation):
+    - A deterministic read-only **query** answers with one function of its key: the same for both builds and for
+      every call, any function, stateless.
+    - A declared nondeterministic or fallible **choice** is a different model, refused by name until it is built.
+  - **The encoding** (`effects.rs`): the query's answers come from a table of `2 × bound` keys and answers plus a
+    default, passed as the generated `observe` method's inputs after the handler's, the same for both builds.
+    - Each build makes at most `bound` calls, and one more marks the log. So any function on the keys the two
+      builds ask for is one choice of the table: the proof covers every snapshot.
+    - Every choice is a function of the key, so a counterexample is one environment. Its witness names the
+      environment (`(arg0=0) gives 1, any other key gives 0`), and the JVM replays it under the stubs.
+    - Shrinking reduces the table with the inputs, and the reduced case is replayed.
+  - **What stays in place**:
+    - A used result without a model is still refused, or unresolved where the walk can't follow the call.
+    - A walk note on the model's owner is dismissed only where the owner's simple name names one class: every
+      other call on that owner is a stub that marks the log.
+    - Everything not encoded is refused by name (`Part::Environment`): throws (E2), DTOs (E3), String keys
+      (values), field or receiver keys (objects), non-integral results, a bound outside 1 to 8.
+  - **Reproducers**, in `lib/tests/environment.rs` (11 tests), on a static controller fixture that uses a rate:
+    - the rewrite is proved;
+    - a wrong query key, an ignored rate and an event on the wrong branch of the rate are each refuted and
+      replayed;
+    - keys asked for in the other order prove, and the difference taken the other way round is refuted: no
+      position coupling;
+    - one key asked for twice proves: functional consistency;
+    - a call past the model's bound is unresolved;
+    - the proof is reused exactly, another bound is a miss, and a stored refutation is replayed again;
+    - `effects --environment FILE` checks under the declared model.
+  - **An existing bug fixed, with its reproducer** (`the_old_builds_unresolved_mark_says_only_what_happened_in_it`):
+    - The two builds' unresolved marks were offset by `tag × 16`, and bit 16 is `NULL_THROWN`. So the old build's
+      unresolved reasons always included a NullPointerException it never had.
+    - The tag now sits above every mark bit (`TAG = 64`), and a model's bound has a bit of its own.
+    - Only the text of an unresolved result changes. No recorded output holds the spurious note.
+  - **Passing inline**: `effects` (18), `environment` (11), `compare`, `foundations`, `application_core` (14) and
+    the library's unit tests (228). E1 and E2 of the contract still stop at this stream's named refusal: Q's
+    receiver needs the objects stream's plan, and its code the values stream's String adapter.
+  - **Interface requests, for the merge** (not purely additive, in files this stream doesn't own):
+    1. `main.rs`: the `--environment` help of `effects` and `compare` says "Refused until it builds them". Now a
+       query of primitive keys is checked.
+    2. `compare.rs`: `Options::environment`'s doc says the same. Its effort report never counts a declared
+       `--environment` model as an "environment assumption" decision, though a person made it.
+    3. `lib/README.md`'s effect-trace paragraph says a used result "is refused until modeled return values come".
+       The paragraph added after it supersedes that, since the README takes additions only.
+  - **Next**: the choice coupling (a per-call occurrence policy), which completes E1. Then E2's modelled failures:
+    a `throws` result under either coupling, checked exceptions included, on the same fixture.
 - Status: working
 
 ## Loop settings

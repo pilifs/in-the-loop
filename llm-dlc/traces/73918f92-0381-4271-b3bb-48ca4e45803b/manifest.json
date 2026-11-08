@@ -1,0 +1,100 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "73918f92-0381-4271-b3bb-48ca4e45803b",
+  "status": "open",
+  "title": "Multi agent feature stream run",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-08T04:34:25.548Z",
+  "ended": "2026-11-08T04:52:49.442Z",
+  "duration_seconds": 1104,
+  "stats": {
+    "turns": 5,
+    "api_calls": 67,
+    "tool_calls": 68,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 223523,
+    "usage": {
+      "input_tokens": 132,
+      "output_tokens": 75547,
+      "cache_read_input_tokens": 9914321,
+      "cache_creation_input_tokens": 233132
+    }
+  },
+  "tools": {
+    "Bash": 61,
+    "Read": 4,
+    "Write": 2,
+    "Edit": 1
+  },
+  "files_touched": [
+    "lib/src/environment.rs",
+    "lib/tests/environment.rs",
+    "llm-dlc/loops/application-core-environment.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T04:34:25.548Z",
+      "ended": "2026-11-08T04:34:25.550Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-08T04:34:21.844Z",
+      "ended": "2026-11-08T04:52:49.442Z",
+      "turns": 5,
+      "api_calls": 67,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 75547,
+        "cache_read_input_tokens": 9914321,
+        "cache_creation_input_tokens": 233132
+      },
+      "peak_context_tokens": 223523
+    }
+  ],
+  "log": {
+    "sha256": "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07",
+    "bytes": 1975048,
+    "lines": 765,
+    "gzip_bytes": 347601,
+    "path": "llm-dlc/traces/73918f92-0381-4271-b3bb-48ca4e45803b/logs/c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ulzwwxvswvsottqvrpmlotmswznyrpos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core environment E1: a consumed primitive return under a deterministic query model",
+      "body": "The effect check answers a modelled call whose result the handler uses from a declared CallModel instead of refusing it. The coupling policy is defined first, in lib/src/environment.rs: a deterministic read-only query answers with one function of its key, the same for both builds and every call. A declared nondeterministic or fallible choice is a different model, refused by name for now. The query is encoded as a table of 2 x bound keys and answers plus a default, passed as inputs of the generated observe method after the handler's. So the proof covers every snapshot, a counterexample is one environment, and calls are never coupled by their position. The witness names the environment it chose and is replayed on a JVM under the generated stubs. effects --environment FILE (and compare's) merges the declared calls into each entry point's claim. Anything the encoding doesn't take yet (throws, DTOs, String, field or receiver keys, non-integral results) is refused by name.\n\nAlso fixes an existing bug: the two builds' unresolved marks were offset by tag x 16, which is the NullPointerException bit, so the old build's unresolved reasons always named a NullPointerException it never had. The tag now sits above every mark bit. Only the text of unresolved results changes.\n\nVerified inline: the new lib/tests/environment.rs (11 tests: a rewrite proved; a wrong key, an ignored rate and a wrong-branch event refuted and replayed; keys asked in another order and repeated reads proved; a call past the bound unresolved; the proof cached exactly and another bound a miss; the CLI flag), with tests/effects.rs (18), compare, foundations, application_core (14) and the 228 unit tests passing. Interface requests for main.rs's and compare.rs's stale --environment docs, and compare's uncounted decision, are recorded in the stream brief's Progress.",
+      "log_sha256": "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07"
+    }
+  ],
+  "logs": {
+    "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07": {
+      "bytes": 1975048,
+      "lines": 765,
+      "gzip_bytes": 347601,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
