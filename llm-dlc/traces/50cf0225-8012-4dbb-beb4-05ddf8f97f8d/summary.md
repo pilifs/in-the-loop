@@ -54,6 +54,12 @@ Status: waiting on jobs 20261108-195222-application-core-phase-5-a-string-inside
 
 Out of date in the brief, outside Progress: Phase 0's step 1 says the claim key covers the label. That holds of spec::cache::key, but not of the regression key a heap check's proof is reused under. The acceptance contract's mandatory rows don't include V3, E3 and R3, which the brief's Done when names per stream. The list covers both.
 
+### application-core Phase 5 step 5: the status set back to working, the six jobs having been collected meanwhile
+
+change `mykrrzxlktto` · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
+
+While the for-review list was being committed, the verification loop collected all six jobs it named as pending, all passed, in yxtmunzo. That commit also took the brief's edit, which was in the shared working copy, so the list is in yxtmunzo and the previous commit zpsmsyyp holds only traces. Progress now records that, and its status is working: the shop examples' Quote#quantity note and J4's figures at the merge are the next pieces, and they need no one else.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz) has every step in between: reasoning, tool calls and their results.

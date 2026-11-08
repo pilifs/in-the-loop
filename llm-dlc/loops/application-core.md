@@ -1508,7 +1508,13 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
 
     Then Phase 5's criterion is met, apart from the two user decisions, which leave O2, V2 and J1 partial with
     their evidence.
-- Status: waiting on jobs 20261108-195222-application-core-phase-5-a-string-inside 20261108-195650-application-core-phase-5-step-3-shop-s-e 20261108-195650-application-core-phase-5-step-3-crosscut 20261108-195650-application-core-phase-5-step-3-deliveri 20261108-195703-application-core-phase-5-step-3-lib-test 20261108-200158-application-core-phase-5-step-4-j4-s-cos
+- 2026-11-08, **the six jobs were collected while the list above was being committed**, all passed, in the
+  verification loop's `yxtmunzo` ("Record verification results: …"). It committed the working copy this brief's edit
+  was in, so the list is in that commit, not in its own `zpsmsyyp`. J4's rerun wrote
+  `lib/benchmark/preparation/j4-merge.{json,md}`. **Next**: the two items the list leaves:
+  - the shop examples' `Quote#quantity` note;
+  - J4's figures at the merge, compared with the stream's.
+- Status: working
 
 ## Loop settings
 
