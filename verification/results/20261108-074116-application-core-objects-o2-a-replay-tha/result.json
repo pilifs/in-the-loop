@@ -1,0 +1,382 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-074116-application-core-objects-o2-a-replay-tha",
+  "title": "application-core objects O2: a replay that cannot run one version reproduces nothing; lib/tests/integration.rs under JBMC, and VF-015's step 4 (example 109) replayed on a JVM",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 1m41s, peak 2.2 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "step 1 (integration tests) was held back 1m33s by its 4-CPU quota in 1m37s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-074116-application-core-objects-o2-a-replay-tha.json",
+    "sha256": "09a0baa9f0bef2950190e3e2d335bb31f739755e5467b9bde6c937c603460624",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-074116-application-core-objects-o2-a-replay-tha",
+      "title": "application-core objects O2: a replay that cannot run one version reproduces nothing; lib/tests/integration.rs under JBMC, and VF-015's step 4 (example 109) replayed on a JVM",
+      "description": "Revision: the objects stream's commit that commits this job, row O2 of llm-dlc/loops/application-core-acceptance.md (replays are faithful), after the main brief's Phase 0 finding on VF-015's step 4: job 20261108-024648-... refuted Hex#toDigit with the new version's replay '<could not replay: String.format depends on the default locale>', and still reported replay.reproduced true, an outcome the interpreter could not produce counting as a difference. The change: witness::differences names no difference where a replay could not run its version, and equivalence and prove run such a witness on a JVM with or without contracts (before, only through a contract). It is a violation where the harness fails there (replay.by jvm, the differences the JVM's, from each version run alone for static methods), unverifiable where the JVM finds the versions agreeing or the property holding. Inline, native, a reproducer shows both: a real throw refuted on a JVM, and a false refutation under --gaps assume (a formatted string's toString approximated as a new object) now unverifiable. Step 1 runs lib/tests/integration.rs under JBMC, whose stubs are where unreplayable outcomes come from: no test may change verdict. Steps 2-4 rerun VF-015's step 4 (commons-codec 87f6aa28 vs 43a9aa66, Hex#toDigit, default engine, JBMC, every char x int), made stricter: the change found with ch > 127, replayed on a JVM, the new version's outcome the JVM's DecoderException, differs exactly [exception]. This does not close VF-015, whose step 5 (the throwing-initializer refusal) the user deferred.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs",
+          "lib/tests/integration.rs"
+        ],
+        "examples": [
+          "109"
+        ]
+      },
+      "expected": "step 1: every non-ignored integration test passes (exit 0), 65 of 65. Steps 2-3 (clone, compile) exit 0. Step 4: verdict violation (jvmcontract exit 1), the witness's ch > 127 (a Unicode digit the old toDigit decodes and the new one rejects), replay {by: jvm, reproduced: true}, before a digit's value and after 'throws DecoderException(...)' with no 'could not replay', differs ['exception']; the step exits 0 once those checks hold. Any other outcome is a finding about this change.",
+      "submitted": {
+        "at": "2026-11-08T07:41:16+00:00"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc",
+        "git",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "3G",
+        "duration": "15m",
+        "timeout": "60m",
+        "notes": "step 1 as 20261108-063512 and -064305 (3-4 min at 2.1 GiB, under a 2-CPU quota); steps 2-4 as 20261108-024648 (about 10 s for its step 4, 100 MiB peak, plus the clone)"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+          "cwd": "."
+        },
+        {
+          "name": "clone 109",
+          "run": "mkdir -p verification/.work-109-o2 && cd verification/.work-109-o2 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+          "cwd": "."
+        },
+        {
+          "name": "compile 109",
+          "run": "cd verification/.work-109-o2 && mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+          "cwd": "."
+        },
+        {
+          "name": "109: the change found and replayed on a JVM",
+          "run": "cd verification/.work-109-o2 && jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change --json > change.json; status=$?; python3 -c \"import json; o = json.load(open('change.json')); cx = o.get('counterexample') or {}; ch = [i['value'] for i in cx.get('inputs', []) if i['name'] == 'ch']; r = o.get('replay') or {}; print('verdict', o['verdict'], 'input', cx.get('input'), 'before', cx.get('before'), 'after', cx.get('after'), 'differs', cx.get('differs'), 'jvm', cx.get('jvm'), 'replay', r, 'problem', o.get('problem')); assert o['verdict'] == 'violation', o['verdict']; assert r.get('reproduced') and r.get('by') == 'jvm', r; assert ch and ch[0] > 127, ch; assert 'could not replay' not in (cx.get('before') or '') + (cx.get('after') or ''), cx; assert 'DecoderException' in (cx.get('after') or ''), cx.get('after'); assert cx.get('differs') == ['exception'], cx.get('differs')\" && test $status -eq 1",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "b38e213b7d01b95fd9e34b78d3141a1bd8deb6ea",
+  "startedAt": "2026-11-08T07:42:46+00:00",
+  "finishedAt": "2026-11-08T07:46:27+00:00",
+  "wallSeconds": 221.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3844799,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 38654705664,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "step 1 as 20261108-063512 and -064305 (3-4 min at 2.1 GiB, under a 2-CPU quota); steps 2-4 as 20261108-024648 (about 10 s for its step 4, 100 MiB peak, plus the clone)"
+  },
+  "usage": {
+    "peakMemoryBytes": 2385543168,
+    "wallSeconds": 101.7,
+    "cpuSeconds": 321.3,
+    "memoryOfEstimate": 0.74,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 118.491,
+      "cpuSeconds": 118.695,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1656045568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "44cc77b35bd8908c5e0e7e0904906eea9ae775ef47d8bded78bf927af55d7c3d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-074116-application-core-objects-o2-a-replay-tha/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 97.058,
+      "cpuSeconds": 312.498,
+      "cpuThrottledSeconds": 93.984,
+      "peakMemoryBytes": 2385543168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 124,
+        "bytes": 6608,
+        "sha256": "c2355e0832e0550fae8b639ab5136f3b21bd4a23d17d52f8889fa11d0ffbfcd8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 123,
+          "text": "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 62.24s",
+          "groups": [
+            "ok",
+            "65",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok",
+        "test an_overloaded_method_is_named_by_its_parameter_types ... ok",
+        "test a_shift_that_overflows_is_found_on_the_records_components ... ok",
+        "test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok",
+        "test capability_contracts_list_each_entry_point_with_its_call_site ... ok",
+        "test a_witness_through_contracts_is_run_on_a_jvm ... ok",
+        "test details_print_the_statement_and_where_the_time_went ... ok",
+        "test draws_the_state_machine_of_a_contract ... ok",
+        "test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok",
+        "test generates_the_tla_operator_the_python_generator_wrote ... ok",
+        "test generalized_quantifiers_fold_and_counterexamples_shrink ... ok",
+        "test impure_or_unbounded_methods_are_refused_with_the_reason ... ok",
+        "test identity_and_initialization_agree_with_the_jvm ... ok",
+        "test arrays_are_quantified_over_and_witnessed ... ok",
+        "test old_reads_an_array_as_the_call_received_it ... ok",
+        "test jbmc_applies_the_contracts_for_its_gaps ... ok",
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test relocation_renames_the_class_and_its_references ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test results_of_two_types_need_a_relation ... ok",
+        "test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_gap_scan_gives_each_class_initializer_a_shape ... ok",
+        "test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok",
+        "test the_gap_scan_names_what_the_own_checker_approximates ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok",
+        "test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 62.24s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "clone 109",
+      "run": "mkdir -p verification/.work-109-o2 && cd verification/.work-109-o2 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 1.404,
+      "cpuSeconds": 0.706,
+      "cpuThrottledSeconds": 0.042,
+      "peakMemoryBytes": 32149504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-clone-109.log",
+        "lines": 5,
+        "bytes": 263,
+        "sha256": "42b50e2a8231d660e25c4bef0ae9ae1121790ee9ecec27fd4fbaa2a5bf299c64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Cloning into 'codec'...",
+        "Preparing worktree (detached HEAD 87f6aa28)",
+        "HEAD is now at 87f6aa28 Reject ambiguous GitIdentifiers tree entry names",
+        "Preparing worktree (detached HEAD 43a9aa66)",
+        "HEAD is now at 43a9aa66 Restrict Hex decoding to ASCII hexadecimal characters"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "compile 109",
+      "run": "cd verification/.work-109-o2 && mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 2.406,
+      "cpuSeconds": 7.48,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 183214080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-compile-109.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "109: the change found and replayed on a JVM",
+      "run": "cd verification/.work-109-o2 && jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change --json > change.json; status=$?; python3 -c \"import json; o = json.load(open('change.json')); cx = o.get('counterexample') or {}; ch = [i['value'] for i in cx.get('inputs', []) if i['name'] == 'ch']; r = o.get('replay') or {}; print('verdict', o['verdict'], 'input', cx.get('input'), 'before', cx.get('before'), 'after', cx.get('after'), 'differs', cx.get('differs'), 'jvm', cx.get('jvm'), 'replay', r, 'problem', o.get('problem')); assert o['verdict'] == 'violation', o['verdict']; assert r.get('reproduced') and r.get('by') == 'jvm', r; assert ch and ch[0] > 127, ch; assert 'could not replay' not in (cx.get('before') or '') + (cx.get('after') or ''), cx; assert 'DecoderException' in (cx.get('after') or ''), cx.get('after'); assert cx.get('differs') == ['exception'], cx.get('differs')\" && test $status -eq 1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.803,
+      "cpuSeconds": 0.591,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 78876672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-109-the-change-found-and-repla.log",
+        "lines": 1,
+        "bytes": 229,
+        "sha256": "71e7a8e1002b22401e190183d3113979af4b62347bbdf9c5dce8cc3b1aadf115",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "verdict violation input toDigit(ch='٧', index=-1) before 7 after throws DecoderException(\"Illegal hexadecimal character 0x667 at index -1.\") differs ['exception'] jvm 25.0.5 replay {'by': 'jvm', 'reproduced': True} problem None"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T07:46:28+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "656a22b79316e78bb8eefb6fbe8d530c919f675f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/656a22b79316e78bb8eefb6fbe8d530c919f675f/jvmcontract",
+    "built": true
+  }
+}
