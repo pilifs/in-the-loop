@@ -766,6 +766,31 @@ pub struct Layout {
     /// [`EXCEPTIONS`]: closing VF-015, under which a checked exception left the harness uncaught and no
     /// equivalence over a method that throws one could be verified ([`Layout::exceptions`]).
     pub checked: Vec<Checked>,
+    /// The setup sequence (O3 of `llm-dlc/loops/application-core-objects.md`): calls on the receiver after it is
+    /// made and before the target, in order, each in both versions on the same symbolic arguments. Empty for a
+    /// constructor-only domain.
+    pub setup: Vec<Setup>,
+}
+
+/// One call of a setup sequence: a void instance method of the receiver's class, called on the receiver in both
+/// versions before the target, its arguments flat parameters of the harness (`setup.0.n`). A call that throws ends
+/// that version's history: its exception, the step's own category ([`setup_category`]), is the version's outcome,
+/// compared with the other's, and the target is not called; the receiver's fields are compared as the history left
+/// them. So an input a setup call rejects in one version only is a difference, never dropped.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Setup {
+    /// The method's name.
+    pub method: String,
+    /// Its descriptor, of primitive parameters and `V`, the same in both versions.
+    pub descriptor: String,
+    /// The flat parameters that are its arguments, in order.
+    pub args: Vec<usize>,
+}
+
+/// The category of an exception the setup call `step` threw, the `index`th class the harness tells apart: apart
+/// from the target's, and from another step's, so that a history that ends earlier is never one that ends later.
+pub fn setup_category(step: usize, index: usize) -> i32 {
+    1000 * (step as i32 + 1) + index as i32 + 1
 }
 
 /// A checked exception class a version of the target declares in its `throws` clause.
@@ -821,7 +846,7 @@ pub fn alias_groups(pairs: &[(String, String)], order: &[String]) -> Vec<Vec<Str
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
     }
 
     /// Lets the object parameters `nullable` be null and those of each group of `groups` be one object (step H2):
@@ -1059,7 +1084,34 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+    }
+
+    /// Appends the setup call `method` of `descriptor` (O3), whose arguments are the new flat parameters `args`,
+    /// named by their path (`setup.0.n`). Called before [`Layout::choose`], whose flags come after every leaf.
+    pub fn add_setup(&mut self, method: &str, descriptor: &str, args: &[(String, Type)]) -> Result<(), String> {
+        if !self.choices.is_empty() {
+            return Err("a setup call is laid out before the choices of null or one object".into());
+        }
+        let mut flat: Vec<(String, Type)> = self.params.iter().map(|p| (p.name.clone(), p.ty.clone())).collect();
+        let mut at = Vec::new();
+        for (name, t) in args {
+            if flat.iter().any(|(n, _)| n == name) {
+                return Err(format!("the setup call's argument {name} has the name of another input"));
+            }
+            flat.push((name.clone(), t.clone()));
+            at.push(flat.len() - 1);
+        }
+        let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
+        self.params = params(&flat_names, &flat_types);
+        self.setup.push(Setup { method: method.to_string(), descriptor: descriptor.to_string(), args: at });
+        Ok(())
+    }
+
+    /// The setup sequence as a witness or a domain says it: `this.take(setup.0.n)`, each call on its arguments'
+    /// names, or on their values as `value` gives them.
+    pub fn setup_text(&self, value: &dyn Fn(usize) -> String) -> Vec<String> {
+        self.setup.iter().map(|s| format!("this.{}({})", s.method, s.args.iter().map(|i| value(*i)).collect::<Vec<_>>().join(", "))).collect()
     }
 
     /// The flat parameters' types: the harness method's.
@@ -1165,7 +1217,13 @@ impl Layout {
                 Slot::Record { name, record, .. } => (format!("{}{}", record.domain_part(name), self.or_null(name)), false),
             })
             .collect();
-        let text = domain(parts, max_array_length);
+        let mut text = domain(parts, max_array_length);
+        if !self.setup.is_empty() {
+            let calls = self.setup_text(&|i| self.params[i].name.clone());
+            let args: Vec<String> = self.setup.iter().flat_map(|s| &s.args).map(|i| format!("{}: {}", self.params[*i].name, self.params[*i].ty.java_name())).collect();
+            let args = if args.is_empty() { String::new() } else { format!(" × {}", args.join(" × ")) };
+            text = format!("{text}; this after the setup {}{args}", calls.join(" then "));
+        }
         let groups = self.alias_groups();
         if groups.is_empty() {
             return text;
@@ -1985,6 +2043,36 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         let try_start = code.label();
         let try_end = code.label();
         let join = code.label();
+        // The setup sequence (O3), on this version's receiver: a call that throws ends the history, its category
+        // the version's outcome, and the target is not called.
+        if !layout.setup.is_empty() {
+            let receiver = layout.receiver.as_ref().ok_or_else(|| Error::new("a setup sequence is called on a receiver, and the target is static"))?;
+            let at = records.iter().position(|r| *r == receiver).expect("the receiver is a record");
+            let (new_local, old_local) = object_slots(at);
+            for (k, step) in layout.setup.iter().enumerate() {
+                let (start, end, next) = (code.label(), code.label(), code.label());
+                code.bind(start);
+                code.load(Kind::Ref, if on_copies { old_local } else { new_local });
+                for i in &step.args {
+                    code.load(kind_of(&params[*i].ty), params[*i].slot);
+                }
+                let setup = writer.pool.method_ref(owner, &step.method, &step.descriptor);
+                code.op_u16(0xb6, setup); // invokevirtual
+                code.bind(end);
+                code.goto(next);
+                for (e, exception) in layout.exceptions(on_copies.then_some("before")).iter().enumerate() {
+                    let handler = code.label();
+                    code.bind(handler);
+                    code.op(0x57); // pop the exception
+                    code.iconst(setup_category(k, e));
+                    code.store(Kind::Int, flag_slot);
+                    code.goto(join);
+                    let catch_type = writer.pool.class(exception);
+                    code.handler(start, end, handler, Some(catch_type));
+                }
+                code.bind(next);
+            }
+        }
         code.bind(try_start);
         // The object of this version standing for a record: the previous version's for the calls on the copies.
         let object_of = |slot: &Slot| -> Option<u16> {
@@ -2768,7 +2856,18 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             s.push_str(&format!("        {} {var} = {};\n", type_name(t), zero(t)));
         }
         s.push_str(&format!("        int e{var} = 0;\n"));
-        s.push_str(&format!("        try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
+        // The setup sequence (O3): a call that throws ends the history, its category the version's outcome.
+        let mut setup_ends = String::new();
+        for (k, step) in layout.setup.iter().enumerate() {
+            let call_args = step.args.iter().map(|i| params[*i].name.clone()).collect::<Vec<_>>().join(", ");
+            s.push_str(&format!("        {setup_ends}try {{ this_{side}.{}({call_args}); }}", step.method));
+            for (i, exception) in layout.exceptions((side == "before").then_some("before")).iter().enumerate() {
+                s.push_str(&format!(" catch ({} t) {{ e{var} = {}; }}", exception.replace('/', "."), setup_category(k, i)));
+            }
+            s.push('\n');
+            setup_ends = format!("if (e{var} == 0) ");
+        }
+        s.push_str(&format!("        {setup_ends}try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
         for (i, exception) in layout.exceptions((side == "before").then_some("before")).iter().enumerate() {
             s.push_str(&format!(" catch ({} t) {{ e{var} = {}; }}", exception.replace('/', "."), i + 1));
         }
@@ -3034,7 +3133,7 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() };
+    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() };
     generate_property_over(class_internal, method, &layout, ret, assume, assertion, signals, max_array_length)
 }
 
@@ -3183,6 +3282,20 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
             emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaves(*first).into_iter());
             code.store(Kind::Ref, local);
             code.bind(done);
+        }
+        // The setup sequence (O3), on the receiver as made: a history whose call throws reaches no state, and is
+        // outside the property, as an input a constructor rejects is.
+        if !layout.setup.is_empty() {
+            let receiver = layout.receiver.as_ref().ok_or_else(|| Error::new("a setup sequence is called on a receiver, and the target is static"))?;
+            let at = records.iter().position(|r| *r == receiver).expect("the receiver is a record");
+            for step in &layout.setup {
+                code.load(Kind::Ref, object_slot(at));
+                for i in &step.args {
+                    code.load(kind_of(&params[*i].ty), params[*i].slot);
+                }
+                let setup = writer.pool.method_ref(class_internal, &step.method, &step.descriptor);
+                code.op_u16(0xb6, setup); // invokevirtual
+            }
         }
         code.bind(build_end);
         code.goto(built);
@@ -3544,6 +3657,11 @@ pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout,
         }
         objects.push_str(&format!("        {} {name};\n        try {{ {name} = {made}; }} catch (Throwable t) {{ return; }}\n", record.java_name()));
     }
+    // The setup sequence (O3): a history whose call throws is outside the property.
+    for step in &layout.setup {
+        let args = step.args.iter().map(|i| flat[*i].name.clone()).collect::<Vec<_>>().join(", ");
+        objects.push_str(&format!("        try {{ self.{}({args}); }} catch (Throwable t) {{ return; }} // the setup sequence\n", step.method));
+    }
     // The plain rendering's parameter list gives way to the leaves', and the objects are made first.
     let header = format!("    public static void {METHOD}({}) {{\n", plain.iter().map(|p| format!("int {}", p.name)).collect::<Vec<_>>().join(", "));
     s = s.replacen(&header, &format!("    public static void {METHOD}({param_list}) {{\n{objects}"), 1);
@@ -3582,7 +3700,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
     }
 
     #[test]

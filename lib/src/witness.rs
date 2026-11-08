@@ -99,7 +99,12 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
             format!("{name}={}[{components}]", record.simple_name())
         }
     };
-    let rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
+    let mut rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
+    // The setup sequence (O3), which the call comes after.
+    if !layout.setup.is_empty() {
+        let calls = layout.setup_text(&|i| format!("{}={}", layout.params[i].name, witnesses[i]));
+        rendered = format!("{rendered}, after the setup {}", calls.join(" then "));
+    }
     (rendered, witnesses)
 }
 
@@ -507,7 +512,26 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             .collect()
     };
     let arg_values = values.clone();
+    // The setup sequence (O3), on the receiver as made: a call that throws ends the history, and its exception,
+    // under the step's own category, is the outcome.
+    let mut setup_ended = None;
     let outcome = match rejected {
+        None if receiver.is_some() && !layout.setup.is_empty() => {
+            let this = receiver.expect("checked");
+            let mut ended = None;
+            for (k, step) in layout.setup.iter().enumerate() {
+                let args: Vec<Value> = step.args.iter().map(|i| flat[*i]).collect();
+                if let Err(f) = m.call_virtual(this, class_internal, &step.method, &step.descriptor, args) {
+                    setup_ended = Some(k);
+                    ended = Some(f);
+                    break;
+                }
+            }
+            match ended {
+                Some(f) => Err(f),
+                None => m.call_virtual(this, class_internal, method, descriptor, values),
+            }
+        }
         Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
         Some(f) => Err(f),
         None => match receiver {
@@ -567,7 +591,11 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     let category = match &outcome {
         Err(Fault::Throw(r)) => {
             let exceptions = layout.exceptions(prefix);
-            Some(exceptions.iter().position(|e| m.is_instance(*r, e)).unwrap_or(exceptions.len()))
+            let index = exceptions.iter().position(|e| m.is_instance(*r, e)).unwrap_or(exceptions.len());
+            Some(match setup_ended {
+                Some(k) => crate::harness::setup_category(k, index) as usize,
+                None => index,
+            })
         }
         _ => None,
     };
@@ -595,7 +623,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() }
         }
         Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+        Err(Fault::Throw(r)) => Replayed { outcome: match setup_ended { Some(k) => format!("{} in the setup call this.{}", render::thrown(&m, r), layout.setup[k].method), None => render::thrown(&m, r) }, returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
         Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
     };
     if let (Some(v), Some(fields)) = (result_value, result_fields_of) {

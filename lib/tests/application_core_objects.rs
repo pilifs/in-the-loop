@@ -241,3 +241,204 @@ fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
     assert!(o.reuse.is_none(), "another inner constructor is another claim: {}", o.output);
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
+
+/// A build of the shared contract's throttle family (`tests/fixtures/application-core/throttle`): `before`,
+/// `after`, or a defect overlaid on `after`.
+fn throttle(build: &str) -> PathBuf {
+    let family = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/throttle");
+    let base = family.join(if build == "before" { "before" } else { "after" });
+    let overlay = family.join("defects").join(build);
+    let file = if overlay.exists() { overlay } else { base }.join("throttle/Throttle.java");
+    compile(&format!("throttle-{build}"), &[("throttle/Throttle.java", &std::fs::read_to_string(file).unwrap())])
+}
+
+/// A frozen throttle claim, with its allocation bound at 1 in both versions: the frozen claims say 0, while
+/// `allows` (and `take`) make the `IllegalArgumentException` they throw, which the domain gate counts (a finding
+/// for the coordinator, under the stream's Progress). Nothing else is changed.
+fn throttle_claim(name: &str) -> jvmcontract::spec::CanonicalClaim {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("tests/fixtures/application-core/golden/{name}.json"));
+    let mut claim: jvmcontract::spec::CanonicalClaim = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    let bounds = &mut claim.domain.as_mut().unwrap().bounds;
+    bounds.before.allocations = 1;
+    bounds.after.allocations = 1;
+    claim
+}
+
+/// O3: a defect only a history reaches. `after-setup` is one unit short once a call of `take` has taken some: right
+/// after construction (`used == 0`) it behaves as before, so the constructor-only claim verifies it, labelled for
+/// that domain; under one setup call, it is refuted, and the witness is the whole history: the constructor, then
+/// `take`, then `allows`, replayed on a JVM. `one-short` is refuted under both, the rewrite `after` verified under
+/// both.
+#[test]
+fn o3_a_defect_only_a_history_reaches_is_refuted_with_the_whole_history_replayed() {
+    use jvmcontract::spec::{heap, ObservationState, Verdict as Claimed};
+    let before = throttle("before");
+    let constructed = throttle_claim("throttle-constructed-claim");
+    let setup = throttle_claim("throttle-setup-claim");
+    for (build, constructed_verdict, setup_verdict) in [("after", Claimed::Verified, Claimed::Verified), ("after-setup", Claimed::Verified, Claimed::Refuted), ("one-short", Claimed::Refuted, Claimed::Refuted)] {
+        let after = throttle(build);
+        let zero = heap::check(&constructed, &before, &after).unwrap_or_else(|u| panic!("{build}, constructed: {u}"));
+        assert_eq!(zero.verdict, constructed_verdict, "{build}, constructed: {zero:?}");
+        assert!(zero.domain.contains("right after its constructor") && zero.domain.contains("no call before the target"), "{build}: the constructor-only scope is labelled: {}", zero.domain);
+        assert!(!zero.domain.contains("setup"), "{build}: {}", zero.domain);
+        let one = heap::check(&setup, &before, &after).unwrap_or_else(|u| panic!("{build}, setup: {u}"));
+        assert_eq!(one.verdict, setup_verdict, "{build}, setup: {one:?}");
+        assert!(one.domain.contains("this after the setup this.take(setup.0.n) × setup.0.n: int"), "{build}: the setup is the domain's: {}", one.domain);
+        if setup_verdict == Claimed::Refuted {
+            let witness = one.witness.as_deref().unwrap();
+            assert!(witness.contains("allows(this=new Throttle(") && witness.contains("after the setup this.take(setup.0.n="), "{build}: the whole history: {witness}");
+            assert!(one.accounting.iter().any(|a| a.observation == "result" && a.state == ObservationState::Refuted), "{build}: {one:?}");
+        }
+    }
+    // Neither claim's key is the other's: the setup sequence is part of the claim, or the claim is uncacheable
+    // (today the key's projection refuses a planned domain, which is the reuse stream's).
+    if let (Ok(a), Ok(b)) = (jvmcontract::spec::cache::key(&constructed), jvmcontract::spec::cache::key(&setup)) {
+        assert_ne!(a, b);
+    }
+}
+
+/// Both versions' plans, from one plan's JSON for each.
+fn plans(before: &str, after: &str) -> jvmcontract::construction::Plans {
+    jvmcontract::construction::Plans { before: serde_json::from_str(before).unwrap(), after: serde_json::from_str(after).unwrap() }
+}
+
+/// A plan of the counter: `this`, a `Counter(int step)`, and the setup calls given (JSON, each `add(I)V` on its
+/// leaf `setup.k.n`).
+fn counter_plan(setup: &[&str]) -> String {
+    let calls = setup.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(", ");
+    format!(r#"{{"nodes": [{{"id": 0, "class": "counters.Counter", "maker": {{"kind": "constructor", "descriptor": "(I)V"}}, "args": [{{"kind": "leaf", "path": "this.step", "type": "int"}}]}}],
+        "roots": [{{"name": "this", "value": {{"kind": "node", "id": 0}}}}], "setup": [{calls}],
+        "bounds": {{"nodes": 1, "max_array_length": 0, "setup_calls": {}}}}}"#, setup.len())
+}
+
+const ADD: &str = r#"{"method": "add(I)V", "args": [{"kind": "leaf", "path": "setup.0.n", "type": "int"}]}"#;
+
+fn planned(name: &str, before: &Path, after: &Path, target: &str, plan: jvmcontract::construction::Plans) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, target);
+    options.engine = jvmcontract::Engine::Native;
+    options.jbmc = NO_JBMC.into();
+    options.plan = Some(plan);
+    let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    equivalence::run(&options).unwrap()
+}
+
+const WINDOW: &str = r#"package windows;
+
+/** A window of integers, of two constructors: a choice the plan makes, never a guess. */
+public class Window {
+    private final int lo;
+    private final int hi;
+
+    public Window(int lo, int hi) {
+        if (lo > hi) {
+            throw new IllegalArgumentException("lo above hi");
+        }
+        this.lo = lo;
+        this.hi = hi;
+    }
+
+    public Window(int width) {
+        this(0, width);
+    }
+
+    public boolean contains(int x) {
+        return lo <= x && x <= hi;
+    }
+}
+"#;
+
+/// O1's selection: a class of two constructors is a named choice. Without a plan, the check refuses it; a plan
+/// that names one by descriptor makes the receiver with it, a rewrite is verified and a defect refuted; a plan that
+/// names a constructor the class doesn't have is refused with the ones it has.
+#[test]
+fn o1_a_plan_selects_one_of_several_constructors_by_descriptor() {
+    let before = compile("window-before", &[("windows/Window.java", WINDOW)]);
+    let after = compile("window-after", &[("windows/Window.java", &WINDOW.replace("return lo <= x && x <= hi;", "return !(x < lo || x > hi);"))]);
+    let defect = compile("window-defect", &[("windows/Window.java", &WINDOW.replace("return lo <= x && x <= hi;", "return lo <= x && x < hi;"))]);
+    let o = regression("window-unplanned", &before, &after, "windows.Window#contains");
+    assert_eq!(o.verdict, Verdict::Unverifiable);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("has 2 constructors"), "{:?}", o.problem);
+    let plan = |descriptor: &str, args: &str| format!(r#"{{"nodes": [{{"id": 0, "class": "windows.Window", "maker": {{"kind": "constructor", "descriptor": "{descriptor}"}}, "args": [{args}]}}],
+        "roots": [{{"name": "this", "value": {{"kind": "node", "id": 0}}}}], "bounds": {{"nodes": 1, "max_array_length": 0, "setup_calls": 0}}}}"#);
+    let two = plan("(II)V", r#"{"kind": "leaf", "path": "this.lo", "type": "int"}, {"kind": "leaf", "path": "this.hi", "type": "int"}"#);
+    let o = planned("window-two", &before, &after, "windows.Window#contains", plans(&two, &two));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let o = planned("window-two-defect", &before, &defect, "windows.Window#contains", plans(&two, &two));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| r.reproduced) && o.counterexample.as_ref().is_some_and(|c| c.jvm.is_some()), "{}", o.output);
+    // The one-argument constructor makes only windows from 0: the defect at hi is reachable there too.
+    let one = plan("(I)V", r#"{"kind": "leaf", "path": "this.width", "type": "int"}"#);
+    let o = planned("window-one-defect", &before, &defect, "windows.Window#contains", plans(&one, &one));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.counterexample.as_ref().unwrap().input.contains("new Window("), "{}", o.output);
+    // A constructor the class doesn't have, and a leaf misnamed, are refused by name.
+    let none = plan("(J)V", r#"{"kind": "leaf", "path": "this.width", "type": "long"}"#);
+    let o = planned("window-none", &before, &after, "windows.Window#contains", plans(&none, &none));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("has no constructor (J)V a caller can use; it has (II)V, (I)V"), "{:?}", o.problem);
+    let misnamed = plan("(I)V", r#"{"kind": "leaf", "path": "this.w", "type": "int"}"#);
+    let o = planned("window-misnamed", &before, &after, "windows.Window#contains", plans(&misnamed, &misnamed));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("which the check names this.width"), "{:?}", o.problem);
+}
+
+/// O3 through `equivalence --plan`: the setup sequence's outcomes are compared. A version whose setup call rejects an
+/// input the other accepts differs on it, in the exception, and the input is never dropped: `add` takes n up to 5
+/// in the new version, and `count` after `add(5)` is refuted, the history replayed on a JVM.
+#[test]
+fn o3_an_input_one_versions_setup_rejects_is_a_difference() {
+    let before = counter("setup-before", |s| s.to_string());
+    let wider = counter("setup-wider", |s| s.replace("n > 4", "n > 5"));
+    let plan = counter_plan(&[ADD]);
+    let o = planned("setup-wider", &before, &wider, "counters.Counter#count", plans(&plan, &plan));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("after the setup this.add(setup.0.n=5)"), "{}", c.input);
+    assert!(c.differs.iter().any(|d| d == "exception"), "{:?}", c.differs);
+    assert!(c.before.contains("in the setup call this.add"), "{}", c.before);
+    assert!(c.jvm.is_some() && o.replay.as_ref().is_some_and(|r| r.reproduced), "{}", o.output);
+    // The same rejection in both versions is the same outcome: a rewrite of add is verified over the history.
+    let rewrite = counter("setup-rewrite", |s| s.replace("count += n * step;", "for (int i = 0; i < n; i++) { count += step; }"));
+    let o = planned("setup-rewrite", &before, &rewrite, "counters.Counter#count", plans(&plan, &plan));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.bounds.setup_calls, Some(1));
+    assert!(stated.assumptions.iter().any(|a| a.kind == jvmcontract::statement::AssumptionKind::Setup), "{:?}", stated.assumptions);
+    // Different setup sequences in the two plans are refused: both versions get the same history.
+    let o = planned("setup-differ", &before, &rewrite, "counters.Counter#count", plans(&plan, &counter_plan(&[])));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("the setup sequences differ"), "{:?}", o.problem);
+    // Three calls are past the sequence a plan may have.
+    let three = counter_plan(&[ADD, ADD, ADD]);
+    let o = planned("setup-three", &before, &rewrite, "counters.Counter#count", plans(&three, &three));
+    assert!(o.problem.as_deref().unwrap_or_default().contains("at most 2"), "{:?}", o.problem);
+}
+
+/// O3 through `prove --plan`: a property of the state a setup call reaches. `count` is 0 right after construction,
+/// and not after `add`, refuted with the history in the witness; a history whose call throws is outside the property.
+#[test]
+fn o3_a_property_over_the_states_a_setup_call_reaches() {
+    let classes = counter("setup-property", |s| s.to_string());
+    let with = |plan: &str, name: &str, assume: Option<&str>, assert: &str| {
+        let mut options = property::Options::new(&[classes.clone()], "counters.Counter#count");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.assume = assume.map(str::to_string);
+        options.assert = Some(assert.into());
+        options.plan = Some(plans(plan, plan));
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let zero = counter_plan(&[]);
+    let one = counter_plan(&[ADD]);
+    assert_eq!(with(&zero, "prop-zero", None, "result == 0").verdict, Verdict::Verified);
+    let o = with(&one, "prop-one", None, "result == 0");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("after the setup this.add(setup.0.n="), "{}", c.input);
+    // add rejects n above 4, so every state it reaches has count at most 4 steps (of a step small enough for 4
+    // steps not to overflow; without the assumption the property is refuted on the overflow of 4 * this.step).
+    let o = with(&one, "prop-bound", Some("this.step < 1000"), "result <= 4 * this.step && result >= 0");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+}

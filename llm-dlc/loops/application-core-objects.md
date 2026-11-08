@@ -167,6 +167,56 @@ Never relax the interface to unblock it.
   - **Next**: O1's second part, a constructor's leaves generalized to bounded primitive arrays (keeping a plan's
     nullability and aliasing, and copies apart between versions). Then the plan's selection of a constructor, and
     `--plan` through `equivalence`, `prove` and `compare`.
+- 2026-11-08, **O1's plan and O3's setup sequence**, through `equivalence --plan`, `prove --plan` and a planned
+  claim (`spec::heap::check`).
+  - **What**: `construction::check_plans` accepts the plans a check makes, and `construction::root` makes each root
+    by its node's constructor descriptor. That descriptor is the explicit choice among several constructors.
+    `construction::setup_calls` gives one or two void calls on the receiver (`harness::Setup`). The regression
+    harness calls them in each version before the target. A setup call that throws ends that version's history:
+    its exception, in the step's own category, is the outcome compared, so an input one version's setup rejects is
+    a difference, not dropped. The property harness skips such a history, as it skips a rejected construction. The
+    interpreter replay runs the history. The JVM run comes for free, since it runs the harness. The statement has
+    the `setup` assumption and `setupCalls`. A planned claim's result names its label and restrictions. The domain
+    gate compares a plan's classes with the claim's.
+  - **Refused by name** ("the objects stream builds it", or the values stream's for an adapted value): arrays,
+    nullable or shared nodes, factories, dependencies, setup calls that return a value, more than two setup calls,
+    and plans whose roots or setup sequences differ between the versions. A plan with a correspondence,
+    `--before-*` or `--results-agree-when`, `--nullable` or `--may-alias` is refused too. A claim with setup calls
+    runs uncached, with a note. `prove --cache --plan` is refused.
+  - **Verified inline** (native, no JBMC). `tests/application_core_objects.rs` adds four tests:
+    - O3 on the frozen throttle claims, with only their allocation bound at 1 (see Found). `after-setup` is
+      verified constructor-only, labelled so, and refuted after one `take`, with the whole history in the witness
+      and run on a JVM. `one-short` is refuted under both claims, `after` verified under both.
+    - A plan selecting one of `Window`'s two constructors. Verified and refuted, with a missing constructor and a
+      misnamed leaf refused.
+    - A setup rejection in one version, refuted on `exception`.
+    - `prove` over the states a setup call reaches.
+    The lib tests (226) and the suites `heap` (its planned-domain test now checks the plan), `foundations`,
+    `compare`, `effects`, `observations`, `alignment`, `summaries`, `conformance` and `skill` pass.
+    `application_core` passes except O3, below.
+  - **Found, for the coordinator: the frozen throttle claims' allocation bound is wrong.**
+    - Both claims say `allocations: 0`, but `allows` and `take` each allocate the `IllegalArgumentException` they
+      throw. The gate counts it, so from this commit the contract's O3 is unresolved ("the previous version's code
+      may make 1 objects in one call, more than the claim's allocation bound of 0") where `expected.json` says
+      verified or refuted.
+    - It never showed before, because the plan was refused before the gate. The integration check fails on O3
+      until the fixture changes.
+    - The fix is the fixture's, not the gate's: bound both claims at 1, or decide in the main brief that a
+      thrown exception isn't counted. I changed neither, since a stream doesn't relax a frozen expectation.
+    - A related open question: the gate counts the target's allocations only, not the setup calls'.
+  - **Interface requests**:
+    - reuse: root the setup methods in `proof_cache::Regression::claim`, and read the plan in the property key and
+      in `spec::cache::key`, which refuses a planned domain as uncacheable today. Until then, the guards above.
+    - coordinator, then reuse: a `setup` field in `witness::Call` and in `proof_cache`'s stored call, so the typed
+      witness carries the setup calls. The rendered input and the typed inputs (`setup.0.n`) carry them today.
+    - coordinator: a way to give `compare` a plan per subject (`main.rs`). Its kernel passes a planned claim
+      through `heap::check_with` as it is.
+  - **Coordination**: reuse closed the cache hole of the entry above in `qssovxor` (its branch). Un-ignore
+    `an_inner_objects_constructor_is_part_of_the_cached_claim` at the merge.
+  - **No job**: the harness changes apply only to a layout with setup calls, which no existing example or JBMC test
+    has. The job above, `20261108-045000-…`, still covers the JBMC integration tests and examples 190–196.
+  - **Next**: O2. Bounded primitive arrays as constructor leaves (`PlanValue::Array`), kept apart between the
+    versions; then nullable and shared nodes; then the five negative controls.
 - Status: working
 
 ## Loop settings

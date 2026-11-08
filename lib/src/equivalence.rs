@@ -907,12 +907,27 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
         return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
     }
-    if let Some(plans) = &options.plan {
-        if let Err(u) = crate::construction::check_plans(&plans.before, &plans.after) {
-            return refuse(&mut out, 1, u.what);
+    // A construction plan (`--plan`, a planned domain): the receiver and each parameter made as it says, by the
+    // constructors its nodes name, and its setup sequence called before the target (O1 and O3 of
+    // `llm-dlc/loops/application-core-objects.md`). The plan gives both versions the same roots, so it is checked
+    // with no other mapping between them.
+    let plan = match &options.plan {
+        Some(plans) => {
+            if let Err(u) = crate::construction::check_plans(&plans.before, &plans.after) {
+                return refuse(&mut out, 1, u.what);
+            }
+            if options.correspondence.as_ref().is_some_and(|c| !c.inputs.is_empty() || !c.outputs.is_empty()) || options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() {
+                return refuse(&mut out, 1, "a construction plan with a correspondence, --before-target, --before-arguments or --results-agree-when is not supported yet: the plan gives both versions the same roots".into());
+            }
+            if !options.nullable.is_empty() || !options.may_alias.is_empty() {
+                return refuse(&mut out, 1, "--nullable or --may-alias with a construction plan: the plan's nodes say which inputs may be null or one object".into());
+            }
+            Some(plans)
         }
-        return refuse(&mut out, 1, "a construction plan is checked, but the regression check doesn't make its inputs by one yet".into());
-    }
+        None => None,
+    };
+    // The plan's root `name` in one version, or a refusal in its words.
+    let planned = |cp: &ClassPath, version: &crate::spec::plans::ConstructionPlan, name: &str| crate::construction::root(cp, version, name).map_err(|u| u.what);
 
     // 1. Both versions in one program: the old one relocated into the package "before".
     let before_dir = work.join("before-classes");
@@ -941,7 +956,17 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // `llm-dlc/loops/application-core-objects.md`), named `this`.
     let receiver_type = Type::Object(class_internal.clone());
     let receiver = if method.is_static() {
+        if plan.is_some_and(|p| p.after.roots.iter().any(|r| r.name == "this")) {
+            return refuse(&mut out, line, format!("the plan has a root this, and {method_name} is a static method"));
+        }
         None
+    } else if let Some(p) = plan {
+        match planned(&after_cp, &p.after, "this") {
+            Ok(Some(crate::construction::Rooted::Object(r))) if r.class == class_internal => Some(r),
+            Ok(Some(_)) => return refuse(&mut out, line, format!("the plan's root this is not an object of {}", class_internal.replace('/', "."))),
+            Ok(None) => return refuse(&mut out, line, format!("{method_name} is an instance method, and the plan has no root this")),
+            Err(gap) => return refuse(&mut out, line, gap),
+        }
     } else {
         match record_of(&after_cp, &receiver_type)? {
             Some(r) => Some(r),
@@ -953,15 +978,29 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let mut records = Vec::new();
     for (name, t) in names.iter().zip(&descriptor.params) {
-        let record = match object_of(&after_cp, t)? {
-            Ok(r) => r,
-            Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}, which is outside the objects a regression check makes: {gap}", t.java_name())),
+        let record = match plan {
+            Some(p) => match planned(&after_cp, &p.after, name) {
+                Ok(Some(crate::construction::Rooted::Object(r))) if Type::Object(r.class.clone()) == *t => Some(r),
+                Ok(Some(crate::construction::Rooted::Leaf(leaf))) if leaf == *t => None,
+                Ok(Some(_)) => return refuse(&mut out, line, format!("the plan's root {name} is not of the parameter's type {}", t.java_name())),
+                // A primitive or array parameter the plan leaves out is an input of its own, as without a plan.
+                Ok(None) if !matches!(t, Type::Object(_)) => None,
+                Ok(None) => return refuse(&mut out, line, format!("the plan has no root {name}, an object parameter of {method_name}")),
+                Err(gap) => return refuse(&mut out, line, gap),
+            },
+            None => match object_of(&after_cp, t)? {
+                Ok(r) => r,
+                Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}, which is outside the objects a regression check makes: {gap}", t.java_name())),
+            },
         };
         if !t.is_primitive() && harness::expr::element_ty(t).is_none() && record.is_none() {
             let adapted = adapted_refusal(t, options.max_array_length);
             return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{adapted}", t.java_name()));
         }
         records.push(record);
+    }
+    if let Some(extra) = plan.and_then(|p| p.after.roots.iter().find(|r| r.name != "this" && !names.contains(&r.name))) {
+        return refuse(&mut out, line, format!("the plan's root {} is no parameter of {method_name}, whose parameters are {}", extra.name, names.join(", ")));
     }
     let result_record = record_of(&after_cp, &descriptor.ret)?;
 
@@ -1018,7 +1057,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if options.before_arguments.is_some() {
                 return refuse(&mut out, line, "--before-arguments with a receiver made by its constructor is not supported: the previous version is called on its own receiver, made from the same leaves".into());
             }
-            match crate::construction::receiver(&before_cp, &before_class_internal) {
+            let made = match plan {
+                Some(p) => match planned(&before_cp, &p.before, "this") {
+                    Ok(Some(crate::construction::Rooted::Object(b))) => Ok(b),
+                    Ok(_) => return refuse(&mut out, line, "the previous version's plan doesn't make the receiver this an object".into()),
+                    Err(gap) => return refuse(&mut out, line, format!("in the previous version, {gap}")),
+                },
+                None => crate::construction::receiver(&before_cp, &before_class_internal),
+            };
+            match made {
                 Ok(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
                 Ok(b) => return refuse(&mut out, line, format!("the receiver is made differently in the two versions: {} before, {} now; a receiver of another construction or other fields is not supported yet", b.domain_part("this"), r.domain_part("this"))),
                 Err(u) => return refuse(&mut out, line, format!("in the previous version, {before_method_name} is an instance method, whose receiver is outside the objects a regression check makes: {}", u.what)),
@@ -1087,6 +1134,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let new_objects: Vec<(String, harness::RecordType)> = names.iter().zip(&records).filter_map(|(n, r)| r.as_ref().filter(|r| r.is_made()).map(|r| (n.clone(), r.clone()))).collect();
     for (i, ((name, t), record)) in names.iter().zip(&descriptor.params).zip(&records).enumerate() {
         both_records.push(match record {
+            // A plan's object: the previous version's as its plan makes it, of the same shape.
+            Some(r) if plan.is_some() => match planned(&before_cp, &plan.expect("checked").before, name) {
+                Ok(Some(crate::construction::Rooted::Object(b))) if b.same_shape(r) => Some((r.clone(), Some(b))),
+                Ok(Some(crate::construction::Rooted::Object(b))) => return refuse(&mut out, line, format!("parameter {name} is made differently by the two versions' plans: {} before, {} now; plans of different shapes are not supported yet", b.domain_part(name), r.domain_part(name))),
+                Ok(_) => return refuse(&mut out, line, format!("the previous version's plan doesn't make {name} an object")),
+                Err(gap) => return refuse(&mut out, line, format!("in the previous version, {gap}")),
+            },
             Some(r) if components_passed => Some((r.clone(), None)),
             Some(r) => match object_of(&before_cp, t)?.ok().flatten() {
                 // Under a correspondence's input equations about it, the previous version's object is made from
@@ -1212,6 +1266,22 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     layout.result_fields = result_fields;
     layout.result_equations = result_equations;
     layout.checked = declared_checked(options, [(&before_class, &before_method), (&class, &method)])?;
+    // The plan's setup sequence (O3): the same calls in both versions, on the same symbolic arguments.
+    if let Some(p) = plan.filter(|p| !p.after.setup.is_empty()) {
+        let calls = match (crate::construction::setup_calls(&after_cp, &p.after, &class_internal), crate::construction::setup_calls(&before_cp, &p.before, &before_class_internal)) {
+            (Ok(after), Ok(before)) => after.into_iter().zip(before).collect::<Vec<_>>(),
+            (Err(u), _) => return refuse(&mut out, line, u.what),
+            (_, Err(u)) => return refuse(&mut out, line, format!("in the previous version, {}", u.what)),
+        };
+        for ((m, d, args), (_, before_d, _)) in calls {
+            if d != before_d {
+                return refuse(&mut out, line, format!("the setup call {m} is {before_d} before and {d} now; a setup call of the same parameters in both versions is supported"));
+            }
+            if let Err(problem) = layout.add_setup(&m, &d, &args) {
+                return refuse(&mut out, line, problem);
+            }
+        }
+    }
     // Object parameters that may be null or one object (step H2): a choice each, made by the harness's flags.
     if !options.nullable.is_empty() || !options.may_alias.is_empty() {
         let order: Vec<String> = std::iter::once("this".to_string()).chain(names.iter().cloned()).collect();
@@ -1308,6 +1378,17 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         .collect();
     let observations = observations;
     let mut claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
+    // A setup sequence (O3) is part of the domain the claim states: the states it reaches from construction, and
+    // no others.
+    if !layout.setup.is_empty() {
+        let calls = layout.setup_text(&|i| layout.params[i].name.clone());
+        claim_assumptions.push(crate::statement::Assumption {
+            kind: crate::statement::AssumptionKind::Setup,
+            text: format!("the receiver is in a state {} reaches from its construction, on any arguments, and in no other; a call of it that throws ends the history, its exception compared as the outcome", calls.join(" then ")),
+            basis: crate::statement::Basis::Stated,
+            id: None,
+        });
+    }
 
     // 3. The statement, as a harness JBMC can check.
     let harness = match harness::generate(&class_internal, &method_name, &layout, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length, previous.as_ref()) {
@@ -1350,7 +1431,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         domain: stated_domain.clone(),
         assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
         observations: observations.clone(),
-        bounds: crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete),
+        bounds: crate::statement::Bounds { setup_calls: (!layout.setup.is_empty()).then_some(layout.setup.len() as u32), ..crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete) },
         models: crate::statement::models(options.models && last.is_some()),
         checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
@@ -1368,6 +1449,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 harness::Slot::Record { record, .. } => record.constructors().into_iter().map(|(owner, d)| MemberRef::new(&owner, "<init>", &d)).collect(),
                 harness::Slot::Plain(_) => Vec::new(),
             })
+            // And the setup calls (O3), which make the receiver's state.
+            .chain(layout.setup.iter().map(|s| MemberRef::new(&class_internal, &s.method, &s.descriptor)))
             .collect();
         if !shared::identical_closure(&shared_before_cp, &shared_after_cp, &constructors) {
             plan.identical = None;
@@ -1392,8 +1475,19 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let shared_names = shared::names(&plan.callees);
     // The proof cache (`--cache`, [`crate::proof_cache`]), on the claim as prepared: a result stored for it is the
     // result, a refuted one once its witness reproduces again.
+    // A claim with a setup sequence (O3) is not cached yet: the claim key roots the target and the constructors,
+    // not the setup methods, so an edit of a setup method alone would reuse a stale result. Asked of the reuse
+    // stream under the objects stream's Progress.
+    let uncached;
+    let cache_options = if !layout.setup.is_empty() && options.cache.is_some() {
+        let _ = writeln!(out, "note: a claim with a setup sequence is not cached yet; its claim key would not root the setup calls");
+        uncached = Options { cache: None, ..options.clone() };
+        &uncached
+    } else {
+        options
+    };
     let (cache, hit) = crate::proof_cache::Regression {
-        options,
+        options: cache_options,
         before_cp: &shared_before_cp,
         after_cp: &shared_after_cp,
         before_target: MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor),
