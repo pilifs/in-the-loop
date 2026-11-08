@@ -881,6 +881,7 @@ impl Parser<'_> {
                     at = Some(inner);
                 }
                 super::FieldKind::Array(t) => return Err(Error::new(format!("{shown} is an array field ({}); a property does not read an object's array fields yet", t.java_name()))),
+                super::FieldKind::String => return Err(Error::new(format!("{shown} is a String field; a property's expressions have no String terms"))),
             }
         }
         Ok(FieldPath { shown, slot, steps, ty })

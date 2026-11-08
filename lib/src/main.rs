@@ -520,9 +520,10 @@ struct EquivalenceArgs {
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
     /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, `construction::Plans`):
-    /// the receiver, parameters, shared objects, bounded arrays, adapted lists and setup calls the check makes its
-    /// inputs by. What a check can't make by it (a factory, a cycle, an adapted value inside an object) is refused by
-    /// name, never made otherwise (`lib/README.md`).
+    /// the receiver, parameters, shared objects, bounded arrays, adapted lists, a node's adapted String (bounded as
+    /// --max-array-length bounds every String) and setup calls the check makes its inputs by. What a check can't make
+    /// by it (a factory, a cycle, another adapted value inside an object) is refused by name, never made otherwise
+    /// (`lib/README.md`).
     #[arg(long)]
     plan: Option<PathBuf>,
     /// Further class path entries (PATH-separated or repeatable).
@@ -672,8 +673,9 @@ struct ProveArgs {
     may_alias: Vec<String>,
     /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, `construction::Plans`):
     /// the receiver, parameters, shared objects, bounded arrays, adapted lists and setup calls the check makes its
-    /// inputs by. What a check can't make by it (a factory, a cycle, an adapted value inside an object) is refused by
-    /// name, never made otherwise (`lib/README.md`).
+    /// inputs by. What a check can't make by it (a factory, a cycle, an adapted value inside an object, a String among
+    /// them, since a property's expressions have no String terms) is refused by name, never made otherwise
+    /// (`lib/README.md`).
     #[arg(long)]
     plan: Option<PathBuf>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property

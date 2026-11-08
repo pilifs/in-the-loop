@@ -1314,9 +1314,9 @@ fn confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no
 /// `values::resolve_claim`), so a claim stated in the frozen claims' words and the same claim stated by the models'
 /// identities are one key, and one stated under another model, or at a stronger level than the model has, is
 /// uncacheable by name, never keyed. `values::resolve_claim` agrees with this file's reference walk
-/// ([`resolved_claim`]) on every frozen claim. A modelled call's adapted result (`environment::check_model`) and a
-/// plan's adapted value inside a node (`construction::check_plans`), both still refused, are refused for the
-/// model first.
+/// ([`resolved_claim`]) on every frozen claim. A modelled call's adapted result (`environment::check_model`), still
+/// refused, and a plan's adapted String inside a node (`construction::check_plans`), taken since Phase 5 (a leaf of
+/// its node's construction, `tests/object_strings.rs`), are refused for the model first.
 #[test]
 fn a_claims_value_domains_are_resolved_before_its_key_and_its_checks() {
     use jvmcontract::spec::plans::{CallModel, Coupling, EvidenceLevel, ModelledResult, Returned};
@@ -1366,20 +1366,19 @@ fn a_claims_value_domains_are_resolved_before_its_key_and_its_checks() {
         let refused = spec::cache::key(&claim(&proved)).expect_err(name);
         assert!(refused.what.contains("never borrows a stronger level"), "{name}: {refused}");
     }
-    // A plan's adapted value inside a node (the quote request's code, its service and dependencies left out): refused
-    // for the model first.
+    // A plan's adapted String inside a node (the quote request's code, its service and dependencies left out): refused
+    // under another model, and taken under this tool's.
     let request_only = |c: CanonicalClaim| {
         let Some(spec::ObjectDomain { made_by: Construction::Planned { mut before, mut after }, .. }) = c.domain else { panic!("the quote claim is planned") };
         for plan in [&mut before, &mut after] {
             plan.nodes.retain(|n| n.class == "quotes.QuoteRequest");
             plan.roots.retain(|r| r.name == "request");
         }
-        jvmcontract::construction::check_plans(&before, &after).unwrap_err()
+        jvmcontract::construction::check_plans(&before, &after)
     };
-    let refused = request_only(claim(&resolved_claim(&read("quote-claim"), &stale).unwrap().0));
+    let refused = request_only(claim(&resolved_claim(&read("quote-claim"), &stale).unwrap().0)).unwrap_err();
     assert!(refused.what.contains("evidence of another model's semantics isn't this one's") && refused.what.contains("takes request.code"), "{refused}");
-    let refused = request_only(claim(&read("quote-claim")));
-    assert!(refused.what.contains("the values stream builds it"), "{refused}");
+    request_only(claim(&read("quote-claim"))).unwrap_or_else(|u| panic!("the request's String code is taken under this tool's model: {u}"));
     // A modelled call whose result is a String: refused for the model first, then for the stubs.
     let string_domain = |models: &values::ValueModels, stated: bool| ValueDomain {
         kind: ValueKind::String {},

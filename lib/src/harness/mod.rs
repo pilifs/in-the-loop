@@ -456,6 +456,9 @@ pub enum FieldKind {
     Array(Type),
     /// A reference to an object of an application class: null in both, or each of its fields as compared in turn.
     Object(Box<Fields>),
+    /// A `java.lang.String`: null in both, or the same content (`String.equals`, the values stream's String model),
+    /// never its identity, which no claim over a String observes (J1's O2: the quote request's code).
+    String,
 }
 
 impl Fields {
@@ -465,6 +468,7 @@ impl Fields {
         for (name, kind) in &self.fields {
             match kind {
                 FieldKind::Value(t) | FieldKind::Array(t) => out.push((name.clone(), t.clone())),
+                FieldKind::String => out.push((name.clone(), Type::Object("java/lang/String".into()))),
                 FieldKind::Object(inner) => out.extend(inner.paths().into_iter().map(|(p, t)| (format!("{name}.{p}"), t))),
             }
         }
@@ -499,6 +503,7 @@ impl Fields {
                 n == m
                     && match (a, b) {
                         (FieldKind::Value(x), FieldKind::Value(y)) | (FieldKind::Array(x), FieldKind::Array(y)) => x == y,
+                        (FieldKind::String, FieldKind::String) => true,
                         (FieldKind::Object(x), FieldKind::Object(y)) => x.same_shape(y),
                         _ => false,
                     }
@@ -507,10 +512,18 @@ impl Fields {
 }
 
 /// Whether a constructor's argument of type `t` is a leaf of its construction, a symbolic parameter of the harness:
-/// a primitive, or a bounded array of integral or boolean elements (O1 of `llm-dlc/loops/application-core-objects.md`),
-/// which the previous version is given its own copy of, as an array parameter is.
+/// a primitive, a bounded array of integral or boolean elements (O1 of `llm-dlc/loops/application-core-objects.md`),
+/// which the previous version is given its own copy of, as an array parameter is, or a String of the values stream's
+/// adapter, of at most the check's bound of code units and never null, the one object both versions are given, as a
+/// String parameter is (J1's O2: the quote request's code).
 pub fn is_leaf(t: &Type) -> bool {
-    t.is_primitive() || expr::element_ty(t).is_some()
+    t.is_primitive() || expr::element_ty(t).is_some() || crate::values::is_string(t)
+}
+
+/// Whether a constructor's parameter `i` of `record`, of type `t`, is an object made in its place: one of the
+/// record's inner objects, neither a leaf nor a dependency.
+fn is_inner(record: &RecordType, i: usize, t: &Type) -> bool {
+    matches!(t, Type::Object(_)) && !record.is_dependency(i) && !is_leaf(t)
 }
 
 impl RecordType {
@@ -554,7 +567,7 @@ impl RecordType {
         for (i, (name, t)) in self.params.iter().enumerate() {
             match t {
                 Type::Object(class) if self.is_dependency(i) => out.push((format!("{path}.{name}"), class.clone())),
-                Type::Object(_) => {
+                t if is_inner(self, i, t) => {
                     if let Some(inner) = nested.next() {
                         out.extend(inner.dependency_paths(&format!("{path}.{name}")));
                     }
@@ -660,7 +673,7 @@ impl RecordType {
             .enumerate()
             .map(|(i, (n, t))| match t {
                 Type::Object(_) if self.is_dependency(i) => format!("{n}: null, a dependency of {}", t.java_name()),
-                Type::Object(_) => format!("{n}: {}", nested.next().map(RecordType::describe).unwrap_or_else(|| t.java_name())),
+                t if is_inner(self, i, t) => format!("{n}: {}", nested.next().map(RecordType::describe).unwrap_or_else(|| t.java_name())),
                 _ => format!("{n}: {}", t.java_name()),
             })
             .collect::<Vec<_>>()
@@ -772,7 +785,8 @@ impl RefPath {
 fn field_refs(out: &mut Vec<RefPath>, path: &str, at: usize, root: Root, fields: &Fields) {
     for (name, kind) in &fields.fields {
         let ty = match kind {
-            FieldKind::Value(_) => continue,
+            // A String's identity is never observed: its content is compared.
+            FieldKind::Value(_) | FieldKind::String => continue,
             FieldKind::Array(t) => t.descriptor(),
             FieldKind::Object(inner) => inner.class.clone(),
         };
@@ -1522,11 +1536,15 @@ impl Layout {
 /// `, each array of length ≤ 4, not null, its own` for an object whose construction takes arrays (O1), each a leaf
 /// of its own; empty for one that takes none.
 fn arrays_of(record: &RecordType, max_array_length: u32) -> String {
+    let mut out = String::new();
     if record.components.iter().any(|(_, t)| matches!(t, Type::Array(_))) {
-        format!(", each array of its construction of length ≤ {max_array_length}, not null, and no two the same array")
-    } else {
-        String::new()
+        out.push_str(&format!(", each array of its construction of length ≤ {max_array_length}, not null, and no two the same array"));
     }
+    // A String leaf (J1's O2) is bounded as a String parameter is ([`string_part`]).
+    if record.components.iter().any(|(_, t)| crate::values::is_string(t)) {
+        out.push_str(&format!(", each String of its construction of ≤ {max_array_length} code units, not null"));
+    }
+    out
 }
 
 /// The domain of a proof, from each parameter's `name: type` and whether it is an array: the parts joined by
@@ -2863,6 +2881,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     for ((name, kind), (old_name, old_kind)) in fields.fields.iter().zip(&old_fields.fields) {
         let descriptor = |k: &FieldKind, prefix: &str| match k {
             FieldKind::Value(t) | FieldKind::Array(t) => t.descriptor(),
+            FieldKind::String => "Ljava/lang/String;".to_string(),
             FieldKind::Object(f) => format!("L{prefix}{};", f.class),
         };
         let old_field = pool.field_ref(&format!("before/{}", old_fields.class), old_name, &descriptor(old_kind, "before/"));
@@ -2923,7 +2942,31 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
                 code.bind(done);
                 used = used.max(deeper).max(scratch + 2);
             }
-            (FieldKind::Object(_), _) => code.goto(fail),
+            // By content: null in both, or `x.equals(y)`, which the own checker models over the content it holds.
+            (FieldKind::String, FieldKind::String) => {
+                let (x, y) = (scratch, scratch + 1);
+                for (local, object, field) in [(x, old, old_field), (y, new, new_field)] {
+                    code.load(Kind::Ref, object);
+                    code.op_u16(0xb4, field); // getfield
+                    code.store(Kind::Ref, local);
+                }
+                let compare = code.label();
+                let done = code.label();
+                code.load(Kind::Ref, x);
+                code.if_nonnull(compare);
+                code.load(Kind::Ref, y);
+                code.if_null(done);
+                code.goto(fail);
+                code.bind(compare);
+                code.load(Kind::Ref, x);
+                code.load(Kind::Ref, y);
+                let equals = pool.method_ref("java/lang/String", "equals", "(Ljava/lang/Object;)Z");
+                code.op_u16(0xb6, equals); // invokevirtual
+                code.if_zero(Cond::Eq, fail);
+                code.bind(done);
+                used = used.max(scratch + 2);
+            }
+            (FieldKind::Object(_) | FieldKind::String, _) => code.goto(fail),
         }
     }
     used
@@ -3491,7 +3534,7 @@ fn construction_source_of(record: &RecordType, prefix: &str, leaves: &mut dyn It
         .enumerate()
         .map(|(i, (_, t))| match t {
             Type::Object(_) if record.is_dependency(i) => "null".to_string(),
-            Type::Object(_) => nested.next().map(|r| construction_source_of(r, prefix, leaves)).unwrap_or_default(),
+            t if is_inner(record, i, t) => nested.next().map(|r| construction_source_of(r, prefix, leaves)).unwrap_or_default(),
             _ => leaves.next().unwrap_or_default(),
         })
         .collect();
@@ -3518,7 +3561,8 @@ fn fields_source(old: &str, new: &str, old_fields: &Fields, fields: &Fields) -> 
                 (FieldKind::Value(_), _) => format!("{x} == {y}"),
                 (FieldKind::Array(_), _) => format!("java.util.Arrays.equals({x}, {y})"),
                 (FieldKind::Object(inner), FieldKind::Object(old_inner)) => format!("({x} == null ? {y} == null : {y} != null && {})", fields_source(&x, &y, old_inner, inner)),
-                (FieldKind::Object(_), _) => "false".to_string(),
+                (FieldKind::String, FieldKind::String) => format!("({x} == null ? {y} == null : {x}.equals({y}))"),
+                (FieldKind::Object(_) | FieldKind::String, _) => "false".to_string(),
             }
         })
         .collect();

@@ -296,7 +296,7 @@ fn a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.problem.as_deref().unwrap_or_default().contains("java.util.List"), "{}", o.output);
 
-    for (target, words) in [("raw", "a raw List"), ("wild", "not a wildcard"), ("boxes", "a field of an array or an object"), ("anyOf", "an identity it couldn't observe"), ("names", "a list of Strings")] {
+    for (target, words) in [("raw", "a raw List"), ("wild", "not a wildcard"), ("boxes", "a field of an array, a String or an object"), ("anyOf", "an identity it couldn't observe"), ("names", "a list of Strings")] {
         let o = equivalence::run(&kernel_options("after", &format!("l.Kernels#{target}"), target)).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{target}: {}", o.output);
         assert!(o.problem.as_deref().unwrap_or_default().contains(words), "{target}: {}", o.output);

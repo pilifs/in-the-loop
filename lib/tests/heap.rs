@@ -223,9 +223,11 @@ public final class Line {
 }
 "#;
 
+// A field of a kind no check observes (an `Object`). A String field was the example until Phase 5 of
+// `llm-dlc/loops/application-core.md`, which compares one by content (`tests/object_strings.rs`).
 const TAGGED: &str = r#"package objects;
 public final class Tagged {
-    String tag;
+    Object tag;
     int n;
     public Tagged(int n) { this.n = n; this.tag = "t"; }
 }
@@ -384,7 +386,7 @@ fn an_object_with_a_field_outside_the_supported_kinds_is_a_named_gap() {
     let Some(o) = regression("after", "tagged") else { return };
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     let problem = o.problem.unwrap();
-    assert!(problem.contains("the field tag of objects.Tagged has type java.lang.String"), "{problem}");
+    assert!(problem.contains("the field tag of objects.Tagged has type java.lang.Object"), "{problem}");
 }
 
 #[test]
@@ -1050,7 +1052,7 @@ fn a_property_wrong_only_where_the_constructor_refuses_holds_within_the_construc
 fn a_property_over_an_object_outside_the_supported_kinds_or_written_wrong_is_refused_by_name() {
     let Some(o) = property_over("after", "tagged", None, "result == t.n", &[], &[]) else { return };
     assert_eq!(o.verdict, Verdict::Unverifiable);
-    assert!(o.problem.as_deref().unwrap().contains("the field tag of objects.Tagged has type java.lang.String"), "{:?}", o.problem);
+    assert!(o.problem.as_deref().unwrap().contains("the field tag of objects.Tagged has type java.lang.Object"), "{:?}", o.problem);
     let wrong = [
         ("\\old(l) == l", "\\old(l) is an object"),
         ("l.price == l", "incomparable types"),

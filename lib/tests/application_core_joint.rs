@@ -390,14 +390,41 @@ fn j1_r2_a_receiver_with_dependencies() {
 /// and quantities, and `alias-to-copy`'s copy is refuted on identity alone, under `checked-claim`. Each rerun is the
 /// stored result.
 ///
-/// The service's dependencies are passed null now, as for R2. The request's String code is still refused: the heap
-/// check's plan doesn't make an adapted value inside a node, and an object with a String field isn't observed by
-/// the regression check ("the values stream builds it"). Ignored until it is, the next piece of work of the brief's
-/// Progress, and not part of a job until then.
+/// The service's dependencies are passed null, as for R2. The request's String code is a leaf of its node's
+/// construction, of the String adapter (at most the claim's 4 code units, never null), and its field is compared by
+/// content (`tests/object_strings.rs`).
+///
+/// `alias-to-copy` is held to the allocation gate's outcome until the user decides the claim's bound (the brief's
+/// Progress): its copy, the exception the copy's constructor may throw and the method's own make 3 objects at most,
+/// more than `checked-claim`'s bound of 1, so the gate leaves it unresolved where `expected.json` says refuted on
+/// `identity:result==request`. Under a bound of 3 in each version it is refuted on that identity alone, its witness
+/// run on a JVM, and `after` is still verified.
 #[test]
-#[ignore = "refused: the regression check doesn't make a String inside an object yet (application-core.md's Progress)"]
 fn j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string() {
-    claim_family("J1 (O2)", "quote", "checked-claim", Check::Heap, None);
+    let gate = |o: &spec::Outcome| {
+        assert_eq!(o.verdict, spec::Verdict::Unresolved, "alias-to-copy under checked-claim: {o:?}");
+        assert!(o.problem.as_deref().is_some_and(|p| p.contains("may make 3 objects in one call, more than the claim's allocation bound of 1")), "{o:?}");
+    };
+    claim_family("J1 (O2)", "quote", "checked-claim", Check::Heap, Some(("alias-to-copy", &gate)));
+
+    let mut raised = golden("checked-claim");
+    let bounds = &mut raised.domain.as_mut().unwrap().bounds;
+    bounds.before.allocations = 3;
+    bounds.after.allocations = 3;
+    let cache = fresh("cache-checked-raised");
+    let proved = run_claim(Check::Heap, &raised, "quote", "after", &cache);
+    record("J1 (O2)", "quote", "checked-claim, allocations 3", "after", "cold", &json!("verified"), &proved);
+    strictly("checked-claim (allocations 3) after", &raised, &proved, &json!("verified"));
+    let copied = run_claim(Check::Heap, &raised, "quote", "alias-to-copy", &cache);
+    let expected = json!(["refuted", "identity:result==request"]);
+    record("J1 (O2)", "quote", "checked-claim, allocations 3", "alias-to-copy", "cold", &expected, &copied);
+    strictly("checked-claim (allocations 3) alias-to-copy", &raised, &copied, &expected);
+    // Refuted on the identity alone: the witness shows the copy's fields as the request's, its code by content.
+    let state = |id: &str| copied.outcome.accounting.iter().find(|a| a.observation == id).map(|a| a.state);
+    assert_eq!(state("result"), Some(ObservationState::Unresolved), "{:?}", copied.outcome);
+    let witness = copied.outcome.witness.clone().unwrap_or_default();
+    let shown = witness.matches("QuoteRequest{code=").count();
+    assert_eq!(shown, 2, "both versions' results are shown with their code by content: {witness}");
 }
 
 /// H: the throttle family. Right after the constructor, `after-setup` is verified, labelled for that domain only,

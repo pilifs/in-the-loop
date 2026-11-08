@@ -1267,6 +1267,68 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     constructor argument (a plan's adapted node argument, and `made_of`'s), and a String field compared by content.
     Then `checked-claim` reaches its verdicts, and the ignored test goes in a job of its own. Then step 3's examples
     with `lib/tests/integration.rs`, J4 and the for-review list.
+- 2026-11-08, **the dependencies job passed**: `20261108-185910-…` at `c99d01a3`, 4 of 4 steps in 3m27s (peak
+  2.3 GiB), recorded by the verification loop (`usommrqt`). J1's R2 (`fee` on every quote build) and the three
+  dependency tests pass on the own checker, and the recording `jbmc` was never called.
+- 2026-11-08, **Phase 5: a String inside an object**, for the regression and heap checks, so that J1's O2 part
+  (`checked-claim`) reaches its verdicts on the quote family (verification pending).
+  - **The reproducer**: `tests/application_core_joint.rs`'s `j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string`,
+    ignored since the dependencies piece, is un-ignored. It failed before on the request's String code, an adapted
+    value inside a node. So did each test of the new `tests/object_strings.rs`, on a constructor's String argument
+    ("a constructor's arguments must be primitives, …").
+  - **The change**:
+    - A constructor's String argument is a leaf of its construction (`harness::is_leaf`), in `made_of` and in a plan's
+      node (`PlanValue::Adapted` of a String, named by its path, never null). It is a value of the String adapter, as
+      a String parameter is: every content up to the check's bound (`--max-array-length`, or the claim's
+      `max_array_length`; a plan's String bounded otherwise is refused), the one object both versions get.
+    - The domain names the bound (`each String of its construction of ≤ 4 code units, not null`), and the statement
+      states `maxValueLength` and the String model. The witness writes the String as a literal (`new Request("a", 0)`),
+      and it is run on a JVM.
+    - A String field is `harness::FieldKind::String`, compared by content: null in both, or `String.equals`, which the
+      own checker models. Never by identity. The witness shows it by content (`Request{code="V", count=1}`).
+    - JBMC is not asked, as for a String parameter. A property check refuses a String inside an object by name, since
+      its expressions have no String terms. So does a list inside a node.
+  - **Checks**:
+    - The new `tests/object_strings.rs`, 3 tests:
+      - four rewrites proved (a `startsWith` by `charAt`, `equals` turned round on a receiver's String, a result whose
+        code is a concatenation, a field set to a copy), and three defects refuted on what they change, each run on a
+        JVM;
+      - the refusals by name, a planned rewrite proved and its defect refuted;
+      - an exact rerun reused, but not under another bound or after an edit of the constructor that takes the String.
+    - Two sabotages fail them: a String field compared by identity, and no String bound given to the checker.
+    - J1's O2 reaches `expected.json`'s verdicts, with no refusal accepted, on every build but `alias-to-copy`; each
+      rerun is the stored result.
+    - `tests/values.rs`' resolution test now expects the request's String code taken under this tool's model, and
+      still refused under another.
+    - Three tests named a refusal that no longer holds, and now name what does:
+      - `tests/heap.rs`'s `Tagged` fixture had a String field as its unsupported field. It is now an `Object`
+        field, still a named gap, in both its regression and its property test;
+      - `tests/value_parameters.rs`'s list-element refusal names a String among the fields left out;
+      - `tests/values.rs` (above).
+    - The integration check passes: the contract 14 of 14, the unit tests 258, `compare` 1, `effects` 19,
+      `foundations` 5, and the Python suites. So does every other binary but `integration.rs` (JBMC), in release:
+      alignment 34, application_core_joint 6 (all, J1's O2 among them), application_core_objects 22, compare_domains
+      3, conformance 10, dependencies 3, environment 17, environment_quotes 4, environment_responses 8, heap 49,
+      object_strings 3, observations 12, reuse 12, reuse_summaries 14, skill 1, string_literals 2, summaries 40,
+      value_parameters 10, values 18.
+  - **For the user: `checked-claim`'s allocation bound**, the same kind of decision as `basket-first-claim`'s.
+    - The claim bounds each version's allocations at 1. `alias-to-copy`'s code may make 3 objects in one call: the
+      copy, the `IllegalArgumentException` its constructor may throw, and the method's own.
+    - So the allocation gate leaves it unresolved ("may make 3 objects in one call, more than the claim's allocation
+      bound of 1"), where `expected.json` says refuted on `identity:result==request`. The gate stays as it is.
+    - Until the user decides, the contract and the joint test hold that one case to exactly the gate's outcome, and
+      every other case to `expected.json`.
+    - The options:
+      1. bound the claim's allocations at 3 in each version. Then the case is refuted on the identity alone, its
+         witness run on a JVM, and `after` stays verified, as the joint test shows;
+      2. keep 1, and expect `unresolved` for `alias-to-copy`: a defect outside the claim.
+  - **The contract tightened**: O2's `checked-claim` accepts no refusal.
+  - **The job**: `20261108-195222-application-core-phase-5-a-string-inside`. It runs J1's O2 and the String tests, with the recording `jbmc` guard.
+  - **Docs**: `lib/README.md` (a new paragraph, **A String inside an object**; the receiver's and the plan's refusal
+    lists), `--plan`'s help (`equivalence`, `prove`), the docs of `harness::is_leaf`, `FieldKind` and `construction`.
+  - **Next**: step 3's examples with `lib/tests/integration.rs`, one job per app, at a revision that has the JVM
+    run's opening of instance methods. Then J4 and the for-review list. Two user decisions are open, the allocation
+    bounds of `basket-first-claim` and `checked-claim`; neither blocks the rest.
 - Status: working
 
 ## Loop settings

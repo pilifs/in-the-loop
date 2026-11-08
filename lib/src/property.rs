@@ -406,6 +406,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let mut layout = if over_objects { harness::Layout::new(receiver, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
     layout.result_fields.0 = result_fields;
+    // A String inside an object (a leaf of its construction, as the regression check makes one since J1's O2): a
+    // property's expressions have no String terms, and its checker is given no String bound, so it is refused by name.
+    if let Some(p) = layout.params.iter().find(|p| crate::values::is_string(&p.ty)) {
+        return refuse(&mut out, line, format!("{} is a String inside an object: a property check makes no String, since its expressions have no String terms; the regression check (jvmcontract equivalence) makes one", p.name));
+    }
     // A dependency the inputs' constructions pass null holds only where the target never reaches it.
     if let Some(reached) = crate::construction::dependency_reached(&cp, &crate::classfile::MemberRef::new(&class_internal, &method_name, &method.descriptor), &layout.dependencies().1) {
         return refuse(&mut out, line, format!("{reached}; a property check passes a dependency null, so it holds only of a target that never reaches one"));

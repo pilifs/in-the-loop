@@ -187,7 +187,7 @@ fn recipe<'a>(record: &crate::harness::RecordType, leaves: &mut impl Iterator<It
         .enumerate()
         .map(|(i, (_, t))| match t {
             Type::Object(_) if record.is_dependency(i) => "null".to_string(),
-            Type::Object(_) => nested.next().map(|r| recipe(r, leaves)).unwrap_or_default(),
+            Type::Object(_) if !crate::harness::is_leaf(t) => nested.next().map(|r| recipe(r, leaves)).unwrap_or_default(),
             _ => leaves.next().cloned().unwrap_or_default(),
         })
         .collect();
@@ -369,7 +369,7 @@ fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argu
         .map(|(i, (c, t))| match t {
             // A dependency, passed null: no input of the witness.
             Type::Object(_) if record.is_dependency(i) => Typed { name: c.clone(), ty: t.java_name(), value: Some(serde_json::Value::Null), components: None, from: None },
-            Type::Object(_) => match nested.next() {
+            Type::Object(_) if !crate::harness::is_leaf(t) => match nested.next() {
                 Some(inner) => typed_made(c, inner, arguments, source, leaves),
                 None => Typed { name: c.clone(), ty: t.java_name(), value: None, components: None, from: None },
             },
@@ -969,6 +969,12 @@ pub fn object_fields(m: &Machine, v: Value, fields: &crate::harness::Fields) -> 
                     _ => "null".into(),
                 },
                 crate::harness::FieldKind::Object(inner) => object_fields(m, value, inner),
+                // By content, as the harness compares it.
+                crate::harness::FieldKind::String => match m.units_of(value) {
+                    Some(s) => string_literal(s.units()),
+                    None if value == Value::Null => "null".into(),
+                    None => "<not a String>".into(),
+                },
             };
             format!("{name}={text}")
         })
@@ -989,7 +995,7 @@ fn primitive_paths(m: &Machine, v: Value, fields: &crate::harness::Fields) -> BT
                 out.insert(name.clone(), value);
             }
             crate::harness::FieldKind::Object(inner) => out.extend(primitive_paths(m, value, inner).into_iter().map(|(p, v)| (format!("{name}.{p}"), v))),
-            crate::harness::FieldKind::Array(_) => {}
+            crate::harness::FieldKind::Array(_) | crate::harness::FieldKind::String => {}
         }
     }
     out

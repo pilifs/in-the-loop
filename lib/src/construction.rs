@@ -40,7 +40,9 @@ pub struct Plans {
 /// both versions. A node's argument may be a dependency, an application interface the check passes null
 /// (`node` checks the class, and the check that the target never reaches it, [`dependency_reached`]). What it
 /// doesn't make yet is refused by name, before any check: such a choice or sharing inside a nested object, a null
-/// array, a factory, an adapted String root, and an adapted value inside a node (the values stream's adapter).
+/// array, a factory, an adapted String root, and an adapted value inside a node other than a String that is never
+/// null. Such a String, the values stream's adapter's (J1's O2: the quote request's code), is a leaf of its node's
+/// construction, bounded as the check bounds every String ([`array_bound_problem`]).
 pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Result<(), Unsupported> {
     for (version, plan) in [("previous", before), ("new", after)] {
         if let Some(problem) = plan.shape_problem() {
@@ -140,9 +142,12 @@ fn java_type(name: &str) -> Option<crate::classfile::Type> {
 /// an object's construction takes an array (O1), which the statement's parameters alone don't show.
 pub fn stated_bounds(layout: &crate::harness::Layout, bounds: crate::statement::Bounds, max_array_length: u32) -> crate::statement::Bounds {
     let arrays = layout.params.iter().any(|p| matches!(p.ty, crate::classfile::Type::Array(_)));
+    // A String inside an object (J1's O2) is bounded as a String parameter is.
+    let strings = layout.params.iter().any(|p| crate::values::is_string(&p.ty));
     crate::statement::Bounds {
         setup_calls: (!layout.setup.is_empty()).then_some(layout.setup.len() as u32),
         max_array_length: if arrays { Some(max_array_length) } else { bounds.max_array_length },
+        max_value_length: if strings { Some(max_array_length) } else { bounds.max_value_length },
         ..bounds
     }
 }
@@ -176,8 +181,16 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
         }
         PlanValue::Adapted { path, domain } => {
             // Resolved first, so that a value stated under another model is refused for that.
-            crate::values::resolve(domain).map_err(|u| Unsupported::new(u.part, format!("the {version} version's {at} takes {path}: {}", u.what)))?;
-            Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, an adapted value: the values stream builds it (llm-dlc/loops/application-core-values.md)")))
+            let domain = crate::values::resolve(domain).map_err(|u| Unsupported::new(u.part, format!("the {version} version's {at} takes {path}: {}", u.what)))?;
+            // A String argument of a node (J1's O2: the quote request's code), a leaf of its construction: never
+            // null, bounded as the check bounds every String (`array_bound_problem`), one object both versions get.
+            if !matches!(domain.kind, crate::spec::plans::ValueKind::String {}) {
+                return Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, an adapted value other than a String: a node's adapted argument is a String of the values stream's adapter, and a list inside an object is not made yet")));
+            }
+            if domain.nullable {
+                return Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, a String that may be null: the check's Strings never are, and a null String is not made yet")));
+            }
+            Ok(())
         }
         // Passed null; `node` checks it is an application interface the constructor takes, and the check that
         // the target never reaches it (`dependency_reached`).
@@ -305,10 +318,19 @@ pub fn arrays(plan: &ConstructionPlan) -> Vec<(String, u32)> {
     }).collect()
 }
 
-/// Why a plan's arrays are bounded otherwise than the check's `max_array_length`, if they are: a bound that
-/// differs would make the check about other arrays than the claim's.
+/// Why a plan's arrays, or the Strings inside its nodes, are bounded otherwise than the check's `max_array_length`, if
+/// they are: a bound that differs would make the check about other arrays or Strings than the claim's, under its
+/// label.
 pub fn array_bound_problem(plan: &ConstructionPlan, max_array_length: u32) -> Option<String> {
-    arrays(plan).into_iter().find(|(_, n)| *n != max_array_length).map(|(path, n)| format!("the plan bounds the array {path} at {n} elements, and the check bounds every array at {max_array_length}: a bound of each array's own is not supported yet"))
+    if let Some((path, n)) = arrays(plan).into_iter().find(|(_, n)| *n != max_array_length) {
+        return Some(format!("the plan bounds the array {path} at {n} elements, and the check bounds every array at {max_array_length}: a bound of each array's own is not supported yet"));
+    }
+    plan.nodes.iter().flat_map(|n| n.args.iter()).find_map(|v| match v {
+        PlanValue::Adapted { path, domain } if matches!(domain.kind, crate::spec::plans::ValueKind::String {}) && domain.max_length != max_array_length => {
+            Some(format!("the plan bounds the String {path} at {} code units, and the check bounds every String at {max_array_length} (--max-array-length, the claim's max_array_length): a bound of each String's own is not supported yet", domain.max_length))
+        }
+        _ => None,
+    })
 }
 
 /// What a plan makes a root: a primitive leaf of its type, or an object.
@@ -573,7 +595,15 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
                 }
                 inner.push(node(cp, plan, *inner_id, &at, within)?);
             }
-            other => return Err(gap(format!("node {id}'s argument {pname} is {}, which check_plans refuses", value_name(other)))),
+            // A String leaf (J1's O2), its domain checked by `supported` and its bound by `array_bound_problem`.
+            PlanValue::Adapted { path: leaf, .. } => {
+                if leaf != &at {
+                    return Err(gap(format!("node {id}'s argument {pname} is the String {leaf}, which the check names {at}: a leaf is named by its path from the root")));
+                }
+                if !crate::values::is_string(pt) {
+                    return Err(gap(format!("node {id}'s argument {pname} is the String {leaf}, and the constructor takes a {}", pt.java_name())));
+                }
+            }
         }
         params.push((pname.clone(), pt.clone()));
     }

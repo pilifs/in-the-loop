@@ -801,10 +801,10 @@ fn list_element(cp: &ClassPath, method: &crate::classfile::Method, pool: &crate:
         Err(gap) => return Ok(Err(format!("its elements are {}, which is outside the objects a regression check makes: {gap}", element.replace('/', ".")))),
     };
     if !record.components.iter().all(|(_, t)| t.is_primitive()) || !record.inner.is_empty() {
-        return Ok(Err(format!("its elements are {}, whose construction takes an array or an object: a list's elements are made of primitives only, for now", record.describe())));
+        return Ok(Err(format!("its elements are {}, whose construction takes an array, a String or an object: a list's elements are made of primitives only, for now", record.describe())));
     }
     if record.fields.as_ref().is_some_and(|f| f.fields.iter().any(|(_, k)| !matches!(k, harness::FieldKind::Value(_)))) {
-        return Ok(Err(format!("its elements are {}, which has a field of an array or an object: a list's elements have primitive fields only, for now, since the identity relations among the references they hold aren't observed", record.simple_name())));
+        return Ok(Err(format!("its elements are {}, which has a field of an array, a String or an object: a list's elements have primitive fields only, for now, since the identity relations among the references they hold aren't observed", record.simple_name())));
     }
     Ok(Ok(record))
 }
@@ -866,7 +866,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
             },
             other => {
                 within.pop();
-                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives, arrays of integral or boolean elements, objects made by their constructors, or dependencies of an application interface, passed null", other.java_name())));
+                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null", other.java_name())));
             }
         }
         params.push((n.clone(), pt.clone()));
@@ -898,6 +898,8 @@ pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) ->
         let kind = match &ft {
             ft if ft.is_primitive() => harness::FieldKind::Value(ft.clone()),
             Type::Array(element) if element.is_primitive() => harness::FieldKind::Array(ft.clone()),
+            // Compared by content (J1's O2: the quote request's code).
+            t if crate::values::is_string(t) => harness::FieldKind::String,
             Type::Object(class) if cp.application(class)?.is_some() => match fields_of(cp, class, within)? {
                 Ok(inner) => harness::FieldKind::Object(Box::new(inner)),
                 Err(gap) => {
@@ -907,7 +909,7 @@ pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) ->
             },
             other => {
                 within.pop();
-                return Ok(Err(format!("the field {} of {java} has type {}; the fields of an object input must be primitives, arrays of primitives, or objects of application classes", f.name, other.java_name())));
+                return Ok(Err(format!("the field {} of {java} has type {}; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes", f.name, other.java_name())));
             }
         };
         fields.push((f.name.clone(), kind));
@@ -1134,6 +1136,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{adapted}", t.java_name()));
         }
         records.push(record);
+    }
+    // A String inside an object (J1's O2: the quote request's code) is a leaf of its construction, a value of the
+    // same adapter as a String parameter: of at most --max-array-length code units, never null.
+    if strings.is_none() && receiver.iter().chain(records.iter().flatten()).any(|r| r.components.iter().any(|(_, t)| crate::values::is_string(t))) {
+        match crate::values::adapter(&Type::Object("java/lang/String".into()), options.max_array_length) {
+            Ok(a) => strings = Some(a),
+            Err(u) => return refuse(&mut out, line, format!("a String inside an object: {}", u.what)),
+        }
     }
     // JBMC models Strings its own way, and its witness's String isn't read, so it can't check this claim: the own
     // checker decides it, and JBMC is neither the fallback nor the confirmation.
@@ -2126,7 +2136,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
         let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &r.arguments(&flat_types)?)) };
         if strings.is_some() {
-            let reason = "a String parameter: JBMC's Strings are its own model, not the own checker's bounded one, and its witness's String isn't read, so it wouldn't check the same claim".to_string();
+            let reason = "a String parameter or a String inside an object: JBMC's Strings are its own model, not the own checker's bounded one, and its witness's String isn't read, so it wouldn't check the same claim".to_string();
             (Some(Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }), None)
         } else if lists_taken {
             let reason = "a list parameter: JBMC runs the list models' bytecode its own way (VF-023: it refutes that a one-element List.of has size 1), so it wouldn't check the same claim".to_string();

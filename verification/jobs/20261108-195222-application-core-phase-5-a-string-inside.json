@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-195222-application-core-phase-5-a-string-inside",
+  "title": "application-core Phase 5: a String inside an object (J1's O2, checked-claim on the quote family), on the own checker with no JBMC",
+  "description": "At the revision that commits this job (llm-dlc/loops/application-core.md, Phase 5, after the receiver-with-dependencies piece left J1's O2 part refused on the request's String code). The regression check (equivalence, so also the heap check of a planned claim) now makes a constructor's String argument as a leaf of its construction (harness::is_leaf; a plan's adapted String inside a node), a value of the String adapter of at most the check's bound of code units, never null, and compares a String field by content (harness::FieldKind::String, String.equals), never by identity. Step 2 runs lib/tests/application_core_joint.rs's j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string (acceptance rows J1 and O2): the frozen checked-claim (QuoteService#checked, domain planned: the service with three null dependencies and the request made from a String code of at most 4 code units and an int array of at most 4, allocations bounded at 1, unwind 16), engine native, every build of the quote family, no refusal accepted: after and six defects verified with every observation preserved, each rerun under one proof cache the stored result under the same key; alias-to-copy held to the allocation gate's outcome (unresolved: its code may make 3 objects, more than the frozen bound of 1), a user decision recorded in the brief's Progress; and under a bound of 3, after verified and alias-to-copy refuted (violation) on identity:result==request with its witness run on a JVM. Step 3 runs lib/tests/object_strings.rs (3 tests): four rewrites over Strings inside objects proved, three defects refuted and run on a JVM; the property check, --engine jbmc and plans with a String bounded otherwise, nullable, misnamed or a list inside a node refused by name; an exact rerun reused but not under another bound or after an edit of the constructor taking the String. Each step runs with a jbmc first on PATH that records being called, and the last step fails if it was. Expected process status 0 for every step.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/application_core_joint.rs",
+      "lib/tests/object_strings.rs",
+      "lib/src/harness/mod.rs",
+      "lib/src/construction.rs",
+      "llm-dlc/loops/application-core.md"
+    ]
+  },
+  "expected": "every step exits 0: j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string and the 3 object_strings tests pass, and the last step finds no call of jbmc",
+  "submitted": {
+    "at": "2026-11-08T19:52:22+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "inline release runs on this machine: j1_o2 about 7 s, object_strings 2 s; plus a release build of the two test binaries (about 3 min)"
+  },
+  "steps": [
+    {
+      "name": "build the tests and the recording jbmc",
+      "run": "cd lib && rm -rf target/strings-shim && mkdir -p target/strings-shim/bin && printf \"#!/bin/sh\\ntouch %s/target/strings-shim/jbmc-called\\nexit 127\\n\" \"$PWD\" > target/strings-shim/bin/jbmc && chmod +x target/strings-shim/bin/jbmc && cargo test --release --test application_core_joint --test object_strings --no-run",
+      "cwd": "."
+    },
+    {
+      "name": "J1 (O2): checked-claim with the request's String code",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/strings-shim/bin:$PATH\" cargo test --release --test application_core_joint j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string -- --exact --nocapture 2>&1 | tee target/strings-j1-o2.log",
+      "cwd": "."
+    },
+    {
+      "name": "the String-inside-an-object tests",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/strings-shim/bin:$PATH\" cargo test --release --test object_strings -- --nocapture 2>&1 | tee target/strings-tests.log",
+      "cwd": "."
+    },
+    {
+      "name": "J2's guard: no check called jbmc",
+      "run": "cd lib && test ! -e target/strings-shim/jbmc-called && echo \"no check called jbmc\"",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
