@@ -12,48 +12,48 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-08T11:30:02.221Z",
-  "duration_seconds": 237,
+  "ended": "2026-11-08T11:31:35.558Z",
+  "duration_seconds": 330,
   "stats": {
     "turns": 2,
-    "api_calls": 16,
-    "tool_calls": 16,
-    "tool_errors": 0,
+    "api_calls": 25,
+    "tool_calls": 25,
+    "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 89835,
+    "peak_context_tokens": 101468,
     "usage": {
-      "input_tokens": 34,
-      "output_tokens": 10023,
-      "cache_read_input_tokens": 959684,
-      "cache_creation_input_tokens": 62308
+      "input_tokens": 52,
+      "output_tokens": 18477,
+      "cache_read_input_tokens": 1815026,
+      "cache_creation_input_tokens": 73941
     }
   },
   "tools": {
-    "Bash": 16
+    "Bash": 25
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-08T11:26:05.429Z",
-      "ended": "2026-11-08T11:30:02.221Z",
+      "ended": "2026-11-08T11:31:35.558Z",
       "turns": 2,
-      "api_calls": 16,
+      "api_calls": 25,
       "usage": {
-        "input_tokens": 34,
-        "output_tokens": 10023,
-        "cache_read_input_tokens": 959684,
-        "cache_creation_input_tokens": 62308
+        "input_tokens": 52,
+        "output_tokens": 18477,
+        "cache_read_input_tokens": 1815026,
+        "cache_creation_input_tokens": 73941
       },
-      "peak_context_tokens": 89835
+      "peak_context_tokens": 101468
     }
   ],
   "log": {
-    "sha256": "65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c",
-    "bytes": 687571,
-    "lines": 178,
-    "gzip_bytes": 148284,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz"
+    "sha256": "bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2",
+    "bytes": 831067,
+    "lines": 252,
+    "gzip_bytes": 165391,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -64,6 +64,14 @@
       "summary": "application-core: the reconcile's first check, three streams not finished (blocked)",
       "body": "The merge loop checked step 1 of the reconcile before merging anything. Every stream loop has stopped, and the verification queue is empty, but only the values stream's brief ends blocked. Objects, environment and reuse still end 'Status: working': each session stopped without setting a status, and run-streams.sh counts a clean stop with no status as done, which the brief's reconcile does not accept ('not only an inactive scope'). Each has work of its own left: objects records its passed O2 job and waits on the merge and on a decision about O3's frozen allocation bound; environment is blocked on the objects and values streams by its own account; reuse reads job 20261108-063259's figures into R3. The brief's Progress records this and ends blocked, with what the user can do: set the status back to working and rerun run-streams.sh (which reruns only the three, then this loop), or count them finished and let the merge take what they committed. Verified by reading each stream's @- brief, the loop summaries, the systemd scopes and the pipeline status; no code changed.\n\nOut of date in the rest of tooling, not the brief: run-streams.sh's 'decided to stop ... counted as done' disagrees with the brief's rule that a finished stream says done or blocked.",
       "log_sha256": "65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c"
+    },
+    {
+      "change_id": "kppsnzynkzypkvmxlwvuvuvozooyuotq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done",
+      "body": "On 2026-11-08 three application-core streams (objects, environment, reuse) ended with their briefs still at 'Status: working'. Each session decided 'LOOP: stop' in feature-loop.sh's decision turn and wrote the status it meant there ('waiting on jobs ...', 'blocked: ...'), but that turn may not edit or commit, and the cycle before it was never asked to keep the status line current. feature-loop.sh then exited 0, and run-streams.sh counted a clean stop with no status as done, so objects and reuse were never rerun when their jobs came back, and the merge loop refused the reconcile.\n\nfeature-loop.sh: the cycle instruction now asks the session to keep a brief's '- Status:' line current in each commit; the decision turn is told a status is never its last line; and when the session decides to stop while the status still says working, one more turn before the compact sets the status the brief's Loop until gives and commits it. If that leaves the status working or uncommitted, the loop ends with exit 1, as needing attention. run-streams.sh: a clean stop whose status is neither done, blocked nor waiting on jobs is now run once more, like a failure, and counts as blocked the second time.\n\nVerified with bash -n on both scripts and a stubbed test of brief_status, has_status and close_status: a stop with status working that the session fixes and commits (ok), one it leaves alone (failed), one edited but not committed (failed), an already blocked status and a brief with no status line (no turn). The stream workspaces run their own copy of feature-loop.sh, so the same file is committed in each before the rerun.",
+      "log_sha256": "bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2"
     }
   ],
   "logs": {
@@ -71,6 +79,12 @@
       "bytes": 687571,
       "lines": 178,
       "gzip_bytes": 148284,
+      "url": null
+    },
+    "bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2": {
+      "bytes": 831067,
+      "lines": 252,
+      "gzip_bytes": 165391,
       "url": null
     }
   },

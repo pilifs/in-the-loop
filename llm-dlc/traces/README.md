@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 74, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 11:30 UTC |
-| Prompts | 1,621 |
-| Model calls | 16,061 |
-| Tool calls | 17,044 (311 failed) |
-| Compactions | 237 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 11:31 UTC |
+| Prompts | 1,626 |
+| Model calls | 16,075 |
+| Tool calls | 17,056 (312 failed) |
+| Compactions | 238 |
 | Subagents | 10 |
-| Tokens written | 17,516,052 |
-| Tokens read | 2,614,988,560 (97.9% from cache) |
-| Commits with a trace | 495 |
-| Log snapshots | 614 (1359.6 MB gzipped, 593 uploaded) |
+| Tokens written | 17,528,165 |
+| Tokens read | 2,616,131,025 (97.9% from cache) |
+| Commits with a trace | 496 |
+| Log snapshots | 616 (1360.0 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -99,8 +99,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 11 | 12 | 1 | 0 | 43,133 | 1 |
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 7 | 8 | 0 | 0 | 44,014 | 1 |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 43,064 | 1 |
-| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 1 min | `claude-opus-5-5` | 1 | 15 | 16 | 0 | 0 | 67,306 | 1 |
-| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 3 min | `claude-opus-5-5` | 2 | 16 | 16 | 0 | 0 | 89,835 | 1 |
+| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | ended | 3 min | `claude-opus-5-5` | 6 | 20 | 19 | 0 | 1 | 73,369 | 1 |
+| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 5 min | `claude-opus-5-5` | 2 | 25 | 25 | 1 | 0 | 101,468 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -182,14 +182,14 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 3,056 | 22 | 30,014 | 369,948 | 92.5% | 131 |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2,917 | 14 | 30,895 | 214,765 | 87.4% | 84 |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 3,151 | 20 | 29,945 | 311,967 | 91.2% | 109 |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 6,987 | 30 | 54,227 | 713,611 | 92.9% | 110 |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 10,023 | 34 | 62,308 | 959,684 | 93.9% | 102 |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 10,646 | 40 | 79,929 | 963,371 | 92.3% | 98 |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 18,477 | 52 | 73,941 | 1,815,026 | 96.1% | 102 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,916 | 87.5% | 74 |
+| `Bash` | 14,928 | 87.5% | 74 |
 | `Read` | 779 | 4.6% | 35 |
 | `Edit` | 650 | 3.8% | 35 |
 | `Write` | 408 | 2.4% | 29 |
@@ -706,6 +706,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 493 | change `movksozl` | Record verification result for application-core values VF-023 second probe (passed) | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) ([log](https://terminalvalue.net/raw-traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d.jsonl.gz)) |
 | 494 | change `ntyolumk` | Record verification result for application-core values VF-023 third probe (passed) | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) ([log](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/4abf970fd7600ab7dcbd3ef94e0b9290b181d4ef02695afaf210dd76ae15d4ed.jsonl.gz)) |
 | 495 | change `ozlqzqow` | application-core: the reconcile's first check, three streams not finished (blocked) | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/3ece423b8d7dff4f86d5e6d9ed15e06a39344be7f0174dffe541ff1efe1004cf.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz)) |
+| 496 | change `kppsnzyn` | Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz)) |
 
 ## Logs
 
@@ -785,8 +786,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 2 | 0 | 0.2 MB | `f30ef695d4d7`, not uploaded |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2 | 0 | 0.2 MB | `9171325d7b0a`, not uploaded |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 2 | 0 | 0.2 MB | `001bb75a2eb3`, not uploaded |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 1 | 0 | 0.1 MB | `3ece423b8d7d`, not uploaded |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 1 | 0 | 0.1 MB | `65fa9163f1ce`, not uploaded |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 2 | 0 | 0.4 MB | `09c8eb16a0e7`, not uploaded |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 2 | 0 | 0.3 MB | `bf3ed266eb83`, not uploaded |
 
 ## Session notes
 
