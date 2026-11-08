@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 2 jobs: stub-reachability step 4 passed, VF-015 now fails at step 5 (ASCII equivalence)
 
-change `pktlkzsptxls` · [log `6e2501c5be6b`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318.jsonl.gz)
+[`67ee1398d84f`](https://github.com/pilifs/in-the-loop/commit/67ee1398d84fd1a330839da91c5fb4ce5e216ad5) · [log `6e2501c5be6b`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318.jsonl.gz)
 
 Ran the two pending jobs on vm-1 at 1b376e0f1e77. The stub-reachability step 4 job (gap tests and conformance corpus under JBMC and auto) passed in 15m. VF-015's job (example 109) passed steps 3 and 4 now that the gap preflight asks JBMC's solver, but step 5 (nothing else changed on ASCII) fails with an unexpected JBMC property (EquivalenceHarness.check.1) beside throwing-initializer notes; recorded in VF-015, which stays open. Collect applied one output.
 
 ### Stub reachability, step 4 done: the guard passed, and VF-015 is deferred by the timebox on an uncaught checked exception in the equivalence harness
 
-change `umwtoqpkokwr` · [log `57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz)
+[`ccb889119227`](https://github.com/pilifs/in-the-loop/commit/ccb889119227b6b60fd4c6bc23df31a1aec7f28e) · [log `57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz)
 
 Both of step 4's jobs were collected in pktlkzsp. The guard job, 20261108-011441-stub-reachability-step-4-no-stub-a-proof, passed: the gap preflight's unit tests, the eight gap tests in lib/tests/integration.rs, and the conformance corpus under --engine jbmc and auto. So the probe leaves out no stub a proof enters. VF-015's job, 20261108-011411-vf-015-example-109-revisited-hex-todigit, now passes the step this brief targets. Step 3, the old toDigit under --assume 'ch == 1632', is proved under --gaps strict, and its note names String.format as a stub the solver shows unreached. But the job fails at step 5, the ASCII equivalence, with 'an unexpected property failed: EquivalenceHarness.check:(CI)V.1'.
 

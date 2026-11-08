@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Stub reachability, step 1: an experiment job that has JBMC's solver decide whether VF-015's proof enters the String.format stub (verification pending)
 
-change `ymkkuxqkvtmv` · [log `5d1d2dc94315`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca.jsonl.gz)
+[`8b264e7f68c5`](https://github.com/pilifs/in-the-loop/commit/8b264e7f68c5f44c3fa434004ed465657cd27134) · [log `5d1d2dc94315`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca.jsonl.gz)
 
 llm-dlc/loops/stub-reachability.md's step 1. The gap preflight counts a stub as entered when JBMC's symbolic execution alone keeps a step of it. For VF-015's proof (prove Hex#toDigit --assume 'ch == 1632' on commons-codec's old Hex), that counts String.format(String, Object[]) as entered on toDigit's exception path, which the assumption makes infeasible. The new verification/triage/stub-reachability.sh reruns that proof unchanged, with JBMC behind a wrapper that records each command and its time. On the proof's harness and command it then tries two methods. (A) --cover location in place of --unwinding-assertions, reading the goals of DecoderException's constructor, of the stub and of toDigit, and once more with --property on one goal. (B) The proof as given, with a rewritten DecoderException whose String.format call first calls a probe that fails an assertion of its own (throw new AssertionError(), as GapIntrinsics.open). Both also run on a control, the same prove without --assume, where the call is reachable. The job's description gives the outcome each method is expected to have.
 
@@ -30,13 +30,13 @@ Verification pending: job 20261107-233000-stub-reachability-step-1-can-jbmc-s-so
 
 ### Record verification results for 7 jobs: VF-001 closed, VF-002 still blocked in build.py, VF-018 triaged
 
-change `qkrlyslvusqm` · [log `267f541e1262`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066.jsonl.gz)
+[`491a5dbb4e35`](https://github.com/pilifs/in-the-loop/commit/491a5dbb4e35ffba0e564639af751942c40070c0) · [log `267f541e1262`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066.jsonl.gz)
 
 Run of 2026-11-07/08 on vm-1. Both conformance-corpus jobs passed with their test run (VF-001 closed). Examples 147 and 148 failed again in build.py's stage_contracts, which is handed the attempt directory rather than the example's folder (VF-002, with the line numbers). The VF-018 triage job passed: JBMC's formula for objects.Kernel#price is 18k variables and 77k clauses at every unwind, and no variant finished in 900 s, so the solver and not the unwinding is the cost. The witness-search job and the stub-reachability step-1 experiment passed. Outputs of the passed jobs were applied by collect.
 
 ### Stub reachability, step 2: the probe at the call site is chosen, since JBMC 6.11 has no --cover
 
-change `mwzqmlswqxyq` · [log `e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz)
+[`b31552b667ee`](https://github.com/pilifs/in-the-loop/commit/b31552b667ee8bc01c00703cce1d6ef38ef8a102) · [log `e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz)
 
 The step 1 job (20261107-233000-stub-reachability-step-1-can-jbmc-s-solv) passed. It reproduced VF-015's step 3 on commons-codec 87f6aa28 and a control without the --assume, then tried two ways of having JBMC's solver decide whether the proof reaches String.format's stub. --cover location is a usage error: JBMC 6.11 doesn't know the option, and the brief's claim that it has one is wrong (the mention in --unwinding-assertions' help line is CBMC's text). A probe assertion at DecoderException's String.format call, from a rewritten caller, was correct on both: it holds under ch == 1632 and fails without the assumption. It took 92 ms, against the proof's 129 ms. llm-dlc/loops/stub-reachability.md's Progress records the measurements and the choice. It also records what step 3 must keep: the probe counts only when the run's unwinding assertions hold; a probe that throws ends its path, so stubs are probed one per run or the probe is guarded by a nondet branch; and a stub leaves the gaps only when every one of its call sites' probes holds. Verified by reading the job's log and outputs; nothing else changed.
 
