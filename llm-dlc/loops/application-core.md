@@ -476,10 +476,28 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     `AssumptionKind::{Environment, Summary, Setup}`, `Bounds::{max_value_length, setup_calls, trace_bound}` and
     `Models::values`. Each is absent or unchosen until a stream fills it, and all 157 recorded example results still
     validate. The contract's `the_result_schema_registers_the_statements_new_kinds` holds the two together.
-  - **Phase 0 is committed** (launch prerequisite 3), but for VF-015's job `20261108-024648-…`, which the
-    verification pipeline hasn't run yet. If it fails, it goes back to the user (no timebox attempt is left), and
-    the streams launch without it.
-- Status: blocked: the user's push and launch (prerequisites 6 and 7); VF-015's job 20261108-024648 pending
+  - **Phase 0 is committed** (launch prerequisite 3). VF-015's job `20261108-024648-…` ran at `eea1a8a8` and
+    failed at step 5 only, triaged by the verification loop (`ponxovxr`, `verification/findings.md`):
+    - **The harness fix works.** Step 5 no longer fails on the uncaught-exception property: JBMC proves the harness.
+      The tool then refuses that proof because JBMC runs four class initializers otherwise than the JVM
+      (`throwing-initializer` at `CharEncoding.<clinit>` and `Hex.<clinit>`, both versions, as possibly throwing a
+      NullPointerException, probably through its `StandardCharsets` stub). That guard is separate from VF-015's
+      harness cause.
+    - **Step 4's replay is half a replay.** The change is found (`toDigit(ch='٧', index=-1)`: before 7), but the
+      new version's replay fails ("String.format depends on the default locale"), and the outcome still says
+      `reproduced: true`: an outcome the interpreter couldn't produce counts as a difference. Not caused by step 7,
+      but step 4's stricter check passed on it.
+    - Per decision 7, there is no timebox attempt left: **this goes back to the user**, and the streams may launch
+      without it. A further attempt could:
+      1. run step 5 with `--engine native`, whose checker reads the JDK's own charset classes: one job of seconds,
+         a native verdict that JBMC doesn't confirm;
+      2. have the throwing-initializer check ask JBMC's solver whether a path reaches the throw, as the gap
+         preflight does for stubs (`jbmc_gaps.rs`): about a day, with its own reproducer and job;
+      3. model the `StandardCharsets` constants for JBMC (`lib/models`, the values stream's).
+
+      Separately, a replay that can't run one version shouldn't count as reproduced (`witness::differences`, the
+      objects stream's replay plumbing).
+- Status: blocked: the user's push and launch (prerequisites 6 and 7), and the user's decision on VF-015
 
 ## Loop settings
 
