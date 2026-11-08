@@ -188,6 +188,32 @@ measurement stays as recorded.
       the comment at the hook in `property::run`.
   - **Next**: J3, registering the streams' new claim fields (a planned domain's plans, a call's model) in
     `spec::cache::KNOWN`, with their invalidation tests. Then R2.
+- 2026-11-08, **J3, the key over the streams' new claim parts**, in `lib/src/spec/cache.rs`:
+  - **Registered whole, as strict types**: `TYPED` names `domain.made_by.before`, `domain.made_by.after` (a
+    construction plan each) and `environment.calls[].model` (a call model). Each is digested whole once it reads back
+    exactly as its type of `spec::plans`, which refuses every field and variant it doesn't declare. A field a stream
+    adds to one of those types is in the digest with the rest, never left out; one the type doesn't declare, or a
+    plan that doesn't read back as written, makes the claim uncacheable by name. Listing the plans' paths one by one
+    in `KNOWN` would only repeat the types (a returned object holds a whole plan again).
+  - **Verified inline**, `tests/reuse.rs`, 3 tests: the 8 frozen claims each have a key, none shared; 27 changes to
+    them each give a key of their own, none an earlier one's: histories (no setup call, a second one, another method
+    or argument type, the setup bound alone, another constructor, a factory, a restriction, either version's plan
+    alone), model outcomes (one fewer, another exception, a choice or a script for a query, the query's key, the call
+    bound, the operation, a model on another call), value bounds and models (a String's length, nullability and
+    evidence level, an array's length, a dependency's class, a list's length, element kind and what its model leaves
+    out), and a returned object's identity, nullability and plan; an undeclared field in a plan or a model, an
+    unknown coupling and an empty setup spelled out are each refused. The contract's J3 now passes on distinct keys,
+    not on the refusal. 230 unit tests, the contract, `summaries.rs`, `heap.rs`, `effects.rs` and `foundations.rs`
+    pass.
+  - **Left for R2**: J3's helper assumptions. A summary's applicability record is not in any claim yet; R2 puts the
+    summaries a caller's proof used into its claim, with their keys.
+  - **Found, from the objects stream** (their reproducer `an_inner_objects_constructor_is_part_of_the_cached_claim`
+    in `tests/application_core_objects.rs`, `#[ignore]`d, on their branch): `proof_cache::Regression::claim` roots each
+    version's closure at a made object's own constructor only, not at the constructors of the objects it is made from,
+    which the harness calls too. So a build changing only an inner constructor reuses another's `verified`
+    (`get(new Wrap(new Inner(0), 0))`: before 0, after 1). It predates this wave, and it is in this stream's file.
+  - **Next**: that cache hole, with a reproducer here first (the closure rooted at every constructor the harness
+    calls, both versions). Then R2.
 - Status: working
 
 ## Loop settings

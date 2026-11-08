@@ -442,7 +442,10 @@ constructor or factory its inputs are made with. The tool is digests too ([`proo
 running executable's bytes, the JDK's whole `release` file, and the models, so a rebuilt binary with the same version
 number is another claim. The projection knows every field of the claim by its path: a field it doesn't know (one
 another part adds) makes the claim uncacheable rather than leaving it out of the key, and so does a part never
-computed. The proof cache is a local directory of result records, one per key; only verified and refuted results are
+computed. A planned domain's plan for each version and a modelled call's model are digested whole, once each reads
+back exactly as its strict type of [`spec::plans`](src/spec/plans.rs), which refuses every field and variant it
+doesn't declare (`spec::cache::TYPED`); `tests/reuse.rs` changes each part of the frozen claims' histories, model
+outcomes and value bounds and finds another key every time. The proof cache is a local directory of result records, one per key; only verified and refuted results are
 stored, a refutation with its witness, and an entry that can't be read or is for another key is a miss.
 
 `equivalence --cache DIR` uses it ([`proof_cache::Regression`](src/proof_cache.rs)), under `--engine native` only

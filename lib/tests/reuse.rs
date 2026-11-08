@@ -3,7 +3,9 @@
 //! the claim key changed by every part of the claim that can change a verdict (the assertion, the domain, the bounds,
 //! the code its inputs are made by, a construction plan's history), never by an unrelated change, and never shared
 //! with a regression claim of the same target. Over the frozen quote fixture (`tests/fixtures/application-core/`)
-//! and small builds compiled here, on the own checker, with no JBMC.
+//! and small builds compiled here, on the own checker, with no JBMC. J3, the key over the streams' new claim parts:
+//! every frozen claim has a key of its own, every change to a planned domain's history, a modelled call's outcomes
+//! or a value bound gives another, and a field those typed parts don't declare makes the claim uncacheable.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -264,4 +266,141 @@ fn property_and_regression_claims_of_one_target_never_share_a_key() {
     let property = property::run(&o).unwrap();
     assert!(!property.output.contains(REUSED), "{}", property.output);
     assert_eq!(entries(&cache), 2);
+}
+
+// J3: the claim key over the streams' new claim parts, a planned domain's plans and a modelled call's model, which
+// `spec::cache::TYPED` digests whole as their strict types.
+
+fn golden_claim(name: &str) -> Value {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/golden").join(format!("{name}.json"));
+    serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap()
+}
+
+/// The key of a claim given as JSON, read as a `CanonicalClaim` first, so that every changed claim is one the types
+/// admit.
+fn claim_key(v: &Value) -> ClaimKey {
+    let claim: jvmcontract::spec::CanonicalClaim = serde_json::from_value(v.clone()).unwrap_or_else(|e| panic!("a claim: {e}"));
+    jvmcontract::spec::cache::key(&claim).unwrap_or_else(|u| panic!("a key: {u}"))
+}
+
+#[test]
+fn every_frozen_claim_has_a_key_of_its_own() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/golden");
+    let mut keys = std::collections::HashMap::new();
+    for entry in std::fs::read_dir(&dir).unwrap() {
+        let name = entry.unwrap().file_name().into_string().unwrap();
+        if let Some(name) = name.strip_suffix("-claim.json") {
+            let key = claim_key(&golden_claim(&format!("{name}-claim")));
+            assert!(keys.insert(key, name.to_string()).is_none(), "{name} shares a key");
+        }
+    }
+    assert_eq!(keys.len(), 8, "{keys:?}");
+}
+
+#[test]
+fn every_semantic_part_of_a_plan_or_a_model_changes_the_key() {
+    type Change = (&'static str, &'static str, fn(&mut Value));
+    let changes: &[Change] = &[
+        // Histories: the setup sequence, the constructor, the plan's bounds, and either version's plan alone.
+        ("throttle-setup-claim", "no setup call", |v| {
+            v["domain"]["made_by"]["after"].as_object_mut().unwrap().remove("setup");
+            v["domain"]["made_by"]["before"].as_object_mut().unwrap().remove("setup");
+        }),
+        ("throttle-setup-claim", "a second setup call", |v| {
+            for side in ["before", "after"] {
+                let plan = &mut v["domain"]["made_by"][side];
+                let call = plan["setup"][0].clone();
+                plan["setup"].as_array_mut().unwrap().push(call);
+                plan["bounds"]["setup_calls"] = 2.into();
+            }
+        }),
+        ("throttle-setup-claim", "another setup method", |v| v["domain"]["made_by"]["after"]["setup"][0]["method"] = "take(J)V".into()),
+        ("throttle-setup-claim", "a setup argument's type", |v| v["domain"]["made_by"]["before"]["setup"][0]["args"][0]["type"] = "long".into()),
+        ("throttle-setup-claim", "the setup bound alone", |v| v["domain"]["made_by"]["after"]["bounds"]["setup_calls"] = 3.into()),
+        ("throttle-setup-claim", "another constructor", |v| v["domain"]["made_by"]["after"]["nodes"][0]["maker"]["descriptor"] = "(J)V".into()),
+        ("throttle-setup-claim", "a factory for a constructor", |v| {
+            v["domain"]["made_by"]["after"]["nodes"][0]["maker"] = serde_json::json!({"kind": "factory", "method": "throttle/Throttle#of(I)Lthrottle/Throttle;"})
+        }),
+        ("throttle-setup-claim", "a restriction stated", |v| v["domain"]["made_by"]["before"]["restrictions"][0] = "the states two calls reach".into()),
+        // Model outcomes: one fewer, another exception, another coupling, key, bound or occurrence policy.
+        ("quote-claim", "a modelled outcome fewer", |v| {
+            let call = &mut v["environment"]["calls"][0];
+            call["model"]["results"].as_array_mut().unwrap().pop();
+            call["outcomes"].as_array_mut().unwrap().pop();
+        }),
+        ("quote-claim", "another modelled exception", |v| v["environment"]["calls"][0]["model"]["results"][1]["class"] = "java.lang.IllegalStateException".into()),
+        ("quote-claim", "a choice for a query", |v| {
+            v["environment"]["calls"][0]["model"]["coupling"] = serde_json::json!({"kind": "choice", "policy": {"kind": "per-call"}})
+        }),
+        ("quote-claim", "a script for a choice per call", |v| {
+            v["environment"]["calls"][0]["model"]["coupling"] = serde_json::json!({"kind": "choice", "policy": {"kind": "script", "results": [0, 1]}})
+        }),
+        ("quote-claim", "a query keyed on nothing", |v| v["environment"]["calls"][0]["model"]["key"] = serde_json::json!([])),
+        ("quote-claim", "a larger call bound", |v| v["environment"]["calls"][0]["model"]["bound"] = 2.into()),
+        ("quote-claim", "another modelled operation", |v| v["environment"]["calls"][0]["model"]["id"] = "rates.other".into()),
+        ("quote-claim", "a model on the event call", |v| {
+            v["environment"]["calls"][1]["model"] = serde_json::json!({"id": "events.send", "key": [], "coupling": {"kind": "query"}, "results": [{"kind": "returns", "value": {"kind": "void"}}], "bound": 1})
+        }),
+        // Value bounds and models: a String's length, nullability and evidence, an array's length.
+        ("quote-claim", "a shorter String", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["max_length"] = 3.into()),
+        ("quote-claim", "a nullable String", |v| v["domain"]["made_by"]["before"]["nodes"][1]["args"][0]["domain"]["nullable"] = true.into()),
+        ("quote-claim", "a String model of another level", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["model"]["level"] = "tested".into()),
+        ("quote-claim", "a shorter array", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][1]["max_length"] = 1.into()),
+        ("quote-claim", "another dependency class", |v| v["domain"]["made_by"]["after"]["nodes"][0]["args"][2]["class"] = "quotes.CachedRates".into()),
+        ("basket-total-claim", "a shorter list", |v| {
+            for side in ["before", "after"] {
+                v["domain"]["made_by"][side]["roots"][0]["value"]["domain"]["max_length"] = 2.into();
+            }
+        }),
+        ("basket-total-claim", "a list of Strings", |v| v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["kind"]["element"] = serde_json::json!({"kind": "string"})),
+        ("basket-total-claim", "a list model that leaves out nothing", |v| {
+            v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["model"].as_object_mut().unwrap().remove("leaves_out");
+        }),
+        // A returned object's identity and nullability, and the plan it is made by.
+        ("offer-claim", "a stable returned object", |v| v["environment"]["calls"][0]["model"]["results"][0]["value"]["identity"] = "stable".into()),
+        ("offer-claim", "a returned object never null", |v| v["environment"]["calls"][0]["model"]["results"][0]["value"]["nullable"] = false.into()),
+        ("offer-claim", "a returned object's field type", |v| {
+            v["environment"]["calls"][0]["model"]["results"][0]["value"]["plan"]["nodes"][0]["args"][1]["type"] = "long".into()
+        }),
+    ];
+    let mut seen = std::collections::HashMap::new();
+    for name in ["throttle-setup-claim", "quote-claim", "basket-total-claim", "offer-claim"] {
+        seen.insert(claim_key(&golden_claim(name)), format!("{name} as frozen"));
+    }
+    for (name, what, change) in changes {
+        let mut changed = golden_claim(name);
+        change(&mut changed);
+        let key = claim_key(&changed);
+        if let Some(other) = seen.insert(key, format!("{name}: {what}")) {
+            panic!("{name}: {what} has the key of {other}");
+        }
+    }
+    // The constructor-only claim and the claim after a setup call are two claims (row J3's history).
+    assert_ne!(claim_key(&golden_claim("throttle-constructed-claim")), claim_key(&golden_claim("throttle-setup-claim")));
+}
+
+#[test]
+fn a_field_a_plan_or_a_model_does_not_declare_makes_the_claim_uncacheable() {
+    use jvmcontract::spec::{cache, Part};
+    let refused = |v: &Value, path: &str| {
+        let u = cache::projection(v).expect_err(path);
+        assert_eq!(u.part, Part::Summaries, "{u}");
+        assert!(u.what.contains("uncacheable") && u.what.contains(path), "{}", u.what);
+        u.what
+    };
+    let quote = golden_claim("quote-claim");
+    assert!(cache::projection(&quote).is_ok());
+    let mut node = quote.clone();
+    node["domain"]["made_by"]["after"]["nodes"][0]["ownership"] = "unique".into();
+    assert!(refused(&node, "domain.made_by.after").contains("ownership"));
+    let mut model = quote.clone();
+    model["environment"]["calls"][0]["model"]["cache_hint"] = "warm".into();
+    assert!(refused(&model, "environment.calls[].model").contains("cache_hint"));
+    let mut variant = quote.clone();
+    variant["environment"]["calls"][0]["model"]["coupling"] = serde_json::json!({"kind": "sometimes"});
+    refused(&variant, "environment.calls[].model");
+    // A plan that reads as its type but not back as written: an empty setup sequence spelled out.
+    let mut spelled = golden_claim("throttle-constructed-claim");
+    spelled["domain"]["made_by"]["before"]["setup"] = serde_json::json!([]);
+    assert!(refused(&spelled, "domain.made_by.before").contains("does not read back"));
 }
