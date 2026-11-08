@@ -469,7 +469,17 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     Anything else fails, a refusal by another stream included. Today G0 reaches its verdicts (the gate refuses
     each unsupported policy, and the kernel's own claim is verified), and every other row stops at its streams'
     named refusals. `environment::check` is E1's and E2's entry point. The integration check passes on it.
-- Status: blocked: Phase 0, by the planning session, before the fork
+  - **Step 6, the schemas**: `examples/schema/result.schema.json`'s statement registers, as named variants, a
+    `value` parameter, the `environment`, `summary` and `setup` assumptions, the bounds `maxValueLength`,
+    `setupCalls` and `traceBound`, the value models with their evidence levels, and a replay `by` `model` (a JVM
+    under the environment model's stubs). `lib/src/statement.rs` has the same: `ParameterKind::Value`,
+    `AssumptionKind::{Environment, Summary, Setup}`, `Bounds::{max_value_length, setup_calls, trace_bound}` and
+    `Models::values`. Each is absent or unchosen until a stream fills it, and all 157 recorded example results still
+    validate. The contract's `the_result_schema_registers_the_statements_new_kinds` holds the two together.
+  - **Phase 0 is committed** (launch prerequisite 3), but for VF-015's job `20261108-024648-…`, which the
+    verification pipeline hasn't run yet. If it fails, it goes back to the user (no timebox attempt is left), and
+    the streams launch without it.
+- Status: blocked: the user's push and launch (prerequisites 6 and 7); VF-015's job 20261108-024648 pending
 
 ## Loop settings
 

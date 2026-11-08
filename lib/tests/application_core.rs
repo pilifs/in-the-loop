@@ -333,3 +333,32 @@ fn j3_semantic_changes_change_the_claim_key() {
     }
     differs("a value bound", &golden("basket-total-claim"), &shorter);
 }
+
+/// The examples' result schema (`examples/schema/result.schema.json`, step 6 of Phase 0) registers every kind the
+/// streams' statements may carry, as `jvmcontract --json` writes them and `build.py` keeps them in camelCase: a
+/// value parameter, the environment's, a summary's and a setup sequence's assumptions, the new bounds, the value
+/// models' evidence levels, and a replay under the environment model.
+#[test]
+fn the_result_schema_registers_the_statements_new_kinds() {
+    use jvmcontract::spec::plans::EvidenceLevel;
+    use jvmcontract::statement::{AssumptionKind, ParameterKind};
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/schema/result.schema.json");
+    let schema: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    let statement = &schema["$defs"]["statement"]["properties"];
+    let names = |v: &Value| -> Vec<String> { v.as_array().unwrap().iter().map(|x| x.as_str().unwrap().to_string()).collect() };
+    let word = |v: Value| v.as_str().unwrap().to_string();
+    let parameter_kinds = names(&statement["domain"]["properties"]["parameters"]["items"]["properties"]["kind"]["enum"]);
+    assert!(parameter_kinds.contains(&word(serde_json::to_value(ParameterKind::Value).unwrap())), "{parameter_kinds:?}");
+    let assumption_kinds = names(&statement["assumptions"]["items"]["properties"]["kind"]["enum"]);
+    for kind in [AssumptionKind::Environment, AssumptionKind::Summary, AssumptionKind::Setup] {
+        assert!(assumption_kinds.contains(&word(serde_json::to_value(kind).unwrap())), "{kind:?}: {assumption_kinds:?}");
+    }
+    for bound in ["maxValueLength", "setupCalls", "traceBound"] {
+        assert!(statement["bounds"]["properties"][bound].is_object(), "{bound}");
+    }
+    let levels = names(&statement["models"]["properties"]["values"]["items"]["properties"]["level"]["enum"]);
+    for level in [EvidenceLevel::Implemented, EvidenceLevel::Modelled, EvidenceLevel::Tested, EvidenceLevel::Trusted, EvidenceLevel::Proved] {
+        assert!(levels.contains(&word(serde_json::to_value(level).unwrap())), "{level:?}: {levels:?}");
+    }
+    assert!(names(&schema["properties"]["replay"]["properties"]["by"]["enum"]).contains(&"model".to_string()));
+}

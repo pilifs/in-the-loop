@@ -199,9 +199,10 @@
                       "primitive",
                       "array",
                       "record",
-                      "object"
+                      "object",
+                      "value"
                     ],
-                    "description": "`record`: a record of primitive components, built through its canonical constructor; `object`: an object of an application class made by its constructor, from primitives and objects made so in turn, whose fields after the call are observed (step H2 of llm-dlc/loops/foundations-heap.md)."
+                    "description": "`record`: a record of primitive components, built through its canonical constructor; `object`: an object of an application class made by its constructor, from primitives and objects made so in turn, whose fields after the call are observed (step H2 of llm-dlc/loops/foundations-heap.md). `value`: a value of a value adapter's domain, a String or an immutable list within its bounds (the values stream's, llm-dlc/loops/application-core.md)."
                   },
                   "null": {
                     "description": "Whether null is among its values: for an array a property's domain lets be null (`--nullable`), or an object parameter whose choice may be null (step H2); otherwise an array is a fresh array, a record one its constructor built and an object one its constructor made.",
@@ -280,7 +281,10 @@
                   "library",
                   "gap",
                   "contract",
-                  "callee"
+                  "callee",
+                  "environment",
+                  "summary",
+                  "setup"
                 ]
               },
               "text": {
@@ -369,6 +373,18 @@
             "complete": {
               "description": "Whether the search covered every execution of every input in the domain within the bounds: a proof's did.",
               "type": "boolean"
+            },
+            "maxValueLength": {
+              "description": "The longest String or list a value parameter is given (the values stream's of llm-dlc/loops/application-core.md); absent without one.",
+              "type": "integer"
+            },
+            "setupCalls": {
+              "description": "The most calls of the setup sequence before the target (the objects stream's); absent without one.",
+              "type": "integer"
+            },
+            "traceBound": {
+              "description": "The most modelled-call attempts a trace records (the environment stream's); absent without a modelled environment.",
+              "type": "integer"
             }
           }
         },
@@ -402,6 +418,21 @@
                 "string",
                 "null"
               ]
+            },
+            "values": {
+              "description": "The value models the check ran under (the values stream's of llm-dlc/loops/application-core.md), each with its evidence level: sampled conformance is `tested`, never `proved`. Absent when none.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["source", "jdk", "level"],
+                "additionalProperties": false,
+                "properties": {
+                  "source": { "type": "string" },
+                  "jdk": { "type": "string" },
+                  "level": { "enum": ["implemented", "modelled", "tested", "trusted", "proved"] },
+                  "leavesOut": { "type": "array", "items": { "type": "string" } }
+                }
+              }
             }
           }
         },
@@ -983,7 +1014,7 @@
       "required": ["by", "reproduced"],
       "additionalProperties": false,
       "properties": {
-        "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: a real JVM: the Box Office Java verifier, or jvmcontract running the harness on a witness found through contracts for gaps (`--gaps advised`), which the interpreter cannot run, with the JDK's own calls where the contracts stood.", "enum": ["interpreter", "jvm"] },
+        "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: a real JVM: the Box Office Java verifier, or jvmcontract running the harness on a witness found through contracts for gaps (`--gaps advised`), which the interpreter cannot run, with the JDK's own calls where the contracts stood. `model`: a real JVM running the witness under the environment model's generated stubs, never against the real dependency (llm-dlc/loops/application-core-environment.md).", "enum": ["interpreter", "jvm", "model"] },
         "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable. For a property, whether the interpreter's run showed the property failing: false too when the property calls the method under proof, which only the harness can evaluate, so that the violation is the checker's word.", "type": "boolean" }
       }
     },

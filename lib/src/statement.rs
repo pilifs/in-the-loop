@@ -169,6 +169,9 @@ pub enum ParameterKind {
     /// An object of an application class made by its constructor, from primitives and objects made so in turn;
     /// its fields after the call are observed.
     Object,
+    /// A value of a value adapter's domain, a String or an immutable list, within its bounds (the values stream's,
+    /// `spec::plans::ValueDomain`).
+    Value,
 }
 
 /// One conjunct of A.
@@ -205,6 +208,14 @@ pub enum AssumptionKind {
     /// A callee whose two versions differ, taken as one function in both because a regression proof of its own
     /// showed they have the same outcome on every input ([`crate::shared::Proved`]); `id` is that proof's claim key.
     Callee,
+    /// A modelled dependency's outcomes, the environment model's generated stubs in place of the real dependency
+    /// (the environment stream's, `spec::plans::CallModel`): a result under it is about the model, not the service.
+    Environment,
+    /// A helper's summary applied at a call in place of its body, its applicability discharged there (the reuse
+    /// stream's, `spec::plans::Summary`); `id` is the claim key of the helper's own proof.
+    Summary,
+    /// The states a construction plan's setup sequence reaches, and no others (the objects stream's O3).
+    Setup,
 }
 
 /// Why an assumption is taken: what stands behind it.
@@ -261,6 +272,15 @@ pub struct Bounds {
     /// Whether the search covered every execution of every input in D within the bounds: a proof's did, and a
     /// counterexample needs no such thing.
     pub complete: bool,
+    /// The longest String or list a value parameter is given (the values stream's), where one is.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_value_length: Option<u32>,
+    /// The most calls of the setup sequence before the target (the objects stream's O3), where there is one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub setup_calls: Option<u32>,
+    /// The most modelled-call attempts a trace records (the environment stream's), where an environment is modelled.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trace_bound: Option<u32>,
 }
 
 /// The models of the JDK the checker read in place of the JDK's own classes, and the JDK whose classes it read.
@@ -273,6 +293,10 @@ pub struct Models {
     pub classes: usize,
     /// The JDK's version (`<java home>/release`), whose classes the own checker reads and JBMC's six come from.
     pub jdk: Option<String>,
+    /// The value models the check ran under (the values stream's: a String's, a list family's), each with its
+    /// source, JDK, evidence level and what it leaves out (`spec::plans::ModelEvidence`).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub values: Vec<crate::spec::plans::ModelEvidence>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -559,7 +583,7 @@ pub fn models(used: bool) -> Models {
         }
         format!("sha256:{}", crate::digest::sha256_hex(&all))
     });
-    Models { used, digest, classes: if used { crate::models::MODELS.len() } else { 0 }, jdk: crate::bmc::gaps::jdk_release() }
+    Models { used, digest, classes: if used { crate::models::MODELS.len() } else { 0 }, jdk: crate::bmc::gaps::jdk_release(), values: Vec::new() }
 }
 
 /// The checker the verdict comes from, from its search; `sat_solver` is the one JBMC was asked for, and
@@ -584,7 +608,7 @@ pub fn scan_checker() -> Checker {
 
 /// The bounds of a run of a checker.
 pub fn bounds(unwind: Option<u32>, domain: &Domain, max_array_length: u32, complete: bool) -> Bounds {
-    Bounds { unwind, max_array_length: domain.has_arrays().then_some(max_array_length), complete }
+    Bounds { unwind, max_array_length: domain.has_arrays().then_some(max_array_length), complete, max_value_length: None, setup_calls: None, trace_bound: None }
 }
 
 #[cfg(test)]

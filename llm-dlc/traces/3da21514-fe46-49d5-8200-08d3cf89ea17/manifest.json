@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T03:08:48.345Z",
-  "duration_seconds": 29577,
+  "ended": "2026-11-08T03:18:48.291Z",
+  "duration_seconds": 30177,
   "stats": {
     "turns": 22,
-    "api_calls": 355,
-    "tool_calls": 377,
+    "api_calls": 364,
+    "tool_calls": 386,
     "tool_errors": 3,
     "compactions": 1,
-    "peak_context_tokens": 452911,
+    "peak_context_tokens": 464411,
     "usage": {
-      "input_tokens": 738,
-      "output_tokens": 355862,
-      "cache_read_input_tokens": 86085641,
-      "cache_creation_input_tokens": 1121970
+      "input_tokens": 756,
+      "output_tokens": 362323,
+      "cache_read_input_tokens": 90202035,
+      "cache_creation_input_tokens": 1133470
     }
   },
   "tools": {
-    "Bash": 328,
+    "Bash": 337,
     "Write": 24,
     "Edit": 18,
     "ToolSearch": 3,
@@ -87,24 +87,24 @@
     {
       "index": 1,
       "started": "2026-11-08T02:14:46.238Z",
-      "ended": "2026-11-08T03:08:48.345Z",
+      "ended": "2026-11-08T03:18:48.291Z",
       "turns": 4,
-      "api_calls": 211,
+      "api_calls": 220,
       "usage": {
-        "input_tokens": 422,
-        "output_tokens": 210434,
-        "cache_read_input_tokens": 55815366,
-        "cache_creation_input_tokens": 423414
+        "input_tokens": 440,
+        "output_tokens": 216895,
+        "cache_read_input_tokens": 59931760,
+        "cache_creation_input_tokens": 434914
       },
-      "peak_context_tokens": 452911
+      "peak_context_tokens": 464411
     }
   ],
   "log": {
-    "sha256": "ac9a7a865d23986833976e28fc08d61ad66ffc3d0ee53ce3151313f1b70731fb",
-    "bytes": 8259643,
-    "lines": 3183,
-    "gzip_bytes": 1351287,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/ac9a7a865d23986833976e28fc08d61ad66ffc3d0ee53ce3151313f1b70731fb.jsonl.gz"
+    "sha256": "e8feff517d6f10819c0c6a8ccc39671182e9f5e3f743e030a255a215210f7070",
+    "bytes": 8452272,
+    "lines": 3260,
+    "gzip_bytes": 1379675,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/e8feff517d6f10819c0c6a8ccc39671182e9f5e3f743e030a255a215210f7070.jsonl.gz"
   },
   "subagents": [
     {
@@ -375,6 +375,14 @@
       "summary": "application-core Phase 0 step 4: the integration contract, one test per acceptance row a unit run reaches",
       "body": "lib/tests/application_core.rs, which llm-dlc/tools/application-core-integration.sh runs on the streams' merge while they work, now has a test per row of llm-dlc/loops/application-core-acceptance.md that a unit-level run can reach: G0 (the domain gate on the foundations kernel: field by field, invariants, a factory, a constructor left out and an extra class each refused, the kernel's own claim verified), O1 (the throttle's receiver in the regression and property checks), O2 (checked's identity under its claim), O3 (the constructor-only and one-setup-call throttle claims), V1 (Codes.vip), V2 (the basket's list kernels and claims), E1 and E2 (the quote and offer claims, through the new environment::check), R1 (prove --cache twice), R2 (the fee helper on its own) and J3 (a setup call, a modelled outcome and a value bound each change the claim key, or leave it uncacheable by name). Every check runs on the native engine with a jbmc path that doesn't exist, J2's guard.\n\nEach case must reach the verdict the frozen tests/fixtures/application-core/golden/expected.json fixes, or be refused in the words of a stream that owns its row (Unsupported naming that part, or a refused check saying 'the STREAM stream builds it'); anything else fails, a refusal by another stream included. Today G0 reaches its verdicts and every other row stops at its streams' named refusals. The integration check passes on this commit's working copy: the contract (13 tests), the lib unit tests and the foundations, compare and effects contracts, and build.py's, review, run-record and performance suites.",
       "log_sha256": "ac9a7a865d23986833976e28fc08d61ad66ffc3d0ee53ce3151313f1b70731fb"
+    },
+    {
+      "change_id": "onuyqpqozpwuuwmsuotqsmmlutpmntxr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 0 step 6: the statement and the examples' result schema register the streams' new kinds",
+      "body": "So that a stream's results stay valid without a schema edit of its own, the statement (lib/src/statement.rs) and the examples' result schema (examples/schema/result.schema.json, edited as text to keep its layout) now name, as variants or optional fields: a value parameter (ParameterKind::Value, the values stream's String or list); the assumptions environment (a modelled dependency's stubs), summary (a helper's summary in place of its body) and setup (the states a setup sequence reaches); the bounds max_value_length, setup_calls and trace_bound; the value models a check ran under, each with its evidence level from implemented to proved (Models::values); and a replay by model, a JVM under the environment model's stubs, never the real dependency. Each is absent or unchosen until a stream fills it, so every existing statement serializes as before.\n\nAll 157 recorded example results still validate against the schema, a statement with each new variant validates, and an unknown evidence level is refused. tests/application_core.rs's the_result_schema_registers_the_statements_new_kinds holds the statement's kinds and the schema together. The whole lib suite passes inline (475 tests, 0 failed), and build.py's suite (189). With this, Phase 0 is committed, but for VF-015's job 20261108-024648, which the pipeline hasn't run; the brief's status names what is left: the user's push and launch, and that job.",
+      "log_sha256": "e8feff517d6f10819c0c6a8ccc39671182e9f5e3f743e030a255a215210f7070"
     }
   ],
   "logs": {
@@ -502,6 +510,12 @@
       "bytes": 7075858,
       "lines": 2638,
       "gzip_bytes": 1203318,
+      "url": null
+    },
+    "e8feff517d6f10819c0c6a8ccc39671182e9f5e3f743e030a255a215210f7070": {
+      "bytes": 8452272,
+      "lines": 3260,
+      "gzip_bytes": 1379675,
       "url": null
     }
   },
