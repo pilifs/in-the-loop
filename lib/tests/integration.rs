@@ -1958,7 +1958,12 @@ fn a_method_of_a_record_is_proved_on_its_components() {
     assert!(outcome.output.contains("✓ fixtures.Backoff#delayMillis behaves as before on every input ("), "{}", outcome.output);
     let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
     assert!(statement.contains("public static void check(long this_baseMillis, long this_capMillis, int attempt)"), "{statement}");
-    assert!(statement.contains("try { this_before = new before.fixtures.Backoff(this_baseMillis, this_capMillis); this_after = new fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { return; }"), "{statement}");
+    // Each version's record is made in a region of its own, and their admission is compared: an input both versions'
+    // constructors reject is skipped, one that only one version's reject is a difference.
+    assert!(statement.contains("try { this_after = new fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { rejectedAfter = true; }"), "{statement}");
+    assert!(statement.contains("try { this_before = new before.fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { rejectedBefore = true; }"), "{statement}");
+    assert!(statement.contains("if (rejectedAfter && rejectedBefore) { return; }"), "{statement}");
+    assert!(statement.contains("if (rejectedAfter || rejectedBefore) { throw new AssertionError(); }"), "{statement}");
     assert!(statement.contains("try { a = this_before.delayMillis(attempt); }"), "{statement}");
 }
 

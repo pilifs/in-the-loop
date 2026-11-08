@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-072230-application-core-objects-o2-lib-tests-in",
+  "title": "application-core objects O2: lib/tests/integration.rs under JBMC with the record test's construction assertion updated; closes VF-022 when it passes",
+  "description": "Revision: the objects stream's commit that commits this job, row O2 of llm-dlc/loops/application-core-acceptance.md. Jobs 20261108-063512-… (at d7330651) and 20261108-064305-… (at ddf265db) both failed on one test, a_method_of_a_record_is_proved_on_its_components (VF-022): its verdict (Verified), domain and 'behaves as before' held, but it asserted the statement text of the single construction region that O2's comparison of constructor admission (d7330651) replaced by two regions, one per version. The assertion now names the new text, copied from those jobs' logs: each version's record made in its own try (rejectedAfter, rejectedBefore), an input both reject skipped, one only one version rejects an AssertionError. Nothing else changed. The rerun also checks what the earlier jobs could not show alone: that every other test still passes at this revision, including the shrunk witnesses 20261108-064305-… asserted. Domain, engine and bounds: as each test states (JBMC and auto, max array length 8 or as given).",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/integration.rs",
+      "lib/src/harness/mod.rs"
+    ]
+  },
+  "expected": "integration tests: every non-ignored test passes (exit 0), 65 of 65, a_method_of_a_record_is_proved_on_its_components included. Any other failure is a finding about this stream's O2 changes, not a pass.",
+  "submitted": {
+    "at": "2026-11-08T07:22:30+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "3G",
+    "duration": "10m",
+    "timeout": "60m",
+    "notes": "jobs 20261108-063512 and -064305 ran this step in 3-4 min at 2.1 GiB, held back by a 2-CPU quota"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

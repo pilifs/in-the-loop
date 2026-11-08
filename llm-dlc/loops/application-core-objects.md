@@ -421,6 +421,23 @@ Never relax the interface to unblock it.
   - **Next**: `witness::differences` must not count a replay that couldn't run one version as reproduced (the main
     brief's Phase 0 finding, on VF-015's step 4: this stream's replay plumbing), with a reproducer first. O2's String
     adapter waits for the merge. Optional: array fields in property expressions.
+- 2026-11-08, **VF-022: a stale assertion in `lib/tests/integration.rs`**. The integration report is still 06:36's
+  (the generated files only).
+  - **The jobs**: `20261108-063512-…` (at `d7330651`) and `20261108-064305-…` (at `ddf265db`) both failed on one
+    test, `a_method_of_a_record_is_proved_on_its_components`, and nothing else. Its verdict (`Verified`), domain and
+    "behaves as before" held. It asserted the text of the single construction region that O2's comparison of
+    constructor admission replaced with one region per version. In the first job, all 20 example steps (126–131,
+    134–137, 150–152, 190–196) passed with their expected verdicts. In the second, the shrunk witnesses the other
+    tests assert held.
+  - **Not the timebox's two failures**: they are one stale expectation in a test, reached by two jobs of two
+    different steps (admission, shrinking). Neither step's own check failed.
+  - **What**: the assertion now names the new text, copied from the jobs' logs: each version's record made in its
+    own `try` (`rejectedAfter`, `rejectedBefore`), an input both reject skipped, and one only one version rejects an
+    `AssertionError`. My inline runs never ran this file, since it needs JBMC. It compiles.
+  - **Job** `20261108-072230-application-core-objects-o2-lib-tests-in` (pending): `lib/tests/integration.rs` under
+    JBMC, 65 of 65 expected. It closes VF-022 when it passes. The verification loop owns the finding's entry.
+  - **Next**: as the entry above, `witness::differences` must not count a replay that couldn't run one version as
+    reproduced, with a reproducer first.
 - Status: working
 
 ## Loop settings

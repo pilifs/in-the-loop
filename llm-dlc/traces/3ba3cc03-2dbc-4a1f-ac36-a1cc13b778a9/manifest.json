@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.480Z",
-  "ended": "2026-11-08T07:19:54.167Z",
-  "duration_seconds": 9929,
+  "ended": "2026-11-08T07:22:51.018Z",
+  "duration_seconds": 10106,
   "stats": {
-    "turns": 41,
-    "api_calls": 480,
-    "tool_calls": 479,
+    "turns": 46,
+    "api_calls": 500,
+    "tool_calls": 498,
     "tool_errors": 1,
-    "compactions": 8,
+    "compactions": 9,
     "peak_context_tokens": 315218,
     "usage": {
-      "input_tokens": 974,
-      "output_tokens": 338560,
-      "cache_read_input_tokens": 67007191,
-      "cache_creation_input_tokens": 1309264
+      "input_tokens": 1014,
+      "output_tokens": 346311,
+      "cache_read_input_tokens": 68539635,
+      "cache_creation_input_tokens": 1385131
     }
   },
   "tools": {
-    "Bash": 426,
-    "Read": 27,
-    "Edit": 11,
+    "Bash": 441,
+    "Read": 29,
+    "Edit": 13,
     "Monitor": 4,
     "SendMessage": 4,
     "ToolSearch": 4,
@@ -43,6 +43,7 @@
     "lib/src/construction.rs",
     "lib/src/harness/mod.rs",
     "lib/tests/application_core_objects.rs",
+    "lib/tests/integration.rs",
     "llm-dlc/loops/application-core-objects.md"
   ],
   "context_windows": [
@@ -161,24 +162,38 @@
     {
       "index": 8,
       "started": "2026-11-08T06:52:38.667Z",
-      "ended": "2026-11-08T07:19:54.167Z",
-      "turns": 4,
-      "api_calls": 46,
+      "ended": "2026-11-08T07:20:19.217Z",
+      "turns": 5,
+      "api_calls": 49,
       "usage": {
-        "input_tokens": 92,
-        "output_tokens": 23309,
-        "cache_read_input_tokens": 4136440,
-        "cache_creation_input_tokens": 107778
+        "input_tokens": 98,
+        "output_tokens": 24669,
+        "cache_read_input_tokens": 4501672,
+        "cache_creation_input_tokens": 110998
       },
-      "peak_context_tokens": 120857
+      "peak_context_tokens": 124077
+    },
+    {
+      "index": 9,
+      "started": "2026-11-08T07:21:00.472Z",
+      "ended": "2026-11-08T07:22:51.018Z",
+      "turns": 4,
+      "api_calls": 17,
+      "usage": {
+        "input_tokens": 34,
+        "output_tokens": 6391,
+        "cache_read_input_tokens": 1167212,
+        "cache_creation_input_tokens": 72647
+      },
+      "peak_context_tokens": 85726
     }
   ],
   "log": {
-    "sha256": "26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3",
-    "bytes": 13594041,
-    "lines": 5127,
-    "gzip_bytes": 2561287,
-    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3.jsonl.gz"
+    "sha256": "046de978211f1ea7480a28d6781cd2b20abd511be72e3b91f5c153253b4b1bcd",
+    "bytes": 14390752,
+    "lines": 5372,
+    "gzip_bytes": 2755473,
+    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/046de978211f1ea7480a28d6781cd2b20abd511be72e3b91f5c153253b4b1bcd.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -253,9 +268,23 @@
       "summary": "application-core objects O2: every constructor and setup method that makes a check's inputs is listed as a claim root, for the reuse stream's key",
       "body": "harness::Layout::construction_roots gives, for each version, every method the harness calls to make the inputs besides the target: each object's constructor (inner objects' and a plan's chosen descriptor included), then the setup calls on that version's receiver class, in order and each once, the previous version's under its own build's names. The regression check's identical-bytecode shortcut now takes its roots from it (the same set as before). The proof cache's regression key (proof_cache.rs, the reuse stream's file) still roots only the target and the constructors, so a claim with a setup sequence keeps running uncached; the interface request under the brief's Progress asks reuse to root Regression::claim at construction_roots, after which this stream drops the guard at the merge.\n\nVerified inline (native, no JBMC): a harness unit test of the roots, and tests/application_core_objects.rs's o2_a_setup_methods_edit_alone_is_another_claim_never_reused, where an edit of only the setup method add misses the cache and is refuted with its whole history, run on a JVM. With the uncached guard switched off it fails (the stale verified is reused); with the key rooted at construction_roots as well, tried in the working copy and reverted, it passes, as do the receiver-constructor cache test and the ignored inner-constructor one. Lib tests 229 of 229; the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill pass; application_core passes except O3, the frozen fixture's allocation bound already recorded for the coordinator. No job: no proof changes.",
       "log_sha256": "26bf08a708a021118a5e8404e400fb678737c74a66db1a54bcfc58d201b5d2f3"
+    },
+    {
+      "change_id": "nkqoklwqvpntvsuqwpopkwktzyuknxms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core objects O2: the record test of lib/tests/integration.rs asserts the two construction regions that compare admission, closing VF-022 when its job passes (verification pending)",
+      "body": "Jobs 20261108-063512-… and 20261108-064305-… both failed on one test only, a_method_of_a_record_is_proved_on_its_components, whose verdict, domain and 'behaves as before' held: it asserted the statement text of the single construction region that O2's comparison of constructor admission (d7330651) replaced with one region per version. The assertion now names the new text, copied from those jobs' logs: each version's record in its own try, an input both reject skipped, one only one rejects an AssertionError. The first job's 20 example steps had passed with their expected verdicts, and the second job's shrunk witnesses held. One stale expectation reached by two jobs of two different steps, not two failures of one item. Verified: the test file compiles; the text matches the harness's emission (harness/mod.rs) and its unit tests. JBMC runs it, so it is queued.\n\nJob 20261108-072230-application-core-objects-o2-lib-tests-in: lib/tests/integration.rs under JBMC, 65 of 65 expected.",
+      "log_sha256": "046de978211f1ea7480a28d6781cd2b20abd511be72e3b91f5c153253b4b1bcd"
     }
   ],
   "logs": {
+    "046de978211f1ea7480a28d6781cd2b20abd511be72e3b91f5c153253b4b1bcd": {
+      "bytes": 14390752,
+      "lines": 5372,
+      "gzip_bytes": 2755473,
+      "url": null
+    },
     "199b094cac380c9ae68cca59703fc5f55b73076ca372cb615298b8ba8d6dc063": {
       "bytes": 6844856,
       "lines": 2579,
