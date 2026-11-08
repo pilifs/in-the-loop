@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 63, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 01:38 UTC |
-| Prompts | 1,585 |
-| Model calls | 15,606 |
-| Tool calls | 16,578 (302 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 01:40 UTC |
+| Prompts | 1,586 |
+| Model calls | 15,628 |
+| Tool calls | 16,601 (302 failed) |
 | Compactions | 234 |
 | Subagents | 10 |
-| Tokens written | 17,196,853 |
-| Tokens read | 2,528,136,895 (97.9% from cache) |
-| Commits with a trace | 468 |
-| Log snapshots | 571 (1334.2 MB gzipped, 558 uploaded) |
+| Tokens written | 17,209,370 |
+| Tokens read | 2,529,599,704 (97.9% from cache) |
+| Commits with a trace | 469 |
+| Log snapshots | 572 (1334.4 MB gzipped, 558 uploaded) |
 
 ## Sessions
 
@@ -87,9 +87,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 21:29 UTC | [2d24d762-29a6-4514-a681-485fd10f1c7e](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | ended | 2 h 10 min | `claude-opus-5-5` | 30 | 297 | 296 | 10 | 4 | 351,123 | 24 |
 | 2026-11-07 21:50 UTC | [00316fc7-52d4-4009-9502-48e1d40764a8](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 9 | 9 | 0 | 0 | 45,314 | 4 |
 | 2026-11-07 21:51 UTC | [VM disk space and jj workspaces](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | ended | 0 min | `claude-opus-5-5` | 1 | 2 | 1 | 0 | 0 | 43,566 | 4 |
-| 2026-11-07 23:23 UTC | [807d6ed2-a98d-4f93-8dbb-28d70736eff7](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | ended | 1 h 54 min | `claude-opus-5-5` | 22 | 132 | 131 | 1 | 4 | 183,073 | 5 |
+| 2026-11-07 23:23 UTC | [807d6ed2-a98d-4f93-8dbb-28d70736eff7](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | open | 2 h 17 min | `claude-opus-5-5` | 23 | 153 | 154 | 1 | 4 | 183,073 | 7 |
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
-| 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | open | 20 min | `claude-sonnet-5-5` | 1 | 9 | 10 | 1 | 0 | 41,971 | 1 |
+| 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | open | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -159,17 +159,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 182,435 | 610 | 643,884 | 46,576,564 | 98.6% | 259 |
 | [`00316fc7`](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | 2,014 | 18 | 33,930 | 292,928 | 89.6% | 162 |
 | [`a76492ce`](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | 530 | 4 | 14,069 | 72,353 | 83.7% | 163 |
-| [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 129,647 | 268 | 420,863 | 10,888,132 | 96.3% | 87 |
+| [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 141,484 | 312 | 470,221 | 12,258,061 | 96.3% | 90 |
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
-| [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2,708 | 18 | 28,852 | 283,166 | 90.7% | 115 |
+| [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,502 | 87.5% | 63 |
-| `Read` | 775 | 4.7% | 33 |
-| `Edit` | 625 | 3.8% | 32 |
+| `Bash` | 14,522 | 87.5% | 63 |
+| `Read` | 776 | 4.7% | 33 |
+| `Edit` | 627 | 3.8% | 32 |
 | `Write` | 395 | 2.4% | 29 |
 | `ToolSearch` | 99 | 0.6% | 25 |
 | `Monitor` | 64 | 0.4% | 21 |
@@ -656,7 +656,8 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 465 | change `mwzqmlsw` | Stub reachability, step 2: the probe at the call site is chosen, since JBMC 6.11 has no --cover | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/ff9a237cd249e3c757d52634131d56294c07667b529daf383d739d6be338d0af.jsonl.gz)), [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz)) |
 | 466 | change `xlnrlwxs` | Stub reachability, step 3: the gap preflight asks JBMC's solver, by a probe at each call site, whether a path reaches a stub its symbolic execution enters | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/e225b1291c741eb3484039516a59dc88ebccd62e1747d2df68e5de3c7811d5ef.jsonl.gz)) |
 | 467 | change `wvztqlwr` | Stub reachability, step 4: VF-015's job resubmitted and a guard job for the gap preflight's probe (verification pending) | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/9c65937475513c0cff0e940ede3298139486ef2adeecbed4d365135694d033b6.jsonl.gz)) |
-| 468 | change `pktlkzsp` | Record verification results for 2 jobs: stub-reachability step 4 passed, VF-015 now fails at step 5 (ASCII equivalence) | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) ([log](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318.jsonl.gz)) |
+| 468 | change `pktlkzsp` | Record verification results for 2 jobs: stub-reachability step 4 passed, VF-015 now fails at step 5 (ASCII equivalence) | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/47a300443a9f8580a7ef4890001164f930c0b02c426e75d2f61059e26134f1de.jsonl.gz)), [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) ([log](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318.jsonl.gz)) |
+| 469 | change `umwtoqpk` | Stub reachability, step 4 done: the guard passed, and VF-015 is deferred by the timebox on an uncaught checked exception in the equivalence harness | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/47a300443a9f8580a7ef4890001164f930c0b02c426e75d2f61059e26134f1de.jsonl.gz)), [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) ([log](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz)) |
 
 ## Logs
 
@@ -724,9 +725,9 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 20 | 17 | 20.6 MB | `1c5ab614e590`, not uploaded |
 | [`00316fc7`](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | 3 | 3 | 0.2 MB | [`ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz) |
 | [`a76492ce`](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | 2 | 2 | 0.2 MB | [`b39051c7278b`](https://terminalvalue.net/raw-traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/b39051c7278b2a67321ecf7ff268386755e79d6a0842e7fe39aadf994b428e4d.jsonl.gz) |
-| [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 5 | 0 | 2.5 MB | `fb327d9c052f`, not uploaded |
+| [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 5 | 0 | 2.5 MB | `47a300443a9f`, not uploaded |
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 0 | 0.3 MB | `e37af19c4509`, not uploaded |
-| [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 1 | 0 | 0.1 MB | `6e2501c5be6b`, not uploaded |
+| [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 0 | 0.2 MB | `57de71ff276e`, not uploaded |
 
 ## Session notes
 

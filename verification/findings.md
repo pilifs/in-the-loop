@@ -118,6 +118,20 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: the job, resubmitted at a fixing commit, passes.
 - **Rerun** 2026-11-07 on `vm-1`: job `20261107-165827-example-109-revisited-hex-todigit-s-regr` (at `86e4ce7d220f`) failed at step 3, differently. The witness replay is no longer the problem (JBMC now proves the old `toDigit` for `0x0660`). Now `jvmcontract` refuses the result under `--gaps strict`: "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it: `jdk-static-method:java.lang.String.format(String, Object[])`" (a stub JBMC returns null or any object for). Steps 4 and 5 were skipped. **Needs**: a decision on whether the job should pass `--gaps assume` or advised (the job's step, the submitter's), or a model of `String.format` (the exception path of `Hex.toDigit` calls it); the cleanup loop's native stream. The entry stays open.
 - **Rerun** 2026-11-08 on `vm-1`: job `20261108-011411-vf-015-example-109-revisited-hex-todigit` (at `1b376e0f1e77`) got further. The gap preflight now asks JBMC's solver and finds no path reaches the `String.format` stub, so step 3 (old `toDigit` for `0x0660`) passes and step 4 (the change found, witness replayed) passes as expected. Step 5 ("nothing else changed on ASCII", expected: verified over every char x int) exits 1: `Hex#toDigit cannot be verified: an unexpected property failed: java::EquivalenceHarness.check:(CI)V.1`, with 4 `throwing-initializer` defect notes (JBMC runs `CharEncoding.<clinit>` and `Hex.<clinit>`, before and after, as possibly throwing NullPointerException, and `catch (java.lang.Error)` in the harness) and the `String.format` gap note. **Needs**: whoever owns the stream (stub-reachability loop, cleanup native stream) to decide whether the harness's `catch (Error)` and the initializers' possible NPE (probably the JDK stub for `StandardCharsets`/`Charset`) make property `check.1` fail spuriously (then a model or an `--unwind`/assumption fix), or a real difference. Logs: `verification/results/20261108-011411-vf-015-example-109-revisited-hex-todigit/logs/5-*.log`. The entry stays open.
+- **Triaged** 2026-11-08 by the stub-reachability loop, from that job's `work-change/jbmc.log` and
+  `work-ascii/jbmc.log`. Neither the initializers nor a stub is the cause. Property `check.1` is JBMC's "no uncaught
+  exception", and both traces end the same way: the old `toDigit` is called on an ASCII char that is no hex digit
+  (`ch = 0` in step 5), constructs `DecoderException` and throws it, and the exception leaves `EquivalenceHarness.check`.
+  `DecoderException` is a checked exception (it extends `java.lang.Exception`), and the equivalence harness's call
+  handlers (`lib/src/harness/mod.rs`, `harness::EXCEPTIONS`) catch only the listed unchecked exceptions,
+  `RuntimeException` and `Error`. So every equivalence over a method that throws a checked exception can't be verified.
+  That includes step 4: its `test $? -eq 1` took "cannot be verified" for the change being found, so its pass shows
+  nothing. **Deferred by the timebox**: it is N3's second failed attempt in a row, after `20261107-165827-…`, so the
+  loops don't try again. **Needs**: the equivalence harness to tell apart the exceptions the two versions declare (a
+  handler for each class in their `throws` clauses, then `java.lang.Exception`, as the property harness already
+  handles a declared exception). Then this job, resubmitted with step 4 checking for a found change rather than exit 1,
+  in a session a person starts. That is a harness change with unit tests, plus one job of a few seconds of JBMC.
+  Recorded in [`llm-dlc/loops/stub-reachability.md`](../llm-dlc/loops/stub-reachability.md)'s Progress.
 
 ### VF-002: examples 147, 148 and 149 never reach a proof
 

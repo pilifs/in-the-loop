@@ -180,7 +180,29 @@ Settled by the user on 2026-11-07:
     - If both pass, close VF-015 and stop with `done`.
     - If VF-015's step 4 fails on `StandardCharsets.UTF_8`, that interpreter fix is this brief's next item.
     - If a guard test fails, a stub a proof enters was left out: fix the probe first.
-- Status: waiting on jobs 20261108-011411-vf-015-example-109-revisited-hex-todigit 20261108-011441-stub-reachability-step-4-no-stub-a-proof
+- **Step 4: the guard passed, and VF-015 is deferred by the timebox.** Both jobs were collected in `pktlkzsp`.
+  - The guard job, `20261108-011441-stub-reachability-step-4-no-stub-a-proof`, passed in 15 minutes: the preflight's
+    unit tests, the eight gap tests and the corpus under JBMC and auto.
+  - VF-015's job, `20261108-011411-vf-015-example-109-revisited-hex-todigit`, passes the step this brief is about.
+    Step 3 is proved, and its note names `String.format` as a stub the solver shows no path reaches (0.2 s, every probe
+    and every unwinding assertion held).
+  - Then it fails at step 5, `equivalence … --unchanged-unless 'ch > 127'`: "an unexpected property failed:
+    `EquivalenceHarness.check:(CI)V.1`". That is not the `StandardCharsets.UTF_8` replay step 4 of the plan foresaw.
+  - **The finding**, from the job's JBMC traces: the property is "no uncaught exception". In both equivalence steps,
+    the old `toDigit` throws `DecoderException` on a non-hex ASCII char (`ch = 0`). That exception is checked, and the
+    equivalence harness's call handlers (`harness::EXCEPTIONS`) catch only unchecked exceptions and `Error`.
+    - Step 4 passed only because its `test $? -eq 1` also accepts "cannot be verified".
+    - The `throwing-initializer` notes the result's first reading suspected are not the cause.
+    - The `String.format` gap that step 4 and 5 report is right: without the assumption, the exception path is reachable.
+  - **Deferred by the timebox**: it is N3's second failure in a row (`20261107-165827-…`, then this job), so the loop
+    makes no third attempt. The cause is in the equivalence harness, outside this brief's stub gaps.
+  - **What a further attempt would try**: the harness catches the exceptions the two versions declare, then
+    `java.lang.Exception`, as the property harness already does for a declared exception. Then VF-015's job, with step
+    4 checking for a found change rather than exit 1. That costs a harness change with unit tests, plus one job of a
+    few seconds of JBMC, in a session a person starts.
+  - VF-015's entry in `verification/findings.md` records the triage and stays open. Example 109's notes record it too.
+  - Step 4's criterion is met, so the loop stops with `done`.
+- Status: done
 
 ## Loop settings
 

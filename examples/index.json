@@ -4430,7 +4430,8 @@
       "notes": [
         "The run recorded here needed the charset models (then a fork of the CProver models library) and the cache models on `--classpath` by hand; both now ship with jvmcontract (`lib/models`, `jvmcontract models`) and go on JBMC's class path by themselves, with a `Character.digit` model generated from the JDK's table that the old version's regression proof lacked. Before concluding anything from a violation in a class that reads a JDK class JBMC has no model of, check the trace for the stub and add a model.",
         "A commit rather than a pull request: the commit and its parent were checked out into two worktrees and the skill's proofs run by hand.",
-        "Next in Commons Codec: `MurmurHash3` and `PureJavaCrc32`, whose classes read no charsets."
+        "Next in Commons Codec: `MurmurHash3` and `PureJavaCrc32`, whose classes read no charsets.",
+        "`toDigit` throws `DecoderException`, a checked exception, on a char that is no hex digit, and the equivalence harness catches only unchecked exceptions and `Error` (`harness::EXCEPTIONS`). So `equivalence` on `Hex#toDigit` ends in \"an unexpected property failed: `EquivalenceHarness.check:(CI)V.1`\" (JBMC's \"no uncaught exception\") until the harness tells declared exceptions apart, and a step that expects exit 1 for \"the change, found\" passes on that too: check for the found change instead. The old version's regression proof under `--assume 'ch == 1632'` holds under `--gaps strict` since the gap preflight asks JBMC's solver whether `String.format`'s stub is reached (VF-015, job `20261108-011411-vf-015-example-109-revisited-hex-todigit`)."
       ],
       "source": "https://github.com/apache/commons-codec/commit/43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be"
     },
