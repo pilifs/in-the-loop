@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result: application-core Phase 5 step 2 joint acceptance passed
 
-change `zutylomypzus` · [log `24cb43f58a34`](https://terminalvalue.net/raw-traces/5797b2b5-cc8e-4306-969d-6366320e1840/24cb43f58a3448f22b5239ed6acac41021c330033047e014e4258508c532d4ab.jsonl.gz)
+[`98b7507d6917`](https://github.com/pilifs/in-the-loop/commit/98b7507d69176cc97dcbfe27a4a033c36ed9623d) · [log `24cb43f58a34`](https://terminalvalue.net/raw-traces/5797b2b5-cc8e-4306-969d-6366320e1840/24cb43f58a3448f22b5239ed6acac41021c330033047e014e4258508c532d4ab.jsonl.gz)
 
 Job 20261108-180246-application-core-phase-5-step-2-the-join (at 388dfe54) passed all 6 steps in 5m04s (estimated 25m, peak 1.8 GiB of 3.0 estimated): J1, J2, H, L on the own checker, no JBMC. No outputs to apply. No findings added.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `0d3ef933f260`](https://terminalvalue.net/raw-traces/5797b2b5-cc8e-4306-969d-6366320e1840/0d3ef933f260aae9ceff66599661cdb24b4829ccd39943e5de5a152fc56684a7.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

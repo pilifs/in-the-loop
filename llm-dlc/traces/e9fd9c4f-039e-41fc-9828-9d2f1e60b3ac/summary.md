@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for application-core reuse R3
 
-change `kwvoqwkntwvs` · [log `48e13096ec21`](https://terminalvalue.net/raw-traces/e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/48e13096ec218fba8f712ea2360bb800c1aa37ee17115d11d905ab72a35050bc.jsonl.gz)
+[`337afa793a10`](https://github.com/pilifs/in-the-loop/commit/337afa793a10f9342352f6b1920122ce32104a80) · [log `48e13096ec21`](https://terminalvalue.net/raw-traces/e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/48e13096ec218fba8f712ea2360bb800c1aa37ee17115d11d905ab72a35050bc.jsonl.gz)
 
 Job 20261108-060410-application-core-reuse-r3-a-small-compar (R3's small compare run timed by stage, cold, rerun and a defect) passed in 3m57s, peak 1.7 GiB (estimated 15m, 3.0 GiB). Its two outputs, lib/benchmark/preparation/preparation.json and .md, were applied to the working copy. No findings added.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `995eda56fd2b`](https://terminalvalue.net/raw-traces/e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/995eda56fd2b343c1f28c5db118a43cd0c1df57456135e3829e0256077cfa2e7.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls
 
-change `wrpxlowuvyyo` · [log `826d59331b84`](https://terminalvalue.net/raw-traces/637cae8e-d166-477d-b0d2-51161e0c6d62/826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601.jsonl.gz)
+[`abe67ebd3d0a`](https://github.com/pilifs/in-the-loop/commit/abe67ebd3d0a7e69f25bfad1e00461f056691d09) · [log `826d59331b84`](https://terminalvalue.net/raw-traces/637cae8e-d166-477d-b0d2-51161e0c6d62/826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601.jsonl.gz)
 
 Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.
 
@@ -30,9 +30,15 @@ Found and recorded in Progress for item 6: property::run still refuses prove --c
 
 ### Record verification results for the VF-023 rerun; VF-023 closed
 
-change `pszyvtwkuqoo` · [log `e07c5bd8029f`](https://terminalvalue.net/raw-traces/637cae8e-d166-477d-b0d2-51161e0c6d62/e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2.jsonl.gz)
+[`208527000fbf`](https://github.com/pilifs/in-the-loop/commit/208527000fbff46af2c20e6bec2854c72e95f444) · [log `e07c5bd8029f`](https://terminalvalue.net/raw-traces/637cae8e-d166-477d-b0d2-51161e0c6d62/e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2.jsonl.gz)
 
 Job 20261108-141443 (the conformance corpus under auto --confirm, at 13f3e9a0dac8) passed in 23m18s, peak 1.8 GiB, so VF-023 is closed in verification/findings.md. Its only output, lib/target/conformance-confirm.log, was not applied because the file changed since the job's commit; it is a log, so no rerun.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `a63a17ed656f`](https://terminalvalue.net/raw-traces/637cae8e-d166-477d-b0d2-51161e0c6d62/a63a17ed656faae8a19a9824ae3ad6b6fcf32f190801c4e99f7ac586b310ee00.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

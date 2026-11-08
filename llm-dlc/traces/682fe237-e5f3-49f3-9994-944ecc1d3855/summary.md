@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result for application-core values VF-023 third probe (passed)
 
-change `ntyolumkwzuo` · [log `4abf970fd760`](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/4abf970fd7600ab7dcbd3ef94e0b9290b181d4ef02695afaf210dd76ae15d4ed.jsonl.gz)
+[`2ddf2e881c43`](https://github.com/pilifs/in-the-loop/commit/2ddf2e881c43747885c69febac896791f371b455) · [log `4abf970fd760`](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/4abf970fd7600ab7dcbd3ef94e0b9290b181d4ef02695afaf210dd76ae15d4ed.jsonl.gz)
 
 Collected job 20261108-093809 (VF-023 third probe, passed in 6.4 s). Re-declaring Collection's methods in the model java.util.List changes no outcome: the same five probes calling size()/isEmpty() are still refuted by JBMC's List.size() stub free value, and oneAssumed still proved. VF-023 updated in verification/findings.md; it stays open.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `001bb75a2eb3`](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/001bb75a2eb37abca06a53c8f630feefe59cea0ec7d733419420d23dba7dac20.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

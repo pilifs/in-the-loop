@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result: application-core Phase 5 receiver-with-dependencies job passed
 
-change `usommrqtslrs` · [log `973a101a118a`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/973a101a118a1c4f3d6d2d59d142d05b03effc02be4b47ddc86b3ae434f50ae9.jsonl.gz)
+[`6f601924973c`](https://github.com/pilifs/in-the-loop/commit/6f601924973cace5d44b9c431cbde1146711b06f) · [log `973a101a118a`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/973a101a118a1c4f3d6d2d59d142d05b03effc02be4b47ddc86b3ae434f50ae9.jsonl.gz)
 
 Job 20261108-185910 (J1's R2 on the quote family with a receiver whose constructor dependencies are passed null, own checker, no JBMC) passed all 4 steps in 3m27s, peak 2.3 GiB (estimated 15m, 3.0 GiB). Attention was only the 2-CPU quota holding two steps back. No findings; nothing applied.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

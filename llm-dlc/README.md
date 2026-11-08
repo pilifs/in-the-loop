@@ -158,18 +158,18 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 1 | 7 | ended |
-| 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1 | 1 | ended |
-| 2026-11-08 18:04 UTC | [5797b2b5-cc8e-4306-969d-6366320e1840](traces/5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 1 | 1 | ended |
-| 2026-11-08 14:15 UTC | [637cae8e-d166-477d-b0d2-51161e0c6d62](traces/637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 1 | 2 | ended |
-| 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1 | 1 | ended |
-| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 12 | 34 | ended |
-| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 140 | 48 | open |
-| 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](traces/682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 1 | 1 | ended |
-| 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 1 | 1 | ended |
-| 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 1 | 1 | ended |
+| 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1 | 2 | ended |
+| 2026-11-08 18:04 UTC | [5797b2b5-cc8e-4306-969d-6366320e1840](traces/5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 1 | 2 | ended |
+| 2026-11-08 14:15 UTC | [637cae8e-d166-477d-b0d2-51161e0c6d62](traces/637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 1 | 3 | ended |
+| 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1 | 2 | ended |
+| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 12 | 35 | ended |
+| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 142 | 49 | open |
+| 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](traces/682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 1 | 2 | ended |
+| 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 1 | 2 | ended |
+| 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 1 | 2 | ended |
 | 2026-11-08 07:03 UTC | [9ef76667-69d8-4501-a1e3-a3001d1a7809](traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | 6 | 7 | ended |
 | 2026-11-08 06:35 UTC | [201f326a-a536-4002-a0f8-5ac6cc2bbfb7](traces/201f326a-a536-4002-a0f8-5ac6cc2bbfb7/summary.md) | 1 | 4 | ended |
-| 2026-11-08 06:05 UTC | [e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac](traces/e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/summary.md) | 1 | 1 | ended |
+| 2026-11-08 06:05 UTC | [e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac](traces/e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/summary.md) | 1 | 2 | ended |
 | 2026-11-08 05:08 UTC | [Verification loop status](traces/4e390f05-cc89-494e-98ab-c027ea3b76a3/summary.md) | 1 | 1 | ended |
 | 2026-11-08 04:52 UTC | [34b4ec0b-987f-413f-b1d9-3ef5149ea8cc](traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/summary.md) | 1 | 3 | ended |
 | 2026-11-08 04:34 UTC | [Multi agent feature stream run](traces/73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 29 | 5 | ended |
@@ -179,11 +179,11 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 1 | 3 | ended |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](traces/65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 1 | 2 | ended |
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 1 | 3 | ended |
-| 2026-11-07 23:23 UTC | [807d6ed2-a98d-4f93-8dbb-28d70736eff7](traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 30 | 10 | ended |
+| 2026-11-07 23:23 UTC | [807d6ed2-a98d-4f93-8dbb-28d70736eff7](traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 30 | 11 | ended |
 | 2026-11-07 21:51 UTC | [VM disk space and jj workspaces](traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | 1 | 4 | ended |
 | 2026-11-07 21:50 UTC | [00316fc7-52d4-4009-9502-48e1d40764a8](traces/00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | 1 | 4 | ended |
 | 2026-11-07 21:29 UTC | [2d24d762-29a6-4514-a681-485fd10f1c7e](traces/2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 30 | 28 | ended |
-| 2026-11-07 18:55 UTC | [Multi agent feature stream run](traces/3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | 26 | 34 | ended |
+| 2026-11-07 18:55 UTC | [Multi agent feature stream run](traces/3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | 26 | 35 | ended |
 | 2026-11-07 16:31 UTC | [ed84ffdf-8f6d-4b88-815e-d0f713e92faf](traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/summary.md) | 4 | 25 | ended |
 | 2026-11-07 16:26 UTC | [367bd874-02ec-44ea-8935-70e651fad013](traces/367bd874-02ec-44ea-8935-70e651fad013/summary.md) | 1 | 2 | ended |
 | 2026-11-07 16:26 UTC | [b65d132b-4eb4-46fd-8556-f4cba3311ad1](traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 67 | 12 | ended |

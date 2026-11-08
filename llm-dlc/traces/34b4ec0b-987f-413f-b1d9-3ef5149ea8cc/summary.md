@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for application-core objects O1
 
-change `vonmxkzztxwk` · [log `d1fd08068ac6`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/d1fd08068ac6907f85c398fb9b9c1c1736a267a1961017b85f78853ef95311b5.jsonl.gz)
+[`533266f625b9`](https://github.com/pilifs/in-the-loop/commit/533266f625b9707009aa79143f8ed45145b55555) · [log `d1fd08068ac6`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/d1fd08068ac6907f85c398fb9b9c1c1736a267a1961017b85f78853ef95311b5.jsonl.gz)
 
 Job 20261108-045000-application-core-objects-o1-lib-tests-in passed: 8 steps (integration tests and shop examples 190-196 under B9, each as expected) in 3m31s, peak 2.1 GiB against an estimate of 25m and 3.0 GiB. No findings; no outputs to apply.
 
 ### application-core environment E1: a consumed primitive return under a deterministic query model
 
-change `ulzwwxvswvso` · [log `edaae9168204`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz)
+[`27ae92ca3a66`](https://github.com/pilifs/in-the-loop/commit/27ae92ca3a666109e984ca9a10384237397c66e0) · [log `edaae9168204`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz)
 
 The effect check answers a modelled call whose result the handler uses from a declared CallModel instead of refusing it. The coupling policy is defined first, in lib/src/environment.rs: a deterministic read-only query answers with one function of its key, the same for both builds and every call. A declared nondeterministic or fallible choice is a different model, refused by name for now. The query is encoded as a table of 2 x bound keys and answers plus a default, passed as inputs of the generated observe method after the handler's. So the proof covers every snapshot, a counterexample is one environment, and calls are never coupled by their position. The witness names the environment it chose and is replayed on a JVM under the generated stubs. effects --environment FILE (and compare's) merges the declared calls into each entry point's claim. Anything the encoding doesn't take yet (throws, DTOs, String, field or receiver keys, non-integral results) is refused by name.
 
@@ -36,7 +36,7 @@ Verified inline: the new lib/tests/environment.rs (11 tests: a rewrite proved; a
 
 ### application-core reuse J3: a planned domain's plans and a modelled call's model in the claim key, digested whole as their strict types
 
-change `mslqzrprorvn` · [log `edaae9168204`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz)
+[`0b7b5d26de62`](https://github.com/pilifs/in-the-loop/commit/0b7b5d26de62f609ebfb52e30c755c50c2bdb54d) · [log `edaae9168204`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz)
 
 The claim key's projection (lib/src/spec/cache.rs) refused every claim with a planned domain or a call model as uncacheable, since Phase 0 added those parts without registering them. TYPED now names domain.made_by.before/after (construction plans) and environment.calls[].model (a call model): each is digested whole once it reads back exactly as its type of spec::plans, which refuses every undeclared field and variant, so nothing in them is left out of the key and an undeclared field still makes the claim uncacheable by name.
 

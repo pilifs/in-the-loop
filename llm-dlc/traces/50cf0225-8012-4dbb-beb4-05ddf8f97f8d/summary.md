@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### application-core Phase 5 step 3: the existing examples at the merged revision, one job per app (verification pending)
 
-change `uvlkwpnzlxtp` · [log `d5b934b078b2`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/d5b934b078b2de486ce531619aac1ecdfc0da6520930d4b1661cfcb4d1bf6d33.jsonl.gz)
+[`c1bc082027f9`](https://github.com/pilifs/in-the-loop/commit/c1bc082027f95211b173e88c7c65191d009bcf4a) · [log `d5b934b078b2`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/d5b934b078b2de486ce531619aac1ecdfc0da6520930d4b1661cfcb4d1bf6d33.jsonl.gz)
 
 Queues Phase 5 step 3 of llm-dlc/loops/application-core.md as four jobs. Each runs at this commit, which has relocate::opened_with (the JVM run's opening of package-private and protected instance methods) and every Phase 5 piece so far. Shop's 190-196 run under compare (expected 190 and 195 verified, 191-194 violation, 196 unverifiable). Crosscut's 150-152 and 160-161 run under equivalence --gaps strict (150, 152 and 160 verified, 151 and 161 violation). Deliveries' 170-172 run under effects (170 verified, 171 and 172 violation). lib/tests/integration.rs runs as it is: 65 tests, JBMC's included, which no inline check ran on the merged code. These are the cleanup merge's reruns plus 190-196. No example's files changed since the cleanup merge, only examples/schema and examples/tools, so the streams touched no example.
 
@@ -30,7 +30,7 @@ The brief is out of date in one place. Example 196's notes, which the brief's Q 
 
 ### application-core Phase 5 step 4: J4's cost report at the merged revision, the reuse stream's benchmark rerun unchanged (verification pending)
 
-change `loozqmzmrwsu` · [log `925580c7daaa`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/925580c7daaaaeec4e5be788fe1c818ce229978d9fa41a940fed9387eefe34c6.jsonl.gz)
+[`9a1b3b3a447e`](https://github.com/pilifs/in-the-loop/commit/9a1b3b3a447ebb2cad33ac1a890ee00e3b9a8932) · [log `925580c7daaa`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/925580c7daaaaeec4e5be788fe1c818ce229978d9fa41a940fed9387eefe34c6.jsonl.gz)
 
 The reuse stream's J4 figures (lib/benchmark/preparation/j4.json, job 20261108-114325) were taken at its own commit 283aa75d, before the merge changed 33 files of lib/src. So they are the stream's, and stay as recorded. A debug smoke run of lib/tests/preparation.rs on the merged revision (1 repeat, 61 s, passed) got the stream's verdicts and cache outcomes in all six scenarios: cold, an unchanged rerun, an unrelated edit, a safe helper rewrite, and the defect offset cold and rerun.
 
@@ -38,13 +38,13 @@ Job 20261108-200158-application-core-phase-5-step-4-j4-s-cos runs the same step 
 
 ### Record verification results: application-core Phase 5 String-in-object, step 3 rerun and step 4 J4 jobs passed
 
-change `yxtmunzopylo` · [log `8a96c17a5418`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/8a96c17a541810153001bf1e78d2e1135a4adabdcdb8868883005e64f124b4ff.jsonl.gz)
+[`d9e0895190bb`](https://github.com/pilifs/in-the-loop/commit/d9e0895190bb08a9e6ff27770da4cc39a976ca02) · [log `8a96c17a5418`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/8a96c17a541810153001bf1e78d2e1135a4adabdcdb8868883005e64f124b4ff.jsonl.gz)
 
 Collected 6 jobs, all passed: the String-inside-an-object job (4 steps, no JBMC), step 3 reruns of Crosscut 150-152/160-161, Deliveries 170-172 and Shop 190-196 (each example with its recorded verdict, 51 outputs applied), lib/tests/integration.rs with JBMC tests, and J4's cost report (2 outputs applied). No conflicts, no verdicts needing a person; estimates were generous (actual 14s-4m against 10-15m).
 
 ### application-core Phase 5 step 5: the for-review list, every row's state on the merged revision, waiting on six jobs
 
-change `zpsmsyypvnoo` · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
+[`69318d17b5cd`](https://github.com/pilifs/in-the-loop/commit/69318d17b5cd034ea86edcd7f5fa6d71ed4229a3) · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
 
 The brief's Progress gets Phase 5's for-review list. Each mandatory row (G0, O1-O3, V1, V2, E1, E2, R1, R2, J1-J4) and the stream items V3, E3 and R3 is named with the jobs that closed it. G0, O1, O3, V1, E1, E2, R1, R2, J2 and J3 pass, as do V3, E3 and R3. O2 and V2 are partial: one case each (checked-claim's alias-to-copy, basket-first-claim's copied-first) is held to the allocation gate's unresolved outcome until the user decides the claim's bound. That leaves J1 partial too. J4 passes on the reuse stream's report (job 20261108-114325), and its rerun at the merged revision is still running. The list also names the timebox's deferrals (none; VF-015's step 5 deferred by the user), the cases still refused by name, what the streams and Phase 5 found for review, the optional work left out, and the pending jobs.
 
@@ -56,19 +56,19 @@ Out of date in the brief, outside Progress: Phase 0's step 1 says the claim key 
 
 ### application-core Phase 5 step 5: the status set back to working, the six jobs having been collected meanwhile
 
-change `mykrrzxlktto` · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
+[`edb710f7b148`](https://github.com/pilifs/in-the-loop/commit/edb710f7b148e8cb91361911be7e926cc789f988) · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
 
 While the for-review list was being committed, the verification loop collected all six jobs it named as pending, all passed, in yxtmunzo. That commit also took the brief's edit, which was in the shared working copy, so the list is in yxtmunzo and the previous commit zpsmsyyp holds only traces. Progress now records that, and its status is working: the shop examples' Quote#quantity note and J4's figures at the merge are the next pieces, and they need no one else.
 
 ### application-core Phase 5 step 5: the shop examples' Quote#quantity note gives the merged revision's reason
 
-change `ntwunskxruyu` · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
+[`9422dc54b36a`](https://github.com/pilifs/in-the-loop/commit/9422dc54b36aebcce4154b33b66bcde522964e35) · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
 
 Examples 190-196 each carry a note naming what stays unresolved in every example of the set. Its reason for Quote#quantity was stale: since the application-core merge the regression check takes an instance method on a receiver made by its constructor, and step 3's collected shop job (20261108-195650-...-shop-s-e) now leaves Quote#quantity unsupported because the receiver is made differently in the two versions (Quote(long, int) before, Quote(Money, int) now), not because it is an instance method. Note 3 of each example.json now says so, and that the old refusal was the reason before the merge. The pages and examples/index.json were re-rendered with build.py --render-only; the note now agrees with each example's collected result.json and verifier-output.txt. The other two parts it names (POST /quotes/text, Money#cents) still match the results. The brief's Progress records this; next is J4's figures at the merge.
 
 ### application-core Phase 5 step 5: J4's figures at the merged revision in J4's row, and the loop blocked on the two allocation-bound decisions
 
-change `vqroonzuutzn` · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
+[`b22573534db4`](https://github.com/pilifs/in-the-loop/commit/b22573534db452c27d2ab239cf956c1f212e7d55) · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
 
 J4's row of the for-review list in llm-dlc/loops/application-core.md's Progress now reads job 20261108-200158's report (lib/benchmark/preparation/j4-merge.json and .md, at 9a1b3b3a, release, medians of 7) against the reuse stream's (j4.*, job 20261108-114325 at 283aa75d). All six scenarios reach the stream's verdicts and cache outcomes; the benchmark's assertions held (1 test passed). Times are within a few milliseconds of the stream's. The defect rerun's median is 51.6 ms against 31.7 ms, but both reports' repeats are bimodal (about 32 or 52 ms), and the two medians fall in different modes. The helper proofs' keys differ from the stream's because the binary changed. J4 passes on the merged revision.
 

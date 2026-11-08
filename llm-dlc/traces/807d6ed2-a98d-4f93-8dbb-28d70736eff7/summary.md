@@ -102,6 +102,12 @@ The user settled the brief's six proposed decisions as drafted: the four streams
 
 It goes in Phase 0, not a stream: the fix is in harness/, the objects stream's file; the environment stream's E2 (modelled failures, catch and propagation) needs it; and it is small. Step 7 has a reproducer first. The handlers then catch each class in either version's throws clause, then java.lang.Exception, comparing by class, and a checked exception that only one version throws is refuted. The closing job is VF-015's resubmitted with step 4 made stricter: the change must be found with its witness replayed, where test $? -eq 1 also accepted 'cannot be verified'. It has no timebox attempt left, so a failure goes back to the user. The starting-point table, prerequisites 1 and 5, Phase 0's Done-when row and Progress are updated, and E2's brief points at step 7. The status stays blocked on Phase 0.
 
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `5aea06ef7ffd`](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/5aea06ef7ffd1d41926450fcbb4e81a320e769b3ed0039af2bc3e65bf18abb53.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/5aea06ef7ffd1d41926450fcbb4e81a320e769b3ed0039af2bc3e65bf18abb53.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result for application-core values VF-023 diagnosis job (passed)
 
-change `xwxzqmrmxumn` · [log `4dfc3c5ad20c`](https://terminalvalue.net/raw-traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/4dfc3c5ad20c4c33e2a6d9b4636487ae43d041fd0ff9b5dba0d37b0c5186ddcc.jsonl.gz)
+[`e3996316ea81`](https://github.com/pilifs/in-the-loop/commit/e3996316ea8143a57de4bf72f6fadeb10979cf43) · [log `4dfc3c5ad20c`](https://terminalvalue.net/raw-traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/4dfc3c5ad20c4c33e2a6d9b4636487ae43d041fd0ff9b5dba0d37b0c5186ddcc.jsonl.gz)
 
 The diagnosis probes (one- and two-element List.of, with and without the static initializer) all verify under JBMC 6.11.0, so the minimal probe does not reproduce the refutation seen in VF-023; the cause lies in the listSizes/listChange harnesses. VF-023 stays open with this noted. Only verification results and findings.md changed.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `f30ef695d4d7`](https://terminalvalue.net/raw-traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/f30ef695d4d7f8721f5c602866decff865327edca4846ca83394f2f7799f4627.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

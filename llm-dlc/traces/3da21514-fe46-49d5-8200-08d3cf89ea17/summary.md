@@ -274,6 +274,12 @@ The user deferred VF-015 (2026-11-08): the streams launch without it, and other 
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `2d9aa05da1ce`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/2d9aa05da1ce9fc367f9b52d41e2ec1bc804148969cf3ee208a41d80bdc1ebe7.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/2d9aa05da1ce9fc367f9b52d41e2ec1bc804148969cf3ee208a41d80bdc1ebe7.jsonl.gz) has every step in between: reasoning, tool calls and their results.

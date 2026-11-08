@@ -20,25 +20,25 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for application-core values V2 step 1 (corpus under auto --confirm failed, VF-023)
 
-change `lslwokrrkrvl` · [log `b64906715e25`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69.jsonl.gz)
+[`67fc0cbcb73b`](https://github.com/pilifs/in-the-loop/commit/67fc0cbcb73bc2b2cd4ab7677a99baaedac30da5) · [log `b64906715e25`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69.jsonl.gz)
 
 One job collected, run on vm-1: the conformance corpus under --engine jbmc and auto passed; under auto --confirm it failed with 8 disagreements on the listSizes and listChange models (the own checker proves them, JBMC refutes them with a witness the interpreter says holds). Recorded as VF-023 for the values stream; nothing resubmitted.
 
 ### Record verification result for application-core objects O2 integration tests (passed, closes VF-022)
 
-change `qvqznktyyuwx` · [log `f28153f3e55c`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/f28153f3e55c1f33b9e9e35cd561d41aa3ec32e19cb47be27e5be19ec0c71ad6.jsonl.gz)
+[`56d6c3cbd3b9`](https://github.com/pilifs/in-the-loop/commit/56d6c3cbd3b948dc11fc953fa4b4da86b5a5b2de) · [log `f28153f3e55c`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/f28153f3e55c1f33b9e9e35cd561d41aa3ec32e19cb47be27e5be19ec0c71ad6.jsonl.gz)
 
 Job 20261108-072230-application-core-objects-o2-lib-tests-in passed on vm-1 in 1m38s: the integration tests pass with the record test's construction assertion updated. VF-022 is closed in verification/findings.md.
 
 ### Record verification result for application-core objects O2 replay job (passed)
 
-change `zlsywslwkmpm` · [log `81c5b3f0d8bc`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/81c5b3f0d8bc8ca9661e3c9332662a7bd956d8b14efe738644d1186f22aa4d2a.jsonl.gz)
+[`d3739c98afd5`](https://github.com/pilifs/in-the-loop/commit/d3739c98afd5b653de4d3ef93778c46c9f887e96) · [log `81c5b3f0d8bc`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/81c5b3f0d8bc8ca9661e3c9332662a7bd956d8b14efe738644d1186f22aa4d2a.jsonl.gz)
 
 Job 20261108-074116-application-core-objects-o2-a-replay-tha passed on vm-1 in 1m41s (4 steps: integration tests under JBMC and the example 109 step 4 replay on a JVM). It does not run VF-015's step 5, so no findings entry changes.
 
 ### application-core objects O2: the record test of lib/tests/integration.rs asserts the two construction regions that compare admission, closing VF-022 when its job passes (verification pending)
 
-change `nkqoklwqvpnt` · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
+[`aa7fd2c989a2`](https://github.com/pilifs/in-the-loop/commit/aa7fd2c989a2e831a5fc738236481360e4e29ad9) · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
 
 Jobs 20261108-063512-… and 20261108-064305-… both failed on one test only, a_method_of_a_record_is_proved_on_its_components, whose verdict, domain and 'behaves as before' held: it asserted the statement text of the single construction region that O2's comparison of constructor admission (d7330651) replaced with one region per version. The assertion now names the new text, copied from those jobs' logs: each version's record in its own try, an input both reject skipped, one only one rejects an AssertionError. The first job's 20 example steps had passed with their expected verdicts, and the second job's shrunk witnesses held. One stale expectation reached by two jobs of two different steps, not two failures of one item. Verified: the test file compiles; the text matches the harness's emission (harness/mod.rs) and its unit tests. JBMC runs it, so it is queued.
 
@@ -46,7 +46,7 @@ Job 20261108-072230-application-core-objects-o2-lib-tests-in: lib/tests/integrat
 
 ### application-core objects O2: a replay that cannot run one version reproduces nothing, and its witness is run on a JVM (verification pending)
 
-change `nqpqroqpsysx` · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
+[`6b4f47cafd31`](https://github.com/pilifs/in-the-loop/commit/6b4f47cafd3105332a5cfd854956578d3331ebff) · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
 
 The main brief's Phase 0 finding on VF-015's step 4: a regression witness whose new version the interpreter could not replay ('String.format depends on the default locale') was reported refuted and replay.reproduced true, an unknown outcome counting as a difference. A native reproducer (tests/application_core_objects.rs, o2_a_replay_that_cannot_run_one_version_is_no_reproduction, failing before) shows it twice under --gaps assume: a new version that throws with a message from String.formatted, refuted by the interpreter's half a replay; and a false refutation, where the checker's approximation of a formatted string's toString (a new object) took a path the JVM never takes (the JVM's String.toString returns the string itself), reported reproduced with after '&lt;could not replay: ...>'. The property check had the same hole.
 
@@ -58,7 +58,7 @@ Job 20261108-074116-application-core-objects-o2-a-replay-tha: lib/tests/integrat
 
 ### application-core values V2 step 2: the list value adapter, its domain and model digest, the harness's Java, witness reader, encoding and rebuilding
 
-change `qxpvnsmlnxpo` · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
+[`67a3c0247079`](https://github.com/pilifs/in-the-loop/commit/67a3c0247079877093dc30782ed77a667b586a4d) · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
 
 values::ListAdapter is the value adapter for one bounded immutable-list family: lists List.of makes over at most max_length (up to 10) objects of one application class, null among them where the domain says so. Its domain is the shared ValueDomain of kind list, with the model's evidence (values::list_model: the list models with the SHA-256 of their bytecode, values::list_model_digest, so that a change in a model changes the evidence's identity; level tested on JDK 25.0.5; what it leaves out). Since the own checker runs the list models (V2 step 1), a list needs no symbolic form: a harness makes one as an application would, by List.of over max_length objects it made by the construction plan, from int choices the checker is free in (ListAdapter::choices, admitted, java): null, the length, and for each element after the first which made object it is, so that every pattern of duplicates and aliases is a choice. ListAdapter::read gives the witness's list as the plan's nodes in order; encode and rebuild go between it and the interpreter's list through values::Nodes (ValueAdapter's methods now take the run's plan objects; a String ignores them), rebuilding by the interpreter's own List.of. A list outside the family, longer than the bound, holding an object the plan didn't make, or a list of Strings, is refused by name, never cut or copied in.
 
@@ -68,7 +68,7 @@ values::adapter still refuses a list parameter by name: making it in a harness a
 
 ### application-core values V3 step 1: an evidence record per modelled String and list operation, checked against boundary cases on the JVM, the interpreter and the own checker
 
-change `soumrxslppon` · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
+[`264c04174455`](https://github.com/pilifs/in-the-loop/commit/264c04174455011c3135a876ce51068fe03e98fc) · [log `dc3ff007446d`](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc.jsonl.gz)
 
 values::OPERATIONS holds one record (values::OperationEvidence) for each of the 14 operations the values models implement: for Strings the literal, the compiler's concatenation, length, isEmpty, charAt, equals and startsWith; for lists List.of's fixed forms, copyOf, size, isEmpty, get, the iterator's path, and the changes the lists refuse. Each record has its model family, what implements it in the own checker, the interpreter and for JBMC, the JDK it was sampled on (25.0.5), the inputs it admits, the exceptions it was seen to throw, what it leaves out, and its level, which is tested and never proved.
 

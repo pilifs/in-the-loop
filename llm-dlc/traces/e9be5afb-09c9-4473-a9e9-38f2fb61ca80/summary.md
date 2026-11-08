@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### application-core: the reconcile's first check, three streams not finished (blocked)
 
-change `ozlqzqowxzso` · [log `65fa9163f1ce`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz)
+[`38f71fe52726`](https://github.com/pilifs/in-the-loop/commit/38f71fe52726802982c33b4c10a71b3e72edf66e) · [log `65fa9163f1ce`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz)
 
 The merge loop checked step 1 of the reconcile before merging anything. Every stream loop has stopped, and the verification queue is empty, but only the values stream's brief ends blocked. Objects, environment and reuse still end 'Status: working': each session stopped without setting a status, and run-streams.sh counts a clean stop with no status as done, which the brief's reconcile does not accept ('not only an inactive scope'). Each has work of its own left: objects records its passed O2 job and waits on the merge and on a decision about O3's frozen allocation bound; environment is blocked on the objects and values streams by its own account; reuse reads job 20261108-063259's figures into R3. The brief's Progress records this and ends blocked, with what the user can do: set the status back to working and rerun run-streams.sh (which reruns only the three, then this loop), or count them finished and let the merge take what they committed. Verified by reading each stream's @- brief, the loop summaries, the systemd scopes and the pipeline status; no code changed.
 
@@ -28,7 +28,7 @@ Out of date in the rest of tooling, not the brief: run-streams.sh's 'decided to 
 
 ### Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done
 
-change `kppsnzynkzyp` · [log `bf3ed266eb83`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz)
+[`b229eda1a042`](https://github.com/pilifs/in-the-loop/commit/b229eda1a0429d185c927c3989b39a8eb39bc9ce) · [log `bf3ed266eb83`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz)
 
 On 2026-11-08 three application-core streams (objects, environment, reuse) ended with their briefs still at 'Status: working'. Each session decided 'LOOP: stop' in feature-loop.sh's decision turn and wrote the status it meant there ('waiting on jobs ...', 'blocked: ...'), but that turn may not edit or commit, and the cycle before it was never asked to keep the status line current. feature-loop.sh then exited 0, and run-streams.sh counted a clean stop with no status as done, so objects and reuse were never rerun when their jobs came back, and the merge loop refused the reconcile.
 
@@ -38,13 +38,13 @@ Verified with bash -n on both scripts and a stubbed test of brief_status, has_st
 
 ### application-core: status back to working, for the rerun of the three unfinished streams
 
-change `yymlmpzwmxqz` · [log `a9d699c70321`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a9d699c703217048e09e4d9aecb6b92996b78fc18e97441d628da415ccff2b91.jsonl.gz)
+[`269acf18a212`](https://github.com/pilifs/in-the-loop/commit/269acf18a212545d3d8b4be660f0281dd927fa1f) · [log `a9d699c70321`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a9d699c703217048e09e4d9aecb6b92996b78fc18e97441d628da415ccff2b91.jsonl.gz)
 
 The reconcile stopped blocked because objects, environment and reuse ended with 'Status: working'. The cause was the loop tooling, fixed in kppsnzyn and committed unchanged in each of the three stream workspaces (umqkzwlp, wvournln, ropyotpk), since each stream runs its own copy of feature-loop.sh. Progress records the cause and the rerun, and its status is working again, so run-streams.sh reruns those three (values is blocked and stays finished) and then this loop. O3's frozen allocation bound still waits on the user. Verified by reading the brief's status with run-streams.sh's own status_of.
 
 ### feature-loop.sh finds a brief in its own workspace first, so a stream reads and is pointed at its own copy
 
-change `unwrvwqwzxqq` · [log `4b7b18b3c08d`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz)
+[`75addfbfbd3c`](https://github.com/pilifs/in-the-loop/commit/75addfbfbd3c28001012e4fe7177d45fbc62ae03) · [log `4b7b18b3c08d`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz)
 
 run-streams.sh starts each stream's copy of feature-loop.sh with the default workspace as its current directory, and feature-loop.sh looked a relative brief up from there first. Every stream therefore ran with the default workspace's copy of its brief: the cycle instruction pointed the session at it, the brief-changed check hashed it, and since kppsnzyn close_status read its status from it. No stream edits that copy, so its Progress is the launch-time one. In this morning's rerun the objects and environment sessions set their status in their own copies; close_status read 'working' in the default copy, asked for an extra turn, and ended the loops as needing attention, with exit 1. run-streams.sh reads each stream's own copy, so both still came out blocked. The objects session diagnosed this in its run summary.
 
@@ -52,31 +52,31 @@ A relative brief is now looked up under the script's own repo first and then fro
 
 ### application-core: the user's decision on O3's allocation bound, recorded for the reconcile
 
-change `yzpxsrytnwpp` · [log `dda83c2c01d8`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/dda83c2c01d8e0a919e874d436ce0f546b5d9998150c155aea157a57c6e3c5bb.jsonl.gz)
+[`f85f089433b5`](https://github.com/pilifs/in-the-loop/commit/f85f089433b51564f2dcfd8edf5b7f45ca3db113) · [log `dda83c2c01d8`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/dda83c2c01d8e0a919e874d436ce0f546b5d9998150c155aea157a57c6e3c5bb.jsonl.gz)
 
 The objects stream was blocked on the frozen throttle claims' allocation bound of 0, which the gate's count of the IllegalArgumentException Throttle#allows throws exceeds. The user decided that both claims are bounded at 1 in each version (checked-claim already counts its thrown exception as 1), and that the bound covers the target call only, not setup calls. The change was made on the objects branch as tzsluzns, verified there with tests/application_core.rs 14 of 14. The main brief's Progress records it so the reconcile takes the fixture change as deliberate, and notes the brief-path fix in unwrvwqw. Status stays working; no code changed in this commit.
 
 ### Record verification result for application-core reuse J4 (passed)
 
-change `tvwtmzkxrvuk` · [log `09758f891502`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313.jsonl.gz)
+[`54f0f6f567c9`](https://github.com/pilifs/in-the-loop/commit/54f0f6f567c97333025b0e28e328471171aec959) · [log `09758f891502`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313.jsonl.gz)
 
 The J4 job (the small compare run's cost report with all five cases) ran on this machine: 1 step passed in 3m37s, peak 1.7 GiB (estimated 15m, 3.0 GiB). collect applied its two outputs, lib/benchmark/preparation/j4.json and j4.md. No verdicts, errors or findings; no findings.md changes.
 
 ### Record session traces
 
-change `kyqtplrynzqv` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`1c880ff4ce3c`](https://github.com/pilifs/in-the-loop/commit/1c880ff4ce3cae2eb5574fc0b5dfae3200a4425a) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the values stream's last turns recorded on its branch, after its last commit, before the merge.
 
 ### Loops record why they stop (the default workspace's kppsnzyn, copied here for the rerun)
 
-change `umqkzwlpoxvz` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`41086f920438`](https://github.com/pilifs/in-the-loop/commit/41086f9204388a4c1da7d9971da8cd77f7004196) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 This stream runs its own workspace's copy of feature-loop.sh, so the fix made in the default workspace as change kppsnzyn is committed here unchanged, byte for byte, before run-streams.sh reruns this stream. A session that decides to stop while this brief's status still says working now gets a turn to set the status and commit it, and the cycle instruction asks for the status line to be kept current. The files are identical to kppsnzyn's, so the merge takes them without a conflict. Verified there (bash -n and a stubbed test of the new functions).
 
 ### application-core objects: O2's last jobs recorded as passed, and the stream's status set to blocked on the merge and on O3's frozen allocation bound
 
-change `lolztnxspzty` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`1500625bd7f8`](https://github.com/pilifs/in-the-loop/commit/1500625bd7f86b8f540621ce40ce5bf95096f99a) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 Progress only. Job 20261108-074116-application-core-objects-o2-a-replay-tha passed at b38e213b7d01: lib/tests/integration.rs under JBMC 65 of 65, and VF-015's step 4 on example 109 refuted with a char above 127 and replayed on a JVM, the new outcome the JVM's DecoderException with no 'could not replay', differs exactly [exception]. It does not close VF-015, whose step 5 the user deferred. Job 20261108-072230-... passed earlier and closed VF-022. Every job of this stream is now collected.
 
@@ -84,7 +84,7 @@ Rechecked inline at ba15f2e5 (the loop-tooling commit umqkzwlp): tests/applicati
 
 ### application-core objects O3: the frozen throttle claims bound allocations at 1, the user's decision, so the contract's O3 passes
 
-change `tzsluznsqozx` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`91ce61ec4a24`](https://github.com/pilifs/in-the-loop/commit/91ce61ec4a242874a68b358d3cf6bd19e2d71ff2) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 The frozen throttle claims (throttle-constructed-claim, throttle-setup-claim) said allocations 0 in both versions, but Throttle#allows makes the IllegalArgumentException it throws for negative units. The domain gate counts every allocation on any path, so the contract's O3 came out unresolved instead of expected.json's verdicts. Phase 0 already counted such a throw in checked-claim (bound 1), so the user decided the 0 was a slip: both claims are now bounded at 1 in each version, and expected.json is unchanged. The user also decided that the bound covers the target call only: setup calls are bounded by the plan's setup_calls and their outcomes are compared, so their allocations aren't counted, and the gate stays as it is.
 
@@ -92,19 +92,19 @@ The stream's test helper throttle_claim, which raised the bound to 1 to work aro
 
 ### Record session traces
 
-change `qqywzsvytvyk` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`0ecab2d06df9`](https://github.com/pilifs/in-the-loop/commit/0ecab2d06df9bd37a4471da178c230416189fa7b) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the objects stream's last turns, after its last commit tzsluzns, recorded on its branch before the merge. The stream ended blocked: O2's String adapter waits for the merge of the values stream's nlkuyptr.
 
 ### Loops record why they stop (the default workspace's kppsnzyn, copied here for the rerun)
 
-change `ropyotpkxzlt` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`fbc94267e255`](https://github.com/pilifs/in-the-loop/commit/fbc94267e255250ab0d1673777ef247629c7b271) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 This stream runs its own workspace's copy of feature-loop.sh, so the fix made in the default workspace as change kppsnzyn is committed here unchanged, byte for byte, before run-streams.sh reruns this stream. A session that decides to stop while this brief's status still says working now gets a turn to set the status and commit it, and the cycle instruction asks for the status line to be kept current. The files are identical to kppsnzyn's, so the merge takes them without a conflict. Verified there (bash -n and a stubbed test of the new functions).
 
 ### application-core reuse R3 done: the shared JDK image table's release figures, read from job 20261108-063259
 
-change `pswrtoxppxsn` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`e338e62bf405`](https://github.com/pilifs/in-the-loop/commit/e338e62bf405881e9a706dfa11a9050d1e3d07e9) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 Job 20261108-063259 (passed at 3841df5e, 3m22s, peak 1.7 GiB) ran the same release benchmark as job 20261108-060410, with the JDK image's table of classes now shared within the process. It reached the same verdicts in all four scenarios, both in process and as a process. Medians of 7, before the cache and with it: an unchanged rerun took 209.8 ms and now 8.6 ms in process (290.3 and 66.1 ms as a process), the cold run 460.6 and 65.6 ms, the defect's cold run 2217 and 1576 ms (solving 1723 and 1484 ms), and its rerun 265.3 and 31.9 ms. An open that builds the table takes 7.89 ms, and one that shares it 0.06 ms. javac still takes about 0.4 s per build, so compilation outweighs a whole rerun: the cut is to preparation, not to proving a change. The runner committed the reports (lib/benchmark/preparation/shared-image.*) in the default workspace, and they reach this branch at the merge.
 
@@ -112,7 +112,7 @@ R3's record in the brief's Progress now holds these figures, and lib/README.md's
 
 ### application-core reuse J4: the cost benchmark gets an unrelated edit and a safe helper rewrite, the contract's last two cases (verification pending)
 
-change `uxqrooysuqkq` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`006dca4dbdd4`](https://github.com/pilifs/in-the-loop/commit/006dca4dbdd49aec600e8cf464796d0f4fa69072) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 lib/tests/preparation.rs, the ignored benchmark of R3, timed a cold compare run on the joint example's builds (examples 190 and 191), an unchanged rerun, the real defect offset and its rerun. The acceptance contract's measurement also asks for an unrelated edit and a safe rewrite of a helper, and the reuse brief asks the report to tell exact hits, helper evidence and preparation reuse apart. Two overlays on after, in a new lib/tests/fixtures/preparation/ with a README, are now run from a copy of the proof cache a cold run of after leaves: unrelated-edit adds a class nothing reaches, and helper-rewrite rewrites Pricing.discount again. The report lists, per subject, whether it was an exact hit or proved, and which helper proofs it was proved on. The benchmark asserts that the unrelated edit proves nothing again, and that in the helper rewrite total is proved again on a new proof of discount while withQuantity is an exact hit. No library code changed.
 
@@ -120,7 +120,7 @@ Verified with a debug smoke run inline (1 repeat, 58 s, passed): the unrelated e
 
 ### application-core reuse J4: the cost report's figures with all five cases, read from job 20261108-114325; the stream is done
 
-change `tvrqpuswknzk` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`baad4df7ed1b`](https://github.com/pilifs/in-the-loop/commit/baad4df7ed1b1e1af6d8f971da57f9c9ef71e255) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 Job 20261108-114325 (passed at 283aa75d, 3m37s, peak 1.7 GiB) ran lib/tests/preparation.rs in release with the acceptance contract's five cases on the joint example: cold, an unchanged rerun, an unrelated edit, a safe rewrite of the helper Pricing.discount, and the offset defect cold and rerun. Every repeat and the process reached the expected verdicts, and every assertion held. Medians of 7, as a process: cold 127.0 ms, rerun 62.5, unrelated edit 64.4 (5 exact hits), helper rewrite 138.7 (1 exact hit, 4 proved: total on the helper's new proof, named by key, and the route again because its effect proof's closure holds the helper's body), defect cold 1687.6 (1364 ms solving) and its rerun 83.7. The edited build's javac, about 400 ms, is 74-87% of every scenario with compilation except the defect's cold run. So the gain is to a rerun's preparation, not a whole build's, and helper evidence is reused by key, not made cheaper to obtain. The runner committed the reports (lib/benchmark/preparation/j4.*) in the default workspace; they reach this branch at the merge.
 
@@ -128,31 +128,31 @@ The brief's Progress records the figures, the three kinds of reuse apart, and tw
 
 ### Record session traces
 
-change `yxlnwossrorp` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`75057ff18be8`](https://github.com/pilifs/in-the-loop/commit/75057ff18be85058776c37cdb63920fedd12dd1a) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the reuse stream's last turns recorded on its branch, after its last commit, before the merge.
 
 ### Loops record why they stop (the default workspace's kppsnzyn, copied here for the rerun)
 
-change `wvournlnxotv` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`a636294bbc5f`](https://github.com/pilifs/in-the-loop/commit/a636294bbc5fd39e984d802eeb4691ce3ec37c87) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 This stream runs its own workspace's copy of feature-loop.sh, so the fix made in the default workspace as change kppsnzyn is committed here unchanged, byte for byte, before run-streams.sh reruns this stream. A session that decides to stop while this brief's status still says working now gets a turn to set the status and commit it, and the cycle instruction asks for the status line to be kept current. The files are identical to kppsnzyn's, so the merge takes them without a conflict. Verified there (bash -n and a stubbed test of the new functions).
 
 ### application-core environment: E3 waits on the merge of the objects stream's construction plan, status blocked
 
-change `qrsyvrmkklsk` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`138b244efda4`](https://github.com/pilifs/in-the-loop/commit/138b244efda43f1429aa6efbe3e4ce052bfc28bc) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 This stream was rerun after the loop's stop fix was copied in as wvournln. Its Progress named E3 next: a nullable DTO response through the objects stream's common construction plan. The cycle checked whether that plan is visible here. It isn't: the plan exists only on the objects stream's branch (construction::root, check_plans, and receivers and parameters made by a plan), none of those commits is an ancestor of this stream's working copy, and here construction.rs is still Phase 0's hook, which refuses by name. The main brief allows integration only through the merge. Writing the DTO's classpath check here would be the object builder of the environment's own that E3 forbids. The shared type is already in place (Returned::Object with Identity::Fresh or Stable in spec/plans.rs), so the Progress entry records the plan for after the merge: the stubs make the response by the plan's constructor from table inputs, a fresh identity gives an object per call and a stable one an object per entry, and an inspection refuses unmodelled methods and fields, as E2's does for a caught failure. The 11:33 integration report shows conflicts only in generated or coordinator files (llm-dlc/README.md, index.json, traces/README.md, traces/metrics.json), none of them this stream's. No open finding is in this stream's files, and this run has no job pending. E1's and E2's own items are done, so the status is now blocked on the merge (and on the values stream's String adapter for the Q rows). Only the brief's Progress section changed, so there is nothing to test.
 
 ### Record session traces
 
-change `krwlnoopzlqp` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`aff9e48bfb8a`](https://github.com/pilifs/in-the-loop/commit/aff9e48bfb8a8041b54f1353b8834657bfb36023) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the environment stream's last turns recorded on its branch, after its last commit, before the merge.
 
 ### Merge the four application-core streams: objects, values, environment and reuse
 
-change `loxnvssxwqtu` · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
+[`43ed2402f566`](https://github.com/pilifs/in-the-loop/commit/43ed2402f566f70c2fd4d47d891d4228800eb620) · [log `be5a7220b6c0`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)
 
 The reconcile of llm-dlc/loops/application-core.md (Phase 5, step 1). All four streams had finished: objects, values and environment blocked on work only the merge makes possible, and reuse done. No stream loop or integration check was running, and no verification job was pending. Each stream's last turns were recorded on its branch (Record session traces: objects qqywzsvy, values kyqtplry, environment krwlnoop, reuse yxlnwoss), and their 46 logs not yet in the default workspace were copied in. The four branches were then merged with the default line's tvwtmzkx. The workspaces application-core-objects, -values, -environment, -reuse and -integration are forgotten; their directories stay on disk for the user to delete.
 
@@ -166,7 +166,7 @@ Out of date in the rest of the brief: Where it starts from describes the state b
 
 ### application-core Phase 5 step 1: a String parameter of a regression check, so the contract's V1 row reaches its verdicts
 
-change `lznmnzxvquru` · [log `a2720e230afd`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a2720e230afd79d3746ab85b8f9c44d10e5aa18b0f5a1a1d139c36a85fa7d1ad.jsonl.gz)
+[`0a1c558c8dab`](https://github.com/pilifs/in-the-loop/commit/0a1c558c8dab9b653ae56df0e71a2cef720d076e) · [log `a2720e230afd`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a2720e230afd79d3746ab85b8f9c44d10e5aa18b0f5a1a1d139c36a85fa7d1ad.jsonl.gz)
 
 The values stream's interface request for V1, applied at the merge. values::adapter now gives the regression check the String adapter (at most --max-array-length code units, never null). equivalence passes the bound to the own checker, reads the witness's String as a new jbmc::Argument::String by the adapter's own rule (values::string_units), rebuilds it for the replay by rebuild's rule (values::new_string), shrinks it, renders it as an escaped Java literal, and also runs it on a JVM as new String(char[]). The statement states a ParameterKind::Value with its bound, Bounds::max_value_length and Models::values, and the regression cache's claim key covers the bound and the String model's identity. JBMC is refused under --engine jbmc and not asked under --confirm, since its Strings are its own model.
 
@@ -174,7 +174,7 @@ Verified inline: the contract's V1 row now accepts no stream's refusal (it faile
 
 ### application-core Phase 5 step 1: a list parameter of a regression check, so the contract's V2 regressions reach their verdicts
 
-change `xyurpwspppyw` · [log `a2720e230afd`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a2720e230afd79d3746ab85b8f9c44d10e5aa18b0f5a1a1d139c36a85fa7d1ad.jsonl.gz)
+[`4a2c377bdc3c`](https://github.com/pilifs/in-the-loop/commit/4a2c377bdc3cdb4cff53642b34cd769d7c9c1159) · [log `a2720e230afd`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a2720e230afd79d3746ab85b8f9c44d10e5aa18b0f5a1a1d139c36a85fa7d1ad.jsonl.gz)
 
 Interface request 1's list half, for plain regression checks. A java.util.List&lt;E> parameter whose generic signature names one element class is now a harness slot of its own (harness::Slot::List), of at most --max-array-length elements, never null. The harness makes that many objects of E by their constructor in each version from the same leaves, and each version's list from the values adapter's int choices in the shape ListAdapter::java writes, skipping what ListAdapter::admitted doesn't admit, so any two elements may be one object. List.of is called through a small branchless class file of version 52 written beside the harness (harness::LISTS_CLASS), since the harness's version 49 can't invokestatic an interface's method. The objects' fields are compared after the calls. The witness stays flat ints and leaves; its list is read by ListAdapter::read, rendered as List.of(new Line(1, 1), the same object as lines[0]), typed as a list of nodes, rebuilt over each version's objects for the interpreter's replay, and run on a JVM. jvm_witness now sizes max_stack from the arguments' widths (part of interface request 6): an eight-line witness failed with 'Stack size too large' before. The statement states the list as a value with its bound and the list model, and the cache key covers the model, the elements' constructors and the helper class. JBMC is not asked (--engine jbmc refused, --confirm not-asked, per VF-023).
 
@@ -182,7 +182,7 @@ The reproducer: the contract's V2 regressions accepted the values stream's refus
 
 ### application-core Phase 5 step 1: a plan's adapted list root and a result's identity with the list's elements, so the contract's V2 claims reach their verdicts
 
-change `npwwwlzmmksu` · [log `ca6ae47fac60`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/ca6ae47fac60de22a39c2ceacb71f268705c0e2a970139bf62a3e9f604561265.jsonl.gz)
+[`2ed1211a5543`](https://github.com/pilifs/in-the-loop/commit/2ed1211a5543aa80f0013608538b9e4588d3a175) · [log `ca6ae47fac60`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/ca6ae47fac60de22a39c2ceacb71f268705c0e2a970139bf62a3e9f604561265.jsonl.gz)
 
 Interface request 1's last part (llm-dlc/loops/application-core.md). construction::check_plans now takes a construction plan's root that is an adapted list of application objects, named as the root. It resolves the root's domain under this tool's list model (values::resolve), and refuses by name a list that may be null, an adapted String root, and roots that differ between the versions. The regression check makes the list as it makes a list parameter, under the domain's own bound (the frozen basket claims' 3) rather than --max-array-length. An object result that the check follows into its fields is no longer refused next to a list: the harness, the replay and the Java text compare it for identity with each of the list's objects, before and now (harness::Root::Element, named lines[0] for the first object and lines.m1, ... for the others). That covers basket-first-claim's identity:result==lines[0]. The statement states the list's objects as one observation of the list, so a claim's field:lines is compared. The list counts among the input objects, and a contract input may name a generic parameter by its erased type.
 
@@ -190,7 +190,7 @@ Verified: the contract (lib/tests/application_core.rs) accepts no refusal for V2
 
 ### application-core Phase 5 step 1: a claim's value domains are resolved under this tool's models before its key, and before a modelled call's or a plan node's adapted value is refused
 
-change `ztwluxllsmxk` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`c56778e8b4b7`](https://github.com/pilifs/in-the-loop/commit/c56778e8b4b74bdf6ab02826b9e1f1bd958368fa) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 2 of the application-core merge. values::resolve_claim resolves every String and list domain a claim carries (a plan's adapted values at its roots, in its nodes and setup calls; a modelled call's adapted response and an object response's plan), and spec::cache::key resolves the claim before digesting it. A claim stated in the frozen claims' words and the same claim stated by the models' identities are now one key; a claim stated under another model, another JDK or a stronger level, or over a domain the adapters refuse, is uncacheable by name instead of keyed. environment::lower and construction::check_plans resolve an adapted result or node value before refusing it, so another model is refused for that; the adapted-result refusal now names what is missing (no stub makes an adapter's value).
 
@@ -198,7 +198,7 @@ Reproducer: tests/values.rs's a_claims_value_domains_are_resolved_before_its_key
 
 ### application-core Phase 5 step 1: a JBMC refutation through a stub that doesn't reproduce is no verdict under --confirm, VF-023's rule (verification pending)
 
-change `soynvvqnukty` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`a3981590dc06`](https://github.com/pilifs/in-the-loop/commit/a3981590dc060572f505d44a44884b363445971f) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 3 of the application-core merge (llm-dlc/loops/application-core.md). VF-023: under --engine auto --confirm the own checker proves listSizes and listChange, and JBMC 6.11.0 refutes them through its stub of java.util.List.size(), with a witness the interpreter replays as holding; the tool reported 'the engines disagree'. equivalence::confirm now treats a JBMC refutation whose witness does not reproduce and whose preflight finds a stub as no verdict, naming the stubs, as it already did for a construct JBMC runs otherwise than the JVM. The own checker's proof stands, not confirmed; a witness that reproduces is still a disagreement.
 
@@ -206,7 +206,7 @@ Verified: the values stream's reproducer (tests/values.rs confirm_takes_a_refuta
 
 ### application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls
 
-change `wrpxlowuvyyo` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`abe67ebd3d0a`](https://github.com/pilifs/in-the-loop/commit/abe67ebd3d0a7e69f25bfad1e00461f056691d09) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.
 
@@ -216,13 +216,13 @@ Found and recorded in Progress for item 6: property::run still refuses prove --c
 
 ### Record verification results for the VF-023 rerun; VF-023 closed
 
-change `pszyvtwkuqoo` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`208527000fbf`](https://github.com/pilifs/in-the-loop/commit/208527000fbff46af2c20e6bec2854c72e95f444) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Job 20261108-141443 (the conformance corpus under auto --confirm, at 13f3e9a0dac8) passed in 23m18s, peak 1.8 GiB, so VF-023 is closed in verification/findings.md. Its only output, lib/target/conformance-confirm.log, was not applied because the file changed since the job's commit; it is a log, so no rerun.
 
 ### application-core Phase 5 step 1: a dependency's DTO response, made by the construction plan, fresh or stable, or null (E3)
 
-change `lkwsnvtrumwn` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`806c5cdbe9d2`](https://github.com/pilifs/in-the-loop/commit/806c5cdbe9d2370156d14755e081aeaac0151315) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 5's E3 half. A modelled call's normal result may now be a DTO (Returned::Object): one object of an application class, made by the one node of a construction plan by the constructor it names from integral or boolean leaves, or null where the model allows it. environment::lower turns it into a Response, each environment table entry's answer being its null flag and its leaves. The class is checked in each build: primitive instance fields only, no static field, no method beside its constructors, then construction::root (the objects stream's plan, so the environment has no object builder of its own). The effect check refuses a build that calls a method on the DTO, writes its field outside its constructors, or calls Object's hashCode, toString, wait or notify where it handles one. The stubs make the response from the chosen entry: a new object for every call under a fresh identity, one per entry for the trace under a stable one. A constructor that rejects the chosen leaves marks the log unresolved (a new mark bit; the build tag moves from 64 to 128). An array, String, inner-object or dependency field, a factory, a setup call, several roots and a stable identity under a per-call choice are refused by name.
 
@@ -230,7 +230,7 @@ Reproducer: the new lib/tests/environment_responses.rs, whose 8 tests all failed
 
 ### application-core Phase 5 step 1: a method's claim under an environment, its receiver and request made by their plan, so the quote family's E1 and E2 rows reach their verdicts
 
-change `xmukllkrsvmk` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`f0f5b7ab63c4`](https://github.com/pilifs/in-the-loop/commit/f0f5b7ab63c48a20e51972de692d595185bfde26) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 5's second half. environment::check now runs the new effects::check_planned: the effect check's generated method takes a planned domain's flat inputs (primitive leaves, bounded int arrays, the values stream's String) and the environment's tables, makes the receiver and request by the constructors their plan names (construction::flat_roots, each dependency of an application interface null and answered by the stubs), and calls the method. A constructor's exception is the outcome, as the call's is. A modelled call's String key is compared by content (environment::lower accepts it); a key past the claim's String bound marks the log unresolved (a new mark bit). Under a plan, a payload String is snapshotted by its content within the same bound. The domain is enforced as the regression gate does (classes, input objects, allocations), and what the plan doesn't make is refused by name.
 
@@ -238,7 +238,7 @@ Verified: the contract's E1 and E2 rows now accept no refusal and reach all sixt
 
 ### application-core Phase 5 step 1: compare counts a declared environment as a person's decision, and the stale help and docs of --environment, --plan and prove --cache
 
-change `olkzqrwkvzvl` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`bf941a2df02c`](https://github.com/pilifs/in-the-loop/commit/bf941a2df02ccf9f5e75269fe4578f0e6ba0e8ca) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 6's first part (llm-dlc/loops/application-core.md). compare::run now counts each modelled call of a declared --environment as one environment assumption in its effort report; before, a person's model counted 0. Reproducer: tests/environment.rs's compare_counts_a_declared_environment_as_a_persons_decision, which failed before the change and passes now.
 
@@ -248,7 +248,7 @@ Verified: environment 17 of 17; the integration check passes (the contract 14 of
 
 ### application-core Phase 5 step 1: prove --cache --plan, a planned property cached with its setup methods in the key, and a property result's reuse in its outcome
 
-change `xttxqzsnlyxs` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`977bfbd3570c`](https://github.com/pilifs/in-the-loop/commit/977bfbd3570c33745a4bd78f9569f9005f06e438) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 6 of the merge, its property-cache part. property::run no longer refuses --cache with --plan: the reuse stream's property claim already reads the plan whole and roots its makers and setup calls in the code closure. property::Outcome gains a reuse field (Reuse::Exact with the key and provenance on a hit), and reuse::property_store takes &mut Outcome, so a result that can't be stored says why in the outcome's output instead of on the standard error.
 
@@ -256,7 +256,7 @@ Reproducer first: tests/reuse.rs's new a_planned_property_is_cached_and_an_edit_
 
 ### application-core Phase 5 step 1: a string literal is read by its code units, an isolated surrogate included, so two literals that differ only in one are never one
 
-change `vvlqvmonnwyv` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`1732e04f4fc1`](https://github.com/pilifs/in-the-loop/commit/1732e04f4fc1c2890676c9a24e5b7c8829d285aa) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 The values stream's request for the merge (interface request 6): the class reader decoded every CONSTANT_Utf8 as Rust text, so "\uDBFF" and "\uDBFE" both read as "\uFFFD", for the interpreter, the own checker, the closure digests and the relocated classes the JVM runs alike. The reproducers failed before: a rewrite of "\uDBFF".charAt(0) to the constant 0xDBFF was refuted, with the JVM run agreeing because relocate had rewritten the old version's literal; a cached proof was reused for a build whose literal differs only in its surrogate; and the effect check verified a send whose topic changed from "q\uDBFF" to "q\uDBFE", a wrong proof.
 
@@ -266,7 +266,7 @@ Verified inline: the new tests/string_literals.rs (2), tests/effects.rs's payloa
 
 ### application-core Phase 5 step 1: a list of Strings bounds its elements' code units, and no variant of the shared interfaces drops a field it doesn't have
 
-change `rntvlrrvovlk` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`32640f466aff`](https://github.com/pilifs/in-the-loop/commit/32640f466affba55708ad7edf39aa9867bab3e5d) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 Interface request 6's ElementKind::String bound: ElementKind::String is now { max_length }, the elements' code units bounded apart from the list's length, and a bound left out is refused. The reproducer: a list of Strings stated with that bound read back without it, because serde's deny_unknown_fields doesn't reach a unit variant of an internally tagged enum. All eight unit variants of lib/src/spec/plans.rs had the same hole (a new unit test probes each), so {"kind": "per-call", "results": [0, 1]} in an environment file was a per-call choice with its script dropped. Each is now an empty struct variant (Query {}), with the same JSON, so no frozen fixture or claim key changes for it.
 
@@ -276,13 +276,19 @@ Verified inline: the library's unit tests 257, values 18, value_parameters 10, r
 
 ### application-core Phase 5 step 1: compare --domains, a kernel subject's declared domain passed to the heap check as it is, and the claim's object domain refuses a field it doesn't have
 
-change `ozqzmwkprvsv` · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
+[`4cd9673c58aa`](https://github.com/pilifs/in-the-loop/commit/4cd9673c58aa24110a78618325ccb3050aae2219) · [log `be163b0de126`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)
 
 The last of interface request 6 (the objects stream's: give compare a plan per subject). Before, compare built every kernel claim with no domain, so on the throttle family's after-setup defect (one unit short only once a setup call has taken some) it verified Throttle#allows over the constructor domain, and had no way to state the setup plan's domain. Now compare --domains FILE takes a JSON object from each kernel subject (the new method, pkg.Class#method) to its ObjectDomain, as a frozen claim states one; the subject's claim carries it as it is, so spec::heap::check_with enforces or refuses each part. A whole domain rather than a bare plan, because a plan doesn't say the claim's classes, bounds or label, which the user decided twice for frozen claims. A domain for a subject the run checks no claim of (an unchanged method, an entry point's handler, a misspelt name) is refused before any proof; each declared domain counts as one domain restriction in the effort report.
 
 With it, the serde hole cycle 13 closed in spec/plans.rs is closed in spec/mod.rs: ObjectDomain, VersionBounds, ObjectBounds and Construction had no deny_unknown_fields, so a domain with a misspelt option (nulable) was read as the domain without it. They now refuse unknown fields, and Construction::FieldByField is an empty struct variant so the attribute reaches it. The JSON is unchanged and every frozen claim still reads.
 
 Verified: the new lib/tests/compare_domains.rs (3 tests: after-setup verified over the constructor domain and refuted over the declared setup plan with the whole history run on a JVM, after verified, one-short refuted over the constructor-only plan; an exact rerun reused and another plan or an edited target checked again; the refusals and the command line). Two sabotages fail it (the claim ignoring the declared domain; ObjectDomain without deny_unknown_fields). The library's unit tests (257) and every affected test binary pass, and so does the integration check (the contract 14 of 14). Found for the for-review list: the proof cache keys the check a domain makes, not its label or bounds, so a constructor-only plan and no declared domain share one stored proof, each result stating its own domain. That is sound, but the brief's Phase 0 sentence 'the claim key covers the label' holds of spec::cache::key, not of the regression key a heap check is reused under. Item 6 is done; item 7 is next.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `8eb05e296a25`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

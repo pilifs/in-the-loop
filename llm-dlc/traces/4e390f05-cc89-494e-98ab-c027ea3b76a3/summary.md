@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### application-core environment E1: a declared nondeterministic operation under a per-call choice
 
-change `rxsvwkoslrtv` · [log `cc5c64510c35`](https://terminalvalue.net/raw-traces/4e390f05-cc89-494e-98ab-c027ea3b76a3/cc5c64510c3505ef1e655a33cf16dde7760830bfc6cbb50db9b53203fc1bbf44.jsonl.gz)
+[`0845894b19db`](https://github.com/pilifs/in-the-loop/commit/0845894b19dbf0b512e7fa2010bfb51daff85e59) · [log `cc5c64510c35`](https://terminalvalue.net/raw-traces/4e390f05-cc89-494e-98ab-c027ea3b76a3/cc5c64510c3505ef1e655a33cf16dde7760830bfc6cbb50db9b53203fc1bbf44.jsonl.gz)
 
 The environment stream's E1 now has its second coupling. A call model with coupling choice and the per-call occurrence policy makes a call's result a function of its key and of the occurrence of that key in the trace, the same function in both builds: a second read of a key is an answer of its own, the n-th reads of a key correspond across the builds, and different keys are never coupled by position. A finite script stays refused by name (the brief's optional work).
 

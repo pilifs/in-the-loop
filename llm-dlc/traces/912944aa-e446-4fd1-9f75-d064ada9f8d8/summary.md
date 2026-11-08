@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result for application-core values VF-023 second probe (passed)
 
-change `movksozlvuuz` · [log `b86b486a2c58`](https://terminalvalue.net/raw-traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d.jsonl.gz)
+[`a1b038bb141d`](https://github.com/pilifs/in-the-loop/commit/a1b038bb141d887a8348acfb522041db124ebaea) · [log `b86b486a2c58`](https://terminalvalue.net/raw-traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d.jsonl.gz)
 
 Collected job 20261108-091002-vf-023-s-second-probe-which-ingredient-o (passed, 5.8 s). Its probes show JBMC refutes exactly the list harnesses that call List.size() or isEmpty(), which JBMC stubs as returning any value; probes without those calls are proved. Recorded as an update to VF-023 (still open: the corpus job's step 2 has not been rerun).
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `9171325d7b0a`](https://terminalvalue.net/raw-traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/9171325d7b0a6f53f7ebbfdaa170545d3cae82c78449b9769baa86c5177447ee.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

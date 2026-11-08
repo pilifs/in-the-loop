@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result for application-core reuse J4 (passed)
 
-change `tvwtmzkxrvuk` · [log `974b445298eb`](https://terminalvalue.net/raw-traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/974b445298eb2bf72e6ef68b1ca45f896bf733553a1c8fbebab958c5e181108c.jsonl.gz)
+[`54f0f6f567c9`](https://github.com/pilifs/in-the-loop/commit/54f0f6f567c97333025b0e28e328471171aec959) · [log `974b445298eb`](https://terminalvalue.net/raw-traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/974b445298eb2bf72e6ef68b1ca45f896bf733553a1c8fbebab958c5e181108c.jsonl.gz)
 
 The J4 job (the small compare run's cost report with all five cases) ran on this machine: 1 step passed in 3m37s, peak 1.7 GiB (estimated 15m, 3.0 GiB). collect applied its two outputs, lib/benchmark/preparation/j4.json and j4.md. No verdicts, errors or findings; no findings.md changes.
+
+### Record session traces
+
+change `tyxwvqsoqryy` · [log `677ec8afc6b4`](https://terminalvalue.net/raw-traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/677ec8afc6b46349c630a7c5f84f3fbf5a50424ed27b46ac8fe98516a73b3796.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 
