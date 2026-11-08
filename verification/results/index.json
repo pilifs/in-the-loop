@@ -2,6 +2,40 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-180246-application-core-phase-5-step-2-the-join",
+      "title": "application-core Phase 5 step 2: the joint acceptance at the merge (J1, J2, H, L), on the own checker with no JBMC",
+      "status": "passed",
+      "summary": "passed: 6 passed step(s) in 5m04s, peak 1.8 GiB (estimated 25m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [
+        "step 1 (build the joint acceptance test and the recording jbmc) was held back 4m33s by its 2-CPU quota in 3m00s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jvmcontract:effects",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/application_core_joint.rs",
+          "lib/tests/fixtures/application-core",
+          "llm-dlc/loops/application-core.md"
+        ]
+      },
+      "sourceCommit": "388dfe54dc3f37d653987c162054d574299d60ea",
+      "finishedAt": "2026-11-08T18:09:37+00:00",
+      "wallSeconds": 304.7,
+      "peakMemoryBytes": 1970139136,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 1500.0,
+        "notes": "inline debug runs on this machine: J1 about 2 min, H 12 s, L 14 s, J2 7 s; plus a release build of the test binary"
+      },
+      "host": "vm-1",
+      "result": "20261108-180246-application-core-phase-5-step-2-the-join/result.json"
+    },
+    {
       "id": "20261108-141443-vf-023-rerun-the-conformance-corpus-unde",
       "title": "VF-023 rerun: the conformance corpus under auto --confirm, now that a JBMC refutation through a stub that doesn't reproduce is no verdict (closes VF-023 when it passes)",
       "status": "passed",
