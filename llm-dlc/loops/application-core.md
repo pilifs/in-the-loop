@@ -497,7 +497,9 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
 
       Separately, a replay that can't run one version shouldn't count as reproduced (`witness::differences`, the
       objects stream's replay plumbing).
-- Status: blocked: the user's push and launch (prerequisites 6 and 7), and the user's decision on VF-015
+- 2026-11-08, **VF-015 deferred by the user**: the streams launch without it. Other ways of proving step 5 are for
+  later; the options above stand. The planning session pushed (prerequisite 6) and set this status (prerequisite 7).
+- Status: working
 
 ## Loop settings
 
