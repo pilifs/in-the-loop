@@ -486,7 +486,13 @@ another part adds) makes the claim uncacheable rather than leaving it out of the
 computed. A planned domain's plan for each version and a modelled call's model are digested whole, once each reads
 back exactly as its strict type of [`spec::plans`](src/spec/plans.rs), which refuses every field and variant it
 doesn't declare (`spec::cache::TYPED`); `tests/reuse.rs` changes each part of the frozen claims' histories, model
-outcomes and value bounds and finds another key every time. The proof cache is a local directory of result records, one per key; only verified and refuted results are
+outcomes and value bounds and finds another key every time. Every value domain in them (a plan's adapted values, at
+its roots, in its nodes and setup calls, and a modelled call's adapted or object response) is first resolved under
+this tool's String and list models (`values::resolve_claim`), so the key digests the models' identities and evidence,
+never the words a claim stands for them with: a claim stated in those words and the same claim stated by the
+identities are one key, a stated level no stronger than the model's and what a claim says the model leaves out give
+way to the model's own record, and a claim stated under another model, another JDK or a stronger level, or over a
+domain the adapters refuse, is uncacheable by name (`tests/values.rs`). The proof cache is a local directory of result records, one per key; only verified and refuted results are
 stored, a refutation with its witness, and an entry that can't be read or is for another key is a miss.
 
 `equivalence --cache DIR` uses it ([`proof_cache::Regression`](src/proof_cache.rs)), under `--engine native` only

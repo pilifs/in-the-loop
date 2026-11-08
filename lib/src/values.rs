@@ -580,6 +580,64 @@ pub fn resolve(stated: &ValueDomain) -> Result<ValueDomain, Unsupported> {
     ValueModels::current().resolve(stated)
 }
 
+impl ValueModels {
+    /// `claim` with every value domain it carries resolved ([`ValueModels::resolve`]): a planned domain's adapted
+    /// values, at its roots, inside its nodes and in its setup calls, in each version; and the environment's
+    /// modelled results, an adapted response's domain and the adapted values of an object response's plan. So two
+    /// claims that state one model, one in [`STATED_STRING_MODEL`]'s or [`STATED_LIST_MODEL`]'s words and one by
+    /// its identity, are one claim, and a claim stated under another model, another JDK or a stronger level is
+    /// refused here, by the domain's path and [`ValueModels::resolve`]'s reason. Resolving a resolved claim
+    /// changes nothing. The claim key resolves a claim before digesting it (`spec::cache::key`).
+    pub fn resolve_claim(&self, claim: &crate::spec::CanonicalClaim) -> Result<crate::spec::CanonicalClaim, Unsupported> {
+        use crate::spec::plans::{ConstructionPlan, ModelledResult, PlanValue, Returned};
+        let resolve = |at: &str, d: &mut ValueDomain| -> Result<(), Unsupported> {
+            *d = self.resolve(d).map_err(|u| Unsupported::new(u.part, format!("{at}: {}", u.what)))?;
+            Ok(())
+        };
+        let value = |at: &str, v: &mut PlanValue| match v {
+            PlanValue::Adapted { domain, .. } => resolve(at, domain),
+            _ => Ok(()),
+        };
+        let plan = |at: &str, p: &mut ConstructionPlan| -> Result<(), Unsupported> {
+            for r in &mut p.roots {
+                value(&format!("{at}'s root {}", r.name), &mut r.value)?;
+            }
+            for n in &mut p.nodes {
+                for (i, a) in n.args.iter_mut().enumerate() {
+                    value(&format!("{at}'s node {}'s argument {i}", n.id), a)?;
+                }
+            }
+            for (k, s) in p.setup.iter_mut().enumerate() {
+                for (i, a) in s.args.iter_mut().enumerate() {
+                    value(&format!("{at}'s setup call {k}'s argument {i}"), a)?;
+                }
+            }
+            Ok(())
+        };
+        let mut out = claim.clone();
+        if let Some(crate::spec::ObjectDomain { made_by: crate::spec::Construction::Planned { before, after }, .. }) = &mut out.domain {
+            plan("the previous version's plan", before)?;
+            plan("the new version's plan", after)?;
+        }
+        for call in out.environment.iter_mut().flat_map(|e| e.calls.iter_mut()) {
+            let Some(model) = &mut call.model else { continue };
+            for result in &mut model.results {
+                match result {
+                    ModelledResult::Returns { value: Returned::Adapted { domain } } => resolve(&format!("the modelled call {}'s result", call.call), domain)?,
+                    ModelledResult::Returns { value: Returned::Object { plan: p, .. } } => plan(&format!("the modelled call {}'s response", call.call), p)?,
+                    _ => {}
+                }
+            }
+        }
+        Ok(out)
+    }
+}
+
+/// [`ValueModels::resolve_claim`] under this tool's models.
+pub fn resolve_claim(claim: &crate::spec::CanonicalClaim) -> Result<crate::spec::CanonicalClaim, Unsupported> {
+    ValueModels::current().resolve_claim(claim)
+}
+
 /// What a level says of agreement with the JVM: nothing beyond a model's existence (implemented, modelled, trusted),
 /// sampled conformance (tested), or a proof.
 fn strength(level: EvidenceLevel) -> u8 {

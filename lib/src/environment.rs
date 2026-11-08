@@ -59,7 +59,8 @@
 //! **What the key can be**, so far: a primitive integral or boolean argument (`arg0`). A String key needs the values
 //! stream's adapter, a field path (`arg1.code`) or an object's identity the objects stream's construction plan;
 //! both are refused by name until then. The normal result: an integral or boolean primitive, or nothing beside a
-//! modelled failure. A DTO is E3's, and a value of an adapter's domain the values stream's.
+//! modelled failure. A DTO is E3's. A value of an adapter's domain is refused, once its domain resolves under this
+//! tool's models (`values::resolve`): no stub makes one.
 
 use std::path::Path;
 
@@ -274,7 +275,11 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
                     Returned::Primitive { ty } => ty.as_str(),
                     Returned::Void => "void",
                     Returned::Object { .. } => return Err(refused(call, "a DTO response made by a construction plan: the environment stream's E3, not built yet")),
-                    Returned::Adapted { .. } => return Err(refused(call, "a value of an adapter's domain: it waits for the values stream's adapter")),
+                    Returned::Adapted { domain } => {
+                        // Resolved first, so that a response stated under another model is refused for that.
+                        crate::values::resolve(domain).map_err(|u| refused(call, format!("its result: {}", u.what)))?;
+                        return Err(refused(call, "a response of an adapter's domain (a String, a list): the effect check's stubs return a primitive so far, and none makes an adapter's value"));
+                    }
                 };
                 if ret.is_some() {
                     return Err(refused(call, "two normal results: a call returns one value of one type"));

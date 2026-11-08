@@ -746,6 +746,43 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Docs**: `lib/README.md` (the list paragraph and the plan paragraph's refusals).
   - **Next**: the rest of item 2, `values::resolve` wherever a modelled call's `Returned::Adapted` is read. Then
     items 3–7.
+- 2026-11-08, **Phase 5 step 1, interface request 2 done: a claim's value domains are resolved before its key**.
+  - **The reproducer**: `tests/values.rs`'s new
+    `a_claims_value_domains_are_resolved_before_its_key_and_its_checks`. It failed before on each of the three call
+    sites below, each taken out alone:
+    - `basket-total-claim` in the frozen claims' words and the same claim stated by the models' identities had two
+      keys;
+    - a modelled call's String result under another model was refused only as an adapted result;
+    - the quote request's code under another model was refused only as an adapted value inside a node.
+  - **The change**:
+    - `values::resolve_claim` (and `ValueModels::resolve_claim`) resolves every value domain a claim carries:
+      - a plan's adapted values, at its roots, inside its nodes and in its setup calls, in each version;
+      - a modelled call's adapted response, and the adapted values of an object response's plan.
+    - `spec::cache::key` resolves the claim first. A claim stated under another model, another JDK or a stronger
+      level, or over a domain the adapters refuse, is uncacheable, naming the domain's path and the reason. It is
+      never keyed.
+    - `environment::lower` resolves an adapted result before refusing it. The refusal now says what is missing (no
+      stub makes an adapter's value), not "waits for the values stream's adapter".
+    - `construction::check_plans` resolves an adapted value inside a node before refusing it.
+  - **Checks**:
+    - The new test checks `values::resolve_claim` against the test file's reference walk on all eight frozen claims.
+      It also checks that resolving twice changes nothing.
+    - It checks each refusal by name: another model, a stronger level, in the key, in the effect check and in the
+      plan check.
+    - The integration check passes (the contract 14 of 14). So do the other binaries but `integration.rs` (JBMC):
+      alignment 34, application_core_objects 21, conformance 10, environment 16, heap 49, observations 12, reuse 11,
+      reuse_summaries 14, skill 1, summaries 40, values 17, value_parameters 10.
+  - **A test of the reuse stream changed, for the for-review list.** `tests/reuse.rs`'s
+    `every_semantic_part_of_a_plan_or_a_model_changes_the_key` expected another key for three changes. Two are
+    the frozen claim once resolved, because `ValueModels::resolve` (the values stream's design, documented there)
+    replaces a stated evidence record with the model's own: a String model stated at `tested`, the model's own level
+    (the frozen claim says `modelled`), and a list model that says it leaves out nothing. Neither changes what is
+    checked, so the test now asserts that each gives the frozen claim's key. The third, a list of Strings, is now
+    never keyed (the adapter refuses it). The test asserts that, and that a String model stated as `proved` is never
+    keyed. A change of the model itself still changes every key over it (`tests/values.rs`).
+  - **Docs**: `lib/README.md`'s claim-key paragraph, the doc of `spec::cache` and of `environment`.
+  - **Next**: item 3, VF-023's rule in `equivalence::confirm`, with values' ignored reproducer un-ignored, and job
+    `20261108-070211-…`'s step 2 rerun unchanged. Then items 4–7.
 - Status: working
 
 ## Loop settings

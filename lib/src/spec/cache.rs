@@ -5,8 +5,9 @@
 //! digested with SHA-256 under a version line ([`PROJECTION`]). The projection knows every field of the claim by its
 //! path ([`KNOWN`]); a field it doesn't know makes the claim uncacheable, so that a field another stream adds to the
 //! claim can't be silently left out of the key. The typed interfaces of [`super::plans`] a claim carries ([`TYPED`])
-//! are digested whole, once they read back as their strict types. A part that was never computed (an empty closure digest or tool
-//! identity) makes it uncacheable too. Nothing that depends on the result or the run is in the claim to begin with.
+//! are digested whole, once they read back as their strict types, and the value domains in them are first resolved
+//! under this tool's String and list models (`values::resolve_claim`). A part that was never computed (an empty
+//! closure digest or tool identity) makes it uncacheable too. Nothing that depends on the result or the run is in the claim to begin with.
 //!
 //! **The cache** is a local directory, never committed (decision 3 of `foundations.md`): one JSON file per key,
 //! `claims/HH/HEX.json`, holding a [`ResultRecord`] and, beside it, the check's own report of the result for a reuse
@@ -219,10 +220,13 @@ pub fn canonical(v: &Value) -> String {
     out
 }
 
-/// The key of a prepared claim: `sha256:` and the digest of [`PROJECTION`] and the claim's canonical form. A part the
-/// projection doesn't know, or one not computed, makes the claim uncacheable (an error), never a key that leaves it
-/// out.
+/// The key of a prepared claim: `sha256:` and the digest of [`PROJECTION`] and the claim's canonical form, its value
+/// domains first resolved under this tool's models (`values::resolve_claim`), so that the key digests the String
+/// and list models' identities, never the words that stand for them, and a claim stated under another model is
+/// never keyed. A part the projection doesn't know, one not computed, or a value domain that doesn't resolve makes
+/// the claim uncacheable (an error), never a key that leaves it out.
 pub fn key(claim: &CanonicalClaim) -> Result<ClaimKey, Unsupported> {
+    let claim = &crate::values::resolve_claim(claim).map_err(|u| uncacheable(format!("its value domains don't resolve under this tool's models: {}", u.what)))?;
     let value = serde_json::to_value(claim).map_err(|e| uncacheable(format!("it does not serialize: {e}")))?;
     let projected = projection(&value)?;
     Ok(ClaimKey(format!("sha256:{}", sha256_hex(format!("{PROJECTION}\n{}", canonical(&projected)).as_bytes()))))

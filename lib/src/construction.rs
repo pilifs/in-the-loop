@@ -173,7 +173,11 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
             }
             Ok(())
         }
-        PlanValue::Adapted { path, .. } => Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, an adapted value: the values stream builds it (llm-dlc/loops/application-core-values.md)"))),
+        PlanValue::Adapted { path, domain } => {
+            // Resolved first, so that a value stated under another model is refused for that.
+            crate::values::resolve(domain).map_err(|u| Unsupported::new(u.part, format!("the {version} version's {at} takes {path}: {}", u.what)))?;
+            Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, an adapted value: the values stream builds it (llm-dlc/loops/application-core-values.md)")))
+        }
         PlanValue::Dependency { path, class } => Err(unbuilt(&format!("the {version} version's {at} takes {path}, a dependency of {class} the environment model stands for, and a construction with dependencies"))),
         PlanValue::Node { id, nullable, same_as } => {
             if *nullable || !same_as.is_empty() {

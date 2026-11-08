@@ -352,17 +352,12 @@ fn every_semantic_part_of_a_plan_or_a_model_changes_the_key() {
         // Value bounds and models: a String's length, nullability and evidence, an array's length.
         ("quote-claim", "a shorter String", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["max_length"] = 3.into()),
         ("quote-claim", "a nullable String", |v| v["domain"]["made_by"]["before"]["nodes"][1]["args"][0]["domain"]["nullable"] = true.into()),
-        ("quote-claim", "a String model of another level", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["model"]["level"] = "tested".into()),
         ("quote-claim", "a shorter array", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][1]["max_length"] = 1.into()),
         ("quote-claim", "another dependency class", |v| v["domain"]["made_by"]["after"]["nodes"][0]["args"][2]["class"] = "quotes.CachedRates".into()),
         ("basket-total-claim", "a shorter list", |v| {
             for side in ["before", "after"] {
                 v["domain"]["made_by"][side]["roots"][0]["value"]["domain"]["max_length"] = 2.into();
             }
-        }),
-        ("basket-total-claim", "a list of Strings", |v| v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["kind"]["element"] = serde_json::json!({"kind": "string"})),
-        ("basket-total-claim", "a list model that leaves out nothing", |v| {
-            v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["model"].as_object_mut().unwrap().remove("leaves_out");
         }),
         // A returned object's identity and nullability, and the plan it is made by.
         ("offer-claim", "a stable returned object", |v| v["environment"]["calls"][0]["model"]["results"][0]["value"]["identity"] = "stable".into()),
@@ -385,6 +380,33 @@ fn every_semantic_part_of_a_plan_or_a_model_changes_the_key() {
     }
     // The constructor-only claim and the claim after a setup call are two claims (row J3's history).
     assert_ne!(claim_key(&golden_claim("throttle-constructed-claim")), claim_key(&golden_claim("throttle-setup-claim")));
+    // A value domain's evidence is the model's, not the claim's words: the key resolves it under this tool's model
+    // first (`values::resolve_claim`), which replaces a stated level no stronger than the model's, and what the claim
+    // says the model leaves out, by the model's own record. So these are the claim as frozen, checked and keyed alike;
+    // a change of the model itself changes the key (`tests/values.rs`), and a stronger level is never keyed.
+    let same: &[Change] = &[
+        ("quote-claim", "a String model of the model's own level", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["model"]["level"] = "tested".into()),
+        ("basket-total-claim", "a list model that says it leaves out nothing", |v| {
+            v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["model"].as_object_mut().unwrap().remove("leaves_out");
+        }),
+    ];
+    for (name, what, change) in same {
+        let mut changed = golden_claim(name);
+        change(&mut changed);
+        assert_eq!(seen.get(&claim_key(&changed)), Some(&format!("{name} as frozen")), "{name}: {what}");
+    }
+    // Never keyed: a domain the values models don't resolve.
+    let refused: &[(Change, &str)] = &[
+        (("quote-claim", "a String model stated as proved", |v| v["domain"]["made_by"]["after"]["nodes"][1]["args"][0]["domain"]["model"]["level"] = "proved".into()), "never borrows a stronger level"),
+        (("basket-total-claim", "a list of Strings", |v| v["domain"]["made_by"]["after"]["roots"][0]["value"]["domain"]["kind"]["element"] = serde_json::json!({"kind": "string"})), "a list of Strings"),
+    ];
+    for ((name, what, change), why) in refused {
+        let mut changed = golden_claim(name);
+        change(&mut changed);
+        let claim: jvmcontract::spec::CanonicalClaim = serde_json::from_value(changed).unwrap();
+        let u = jvmcontract::spec::cache::key(&claim).expect_err(what);
+        assert!(u.what.contains("uncacheable") && u.what.contains(why), "{name}: {what}: {u}");
+    }
 }
 
 #[test]

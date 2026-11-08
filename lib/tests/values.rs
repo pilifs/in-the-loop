@@ -1304,3 +1304,107 @@ fn confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no
     assert_eq!(outcome.verdict, Verdict::Verified, "the own checker's proof stands, not confirmed: {}", outcome.output);
     assert!(outcome.output.contains("  not confirmed: JBMC 6.11.0 gave no verdict") && outcome.output.contains("java.util.List.size()"), "{}", outcome.output);
 }
+
+/// The merge's interface request 2: a claim's value domains are resolved under this tool's models wherever the tool
+/// reads them, not only in a test. The claim key digests the resolved claim (`spec::cache::key` through
+/// `values::resolve_claim`), so a claim stated in the frozen claims' words and the same claim stated by the models'
+/// identities are one key, and one stated under another model, or at a stronger level than the model has, is
+/// uncacheable by name, never keyed. `values::resolve_claim` agrees with this file's reference walk
+/// ([`resolved_claim`]) on every frozen claim. A modelled call's adapted result (`environment::check_model`) and a
+/// plan's adapted value inside a node (`construction::check_plans`), both still refused, are refused for the
+/// model first.
+#[test]
+fn a_claims_value_domains_are_resolved_before_its_key_and_its_checks() {
+    use jvmcontract::spec::plans::{CallModel, Coupling, EvidenceLevel, ModelledResult, Returned};
+    use jvmcontract::spec::{self, CanonicalClaim, Construction, ModeledCall, Part};
+    let golden = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/golden");
+    let read = |name: &str| -> serde_json::Value { serde_json::from_str(&std::fs::read_to_string(golden.join(format!("{name}.json"))).unwrap()).unwrap() };
+    let claim = |v: &serde_json::Value| -> CanonicalClaim { serde_json::from_value(v.clone()).unwrap() };
+    let current = values::ValueModels::current();
+    let mut stale = current.clone();
+    stale.list.source = format!("{}; models sha256 {}", values::LIST_MODEL, "0".repeat(64));
+    stale.string.source = values::STRING_MODEL.replace("model 1", "model 0");
+    // The production walk is the reference walk, on every frozen claim.
+    let mut names: Vec<_> = std::fs::read_dir(&golden).unwrap().map(|e| e.unwrap().file_name().into_string().unwrap()).filter(|n| n.ends_with("-claim.json")).collect();
+    names.sort();
+    for name in &names {
+        let stated = read(name.trim_end_matches(".json"));
+        let reference = claim(&resolved_claim(&stated, &current).unwrap().0);
+        assert_eq!(values::resolve_claim(&claim(&stated)).unwrap(), reference, "{name}");
+        assert_eq!(values::resolve_claim(&reference).unwrap(), reference, "{name}: resolving is idempotent");
+    }
+    for (name, family) in [("basket-total-claim", "list"), ("quote-claim", "String")] {
+        let stated = read(name);
+        let words = spec::cache::key(&claim(&stated)).unwrap_or_else(|u| panic!("{name}: {u}"));
+        let identity = spec::cache::key(&claim(&resolved_claim(&stated, &current).unwrap().0)).unwrap();
+        assert_eq!(words, identity, "{name}: a claim in the models' words and the same claim by their identities are one key");
+        // Under another model: never keyed.
+        let other = claim(&resolved_claim(&stated, &stale).unwrap().0);
+        let refused = spec::cache::key(&other).expect_err(name);
+        assert_eq!(refused.part, Part::Summaries, "{name}: {refused}");
+        assert!(refused.what.contains("don't resolve under this tool's models") && refused.what.contains("evidence of another model's semantics isn't this one's") && refused.what.contains("plan's"), "{name}: {refused}");
+        assert!(refused.what.contains(&format!("a {family} domain")), "{name}: {refused}");
+        // At a stronger level than the model has.
+        let mut proved = stated.clone();
+        fn level(v: &mut serde_json::Value) {
+            match v {
+                serde_json::Value::Object(map) => {
+                    if map.get("kind").and_then(|k| k.as_str()) == Some("adapted") {
+                        map.get_mut("domain").unwrap()["model"]["level"] = "proved".into();
+                    }
+                    map.values_mut().for_each(level);
+                }
+                serde_json::Value::Array(items) => items.iter_mut().for_each(level),
+                _ => {}
+            }
+        }
+        level(&mut proved);
+        let refused = spec::cache::key(&claim(&proved)).expect_err(name);
+        assert!(refused.what.contains("never borrows a stronger level"), "{name}: {refused}");
+    }
+    // A plan's adapted value inside a node (the quote request's code, its service and dependencies left out): refused
+    // for the model first.
+    let request_only = |c: CanonicalClaim| {
+        let Some(spec::ObjectDomain { made_by: Construction::Planned { mut before, mut after }, .. }) = c.domain else { panic!("the quote claim is planned") };
+        for plan in [&mut before, &mut after] {
+            plan.nodes.retain(|n| n.class == "quotes.QuoteRequest");
+            plan.roots.retain(|r| r.name == "request");
+        }
+        jvmcontract::construction::check_plans(&before, &after).unwrap_err()
+    };
+    let refused = request_only(claim(&resolved_claim(&read("quote-claim"), &stale).unwrap().0));
+    assert!(refused.what.contains("evidence of another model's semantics isn't this one's") && refused.what.contains("takes request.code"), "{refused}");
+    let refused = request_only(claim(&read("quote-claim")));
+    assert!(refused.what.contains("the values stream builds it"), "{refused}");
+    // A modelled call whose result is a String: refused for the model first, then for the stubs.
+    let string_domain = |models: &values::ValueModels, stated: bool| ValueDomain {
+        kind: ValueKind::String,
+        nullable: false,
+        max_length: 3,
+        model: if stated { jvmcontract::spec::plans::ModelEvidence { source: values::STATED_STRING_MODEL.into(), jdk: values::COMPUTED.into(), level: EvidenceLevel::Tested, leaves_out: vec![] } } else { models.string.clone() },
+    };
+    let call = |domain: ValueDomain| {
+        let model = CallModel { id: "rates.currency".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Adapted { domain } }], bound: 1 };
+        (ModeledCall { call: "quotes/Rates#currency(J)Ljava/lang/String;".into(), outcomes: vec!["returns".into()], model: Some(model.clone()) }, model)
+    };
+    for (what, domain, expected) in [
+        ("another model", string_domain(&stale, false), "evidence of another model's semantics isn't this one's"),
+        ("a stronger level", ValueDomain { model: jvmcontract::spec::plans::ModelEvidence { level: EvidenceLevel::Proved, ..current.string.clone() }, ..string_domain(&current, false) }, "never borrows a stronger level"),
+        ("this model", string_domain(&current, false), "the effect check's stubs return a primitive so far"),
+        ("this model, in words", string_domain(&current, true), "the effect check's stubs return a primitive so far"),
+    ] {
+        let (c, m) = call(domain);
+        let refused = jvmcontract::environment::check_model(&c, &m).unwrap_err();
+        assert_eq!(refused.part, Part::Environment, "{what}: {refused}");
+        assert!(refused.what.contains(expected), "{what}: {refused}");
+    }
+    // And the key of a claim with such a result: the words and the identity one key, another model never keyed.
+    let with = |domain: ValueDomain| {
+        let mut c = claim(&read("quote-claim"));
+        c.environment.as_mut().unwrap().calls.push(call(domain).0);
+        c
+    };
+    assert_eq!(spec::cache::key(&with(string_domain(&current, true))).unwrap(), spec::cache::key(&with(string_domain(&current, false))).unwrap());
+    let refused = spec::cache::key(&with(string_domain(&stale, false))).unwrap_err();
+    assert!(refused.what.contains("the modelled call quotes/Rates#currency(J)Ljava/lang/String;'s result") && refused.what.contains("another model's semantics"), "{refused}");
+}
