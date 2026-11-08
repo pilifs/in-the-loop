@@ -937,15 +937,17 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
     // A record whose components are primitive stands in for a value of it: the receiver, a parameter or the result.
+    // Any other receiver is an object made by its constructor, as a parameter is (O1 of
+    // `llm-dlc/loops/application-core-objects.md`), named `this`.
     let receiver_type = Type::Object(class_internal.clone());
     let receiver = if method.is_static() {
         None
     } else {
         match record_of(&after_cp, &receiver_type)? {
             Some(r) => Some(r),
-            None => match crate::construction::receiver(&class_internal) {
+            None => match crate::construction::receiver(&after_cp, &class_internal) {
                 Ok(r) => Some(r),
-                Err(u) => return refuse(&mut out, line, format!("{} is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are ({})", method_name, u.what)),
+                Err(u) => return refuse(&mut out, line, format!("{method_name} is an instance method, whose receiver is outside the objects a regression check makes: {}", u.what)),
             },
         }
     };
@@ -1010,6 +1012,18 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut previous_receiver = None;
     let before_receiver = match (&receiver, before_method.is_static()) {
         (None, true) => None,
+        // An ordinary receiver made by its constructor (O1): the previous version's made the same way, of the same
+        // construction and fields, as a parameter's is.
+        (Some(r), false) if r.is_made() => {
+            if options.before_arguments.is_some() {
+                return refuse(&mut out, line, "--before-arguments with a receiver made by its constructor is not supported: the previous version is called on its own receiver, made from the same leaves".into());
+            }
+            match crate::construction::receiver(&before_cp, &before_class_internal) {
+                Ok(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
+                Ok(b) => return refuse(&mut out, line, format!("the receiver is made differently in the two versions: {} before, {} now; a receiver of another construction or other fields is not supported yet", b.domain_part("this"), r.domain_part("this"))),
+                Err(u) => return refuse(&mut out, line, format!("in the previous version, {before_method_name} is an instance method, whose receiver is outside the objects a regression check makes: {}", u.what)),
+            }
+        }
         (Some(r), true) if components_passed => Some((r.clone(), None)),
         (_, false) => match record_of(&before_cp, &Type::Object(before_class_internal.clone()))? {
             Some(b) if receiver.as_ref().is_some_and(|r| b.same_shape(r)) && !receiver_built => Some((receiver.clone().expect("checked"), Some(b))),
@@ -1045,6 +1059,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Err(gap) => return refuse(&mut out, line, gap),
         };
         for (old_root, new_root, whole) in roots {
+            if old_root == "this" && receiver.as_ref().is_some_and(harness::RecordType::is_made) {
+                return refuse(&mut out, line, "the correspondence relates the receiver: equations about an ordinary receiver are not supported yet; its fields are compared for equality".into());
+            }
             // Equations about no parameter of either version relate no input of this method, and say nothing here.
             if !before_names.contains(&old_root) && !new_root.as_ref().is_some_and(|r| names.contains(r)) {
                 let _ = writeln!(out, "note: the correspondence's equation about {old_root} relates no parameter of either version, and says nothing about this method");

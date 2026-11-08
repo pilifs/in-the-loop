@@ -666,10 +666,12 @@ impl RecordType {
     }
 }
 
-/// Where a reference of [`RefPath`] starts: the result, or the target's argument `args[i]`.
+/// Where a reference of [`RefPath`] starts: the result, the receiver made by its constructor (`this`, O1 of
+/// `llm-dlc/loops/application-core-objects.md`), or the target's argument `args[i]`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Root {
     Result,
+    Receiver,
     Arg(usize),
 }
 
@@ -955,6 +957,15 @@ impl Layout {
         }
         if !with_args {
             return out;
+        }
+        // An ordinary receiver (O1) is a named root, `this`, like an object parameter.
+        if let Some(Slot::Record { name, record, before, .. }) = &self.receiver {
+            let made = if previous { before.as_ref() } else { Some(record) };
+            if let Some(fields) = made.and_then(|r| r.fields.as_ref()) {
+                let at = out.len();
+                out.push(RefPath { path: name.clone(), ty: fields.class.clone(), root: Root::Receiver, field: None });
+                field_refs(&mut out, name, at, Root::Receiver, fields);
+            }
         }
         for (i, slot) in self.args.iter().enumerate() {
             match slot {
@@ -2211,6 +2222,10 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                     None => {
                         let from = match r.root {
                             Root::Result => if previous { a } else { b },
+                            Root::Receiver => {
+                                let (new_local, old_local) = object_slots(0);
+                                if previous { old_local } else { new_local }
+                            }
                             Root::Arg(i) => match &layout.args[i] {
                                 Slot::Plain(p) => {
                                     let p = &params[*p];
@@ -3051,16 +3066,28 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
     let is_void = *ret == Type::Void;
-    let callee = Callee::of(class_internal, method, &descriptor, &target_types, ret);
+    // An instance method (O1 of `llm-dlc/loops/application-core-objects.md`) is called on its receiver, which an
+    // expression can't call it without: the callee is a static method's only.
+    let callee = if layout.receiver.is_some() { None } else { Callee::of(class_internal, method, &descriptor, &target_types, ret) };
     // Each object argument, made from its leaves before anything else, in a local of its own after the flat
-    // parameters (step H2).
+    // parameters (step H2); the receiver's first, when the method has one.
     let records = layout.records();
     let object_slot = |i: usize| arg_slots + i as u16;
     let base = arg_slots + records.len() as u16;
 
-    // The names the expressions see: the arguments (an object by its local), then the result.
+    // The names the expressions see: the receiver as `this`, the arguments (an object by its local), then the
+    // result.
     let mut arg_names: Vec<Param> = Vec::new();
     let mut objects: Vec<(String, Fields)> = Vec::new();
+    let receiver = match &layout.receiver {
+        Some(Slot::Record { name, record, .. }) => {
+            if let Some(fields) = &record.fields {
+                objects.push((name.clone(), fields.clone()));
+            }
+            Some(Param { name: name.clone(), ty: Type::Object(record.class.clone()), slot: object_slot(0) })
+        }
+        _ => None,
+    };
     for slot in &layout.args {
         match slot {
             Slot::Plain(i) => arg_names.push(params[*i].clone()),
@@ -3073,7 +3100,9 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
             }
         }
     }
-    let mut names = arg_names.clone();
+    // What the assumption and the throws clauses read: the receiver, then the arguments.
+    let visible: Vec<Param> = receiver.iter().cloned().chain(arg_names.iter().cloned()).collect();
+    let mut names = visible.clone();
     if !is_void {
         names.push(Param { name: RESULT.into(), ty: ret.clone(), slot: base });
         if let Some(fields) = &layout.result_fields.0 {
@@ -3095,7 +3124,7 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     let copies: Vec<(u16, u16)> = arg_names.iter().filter(|p| matches!(p.ty, Type::Array(_))).enumerate().map(|(i, p)| (p.slot, expected + 1 + i as u16)).collect();
     let first_free = expected + 1 + copies.len() as u16;
     let assume_expr = match assume {
-        Some(src) => Some(expr::parse_over_objects(src, &arg_names, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
+        Some(src) => Some(expr::parse_over_objects(src, &visible, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
         None => None,
     };
     let assertion_expr = expr::parse_over_objects(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies), &objects).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
@@ -3108,7 +3137,7 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
         if signal.class.is_empty() || signal.class.contains(|c: char| c.is_whitespace() || c == ';' || c == '[') {
             return Err(Error::new(format!("in the throws clause: {:?} is not a class name", signal.java_name())));
         }
-        let when = expr::parse_over_objects(&signal.when, &arg_names, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
+        let when = expr::parse_over_objects(&signal.when, &visible, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
         signal_exprs.push((signal.clone(), when));
     }
 
@@ -3304,11 +3333,14 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
         emit_failure(&mut code, &mut writer.pool);
     }
     code.bind(try_start);
+    if let Some(this) = &receiver {
+        code.load(Kind::Ref, this.slot);
+    }
     for p in &arg_names {
         code.load(kind_of(&p.ty), p.slot);
     }
     let target = writer.pool.method_ref(class_internal, method, &descriptor);
-    code.op_u16(0xb8, target); // invokestatic
+    code.op_u16(if receiver.is_some() { 0xb6 } else { 0xb8 }, target); // invokevirtual, invokestatic
     if !is_void {
         code.store(ret_kind, result);
     }
@@ -3487,10 +3519,20 @@ pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout,
         })
         .collect();
     let plain: Vec<Param> = args.iter().map(|a| Param { name: a.clone(), ty: Type::Int, slot: 0 }).collect();
-    let mut s = property_source(class_internal, method, &plain, ret, assume, assertion, signals);
+    // An instance method's receiver (O1) is the local `self`, a static method's harness having no `this`.
+    let on_receiver = layout.receiver.is_some();
+    let own = |text: &str| if on_receiver { replace_word(text, "this", "self") } else { text.to_string() };
+    let (assume_shown, assertion_shown) = (assume.map(own), own(assertion));
+    let signals_shown: Vec<Signal> = signals.iter().map(|g| Signal { when: own(&g.when), ..g.clone() }).collect();
+    let mut s = property_source(class_internal, method, &plain, ret, assume_shown.as_deref(), &assertion_shown, &signals_shown);
+    if on_receiver {
+        let class = class_internal.replace('/', ".");
+        s = s.replacen(&format!("{class}.{method}("), &format!("self.{method}("), 1);
+    }
     let mut objects = String::from("        // The objects, from their leaves; an input a constructor rejects is outside the property.\n");
     for slot in layout.records() {
         let Slot::Record { name, record, first, .. } = slot else { continue };
+        let name = &if name == "this" { "self".to_string() } else { name.clone() };
         let mut made = construction_source(record, "", &mut record.leaf_indices(*first).into_iter().map(|i| &flat[i]));
         if let Some(c) = layout.choice(name) {
             for (other, flag) in c.same.iter().rev() {

@@ -323,13 +323,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Err(problem) => return refuse(&mut out, 1, problem),
     };
     let line = method.first_line().map(u32::from).unwrap_or(1);
-    if !method.is_static() {
-        // An ordinary receiver is the objects stream's (O1): until it builds one, the check is refused.
-        if let Err(u) = crate::construction::receiver(&class_internal) {
-            return refuse(&mut out, line, format!("only static methods are supported ({})", u.what));
+    // An instance method is called on an ordinary receiver made by its constructor (O1 of
+    // `llm-dlc/loops/application-core-objects.md`), `this`, as an object parameter is made.
+    let receiver = if method.is_static() {
+        None
+    } else {
+        match crate::construction::receiver(&cp, &class_internal) {
+            Ok(r) => Some((r, None)),
+            Err(u) => return refuse(&mut out, line, format!("{method_name} is an instance method, whose receiver is outside the objects a property check makes: {}", u.what)),
         }
-        return refuse(&mut out, line, "an instance method's receiver is made, but the property check doesn't take it yet".into());
-    }
+    };
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
     // A parameter of an application class is an object made by its constructor (step H2 of
@@ -355,8 +358,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::fields_of(&cp, class, &mut Vec::new())?.ok(),
         _ => None,
     };
-    let over_objects = records.iter().any(Option::is_some) || result_fields.is_some();
-    let mut layout = if over_objects { harness::Layout::new(None, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
+    let over_objects = receiver.is_some() || records.iter().any(Option::is_some) || result_fields.is_some();
+    let mut layout = if over_objects { harness::Layout::new(receiver, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
     layout.result_fields.0 = result_fields;
     // The choices of null and of one object: an array parameter's are the own checker's, an object parameter's the
     // harness's flags.
@@ -380,7 +383,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Err(problem) => return refuse(&mut out, line, problem),
     };
     if !object_nullable.is_empty() || !object_pairs.is_empty() {
-        if let Err(problem) = layout.choose_in(&object_nullable, &harness::alias_groups(&object_pairs, &names), true) {
+        let order: Vec<String> = layout.receiver.iter().map(|_| "this".to_string()).chain(names.iter().cloned()).collect();
+        if let Err(problem) = layout.choose_in(&object_nullable, &harness::alias_groups(&object_pairs, &order), true) {
             return refuse(&mut out, line, problem);
         }
     }

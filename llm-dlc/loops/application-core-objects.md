@@ -131,8 +131,42 @@ Never relax the interface to unblock it.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
-  Phase 0 included.
+- Forked 2026-11-08 after the main brief's [launch prerequisites](application-core.md#launch-prerequisites), Phase 0
+  included. No integration report yet at the first cycle.
+- 2026-11-08, **O1's first part: an ordinary receiver made by its constructor**, in `equivalence` and `prove`.
+  - **What**: `construction::receiver(cp, class)` makes the receiver as an object parameter is made
+    (`equivalence::made_of`, no second heap system), named `this`. In `equivalence`, both versions' receivers must
+    be made the same way; their fields are compared after the call, and `this` is a new root of the identity
+    relations (`harness::Root::Receiver`). In `prove`, the target is called on its receiver (`invokevirtual`), and
+    the expressions read `this.f`. The JVM run of a witness and the cache's closure roots (the receiver's
+    constructor) come from the existing paths.
+  - **Refused by name**: a constructor argument that is an array, a String or a dependency says "the objects
+    stream builds it". Several constructors, a superclass and cycles are named boundaries. So are `--nullable this`,
+    `--before-arguments`, and a correspondence's equations about an ordinary receiver.
+  - **Verified inline** (native, no JBMC): the contract's O1 passes, with the throttle's `allows` verified and
+    `one-short` replayed. `tests/application_core_objects.rs` has five tests: a receiver's mutation refuted on
+    `field:this` and run on a JVM; a receiver returned as a copy refuted on identity with `this`; properties over
+    `this.f`, proved and refuted; the refusals; and the cache, where an exact rerun reuses the proof and an edit of
+    the constructor alone misses it. The lib tests and the contracts `heap`, `foundations`, `compare`, `effects`,
+    `application_core`, `observations`, `alignment` and `summaries` pass.
+  - **Job** `20261108-045000-application-core-objects-o1-lib-tests-in` (pending): `lib/tests/integration.rs`
+    (JBMC), and examples 190–196. Their kernels recorded `Quote#quantity` as unresolved for being an instance
+    method, so their kernel lines may change, but not their verdicts.
+  - **Found: an unsound cache hit, for the reuse stream** (`proof_cache.rs` is its file, so this is a coordination
+    item, not fixed here). `Regression::claim` roots each version's closure at a made object's own constructor, not
+    at the inner objects' constructors, which the harness calls apart (`RecordType::constructors` lists every one).
+    So an edit of an inner class's constructor alone doesn't change the key.
+    - **Reproducer**: `tests/application_core_objects.rs`'s `an_inner_objects_constructor_is_part_of_the_cached_claim`,
+      ignored until the fix. A rewrite of `get(Wrap w)` over `Wrap(Inner in, int k)` is verified and stored. A
+      build whose `Inner(int v)` stores `v + 1` then reuses that `verified`, although it is refuted without the
+      cache (`get(new Wrap(new Inner(0), 0))`: before 0, after 1).
+    - **Scope**: it predates this wave, and hits any regression check under `--cache` with a nested object input
+      (foundations H2).
+    - **The likely fix**: root each version at `record.constructors()` in place of the record's own `<init>`, then
+      un-ignore the test.
+  - **Next**: O1's second part, a constructor's leaves generalized to bounded primitive arrays (keeping a plan's
+    nullability and aliasing, and copies apart between versions). Then the plan's selection of a constructor, and
+    `--plan` through `equivalence`, `prove` and `compare`.
 - Status: working
 
 ## Loop settings

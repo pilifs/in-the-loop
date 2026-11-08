@@ -527,6 +527,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         let v = match &r.field {
             None => match r.root {
                 crate::harness::Root::Result => result_value,
+                crate::harness::Root::Receiver => receiver.unwrap_or(Value::Null),
                 crate::harness::Root::Arg(i) => arg_values.get(i).copied().unwrap_or(Value::Null),
             },
             Some((parent, _, name, _)) => match references[*parent].1 {

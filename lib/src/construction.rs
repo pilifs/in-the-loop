@@ -37,10 +37,22 @@ pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Resul
 }
 
 /// The construction of an ordinary receiver (O1): `this`, an object of `class` (an internal name) made by its
-/// constructor, a named root. Asked where a regression or property check meets an instance method of a class that
-/// is not a record of primitive components; its refusal is added to the check's.
-pub fn receiver(class: &str) -> Result<crate::harness::RecordType, Unsupported> {
-    Err(unbuilt(&format!("an ordinary receiver, an object of {} made by its constructor", class.replace('/', "."))))
+/// constructor, a named root, exactly as a parameter made by its constructor is (`equivalence::made_of`, step H2 of
+/// `llm-dlc/loops/foundations-heap.md`): the one constructor a caller can use, from primitive leaves and objects made
+/// so in turn, observed by its fields after the call. Asked where a regression or property check meets an instance
+/// method of a class that is not a record of primitive components. A class outside that is refused by name: a
+/// constructor argument the stream has yet to make (an array, a String, a dependency) says so, and what no plan of
+/// this wave makes (several constructors without a choice, a superclass, a cycle) is a boundary of its own.
+pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
+    let java = class.replace('/', ".");
+    match crate::equivalence::made_of(cp, class, &mut Vec::new()) {
+        Ok(Ok(record)) => Ok(record),
+        Ok(Err(gap)) if gap.contains("constructor's arguments must be") || gap.contains("is an interface") || gap.contains("is abstract") => {
+            Err(unbuilt(&format!("an ordinary receiver, an object of {java} made by its constructor, whose {gap}")))
+        }
+        Ok(Err(gap)) => Err(Unsupported::new(Part::Objects, format!("the receiver, an object of {java} made by its constructor: {gap}"))),
+        Err(e) => Err(Unsupported::new(Part::Objects, format!("the receiver, an object of {java}: {e}"))),
+    }
 }
 
 /// Reads `--plan FILE` of `equivalence` and `prove`: [`Plans`] as JSON (one plan for both versions of a property
@@ -74,7 +86,6 @@ mod tests {
         assert!(gap.what.contains("the objects stream builds it"), "{gap}");
         // A plan of the wrong shape is named as such first.
         assert!(check_plans(&plan(1), &plan(0)).unwrap_err().what.starts_with("the new version's construction plan: the plan makes 1 objects"));
-        assert!(receiver("shop/Pricing").unwrap_err().what.contains("an object of shop.Pricing made by its constructor"));
         let file = std::env::temp_dir().join(format!("plans-{}.json", std::process::id()));
         std::fs::write(&file, serde_json::to_string(&Plans { before: plan(1), after: plan(1) }).unwrap()).unwrap();
         assert!(load(&file).unwrap_err().what.contains("the objects stream builds it"));
