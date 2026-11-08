@@ -64,6 +64,9 @@ In order, with acceptance rows E1 and E2 of the [contract](application-core-acce
     never invent a message or cause.
 - Check the application's catch and propagation behaviour, and the resulting differences in status or effects. A
   newly missing catch, or an event emitted on the wrong failure branch, must be refutable.
+- A modelled exception may be checked (an `IOException`, say). Phase 0's step 7 (VF-015) makes the equivalence
+  harness catch the checked exceptions the two versions declare. Build on it, and ask the coordinator under Progress
+  if it falls short.
 - The counterexample holds the dependency choices and their correlation keys, and replays under generated
   deterministic stubs on the real JVM.
   - It is labelled replay under the model, never execution against Kafka, MongoDB or a live service.

@@ -1,8 +1,7 @@
 # Brief: application core, making native change verification useful for ordinary service code
 
-**Drafted 2026-11-07, from an outside plan; its [decisions](#decisions) are proposed and not yet settled with the
-user.** It starts after the [launch prerequisites](#launch-prerequisites), which include the cleanup loop's merge and
-Phase 0.
+**Drafted 2026-11-07, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08.** It
+starts after the [launch prerequisites](#launch-prerequisites), which include Phase 0.
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). It widens the before/after verification of the
 native checker in [four streams run in parallel](#streams), each a loop of its own with a short brief that names its
@@ -71,6 +70,7 @@ numbers are at that commit, and the cleanup merge will move some of them. Phase 
 | Shared helpers | `shared.rs` shares only pure functions of primitive arguments (doc 1–3). `pure_closure` (525) rejects fields, statics and arrays (565–566), and floating point (552). | reuse |
 | The proof cache | `proof_cache.rs` covers regression (`Regression`, `lookup` at 419) and changed helpers (`Helpers`). Effect and heap checks reach it through `equivalence::run`. `property.rs` doesn't use the cache at all. The lookup comes after the harness is generated and the shared callees are planned (`equivalence.rs:1236–1309`). | reuse |
 | The verifier build | `verification/pipeline.py:829–836` already caches the `jvmcontract` binary by `lib/`'s tree hash. Don't rebuild it. | reuse |
+| **Checked exceptions in the equivalence harness (VF-015)** | **In scope, for Phase 0** ([decision 7](#decisions)). The equivalence harness's call handlers catch only `harness::EXCEPTIONS` (`lib/src/harness/mod.rs:37`), unchecked exceptions, and then `RuntimeException` and `Error`. A checked exception leaves `EquivalenceHarness.check` uncaught, and JBMC's "no uncaught exception" property fails. So no equivalence over a method that throws one can be verified. The property harness already handles a declared exception (its throws clauses, `harness/mod.rs:2896`). Found by the stub-reachability loop on 2026-11-08: example 109's old `toDigit` throws commons-codec's `DecoderException`, and job `20261108-011411-vf-015-…` failed at step 5. Deferred there by the timebox as VF-015's second failure. Its step 4 passed only because `test $? -eq 1` also accepts "cannot be verified". | Phase 0 |
 | **Domain options nobody reads** | **A hole for Phase 0.** `ObjectDomain` (`spec/mod.rs:96–138`) has `classes`, `bounds.*.allocations`, `made_by` (`Constructors{calls}`, `FieldByField`, `Invariant`) and `label`. None of them is read anywhere in `lib/src`, except the cache key's projection (`spec/cache.rs:69–84`). So a claim with `made_by: FieldByField` or `Invariant` runs as the constructor domain. It is latent, because no production path fills an `ObjectDomain` yet: `Statement.spec` is always `None` (`statement.rs:49–52`), and `compare` passes `domain: None`. Only tests build one. This wave starts filling it, so Phase 0 makes every unread option refuse before any proof or lookup. | Phase 0 |
 
 **Fixtures to extend**, per the [acceptance contract](application-core-acceptance.md#small-fixture-families):
@@ -156,8 +156,8 @@ In addition:
 The planning session is `3da21514-fe46-49d5-8200-08d3cf89ea17`, the conversation that adapted this brief in the default
 workspace. The streams fork from it, so Phase 0 is its work, done before any fork.
 
-1. **The cleanup loop merged.** Its reconcile is committed, with its for-review list. Its required native checks on
-   safety, replay and schema pass at the merge.
+1. **The cleanup loop merged** (done: merged and pushed 2026-11-07). Its reconcile is committed, with its for-review
+   list. Its required native checks on safety, replay and schema pass at the merge.
    - A JBMC-only timeout it defers (VF-018) doesn't block native feature work.
    - That deferral never licenses weakening a cleanup test, or claiming confirmation.
 2. **The baseline recounted at the merge.**
@@ -170,8 +170,8 @@ workspace. The streams fork from it, so Phase 0 is its work, done before any for
    - `application-core` and `application-core-STREAM` in `feature-loop.sh`;
    - `application-core` with its four streams in `run-streams.sh`;
    - the integration check `llm-dlc/tools/application-core-integration.sh`.
-5. **This brief, its four stream briefs and the acceptance contract committed** (drafted 2026-11-07), with the
-   session ids in their Loop settings and the [decisions](#decisions) settled by the user.
+5. **This brief, its four stream briefs and the acceptance contract committed** (done 2026-11-07), with the session
+   ids in their Loop settings, and the [decisions](#decisions) settled by the user (done 2026-11-08).
 6. **Push**, at the user's request.
 7. **Set this brief's status to `working`.** `run-streams.sh` doesn't run a loop whose status is `done` or `blocked`.
    Then **close the planning session**. The user then runs
@@ -213,6 +213,20 @@ The steps, each committed:
 5. **The fixture skeletons** of Q, H and L, frozen: the before and after Java and the defective siblings, with the
    claim projections they are checked under. Their semantics are fixed now, not after seeing which proof succeeds.
 6. **The JSON schemas** a stream will need (`examples/schema/`), with the new kinds added as named variants.
+7. **Checked exceptions in the equivalence harness, closing VF-015** ([decision 7](#decisions)).
+   - **The reproducer first**: a unit test in `harness/`'s tests, failing before. An equivalence over a method that
+     throws a checked exception gives "cannot be verified" today, and should give a verdict.
+   - **The fix**: the call handlers catch the exceptions the two versions declare (a handler for each class in either
+     version's `throws` clause, most specific first), then `java.lang.Exception`, as the property harness handles a
+     declared exception. An exception thrown is part of the outcome the two versions are compared on, by class.
+   - **Nothing gets weaker**: a checked exception that only one version throws, or that the two throw on different
+     inputs, is a difference, refuted with a replayed witness.
+   - **The check**, as a job: VF-015's job resubmitted with its steps unchanged except step 4. Step 4 checks that the
+     change is found (the result names a violation, and the witness replays) instead of `test $? -eq 1`, which also
+     accepts "cannot be verified". The result is stricter, as VF-015's triage asks. The title names "closes VF-015
+     when it passes". Expected: step 3 proved, step 4 refuted with a Unicode digit (`ch > 127`), step 5 verified.
+   - The environment stream's E2 (modelled failures, their catch and propagation) builds on this. A modelled
+     exception may be checked.
 
 ## Streams
 
@@ -334,7 +348,7 @@ Each stream brief lists its items in order. All four run at once.
 
 | Phase | Criterion |
 |---|---|
-| 0 | G0's gate: the domain gate refuses every unread option, with reproducers; the four interfaces, hooks, contract test and frozen fixture skeletons committed |
+| 0 | G0's gate: the domain gate refuses every unread option, with reproducers; the four interfaces, hooks, contract test and frozen fixture skeletons committed; VF-015's harness fix committed with its reproducer, and its job passing, or deferred to the user with the finding (it has no timebox attempt left) |
 | 1, objects | O1–O3 pass, or each is deferred by the timebox with the finding |
 | 2, values | V1–V3 pass, or each is deferred by the timebox with the finding |
 | 3, environment | E1–E3 pass, or each is deferred by the timebox with the finding |
@@ -359,7 +373,7 @@ acceptance case that needs them.
 
 ## Decisions
 
-Proposed by the planning session on 2026-11-07, for the user to settle before launch:
+Settled by the user on 2026-11-08, as the planning session proposed them on 2026-11-07, with the seventh added:
 1. **The four streams and their scope**, as the outside plan drew them. Optional work stays optional and never blocks
    a row: objects' factory routes, values' extra method, environment's clock or response script, and reuse's R4.
 2. **Verification with the pipeline**, not separate, so that rows can close in the loop.
@@ -369,14 +383,26 @@ Proposed by the planning session on 2026-11-07, for the user to settle before la
 4. **Phase 0 runs in the planning session**, after the cleanup merge and before the fork, so that every stream
    inherits it.
 5. **Memory**: each stream's scope capped at 4 GB, and the runner given about 24 GB.
-6. **Model and effort**: `claude-opus-5-5` at high effort for every loop, as in cleanup.
+6. **Model and effort**: `claude-opus-5-5` at high effort for every loop.
+7. **VF-015 is in scope**, as [Phase 0's step 7](#phase-0-thin-interfaces-not-a-rewrite): the equivalence harness
+   catches checked exceptions. The stub-reachability loop's timebox deferred it to a person on 2026-11-08, and this is
+   that person's decision. It goes in Phase 0, not in a stream, for three reasons:
+   - the fix is in `harness/`, which the objects stream owns;
+   - the environment stream's E2 needs it;
+   - it is small: a harness change with unit tests, and one job of a few seconds of JBMC.
+
+   It has no timebox attempt left. If the job fails again, it goes back to the user with the finding, and the streams
+   launch without it.
 
 ## Progress
 
 - Drafted 2026-11-07 by the planning session, from the outside plan, while the cleanup run was still going. The
   starting point was recounted at `wwlnosom`, and the names were registered in `feature-loop.sh` and `run-streams.sh`
-  with the integration script. Prerequisites 1–3 and 5–7 are still to do: the cleanup merge comes first.
-- Status: blocked: the cleanup loop's merge, then Phase 0 by the planning session, and the user's decisions
+  with the integration script.
+- 2026-11-08: the user settled the six decisions as proposed, and brought VF-015 in scope as Phase 0's step 7
+  (decision 7). The cleanup loop is merged and pushed (prerequisite 1). Prerequisites 2, 3 and 6–7 are left: the
+  recount at the merge, then Phase 0 by the planning session.
+- Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings
 
