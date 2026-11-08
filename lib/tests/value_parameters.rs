@@ -355,15 +355,14 @@ fn list_domain(plan: &mut jvmcontract::spec::plans::ConstructionPlan) -> &mut jv
 /// A planned domain's adapted list root (V2, through the domain gate): the claim's own bound of 3 lines, not the
 /// check's array bound of 4, and the result compared with each of the list's objects for identity, so that
 /// `identity:result==lines[0]` is preserved by the rewrite and refuted where the result is a copy of the first line
-/// (under the frozen `basket-first-claim` with each version's allocation bound raised to the copy's 2 objects, the
-/// `Line` and the exception its constructor may throw), on a witness replayed on a JVM. A kernel returning the
-/// element class without a plan is proved with the same identities stated.
+/// (under the frozen `basket-first-claim`, whose allocation bound is the copy's 2 objects in each version, the
+/// `Line` and the exception its constructor may throw: the user's decision of 2026-11-08), on a witness replayed on
+/// a JVM. A kernel returning the element class without a plan is proved with the same identities stated.
 #[test]
 fn a_planned_list_root_has_its_own_bound_and_the_results_identity_with_its_elements_is_observed() {
-    let mut claim = basket_claim("basket-first-claim");
-    let bounds = &mut claim.domain.as_mut().unwrap().bounds;
-    bounds.before.allocations = 2;
-    bounds.after.allocations = 2;
+    let claim = basket_claim("basket-first-claim");
+    let bounds = &claim.domain.as_ref().unwrap().bounds;
+    assert_eq!((bounds.before.allocations, bounds.after.allocations), (2, 2), "the user's bound");
     let check = |claim: &jvmcontract::spec::CanonicalClaim, build: &str| jvmcontract::spec::heap::check(claim, &basket("before"), &basket(build)).unwrap();
     let proved = check(&claim, "after");
     assert_eq!(proved.verdict, jvmcontract::spec::Verdict::Verified, "{proved:?}");
@@ -377,9 +376,15 @@ fn a_planned_list_root_has_its_own_bound_and_the_results_identity_with_its_eleme
     assert_eq!(state(&copied, "result"), Some(jvmcontract::spec::ObservationState::Unresolved), "the copy's fields are the first line's: {copied:?}");
     assert!(copied.witness.as_deref().is_some_and(|w| w.contains("lines=List.of(")), "{copied:?}");
 
-    // Under the frozen bound of 0, the copy's code is outside the claim: unresolved, never refuted or proved.
-    let frozen = check(&basket_claim("basket-first-claim"), "copied-first");
-    assert_eq!(frozen.verdict, jvmcontract::spec::Verdict::Unresolved, "{frozen:?}");
+    // Under a bound of 0 (the frozen one before that decision), the copy's code is outside the claim: unresolved,
+    // never refuted or proved.
+    let mut none = basket_claim("basket-first-claim");
+    let bounds = &mut none.domain.as_mut().unwrap().bounds;
+    bounds.before.allocations = 0;
+    bounds.after.allocations = 0;
+    let outside = check(&none, "copied-first");
+    assert_eq!(outside.verdict, jvmcontract::spec::Verdict::Unresolved, "{outside:?}");
+    assert!(outside.problem.as_deref().is_some_and(|p| p.contains("may make 2 objects in one call, more than the claim's allocation bound of 0")), "{outside:?}");
 
     let o = equivalence::run(&kernel_options("after", "l.Kernels#firstOf", "first-of")).unwrap();
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);

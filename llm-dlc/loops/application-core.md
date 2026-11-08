@@ -1559,8 +1559,19 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     a job included. Either way the three rows close: as passing, or with the case expected unresolved.
     - `basket-first-claim`: 0 or 2;
     - `checked-claim`: 1 or 3.
-- Status: blocked: the user's two allocation-bound decisions, `basket-first-claim` (0 or 2), which leaves V2 partial,
-  and `checked-claim` (1 or 3), which leaves O2 and J1 partial, each by one case, until it is settled
+- 2026-11-08, **the two allocation bounds, decided by the user: 2 and 3**, as O3's was, the gate counting the
+  exceptions a call may throw. `golden/basket-first-claim.json` bounds each version's allocations at 2 (was 0), and
+  `golden/checked-claim.json` at 3 (was 1). `expected.json` is unchanged; the gate stays as it is.
+  - **No case is held any more**: the contract's O2 and V2 rows (`lib/tests/application_core.rs`) and the joint
+    test's J1 (O2) and L (`lib/tests/application_core_joint.rs`) hold every case to `expected.json`, so
+    `copied-first` and `alias-to-copy` are refuted on their identity. `claim_family`'s `held` parameter is gone.
+    `tests/value_parameters.rs` reads the frozen bound of 2 and keeps a bound of 0 as the gate's unresolved case.
+  - **Verified inline**, in debug: the contract 14 of 14, value_parameters 10, the joint test's L and J1 (O2), and
+    the integration check. A sabotage, the old bounds put back, fails the contract's O2 and V2.
+  - **The job**: `20261108-214557-application-core-phase-5-the-user-s-allo`, the whole joint acceptance, the contract
+    and value_parameters in release, with the recording `jbmc` guard. When it passes, O2, V2 and J1 pass, every row
+    of the for-review list passes, and the status is `done`.
+- Status: waiting on jobs 20261108-214557-application-core-phase-5-the-user-s-allo
 
 ## Loop settings
 

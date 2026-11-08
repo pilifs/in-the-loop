@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-214557-application-core-phase-5-the-user-s-allo",
+  "title": "application-core Phase 5: the user's allocation bounds (basket-first-claim 2, checked-claim 3), the joint acceptance and the contract with no case held",
+  "description": "The user decided the two frozen claims' allocation bounds on 2026-11-08: lib/tests/fixtures/application-core/golden/basket-first-claim.json now bounds each version's allocations at 2 (was 0) and checked-claim.json at 3 (was 1), because the allocation gate counts the exceptions a call may throw, as the user's earlier O3 decision did. Under the old bounds copied-first and alias-to-copy were left unresolved where expected.json says refuted on identity; the contract (lib/tests/application_core.rs) and the joint acceptance (lib/tests/application_core_joint.rs) held those two cases to the gate's outcome. They now hold every case to expected.json. This job runs the whole joint acceptance (J1 with its R2 and O2 parts, H, L, J2), the contract and tests/value_parameters.rs in release on the own checker, with a jbmc first on PATH that records being called; the last step fails if any check called it. expected.json is unchanged. When it passes, O2, V2 and J1 of llm-dlc/loops/application-core.md pass and Phase 5 is done.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "jvmcontract:effects",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/fixtures/application-core/golden",
+      "lib/tests/application_core_joint.rs",
+      "lib/tests/application_core.rs",
+      "llm-dlc/loops/application-core.md"
+    ]
+  },
+  "expected": "every step exits 0: all six joint tests, the contract's 14 and value_parameters' 10 pass, and the last step finds no call of jbmc",
+  "submitted": {
+    "at": "2026-11-08T21:45:57+00:00",
+    "session": "6ca21bdf-4743-4500-90ea-7fe6280624b2",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "notes": "debug inline on this machine: contract 67 s, joint L and J1 O2 14 s, value_parameters 6 s; the earlier joint job took 5 min in release, plus the release build"
+  },
+  "steps": [
+    {
+      "name": "build the tests and the recording jbmc",
+      "run": "cd lib && rm -rf target/bounds-shim && mkdir -p target/bounds-shim/bin && printf \"#!/bin/sh\\ntouch %s/target/bounds-shim/jbmc-called\\nexit 127\\n\" \"$PWD\" > target/bounds-shim/bin/jbmc && chmod +x target/bounds-shim/bin/jbmc && cargo test --release --test application_core_joint --test application_core --test value_parameters --no-run",
+      "cwd": "."
+    },
+    {
+      "name": "the joint acceptance: J1 (with R2 and O2), H, L, J2",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/bounds-shim/bin:$PATH\" cargo test --release --test application_core_joint -- --nocapture 2>&1 | tee target/bounds-joint.log",
+      "cwd": "."
+    },
+    {
+      "name": "the contract, 14 rows with no case held",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/bounds-shim/bin:$PATH\" cargo test --release --test application_core 2>&1 | tee target/bounds-contract.log",
+      "cwd": "."
+    },
+    {
+      "name": "value_parameters: the list root under the frozen bound of 2, and 0 left unresolved",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/bounds-shim/bin:$PATH\" cargo test --release --test value_parameters 2>&1 | tee target/bounds-values.log",
+      "cwd": "."
+    },
+    {
+      "name": "J2's guard: no check called jbmc",
+      "run": "cd lib && test ! -e target/bounds-shim/jbmc-called && echo \"no check called jbmc\"",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

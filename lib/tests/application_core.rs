@@ -248,23 +248,11 @@ fn o1_an_ordinary_receiver_in_the_regression_and_property_checks() {
 fn o2_an_array_valued_constructor_faithful_to_identity() {
     // The service's dependencies are passed null, and the request's String code is a leaf of its construction
     // compared by content, since Phase 5 (application-core.md's Progress): no refusal is accepted.
-    // `alias-to-copy`'s copy, the exception the copy's constructor may throw and the method's own make 3 objects at
-    // most, more than `checked-claim`'s allocation bound of 1: the gate leaves it unresolved, where `expected.json`
-    // says refuted on `identity:result==request`. A frozen fixture's bound against its expectation, as
-    // `basket-first-claim`'s is: the user's decision. Until then that one case is held to exactly the gate's
-    // outcome, and every other to its expectation.
-    let checked = golden("checked-claim");
-    for (name, verdict) in cases("quote", "checked-claim") {
-        let what = format!("checked-claim {name}");
-        let result = spec::heap::check(&checked, &build("quote", "before"), &build("quote", &name));
-        if name == "alias-to-copy" {
-            let o = result.unwrap_or_else(|u| panic!("{what}: refused: {u}"));
-            assert_eq!(o.verdict, spec::Verdict::Unresolved, "{what}: {o:?}");
-            assert!(o.problem.as_deref().is_some_and(|p| p.contains("may make 3 objects in one call, more than the claim's allocation bound of 1")), "{what}: {o:?}");
-            continue;
-        }
-        holds(&what, result, &verdict, &[]);
-    }
+    // `checked-claim` bounds each version's allocations at 3, the user's decision of 2026-11-08 (the frozen 1 counted
+    // only the method's own exception): `alias-to-copy`'s copy, the exception its constructor may throw and the
+    // method's own are within the claim, so the copy is refuted on `identity:result==request`, as `expected.json`
+    // says.
+    claims("quote", "checked-claim", &[], spec::heap::check);
 }
 
 /// O3: a defect only a history reaches. Under the constructor-only claim, `after-setup` is verified, labelled for
@@ -293,23 +281,11 @@ fn v2_a_bounded_supported_list_as_input() {
     // The frozen claims' adapted list root too (Phase 5 step 1): no refusal is accepted.
     claims("basket", "basket-total-claim", &[], spec::heap::check);
     claims("basket", "basket-clear-claim", &[], spec::heap::check);
-    // `basket-first-claim` bounds each version's allocations at 0, and `copied-first`'s copy makes a Line (and the
-    // IllegalArgumentException its constructor may throw): the allocation gate leaves it unresolved, where
-    // `expected.json` says refuted on `identity:result==lines[0]`. A frozen fixture's bound against its expectation,
-    // as O3's was: the user's decision (application-core.md's Progress). Until then that one case is held to exactly
-    // the gate's outcome, and every other to its expectation.
-    let first = golden("basket-first-claim");
-    for (name, verdict) in cases("basket", "basket-first-claim") {
-        let what = format!("basket-first-claim {name}");
-        let result = spec::heap::check(&first, &build("basket", "before"), &build("basket", &name));
-        if name == "copied-first" {
-            let o = result.unwrap_or_else(|u| panic!("{what}: refused: {u}"));
-            assert_eq!(o.verdict, spec::Verdict::Unresolved, "{what}: {o:?}");
-            assert!(o.problem.as_deref().is_some_and(|p| p.contains("may make 2 objects in one call, more than the claim's allocation bound of 0")), "{what}: {o:?}");
-            continue;
-        }
-        holds(&what, result, &verdict, &[]);
-    }
+    // `basket-first-claim` bounds each version's allocations at 2, the user's decision of 2026-11-08 (the frozen 0
+    // left the copy outside the claim): `copied-first`'s copy makes a Line and the IllegalArgumentException its
+    // constructor may throw, as O3's decision counted the exception `allows` throws, so the copy is refuted on
+    // `identity:result==lines[0]`, as `expected.json` says.
+    claims("basket", "basket-first-claim", &[], spec::heap::check);
 }
 
 /// E1: a consumed return value and a declared failure, under one explicit environment: the rate a dependency

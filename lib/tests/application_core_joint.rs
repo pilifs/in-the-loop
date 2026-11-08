@@ -201,9 +201,8 @@ fn record(row: &str, family: &str, claim: &str, name: &str, run_name: &str, expe
 
 /// Every build of `family` under the frozen claim `name`, each run cold and then again under one cache: the result
 /// as expected each time, the rerun the stored result under the same key, and every build whose expected verdict
-/// differs from `after`'s under another key, never answered by a stored result. `held` names a build held to
-/// another outcome than `expected.json`'s, with the check it must pass instead (a user's decision still open).
-fn claim_family(row: &str, family: &str, name: &str, check: Check, held: Option<(&str, &dyn Fn(&spec::Outcome))>) -> Vec<(String, Option<String>)> {
+/// differs from `after`'s under another key, never answered by a stored result.
+fn claim_family(row: &str, family: &str, name: &str, check: Check) -> Vec<(String, Option<String>)> {
     let claim = golden(name);
     let cache = fresh(&format!("cache-{name}"));
     let mut keys: Vec<(String, Option<String>)> = Vec::new();
@@ -214,10 +213,7 @@ fn claim_family(row: &str, family: &str, name: &str, check: Check, held: Option<
         record(row, family, name, &build_name, "cold", &verdict, &cold);
         let key = cold.key.clone();
         assert!(key.is_some(), "{what}: the claim is cacheable, so that its reuse can be shown: {:?}", cold.outcome);
-        match held {
-            Some((held_name, hold)) if held_name == build_name => hold(&cold.outcome),
-            _ => strictly(&what, &claim, &cold, &verdict),
-        }
+        strictly(&what, &claim, &cold, &verdict);
         if build_name == "after" {
             assert!(!cold.exact, "{what}: the first run under a fresh cache reuses nothing");
             after_key = key.clone();
@@ -313,8 +309,8 @@ fn regression_family(row: &str, family: &str, target: &str, bound: Option<u32>) 
 /// `fee` as a plain regression are apart, below.
 #[test]
 fn j1_the_quote_family_composes_the_four_streams() {
-    claim_family("J1 (E1)", "quote", "quote-claim", Check::Planned, None);
-    claim_family("J1 (E2)", "quote", "offer-claim", Check::Planned, None);
+    claim_family("J1 (E1)", "quote", "quote-claim", Check::Planned);
+    claim_family("J1 (E2)", "quote", "offer-claim", Check::Planned);
     regression_family("J1 (V1)", "quote", "quotes.Codes#vip", None);
 
     // Invalidation by the environment model: without the rate's modelled `RateUnavailable`, the claim is another
@@ -394,31 +390,19 @@ fn j1_r2_a_receiver_with_dependencies() {
 /// construction, of the String adapter (at most the claim's 4 code units, never null), and its field is compared by
 /// content (`tests/object_strings.rs`).
 ///
-/// `alias-to-copy` is held to the allocation gate's outcome until the user decides the claim's bound (the brief's
-/// Progress): its copy, the exception the copy's constructor may throw and the method's own make 3 objects at most,
-/// more than `checked-claim`'s bound of 1, so the gate leaves it unresolved where `expected.json` says refuted on
-/// `identity:result==request`. Under a bound of 3 in each version it is refuted on that identity alone, its witness
-/// run on a JVM, and `after` is still verified.
+/// `checked-claim` bounds each version's allocations at 3, the user's decision of 2026-11-08 (the frozen 1 counted
+/// only the method's own exception): `alias-to-copy`'s copy, the exception its constructor may throw and the
+/// method's own are within the claim, so it is refuted on `identity:result==request` alone, its witness run on a
+/// JVM, and `after` is still verified.
 #[test]
 fn j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string() {
-    let gate = |o: &spec::Outcome| {
-        assert_eq!(o.verdict, spec::Verdict::Unresolved, "alias-to-copy under checked-claim: {o:?}");
-        assert!(o.problem.as_deref().is_some_and(|p| p.contains("may make 3 objects in one call, more than the claim's allocation bound of 1")), "{o:?}");
-    };
-    claim_family("J1 (O2)", "quote", "checked-claim", Check::Heap, Some(("alias-to-copy", &gate)));
+    claim_family("J1 (O2)", "quote", "checked-claim", Check::Heap);
 
-    let mut raised = golden("checked-claim");
-    let bounds = &mut raised.domain.as_mut().unwrap().bounds;
-    bounds.before.allocations = 3;
-    bounds.after.allocations = 3;
-    let cache = fresh("cache-checked-raised");
-    let proved = run_claim(Check::Heap, &raised, "quote", "after", &cache);
-    record("J1 (O2)", "quote", "checked-claim, allocations 3", "after", "cold", &json!("verified"), &proved);
-    strictly("checked-claim (allocations 3) after", &raised, &proved, &json!("verified"));
-    let copied = run_claim(Check::Heap, &raised, "quote", "alias-to-copy", &cache);
-    let expected = json!(["refuted", "identity:result==request"]);
-    record("J1 (O2)", "quote", "checked-claim, allocations 3", "alias-to-copy", "cold", &expected, &copied);
-    strictly("checked-claim (allocations 3) alias-to-copy", &raised, &copied, &expected);
+    let claim = golden("checked-claim");
+    let bounds = &claim.domain.as_ref().unwrap().bounds;
+    assert_eq!((bounds.before.allocations, bounds.after.allocations), (3, 3), "the user's bound");
+    let cache = fresh("cache-checked-copy");
+    let copied = run_claim(Check::Heap, &claim, "quote", "alias-to-copy", &cache);
     // Refuted on the identity alone: the witness shows the copy's fields as the request's, its code by content.
     let state = |id: &str| copied.outcome.accounting.iter().find(|a| a.observation == id).map(|a| a.state);
     assert_eq!(state("result"), Some(ObservationState::Unresolved), "{:?}", copied.outcome);
@@ -433,8 +417,8 @@ fn j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string() {
 /// another key under each. `allows` also reaches its verdicts as a plain regression and as a property.
 #[test]
 fn h_the_throttle_family() {
-    let constructed = claim_family("H (O3)", "throttle", "throttle-constructed-claim", Check::Heap, None);
-    let setup = claim_family("H (O3)", "throttle", "throttle-setup-claim", Check::Heap, None);
+    let constructed = claim_family("H (O3)", "throttle", "throttle-constructed-claim", Check::Heap);
+    let setup = claim_family("H (O3)", "throttle", "throttle-setup-claim", Check::Heap);
     for ((name, a), (_, b)) in constructed.iter().zip(&setup) {
         assert_ne!(a, b, "{name}: the constructor-only and the setup domain are two claims");
     }
@@ -461,17 +445,14 @@ fn h_the_throttle_family() {
 
 /// L: the basket family over a bounded immutable list. `total`, `first` and `clearAll` reach their verdicts under
 /// their frozen claims and as plain regressions within the claims' bound of 3: order, duplicates and identity kept,
-/// each defect refuted and replayed. `basket-first-claim`'s `copied-first` is held to the allocation gate's outcome
-/// until the user decides its bound (the brief's Progress). A smaller list bound is another claim, checked again.
+/// each defect refuted and replayed. `basket-first-claim` bounds each version's allocations at 2, the user's decision
+/// of 2026-11-08, so `copied-first`'s copy (the Line and the exception its constructor may throw) is within the claim
+/// and refuted on its identity. A smaller list bound is another claim, checked again.
 #[test]
 fn l_the_basket_family() {
-    claim_family("L (V2)", "basket", "basket-total-claim", Check::Heap, None);
-    claim_family("L (V2)", "basket", "basket-clear-claim", Check::Heap, None);
-    let gate = |o: &spec::Outcome| {
-        assert_eq!(o.verdict, spec::Verdict::Unresolved, "copied-first under basket-first-claim: {o:?}");
-        assert!(o.problem.as_deref().is_some_and(|p| p.contains("more than the claim's allocation bound of 0")), "{o:?}");
-    };
-    claim_family("L (V2)", "basket", "basket-first-claim", Check::Heap, Some(("copied-first", &gate)));
+    claim_family("L (V2)", "basket", "basket-total-claim", Check::Heap);
+    claim_family("L (V2)", "basket", "basket-clear-claim", Check::Heap);
+    claim_family("L (V2)", "basket", "basket-first-claim", Check::Heap);
     regression_family("L (V2)", "basket", "basket.Basket#total", Some(3));
     regression_family("L (V2)", "basket", "basket.Basket#clearAll", Some(3));
 
