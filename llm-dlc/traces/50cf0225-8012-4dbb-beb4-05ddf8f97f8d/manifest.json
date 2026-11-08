@@ -104,6 +104,14 @@
       "summary": "application-core Phase 5 step 5: the shop examples' Quote#quantity note gives the merged revision's reason",
       "body": "Examples 190-196 each carry a note naming what stays unresolved in every example of the set. Its reason for Quote#quantity was stale: since the application-core merge the regression check takes an instance method on a receiver made by its constructor, and step 3's collected shop job (20261108-195650-...-shop-s-e) now leaves Quote#quantity unsupported because the receiver is made differently in the two versions (Quote(long, int) before, Quote(Money, int) now), not because it is an instance method. Note 3 of each example.json now says so, and that the old refusal was the reason before the merge. The pages and examples/index.json were re-rendered with build.py --render-only; the note now agrees with each example's collected result.json and verifier-output.txt. The other two parts it names (POST /quotes/text, Money#cents) still match the results. The brief's Progress records this; next is J4's figures at the merge.",
       "log_sha256": "891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2"
+    },
+    {
+      "change_id": "vqroonzuutznumrluwyxpoqzlxmvmppo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 5: J4's figures at the merged revision in J4's row, and the loop blocked on the two allocation-bound decisions",
+      "body": "J4's row of the for-review list in llm-dlc/loops/application-core.md's Progress now reads job 20261108-200158's report (lib/benchmark/preparation/j4-merge.json and .md, at 9a1b3b3a, release, medians of 7) against the reuse stream's (j4.*, job 20261108-114325 at 283aa75d). All six scenarios reach the stream's verdicts and cache outcomes; the benchmark's assertions held (1 test passed). Times are within a few milliseconds of the stream's. The defect rerun's median is 51.6 ms against 31.7 ms, but both reports' repeats are bimodal (about 32 or 52 ms), and the two medians fall in different modes. The helper proofs' keys differ from the stream's because the binary changed. J4 passes on the merged revision.\n\nThis meets Phase 5's criterion, and the for-review list names every row's state. O2, V2 and J1 stay partial, each by one case held to the allocation gate's unresolved outcome, until the user settles basket-first-claim's bound (0 or 2) and checked-claim's (1 or 3). The status is set to blocked on those two decisions. No job is pending. The brief is out of date in two places: Phase 0's step 1 says the claim key covers the label, which holds of spec::cache::key only (the heap check's proof cache keys the harness), and the contract's rows leave out the stream items V3, E3 and R3, which the list reports.",
+      "log_sha256": "891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2"
     }
   ],
   "logs": {

@@ -1434,12 +1434,37 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
       - Step 2's job's three kinds of invalidation, each another key, checked again: a modelled outcome less, a
         smaller list bound, and another assertion.
       - Each build whose verdict differs from `after`'s gets another key.
-    - **J4, passes on the reuse stream's evidence; the merge's rerun is running.**
-      - The stream's report, job `20261108-114325-…` at its `283aa75d`, has all five cases, with preparation,
-        solving and replay timed apart, and R3's reuse.
-      - Since then the library changed in 33 files. The inline smoke run at this revision got the same verdicts and
-        cache outcomes.
-      - Job `20261108-200158-…` reruns it unchanged, writing `j4-merge.*`. Its figures go here once it is collected.
+    - **J4, passes on the merged revision.** Job `20261108-200158-…` (at `9a1b3b3a`, passed, 3m43s, peak 1.9 GiB)
+      reran the reuse stream's step unchanged and wrote `lib/benchmark/preparation/j4-merge.{json,md}`. The stream's
+      own report, job `20261108-114325-…` at its `283aa75d`, stays as recorded in `j4.*`. Release, medians of 7, for
+      these fixtures only.
+      - **The verdicts and cache outcomes are the stream's**, in all six scenarios: the benchmark's assertions held.
+        `after`, the unrelated edit and the helper rewrite verify `POST /quotes`, `discount`, `total` and
+        `withQuantity`. `offset` refutes the route and `total`. In every scenario `POST /quotes/text` is unresolved,
+        and `Money#cents` and `Quote#quantity` unchecked.
+        - The two reruns and the unrelated edit: 5 exact hits of 5.
+        - The helper rewrite: 1 hit (`withQuantity`), and `total` proved again on a new proof of `discount`.
+        - The helper proofs' keys differ from the stream's (`discount`'s cold key `sha256:1ac7558b…`, was
+          `776dae08…`). That is expected, since the binary changed (13.7 MB, was 12.9 MB).
+      - **Times in process, merge (stream)**:
+
+        | Case | ms | Solving | After the runs (replay, JVM) | Before each proof |
+        |---|---|---|---|---|
+        | cold | 62.9 (71.5) | 44.0 (50.0) | 9.2 (10.2) | 6.2 (6.8) |
+        | unchanged rerun | 9.2 (9.5) | 0 | 0 | 5.7 (6.1) |
+        | unrelated edit | 9.3 (8.9) | 0 | 0 | 5.9 (5.8) |
+        | helper rewrite | 71.1 (79.2) | 52.0 (59.0) | 8.6 (9.4) | 6.4 (6.8) |
+        | defect, cold | 1439.2 (1450.7) | 1350.0 (1364.0) | 35.2 (53.9) | 48.7 (48.0) |
+        | defect, rerun | 51.6 (31.7) | 0 | 0 | 47.2 (27.3) |
+
+        - Almost all of the defect's cold time is solving `total`'s refutation, as at the stream (1300 ms of it).
+        - The rerun of the defect is no slower at the merge. Its repeats are bimodal in both reports, about 32 ms or
+          about 52 ms each, depending on `discount`'s "before" (about 22 ms or 42 ms). The stream's median fell in
+          the fast mode (5 of 7), and the merge's in the slow one (4 of 7).
+        - The repeated stages are within a millisecond of the stream's. Opening the JDK's image is 7.70 ms the
+          first time and 0.07 ms after (R3's shared table). The binary's digest takes 38.3 ms, once per process.
+      - **The finding is unchanged**: an exact rerun or an unrelated edit costs no solving, and preparation before
+        each proof stays the larger part of a cached run.
     - **V3, passes.** It ran inline only: `tests/values.rs`, the evidence records, and value domains resolved before
       the key.
       - VF-023 was closed by job `20261108-141443-…`, its last attempt.
@@ -1521,7 +1546,21 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   refused as an instance method before the merge. The other two parts it names (`POST /quotes/text`, `Money#cents`)
   are unresolved for the reasons it gives. **Next**: J4's figures at the merge (`j4-merge.*`, job
   `20261108-200158-…`), compared with the stream's, into J4's row.
-- Status: working
+- 2026-11-08, **J4's figures at the merge, in J4's row** of the for-review list above. Job `20261108-200158-…` reached
+  the stream's verdicts and cache outcomes in all six scenarios, with times within a few milliseconds of the stream's.
+  The one larger gap, in the defect's rerun, is the same two timing modes split differently over the repeats. J4
+  passes on the merged revision.
+  - **Phase 5's criterion is met**, and the list names every row's state:
+    - G0, O1, O3, V1, E1, E2, R1, R2, J2, J3 and J4 pass, and the stream items V3, E3 and R3 too;
+    - O2, V2 and J1 are partial, with their evidence: V2 by `basket-first-claim`'s `copied-first`, and O2 and J1 by
+      `checked-claim`'s `alias-to-copy`, each held to the allocation gate's unresolved outcome.
+  - No job is pending. Nothing the timebox deferred, or optional left out, is taken up.
+  - **What needs the user**: the two allocation bounds. Once they are decided, applying them is one piece of work,
+    a job included. Either way the three rows close: as passing, or with the case expected unresolved.
+    - `basket-first-claim`: 0 or 2;
+    - `checked-claim`: 1 or 3.
+- Status: blocked: the user's two allocation-bound decisions, `basket-first-claim` (0 or 2), which leaves V2 partial,
+  and `checked-claim` (1 or 3), which leaves O2 and J1 partial, each by one case, until it is settled
 
 ## Loop settings
 
