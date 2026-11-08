@@ -12,48 +12,49 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-07T23:23:44.332Z",
-  "ended": "2026-11-07T23:24:01.385Z",
-  "duration_seconds": 17,
+  "ended": "2026-11-08T00:55:29.049Z",
+  "duration_seconds": 5505,
   "stats": {
     "turns": 1,
-    "api_calls": 5,
-    "tool_calls": 5,
-    "tool_errors": 0,
+    "api_calls": 26,
+    "tool_calls": 27,
+    "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 32519,
+    "peak_context_tokens": 62697,
     "usage": {
-      "input_tokens": 10,
-      "output_tokens": 652,
-      "cache_read_input_tokens": 127422,
-      "cache_creation_input_tokens": 21135
+      "input_tokens": 52,
+      "output_tokens": 8108,
+      "cache_read_input_tokens": 988487,
+      "cache_creation_input_tokens": 51313
     }
   },
   "tools": {
-    "Bash": 5
+    "Bash": 26,
+    "bash": 1
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-07T23:23:44.332Z",
-      "ended": "2026-11-07T23:24:01.385Z",
+      "ended": "2026-11-08T00:55:29.049Z",
       "turns": 1,
-      "api_calls": 5,
+      "api_calls": 26,
       "usage": {
-        "input_tokens": 10,
-        "output_tokens": 652,
-        "cache_read_input_tokens": 127422,
-        "cache_creation_input_tokens": 21135
+        "input_tokens": 52,
+        "output_tokens": 8108,
+        "cache_read_input_tokens": 988487,
+        "cache_creation_input_tokens": 51313
       },
-      "peak_context_tokens": 32519
+      "peak_context_tokens": 62697
     }
   ],
   "log": {
-    "sha256": "5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca",
-    "bytes": 276963,
-    "lines": 54,
-    "gzip_bytes": 71250,
-    "path": "llm-dlc/traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/logs/5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca.jsonl.gz"
+    "sha256": "267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066",
+    "bytes": 574674,
+    "lines": 163,
+    "gzip_bytes": 111542,
+    "path": "llm-dlc/traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/logs/267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -64,9 +65,23 @@
       "summary": "Stub reachability, step 1: an experiment job that has JBMC's solver decide whether VF-015's proof enters the String.format stub (verification pending)",
       "body": "llm-dlc/loops/stub-reachability.md's step 1. The gap preflight counts a stub as entered when JBMC's symbolic execution alone keeps a step of it. For VF-015's proof (prove Hex#toDigit --assume 'ch == 1632' on commons-codec's old Hex), that counts String.format(String, Object[]) as entered on toDigit's exception path, which the assumption makes infeasible. The new verification/triage/stub-reachability.sh reruns that proof unchanged, with JBMC behind a wrapper that records each command and its time. On the proof's harness and command it then tries two methods. (A) --cover location in place of --unwinding-assertions, reading the goals of DecoderException's constructor, of the stub and of toDigit, and once more with --property on one goal. (B) The proof as given, with a rewritten DecoderException whose String.format call first calls a probe that fails an assertion of its own (throw new AssertionError(), as GapIntrinsics.open). Both also run on a control, the same prove without --assume, where the call is reachable. The job's description gives the outcome each method is expected to have.\n\nChecked inline: the script's syntax, its argv rewriting on made-up commands, and its recording wrapper with echo in place of JBMC. No JBMC was run. The brief's Progress records why the probe is a rewritten caller and not a rewritten goto program: jbmc 6.11 can't write a goto binary for goto-instrument. jbmc --help lists --cover only in --unwinding-assertions' line, so whether --cover is accepted is for the job to show.\n\nVerification pending: job 20261107-233000-stub-reachability-step-1-can-jbmc-s-solv (verification/jobs/). Step 2, choosing the method, waits on its result.",
       "log_sha256": "5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca"
+    },
+    {
+      "change_id": "qkrlyslvusqmnupntktnoqlxnruxrqoq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 7 jobs: VF-001 closed, VF-002 still blocked in build.py, VF-018 triaged",
+      "body": "Run of 2026-11-07/08 on vm-1. Both conformance-corpus jobs passed with their test run (VF-001 closed). Examples 147 and 148 failed again in build.py's stage_contracts, which is handed the attempt directory rather than the example's folder (VF-002, with the line numbers). The VF-018 triage job passed: JBMC's formula for objects.Kernel#price is 18k variables and 77k clauses at every unwind, and no variant finished in 900 s, so the solver and not the unwinding is the cost. The witness-search job and the stub-reachability step-1 experiment passed. Outputs of the passed jobs were applied by collect.",
+      "log_sha256": "267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066"
     }
   ],
   "logs": {
+    "267f541e12622ed0dbb174dd5695ed687da365b45c9b476fe26d4fcbc19ff066": {
+      "bytes": 574674,
+      "lines": 163,
+      "gzip_bytes": 111542,
+      "url": null
+    },
     "5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca": {
       "bytes": 276963,
       "lines": 54,

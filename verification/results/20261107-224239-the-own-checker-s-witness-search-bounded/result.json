@@ -1,0 +1,233 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-224239-the-own-checker-s-witness-search-bounded",
+  "title": "The own checker's witness search bounded by work: lib/tests/integration.rs, alignment.rs and observations.rs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8m15s, peak 3.1 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×3",
+  "attention": [
+    "step 1 (integration, alignment and observations tests) was held back 4m51s by its 2-CPU quota in 8m15s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-224239-the-own-checker-s-witness-search-bounded.json",
+    "sha256": "eefacc39565ee3e5ac8216d6ce4a4214daefc59134d9175c5d98562ced00ba37",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-224239-the-own-checker-s-witness-search-bounded",
+      "title": "The own checker's witness search bounded by work: lib/tests/integration.rs, alignment.rs and observations.rs",
+      "description": "After the first violation, the own checker searches the remaining paths for a witness in an earlier stage (lib/src/bmc/mod.rs, check). That search used to stop at as long again as the first violation took, at least a second, so on a loaded or slower machine it could stop sooner and report another witness: the last clock dependency in the own checker after VF-010. It now stops at as much solver work again (conflicts, at least PROBE_CONFLICTS) and as many paths again (at least 64), the same on every machine; a solver with no conflict limit keeps the time rule. The library's unit tests (211, with the reproducer the_search_for_a_smaller_witness_does_not_depend_on_the_clock, which fails on the old code under a solver 300 ms slower per call), foundations, compare, effects, heap, summaries and conformance (non-ignored) passed inline. This job runs the suites that weren't run inline, which several of run JBMC, at the commit that makes the change. Expected: every non-ignored test passes.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "native:probes"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/tests/integration.rs"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-07T22:42:39+00:00",
+        "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "as the cleanup merge's integration job (2m37s, peak 2.0 GiB), plus two smaller suites"
+      },
+      "steps": [
+        {
+          "name": "integration, alignment and observations tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration --test alignment --test observations",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "d95f87804f44c65748387b9f30843b239a84725b",
+  "startedAt": "2026-11-07T23:25:59+00:00",
+  "finishedAt": "2026-11-07T23:34:15+00:00",
+  "wallSeconds": 496.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 974932,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 25769803776,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "as the cleanup merge's integration job (2m37s, peak 2.0 GiB), plus two smaller suites"
+  },
+  "usage": {
+    "peakMemoryBytes": 3333611520,
+    "wallSeconds": 495.4,
+    "cpuSeconds": 828.6,
+    "memoryOfEstimate": 1.03,
+    "durationOfEstimate": 0.55
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "integration, alignment and observations tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration --test alignment --test observations",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 495.397,
+      "cpuSeconds": 828.641,
+      "cpuThrottledSeconds": 291.91,
+      "peakMemoryBytes": 3333611520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-alignment-and-obse.log",
+        "lines": 183,
+        "bytes": 10510,
+        "sha256": "01694cb2172d4c12baa1c74dc3ba685aa9e058ae244610b40cf893152ec083dd",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 3
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 93,
+          "text": "test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 98.61s",
+          "groups": [
+            "ok",
+            "34",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 163,
+          "text": "test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 119.54s",
+          "groups": [
+            "ok",
+            "64",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 182,
+          "text": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 212.53s",
+          "groups": [
+            "ok",
+            "12",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test results_of_two_types_need_a_relation ... ok",
+        "test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_gap_scan_gives_each_class_initializer_a_shape ... ok",
+        "test the_gap_scan_names_what_the_own_checker_approximates ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 119.54s",
+        "",
+        "     Running tests/observations.rs (target/debug/deps/observations-7b976424b8698adc)",
+        "",
+        "running 12 tests",
+        "test a_changed_shape_is_changed_not_preserved ... ok",
+        "test a_renamed_handler_or_path_variable_is_the_same_entry_point ... ok",
+        "test a_route_observes_its_response_status_and_event ... ok",
+        "test box_office_specs_say_what_its_source_does ... ok",
+        "test entry_points_a_key_does_not_tell_apart_are_unresolved ... ok",
+        "test box_office_examples_compare_as_their_boundary_diffs_say has been running for over 60 seconds",
+        "test every_box_office_entry_point_has_a_spec_that_matches_its_golden_text ... ok",
+        "test the_command_compares_against_an_earlier_builds_specs ... ok",
+        "test the_command_prints_the_specs_as_text_and_json ... ok",
+        "test the_specs_are_the_same_for_the_refactor_and_say_where_the_defects_differ ... ok",
+        "test two_builds_of_the_joint_example_compare_into_accounted_obligations ... ok",
+        "test what_the_analysis_cannot_see_stays_in_the_spec ... ok",
+        "test box_office_examples_compare_as_their_boundary_diffs_say ... ok",
+        "",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 212.53s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T00:54:27+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

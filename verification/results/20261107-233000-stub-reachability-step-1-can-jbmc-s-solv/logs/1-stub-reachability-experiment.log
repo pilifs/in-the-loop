@@ -1,0 +1,98 @@
+== 1. clone and compile
+probe: 64:        super(String.format(Reach.reach(message), args));
+== 2. VF-015's step 3, unchanged, and the control
+== 2. the proofs (case: --assume 'ch == 1632'; control: no --assume)
+-- case: jvmcontract exit 1 in 482 ms; its last lines:
+   note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, work-case/jbmc-goto.txt):
+     jbmc gap: jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5: java.lang.String.format(java.lang.String, java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.codec.DecoderException.<init>:64
+   ✗ org.apache.commons.codec.binary.Hex#toDigit cannot be verified: JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it
+   jbmc other exit=0 time=3ms
+   jbmc listing exit=0 time=49ms
+   jbmc symbolic exit=0 time=100ms
+   jbmc other exit=0 time=4ms
+   jbmc proof exit=0 time=129ms
+-- control: jvmcontract exit 1 in 465 ms; its last lines:
+       outcome: 1
+     (found by JBMC 6.11.0 in 0.4 s as toDigit(ch='7', index=-1), shrunk to the input above in 26 interpreter runs, replayed in the interpreter; domain ch: char × index: int)
+   
+   The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+   jbmc other exit=0 time=4ms
+   jbmc listing exit=0 time=45ms
+   jbmc symbolic exit=0 time=104ms
+   jbmc other exit=0 time=4ms
+   jbmc proof exit=10 time=105ms
+== 3. case
+   proof command: jbmc PropertyHarness --function PropertyHarness.check --classpath /home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/harness:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/base-classes:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/jdk:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/models --unwind 16 --trace --throw-runtime-exceptions --unwinding-assertions --json-ui --timestamp monotonic --no-refine-strings --sat-solver cadical 
+   A. --cover location: jbmc exit 64 in 3 ms (lib/target/stub-reach/case-cover.txt)
+   A. 
+   A. the goals of DecoderException(String, Object...), String.format's stub and toDigit:
+      (no goal of String.format's stub is listed)
+   A'. not run: no goal of the constructor to name
+   B. the proof with the probe: jbmc exit 0 in 92 ms (lib/target/stub-reach/case-probe.txt)
+   B. VERIFICATION SUCCESSFUL
+   B. the probe's and the harness's properties:
+      [java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 93: SUCCESS
+      [java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS
+      [java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String;.assertion.1] line 5 assertion at file org/apache/commons/codec/Reach.java line 5 function java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String; bytecode-index 3: SUCCESS
+== 3. control
+   proof command: jbmc PropertyHarness --function PropertyHarness.check --classpath /home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/harness:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/base-classes:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/jdk:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/models --unwind 16 --trace --throw-runtime-exceptions --unwinding-assertions --json-ui --timestamp monotonic --no-refine-strings --sat-solver cadical 
+   A. --cover location: jbmc exit 64 in 4 ms (lib/target/stub-reach/control-cover.txt)
+   A. 
+   A. the goals of DecoderException(String, Object...), String.format's stub and toDigit:
+      (no goal of String.format's stub is listed)
+   A'. not run: no goal of the constructor to name
+   B. the proof with the probe: jbmc exit 10 in 90 ms (lib/target/stub-reach/control-probe.txt)
+   B. VERIFICATION FAILED
+   B. the probe's and the harness's properties:
+      [java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 85: FAILURE
+      [java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS
+      [java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String;.assertion.1] line 5 assertion at file org/apache/commons/codec/Reach.java line 5 function java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String; bytecode-index 3: FAILURE
+== summary
+stub reachability experiment, 2026-11-08T00:54:14Z, 6.11.0 (cbmc-6.11.0)
+probe: 64:        super(String.format(Reach.reach(message), args));
+== 2. the proofs (case: --assume 'ch == 1632'; control: no --assume)
+-- case: jvmcontract exit 1 in 482 ms; its last lines:
+   note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, work-case/jbmc-goto.txt):
+     jbmc gap: jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5: java.lang.String.format(java.lang.String, java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.codec.DecoderException.<init>:64
+   ✗ org.apache.commons.codec.binary.Hex#toDigit cannot be verified: JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it
+   jbmc other exit=0 time=3ms
+   jbmc listing exit=0 time=49ms
+   jbmc symbolic exit=0 time=100ms
+   jbmc other exit=0 time=4ms
+   jbmc proof exit=0 time=129ms
+-- control: jvmcontract exit 1 in 465 ms; its last lines:
+       outcome: 1
+     (found by JBMC 6.11.0 in 0.4 s as toDigit(ch='7', index=-1), shrunk to the input above in 26 interpreter runs, replayed in the interpreter; domain ch: char × index: int)
+   
+   The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+   jbmc other exit=0 time=4ms
+   jbmc listing exit=0 time=45ms
+   jbmc symbolic exit=0 time=104ms
+   jbmc other exit=0 time=4ms
+   jbmc proof exit=10 time=105ms
+== 3. case
+   proof command: jbmc PropertyHarness --function PropertyHarness.check --classpath /home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/harness:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/base-classes:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/jdk:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/models --unwind 16 --trace --throw-runtime-exceptions --unwinding-assertions --json-ui --timestamp monotonic --no-refine-strings --sat-solver cadical 
+   A. --cover location: jbmc exit 64 in 3 ms (lib/target/stub-reach/case-cover.txt)
+   A. 
+   A. the goals of DecoderException(String, Object...), String.format's stub and toDigit:
+      (no goal of String.format's stub is listed)
+   A'. not run: no goal of the constructor to name
+   B. the proof with the probe: jbmc exit 0 in 92 ms (lib/target/stub-reach/case-probe.txt)
+   B. VERIFICATION SUCCESSFUL
+   B. the probe's and the harness's properties:
+      [java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 93: SUCCESS
+      [java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS
+      [java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String;.assertion.1] line 5 assertion at file org/apache/commons/codec/Reach.java line 5 function java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String; bytecode-index 3: SUCCESS
+== 3. control
+   proof command: jbmc PropertyHarness --function PropertyHarness.check --classpath /home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/harness:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/base-classes:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/jdk:/home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/models --unwind 16 --trace --throw-runtime-exceptions --unwinding-assertions --json-ui --timestamp monotonic --no-refine-strings --sat-solver cadical 
+   A. --cover location: jbmc exit 64 in 4 ms (lib/target/stub-reach/control-cover.txt)
+   A. 
+   A. the goals of DecoderException(String, Object...), String.format's stub and toDigit:
+      (no goal of String.format's stub is listed)
+   A'. not run: no goal of the constructor to name
+   B. the proof with the probe: jbmc exit 10 in 90 ms (lib/target/stub-reach/control-probe.txt)
+   B. VERIFICATION FAILED
+   B. the probe's and the harness's properties:
+      [java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 85: FAILURE
+      [java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS
+      [java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String;.assertion.1] line 5 assertion at file org/apache/commons/codec/Reach.java line 5 function java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String; bytecode-index 3: FAILURE

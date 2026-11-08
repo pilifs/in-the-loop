@@ -1,0 +1,234 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-223430-example-148-b11-advised-contracts-full-j",
+  "title": "Example 148 (B11, advised contracts): full jitter proved below the cap on an agent's contracts, the contracts and their evidence as the run reports them (closes VF-002 when it passes)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.6s, peak 103.5 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [
+    "step 1 (example 148 (B11)) exited 1, expected 0",
+    "step 1 (example 148 (B11)) was held back 4.2s by its 1-CPU quota in 3.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-223430-example-148-b11-advised-contracts-full-j.json",
+    "sha256": "41ad645e17d6b20c90ad20b8e67087ddc92e47e5db07c148709d28fedeb623fc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-223430-example-148-b11-advised-contracts-full-j",
+      "title": "Example 148 (B11, advised contracts): full jitter proved below the cap on an agent's contracts, the contracts and their evidence as the run reports them (closes VF-002 when it passes)",
+      "description": "Resubmitted for VF-002 (verification/findings.md) after the cleanup loop's timebox stopped it: build.py's stage_contracts and contracts_digest now read the example's own folder (xmsmzwoy), where the previous run (20261107-165152) failed with FileNotFoundError on the attempt's gaps.contracts. The user decided (2026-11-07) to run it first and then reword the example: its title says 'one proved against the JDK and two tested', but the own checker now computes Integer.numberOfLeadingZeros exactly, so that call is no gap, and whether the agent's contract for it is still proved and counted is what this run shows. The expectation was relaxed from '1 proved, 2 tested' to the verdict, which is all build.py checks.\n\nNew example for steps 3c/3e of llm-dlc/loops/sound-verdicts.md: the recorded example of a proof that closes only through agent-written contracts. The same Crosscut change as example 147 (Jitter#fullJitterMillis), with the nextInt contract corrected to throw IllegalArgumentException when bound <= 0. Under --engine native --gaps advised --contracts gaps.contracts the contract for Integer.numberOfLeadingZeros is proved against the bytecode of java.lang.Integer from the JDK image, the two for java.util.Random are tested on a real JVM, and the property (result in [0, capMillis), IllegalArgumentException for an invalid policy) is proved on every input. The page should show both evidence levels. Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-002: build.py's excerpts() now takes a subject the patch creates, with an empty before side. The earlier job, 20261106-053555-example-148-b11-advised-contracts-full-j, stopped before any proof with 'the patch does not change the subject file'. Closes VF-002 in verification/findings.md when it passes with the expected verdict.",
+      "kind": "example",
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "148"
+        ],
+        "paths": [
+          "lib/src/contract_proving.rs",
+          "lib/src/contract_testing.rs"
+        ]
+      },
+      "expected": "verdict verified (build.py prints 'as expected' and exits 0). What the label and result.search.gaps report is recorded, not required: since Integer.numberOfLeadingZeros is no longer a gap of the own checker, the verdict may rest on the two tested contracts for java.util.Random alone, or still count the agent's numberOfLeadingZeros contract as proved; this run says which, and 148's title and summary are reworded to match",
+      "submitted": {
+        "at": "2026-11-07T22:34:30+00:00",
+        "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "as the job resubmitted; the earlier run stopped within a second"
+      },
+      "steps": [
+        {
+          "name": "example 148 (B11)",
+          "run": "python3 examples/tools/build.py 148",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/148-full-jitter-proved-below-the-cap-on-an-agent-s-contracts-one-proved-against-the-jdk-and-two-tested"
+      ],
+      "supersedes": "20261107-165152-example-148-b11-advised-contracts-full-j"
+    }
+  },
+  "sourceCommit": "b521d26a73ab289b3e080d4b257b689d2f4cca2d",
+  "startedAt": "2026-11-07T23:23:58+00:00",
+  "finishedAt": "2026-11-07T23:25:59+00:00",
+  "wallSeconds": 121.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 974932,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 25769803776,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "as the job resubmitted; the earlier run stopped within a second"
+  },
+  "usage": {
+    "peakMemoryBytes": 108486656,
+    "wallSeconds": 3.6,
+    "cpuSeconds": 3.5,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 116.323,
+      "cpuSeconds": 116.116,
+      "cpuThrottledSeconds": 0.22,
+      "peakMemoryBytes": 1962811392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 5,
+        "bytes": 368,
+        "sha256": "f709196985dd8472adb0e1d30f80fd42a9e3eb0f3d106bf2cea149aa1df3ac51",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Blocking waiting for file lock on package cache",
+        "    Blocking waiting for file lock on package cache",
+        "    Blocking waiting for file lock on package cache",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 56s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 148 (B11)",
+      "run": "python3 examples/tools/build.py 148",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.607,
+      "cpuSeconds": 3.538,
+      "cpuThrottledSeconds": 4.247,
+      "peakMemoryBytes": 108486656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-148-b11.log",
+        "lines": 28,
+        "bytes": 2064,
+        "sha256": "191a3d34409af2dfbb4b12446607e01c2b91bea0ee8a03c378a84d152277a259",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "148-full-jitter-proved-below-the-cap-on-an-agent-s-contracts-one-proved-against-the-jdk-and-two-tested: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.6 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/examples/tools/build.py\", line 4525, in <module>",
+        "    sys.exit(main(sys.argv[1:]))",
+        "             ~~~~^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/examples/tools/build.py\", line 269, in main",
+        "    result = run(folder, example, out)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/examples/tools/build.py\", line 692, in run",
+        "    RUNNERS[app][p[\"approach\"]](out, example, tmp, module, result)",
+        "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/examples/tools/build.py\", line 2365, in run_tool_property",
+        "    stage_contracts(folder, example, build)",
+        "    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/examples/tools/build.py\", line 432, in stage_contracts",
+        "    shutil.copyfile(folder / name, target)",
+        "    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/shutil.py\", line 313, in copyfile",
+        "    with open(src, 'rb') as fsrc:",
+        "         ~~~~^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j/.build-py/examples-w1d9d7en/attempts/148/attempt-dz4kra5g/gaps.contracts'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T00:54:27+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "edf66d418bacbcdccb349455f2d452d0dcf270b4",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/edf66d418bacbcdccb349455f2d452d0dcf270b4/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-223430-example-148-b11-advised-contracts-full-j"
+}

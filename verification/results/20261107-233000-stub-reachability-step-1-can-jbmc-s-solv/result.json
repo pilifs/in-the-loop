@@ -1,0 +1,476 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-233000-stub-reachability-step-1-can-jbmc-s-solv",
+  "title": "Stub reachability, step 1: can JBMC's solver show VF-015's String.format stub unentered (--cover location, or a probe assertion), and at what cost next to the proof",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.4s, peak 112.9 MiB (estimated 5m00s, 2.0 GiB); 31 output file(s) changed",
+  "attention": [
+    "declared output lib/target/stub-reach/case-cover-one.txt was not produced",
+    "declared output lib/target/stub-reach/control-cover-one.txt was not produced",
+    "step 1 (stub reachability experiment) was held back 11.2s by its 1-CPU quota in 8.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv.json",
+    "sha256": "d93f1b9a77c1d5ea69dc9cf25b05e0d8433f49c3b98be8d3701534e10b1bf78a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-233000-stub-reachability-step-1-can-jbmc-s-solv",
+      "title": "Stub reachability, step 1: can JBMC's solver show VF-015's String.format stub unentered (--cover location, or a probe assertion), and at what cost next to the proof",
+      "description": "Step 1 of llm-dlc/loops/stub-reachability.md. JBMC's gap preflight (lib/src/jbmc_gaps.rs) counts a stub as entered when JBMC's symbolic execution alone (--program-only) keeps a step of it, and symbolic execution keeps every branch it cannot simplify to false. In VF-015 (verification/findings.md) that refuses a JBMC proof under --gaps strict: 'prove Hex#toDigit --assume ch == 1632 --assert result == 0' on commons-codec's old Hex (87f6aa28) is proved, but the preflight names JBMC's stub of String.format(String, Object[]), called by DecoderException(String, Object...) at DecoderException.java:64 on toDigit's exception path, which ch == 1632 makes infeasible (Character.digit, the model, returns 0). This job measures two ways to have the solver decide it, on the harness and the last proof command (--trace) the run recorded, with any input-interval stage dropped. verification/triage/stub-reachability.sh clones and compiles the old commons-codec, and a copy of DecoderException whose String.format call first calls a probe Reach.reach that does 'throw new AssertionError()' (an assertion of its own under JBMC, as jvmcontract's GapIntrinsics.open). It runs VF-015's step 3 unchanged with --work kept and JBMC behind a wrapper that records each command, its exit and its time (listing, symbolic run, proof), and a control: the same prove without --assume, where the exception path is open. Then for each: (A) the proof command with --cover location in place of --unwinding-assertions and --trace (JBMC 6.11 refuses the two together; with --unwind alone a path past the bound is cut, which loses nothing here because the proof's unwinding assertions held), reading the goals of DecoderException's constructor, String.format's stub (it may have none, being generated) and toDigit, then the same with --property on the constructor's first goal alone; (B) the proof command as given with the probe's classes second on the class path. Expected: the case's proof is refused under strict as in VF-015 (jvmcontract exit 1), its JBMC proof well under a second; on the case, A reports the constructor's goals (and the stub's, if any) not covered and toDigit's return path covered, and B gives VERIFICATION SUCCESSFUL with the probe's assertion SUCCESS; on the control, A reports the constructor's goals covered and B the probe's assertion FAILURE; each method costs about the proof's own time. If --cover is not accepted by jbmc, A's lines say so. The script exits 0 when it ran to the end; the outcomes are read from lib/target/stub-reach/summary.txt by the session that chooses the method (step 2).",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc",
+        "jbmc:gaps",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "verification/triage/stub-reachability.sh",
+          "lib/src/jbmc_gaps.rs"
+        ],
+        "examples": [
+          "109"
+        ],
+        "jobs": [
+          "20261107-165827-example-109-revisited-hex-todigit-s-regr"
+        ]
+      },
+      "expected": "exits 0; summary.txt shows the case refused under strict, A: the constructor's goals not covered on the case and covered on the control, B: the probe's assertion SUCCESS on the case and FAILURE on the control, each in about the proof's time",
+      "submitted": {
+        "at": "2026-11-07T23:30:00+00:00"
+      },
+      "requires": [
+        "git",
+        "javac",
+        "jbmc",
+        "jvmcontract",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "VF-015's job ran its clone, compile and this proof in 10 s at 100 MiB peak; here two more jvmcontract proofs and six JBMC runs of about a second each, --cover perhaps a few"
+      },
+      "steps": [
+        {
+          "name": "stub reachability experiment",
+          "run": "bash verification/triage/stub-reachability.sh",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/stub-reach/summary.txt",
+        "lib/target/stub-reach/case.log",
+        "lib/target/stub-reach/control.log",
+        "lib/target/stub-reach/case-proof-command.txt",
+        "lib/target/stub-reach/control-proof-command.txt",
+        "lib/target/stub-reach/case-cover.txt",
+        "lib/target/stub-reach/case-cover-one.txt",
+        "lib/target/stub-reach/case-probe.txt",
+        "lib/target/stub-reach/control-cover.txt",
+        "lib/target/stub-reach/control-cover-one.txt",
+        "lib/target/stub-reach/control-probe.txt",
+        "lib/target/stub-reach/argv",
+        "lib/target/stub-reach/probe-src"
+      ]
+    }
+  },
+  "sourceCommit": "8b264e7f68c5f44c3fa434004ed465657cd27134",
+  "startedAt": "2026-11-08T00:54:14+00:00",
+  "finishedAt": "2026-11-08T00:54:23+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1009954,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 25769803776,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "VF-015's job ran its clone, compile and this proof in 10 s at 100 MiB peak; here two more jvmcontract proofs and six JBMC runs of about a second each, --cover perhaps a few"
+  },
+  "usage": {
+    "peakMemoryBytes": 118362112,
+    "wallSeconds": 8.4,
+    "cpuSeconds": 6.9,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "stub reachability experiment",
+      "run": "bash verification/triage/stub-reachability.sh",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 8.435,
+      "cpuSeconds": 6.907,
+      "cpuThrottledSeconds": 11.232,
+      "peakMemoryBytes": 118362112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-stub-reachability-experiment.log",
+        "lines": 98,
+        "bytes": 11264,
+        "sha256": "54a96903d452eb243bd7bcfa26b28942c678da4dd957ca47e8a74db31c65dc45",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   jbmc listing exit=0 time=49ms",
+        "   jbmc symbolic exit=0 time=100ms",
+        "   jbmc other exit=0 time=4ms",
+        "   jbmc proof exit=0 time=129ms",
+        "-- control: jvmcontract exit 1 in 465 ms; its last lines:",
+        "       outcome: 1",
+        "     (found by JBMC 6.11.0 in 0.4 s as toDigit(ch='7', index=-1), shrunk to the input above in 26 interpreter runs, replayed in the interpreter; domain ch: char × index: int)",
+        "   ",
+        "   The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.",
+        "   jbmc other exit=0 time=4ms",
+        "   jbmc listing exit=0 time=45ms",
+        "   jbmc symbolic exit=0 time=104ms",
+        "   jbmc other exit=0 time=4ms",
+        "   jbmc proof exit=10 time=105ms",
+        "== 3. case",
+        "   proof command: jbmc PropertyHarness --function PropertyHarness.check --classpath /home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-case/harness:/home/filip/code/in-the-loop/verification/.state/work/20261107-23",
+        "   A. --cover location: jbmc exit 64 in 3 ms (lib/target/stub-reach/case-cover.txt)",
+        "   A. ",
+        "   A. the goals of DecoderException(String, Object...), String.format's stub and toDigit:",
+        "      (no goal of String.format's stub is listed)",
+        "   A'. not run: no goal of the constructor to name",
+        "   B. the proof with the probe: jbmc exit 0 in 92 ms (lib/target/stub-reach/case-probe.txt)",
+        "   B. VERIFICATION SUCCESSFUL",
+        "   B. the probe's and the harness's properties:",
+        "      [java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 93: SUCCESS",
+        "      [java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS",
+        "      [java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String;.assertion.1] line 5 assertion at file org/apache/commons/codec/Reach.java line 5 function java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String; bytecode-index 3: SUCCESS",
+        "== 3. control",
+        "   proof command: jbmc PropertyHarness --function PropertyHarness.check --classpath /home/filip/code/in-the-loop/verification/.state/work/20261107-233000-stub-reachability-step-1-can-jbmc-s-solv/lib/target/stub-reach/work-control/harness:/home/filip/code/in-the-loop/verification/.state/work/20261107",
+        "   A. --cover location: jbmc exit 64 in 4 ms (lib/target/stub-reach/control-cover.txt)",
+        "   A. ",
+        "   A. the goals of DecoderException(String, Object...), String.format's stub and toDigit:",
+        "      (no goal of String.format's stub is listed)",
+        "   A'. not run: no goal of the constructor to name",
+        "   B. the proof with the probe: jbmc exit 10 in 90 ms (lib/target/stub-reach/control-probe.txt)",
+        "   B. VERIFICATION FAILED",
+        "   B. the probe's and the harness's properties:",
+        "      [java::PropertyHarness.check:(CI)V.assertion.1] assertion at function java::PropertyHarness.check:(CI)V bytecode-index 85: FAILURE",
+        "      [java::PropertyHarness.check:(CI)V.1] file PropertyHarness.java no uncaught exception: SUCCESS",
+        "      [java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String;.assertion.1] line 5 assertion at file org/apache/commons/codec/Reach.java line 5 function java::org.apache.commons.codec.Reach.reach:(Ljava/lang/String;)Ljava/lang/String; bytecode-index 3: FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/stub-reach/summary.txt",
+      "change": "added",
+      "bytes": 5626,
+      "sha256": "6ca8cc9fd19d9bf3a80143576e8735d951c14edd4bef3f0e3d32d17fcb2b64aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/case.log",
+      "change": "added",
+      "bytes": 893,
+      "sha256": "9df9eacb22d80f5e740905b227ffb10022432dcc53753c3bc44e094ee9779525",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/control.log",
+      "change": "added",
+      "bytes": 1047,
+      "sha256": "9d4cb7e0a1a616717883d269bfeca958843755f58a4327237655f97ed954ea98",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/case-proof-command.txt",
+      "change": "added",
+      "bytes": 803,
+      "sha256": "945628a7d44118e6dc22c937d966621bb8e5d92b0d8bb4490ce7d1622bfc65f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/control-proof-command.txt",
+      "change": "added",
+      "bytes": 812,
+      "sha256": "ab762379a3394c8e231b805544b42f6eb10aa11eca3672e4cd9799d6f6e6ef54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/case-cover.txt",
+      "change": "added",
+      "bytes": 17588,
+      "sha256": "45c90d97ad3a4d963624f82911ea436a12e400c72b981a351c28088891efe793",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/case-probe.txt",
+      "change": "added",
+      "bytes": 4081,
+      "sha256": "3937ebdf5f67cd1e22899dfc29141ee3bff16bc66afd15f7ffb034c46bc85d79",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/control-cover.txt",
+      "change": "added",
+      "bytes": 17588,
+      "sha256": "45c90d97ad3a4d963624f82911ea436a12e400c72b981a351c28088891efe793",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/control-probe.txt",
+      "change": "added",
+      "bytes": 4417,
+      "sha256": "e528932a853c34b098a9c68ddae68e27b884c41f84c0e92ddf47946e23cef043",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262019387527.argv",
+      "change": "added",
+      "bytes": 10,
+      "sha256": "cf42901e26ac65be785709497bbf48ba657e913f84c8d2c85bd0cf2d459afe13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262019387527.done",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "d56bd6be43820510d75885b8863c956d2aab76f99f2822d61b563cdfa0b2bdfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262031435997.argv",
+      "change": "added",
+      "bytes": 724,
+      "sha256": "7fb6a8dfe5611a8279f73c1f9d738b62967f40448fa46df864dc269e29409566",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262031435997.done",
+      "change": "added",
+      "bytes": 7,
+      "sha256": "6ff9ea36d04a04dd6b94e4eca0cc0abbcef68ef71368a90b3705b73b8ffce249",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262144626240.argv",
+      "change": "added",
+      "bytes": 752,
+      "sha256": "3eb3fcb9fefa74520dc317ac4fe81d67c5397f93f0a90bf38e495043b0b218b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262144626240.done",
+      "change": "added",
+      "bytes": 8,
+      "sha256": "427fdec5f9d5d043710045015a468a11fe4321c8015cc1152f05e6f1aeacc8cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262269457739.argv",
+      "change": "added",
+      "bytes": 10,
+      "sha256": "cf42901e26ac65be785709497bbf48ba657e913f84c8d2c85bd0cf2d459afe13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262269457739.done",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "dfa6178502cf04be45161a46eb79b2ff4ca9ed99ca5cb42e81d083fec0f2096a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262281736781.argv",
+      "change": "added",
+      "bytes": 798,
+      "sha256": "104455493896a2c5623696bbd2fdb9e776ab2b0070405d803bcd13a89243c770",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262281736781.done",
+      "change": "added",
+      "bytes": 8,
+      "sha256": "3c3a1d08d22ee808f29692dd02efcd82cc1e85b8d134a8b37e11580873daf51d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262521503926.argv",
+      "change": "added",
+      "bytes": 10,
+      "sha256": "cf42901e26ac65be785709497bbf48ba657e913f84c8d2c85bd0cf2d459afe13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262521503926.done",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "dfa6178502cf04be45161a46eb79b2ff4ca9ed99ca5cb42e81d083fec0f2096a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262531525626.argv",
+      "change": "added",
+      "bytes": 733,
+      "sha256": "0cedf5b2bcf45bc33d4186632a8f1a0b7a7c52f6df2b60eba1da7801753d792f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262531525626.done",
+      "change": "added",
+      "bytes": 7,
+      "sha256": "e645d9fca2a7f6d18bc0f32040b16bcbd94aa59d6bd6a67cbf1a6b465d5cc37c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262644376052.argv",
+      "change": "added",
+      "bytes": 761,
+      "sha256": "35e3b740bc55132e27d7821df2af8975f90b9621d28a9e9355d61a69ba520a27",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262644376052.done",
+      "change": "added",
+      "bytes": 8,
+      "sha256": "ea14e9c11818fc710f7521a3ae795850ba8e435f6847a0661b98efd164a163e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262767962577.argv",
+      "change": "added",
+      "bytes": 10,
+      "sha256": "cf42901e26ac65be785709497bbf48ba657e913f84c8d2c85bd0cf2d459afe13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262767962577.done",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "dfa6178502cf04be45161a46eb79b2ff4ca9ed99ca5cb42e81d083fec0f2096a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262778610341.argv",
+      "change": "added",
+      "bytes": 807,
+      "sha256": "02116a39c51e7618f38eca6a7046ba49c3b96de48d3178894ec64dcb6da984c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/argv/1794099262778610341.done",
+      "change": "added",
+      "bytes": 9,
+      "sha256": "bcdf4a8ed69dc83bf053ad8b64957b68709cdbe332c9879ba6856ad4f73bb623",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/probe-src/org/apache/commons/codec/DecoderException.java",
+      "change": "added",
+      "bytes": 4037,
+      "sha256": "ecc99f7fda43be5e372c9453c824b290a3d345ae8858e76d397b17bd41f90e0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/stub-reach/probe-src/org/apache/commons/codec/Reach.java",
+      "change": "added",
+      "bytes": 147,
+      "sha256": "7ccbe5f18ca68d3f9a2e1053ef415d741c7779484fcf3c650a89102a92e29f50",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T00:54:27+00:00",
+    "applied": [
+      "lib/target/stub-reach/summary.txt",
+      "lib/target/stub-reach/case.log",
+      "lib/target/stub-reach/control.log",
+      "lib/target/stub-reach/case-proof-command.txt",
+      "lib/target/stub-reach/control-proof-command.txt",
+      "lib/target/stub-reach/case-cover.txt",
+      "lib/target/stub-reach/case-probe.txt",
+      "lib/target/stub-reach/control-cover.txt",
+      "lib/target/stub-reach/control-probe.txt",
+      "lib/target/stub-reach/argv/1794099262019387527.argv",
+      "lib/target/stub-reach/argv/1794099262019387527.done",
+      "lib/target/stub-reach/argv/1794099262031435997.argv",
+      "lib/target/stub-reach/argv/1794099262031435997.done",
+      "lib/target/stub-reach/argv/1794099262144626240.argv",
+      "lib/target/stub-reach/argv/1794099262144626240.done",
+      "lib/target/stub-reach/argv/1794099262269457739.argv",
+      "lib/target/stub-reach/argv/1794099262269457739.done",
+      "lib/target/stub-reach/argv/1794099262281736781.argv",
+      "lib/target/stub-reach/argv/1794099262281736781.done",
+      "lib/target/stub-reach/argv/1794099262521503926.argv",
+      "lib/target/stub-reach/argv/1794099262521503926.done",
+      "lib/target/stub-reach/argv/1794099262531525626.argv",
+      "lib/target/stub-reach/argv/1794099262531525626.done",
+      "lib/target/stub-reach/argv/1794099262644376052.argv",
+      "lib/target/stub-reach/argv/1794099262644376052.done",
+      "lib/target/stub-reach/argv/1794099262767962577.argv",
+      "lib/target/stub-reach/argv/1794099262767962577.done",
+      "lib/target/stub-reach/argv/1794099262778610341.argv",
+      "lib/target/stub-reach/argv/1794099262778610341.done",
+      "lib/target/stub-reach/probe-src/org/apache/commons/codec/DecoderException.java",
+      "lib/target/stub-reach/probe-src/org/apache/commons/codec/Reach.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "edf66d418bacbcdccb349455f2d452d0dcf270b4",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/edf66d418bacbcdccb349455f2d452d0dcf270b4/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

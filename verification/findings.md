@@ -91,6 +91,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   harness and goto program, and reruns the first proof with JBMC's statistics, as given and at `--unwind` 8, 4 and 2
   and with `--slice-formula`, 900 s each. The encoding to try next (fewer objects, the equations as assumptions)
   follows from where its time goes.
+- **Triage ran** 2026-11-08 on `vm-1`: `20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5` (at `8aac19618c9d`)
+  passed (1h21m; its outputs `lib/target/vf018/summary.txt` and `proof-command.txt` were applied). What it shows for
+  `objects.Kernel#price`: the harness is small (211 bytecode instructions over 2 methods, 12 KiB; goto program of
+  3186 lines), symex takes 0.009 s and produces 518 steps and 1 VCC, and the formula is 18358 variables and 77108
+  clauses. The solver, not the encoding of the program, is where the time goes: as given (`--unwind 16`), at
+  `--unwind` 8, 4 and 2, and with `--slice-formula` (15753 variables, 76395 clauses), JBMC did not finish within
+  900 s in any of the five runs, and the formula is the same size at every unwind, so the unwinding is not what
+  makes it hard. **Needs**: the next triage is on what the 77k clauses are (JBMC's output with `--show-vcc`, or
+  which equations of the correspondence are arithmetic that a SAT solver finds hard), and then fewer objects or
+  the equations as assumptions, as the entry's plan says; the cleanup loop's jbmc stream. Still open.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 
@@ -144,10 +154,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   `20261107-223430-example-148-b11-advised-contracts-full-j`, with 149's summary, explanation and resolution corrected
   to two contracts in the same commit (its passing result already reads `relying on 2 contracts ..., 2 tested`).
   148's job expects the verdict alone. VF-002 closes when both pass; 148 is then reworded to what its result shows.
+- **Failed again** 2026-11-08 on `vm-1`: `20261107-223430-example-147-b11-advised-contracts-a-cont` and
+  `20261107-223430-example-148-b11-advised-contracts-full-j` (at `a8b76de9c96f` and `b521d26a73ab`), each in 3.6 s,
+  with the same `FileNotFoundError` as on 2026-11-07: `build.py:432` in `stage_contracts`, `shutil.copyfile(folder /
+  name, target)` where `folder` is the run's attempt directory
+  (`.build-py/examples-*/attempts/147/attempt-*/gaps.contracts`), not the example's folder, which holds
+  `gaps.contracts` (committed). `run()` calls `RUNNERS[app][approach](out, example, tmp, module, result)`
+  (`build.py:692`) with `out`, so `run_tool_property(folder, ...)` (`build.py:2365`) receives the attempt directory.
+  So the earlier fix to `stage_contracts` and `contracts_digest` did not reach this call. It is `build.py`'s, not the
+  pipeline's or the jobs': they are as they should be. I did not fix it or resubmit, since it would fail the same.
+  **Needs**: the examples stream or whoever owns `build.py` passes the example's folder to `stage_contracts` (check
+  `advice_record`, which gets the same `folder`), with a unit test that runs a B11 example with `approach.contracts`
+  through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
+
+## Decided and closed
 
 ### VF-001: JBMC verdicts the JVM contradicts, passed through by `--engine auto`
 
-- **Status**: open
+- **Status**: closed 2026-11-08, by jobs `20261107-222356-conformance-corpus-under-jbmc-and-engine` and
+  `20261107-222356-conformance-corpus-under-engine-auto-con` (at `1e430db14391`, `mkdir -p target` added): each ran
+  its test (`the_corpus_agrees_with_the_jvm_under_jbmc_and_auto`, `..._under_auto_confirm`) and passed, 1 passed, 0 failed
 - **Raised**: 2026-11-06 on `vm-1`. Jobs `20261106-021741-conformance-corpus-under-jbmc-and-engine` and
   `20261106-024336-conformance-corpus-under-engine-auto-con`, both at `470be6c5ff8b`, JBMC 6.11.0.
 - **Found**: the conformance corpus (54 methods, 93 claims, the JVM as reference) disagrees with JBMC in both
@@ -176,8 +202,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Resubmitted** 2026-11-07 as `20261107-222356-conformance-corpus-under-jbmc-and-engine` and
   `20261107-222356-conformance-corpus-under-engine-auto-con`, with `mkdir -p target &&` before the step's test
   command and nothing else changed. VF-001 closes when both pass.
-
-## Decided and closed
 
 ### VF-013: the loops' run records are never published: they are gitignored, and unredacted
 

@@ -1,0 +1,219 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5",
+  "title": "VF-018 triage: what JBMC is given for H5's objects.Kernel#price under a correspondence, and whether a smaller bound lets it finish",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1h21m, peak 1.5 GiB (estimated 1h15m, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5.json",
+    "sha256": "4ff2030a36ea0a4a9f3a4bab9ae136bfe7b45c48e422fde2c30bd2cd2f78beb7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5",
+      "title": "VF-018 triage: what JBMC is given for H5's objects.Kernel#price under a correspondence, and whether a smaller bound lets it finish",
+      "description": "VF-018 (verification/findings.md): three of H5's regression proofs over objects under a correspondence (objects.Kernel#price, lines.Lines#reprice, orders.Orders#reprice in lib/tests/heap.rs) get no verdict from JBMC within 600 s, nor within 1800 s; the own checker proves each. The user decided on 2026-11-07 to triage the harness and keep the tests' expectation. This job measures one of the three, objects.Kernel#price, the first case of the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm. verification/triage/vf018.sh (1) runs that ignored test with JBMC behind a wrapper that records each command line, and a 120 s limit per run (the test is expected to fail; it leaves the harness and the commands), (2) measures the first proof command's harness (classes, bytecode instructions) and goto program, and (3) reruns that command directly with --verbosity 8, each under 900 s: as given, at --unwind 8, 4 and 2 where smaller than given, and with --slice-formula. It changes no test, option or expectation. The summary (program size, VCCs, variables and clauses, symex and solver times, which runs finish) says where JBMC's time goes, which decides the change to the harness encoding that comes next. Its plumbing was checked inline with stand-in jbmc and cargo commands.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "verification/triage/vf018.sh",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0 and writes lib/target/vf018/summary.txt with a line per JBMC run; no verdict is required of any run. The test in step 1 fails, as VF-018 records, and does not fail the job",
+      "submitted": {
+        "at": "2026-11-07T22:45:23+00:00",
+        "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "75m",
+        "memoryLimit": "6G",
+        "timeout": "2h30m",
+        "notes": "step 1 is the output relations test with a 120 s limit per JBMC run (10 cases, some with stage runs: up to about 25 min); step 3 is up to five JBMC runs of at most 900 s each. VF-018's reruns peaked at 1.6 GiB"
+      },
+      "steps": [
+        {
+          "name": "VF-018 triage",
+          "run": "bash verification/triage/vf018.sh",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/vf018/summary.txt",
+        "lib/target/vf018/proof-command.txt"
+      ]
+    }
+  },
+  "sourceCommit": "8aac19618c9d1dfdc8312f400315f33496678c15",
+  "startedAt": "2026-11-07T23:25:59+00:00",
+  "finishedAt": "2026-11-08T00:47:50+00:00",
+  "wallSeconds": 4911.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 974932,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 25769803776,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 9000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 4500.0,
+    "notes": "step 1 is the output relations test with a 120 s limit per JBMC run (10 cases, some with stage runs: up to about 25 min); step 3 is up to five JBMC runs of at most 900 s each. VF-018's reruns peaked at 1.6 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1639960576,
+    "wallSeconds": 4910.4,
+    "cpuSeconds": 4987.8,
+    "memoryOfEstimate": 0.51,
+    "durationOfEstimate": 1.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "VF-018 triage",
+      "run": "bash verification/triage/vf018.sh",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 4910.426,
+      "cpuSeconds": 4987.814,
+      "cpuThrottledSeconds": 1.508,
+      "peakMemoryBytes": 1639960576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-vf-018-triage.log",
+        "lines": 97,
+        "bytes": 8296,
+        "sha256": "43938b5a2d89f793e03f830ac2b0e7b1796761679fd904a55dfe64c0a4ae7d16",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "class path entry /home/filip/code/in-the-loop/verification/.state/work/20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5/lib/target/tmp/heap-objects/work-related-after-case0-Jbmc-false/before-classes: 4 classes, 28 KiB",
+        "class path entry /home/filip/code/in-the-loop/verification/.state/work/20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5/lib/target/tmp/heap-objects/work-related-after-case0-Jbmc-false/jdk: 6 classes, 96 KiB",
+        "class path entry /home/filip/code/in-the-loop/verification/.state/work/20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5/lib/target/tmp/heap-objects/work-related-after-case0-Jbmc-false/models: 17 classes, 100 KiB",
+        "harness bytecode: 211 instructions over 2 methods",
+        "goto program: 3186 lines (--show-goto-functions)",
+        "-- as-given-unwind-16: did not finish in 900 s after 900 s",
+        "      1 size of program expression: 518 steps",
+        "      1 Runtime Symex: 0.00850267s",
+        "      1 Runtime Post-process: 4.298e-06s",
+        "      1 Runtime Convert SSA: 0.0138797s",
+        "      1 Generated 2 VCC(s), 1 remaining after simplification",
+        "      1 18358 variables, 77108 clauses",
+        "-- unwind-8: did not finish in 900 s after 900 s",
+        "      1 size of program expression: 518 steps",
+        "      1 Runtime Symex: 0.00586437s",
+        "      1 Runtime Post-process: 3.516e-06s",
+        "      1 Runtime Convert SSA: 0.0107403s",
+        "      1 Generated 2 VCC(s), 1 remaining after simplification",
+        "      1 18358 variables, 77108 clauses",
+        "-- unwind-4: did not finish in 900 s after 900 s",
+        "      1 size of program expression: 518 steps",
+        "      1 Runtime Symex: 0.00597324s",
+        "      1 Runtime Post-process: 3.256e-06s",
+        "      1 Runtime Convert SSA: 0.0108576s",
+        "      1 Generated 2 VCC(s), 1 remaining after simplification",
+        "      1 18358 variables, 77108 clauses",
+        "-- unwind-2: did not finish in 900 s after 900 s",
+        "      1 size of program expression: 518 steps",
+        "      1 Runtime Symex: 0.00620186s",
+        "      1 Runtime Post-process: 3.366e-06s",
+        "      1 Runtime Convert SSA: 0.011367s",
+        "      1 Generated 2 VCC(s), 1 remaining after simplification",
+        "      1 18358 variables, 77108 clauses",
+        "-- as-given-slice-formula: did not finish in 900 s after 900 s",
+        "      1 size of program expression: 518 steps",
+        "      1 Runtime Symex: 0.00602481s",
+        "      1 Runtime Post-process: 3.437e-06s",
+        "      1 Runtime Convert SSA: 0.0101933s",
+        "      1 Generated 2 VCC(s), 1 remaining after simplification",
+        "      1 15753 variables, 76395 clauses"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/vf018/summary.txt",
+      "change": "added",
+      "bytes": 4093,
+      "sha256": "0331a58f70fbf7051cfce0f7270a7cc185072161271de7bf785d268596c419a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf018/proof-command.txt",
+      "change": "added",
+      "bytes": 1090,
+      "sha256": "662ca3c249767e859680722963305888ca6bfe26c5f25805f9b8b8084c74f92a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T00:54:27+00:00",
+    "applied": [
+      "lib/target/vf018/summary.txt",
+      "lib/target/vf018/proof-command.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

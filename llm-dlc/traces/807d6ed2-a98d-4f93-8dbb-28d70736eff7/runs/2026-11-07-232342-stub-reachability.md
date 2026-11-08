@@ -12,3 +12,7 @@ After each commit the session decides whether to go on:
 
 ## Commits
 
+- cycle 1, 2026-11-07 23:30:41, `ymkkuxqkvtmv`: Stub reachability, step 1: an experiment job that has JBMC's solver decide whether VF-015's proof enters the String.format stub (verification pending)
+  - decided to continue: Neither stop condition has been met. Step 4's criterion is far off: this run has made one commit, which queued step 1's experiment job. Step 2 can't find "no method" until that job's result exists, so the loop isn't blocked, and the user isn't needed. Everything left now waits on job `20261107-233000-stub-reachability-step-1-can-jbmc-s-solv`. The next cycle should first check whether its result has been collected, and choose the method from it, not start anything new.
+
+Stopped 2026-11-07 23:31:44: cycle 2 made no commit; session 807d6ed2-a98d-4f93-8dbb-28d70736eff7 needs attention.
