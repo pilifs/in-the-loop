@@ -1564,16 +1564,47 @@ def example_plan(example):
     builds and which tools it calls. The pipeline asks build.py rather than guessing from the approach, so a job
     requires what its run uses: no JBMC for a proof by the tool's own checker, jvmcontract (and its build memory) for
     a B12 run on the Gradle app."""
+    return build_module(example["id"]).plan(example)
+
+
+def build_module(example_id):
+    """examples/tools/build.py, imported without running anything."""
     path = ROOT / "examples/tools/build.py"
     if not path.exists():
-        sys.exit(f"example {example['id']}: {path.relative_to(ROOT)} is missing, and the plan of a run comes from it")
+        sys.exit(f"example {example_id}: {path.relative_to(ROOT)} is missing, and the plan of a run comes from it")
     spec = importlib.util.spec_from_file_location("examples_build", path)
     build = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(build)
-    return build.plan(example)
+    return build
 
 
-def example_job_parts(example_id):
+def example_task_job_parts(example_id, folder, task):
+    """The job parts of one task of a real-world example with a target sidecar (llm-dlc/loops/example-targets.md):
+    the same plan `build.py --plan ID --task T` prints (examples/tools/targets/route.py), and its step runs
+    `build.py ID --task T`. A task whose plan is not executable (Phase 0's stubs answer Unsupported) is refused."""
+    build = build_module(example_id)
+    example = build.load_example(folder)
+    target = build.sidecar.load(folder, example)
+    if target is None:
+        sys.exit(f"example {example_id} has no target sidecar (target.json), so it has no task {task!r}")
+    try:
+        plan = build.target_route.plan(folder, example, target, task)
+    except build.target_route.UnknownTask as e:
+        sys.exit(str(e))
+    if not plan["executable"]:
+        sys.exit(f"example {example_id} task {task}: not executable ({plan['notExecuted']})")
+    rel = folder.relative_to(ROOT).as_posix()
+    requires = list(dict.fromkeys(plan["tools"]["required"] + plan["tools"]["optional"]))
+    expected = plan.get("expected")
+    return {"step": {"name": f"example {example_id} task {task} ({plan['kind']})",
+                     "run": f"python3 examples/tools/build.py {example_id} --task {task}", "cwd": "."},
+            "output": f"{rel}/{plan['outputs'].get('receipts', 'receipts/' + task)}", "requires": requires,
+            "capability": f"target:{plan['kind']}",
+            "expected": f"example {example_id} task {task} gives its expected conclusion, {expected or 'none stated'}: "
+                        "build.py prints 'as expected' and exits 0"}
+
+
+def example_job_parts(example_id, task=None):
     """The step, outputs, requirements and capability of a job that runs one demo example through build.py. The
     requirements are the tools build.py's plan says the run calls, its optional ones included: a job that may need a
     tool runs where the tool is."""
@@ -1582,6 +1613,11 @@ def example_job_parts(example_id):
         sys.exit(f"example {example_id}: expected one folder examples/{example_id}-*, found {len(folders)}")
     folder = folders[0]
     example = json.loads((folder / "example.json").read_text())
+    if task is not None:
+        return example_task_job_parts(example_id, folder, task)
+    if example.get("origin") != "constructed" and example.get("target"):
+        sys.exit(f"example {example_id} has a target sidecar: name one of its tasks with --task "
+                 "(python3 examples/tools/build.py --plan ID lists them)")
     if example.get("origin") != "constructed":
         sys.exit(f"example {example_id} is {example.get('origin')}: build.py does not run it (its report is its README.md); "
                  "describe its proof with --step and --kind real-world instead")
@@ -1641,8 +1677,10 @@ def cmd_submit(args):
     outputs = job.setdefault("outputs", [])
     requires = job.setdefault("requires", [])
     expected = [job["expected"]] if job.get("expected") else []
+    if args.task and len(args.example or []) != 1:
+        sys.exit("--task goes with exactly one --example")
     for example_id in args.example or []:
-        parts = example_job_parts(example_id)
+        parts = example_job_parts(example_id, args.task)
         steps.append(parts["step"])
         outputs.append(parts["output"])
         requires.extend(parts["requires"])
@@ -1806,6 +1844,8 @@ def main(argv=None):
     p.add_argument("--link", action="append", help="KIND:VALUE, such as example:104, path:lib/src/tla.rs, commit:abc123; repeatable")
     p.add_argument("--expected", help="what a pass looks like, in words")
     p.add_argument("--example", action="append", help="run this demo example through build.py (fills in step, outputs, requirements)")
+    p.add_argument("--task", help="with one --example of a real-world example with a target sidecar: the task to run "
+                   "(build.py ID --task T, from the same plan build.py --plan ID --task T prints)")
     p.add_argument("--step", nargs=2, action="append", metavar=("NAME", "COMMAND"), help="a bash step; repeatable")
     p.add_argument("--run", action="append", metavar="COMMAND", help="a bash step named after its command; repeatable")
     p.add_argument("--cwd", help="the steps' directory, relative to the repo root")

@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-09T02:22:44.948Z",
-  "duration_seconds": 53800,
+  "ended": "2026-11-09T02:28:08.955Z",
+  "duration_seconds": 54124,
   "stats": {
     "turns": 16,
-    "api_calls": 179,
-    "tool_calls": 181,
+    "api_calls": 195,
+    "tool_calls": 197,
     "tool_errors": 5,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 382,
-      "output_tokens": 184056,
-      "cache_read_input_tokens": 29097730,
-      "cache_creation_input_tokens": 927875
+      "input_tokens": 414,
+      "output_tokens": 208611,
+      "cache_read_input_tokens": 32636019,
+      "cache_creation_input_tokens": 966701
     }
   },
   "tools": {
-    "Bash": 152,
-    "Write": 15,
+    "Bash": 166,
+    "Write": 17,
     "Read": 7,
     "AskUserQuestion": 4,
     "Agent": 2,
@@ -46,9 +46,11 @@
     "examples/schema/target.schema.json",
     "examples/tools/targets/__init__.py",
     "examples/tools/targets/interfaces.py",
+    "examples/tools/targets/route.py",
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/sidecar.py",
     "examples/tools/targets/test_interfaces.py",
+    "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_sidecar.py",
     "examples/tools/targets/workflow.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/example-targets-loop-draft.md"
@@ -71,24 +73,24 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-09T02:22:44.948Z",
+      "ended": "2026-11-09T02:28:08.955Z",
       "turns": 7,
-      "api_calls": 57,
+      "api_calls": 73,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 53512,
-        "cache_read_input_tokens": 6814332,
-        "cache_creation_input_tokens": 175156
+        "input_tokens": 152,
+        "output_tokens": 78067,
+        "cache_read_input_tokens": 10352621,
+        "cache_creation_input_tokens": 213982
       },
-      "peak_context_tokens": 203992
+      "peak_context_tokens": 242818
     }
   ],
   "log": {
-    "sha256": "76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828",
-    "bytes": 5040340,
-    "lines": 1668,
-    "gzip_bytes": 951049,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828.jsonl.gz"
+    "sha256": "5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8",
+    "bytes": 5515726,
+    "lines": 1835,
+    "gzip_bytes": 1011181,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8.jsonl.gz"
   },
   "subagents": [
     {
@@ -98,24 +100,24 @@
       ],
       "stats": {
         "turns": 0,
-        "api_calls": 58,
-        "tool_calls": 60,
+        "api_calls": 66,
+        "tool_calls": 68,
         "tool_errors": 0,
         "compactions": 0,
-        "peak_context_tokens": 129172,
+        "peak_context_tokens": 133569,
         "usage": {
-          "input_tokens": 116,
-          "output_tokens": 14794,
-          "cache_read_input_tokens": 4488443,
-          "cache_creation_input_tokens": 129170
+          "input_tokens": 132,
+          "output_tokens": 20711,
+          "cache_read_input_tokens": 5538253,
+          "cache_creation_input_tokens": 133567
         }
       },
       "log": {
-        "sha256": "447820c9bace86d45084ed143459d13ab1faf1abac3c93d5d563979a3fee9322",
-        "bytes": 1275032,
-        "lines": 350,
-        "gzip_bytes": 219223,
-        "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/447820c9bace86d45084ed143459d13ab1faf1abac3c93d5d563979a3fee9322.jsonl.gz"
+        "sha256": "0cbf875be71723573539952154ded004812df3a498737dc4b6305ea7963294ac",
+        "bytes": 1355592,
+        "lines": 390,
+        "gzip_bytes": 229594,
+        "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/0cbf875be71723573539952154ded004812df3a498737dc4b6305ea7963294ac.jsonl.gz"
       }
     },
     {
@@ -482,6 +484,14 @@
       "summary": "example-targets Phase 0 step 2: the three shared interfaces, frozen, with stubs that fail closed",
       "body": "examples/tools/targets/interfaces.py freezes TaskPlan (a pure resolution of a named task: revisions, declared claim, prerequisites, artifacts, tools, explicit engine and gaps, authored expectation, outputs), PreparedTarget (source-locked, artifacts-ready or failed with its stage, diagnostic and whatever artifacts exist; never a claim decision), the raw ExecutionRecord between runtime and workflow (how a process ended, never a verdict; observations None when unreadable), Receipt (one format-2 receipt per task and attempt) and the named Unsupported result. workflow.py (plan_task, ingest, project) and runtime.py (prepare, run_controls, run_verifier) are the owning streams' files: Phase 0's versions return Unsupported naming the interface and the stream, and project() states only what target.json says, with readiness and claim statuses left None for W4. test_interfaces.py freezes the signatures and field order (a field added later needs a default); test_workflow.py and test_runtime.py, owned by their streams, test the stubs and are rewritten as each is replaced. Verified: 21 tests pass under unittest discovery and each file alone.",
       "log_sha256": "76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828"
+    },
+    {
+      "change_id": "lrxtyuuxlwnxvkrlvwxtunzqpvzqqnny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 0 step 3: the hooks (build.py --task, pipeline submit --task, index and find.py projections, result-schema extension points)",
+      "body": "build.py: --plan NNN --task T prints one task's plan and NNN --task T makes one attempt, both through examples/tools/targets/route.py, which chains plan_task, prepare per revision (only artifacts-ready goes on), run_controls, run_verifier and ingest, and stops at the first Unsupported (printed as not-executed, exit 1). The real-world gate opens only for an example with a target sidecar and a named task; --plan NNN lists a sidecar example's task plans; a bad --task (unknown, no sidecar, two ids, another mode) exits 2 before anything runs. pipeline.py submit --example NNN --task T builds the job from the same plan and refuses a task that isn't executable, so nothing can be queued while Phase 0's stubs answer. render_index() adds each example's  projection (workflow.project()) beside its historical verdictLabel; find.py gains --family, --role, --readiness, --claim-status and --gap (observed gaps only), which nothing without a projected value matches. result.schema.json gains claim.target (task, sidecar hash, revisions, every classpath entry in order by sha256, JDKs, folder files), inputs.dependencies 'pinned in target.dependencies', inputs.patch null only with a target, records/ evidence paths in a bundle, and inputs.contracts, which build.py's claim_record() already writes under --gaps advised and the schema refused (the brief's side finding). Also fixes step 1's break of verification/test_pipeline.py (its stub repo now copies targets/), found by the baseline recount. Verified: test_route.py's 12 tests (hooks, chain order and stops, index, find filters), a new pipeline test for --task, test_pipeline 29/29, test_build 190/190, the targets suite, and all 157 stored results still valid against both result schemas; the docs in examples/README.md and verification/README.md describe the route.",
+      "log_sha256": "5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8"
     }
   ],
   "logs": {
@@ -491,16 +501,16 @@
       "gzip_bytes": 254846,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313.jsonl.gz"
     },
+    "0cbf875be71723573539952154ded004812df3a498737dc4b6305ea7963294ac": {
+      "bytes": 1355592,
+      "lines": 390,
+      "gzip_bytes": 229594,
+      "url": null
+    },
     "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db": {
       "bytes": 4198262,
       "lines": 1377,
       "gzip_bytes": 814997,
-      "url": null
-    },
-    "447820c9bace86d45084ed143459d13ab1faf1abac3c93d5d563979a3fee9322": {
-      "bytes": 1275032,
-      "lines": 350,
-      "gzip_bytes": 219223,
       "url": null
     },
     "4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7": {
@@ -508,6 +518,12 @@
       "lines": 550,
       "gzip_bytes": 232578,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz"
+    },
+    "5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8": {
+      "bytes": 5515726,
+      "lines": 1835,
+      "gzip_bytes": 1011181,
+      "url": null
     },
     "65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c": {
       "bytes": 687571,

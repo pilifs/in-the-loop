@@ -485,6 +485,16 @@ a real-world example, or a constructed one whose subject file no app builds or w
 takes. Nothing is written for it, so an earlier `result.json` stays the record of its own run. Running every
 example means every constructed one, so the real-world ones are left out without failing.
 
+A real-world example with a target sidecar (`target.json`, [`schema/target.schema.json`](schema/target.schema.json),
+from [`example-targets.md`](../llm-dlc/loops/example-targets.md)) is the exception: it is run one task at a time.
+`build.py --plan NNN` lists its tasks' plans, `build.py --plan NNN --task T` prints one, and `build.py NNN --task T`
+makes one attempt through [`tools/targets/`](tools/targets/__init__.py): plan, prepare each revision, run the
+controls and the verifier, and ingest one receipt per task and attempt. An attempt that stops at an interface not yet
+implemented prints `not-executed (task T: unsupported: INTERFACE (OWNER): why)` and exits 1. Without `--task` it is
+not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
+it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
+`--role`, `--readiness`, `--claim-status` and `--gap` filter on.
+
 Before it reads a verdict, `build.py` decides how the verifier's run ended, and records it in `result.json` as
 `execution`: `completed`, `timed-out`, `killed`, `invalid-output` or `tool-error`, with the exit code and the
 reason. Only a completed run has a verdict. A violation also needs what shows it, such as a counterexample, a

@@ -108,6 +108,9 @@ Then carry on with the next thing. Don't wait for the result, and don't run the 
   `jvmcontract:equivalence`, `jvmcontract:tlc`, ...), and a feature if there is one (`tlc:liveness`,
   `tlc:coverage`, `jbmc:arrays`, `jbmc:strings`).
 - `--link` adds what the job is about: `example:104`, `path:lib/src/tla.rs`, `job:ID`.
+- `--task T`, with one `--example` of a real-world example with a target sidecar, queues one of its tasks: the job
+  runs `build.py NNN --task T`, from the same plan `build.py --plan NNN --task T` prints, and a task whose plan is not
+  executable is refused rather than queued.
 - One job per thing a reader would want to know separately. Two examples that can fail independently are two jobs;
   four configurations of one example are one.
 

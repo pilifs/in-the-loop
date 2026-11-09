@@ -437,12 +437,51 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(list((self.repo.dir / "verification/jobs").glob("*.json")) if (self.repo.dir / "verification/jobs").exists() else [], [])
 
 
+    def add_target_example(self, example_id):
+        """A real-world example with a target sidecar in the stub repo, with build.py, the schemas and the tags it
+        is checked against."""
+        self.add_example("100", "B9", "examples/apps/crosscut/src/main/java/a/B.java")  # copies build.py and targets/
+        shutil.copytree(HERE.parent / "examples/schema", self.repo.dir / "examples/schema", dirs_exist_ok=True)
+        (self.repo.dir / "examples/tags.json").write_text(json.dumps({"domain": {"open-source-libraries": "d"}}))
+        folder = self.repo.dir / f"examples/{example_id}-a-target"
+        folder.mkdir(parents=True)
+        (folder / "example.json").write_text(json.dumps({
+            "id": example_id, "title": "t", "summary": "s", "origin": "real-world", "categories": ["security"],
+            "tags": ["open-source-libraries"], "severity": "low", "subject": {"system": "S", "symbol": "a.B#m"},
+            "approach": {"id": "B11", "name": "Property proofs", "tool": "lib"}, "change": {"kind": "bug-fix"},
+            "source": {"kind": "commit", "repository": "https://github.com/a/b", "url": "https://github.com/a/b/commit/x"},
+            "verdictLabel": "not run", "target": "target.json"}))
+        (folder / "target.json").write_text(json.dumps({
+            "schema": "example-target/v1", "identity": {"case": "c", "family": "f", "role": "negative"},
+            "history": {"repository": "https://github.com/a/b", "revisions": {"fixed": {"commit": "a" * 40}}},
+            "tasks": [{"id": "fixed-security", "kind": "prove", "relation": "security", "revision": "fixed",
+                       "target": "a.B#m", "expected": "established", "engine": "native"}]}))
+
+    def test_a_target_task_is_submitted_only_from_an_executable_plan(self):
+        self.add_target_example("285")
+        submit = lambda *extra: self.repo.pipeline("submit", "--title", "A target task", "--description", "d",
+                                                   "--capability", "B11", "--example", "285", *extra, check=False)
+        proc = submit()
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("name one of its tasks with --task", proc.stderr)
+        proc = submit("--task", "no-such-task")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("has no task 'no-such-task'", proc.stderr)
+        # Phase 0's planning stub answers Unsupported, so nothing can be queued until the workflow stream replaces it.
+        proc = submit("--task", "fixed-security")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("unsupported: task-plan (example-targets-workflow)", proc.stderr)
+        self.assertFalse((self.repo.dir / "verification/jobs").exists() and list((self.repo.dir / "verification/jobs").glob("*.json")))
+
     def add_example(self, example_id, approach, subject, **approach_fields):
         """A constructed example in the stub repo, with build.py beside it to plan its run."""
         tools = self.repo.dir / "examples/tools"
         tools.mkdir(parents=True, exist_ok=True)
-        for module in ("build.py", "result_format.py"):  # build.py and the module it imports
+        for module in ("build.py", "result_format.py"):  # build.py and the modules it imports
             shutil.copy(HERE.parent / "examples/tools" / module, tools / module)
+        if not (tools / "targets").exists():
+            shutil.copytree(HERE.parent / "examples/tools/targets", tools / "targets",
+                            ignore=shutil.ignore_patterns("__pycache__", "test_*.py"))
         folder = self.repo.dir / f"examples/{example_id}-a-constructed-change"
         folder.mkdir(parents=True)
         (folder / "example.json").write_text(json.dumps({

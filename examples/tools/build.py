@@ -39,9 +39,13 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py --render-only [ID ...]  rewrite their pages from result.json, running nothing
        python3 examples/tools/build.py --plan [ID ...]     print what each run would take (plan()), as JSON, running nothing
        python3 examples/tools/build.py --index-only        the router: examples/README.md's tables and examples/index.json
+       python3 examples/tools/build.py --plan ID --task T  the plan of one task of a real-world example with a target sidecar
+       python3 examples/tools/build.py ID --task T         one attempt at that task (examples/tools/targets/route.py)
 
 A real-world example (origin "real-world") is not run, and naming one is a failure: its report is its README.md, and its example.json is what the
-router knows of it. Every example's tags must come from examples/tags.json.
+router knows of it. The exception is one with a target sidecar (target.json, llm-dlc/loops/example-targets.md), whose
+tasks are planned and run one at a time with --task, through examples/tools/targets/; without --task it is not run
+either. Every example's tags must come from examples/tags.json.
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
 cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps; the Python
 module jsonschema, without which no result is published. No Docker.
@@ -64,7 +68,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # the pipeline imports build.py by its path
 import result_format  # noqa: E402  the stored result's format, and the flat view everything here reads
-from targets import sidecar  # noqa: E402  a real-world example's target.json (llm-dlc/loops/example-targets.md)
+from targets import route as target_route, sidecar, workflow as target_workflow  # noqa: E402  real-world examples' target.json (llm-dlc/loops/example-targets.md)
+from targets.interfaces import Unsupported  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 EXAMPLES = REPO / "examples"
@@ -205,14 +210,18 @@ def stages(out):
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
+    argv, task = task_argument(argv)
     mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"], ["--plan"], ["--scan-gaps"]) else None
     ids = argv[1:] if mode else argv
-    problem = selection_problem(mode, ids, folders)
+    problem = selection_problem(mode, ids, folders) or task_problem(mode, ids, task, folders)
     if problem:
         print(f"build.py: {problem}", file=sys.stderr)
-        print("usage: build.py [ID ...] | --render-only [ID ...] | --plan [ID ...] | --scan-gaps [ID ...] | --index-only", file=sys.stderr)
+        print("usage: build.py [ID ...] | ID --task T | --render-only [ID ...] | --plan [ID ...] | --plan ID --task T | "
+              "--scan-gaps [ID ...] | --index-only", file=sys.stderr)
         return 2  # nothing has run
     wanted = set(ids)
+    if task:
+        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan")
     if mode == "--plan":
         # What each run would take, as JSON, running nothing: every constructed example's by default.
         plans = [plan(load_example(f)) for f in folders if (f.name[:3] in wanted if wanted else True)]
@@ -304,9 +313,64 @@ def selection_problem(mode, ids, folders):
     return None
 
 
+def task_argument(argv):
+    """argv without `--task T`, and T (None without it). A second --task, or one without a value, is left in argv
+    for selection_problem() to refuse as not an example id."""
+    if argv.count("--task") == 1:
+        i = argv.index("--task")
+        if i + 1 < len(argv) and not argv[i + 1].startswith("--"):
+            return argv[:i] + argv[i + 2:], argv[i + 1]
+    return argv, None
+
+
+def task_problem(mode, ids, task, folders):
+    """Why `--task` can't be used as given, or None: it takes one example, with a target sidecar that defines it,
+    and only to run or plan it."""
+    if task is None:
+        return None
+    if mode not in (None, "--plan"):
+        return f"--task goes with an example to run or --plan, not {mode}"
+    if len(ids) != 1:
+        return f"--task {task} takes exactly one example id, not {len(ids)}"
+    folder = next(f for f in folders if f.name[:3] == ids[0])
+    example = load_example(folder)
+    target = sidecar.load(folder, example)
+    if target is None:
+        return f"example {ids[0]} has no target sidecar (target.json), so it has no tasks"
+    if task not in target_route.task_ids(target):
+        return f"example {ids[0]} has no task {task!r} (its tasks: {', '.join(target_route.task_ids(target)) or 'none'})"
+    return None
+
+
+def run_task(folder, task, plan_only=False):
+    """`--plan ID --task T` prints the task's plan; `ID --task T` makes one attempt at it through the target route
+    (examples/tools/targets/route.py). An attempt that stops at an Unsupported result prints a not-executed line
+    naming it and exits 1, as an unexecuted example does; one that gives a receipt prints its conclusion and exits 0
+    only when ingestion found it as the task expected."""
+    example = load_example(folder)
+    target = sidecar.load(folder, example)
+    if plan_only:
+        print(json.dumps([target_route.plan(folder, example, target, task)], indent=2, ensure_ascii=False))
+        return 0
+    print(f"{folder.name}: running task {task} (target route)", flush=True)
+    receipt = target_route.run(folder, example, target, task, scratch() / "targets" / folder.name[:3] / task)
+    if isinstance(receipt, Unsupported):
+        print(f"{folder.name}: not-executed (task {task}: {receipt.describe()})")
+        print(f"Not executed: {folder.name}")
+        return 1
+    expected = next(t for t in target["tasks"] if t["id"] == task).get("expected")
+    matches = expected is not None and receipt.status == expected
+    print(f"{folder.name}: task {task}: {receipt.status or 'none'} ({receipt.execution}; "
+          f"{'as expected' if matches else 'EXPECTED ' + (expected or 'nothing').upper()}), receipt {receipt.path}")
+    return 0 if matches else 1
+
+
 def not_executable(example):
     """Why build.py cannot run this example, or None when it can."""
     if example["origin"] != "constructed":
+        if example.get("target"):
+            return ("a real-world example with a target sidecar: it is run one task at a time, with --task "
+                    "(build.py --plan ID lists its tasks)")
         return ("a real-world example: its report is its README.md, and build.py has no adapter for its "
                 "project's build")
     app = app_of(example)
@@ -350,6 +414,11 @@ def plan(example):
     approach = example["approach"]["id"]
     reason = not_executable(example)
     p = {"example": example["id"], "approach": approach, "executable": reason is None, "notExecuted": reason}
+    if reason and example.get("target"):
+        # Each task's plan, from the sidecar alone, as --plan ID --task T prints it.
+        folder = next(EXAMPLES.glob(f"{example['id']}-*"))
+        target = sidecar.load(folder, example)
+        return {**p, "tasks": [target_route.plan(folder, example, target, t) for t in target_route.task_ids(target)]}
     if reason:
         return p
     app = app_of(example)
@@ -4451,6 +4520,11 @@ def code(text):
     return "`" + text.replace("|", "\\|") + "`"
 
 
+def target_projection(folder, example):
+    target = sidecar.load(folder, example)
+    return target_workflow.project(folder, example, target) if target else None
+
+
 def render_index(folders):
     """The router: the table of every example and the examples by tag in examples/README.md, and index.json."""
     examples = []
@@ -4485,6 +4559,9 @@ def render_index(folders):
             "existingTestsPassed": res["existingTests"]["passed"] if res else None,
             "notes": ex.get("notes", []),
             "source": ex.get("source", {}).get("url"),
+            # A sidecar's projection (examples/tools/targets/workflow.py's project()): family, role, readiness, claim
+            # statuses and gaps, for find.py. The historical verdictLabel above stays as it is, beside it.
+            "target": target_projection(folder, ex),
         })
     by_tag = {}
     for folder, ex, _ in examples:

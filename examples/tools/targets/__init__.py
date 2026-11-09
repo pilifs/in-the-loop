@@ -6,7 +6,9 @@
   the raw ExecutionRecord between them and the named Unsupported result. Coordinator-owned.
 - workflow.py: task planning, attempt ingestion and the index projection (the workflow stream).
 - runtime.py: preparation, separate-JVM controls and the verifier on prepared artifacts (the runtime stream).
+- route.py: what build.py (--plan ID --task T, ID --task T) and pipeline.py (submit --example ID --task T) call; it
+  chains the interfaces and stops at the first Unsupported. Coordinator-owned.
 
-Tests: test_sidecar.py and test_interfaces.py (coordinator), test_workflow.py and test_runtime.py (their streams).
+Tests: test_sidecar.py, test_interfaces.py and test_route.py (coordinator), test_workflow.py and test_runtime.py (their streams).
 Nothing here touches the network, and planning never does.
 """

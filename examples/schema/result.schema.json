@@ -1237,6 +1237,7 @@
       ]
     },
     "claim": {
+      "allOf": [{ "if": { "not": { "required": ["target"] } }, "then": { "properties": { "inputs": { "properties": { "patch": { "type": "string" } } } } } }],
       "description": "What the run checked, frozen before it ran (written to the attempt's directory as claim.json before anything was built). Another input or scope is another claim, with another id; another engine, timeout or tool is another attempt at the same one. Absent in results written before 2026-11-05 (step 3b of llm-dlc/loops/build-orchestration.md).",
       "type": "object",
       "required": ["id", "format", "example", "statement", "scope", "inputs"],
@@ -1256,17 +1257,39 @@
             "proofCache": { "description": "Written by build.py's claim_scope: the cache starts empty, so a helper's proof the caller rests on was made in this run.", "const": "fresh: helpers' proofs made in the run" }
           }
         },
+        "target": {
+          "description": "For a task of a real-world example's target sidecar (llm-dlc/loops/example-targets.md): the task, the sidecar it was resolved from, its revisions, and the identities the claim is bound to after preparation, before the verifier runs: every classpath entry in order with its SHA-256, the JDKs, and the adapter, oracle and model files. Another of any of them is another claim. Absent for every other claim. The workflow stream may add properties to it, additively.",
+          "type": "object",
+          "required": ["task", "sidecar", "revisions", "dependencies", "jdks"],
+          "additionalProperties": false,
+          "properties": {
+            "task": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+            "sidecar": { "description": "The SHA-256 of target.json as the task was planned from it.", "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "revisions": { "description": "Each revision the task uses, by its name in target.json, with its full commit SHA.", "type": "object", "minProperties": 1, "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{40}$" } },
+            "dependencies": {
+              "description": "Every classpath entry of each revision, in classpath order: the original artifact, its dependencies, the adapter and driver, each by content.",
+              "type": "array",
+              "items": { "type": "object", "required": ["revision", "position", "role", "sha256"], "additionalProperties": false,
+                "properties": { "revision": { "type": "string" }, "position": { "type": "integer", "minimum": 0 },
+                  "role": { "enum": ["original", "dependency", "adapter", "driver", "oracle", "stub"] },
+                  "coordinates": { "type": "string" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } }
+            },
+            "jdks": { "description": "Each JDK the attempt ran on, by its `java -version` first line: a different JDK is a different identity.", "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "files": { "description": "Adapter, oracle, model and claim files from the example's folder, by path, with their SHA-256.", "type": "object", "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" } }
+          }
+        },
         "inputs": {
           "description": "The inputs' fingerprints: the patch's SHA-256, the files the run copies before and after the patch (the app's sources, contracts, models and build files, and for Box Office the Java verifier; build output left out), how dependencies are pinned, and for D1 the model's specification and configurations as the patched copy has them.",
           "type": "object",
           "required": ["patch", "before", "after", "dependencies"],
           "additionalProperties": false,
           "properties": {
-            "patch": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "patch": { "description": "The SHA-256 of the example's patch; null only for a target task's claim (`target`), whose revisions are upstream commits.", "anyOf": [{ "type": "string", "pattern": "^[0-9a-f]{64}$" }, { "type": "null" }] },
             "before": { "anyOf": [{ "type": "null" }, { "type": "object", "required": ["sha256", "files"], "additionalProperties": false, "properties": { "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "files": { "type": "integer", "minimum": 1 } } }] },
             "after": { "anyOf": [{ "type": "null" }, { "type": "object", "required": ["sha256", "files"], "additionalProperties": false, "properties": { "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "files": { "type": "integer", "minimum": 1 } } }] },
-            "dependencies": { "description": "`the JDK` for the javac apps; `declared in the build files` for Box Office, whose libraries Gradle resolves by the versions its (fingerprinted) build files declare, the artifacts themselves not fingerprinted.", "enum": ["the JDK", "declared in the build files"] },
-            "model": { "description": "D1: each model file, repo-relative, with its SHA-256.", "type": "object", "additionalProperties": { "type": ["string", "null"] } }
+            "dependencies": { "description": "`the JDK` for the javac apps; `declared in the build files` for Box Office, whose libraries Gradle resolves by the versions its (fingerprinted) build files declare, the artifacts themselves not fingerprinted; `pinned in target.dependencies` for a target task, whose every classpath entry is hashed there.", "enum": ["the JDK", "declared in the build files", "pinned in target.dependencies"] },
+            "model": { "description": "D1: each model file, repo-relative, with its SHA-256.", "type": "object", "additionalProperties": { "type": ["string", "null"] } },
+            "contracts": { "description": "Under --gaps advised: the SHA-256 of the example's contracts for the gaps (build.py's contracts_digest()), which the verdict rests on for each gap they close.", "type": "string", "pattern": "^[0-9a-f]{64}$" }
           }
         }
       }
@@ -1343,7 +1366,7 @@
       "additionalProperties": false,
       "properties": {
         "artifacts": { "type": "array", "items": { "type": "object", "required": ["path", "sha256", "bytes"], "additionalProperties": false,
-          "properties": { "path": { "type": "string", "pattern": "^(result\\.sarif|verifier-output\\.txt|statement(-\\d+)?\\.java)$" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "bytes": { "type": "integer", "minimum": 0 } } } }
+          "properties": { "path": { "description": "Relative to the result's directory. A target task's receipt may also keep its raw execution records under records/ (controlled names, no subdirectory).", "type": "string", "pattern": "^(result\\.sarif|verifier-output\\.txt|statement(-\\d+)?\\.java|records/[A-Za-z0-9][A-Za-z0-9._-]*)$" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "bytes": { "type": "integer", "minimum": 0 } } } }
       }
     },
     "sarif": {
