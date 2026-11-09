@@ -1,6 +1,6 @@
 # Brief: example targets, real-world changes as reproducible work packets
 
-**Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08.** It starts after the [launch prerequisites](#launch-prerequisites), which include Phase 0.
+**Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08; [Phase 0](#phase-0-interfaces-hooks-and-fixtures) was done on 2026-11-09.** It starts after the [launch prerequisites](#launch-prerequisites).
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). It **scaffolds** external Java changes, Spring CVEs and
 independent upstream changes of the same kinds, as packets a later agent can execute, prove, refute or turn into an
@@ -62,9 +62,11 @@ was recounted [below](#where-it-starts-from).
 
 ## Where it starts from
 
-Recounted 2026-11-08 at `210b9498` (application-core Phase 5 step 1, after its streams' merge `43ed2402`), against the
-outside review's claims at `57f04e55`. **Recount again at application-core's final commit** ([prerequisite
-2](#launch-prerequisites)): application-core is still delivering capabilities this table names.
+Recounted 2026-11-08 at `210b9498` against the outside review's claims at `57f04e55`, and **again on 2026-11-09 at
+application-core's final commit, `a7abc155`** ([prerequisite 2](#launch-prerequisites)). Line numbers are
+`a7abc155`'s, before Phase 0's edits (which add a few lines near the top of `build.py`, and the seam this table says
+is missing). Two rows changed: application-core is done, and VF-023 is closed; the rest moved only in line numbers,
+some of which were already off at `210b9498`.
 
 | Finding | Evidence | Consequence |
 |---|---|---|
@@ -73,19 +75,19 @@ outside review's claims at `57f04e55`. **Recount again at application-core's fin
 | **Dependencies are declared, not hashed.** | `claim_record()` (`build.py:764-782`) hashes the patch and the copied trees; dependencies are the string "declared in the build files" or "the JDK" (`:775`), with "the artifacts themselves are not fingerprinted" (`:773-774`). Tools: `attempt_tools()` `:864-887`. There is no Maven path at all. | Bind attempts to the actual JARs, classpath order, JDK and adapter/oracle identities, through the existing claim record. |
 | **The pipeline refuses real-world examples before planning.** | `verification/pipeline.py:1585-1587`, before `example_plan()` (`:1588`); tested at `verification/test_pipeline.py:428`. | `submit --example NNN --task T` consumes the same task plan. |
 | **The index uses authored labels for real-world examples.** | `render_index()` (`build.py:4448`) takes `verdictLabel` (`:4465`) and writes `verdict: None` (`:4475`); `example.schema.json:115-116` requires `source` and `verdictLabel` for them. | Historical labels stay historical; a new receipt is shown beside them, never instead. |
-| **Format 2 exists, with evidence checked before publication.** | `result_format.py` `FORMAT = 2` (`:34`), `pack()` (`:83-102`); `check_result()` (`build.py:958-969`) validates the flat view, the round trip, the stored format and the bundle's sha256s before `publish()` (`:979+`). 45 stored results are format 2, 112 format 1. | One format-2 receipt per task and attempt. No new format. |
-| **Authored metadata is closed and has no locks.** | `example.schema.json`: `source` is `{kind, repository, url}` (`:56-64`), `additionalProperties: false` at the top (`:8`) and on every nested object. No commit field, hash, lock or build info. | A sidecar reference is a schema change, made once, in Phase 0. |
+| **Format 2 exists, with evidence checked before publication.** | `result_format.py` `FORMAT = 2` (`:37`), `pack()` (`:81-98`); `check_result()` (`build.py:958-969`) validates the flat view, the round trip, the stored format and the bundle's sha256s before `publish()` (`:979+`). 45 stored results are format 2, 112 format 1. | One format-2 receipt per task and attempt. No new format. |
+| **Authored metadata is closed and has no locks.** | `example.schema.json`: `source` is `{kind, repository, url}` (`:56-64`), `additionalProperties: false` at the top (`:8`) and on every nested object. No commit field, hash, lock or build info. | A sidecar reference is a schema change, made once: Phase 0 added `example.json`'s optional `target`. |
 | **Five real-world examples, all handwritten.** | 105 (commons-numbers `pow`, all three conclusions positive), 106 (commons-lang `reverse`), 107 (commons-lang `subarray`, mixed: one property ⚠ unverifiable), 108 (jackson-core, unresolved), 109 (commons-codec `Hex.toDigit`, new version ✓, old-version regression ⚠ needs a `Character.digit` model, replay limits on `StandardCharsets.UTF_8` and locale-dependent `String.format`). Each has only `example.json` and `README.md`. | 105 is the calibration migration; 106 its documented fallback. 107–109 stay visible as they are. |
-| **A one-sided replay no longer counts as reproduced.** | The outside review attributed this to example 109's record; it is VF-015's step 4, job `20261108-024648` (`findings.md:196-200`). Fixed after `57f04e55`: `witness::differences` is empty when either side couldn't replay (`lib/src/witness.rs:779-786`, test `:1052`), `equivalence.rs:2218-2224`; documented at `lib/README.md:245`. | Rely on it, and keep separate-JVM replay of both sides as the oracle path. VF-015's own remaining work stays deferred by the user. |
-| **No fix command; JBMC is the CLI default.** | `lib/src/main.rs`: `Equivalence` `:39-40`, `Prove` `:95-96`, no `fix`; `engine` defaults to `jbmc` (`:579-580`, `:718-719`, `:349`), `gaps` to `strict` (`:591-592`, `:730-731`). | Repair is composed in the target layer from separate tasks; native is always requested explicitly. |
-| **No external-target code yet, but the seam is planned.** | No `target.json`, `TaskPlan`, `PreparedTarget` or lock anywhere. `build-orchestration.md:599-604` defers "4c. External artifacts as inputs", with "whether dependencies may be downloaded" left to the user (`:90-91`). | This brief is 4c. The user settled downloads ([decision 1](#decisions)). |
-| **Example numbers are reserved only in briefs.** | `application-core.md:266-271` (230–279), `cleanup.md:154-158` (197–229). The highest folder is 196; 197–279 are unused. Nothing in `examples/README.md` or `tags.json`. | This brief reserves 280–329 ([Streams](#streams)). |
+| **A one-sided replay no longer counts as reproduced.** | The outside review attributed this to example 109's record; it is VF-015's step 4, job `20261108-024648` (`findings.md:196-200`). Fixed after `57f04e55`: `witness::differences` is empty when either side couldn't replay (`lib/src/witness.rs:812-820`, test `:1094`), `equivalence.rs:584-591` and `:2278-2281`; documented at `lib/README.md:250`. | Rely on it, and keep separate-JVM replay of both sides as the oracle path. VF-015's own remaining work stays deferred by the user. |
+| **No fix command; JBMC is the CLI default.** | `lib/src/main.rs`: `Equivalence` `:40`, `Prove` `:96`, no `fix`; `engine` defaults to `jbmc` (`:592`, `:737`, `:359`), `gaps` to `strict` (`:604`, `:749`, `:362`). | Repair is composed in the target layer from separate tasks; native is always requested explicitly. |
+| **No external-target code yet, but the seam is planned.** | No `target.json`, `TaskPlan`, `PreparedTarget` or lock anywhere. `build-orchestration.md:599-604` defers "4c. External artifacts as inputs", with "whether dependencies may be downloaded" left to the user (`:90-92`). | This brief is 4c. The user settled downloads ([decision 1](#decisions)). Phase 0 added the seam ([below](#phase-0-interfaces-hooks-and-fixtures)). |
+| **Example numbers are reserved only in briefs.** | `application-core.md:299-304` (230–279), `cleanup.md:154-158` (197–229). The highest folder is 196; 197–279 are unused. Nothing in `examples/README.md` or `tags.json`. | This brief reserves 280–329 ([Streams](#streams)); Phase 0 recorded it in `examples/README.md`. |
 | **The machine.** | Temurin JDKs from sdkman under `~/.sdkman/candidates/java/`: `25.0.5.0+8-tem` (the default, `Temurin-25.0.5+8`), `21.0.13.0+9-tem`, and, installed by the planning session on 2026-11-08, `17.0.21.0+9-tem` (`Temurin-17.0.21+9`), `11.0.33.0+10-tem` (`Temurin-11.0.33+10`) and `8.0.512.0+9-tem` (`1.8.0_512-b09`); also GraalVM CE 25, Maven 3.10.0, Gradle 9.8.2 and `/usr/bin/jbmc`. No `~/.m2`. Jobs have cloned from github.com (VF-015's job); nothing has used Maven Central. Jobs run in systemd user scopes with memory caps and no network restriction (`verification/README.md:201`). | Every JDK an upstream build of this portfolio needs is present ([decision 3](#decisions)), and none changes the default. |
-| **Application-core** delivers ordinary receivers, bounded Strings and lists, modelled dependency outcomes and reuse in this baseline's Phase 5. | `application-core.md` Progress; open findings VF-023 (JBMC `List.size` stub), VF-018, VF-015 (deferred by the user), VF-002, VF-020. | Probe its actual final revision. A registered flag or a test that accepts an unsupported hook is not proof support. |
+| **Application-core is done** (its final job `20261108-214557` passed at `47358229`; `application-core.md:1606-1619`). Under `--engine native --gaps strict`: a **String** parameter of a regression check is bounded UTF-16 with content, never null (`length`, `isEmpty`, `charAt`, `equals`, `startsWith`, concatenation), and refused in a property check, as a result, as a plan root, null, or in a `List<String>`; a **list** only from `List.of`/`copyOf`, at most 10 elements of one application class built from primitives, with `contains`, `indexOf`, `equals` and `hashCode` gaps; a **receiver** made by its one usable constructor or a `--plan`, an application-interface dependency passed null (refused if reached); **environment** outcomes through `CallModel` and DTO plans (`lib/README.md:230-236`, `:318-324`, `:352-362`). Regex, locale-dependent methods and reflection are outside the interpreter (`:210`, `:405-410`), `invokeinterface` dispatches only to application methods, an enum or static initializer only inside the fragment (`:334`), no floating point. | VF-023 is closed; open: VF-020, VF-018, VF-015 (deferred by the user), VF-002. Spring's regex (BCrypt hash validation, `RegexRequestMatcher`), `toLowerCase` locale, `HttpServletRequest` interfaces and enum initializers are where the packets' probes will likely stop: each is a prediction until a probe reaches it. Whether real Spring code stays in the fragment takes a queued probe, never an inline proof. |
 
-Side finding for the coordinator: `result.schema.json`'s `claim.inputs` is closed and has no `contracts` property, so an
-advised example's claim (147, 148) would fail `check_result` once VF-002 lets it reach one (not run). Note it in Phase
-0's recount; it is not this brief's to fix unless the sidecar's result-schema extension touches the same block.
+Side finding for the coordinator: `result.schema.json`'s `claim.inputs` was closed with no `contracts` property, though
+`build.py`'s `claim_record()` writes one under `--gaps advised`, so an advised example's claim (147, 148) would have
+failed `check_result` once VF-002 lets it reach one. Phase 0 step 3 touched that block, and added it (`lrxtyuux`).
 
 ## How to work through it
 
@@ -269,19 +271,24 @@ The planning session is `e9be5afb-09c9-4473-a9e9-38f2fb61ca80`, the conversation
 fork from it, so Phase 0 is its work, done before any fork ([decision 7](#decisions)).
 
 1. **Application-core finished**: its merge and Phase 5 committed, with its for-review list, and its `run-streams.sh`
-   exited. Shared files (`build.py`, `pipeline.py`, the schemas) are touched only after that.
+   exited. Shared files (`build.py`, `pipeline.py`, the schemas) are touched only after that. *Done: `a7abc155`,
+   2026-11-08.*
 2. **The baseline recounted** at that commit: [Where it starts from](#where-it-starts-from) updated, application-core's
    delivered capabilities probed on the String, list, receiver and environment cases these packets need, and the
-   integration contracts run inline.
+   integration contracts run inline. *Done 2026-11-09: the table's application-core row says what the native checker
+   supports and refuses for each, from its brief and `lib/README.md` (no proof was run inline); application-core's
+   Python suites pass, and its cargo suites, last run by its final job, weren't rerun.*
 3. **The inputs committed**: `example-targets-inputs/seeds.json`, and the archived registry with its sha256 checked
-   against `e86301abe767bcd9c39c5c9dc8889dfcbb1c22bb45bead53fc630acd0b9c62e5` (the user supplies the file).
-4. **Phase 0** ([below](#phase-0-interfaces-hooks-and-fixtures)), committed.
+   against `e86301abe767bcd9c39c5c9dc8889dfcbb1c22bb45bead53fc630acd0b9c62e5` (the user supplies the file). *Done:
+   `tspropkox` and `xuzwwrwx`.*
+4. **Phase 0** ([below](#phase-0-interfaces-hooks-and-fixtures)), committed. *Done 2026-11-09.*
 5. **The names**: `example-targets` and `example-targets-STREAM` in `feature-loop.sh` (refusing
    `example-targets-acceptance` and `example-targets-sources`, which aren't briefs), `example-targets` with its four
    streams in `run-streams.sh`, and the integration check `llm-dlc/tools/example-targets-integration.sh`. Both
-   launchers are replaced by rename if anything runs from them.
+   launchers are replaced by rename if anything runs from them. *Done in Phase 0 step 6.*
 6. **The briefs committed** with their session ids (done 2026-11-08, in the workspace `example-targets-plan`, rebased onto
-   application-core's final commit at Phase 0), and the [decisions](#decisions) settled by the user (done 2026-11-08).
+   application-core's final commit on 2026-11-09, and that workspace forgotten), and the [decisions](#decisions)
+   settled by the user (done 2026-11-08).
 7. **Push**, at the user's request.
 8. **This brief's status set to `working`**, and the planning session closed. The user then runs
    `FEATURE_LOOP_MEMORY_MAX=4G CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh example-targets` from the default
@@ -308,21 +315,48 @@ The planning session, in the default workspace, one step per commit, each with i
    its stream hasn't replaced yet.
 6. **The numbers and names**: the ranges [below](#streams) recorded, and prerequisite 5.
 
+**Done 2026-11-09**, one commit per step: `ptroqoqm` (1), `quzmrkzx` (2), `lrxtyuux` (3), `ynzpqxsv` (4), `pqulqqlx`
+(5), and step 6's commit. What the streams build against:
+- **The sidecar**: [`examples/schema/target.schema.json`](../../examples/schema/target.schema.json) (`example-target/v1`)
+  and [`examples/tools/targets/sidecar.py`](../../examples/tools/targets/sidecar.py), which checks what the schema
+  can't (paths inside the folder, links included; defined revisions, pairs and tasks; unique ids; no prerequisite
+  cycle; no mutable version). `example.json`'s optional `target` is always `target.json`, real-world only, and
+  `build.py`'s `load_example()` checks the sidecar whenever an example is read. A task may state `allowedChange` (the
+  inputs a preservation task leaves out); a replay names a revision or a pair; a `control` may use fixture revisions.
+- **The interfaces**: [`interfaces.py`](../../examples/tools/targets/interfaces.py) freezes `TaskPlan` (with `folder`,
+  and `artifacts` entries of the `ARTIFACT_SOURCE` shape), `PreparedTarget`, `ExecutionRecord`, `Receipt` and
+  `Unsupported`, and the functions `workflow.plan_task`, `ingest`, `handoff` and `project`, and `runtime.prepare`,
+  `run_controls` and `run_verifier`. Each stub returns `Unsupported` naming its stream, its reason saying "Phase 0's
+  stub". `test_interfaces.py` freezes signatures and field order: a field added later needs a default.
+- **The hooks**: `build.py --plan NNN --task T`, `build.py NNN --task T` and `pipeline.py submit --example NNN --task
+  T`, all through [`route.py`](../../examples/tools/targets/route.py), which stops at the first `Unsupported`; the
+  index's `target` projection and `find.py --family/--role/--readiness/--claim-status/--gap`; `result.schema.json`'s
+  `claim.target`, `inputs.dependencies: pinned in target.dependencies`, a null patch only with a target, and `records/`
+  bundle paths. Old receipts stay valid (all 157 checked).
+- **The fixtures**: [`examples/tools/targets/fixtures/`](../../examples/tools/targets/fixtures/README.md), a
+  two-revision `int` fixture with a mutant and a regex capability refusal, deterministic JARs, recorded JVM controls on
+  JDK 21 and 25, a recorded `jvmcontract gaps` refusal, and constructed bad runs and receipts.
+- **The contract**: [`examples/tools/test_targets_contract.py`](../../examples/tools/test_targets_contract.py), rows A0,
+  A1, A2, A3/A4 and A5 on the fixture, A6 and A7. At Phase 0's end, A0's three tests pass and the other 13 stop at their
+  stream's stub.
+
 ## Streams
 
 | Loop | Brief | jj workspace | Owns |
 |---|---|---|---|
-| `example-targets-runtime` | [`example-targets-runtime.md`](example-targets-runtime.md) | `example-targets-runtime` | `examples/tools/targets/runtime*` and its tests and fixtures |
+| `example-targets-runtime` | [`example-targets-runtime.md`](example-targets-runtime.md) | `example-targets-runtime` | `examples/tools/targets/runtime*`, `test_runtime.py` and further tests and fixtures of its own |
 | `example-targets-negative` | [`example-targets-negative.md`](example-targets-negative.md) | `example-targets-negative` | the catalog folders and the three negative packets: their source records, local adapters, oracles, probes and notes |
 | `example-targets-positive` | [`example-targets-positive.md`](example-targets-positive.md) | `example-targets-positive` | the three positive packets, their mutation controls, the optional control, and 105's migration data |
-| `example-targets-workflow` | [`example-targets-workflow.md`](example-targets-workflow.md) | `example-targets-workflow` | `examples/tools/targets/workflow*`, the sidecar schema after Phase 0, and its tests |
+| `example-targets-workflow` | [`example-targets-workflow.md`](example-targets-workflow.md) | `example-targets-workflow` | `examples/tools/targets/workflow*`, the sidecar schema and `sidecar.py` after Phase 0, `test_workflow.py`, `test_sidecar.py` and its other tests |
 | `example-targets` | this brief | `default` | Phase 0, the merge, Phase 5 and the joint acceptance |
 
 **Runtime produces evidence; workflow classifies it.** Case streams write no downloaders or parsers of their own.
 
 **Shared files have one writer** ([decision 6](#decisions)): the planning session, in Phase 0, writes `build.py`,
 `pipeline.py`, `result_format.py`, the shared schemas, `find.py`, `examples/tags.json`, the generated indexes, the
-launchers and the integration script. While the streams run, none of them edits these. A stream that needs a change
+launchers and the integration script, and also `targets/interfaces.py`, `targets/route.py`, their tests, the fixtures
+and the contract test. While the streams run, none of them edits these, with one exception: workflow may add the
+fixture's claim files (`fixtures/claims/`) and the `claim` keys in `fixtures/target.json` that refer to them. A stream that needs a change
 records an interface request under its Progress and works on what doesn't depend on it; a purely additive line (one
 tag, one registration) may go in a block marked with the stream's name, anything else waits for the merge.
 `examples/README.md` and `examples/tags.json` take additions only. Application-core's engine files (`lib/`) belong to
@@ -468,7 +502,17 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   `example-targets-inputs/spring-cve-targets.research-2026-11-04.json` is its `inputs/` file, sha256 `e86301ab…` as
   pinned, with 15 cases and the stale `4c279ba6` verifier review. The package's other files match the text the briefs
   were adapted from.
-- Status: blocked: application-core's finish, and Phase 0 by the planning session
+- 2026-11-09, **Phase 0 done** by the planning session, after application-core's final commit `a7abc155`, onto which the
+  drafted commits were rebased (the `example-targets-plan` workspace forgotten; its directory is the user's to delete).
+  The baseline was recounted (application-core done, VF-023 closed, line numbers moved), with a subagent's read-only
+  report and no proof run. Six commits, listed under [Phase 0](#phase-0-interfaces-hooks-and-fixtures). Step 1 broke
+  `verification/test_pipeline.py`'s stub repo, which didn't copy `examples/tools/targets/`, and step 3 fixed it. The
+  integration script passes on the default workspace: the contract (3 pass, 13 stop at their stubs), the targets suite
+  (41), `test_build.py` (190), `test_pipeline.py` (29) and every sidecar validated. For review: the fixture's
+  `example.json` says `origin: real-world` only because the route takes one; its sidecar's role is `control`. The
+  recorded gap scan used a `jvmcontract` built before application-core's last `lib/src` change (noted in the
+  fixtures' README).
+- Status: blocked: the push (prerequisite 7), at the user's request; then this line becomes `working` and the user launches
 
 ## Loop settings
 

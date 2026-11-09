@@ -639,7 +639,9 @@ inputs before shrinking. Counterexamples recorded before 2026-11-05 have no `wit
 
 ## Add an example
 
-Take the next free number; constructed and real-world examples share the sequence.
+Take the next free number; constructed and real-world examples share the sequence. Numbers 280–329 are reserved for
+[`example-targets.md`](../llm-dlc/loops/example-targets.md)'s streams (its [Streams](../llm-dlc/loops/example-targets.md#streams)
+section allocates them): skip them when you take the next free number.
 
 **A constructed example:**
 

@@ -32,8 +32,15 @@ refuses real-world examples, and its claim record names dependencies as "declare
 them, for Gradle only (there is no Maven path); the verifier already generates harnesses, relocates the previous
 version's classes and records statements, so reuse it through the current commands; application-core's construction
 and value adapters still refuse what they don't support, so a Spring receiver or String isn't proof-ready because it
-compiles; a one-sided replay no longer counts as reproduced (`witness.rs:779-786`). Temurin JDKs 8, 11, 17, 21 and 25 are installed
+compiles; a one-sided replay no longer counts as reproduced (`witness.rs:812-820`). Temurin JDKs 8, 11, 17, 21 and 25 are installed
 (21 and 25 the main targets, 25 the default; the main brief's JDK rule).
+
+Phase 0 delivered (2026-11-09; the main brief's [Phase 0](example-targets.md#phase-0-interfaces-hooks-and-fixtures)):
+`examples/tools/targets/runtime.py`, whose `prepare`, `run_controls` and `run_verifier` are stubs returning
+`Unsupported` for you to replace, behind the frozen types in `interfaces.py` (a `TaskPlan`'s `artifacts` entries tell
+you each revision's route and sources); the fixtures (`targets/fixtures/`, with `build_fixtures.py`, which the fixture
+route builds with); and the contract rows that are yours, A2 and A3/A4 on the fixture, and A5's runtime half, in
+`examples/tools/test_targets_contract.py`. They stop at your stubs now, and your work turns them into passes.
 
 ## Your items
 
@@ -110,8 +117,8 @@ Phase 5. Phase 5 runs the six deep packets and 105's calibration through this pa
 
 ## Ownership and cooperation
 
-- **Yours**: `examples/tools/targets/runtime*`, its focused tests and fixtures, and example numbers 315–319 if you need
-  any.
+- **Yours**: `examples/tools/targets/runtime*`, `test_runtime.py` (rewrite its stub tests as you replace each stub), your
+  other focused tests and fixtures in files of your own, and example numbers 315–319 if you need any.
 - **Not yours**: `build.py`, `pipeline.py`, result and report schemas and the launchers (the coordinator); task planning
   and ingestion (workflow); case folders, local adapters and oracles (negative and positive). Ask through Progress.
 - Your tests go in files of your own.

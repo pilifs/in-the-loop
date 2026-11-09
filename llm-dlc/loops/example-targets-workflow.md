@@ -33,8 +33,14 @@ Recounted in the main brief's [Where it starts from](example-targets.md#where-it
 --plan` resolves a plan without executing anything (`plan()`, `build.py:336-393`); `result_format.py` keeps Claim,
 Attempt, Conclusion, Evidence and Bundle apart (`pack()`, `:83-102`), and `check_result()` validates and hashes evidence
 before `publish()`; real-world examples are refused by `build.py` and by `pipeline.py` before planning, and indexed by
-their authored labels; `example.schema.json` is closed. Phase 0 adds the sidecar reference, the three interfaces failing
-closed, and the hooks you implement behind.
+their authored labels; `example.schema.json` is closed.
+
+Phase 0 delivered (2026-11-09; the main brief's [Phase 0](example-targets.md#phase-0-interfaces-hooks-and-fixtures)):
+the sidecar schema and `examples/tools/targets/sidecar.py`, now yours; `workflow.py`, whose `plan_task`, `ingest` and
+`handoff` are stubs returning `Unsupported` for you to replace and whose `project` states only what the sidecar says;
+the hooks in `build.py`, `pipeline.py`, `render_index()` and `find.py`, through `route.py`; the result schema's
+`claim.target`; the fixtures; and the contract rows that are yours, A1, A6 and A7, and A5's ingestion half, in
+`examples/tools/test_targets_contract.py`. They stop at your stubs now, and your work turns them into passes.
 
 ## Your items
 
@@ -83,10 +89,13 @@ scheduler; native tasks get no mandatory JBMC dependency.
 
 ## Ownership and cooperation
 
-- **Yours**: `examples/tools/targets/workflow*`, the sidecar schema after Phase 0, your tests, and example numbers
+- **Yours**: `examples/tools/targets/workflow*`, the sidecar schema and `sidecar.py` after Phase 0, `test_workflow.py`
+  (rewrite its stub tests as you replace each stub), `test_sidecar.py`, your other tests, the fixture's claim files
+  (`targets/fixtures/claims/`, with the `claim` keys in `fixtures/target.json` that name them), and example numbers
   320–324 if you need any.
 - **Not yours**: `build.py`, `pipeline.py`, `result_format.py`, the shared result schemas, `find.py`, the generated
-  indexes, tags and launchers (the coordinator, behind Phase 0's hooks); acquisition, builds, adapters and JVM execution
+  indexes, tags and launchers, `interfaces.py`, `route.py` and the contract test (the coordinator, behind Phase 0's
+  hooks); acquisition, builds, adapters and JVM execution
   (runtime); case folders (negative and positive). Ask through Progress.
 
 ## Acceptance

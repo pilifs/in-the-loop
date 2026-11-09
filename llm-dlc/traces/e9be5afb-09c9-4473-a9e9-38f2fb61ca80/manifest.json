@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-09T02:38:08.839Z",
-  "duration_seconds": 54723,
+  "ended": "2026-11-09T02:43:42.462Z",
+  "duration_seconds": 55057,
   "stats": {
     "turns": 16,
-    "api_calls": 219,
-    "tool_calls": 221,
+    "api_calls": 234,
+    "tool_calls": 236,
     "tool_errors": 6,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 462,
-      "output_tokens": 262401,
-      "cache_read_input_tokens": 39069510,
-      "cache_creation_input_tokens": 1033586
+      "input_tokens": 492,
+      "output_tokens": 285062,
+      "cache_read_input_tokens": 43895719,
+      "cache_creation_input_tokens": 1059820
     }
   },
   "tools": {
-    "Bash": 188,
+    "Bash": 203,
     "Write": 19,
     "Read": 7,
     "AskUserQuestion": 4,
@@ -75,24 +75,24 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-09T02:38:08.839Z",
+      "ended": "2026-11-09T02:43:42.462Z",
       "turns": 7,
-      "api_calls": 97,
+      "api_calls": 112,
       "usage": {
-        "input_tokens": 200,
-        "output_tokens": 131857,
-        "cache_read_input_tokens": 16786112,
-        "cache_creation_input_tokens": 280867
+        "input_tokens": 230,
+        "output_tokens": 154518,
+        "cache_read_input_tokens": 21612321,
+        "cache_creation_input_tokens": 307101
       },
-      "peak_context_tokens": 309703
+      "peak_context_tokens": 335937
     }
   ],
   "log": {
-    "sha256": "08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3",
-    "bytes": 6123881,
-    "lines": 2059,
-    "gzip_bytes": 1091942,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3.jsonl.gz"
+    "sha256": "94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b",
+    "bytes": 6448783,
+    "lines": 2208,
+    "gzip_bytes": 1129662,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b.jsonl.gz"
   },
   "subagents": [
     {
@@ -510,6 +510,14 @@
       "summary": "example-targets Phase 0 step 5: the integration contract, examples/tools/test_targets_contract.py",
       "body": "One test per Tier A row the streams can reach on the fixtures, each either reaching the row's final outcome or stopping at the named Unsupported result of a Phase 0 stub (a skip naming it); any other Unsupported, type or outcome fails. A0: the fixture is a valid sidecar example, the route answers, and every constructed and handwritten example keeps its route. A1 (workflow): every fixture task plans offline (no socket, no process, no write) as the sidecar states it, with native tasks never requiring JBMC; the handoff reads offline. A2 (runtime): a fixture revision is prepared with its original's identity (build_fixtures.py's after.jar), adapter, ordered classpath and JDK, reproducibly; changed source bytes change the identity; an adapter shadowing fixture.Gate is refused. A3/A4 on the fixture: per-revision JVM controls on JDK 21 and 25, the oracle finding 97 on before, nothing on after, 65 on the mutant. A5 on the fixture (where jvmcontract is built): established, refuted and preservation conclusions through the whole route, and the regex probe refused by name. A6 (workflow): distinct receipts per task and attempt with the earlier kept, valid against both result schemas, claim.target bound; a kill, malformed output, a one-sided replay and an exit code alone never become a result. A7: the regex probe's handoff carries hashed inputs, commands, one next action and the observed gap packet. Runtime's rows use a TaskPlan built from the sidecar and workflow's use PreparedTargets and records built from the fixtures, so each stream's rows move with its own work. Before it, so each stream can be planned from: TaskPlan gains folder and a defined artifact-source shape, a replay task may name a pair (the fixture gains replay and mutant-replay on its pairs), a fixture revision's commit is fixture:<path>, and workflow.handoff() joins the frozen interfaces (W3) with its stub. Verified: 15 tests, 2 pass and 13 stop at the stub of their stream (3.6 s); A2-A4 also pass against plausible fake implementations (a throwaway check), so their final assertions are satisfiable; the targets suite and test_build pass.",
       "log_sha256": "08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3"
+    },
+    {
+      "change_id": "wylwwystpsxouunztkoyrqyvrzymzwpx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 0 step 6: numbers and names, the integration script, and the briefs brought up to date",
+      "body": "examples/README.md records that 280-329 are reserved for the example-targets streams, and the contract's A0 checks it. feature-loop.sh knows example-targets and example-targets-STREAM and refuses example-targets-acceptance, -sources and -inputs, which aren't briefs; run-streams.sh knows example-targets with its streams runtime, negative, positive and workflow; both were replaced by rename. llm-dlc/tools/example-targets-integration.sh runs the contract (CONTRACT FAILED), then the targets suite, test_build.py, test_pipeline.py and every example read with its sidecar (TESTS FAILED), offline. The main brief's starting table is recounted at application-core's final commit a7abc155 (application-core done with what its native checker supports and refuses for Strings, lists, receivers and environment; VF-023 closed; corrected line numbers), the side finding is marked fixed, prerequisites 1-6 are marked done, Phase 0 lists what it delivered, ownership covers the new files (workflow: sidecar.py, test_workflow.py, test_sidecar.py, the fixture's claim files; runtime: test_runtime.py), and the runtime and workflow briefs say which contract rows are theirs. Status: blocked only on the push, at the user's request. Verified: the integration script passed end to end (contract 3 pass and 13 stop at their stubs, targets 41, test_build 190, test_pipeline 29, all sidecars read); feature-loop.sh refuses the non-brief names and an unknown stream.",
+      "log_sha256": "94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b"
     }
   ],
   "logs": {
@@ -578,6 +586,12 @@
       "lines": 1136,
       "gzip_bytes": 622725,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6.jsonl.gz"
+    },
+    "94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b": {
+      "bytes": 6448783,
+      "lines": 2208,
+      "gzip_bytes": 1129662,
+      "url": null
     },
     "a2720e230afd79d3746ab85b8f9c44d10e5aa18b0f5a1a1d139c36a85fa7d1ad": {
       "bytes": 2503339,

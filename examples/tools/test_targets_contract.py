@@ -201,6 +201,10 @@ class A0SharedContract(Contract):
         with self.assertRaises(route.UnknownTask):
             route.plan(self.folder, self.example, self.target, "no-such-task")
 
+    def test_the_numbers_are_reserved(self):
+        readme = (HERE.parent / "README.md").read_text()
+        self.assertIn("Numbers 280–329 are reserved", readme)
+
     def test_constructed_and_handwritten_examples_keep_their_route(self):
         for folder in sorted(HERE.parent.glob("[0-9][0-9][0-9]-*")):
             example = json.loads((folder / "example.json").read_text())
