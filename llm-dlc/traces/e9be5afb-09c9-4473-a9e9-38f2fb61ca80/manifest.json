@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e9be5afb-09c9-4473-a9e9-38f2fb61ca80",
-  "status": "ended",
+  "status": "open",
   "title": "Application-core feature streams exiting early",
   "first_prompt": "The latest feature streams (\"application-core\") appear to have exited early. Can you investigate?",
   "client": {
@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-08T17:23:17.790Z",
-  "duration_seconds": 21432,
+  "ended": "2026-11-09T02:15:03.595Z",
+  "duration_seconds": 53338,
   "stats": {
-    "turns": 12,
-    "api_calls": 122,
-    "tool_calls": 122,
-    "tool_errors": 3,
+    "turns": 16,
+    "api_calls": 151,
+    "tool_calls": 148,
+    "tool_errors": 5,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 262,
-      "output_tokens": 130544,
-      "cache_read_input_tokens": 22283398,
-      "cache_creation_input_tokens": 752719
+      "input_tokens": 326,
+      "output_tokens": 144151,
+      "cache_read_input_tokens": 24639135,
+      "cache_creation_input_tokens": 839307
     }
   },
   "tools": {
-    "Bash": 105,
+    "Bash": 130,
     "Write": 7,
+    "Read": 5,
     "AskUserQuestion": 4,
-    "Read": 4,
     "Agent": 1,
     "ScheduleWakeup": 1
   },
@@ -63,24 +63,24 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-08T17:23:17.790Z",
-      "turns": 3,
-      "api_calls": 0,
+      "ended": "2026-11-09T02:15:03.595Z",
+      "turns": 7,
+      "api_calls": 29,
       "usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 0
+        "input_tokens": 64,
+        "output_tokens": 13607,
+        "cache_read_input_tokens": 2355737,
+        "cache_creation_input_tokens": 86588
       },
-      "peak_context_tokens": 0
+      "peak_context_tokens": 115424
     }
   ],
   "log": {
-    "sha256": "8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6",
-    "bytes": 3368889,
-    "lines": 1136,
-    "gzip_bytes": 622725,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6.jsonl.gz"
+    "sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db",
+    "bytes": 4198262,
+    "lines": 1377,
+    "gzip_bytes": 814997,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz"
   },
   "subagents": [
     {
@@ -391,6 +391,46 @@
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6"
+    },
+    {
+      "change_id": "tspropkoxutymuzvksvzskotmuwxtzsq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Draft the example-targets loop: four streams that scaffold Spring CVEs and independent upstream changes as reproducible work packets",
+      "body": "Adds llm-dlc/loops/example-targets.md, its four stream briefs (runtime, negative, positive, workflow), example-targets-acceptance.md and example-targets-sources.md, adapted from an outside plan the user shared (a review of the repository at main 57f04e55 on GitHub, ~/code/briefs/example-targets-all-documents.txt), with its seed metadata unchanged as example-targets-inputs/seeds.json. The loop scaffolds, it doesn't run the proof campaign: three CVEs (2023-34055, 2022-22968, 2025-22228) and three independent historical positives become packets with pinned history, fixed tasks, independent oracles, mutation controls and replay routes, the 15-CVE registry and CVE-2025-22234 are catalogued, example 105 migrates as the calibration, and the observed capability gaps are ranked as the work list towards a v1.\n\nEach of the review's claims about the code was recounted at 210b9498 (application-core Phase 5 step 1) with file:line evidence, in the main brief's 'Where it starts from'. Three are corrected: the one-sided replay it attributed to example 109 is VF-015's step 4 and already fixed (witness.rs:779-786); example numbers are reserved only in briefs, with 197-279 unused, so this brief takes 280-329; and example.schema.json is closed, so the sidecar reference is a Phase 0 schema change. The review's private link to an earlier document is replaced by a description.\n\nThe user settled four decisions on 2026-11-08: downloads allowed in jobs and loops, from github.com and Maven Central only, hash-pinned (settling build-orchestration.md's open question for this wave); four streams, with the case packets run through the merged infrastructure in Phase 5, since the streams' branches can't share code; JDKs 8, 11 and 17 installed in Phase 0 for upstream builds; and the archived registry supplied by the user. Decisions 5-12 (pipeline mode, one writer for shared files, Phase 0 in this planning session e9be5afb after application-core finishes, memory, model, the number ranges, the v1 gap inventory, and the adaptations) are proposed.\n\nNot launched and not launchable yet: the names are registered in feature-loop.sh and run-streams.sh in Phase 0, after application-core's run (which is using run-streams.sh) finishes, so the main brief's status is blocked. Committed from a workspace of its own, example-targets-plan, based on main, because application-core's Phase 5 has uncommitted work in the default workspace; it is rebased onto application-core's final commit at Phase 0. Verified by checking every relative link in the briefs (only the integration script Phase 0 adds is missing) and that seeds.json parses.",
+      "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
+    },
+    {
+      "change_id": "myyoxkpzvzlurumwnypkpluoxnomqqvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: the JDKs installed now, out of Phase 0, with JDK 25 as the default and main target",
+      "body": "At the user's request the planning session installed the JDKs of decision 3 itself instead of leaving them to Phase 0: Temurin 17.0.21+9, 11.0.33+10 and 8u512-b09 with sdkman, beside the 21.0.13+9 and 25.0.5+8 already there. sdkman made each the default as it installed, even with its prompt declined, so the default was set back to 25.0.5.0+8-tem at once. About two minutes passed; the pipeline had no job pending or running, and the application-core merge loop only read and edited files meanwhile, so nothing ran on the wrong JDK.\n\nThe briefs now say: JDK 25 is the default and, as the most relevant for Java development today, the target of everything this wave writes and the JVM for concrete controls wherever a revision's pinned artifacts run on it; an older JDK is used only where a revision's build or runtime needs it, selected by full path, and every preparation and replay records the JDK it used. Phase 0 loses its step 1 (six steps left), the machine row of 'Where it starts from' lists the five JDKs with their identities, decision 3 records the install, and A0 no longer names JDKs. Verified with each JDK's java -version and release file, and sdk current java giving 25.0.5.0+8-tem in a login shell.",
+      "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
+    },
+    {
+      "change_id": "ovzrqrxxnunvlruopvqkrwqvwozzusym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: JDK 21 a main target beside 25",
+      "body": "At the user's request, JDKs 21 and 25, the two current LTS releases, are both main targets; 25 stays sdkman's default. Everything this wave writes is compiled with --release 21 so it runs on both, and a revision's concrete controls run on 21 and on 25 wherever its pinned artifacts do, as two JVM identities recorded separately, a disagreement between them being a finding. Older JDKs (8, 11, 17) are used only where a revision's build or runtime needs them. Updates the main brief's JDK rule and decision 3, and the runtime and positive briefs.\n\nVerified that JDK 25's javac --release 21 output runs on both installed JDKs (a class printing java.version: 21.0.13 and 25.0.5).",
+      "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
+    },
+    {
+      "change_id": "ooorlwpzuxwkmszwpvwzuyxvzpypzmul",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: decisions 5-12 settled by the user, as proposed",
+      "body": "The user walked through the eight proposed decisions on 2026-11-08 and settled each as proposed: verification with the pipeline; one writer for shared files (the planning session, in Phase 0); Phase 0 in this planning session e9be5afb after application-core finishes; 4 GB per stream scope with about 24 GB for the runner; claude-opus-5-5 at high effort for all five loops; example numbers 280-329 as allocated, mutation controls inside their packets; the v1 gap inventory as an explicit Phase 5 output; and the adaptations to the outside plan (the three corrected claims, the private link replaced, this repository's launch metadata).\n\nThe main brief's header, Decisions section, prerequisite 6 and Progress record it, and its status is now blocked only on application-core's finish, the archived registry the user is providing, and Phase 0. No stream brief needed a change: their Loop settings already carried these values. Verified by reading the status line back.",
+      "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
+    },
+    {
+      "change_id": "xuzwwrwxymqkoywyuooopovrkmkqzznn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: the archived CVE registry committed, hash checked (prerequisite 3)",
+      "body": "The outside plan pins its 15-CVE research registry, spring-cve-targets.research-2026-11-04.json, by sha256 e86301ab…; the user supplied the plan's package, and its inputs/ file matches that hash. It is committed unchanged under llm-dlc/loops/example-targets-inputs/ as the negative stream's catalog input: 15 cases, none run, with a verifier review from commit 4c279ba6 that the brief already marks stale. The package's other files were compared with the text the briefs were adapted from and match it, so nothing else changes. The main brief's Progress records this, and its status now waits only on application-core's finish and Phase 0.",
+      "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
     }
   ],
   "logs": {
@@ -399,6 +439,12 @@
       "lines": 577,
       "gzip_bytes": 254846,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313.jsonl.gz"
+    },
+    "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db": {
+      "bytes": 4198262,
+      "lines": 1377,
+      "gzip_bytes": 814997,
+      "url": null
     },
     "4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7": {
       "bytes": 1397981,

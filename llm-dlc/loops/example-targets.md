@@ -462,9 +462,13 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   effort, example numbers 280–329, the v1 gap inventory as a Phase 5 output, and the adaptations to the outside plan.
 - 2026-11-08, **the JDKs installed** by the planning session, at the user's request, out of Phase 0: Temurin 17, 11 and 8
   with sdkman. sdkman made each the default as it installed, despite a declined prompt, so the default was set back to
-  `25.0.5.0+8-tem` at once (about two minutes; no job ran and no loop ran `java` meanwhile). Phase 0 has six steps left. Prerequisites 1–8 are still to do:
+  `25.0.5.0+8-tem` at once (about two minutes; no job ran and no loop ran `java` meanwhile). Phase 0 has six steps left. Prerequisites 1, 2 and 4–8 are still to do:
   application-core finishes first, and the names are registered in Phase 0, so nothing can launch this loop before it.
-- Status: blocked: application-core's finish, the archived registry from the user, and Phase 0 by the planning session
+- 2026-11-09, **the archived registry committed** (prerequisite 3): the user supplied the outside plan's package, and
+  `example-targets-inputs/spring-cve-targets.research-2026-11-04.json` is its `inputs/` file, sha256 `e86301ab…` as
+  pinned, with 15 cases and the stale `4c279ba6` verifier review. The package's other files match the text the briefs
+  were adapted from.
+- Status: blocked: application-core's finish, and Phase 0 by the planning session
 
 ## Loop settings
 
