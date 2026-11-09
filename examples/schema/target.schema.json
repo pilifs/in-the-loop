@@ -134,7 +134,7 @@
         "additionalProperties": false,
         "properties": {
           "id": { "$ref": "#/$defs/name" },
-          "kind": { "description": "prove: a property of one revision; compare or equivalence: two revisions of a pair; replay: concrete controls only.", "enum": ["prove", "compare", "equivalence", "replay"] },
+          "kind": { "description": "prove: a property of one revision; compare or equivalence: two revisions of a pair; replay: concrete controls only, on one revision or a pair's two.", "enum": ["prove", "compare", "equivalence", "replay"] },
           "relation": { "enum": ["security", "preservation", "compatibility", "introduction", "calibration", "diagnostic"] },
           "revision": { "description": "A revision name, for prove and replay.", "$ref": "#/$defs/name" },
           "pair": { "description": "A pair name, for compare and equivalence.", "$ref": "#/$defs/name" },
@@ -150,7 +150,8 @@
           "notes": { "type": "array", "items": { "type": "string" } }
         },
         "allOf": [
-          { "if": { "properties": { "kind": { "enum": ["prove", "replay"] } } }, "then": { "required": ["revision"], "not": { "required": ["pair"] } } },
+          { "if": { "properties": { "kind": { "const": "prove" } } }, "then": { "required": ["revision"], "not": { "required": ["pair"] } } },
+          { "if": { "properties": { "kind": { "const": "replay" } } }, "then": { "oneOf": [{ "required": ["revision"] }, { "required": ["pair"] }] } },
           { "if": { "properties": { "kind": { "enum": ["compare", "equivalence"] } } }, "then": { "required": ["pair"], "not": { "required": ["revision"] } } }
         ]
       }

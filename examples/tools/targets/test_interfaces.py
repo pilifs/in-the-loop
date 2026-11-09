@@ -23,6 +23,7 @@ SIGNATURES = {
     (workflow, "plan_task"): ["folder", "example", "target", "task"],
     (workflow, "ingest"): ["plan", "prepared", "records", "out"],
     (workflow, "project"): ["folder", "example", "target"],
+    (workflow, "handoff"): ["folder", "example", "target", "task"],
     (runtime, "prepare"): ["plan", "revision", "workdir"],
     (runtime, "run_controls"): ["plan", "prepared", "workdir"],
     (runtime, "run_verifier"): ["plan", "prepared", "workdir"],
@@ -32,7 +33,7 @@ SIGNATURES = {
 FIELDS = {
     interfaces.Unsupported: ["interface", "owner", "reason", "stage", "diagnostic"],
     interfaces.TaskPlan: ["example", "task", "kind", "relation", "target", "revisions", "claim", "prerequisites",
-                          "artifacts", "tools", "engine", "gaps", "expected", "outputs", "network"],
+                          "artifacts", "tools", "engine", "gaps", "expected", "outputs", "folder", "network"],
     interfaces.Artifact: ["path", "sha256", "role", "coordinates", "origin"],
     interfaces.PreparedTarget: ["example", "task", "revision", "commit", "stage", "source", "artifacts", "classpath",
                                 "toolchain", "failedStage", "diagnostic", "logs"],
@@ -47,7 +48,7 @@ def plan():
         example="999", task="fixed-security", kind="prove", relation="security", target="fixture.Gate#allowed",
         revisions=("fixed",), claim={"task": "fixed-security"}, prerequisites=(), artifacts=(),
         tools={"required": ["java"], "optional": []}, engine="native", gaps="strict", expected="established",
-        outputs={"receipts": "receipts/fixed-security"})
+        outputs={"receipts": "receipts/fixed-security"}, folder="/nonexistent/999-fixture")
 
 
 class InterfacesTest(unittest.TestCase):

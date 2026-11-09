@@ -60,7 +60,8 @@ class FixturesTest(unittest.TestCase):
         self.assertEqual(target["identity"]["role"], "control")
         self.assertEqual({t["id"]: t.get("expected") for t in target["tasks"]},
                          {"vulnerable-security": "refuted", "fixed-security": "established", "preservation": "established",
-                          "mutant-security": "refuted", "regex-probe": "unresolved", "replay": None})
+                          "mutant-security": "refuted", "regex-probe": "unresolved", "replay": None,
+                          "mutant-replay": None})
 
     def test_the_recorded_controls_are_execution_records_the_oracle_reads(self):
         o = oracle()

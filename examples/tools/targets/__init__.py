@@ -4,7 +4,7 @@
   schema, after Phase 0.
 - interfaces.py: the three shared interfaces, frozen in Phase 0 (TaskPlan, PreparedTarget, attempt ingestion), with
   the raw ExecutionRecord between them and the named Unsupported result. Coordinator-owned.
-- workflow.py: task planning, attempt ingestion and the index projection (the workflow stream).
+- workflow.py: task planning, attempt ingestion, handoffs and the index projection (the workflow stream).
 - runtime.py: preparation, separate-JVM controls and the verifier on prepared artifacts (the runtime stream).
 - route.py: what build.py (--plan ID --task T, ID --task T) and pipeline.py (submit --example ID --task T) call; it
   chains the interfaces and stops at the first Unsupported. Coordinator-owned.

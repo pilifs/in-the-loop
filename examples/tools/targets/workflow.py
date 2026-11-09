@@ -1,6 +1,6 @@
 """Task planning, attempt ingestion and the index projection: the workflow stream's side of the interfaces
-(interfaces.py), as Phase 0 of llm-dlc/loops/example-targets.md leaves them. plan_task() and ingest() fail closed
-with the named Unsupported result until the workflow stream replaces them (W1, W2); project() reports only what
+(interfaces.py), as Phase 0 of llm-dlc/loops/example-targets.md leaves them. plan_task(), ingest() and handoff() fail
+closed with the named Unsupported result until the workflow stream replaces them (W1, W2, W3); project() reports only what
 target.json states and derives no readiness until W4 does. Signatures are frozen."""
 
 from targets.interfaces import WORKFLOW, Unsupported
@@ -19,6 +19,15 @@ def ingest(plan, prepared, records, out):
     Unsupported."""
     return Unsupported("ingest", WORKFLOW, "attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it",
                        stage="ingest")
+
+
+def handoff(folder, example, target, task):
+    """The task's handoff packet, for an agent that continues it without rediscovery: its immutable inputs with their
+    hashes, the exact commands, its current receipts, the next prerequisite and one recommended action, and for an
+    observed gap the brief's capability-gap packet. Predicted and observed gaps stay apart. Offline, read-only: a
+    dict, or Unsupported."""
+    return Unsupported("handoff", WORKFLOW, "the handoff export is Phase 0's stub until the workflow stream's W3 replaces it",
+                       stage="handoff")
 
 
 def project(folder, example, target):

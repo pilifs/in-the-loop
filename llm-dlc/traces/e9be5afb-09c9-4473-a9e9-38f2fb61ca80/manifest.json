@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-09T02:33:39.177Z",
-  "duration_seconds": 54454,
+  "ended": "2026-11-09T02:38:08.839Z",
+  "duration_seconds": 54723,
   "stats": {
     "turns": 16,
-    "api_calls": 212,
-    "tool_calls": 214,
+    "api_calls": 219,
+    "tool_calls": 221,
     "tool_errors": 6,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 448,
-      "output_tokens": 238023,
-      "cache_read_input_tokens": 37022555,
-      "cache_creation_input_tokens": 1005413
+      "input_tokens": 462,
+      "output_tokens": 262401,
+      "cache_read_input_tokens": 39069510,
+      "cache_creation_input_tokens": 1033586
     }
   },
   "tools": {
-    "Bash": 182,
-    "Write": 18,
+    "Bash": 188,
+    "Write": 19,
     "Read": 7,
     "AskUserQuestion": 4,
     "Agent": 2,
@@ -54,6 +54,7 @@
     "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_sidecar.py",
     "examples/tools/targets/workflow.py",
+    "examples/tools/test_targets_contract.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/example-targets-loop-draft.md"
   ],
   "context_windows": [
@@ -74,24 +75,24 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-09T02:33:39.177Z",
+      "ended": "2026-11-09T02:38:08.839Z",
       "turns": 7,
-      "api_calls": 90,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 186,
-        "output_tokens": 107479,
-        "cache_read_input_tokens": 14739157,
-        "cache_creation_input_tokens": 252694
+        "input_tokens": 200,
+        "output_tokens": 131857,
+        "cache_read_input_tokens": 16786112,
+        "cache_creation_input_tokens": 280867
       },
-      "peak_context_tokens": 281530
+      "peak_context_tokens": 309703
     }
   ],
   "log": {
-    "sha256": "5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad",
-    "bytes": 5876631,
-    "lines": 1982,
-    "gzip_bytes": 1059493,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad.jsonl.gz"
+    "sha256": "08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3",
+    "bytes": 6123881,
+    "lines": 2059,
+    "gzip_bytes": 1091942,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3.jsonl.gz"
   },
   "subagents": [
     {
@@ -501,9 +502,23 @@
       "summary": "example-targets Phase 0 step 4: the fixtures every stream's unit checks run on",
       "body": "examples/tools/targets/fixtures/ holds a constructed two-revision fixture laid out as an example with a target sidecar (role control, never placed in examples/): fixture.Gate.allowed(int) denies code 65 and its fix also denies 97, a constructed mutant of the fix denies 97 only, and fixture.RegexGate (in every revision) goes through java.util.regex as the deliberate capability refusal. A minimal adapter is compiled separately against each revision's JAR and a driver prints one JSON line per input; gate/oracle.py is the independent oracle. build_fixtures.py builds the JARs with --release 21, a fixed timestamp and sorted entries (byte-identical across builds). make_records.py recorded each revision's driver in its own JVM on JDK 25 and 21 (the oracle finds 97 on before, 65 on the mutant, nothing on after, on both JDKs) and the static jvmcontract gaps scan of RegexGate (Pattern.compile, Pattern.matcher, Matcher.matches; it proves nothing, and the binary predates application-core's last lib/src change, noted in the README), and constructed a killed control, malformed output, a one-sided replay, an exit-1 verifier with no witness, and two receipts from example 025's result: one without its conclusion, one whose bundle doesn't match. The sidecar schema gains fixture revisions and route (control only, checked) and a task's allowedChange for preservation. Verified: test_fixtures.py (6: determinism, records against the builder and oracle, the refusal's three calls, the bad runs and receipts refused by the stored schema and bundle_problems), test_sidecar.py 15, the targets suite.",
       "log_sha256": "5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad"
+    },
+    {
+      "change_id": "pqulqqlxyotmwkltwmnuumxstmmyxtsu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 0 step 5: the integration contract, examples/tools/test_targets_contract.py",
+      "body": "One test per Tier A row the streams can reach on the fixtures, each either reaching the row's final outcome or stopping at the named Unsupported result of a Phase 0 stub (a skip naming it); any other Unsupported, type or outcome fails. A0: the fixture is a valid sidecar example, the route answers, and every constructed and handwritten example keeps its route. A1 (workflow): every fixture task plans offline (no socket, no process, no write) as the sidecar states it, with native tasks never requiring JBMC; the handoff reads offline. A2 (runtime): a fixture revision is prepared with its original's identity (build_fixtures.py's after.jar), adapter, ordered classpath and JDK, reproducibly; changed source bytes change the identity; an adapter shadowing fixture.Gate is refused. A3/A4 on the fixture: per-revision JVM controls on JDK 21 and 25, the oracle finding 97 on before, nothing on after, 65 on the mutant. A5 on the fixture (where jvmcontract is built): established, refuted and preservation conclusions through the whole route, and the regex probe refused by name. A6 (workflow): distinct receipts per task and attempt with the earlier kept, valid against both result schemas, claim.target bound; a kill, malformed output, a one-sided replay and an exit code alone never become a result. A7: the regex probe's handoff carries hashed inputs, commands, one next action and the observed gap packet. Runtime's rows use a TaskPlan built from the sidecar and workflow's use PreparedTargets and records built from the fixtures, so each stream's rows move with its own work. Before it, so each stream can be planned from: TaskPlan gains folder and a defined artifact-source shape, a replay task may name a pair (the fixture gains replay and mutant-replay on its pairs), a fixture revision's commit is fixture:<path>, and workflow.handoff() joins the frozen interfaces (W3) with its stub. Verified: 15 tests, 2 pass and 13 stop at the stub of their stream (3.6 s); A2-A4 also pass against plausible fake implementations (a throwaway check), so their final assertions are satisfiable; the targets suite and test_build pass.",
+      "log_sha256": "08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3"
     }
   ],
   "logs": {
+    "08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3": {
+      "bytes": 6123881,
+      "lines": 2059,
+      "gzip_bytes": 1091942,
+      "url": null
+    },
     "09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313": {
       "bytes": 1518756,
       "lines": 577,

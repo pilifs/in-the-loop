@@ -6,6 +6,7 @@
     run_verifier(plan, prepared, workdir)          -> ExecutionRecord | Unsupported       runtime.py  (R3)
     ingest(plan, prepared, records, out)           -> Receipt | Unsupported               workflow.py (W2)
     project(folder, example, target)               -> dict                                 workflow.py (W4)
+    handoff(folder, example, target, task)         -> dict | Unsupported                  workflow.py (W3)
 
 Task metadata goes in, results come out, and the two stay apart: a TaskPlan never carries an outcome, a
 PreparedTarget never decides a claim, an ExecutionRecord is raw (an exit code is not a verdict), and only ingestion
@@ -53,16 +54,26 @@ class TaskPlan:
     revisions: Tuple[str, ...]  # the revision names it prepares: one for prove and replay, a pair's two otherwise
     claim: Mapping  # the declared source-level claim: the task's statement, domain, observations, bounds, and its claim file and hash
     prerequisites: Tuple[str, ...]  # task ids, resolved in order
-    artifacts: Tuple[Mapping, ...]  # what preparation must produce, per revision (coordinates or build recipe)
+    artifacts: Tuple[Mapping, ...]  # per revision, what preparation starts from (ARTIFACT_SOURCE below)
     tools: Mapping  # {"required": [...], "optional": [...]}: java, javac, jvmcontract ...; never jbmc for a native task
     engine: Optional[str]  # native, jbmc or auto: always explicit for a proof task
     gaps: Optional[str]
     expected: Optional[str]  # the authored semantic expectation: established, refuted, unresolved, or None
-    outputs: Mapping  # where its receipt goes, relative to the example's folder
+    outputs: Mapping  # where its receipt goes, relative to the example's folder: {"receipts": "receipts/<task>"}
+    folder: str  # the example's folder, absolute: every path in the plan is relative to it
     network: bool = False  # whether preparation needs acquisition (planning itself never does)
 
     def as_dict(self):
         return to_dict(self)
+
+
+# The keys of one TaskPlan.artifacts entry, one per revision the task prepares, resolved from target.json: `revision`
+# (its name), `route` (published-artifact, upstream-build or fixture), `repository`, then `commit` (the full SHA) or
+# `fixture` (a control's source directory, relative to the folder), and as the sidecar gives them `coordinates`, `url`
+# and `sha256` (a published artifact), `build` (tool, argv, jdk), `adapters` (paths relative to the folder) and `jdks`
+# (the JDKs the controls run on). An owner may add keys; these keep their meaning.
+ARTIFACT_SOURCE = ("revision", "route", "repository", "commit", "fixture", "coordinates", "url", "sha256", "build",
+                   "adapters", "jdks")
 
 
 @dataclass(frozen=True)
@@ -84,7 +95,7 @@ class PreparedTarget:
     example: str
     task: str
     revision: str  # the revision's name in target.json
-    commit: str  # its full SHA
+    commit: str  # its full SHA, or fixture:<path> for a control's fixture revision
     stage: str  # source-locked, artifacts-ready, failed
     source: Mapping  # repository, commit, selected paths, provenance, adapter recipe
     artifacts: Tuple[Artifact, ...] = ()

@@ -27,5 +27,6 @@ JDK calls the checker has always refused, and a rerun of `make_records.py` with 
 
 The tasks in `target.json` are the fixture's: `vulnerable-security` (expected refuted), `fixed-security` (expected
 established), `preservation` outside `code == 97` (expected established), `mutant-security` (expected refuted),
-`regex-probe` (expected unresolved: a capability refusal), and `replay` (the concrete controls). Each is over `int`
+`regex-probe` (expected unresolved: a capability refusal), and `replay` and `mutant-replay` (the concrete controls
+on the fix's pair and on the mutation's). Each is over `int`
 codes, inside the tool's own checker, except `regex-probe`.

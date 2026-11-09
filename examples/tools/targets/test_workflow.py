@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests of workflow.py, owned by the workflow stream with it. Phase 0 left plan_task() and ingest() as stubs that fail closed with the
+"""Tests of workflow.py, owned by the workflow stream with it. Phase 0 left plan_task(), ingest() and handoff() as stubs that fail closed with the
 named Unsupported result; these tests say so, and the stream rewrites them as it replaces each stub.
 
   python3 examples/tools/targets/test_workflow.py
@@ -27,6 +27,9 @@ class StubsFailClosedTest(unittest.TestCase):
 
     def test_ingestion(self):
         self.check(workflow.ingest(plan(), {}, (), Path(".")), "ingest", interfaces.WORKFLOW)
+
+    def test_handoff(self):
+        self.check(workflow.handoff(Path("."), {}, {}, "t"), "handoff", interfaces.WORKFLOW)
 
     def test_the_projection_states_only_what_the_sidecar_says(self):
         target = {"identity": {"case": "c", "family": "f", "role": "negative"}, "tasks": [{"id": "t"}],

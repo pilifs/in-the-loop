@@ -146,7 +146,8 @@ def a_plan():
     return interfaces.TaskPlan(example="285", task="preservation", kind="equivalence", relation="preservation",
                                target="fixture.Gate#allowed", revisions=("vulnerable", "fixed"), claim={}, prerequisites=(),
                                artifacts=(), tools={"required": [], "optional": []}, engine="native", gaps="strict",
-                               expected="established", outputs={"receipts": "receipts/preservation"})
+                               expected="established", outputs={"receipts": "receipts/preservation"},
+                               folder="/nonexistent/285-a-target")
 
 
 def prepared(revision, stage="artifacts-ready", **fields):

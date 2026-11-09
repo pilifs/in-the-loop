@@ -41,8 +41,10 @@
     { "id": "regex-probe", "kind": "prove", "relation": "diagnostic", "revision": "after",
       "target": "fixture.RegexGate#allowed(Ljava/lang/String;)Z", "expected": "unresolved", "engine": "native", "gaps": "strict",
       "notes": ["The deliberate capability refusal: java.util.regex is outside the tool's own checker, so strict refuses it by name."] },
-    { "id": "replay", "kind": "replay", "relation": "security", "revision": "after", "target": "fixture.Gate#allowed(I)Z",
-      "notes": ["Concrete controls only: each revision's driver in its own JVM on JDK 21 and 25, read by gate/oracle.py."] }
+    { "id": "replay", "kind": "replay", "relation": "security", "pair": "fix", "target": "fixture.Gate#allowed(I)Z",
+      "notes": ["Concrete controls only: each revision's driver in its own JVM on JDK 21 and 25, read by gate/oracle.py."] },
+    { "id": "mutant-replay", "kind": "replay", "relation": "security", "pair": "mutation", "target": "fixture.Gate#allowed(I)Z",
+      "notes": ["The mutation control's concrete side: the mutant fails the oracle the fixed revision passes."] }
   ],
   "controls": [
     { "id": "gate-driver", "kind": "driver", "path": "gate/driver/fixture/driver/GateDriver.java" },
