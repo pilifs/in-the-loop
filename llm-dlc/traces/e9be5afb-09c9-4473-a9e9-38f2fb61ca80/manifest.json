@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-09T02:15:03.595Z",
-  "duration_seconds": 53338,
+  "ended": "2026-11-09T02:20:50.024Z",
+  "duration_seconds": 53685,
   "stats": {
     "turns": 16,
-    "api_calls": 151,
-    "tool_calls": 148,
+    "api_calls": 176,
+    "tool_calls": 176,
     "tool_errors": 5,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 326,
-      "output_tokens": 144151,
-      "cache_read_input_tokens": 24639135,
-      "cache_creation_input_tokens": 839307
+      "input_tokens": 376,
+      "output_tokens": 173250,
+      "cache_read_input_tokens": 28507247,
+      "cache_creation_input_tokens": 918083
     }
   },
   "tools": {
-    "Bash": 130,
-    "Write": 7,
-    "Read": 5,
+    "Bash": 151,
+    "Write": 11,
+    "Read": 7,
     "AskUserQuestion": 4,
-    "Agent": 1,
+    "Agent": 2,
     "ScheduleWakeup": 1
   },
   "files_touched": [
@@ -43,6 +43,10 @@
     "/tmp/claude-1001/-home-user-code-in-the-loop/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/scratchpad/example-targets/llm-dlc/loops/example-targets-runtime.md",
     "/tmp/claude-1001/-home-user-code-in-the-loop/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/scratchpad/example-targets/llm-dlc/loops/example-targets-workflow.md",
     "/tmp/claude-1001/-home-user-code-in-the-loop/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/scratchpad/example-targets/llm-dlc/loops/example-targets.md",
+    "examples/schema/target.schema.json",
+    "examples/tools/targets/__init__.py",
+    "examples/tools/targets/sidecar.py",
+    "examples/tools/targets/test_sidecar.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/example-targets-loop-draft.md"
   ],
   "context_windows": [
@@ -63,26 +67,53 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-09T02:15:03.595Z",
+      "ended": "2026-11-09T02:20:50.024Z",
       "turns": 7,
-      "api_calls": 29,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 64,
-        "output_tokens": 13607,
-        "cache_read_input_tokens": 2355737,
-        "cache_creation_input_tokens": 86588
+        "input_tokens": 114,
+        "output_tokens": 42706,
+        "cache_read_input_tokens": 6223849,
+        "cache_creation_input_tokens": 165364
       },
-      "peak_context_tokens": 115424
+      "peak_context_tokens": 194200
     }
   ],
   "log": {
-    "sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db",
-    "bytes": 4198262,
-    "lines": 1377,
-    "gzip_bytes": 814997,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz"
+    "sha256": "762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02",
+    "bytes": 4896247,
+    "lines": 1622,
+    "gzip_bytes": 930825,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02.jsonl.gz"
   },
   "subagents": [
+    {
+      "agent": "agent-a15b0f2f4c3b76aed",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "stats": {
+        "turns": 0,
+        "api_calls": 49,
+        "tool_calls": 51,
+        "tool_errors": 0,
+        "compactions": 0,
+        "peak_context_tokens": 117578,
+        "usage": {
+          "input_tokens": 98,
+          "output_tokens": 11697,
+          "cache_read_input_tokens": 3382704,
+          "cache_creation_input_tokens": 117576
+        }
+      },
+      "log": {
+        "sha256": "5109bc29ee7f809797be67575674169a84f35117f6bc2fa58abc97aa46fb1998",
+        "bytes": 1149415,
+        "lines": 303,
+        "gzip_bytes": 202421,
+        "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/5109bc29ee7f809797be67575674169a84f35117f6bc2fa58abc97aa46fb1998.jsonl.gz"
+      }
+    },
     {
       "agent": "agent-a77edabdec68d07f4",
       "models": [
@@ -431,6 +462,14 @@
       "summary": "example-targets: the archived CVE registry committed, hash checked (prerequisite 3)",
       "body": "The outside plan pins its 15-CVE research registry, spring-cve-targets.research-2026-11-04.json, by sha256 e86301ab…; the user supplied the plan's package, and its inputs/ file matches that hash. It is committed unchanged under llm-dlc/loops/example-targets-inputs/ as the negative stream's catalog input: 15 cases, none run, with a verifier review from commit 4c279ba6 that the brief already marks stale. The package's other files were compared with the text the briefs were adapted from and match it, so nothing else changes. The main brief's Progress records this, and its status now waits only on application-core's finish and Phase 0.",
       "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
+    },
+    {
+      "change_id": "ptroqoqmxvsmlxuprwulmzssyxozlzvm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 0 step 1: the strict target.json sidecar schema, its loader, and the one reference from example.json",
+      "body": "examples/schema/target.schema.json (example-target/v1) is the work manifest a real-world example may carry: identity (case, family, role), history (full commit SHAs, separately named pairs, introduction status), preparation (published artifact or upstream build, Maven Central and github.com URLs only, fixed versions, JDK 8/11/17/21/25), tasks (prove/compare/equivalence/replay, revision or pair by kind, explicit engine and bounds, authored expectation, prerequisites), controls and handoff blockers by gap kind. Every object is closed. examples/tools/targets/sidecar.py validates it and adds the checks a schema can't make: paths resolve inside the folder (symlinks included), every named revision, pair and task exists, ids are unique, prerequisites have no cycle, and no mutable artifact version. example.schema.json gains an optional target (always target.json), forbidden for constructed examples; build.py's load_example() checks the sidecar whenever an example is read. Verified: 14 new tests (examples/tools/targets/test_sidecar.py) cover an unknown field at each level, mutable revisions and versions, a foreign download URL, path escapes, a cycle and undefined names; test_build.py's 190 tests pass; --index-only leaves README and index.json unchanged.",
+      "log_sha256": "762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02"
     }
   ],
   "logs": {
@@ -452,11 +491,23 @@
       "gzip_bytes": 232578,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz"
     },
+    "5109bc29ee7f809797be67575674169a84f35117f6bc2fa58abc97aa46fb1998": {
+      "bytes": 1149415,
+      "lines": 303,
+      "gzip_bytes": 202421,
+      "url": null
+    },
     "65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c": {
       "bytes": 687571,
       "lines": 178,
       "gzip_bytes": 148284,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz"
+    },
+    "762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02": {
+      "bytes": 4896247,
+      "lines": 1622,
+      "gzip_bytes": 930825,
+      "url": null
     },
     "8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6": {
       "bytes": 3368889,

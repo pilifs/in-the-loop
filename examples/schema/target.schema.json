@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pilifs/in-the-loop/examples/schema/target.schema.json",
+  "title": "External target sidecar (authored work manifest)",
+  "description": "What a real-world example's target.json states about the external change it scaffolds: its identity, its history, how its artifacts are prepared, its tasks, its controls and its handoff. It is a work manifest, not a specification language: a claim, model, contract or witness file is referred to by path (and hashed where it is pinned), never restated. An example opts in with `\"target\": \"target.json\"` in its example.json, which only a real-world example may have. examples/tools/targets/sidecar.py validates it against this schema and then makes the checks a schema can't: every path stays inside the example's folder, every revision, pair and task named is defined, and task prerequisites have no cycle. Frozen by Phase 0 of llm-dlc/loops/example-targets.md; from then on the workflow stream owns it, with additive changes recorded for the merge. Readiness and proof outcomes are not stored here: they are derived from the receipts.",
+  "type": "object",
+  "required": ["schema", "identity", "history", "tasks"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema": { "description": "The sidecar's version. Another version is refused, never read as this one.", "const": "example-target/v1" },
+    "identity": {
+      "type": "object",
+      "required": ["case", "family", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "case": { "description": "The stable logical case id, as the seed file names it (not the example number).", "$ref": "#/$defs/name" },
+        "family": { "description": "The family the case belongs to; a negative and its independent positive share it.", "$ref": "#/$defs/name" },
+        "role": {
+          "description": "negative: a vulnerability's vulnerable and fixed revisions; positive: an independent accepted change with an expected outcome for a named claim (never 'the release is secure'); calibration: a supported obligation that checks the route itself (105); catalog: research metadata only, no deep build; control: a constructed sensitivity case.",
+          "enum": ["negative", "positive", "calibration", "catalog", "control"]
+        },
+        "companions": { "description": "Related examples by number: a negative's positive, a follow-up CVE.", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/exampleId" } },
+        "matching": { "description": "Why a companion is matched, and where the match is imperfect.", "type": "string" },
+        "sourceConfidence": {
+          "description": "researched: taken from earlier research, not yet checked; checked-upstream: every revision checked against the upstream repository; reproduced: the revisions were built or fetched and replayed.",
+          "enum": ["researched", "checked-upstream", "reproduced"]
+        },
+        "cve": { "description": "The CVE id, for a negative or catalog entry.", "type": "string", "pattern": "^CVE-[0-9]{4}-[0-9]{4,}$" }
+      }
+    },
+    "history": {
+      "type": "object",
+      "required": ["repository", "revisions"],
+      "additionalProperties": false,
+      "properties": {
+        "repository": { "description": "The upstream repository, on github.com (the downloads policy of decision 1).", "type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "researchedOn": { "description": "When the research this entry comes from was done (the archived registry's as_of).", "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "revisions": {
+          "description": "Each revision the case uses, by name. A commit is a full 40-hex SHA: a branch, a short SHA or a tag alone is a mutable reference and is refused. A tag or release is recorded beside the commit, never instead of it.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/name" },
+          "additionalProperties": {
+            "type": "object",
+            "required": ["commit"],
+            "additionalProperties": false,
+            "properties": {
+              "commit": { "$ref": "#/$defs/sha1" },
+              "parent": { "description": "The parent this case compares against; for a merge commit, the selected one.", "$ref": "#/$defs/sha1" },
+              "parentReason": { "description": "Why that parent was selected, for a merge commit.", "type": "string" },
+              "tag": { "type": "string" },
+              "release": { "type": "string" },
+              "checked": { "description": "How the commit (and its parent) was checked against upstream, and when.", "type": "string" }
+            }
+          }
+        },
+        "pairs": {
+          "description": "Separately named revision pairs: a release comparison, the exact fix, an introduction, a positive change, a constructed mutation. A fix's parent is never an introduction by default.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "kind", "before", "after"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "$ref": "#/$defs/name" },
+              "kind": { "enum": ["release", "exact-fix", "introduction", "positive", "mutation"] },
+              "before": { "description": "A revision name.", "$ref": "#/$defs/name" },
+              "after": { "description": "A revision name.", "$ref": "#/$defs/name" },
+              "selected": { "description": "The pair executed, chosen explicitly before a claim is frozen.", "type": "boolean" }
+            }
+          }
+        },
+        "advisories": { "type": "array", "items": { "$ref": "#/$defs/url" } },
+        "links": { "description": "Patches, pull requests, issues and other sources.", "type": "array", "items": { "$ref": "#/$defs/url" } },
+        "introduction": {
+          "type": "object",
+          "required": ["status"],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "description": "unknown; candidate: a source-level hypothesis; vendor-attributed: the vendor says so, unreproduced; established: a reproduced parent/child transition with an independent oracle.",
+              "enum": ["unknown", "candidate", "vendor-attributed", "established"]
+            },
+            "commit": { "$ref": "#/$defs/sha1" },
+            "evidence": { "type": "string" }
+          }
+        },
+        "unresolved": { "description": "Provenance questions still open.", "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "preparation": {
+      "description": "How the artifacts are obtained. Absent while the case is only catalogued.",
+      "type": "object",
+      "required": ["route"],
+      "additionalProperties": false,
+      "properties": {
+        "route": { "description": "published-artifact: specific JARs from Maven Central, checksums checked; upstream-build: the exact commit built with its own build tool and a JDK it supports.", "enum": ["published-artifact", "upstream-build"] },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["revision", "coordinates"],
+            "additionalProperties": false,
+            "properties": {
+              "revision": { "description": "A revision name.", "$ref": "#/$defs/name" },
+              "coordinates": { "description": "group:artifact:version, a fixed version: a range, `+`, LATEST, RELEASE or a SNAPSHOT is refused.", "type": "string", "pattern": "^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[0-9][A-Za-z0-9_.-]*$" },
+              "url": { "description": "Where it is fetched from: Maven Central or github.com only.", "type": "string", "pattern": "^https://(repo\\.maven\\.apache\\.org/maven2|github\\.com)/" },
+              "sha256": { "description": "Recorded the first time it is fetched, checked on every reuse.", "$ref": "#/$defs/sha256" }
+            }
+          }
+        },
+        "build": {
+          "type": "object",
+          "required": ["tool", "argv", "jdk"],
+          "additionalProperties": false,
+          "properties": {
+            "tool": { "description": "The revision's own build tool, by its wrapper where it has one.", "enum": ["gradle-wrapper", "maven-wrapper", "gradle", "maven"] },
+            "argv": { "description": "The exact argument vector, run in the checkout's root.", "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "jdk": { "$ref": "#/$defs/jdk" }
+          }
+        },
+        "jdks": { "description": "The JDKs the concrete controls run on, each a separate identity (21 and 25 wherever the artifacts run on them).", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/jdk" } },
+        "adapters": { "description": "Adapter sources in the example's folder, compiled separately from the original sources.", "type": "array", "items": { "$ref": "#/$defs/file" } }
+      }
+    },
+    "tasks": {
+      "description": "Each task a later agent can plan, prepare, run or hand off. Empty for a catalog entry. A repair is composed from separate tasks (the vulnerable property, the same property on the fix, preservation); there is no fix task.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "relation", "target"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/name" },
+          "kind": { "description": "prove: a property of one revision; compare or equivalence: two revisions of a pair; replay: concrete controls only.", "enum": ["prove", "compare", "equivalence", "replay"] },
+          "relation": { "enum": ["security", "preservation", "compatibility", "introduction", "calibration", "diagnostic"] },
+          "revision": { "description": "A revision name, for prove and replay.", "$ref": "#/$defs/name" },
+          "pair": { "description": "A pair name, for compare and equivalence.", "$ref": "#/$defs/name" },
+          "target": { "description": "The original method, as <class>#<method>(<descriptor>) or <class>#<method>.", "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$.]*#[A-Za-z_$<][A-Za-z0-9_$>]*(\\(.*\\).*)?$" },
+          "claim": { "description": "The claim file in the folder (claims/), once written; it is frozen before the attempt.", "$ref": "#/$defs/file" },
+          "expected": { "description": "The authored semantic expectation, never rewritten after a result: refuted (the vulnerable property), established (the fix, preservation), or unresolved.", "enum": ["established", "refuted", "unresolved"] },
+          "requires": { "description": "Prerequisite tasks, by id. A cycle is refused.", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/name" } },
+          "parent": { "description": "For a narrower diagnostic or derived claim: the task it is derived from, which stays unresolved.", "$ref": "#/$defs/name" },
+          "engine": { "description": "Named explicitly: native strict is the default this wave asks for, and the CLI's default engine is JBMC.", "enum": ["native", "jbmc", "auto"] },
+          "gaps": { "enum": ["strict", "assume", "advised"] },
+          "bounds": { "description": "Explicit bounds, by the tool's option names (maxArrayLength, unwind, maxStringLength ...).", "type": "object", "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" }, "additionalProperties": { "type": "integer", "minimum": 0 } },
+          "notes": { "type": "array", "items": { "type": "string" } }
+        },
+        "allOf": [
+          { "if": { "properties": { "kind": { "enum": ["prove", "replay"] } } }, "then": { "required": ["revision"], "not": { "required": ["pair"] } } },
+          { "if": { "properties": { "kind": { "enum": ["compare", "equivalence"] } } }, "then": { "required": ["pair"], "not": { "required": ["revision"] } } }
+        ]
+      }
+    },
+    "controls": {
+      "description": "The independent oracle, the known trigger, legitimate inputs, mutation controls and replay drivers, as files in the folder.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/name" },
+          "kind": { "enum": ["oracle", "trigger", "legitimate", "mutation", "driver", "probe"] },
+          "path": { "$ref": "#/$defs/file" },
+          "revision": { "$ref": "#/$defs/name" },
+          "task": { "$ref": "#/$defs/name" },
+          "sha256": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "observed", "summary"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "description": "The capability-gap kinds of the brief, kept apart.", "enum": ["java-semantics", "input-construction", "oracle-ambiguity", "source-provenance", "build-or-dependency", "replay", "resources", "verifier-bug"] },
+              "observed": { "description": "true: a probe or attempt produced it; false: predicted, a hypothesis until a probe reaches it.", "type": "boolean" },
+              "task": { "$ref": "#/$defs/name" },
+              "summary": { "type": "string" },
+              "packet": { "description": "The gap packet's file in the folder.", "$ref": "#/$defs/file" },
+              "finding": { "description": "An existing finding id it reuses.", "type": "string", "pattern": "^VF-[0-9]{3}$" }
+            }
+          }
+        },
+        "next": { "description": "The one recommended next action, as an exact command where there is one.", "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "name": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 80 },
+    "exampleId": { "type": "string", "pattern": "^[0-9]{3}$" },
+    "sha1": { "description": "A full commit SHA.", "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "url": { "type": "string", "pattern": "^https://" },
+    "jdk": { "description": "A Temurin feature release installed under sdkman.", "enum": ["8", "11", "17", "21", "25"] },
+    "file": {
+      "description": "A path relative to the example's folder: no leading slash, no `..` segment, no backslash. sidecar.py also checks that it resolves inside the folder.",
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))[A-Za-z0-9_][A-Za-z0-9_./-]*$",
+      "maxLength": 200
+    }
+  }
+}

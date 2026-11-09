@@ -64,6 +64,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # the pipeline imports build.py by its path
 import result_format  # noqa: E402  the stored result's format, and the flat view everything here reads
+from targets import sidecar  # noqa: E402  a real-world example's target.json (llm-dlc/loops/example-targets.md)
 
 REPO = Path(__file__).resolve().parents[2]
 EXAMPLES = REPO / "examples"
@@ -479,6 +480,10 @@ def load_example(folder):
     unknown = [t for t in example["tags"] if t not in tag_vocabulary()]
     if unknown:
         sys.exit(f"{folder}: tags not in examples/tags.json: {', '.join(unknown)}")
+    try:
+        sidecar.load(folder, example)  # a real-world example's target.json, checked whenever the example is read
+    except sidecar.SidecarError as e:
+        sys.exit(str(e))
     return example  # whether build.py can run it is not_executable()'s question
 
 
