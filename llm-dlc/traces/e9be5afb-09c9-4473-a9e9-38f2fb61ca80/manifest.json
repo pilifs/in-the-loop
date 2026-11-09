@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-09T02:28:08.955Z",
-  "duration_seconds": 54124,
+  "ended": "2026-11-09T02:33:39.177Z",
+  "duration_seconds": 54454,
   "stats": {
     "turns": 16,
-    "api_calls": 195,
-    "tool_calls": 197,
-    "tool_errors": 5,
+    "api_calls": 212,
+    "tool_calls": 214,
+    "tool_errors": 6,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 414,
-      "output_tokens": 208611,
-      "cache_read_input_tokens": 32636019,
-      "cache_creation_input_tokens": 966701
+      "input_tokens": 448,
+      "output_tokens": 238023,
+      "cache_read_input_tokens": 37022555,
+      "cache_creation_input_tokens": 1005413
     }
   },
   "tools": {
-    "Bash": 166,
-    "Write": 17,
+    "Bash": 182,
+    "Write": 18,
     "Read": 7,
     "AskUserQuestion": 4,
     "Agent": 2,
@@ -45,6 +45,7 @@
     "/tmp/claude-1001/-home-user-code-in-the-loop/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/scratchpad/example-targets/llm-dlc/loops/example-targets.md",
     "examples/schema/target.schema.json",
     "examples/tools/targets/__init__.py",
+    "examples/tools/targets/fixtures/make_records.py",
     "examples/tools/targets/interfaces.py",
     "examples/tools/targets/route.py",
     "examples/tools/targets/runtime.py",
@@ -73,24 +74,24 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-09T02:28:08.955Z",
+      "ended": "2026-11-09T02:33:39.177Z",
       "turns": 7,
-      "api_calls": 73,
+      "api_calls": 90,
       "usage": {
-        "input_tokens": 152,
-        "output_tokens": 78067,
-        "cache_read_input_tokens": 10352621,
-        "cache_creation_input_tokens": 213982
+        "input_tokens": 186,
+        "output_tokens": 107479,
+        "cache_read_input_tokens": 14739157,
+        "cache_creation_input_tokens": 252694
       },
-      "peak_context_tokens": 242818
+      "peak_context_tokens": 281530
     }
   ],
   "log": {
-    "sha256": "5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8",
-    "bytes": 5515726,
-    "lines": 1835,
-    "gzip_bytes": 1011181,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8.jsonl.gz"
+    "sha256": "5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad",
+    "bytes": 5876631,
+    "lines": 1982,
+    "gzip_bytes": 1059493,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad.jsonl.gz"
   },
   "subagents": [
     {
@@ -492,6 +493,14 @@
       "summary": "example-targets Phase 0 step 3: the hooks (build.py --task, pipeline submit --task, index and find.py projections, result-schema extension points)",
       "body": "build.py: --plan NNN --task T prints one task's plan and NNN --task T makes one attempt, both through examples/tools/targets/route.py, which chains plan_task, prepare per revision (only artifacts-ready goes on), run_controls, run_verifier and ingest, and stops at the first Unsupported (printed as not-executed, exit 1). The real-world gate opens only for an example with a target sidecar and a named task; --plan NNN lists a sidecar example's task plans; a bad --task (unknown, no sidecar, two ids, another mode) exits 2 before anything runs. pipeline.py submit --example NNN --task T builds the job from the same plan and refuses a task that isn't executable, so nothing can be queued while Phase 0's stubs answer. render_index() adds each example's  projection (workflow.project()) beside its historical verdictLabel; find.py gains --family, --role, --readiness, --claim-status and --gap (observed gaps only), which nothing without a projected value matches. result.schema.json gains claim.target (task, sidecar hash, revisions, every classpath entry in order by sha256, JDKs, folder files), inputs.dependencies 'pinned in target.dependencies', inputs.patch null only with a target, records/ evidence paths in a bundle, and inputs.contracts, which build.py's claim_record() already writes under --gaps advised and the schema refused (the brief's side finding). Also fixes step 1's break of verification/test_pipeline.py (its stub repo now copies targets/), found by the baseline recount. Verified: test_route.py's 12 tests (hooks, chain order and stops, index, find filters), a new pipeline test for --task, test_pipeline 29/29, test_build 190/190, the targets suite, and all 157 stored results still valid against both result schemas; the docs in examples/README.md and verification/README.md describe the route.",
       "log_sha256": "5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8"
+    },
+    {
+      "change_id": "ynzpqxsvuzoxwsvylrkkumrxmssruosw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 0 step 4: the fixtures every stream's unit checks run on",
+      "body": "examples/tools/targets/fixtures/ holds a constructed two-revision fixture laid out as an example with a target sidecar (role control, never placed in examples/): fixture.Gate.allowed(int) denies code 65 and its fix also denies 97, a constructed mutant of the fix denies 97 only, and fixture.RegexGate (in every revision) goes through java.util.regex as the deliberate capability refusal. A minimal adapter is compiled separately against each revision's JAR and a driver prints one JSON line per input; gate/oracle.py is the independent oracle. build_fixtures.py builds the JARs with --release 21, a fixed timestamp and sorted entries (byte-identical across builds). make_records.py recorded each revision's driver in its own JVM on JDK 25 and 21 (the oracle finds 97 on before, 65 on the mutant, nothing on after, on both JDKs) and the static jvmcontract gaps scan of RegexGate (Pattern.compile, Pattern.matcher, Matcher.matches; it proves nothing, and the binary predates application-core's last lib/src change, noted in the README), and constructed a killed control, malformed output, a one-sided replay, an exit-1 verifier with no witness, and two receipts from example 025's result: one without its conclusion, one whose bundle doesn't match. The sidecar schema gains fixture revisions and route (control only, checked) and a task's allowedChange for preservation. Verified: test_fixtures.py (6: determinism, records against the builder and oracle, the refusal's three calls, the bad runs and receipts refused by the stored schema and bundle_problems), test_sidecar.py 15, the targets suite.",
+      "log_sha256": "5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad"
     }
   ],
   "logs": {
@@ -523,6 +532,12 @@
       "bytes": 5515726,
       "lines": 1835,
       "gzip_bytes": 1011181,
+      "url": null
+    },
+    "5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad": {
+      "bytes": 5876631,
+      "lines": 1982,
+      "gzip_bytes": 1059493,
       "url": null
     },
     "65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c": {

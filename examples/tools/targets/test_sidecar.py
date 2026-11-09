@@ -115,6 +115,15 @@ class SidecarTest(unittest.TestCase):
         self.refused(t, "cycle")
         self.refused(edited(x=lambda t: t["tasks"][0].update(requires=["vulnerable-security"])), "cycle")
 
+    def test_only_a_control_is_built_from_fixtures(self):
+        fixture = edited(x=lambda t: t["history"]["revisions"].update(fixed={"fixture": "gate/after"}))
+        self.refused(fixture, "only a control may name a fixture")
+        sidecar.check(edited(x=lambda t: t["history"]["revisions"].update(fixed={"fixture": "gate/after"}),
+                             y=lambda t: t["identity"].update(role="control")), self.folder)
+        self.refused(edited(x=lambda t: t["history"]["revisions"].update(fixed={"commit": B, "fixture": "gate/after"})),
+                     "is valid under each of")
+        self.refused(edited(x=lambda t: t.update(preparation={"route": "fixture"})), "only a control is built from fixtures")
+
     def test_undefined_names_are_refused(self):
         self.refused(edited(x=lambda t: t["tasks"][0].update(revision="introduced")), "revision introduced is not defined")
         self.refused(edited(x=lambda t: t["tasks"][2].update(pair="release")), "pair release is not defined")

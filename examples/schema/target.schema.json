@@ -37,16 +37,17 @@
         "repository": { "description": "The upstream repository, on github.com (the downloads policy of decision 1).", "type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
         "researchedOn": { "description": "When the research this entry comes from was done (the archived registry's as_of).", "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
         "revisions": {
-          "description": "Each revision the case uses, by name. A commit is a full 40-hex SHA: a branch, a short SHA or a tag alone is a mutable reference and is refused. A tag or release is recorded beside the commit, never instead of it.",
+          "description": "Each revision the case uses, by name. A commit is a full 40-hex SHA: a branch, a short SHA or a tag alone is a mutable reference and is refused. A tag or release is recorded beside the commit, never instead of it. A control (identity.role) may instead name a `fixture`: a directory of sources in its folder, built locally, never an upstream revision.",
           "type": "object",
           "minProperties": 1,
           "propertyNames": { "$ref": "#/$defs/name" },
           "additionalProperties": {
             "type": "object",
-            "required": ["commit"],
+            "oneOf": [{ "required": ["commit"] }, { "required": ["fixture"] }],
             "additionalProperties": false,
             "properties": {
               "commit": { "$ref": "#/$defs/sha1" },
+              "fixture": { "description": "For a control only: the revision's sources, a directory in the folder.", "$ref": "#/$defs/file" },
               "parent": { "description": "The parent this case compares against; for a merge commit, the selected one.", "$ref": "#/$defs/sha1" },
               "parentReason": { "description": "Why that parent was selected, for a merge commit.", "type": "string" },
               "tag": { "type": "string" },
@@ -95,7 +96,7 @@
       "required": ["route"],
       "additionalProperties": false,
       "properties": {
-        "route": { "description": "published-artifact: specific JARs from Maven Central, checksums checked; upstream-build: the exact commit built with its own build tool and a JDK it supports.", "enum": ["published-artifact", "upstream-build"] },
+        "route": { "description": "published-artifact: specific JARs from Maven Central, checksums checked; upstream-build: the exact commit built with its own build tool and a JDK it supports; fixture: a control's fixture revisions, built locally (Phase 0's examples/tools/targets/fixtures/build_fixtures.py).", "enum": ["published-artifact", "upstream-build", "fixture"] },
         "artifacts": {
           "type": "array",
           "items": {
@@ -140,6 +141,7 @@
           "target": { "description": "The original method, as <class>#<method>(<descriptor>) or <class>#<method>.", "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$.]*#[A-Za-z_$<][A-Za-z0-9_$>]*(\\(.*\\).*)?$" },
           "claim": { "description": "The claim file in the folder (claims/), once written; it is frozen before the attempt.", "$ref": "#/$defs/file" },
           "expected": { "description": "The authored semantic expectation, never rewritten after a result: refuted (the vulnerable property), established (the fix, preservation), or unresolved.", "enum": ["established", "refuted", "unresolved"] },
+          "allowedChange": { "description": "For a preservation or compatibility task: the inputs the change is allowed to affect, a Java boolean expression over the method's parameters (B9's intendedInputs). It is justified before any attempt and never enlarged after a counterexample.", "type": "string", "minLength": 1 },
           "requires": { "description": "Prerequisite tasks, by id. A cycle is refused.", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/name" } },
           "parent": { "description": "For a narrower diagnostic or derived claim: the task it is derived from, which stays unresolved.", "$ref": "#/$defs/name" },
           "engine": { "description": "Named explicitly: native strict is the default this wave asks for, and the CLI's default engine is JBMC.", "enum": ["native", "jbmc", "auto"] },

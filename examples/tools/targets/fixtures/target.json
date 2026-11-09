@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "phase0-fixture-gate",
+    "family": "phase0-fixture",
+    "role": "control",
+    "matching": "A constructed stand-in for a case-normalization fix (the binder family's shape, over int codes so the tool's own checker supports it): vulnerable, fixed, a mutant of the fix, and a capability refusal.",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "before": { "fixture": "gate/before" },
+      "after": { "fixture": "gate/after" },
+      "mutant": { "fixture": "gate/mutant" }
+    },
+    "pairs": [
+      { "name": "fix", "kind": "exact-fix", "before": "before", "after": "after", "selected": true },
+      { "name": "mutation", "kind": "mutation", "before": "after", "after": "mutant" }
+    ],
+    "introduction": { "status": "unknown" }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": ["21", "25"],
+    "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"]
+  },
+  "tasks": [
+    { "id": "vulnerable-security", "kind": "prove", "relation": "security", "revision": "before",
+      "target": "fixture.Gate#allowed(I)Z", "expected": "refuted", "engine": "native", "gaps": "strict",
+      "notes": ["The property: allowed(code) is false for code 65 and 97. The vulnerable revision allows 97."] },
+    { "id": "fixed-security", "kind": "prove", "relation": "security", "revision": "after",
+      "target": "fixture.Gate#allowed(I)Z", "expected": "established", "engine": "native", "gaps": "strict" },
+    { "id": "preservation", "kind": "equivalence", "relation": "preservation", "pair": "fix",
+      "target": "fixture.Gate#allowed(I)Z", "allowedChange": "code == 97", "expected": "established", "engine": "native", "gaps": "strict",
+      "requires": ["replay"] },
+    { "id": "mutant-security", "kind": "prove", "relation": "security", "revision": "mutant",
+      "target": "fixture.Gate#allowed(I)Z", "expected": "refuted", "engine": "native", "gaps": "strict",
+      "notes": ["The mutation control: the same property and domain as fixed-security, on the constructed mutant."] },
+    { "id": "regex-probe", "kind": "prove", "relation": "diagnostic", "revision": "after",
+      "target": "fixture.RegexGate#allowed(Ljava/lang/String;)Z", "expected": "unresolved", "engine": "native", "gaps": "strict",
+      "notes": ["The deliberate capability refusal: java.util.regex is outside the tool's own checker, so strict refuses it by name."] },
+    { "id": "replay", "kind": "replay", "relation": "security", "revision": "after", "target": "fixture.Gate#allowed(I)Z",
+      "notes": ["Concrete controls only: each revision's driver in its own JVM on JDK 21 and 25, read by gate/oracle.py."] }
+  ],
+  "controls": [
+    { "id": "gate-driver", "kind": "driver", "path": "gate/driver/fixture/driver/GateDriver.java" },
+    { "id": "gate-oracle", "kind": "oracle", "path": "gate/oracle.py" },
+    { "id": "gate-mutant", "kind": "mutation", "path": "gate/mutant/fixture/Gate.java", "revision": "mutant" }
+  ],
+  "handoff": {
+    "blockers": [
+      { "kind": "java-semantics", "observed": true, "task": "regex-probe",
+        "summary": "jvmcontract gaps on RegexGate.allowed reaches Pattern.compile, Pattern.matcher and Matcher.matches (records/regex-gate-gaps.json)",
+        "packet": "records/regex-gate-gaps.json" }
+    ],
+    "next": "python3 examples/tools/build.py --plan 999 --task fixed-security"
+  }
+}

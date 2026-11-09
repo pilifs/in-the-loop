@@ -1,0 +1,38 @@
+{
+  "roots": [
+    "fixture.RegexGate#allowed"
+  ],
+  "methods": 2,
+  "jdk": "25.0.5",
+  "gaps": [
+    {
+      "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
+      "kind": "jdk-reference-method",
+      "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
+      "sites": [
+        "fixture.RegexGate.allowed:14"
+      ],
+      "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+      "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
+      "kind": "jdk-primitive-method",
+      "call": "java.util.regex.Matcher.matches()",
+      "sites": [
+        "fixture.RegexGate.allowed:14"
+      ],
+      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    },
+    {
+      "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
+      "kind": "jdk-static-method",
+      "call": "java.util.regex.Pattern.compile(java.lang.String)",
+      "sites": [
+        "fixture.RegexGate.<clinit>:8"
+      ],
+      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    }
+  ],
+  "exact": {},
+  "refused": {}
+}

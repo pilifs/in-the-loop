@@ -9,6 +9,9 @@
 - route.py: what build.py (--plan ID --task T, ID --task T) and pipeline.py (submit --example ID --task T) call; it
   chains the interfaces and stops at the first Unsupported. Coordinator-owned.
 
-Tests: test_sidecar.py, test_interfaces.py and test_route.py (coordinator), test_workflow.py and test_runtime.py (their streams).
+- fixtures/: Phase 0's local, deterministic fixtures (fixtures/README.md): a two-revision adapter fixture with a
+  mutant, recorded concrete controls, a recorded capability refusal, and constructed bad runs and receipts.
+
+Tests: test_fixtures.py, test_sidecar.py, test_interfaces.py and test_route.py (coordinator), test_workflow.py and test_runtime.py (their streams).
 Nothing here touches the network, and planning never does.
 """

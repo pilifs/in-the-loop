@@ -1,0 +1,605 @@
+{
+  "provenance": "recorded: each fixture revision's driver in its own JVM, on JDK 25 and 21, by make_records.py",
+  "fixtures": {
+    "release": "21",
+    "date": "2026-01-01T00:00:00Z",
+    "javac": "javac 25.0.5",
+    "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+    "jars": {
+      "adapter-after": {
+        "path": "adapter-after.jar",
+        "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+      },
+      "adapter-before": {
+        "path": "adapter-before.jar",
+        "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+      },
+      "adapter-mutant": {
+        "path": "adapter-mutant.jar",
+        "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+      },
+      "after": {
+        "path": "after.jar",
+        "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5"
+      },
+      "before": {
+        "path": "before.jar",
+        "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31"
+      },
+      "driver": {
+        "path": "driver.jar",
+        "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+      },
+      "mutant": {
+        "path": "mutant.jar",
+        "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10"
+      }
+    },
+    "mutant": {
+      "base": "after",
+      "patchSha256": "747099f3c630de54f4f7289116e5a4d7fa1f691eada919d4977db95c002a7ba1"
+    }
+  },
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "before",
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-before.jar:before.jar",
+        "fixture.driver.GateDriver",
+        "-1",
+        "0",
+        "64",
+        "65",
+        "66",
+        "96",
+        "97",
+        "98",
+        "2147483647"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.038,
+      "stdout": "control-before-jdk25.stdout",
+      "stderr": "control-before-jdk25.stderr",
+      "identities": {
+        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+          },
+          {
+            "path": "adapter-before.jar",
+            "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+          },
+          {
+            "path": "before.jar",
+            "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "input": -1,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 0,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 64,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 65,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 66,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 96,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 97,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 98,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 2147483647,
+          "outcome": "returned",
+          "value": true
+        }
+      ],
+      "control": "gate-driver",
+      "oracleProblems": [
+        [
+          97,
+          "returned True, the statement says False"
+        ]
+      ]
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "after",
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-after.jar:after.jar",
+        "fixture.driver.GateDriver",
+        "-1",
+        "0",
+        "64",
+        "65",
+        "66",
+        "96",
+        "97",
+        "98",
+        "2147483647"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.032,
+      "stdout": "control-after-jdk25.stdout",
+      "stderr": "control-after-jdk25.stderr",
+      "identities": {
+        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+          },
+          {
+            "path": "adapter-after.jar",
+            "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+          },
+          {
+            "path": "after.jar",
+            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "input": -1,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 0,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 64,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 65,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 66,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 96,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 97,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 98,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 2147483647,
+          "outcome": "returned",
+          "value": true
+        }
+      ],
+      "control": "gate-driver",
+      "oracleProblems": []
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "mutant",
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-mutant.jar:mutant.jar",
+        "fixture.driver.GateDriver",
+        "-1",
+        "0",
+        "64",
+        "65",
+        "66",
+        "96",
+        "97",
+        "98",
+        "2147483647"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.033,
+      "stdout": "control-mutant-jdk25.stdout",
+      "stderr": "control-mutant-jdk25.stderr",
+      "identities": {
+        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+          },
+          {
+            "path": "adapter-mutant.jar",
+            "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+          },
+          {
+            "path": "mutant.jar",
+            "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "input": -1,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 0,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 64,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 65,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 66,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 96,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 97,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 98,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 2147483647,
+          "outcome": "returned",
+          "value": true
+        }
+      ],
+      "control": "gate-driver",
+      "oracleProblems": [
+        [
+          65,
+          "returned True, the statement says False"
+        ]
+      ]
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "before",
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-before.jar:before.jar",
+        "fixture.driver.GateDriver",
+        "-1",
+        "0",
+        "64",
+        "65",
+        "66",
+        "96",
+        "97",
+        "98",
+        "2147483647"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.054,
+      "stdout": "control-before-jdk21.stdout",
+      "stderr": "control-before-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+          },
+          {
+            "path": "adapter-before.jar",
+            "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+          },
+          {
+            "path": "before.jar",
+            "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "input": -1,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 0,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 64,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 65,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 66,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 96,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 97,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 98,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 2147483647,
+          "outcome": "returned",
+          "value": true
+        }
+      ],
+      "control": "gate-driver",
+      "oracleProblems": [
+        [
+          97,
+          "returned True, the statement says False"
+        ]
+      ]
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "after",
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-after.jar:after.jar",
+        "fixture.driver.GateDriver",
+        "-1",
+        "0",
+        "64",
+        "65",
+        "66",
+        "96",
+        "97",
+        "98",
+        "2147483647"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.038,
+      "stdout": "control-after-jdk21.stdout",
+      "stderr": "control-after-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+          },
+          {
+            "path": "adapter-after.jar",
+            "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+          },
+          {
+            "path": "after.jar",
+            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "input": -1,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 0,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 64,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 65,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 66,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 96,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 97,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 98,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 2147483647,
+          "outcome": "returned",
+          "value": true
+        }
+      ],
+      "control": "gate-driver",
+      "oracleProblems": []
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "mutant",
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-mutant.jar:mutant.jar",
+        "fixture.driver.GateDriver",
+        "-1",
+        "0",
+        "64",
+        "65",
+        "66",
+        "96",
+        "97",
+        "98",
+        "2147483647"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.043,
+      "stdout": "control-mutant-jdk21.stdout",
+      "stderr": "control-mutant-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108"
+          },
+          {
+            "path": "adapter-mutant.jar",
+            "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3"
+          },
+          {
+            "path": "mutant.jar",
+            "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10"
+          }
+        ]
+      },
+      "observations": [
+        {
+          "input": -1,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 0,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 64,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 65,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 66,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 96,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 97,
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": 98,
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": 2147483647,
+          "outcome": "returned",
+          "value": true
+        }
+      ],
+      "control": "gate-driver",
+      "oracleProblems": [
+        [
+          65,
+          "returned True, the statement says False"
+        ]
+      ]
+    }
+  ]
+}

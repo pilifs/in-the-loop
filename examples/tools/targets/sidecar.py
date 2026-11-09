@@ -72,6 +72,9 @@ def files(target):
         out.append((f"controls/{i}/path", control["path"]))
     for i, adapter in enumerate(target.get("preparation", {}).get("adapters", [])):
         out.append((f"preparation/adapters/{i}", adapter))
+    for name, revision in target["history"]["revisions"].items():
+        if "fixture" in revision:
+            out.append((f"history/revisions/{name}/fixture", revision["fixture"]))
     for i, blocker in enumerate(target.get("handoff", {}).get("blockers", [])):
         if "packet" in blocker:
             out.append((f"handoff/blockers/{i}/packet", blocker["packet"]))
@@ -86,6 +89,12 @@ def consistency_problems(target, folder):
         if resolved != root and root not in resolved.parents:
             problems.append(f"{where}: {name} resolves outside the example's folder")
     revisions = set(target["history"]["revisions"])
+    control = target["identity"]["role"] == "control"
+    fixtures = [n for n, r in target["history"]["revisions"].items() if "fixture" in r]
+    if fixtures and not control:
+        problems.append(f"revisions {', '.join(fixtures)}: only a control may name a fixture instead of an upstream commit")
+    if target.get("preparation", {}).get("route") == "fixture" and not control:
+        problems.append("preparation route fixture: only a control is built from fixtures")
     pairs = {}
     for p in target["history"].get("pairs", []):
         if p["name"] in pairs:

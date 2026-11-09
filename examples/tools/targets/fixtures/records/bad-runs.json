@@ -1,0 +1,121 @@
+{
+  "provenance": "constructed: how a run can go wrong, for the checks that must never read it as a result",
+  "records": {
+    "killed-control": {
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-after.jar:after.jar",
+        "fixture.driver.GateDriver",
+        "65",
+        "97"
+      ],
+      "identities": {
+        "jdk": "constructed"
+      },
+      "control": "gate-driver",
+      "kind": "jvm-control",
+      "revision": "after",
+      "status": "killed",
+      "exitCode": null,
+      "seconds": 30.0,
+      "stdout": "killed.stdout",
+      "stderr": "killed.stderr",
+      "observations": null
+    },
+    "malformed-control": {
+      "argv": [
+        "java",
+        "-cp",
+        "driver.jar:adapter-after.jar:after.jar",
+        "fixture.driver.GateDriver",
+        "65",
+        "97"
+      ],
+      "identities": {
+        "jdk": "constructed"
+      },
+      "control": "gate-driver",
+      "kind": "jvm-control",
+      "revision": "after",
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.2,
+      "stdout": "malformed.stdout",
+      "stderr": "malformed.stderr",
+      "observations": null
+    },
+    "one-sided-replay": [
+      {
+        "argv": [
+          "java",
+          "-cp",
+          "driver.jar:adapter-after.jar:after.jar",
+          "fixture.driver.GateDriver",
+          "65",
+          "97"
+        ],
+        "identities": {
+          "jdk": "constructed"
+        },
+        "control": "gate-driver",
+        "kind": "jvm-control",
+        "revision": "before",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.2,
+        "stdout": "killed.stdout",
+        "stderr": "killed.stderr",
+        "observations": [
+          {
+            "input": 65,
+            "outcome": "returned",
+            "value": false
+          }
+        ]
+      },
+      {
+        "argv": [
+          "java",
+          "-cp",
+          "driver.jar:adapter-after.jar:after.jar",
+          "fixture.driver.GateDriver",
+          "65",
+          "97"
+        ],
+        "identities": {
+          "jdk": "constructed"
+        },
+        "control": "gate-driver",
+        "kind": "jvm-control",
+        "revision": "after",
+        "status": "not-started",
+        "exitCode": null,
+        "seconds": 0.0,
+        "stdout": "exit-one.stdout",
+        "stderr": "exit-one.stderr",
+        "observations": null
+      }
+    ],
+    "exit-one-verifier": {
+      "kind": "verifier",
+      "revision": "before",
+      "argv": [
+        "jvmcontract",
+        "prove",
+        "--engine",
+        "native"
+      ],
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.5,
+      "stdout": "exit-one.stdout",
+      "stderr": "exit-one.stderr",
+      "identities": {
+        "jvmcontract": "constructed"
+      },
+      "observations": null,
+      "control": null
+    }
+  }
+}

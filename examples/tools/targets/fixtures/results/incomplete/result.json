@@ -1,0 +1,194 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "ea2923ba75330214",
+    "format": 1,
+    "example": "025",
+    "statement": {
+      "approach": "B8",
+      "target": "net.terminalvalue.crosscut.tx.TransactionBoundary#exit",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {},
+    "inputs": {
+      "patch": "57ff03d5128b313c75fa321b2580c2946d8d1c8d6b5034a9bdc74ccc2949350f",
+      "before": {
+        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
+        "files": 58
+      },
+      "after": {
+        "sha256": "f16e7de61029737014ca5ead7477f822c608edb510a60e964e4c66fdd005ce4d",
+        "files": 58
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T153855Z-c566bec3",
+    "claim": "ea2923ba75330214",
+    "startedAt": "2026-11-07T15:38:55+00:00",
+    "seconds": 1.7,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "78485c2568e64a5bfdc04d5df34cababfab750954472cfec47ff7bb4682f0a82",
+        "files": 42
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
+      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.8,
+        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+      },
+      {
+        "name": "javac patched crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.8,
+        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+      },
+      {
+        "name": "the crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-crosscut-tests.stdout",
+        "stderr": "logs/04-the-crosscut-tests.stderr"
+      },
+      {
+        "name": "jvmcontract verify",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.0,
+        "stdout": "logs/05-jvmcontract-verify.stdout",
+        "stderr": "logs/05-jvmcontract-verify.stderr"
+      },
+      {
+        "name": "jvmcontract derive TransactionBoundary#exit",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/06-jvmcontract-derive-transactionboundary-exit.stdout",
+        "stderr": "logs/06-jvmcontract-derive-transactionboundary-exit.stderr"
+      },
+      {
+        "name": "jvmcontract statemachine",
+        "status": "exited",
+        "exitCode": 2,
+        "seconds": 0.0,
+        "stdout": "logs/07-jvmcontract-statemachine.stdout",
+        "stderr": "logs/07-jvmcontract-statemachine.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/08-version-of-java.stdout",
+        "stderr": "logs/08-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/09-version-of-javac.stdout",
+        "stderr": "logs/09-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-gvuejtsl/attempts/025/attempt-88x51j4e"
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.crosscut.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java",
+      "startLine": 1,
+      "code": "package net.terminalvalue.crosscut.tx;\n\nimport static net.terminalvalue.crosscut.tx.Completion.ThrowableKind.CHECKED_EXCEPTION;\nimport static net.terminalvalue.crosscut.tx.Enlistment.BEGIN;\nimport static net.terminalvalue.crosscut.tx.Enlistment.JOIN;\nimport static net.terminalvalue.crosscut.tx.Enlistment.RUN_OUTSIDE;\n    // ...\n        return switch (threw.rule()) {\n            case ROLLBACK_FOR -> true;\n            case NO_ROLLBACK_FOR -> false;\n            case NONE -> threw.kind() != CHECKED_EXCEPTION;\n        };\n    }\n}\n"
+    },
+    "after": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java",
+      "startLine": 1,
+      "code": "package net.terminalvalue.crosscut.tx;\n\nimport static net.terminalvalue.crosscut.tx.Completion.ThrowableKind.RUNTIME_EXCEPTION;\nimport static net.terminalvalue.crosscut.tx.Enlistment.BEGIN;\nimport static net.terminalvalue.crosscut.tx.Enlistment.JOIN;\nimport static net.terminalvalue.crosscut.tx.Enlistment.RUN_OUTSIDE;\n    // ...\n        return switch (threw.rule()) {\n            case ROLLBACK_FOR -> true;\n            case NO_ROLLBACK_FOR -> false;\n            case NONE -> threw.kind() == RUNTIME_EXCEPTION; // the unchecked default\n        };\n    }\n}\n"
+    },
+    "casesTotal": 22,
+    "domain": null,
+    "counterexamples": [
+      {
+        "input": "exit(Threw[kind=ERROR, rule=NONE], false)",
+        "contract": "ROLLBACK",
+        "actual": "COMMIT"
+      }
+    ],
+    "purityViolations": [],
+    "trustedCalls": [
+      "java.lang.Enum.ordinal",
+      "java.lang.MatchException.<init>",
+      "java.lang.Record.<init>",
+      "java.lang.runtime.SwitchBootstraps.typeSwitch",
+      "java.util.List.copyOf",
+      "java.util.List.of",
+      "java.util.Objects.requireNonNull"
+    ],
+    "contractDiff": null,
+    "proof": null,
+    "problem": null,
+    "statement": null,
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": null,
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt"
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "a6b5b180efa756ff046d061c716ea1fd4d3b5ab7c571aed268ffaedd54d71a94",
+        "bytes": 2611
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "dd4ce5ba741c9c520e9125f2e51619ee64cd24006ab77621bc3b6b10fef57482",
+        "bytes": 1628
+      }
+    ]
+  }
+}
