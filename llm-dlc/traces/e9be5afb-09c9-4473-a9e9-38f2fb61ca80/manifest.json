@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T11:26:05.429Z",
-  "ended": "2026-11-09T02:20:50.024Z",
-  "duration_seconds": 53685,
+  "ended": "2026-11-09T02:22:44.948Z",
+  "duration_seconds": 53800,
   "stats": {
     "turns": 16,
-    "api_calls": 176,
-    "tool_calls": 176,
+    "api_calls": 179,
+    "tool_calls": 181,
     "tool_errors": 5,
     "compactions": 1,
     "peak_context_tokens": 339175,
     "usage": {
-      "input_tokens": 376,
-      "output_tokens": 173250,
-      "cache_read_input_tokens": 28507247,
-      "cache_creation_input_tokens": 918083
+      "input_tokens": 382,
+      "output_tokens": 184056,
+      "cache_read_input_tokens": 29097730,
+      "cache_creation_input_tokens": 927875
     }
   },
   "tools": {
-    "Bash": 151,
-    "Write": 11,
+    "Bash": 152,
+    "Write": 15,
     "Read": 7,
     "AskUserQuestion": 4,
     "Agent": 2,
@@ -45,8 +45,12 @@
     "/tmp/claude-1001/-home-user-code-in-the-loop/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/scratchpad/example-targets/llm-dlc/loops/example-targets.md",
     "examples/schema/target.schema.json",
     "examples/tools/targets/__init__.py",
+    "examples/tools/targets/interfaces.py",
+    "examples/tools/targets/runtime.py",
     "examples/tools/targets/sidecar.py",
+    "examples/tools/targets/test_interfaces.py",
     "examples/tools/targets/test_sidecar.py",
+    "examples/tools/targets/workflow.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/example-targets-loop-draft.md"
   ],
   "context_windows": [
@@ -67,24 +71,24 @@
     {
       "index": 1,
       "started": "2026-11-08T17:23:17.807Z",
-      "ended": "2026-11-09T02:20:50.024Z",
+      "ended": "2026-11-09T02:22:44.948Z",
       "turns": 7,
-      "api_calls": 54,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 114,
-        "output_tokens": 42706,
-        "cache_read_input_tokens": 6223849,
-        "cache_creation_input_tokens": 165364
+        "input_tokens": 120,
+        "output_tokens": 53512,
+        "cache_read_input_tokens": 6814332,
+        "cache_creation_input_tokens": 175156
       },
-      "peak_context_tokens": 194200
+      "peak_context_tokens": 203992
     }
   ],
   "log": {
-    "sha256": "762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02",
-    "bytes": 4896247,
-    "lines": 1622,
-    "gzip_bytes": 930825,
-    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02.jsonl.gz"
+    "sha256": "76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828",
+    "bytes": 5040340,
+    "lines": 1668,
+    "gzip_bytes": 951049,
+    "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828.jsonl.gz"
   },
   "subagents": [
     {
@@ -94,24 +98,24 @@
       ],
       "stats": {
         "turns": 0,
-        "api_calls": 49,
-        "tool_calls": 51,
+        "api_calls": 58,
+        "tool_calls": 60,
         "tool_errors": 0,
         "compactions": 0,
-        "peak_context_tokens": 117578,
+        "peak_context_tokens": 129172,
         "usage": {
-          "input_tokens": 98,
-          "output_tokens": 11697,
-          "cache_read_input_tokens": 3382704,
-          "cache_creation_input_tokens": 117576
+          "input_tokens": 116,
+          "output_tokens": 14794,
+          "cache_read_input_tokens": 4488443,
+          "cache_creation_input_tokens": 129170
         }
       },
       "log": {
-        "sha256": "5109bc29ee7f809797be67575674169a84f35117f6bc2fa58abc97aa46fb1998",
-        "bytes": 1149415,
-        "lines": 303,
-        "gzip_bytes": 202421,
-        "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/5109bc29ee7f809797be67575674169a84f35117f6bc2fa58abc97aa46fb1998.jsonl.gz"
+        "sha256": "447820c9bace86d45084ed143459d13ab1faf1abac3c93d5d563979a3fee9322",
+        "bytes": 1275032,
+        "lines": 350,
+        "gzip_bytes": 219223,
+        "path": "llm-dlc/traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/logs/447820c9bace86d45084ed143459d13ab1faf1abac3c93d5d563979a3fee9322.jsonl.gz"
       }
     },
     {
@@ -470,6 +474,14 @@
       "summary": "example-targets Phase 0 step 1: the strict target.json sidecar schema, its loader, and the one reference from example.json",
       "body": "examples/schema/target.schema.json (example-target/v1) is the work manifest a real-world example may carry: identity (case, family, role), history (full commit SHAs, separately named pairs, introduction status), preparation (published artifact or upstream build, Maven Central and github.com URLs only, fixed versions, JDK 8/11/17/21/25), tasks (prove/compare/equivalence/replay, revision or pair by kind, explicit engine and bounds, authored expectation, prerequisites), controls and handoff blockers by gap kind. Every object is closed. examples/tools/targets/sidecar.py validates it and adds the checks a schema can't make: paths resolve inside the folder (symlinks included), every named revision, pair and task exists, ids are unique, prerequisites have no cycle, and no mutable artifact version. example.schema.json gains an optional target (always target.json), forbidden for constructed examples; build.py's load_example() checks the sidecar whenever an example is read. Verified: 14 new tests (examples/tools/targets/test_sidecar.py) cover an unknown field at each level, mutable revisions and versions, a foreign download URL, path escapes, a cycle and undefined names; test_build.py's 190 tests pass; --index-only leaves README and index.json unchanged.",
       "log_sha256": "762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02"
+    },
+    {
+      "change_id": "quzmrkzxrltovpprxykwuzttqqnpnvvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 0 step 2: the three shared interfaces, frozen, with stubs that fail closed",
+      "body": "examples/tools/targets/interfaces.py freezes TaskPlan (a pure resolution of a named task: revisions, declared claim, prerequisites, artifacts, tools, explicit engine and gaps, authored expectation, outputs), PreparedTarget (source-locked, artifacts-ready or failed with its stage, diagnostic and whatever artifacts exist; never a claim decision), the raw ExecutionRecord between runtime and workflow (how a process ended, never a verdict; observations None when unreadable), Receipt (one format-2 receipt per task and attempt) and the named Unsupported result. workflow.py (plan_task, ingest, project) and runtime.py (prepare, run_controls, run_verifier) are the owning streams' files: Phase 0's versions return Unsupported naming the interface and the stream, and project() states only what target.json says, with readiness and claim statuses left None for W4. test_interfaces.py freezes the signatures and field order (a field added later needs a default); test_workflow.py and test_runtime.py, owned by their streams, test the stubs and are rewritten as each is replaced. Verified: 21 tests pass under unittest discovery and each file alone.",
+      "log_sha256": "76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828"
     }
   ],
   "logs": {
@@ -485,17 +497,17 @@
       "gzip_bytes": 814997,
       "url": null
     },
+    "447820c9bace86d45084ed143459d13ab1faf1abac3c93d5d563979a3fee9322": {
+      "bytes": 1275032,
+      "lines": 350,
+      "gzip_bytes": 219223,
+      "url": null
+    },
     "4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7": {
       "bytes": 1397981,
       "lines": 550,
       "gzip_bytes": 232578,
       "url": "https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz"
-    },
-    "5109bc29ee7f809797be67575674169a84f35117f6bc2fa58abc97aa46fb1998": {
-      "bytes": 1149415,
-      "lines": 303,
-      "gzip_bytes": 202421,
-      "url": null
     },
     "65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c": {
       "bytes": 687571,
@@ -507,6 +519,12 @@
       "bytes": 4896247,
       "lines": 1622,
       "gzip_bytes": 930825,
+      "url": null
+    },
+    "76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828": {
+      "bytes": 5040340,
+      "lines": 1668,
+      "gzip_bytes": 951049,
       "url": null
     },
     "8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6": {
