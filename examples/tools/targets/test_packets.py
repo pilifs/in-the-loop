@@ -93,5 +93,25 @@ class SimpleMatchMutantTest(unittest.TestCase):
         self.assertEqual(p.artifacts[1]["mutant"]["patch"]["path"], "mutant/suffix-anywhere.patch")
 
 
+class RouterTest(unittest.TestCase):
+    """Request 4: the committed router (examples/index.json and examples/README.md's table) lists every numbered
+    folder, the catalog 285-300 and the positives 305-307 included, each sidecar example with its target projection,
+    so find.py can reach them."""
+
+    def test_the_router_lists_every_numbered_folder(self):
+        folders = sorted(p.name for p in EXAMPLES.iterdir() if p.is_dir() and p.name[:3].isdigit())
+        index = {e["id"]: e for e in json.loads((EXAMPLES / "index.json").read_text())["examples"]}
+        readme = (EXAMPLES / "README.md").read_text()
+        for name in folders:
+            with self.subTest(name):
+                self.assertTrue(name[:3] in index, f"{name} is not in examples/index.json")
+                self.assertEqual(index[name[:3]]["path"], f"examples/{name}")
+                self.assertIn(f"]({name}/README.md) |", readme)
+                if (EXAMPLES / name / "target.json").exists():
+                    self.assertIsNotNone(index[name[:3]]["target"])
+        for number in PACKETS:
+            self.assertIn(index[number]["target"]["role"], ("negative", "positive"))
+
+
 if __name__ == "__main__":
     unittest.main()

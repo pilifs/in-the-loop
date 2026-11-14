@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 95, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 20:22 UTC |
-| Prompts | 2,229 |
-| Model calls | 21,339 |
-| Tool calls | 22,314 (383 failed) |
-| Compactions | 343 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 20:28 UTC |
+| Prompts | 2,234 |
+| Model calls | 21,357 |
+| Tool calls | 22,333 (383 failed) |
+| Compactions | 344 |
 | Subagents | 16 |
-| Tokens written | 21,980,781 |
-| Tokens read | 3,317,825,200 (97.9% from cache) |
-| Commits with a trace | 650 |
-| Log snapshots | 800 (1695.1 MB gzipped, 732 uploaded) |
+| Tokens written | 21,989,209 |
+| Tokens read | 3,319,362,441 (97.9% from cache) |
+| Commits with a trace | 651 |
+| Log snapshots | 801 (1696.6 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -121,7 +121,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | ended | 1 min | `claude-opus-5-5` | 1 | 13 | 13 | 0 | 0 | 61,068 | 3 |
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
-| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 1 h 56 min | `claude-opus-5-5` | 30 | 212 | 210 | 6 | 4 | 164,466 | 11 |
+| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 2 h 3 min | `claude-opus-5-5` | 35 | 230 | 229 | 6 | 5 | 164,466 | 12 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -225,15 +225,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 5,386 | 26 | 35,225 | 662,041 | 94.9% | 129 |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 129,323 | 444 | 593,226 | 18,882,451 | 97.0% | 151 |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 137,751 | 480 | 683,517 | 20,329,365 | 96.7% | 153 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 19,574 | 87.7% | 95 |
-| `Read` | 1,042 | 4.7% | 45 |
-| `Edit` | 811 | 3.6% | 45 |
+| `Bash` | 19,588 | 87.7% | 95 |
+| `Read` | 1,045 | 4.7% | 45 |
+| `Edit` | 813 | 3.6% | 45 |
 | `Write` | 513 | 2.3% | 41 |
 | `ToolSearch` | 125 | 0.6% | 32 |
 | `Monitor` | 98 | 0.4% | 36 |
@@ -904,6 +904,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 648 | change `nrtqqxqx` | example-targets Phase 5 step 1: the fixture recipe compiles with -parameters, so contract A5 passes | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886.jsonl.gz)) |
 | 649 | change `owpostsy` | example-targets Phase 5 step 1: the download hosts widened to repo.spring.io and services/plugins.gradle.org; P3's build plugin needs credentials | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48.jsonl.gz)) |
 | 650 | change `lllrnmuo` | example-targets Phase 5 step 1: the six packets' mutation controls become W1 mutant revisions, with tasks of their own | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea.jsonl.gz)) |
+| 651 | change `vrzlzssr` | example-targets Phase 5 step 1: the router regenerated, so index.json and examples/README.md list 285-300 and 305-307 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/ef6b8e92dfcb6e3761f832779bc45db878d357ad34d49f5e17e521bfcae76e9a.jsonl.gz)) |
 
 ## Logs
 
@@ -1005,7 +1006,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 1 | 0 | 0.1 MB | `d7c8b8e9c4a0`, not uploaded |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 11 | 0 | 4.6 MB | `056a469b4914`, not uploaded |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 12 | 0 | 6.1 MB | `ef6b8e92dfcb`, not uploaded |
 
 ## Session notes
 

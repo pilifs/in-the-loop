@@ -749,6 +749,26 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
 
     No mutant was prepared: those are Phase 5's packet jobs.
   - **Next**: request 4, `build.py --index-only`, so the router lists 285–300 and 305–307.
+- 2026-11-14, **Phase 5 step 1, request 4 done: the router lists the packets.**
+  - **Reproducer**: a new test, `test_packets.py`'s `RouterTest`, failed for 19 folders, 285–300 and 305–307. It
+    checks that `examples/index.json` and `examples/README.md`'s table list every numbered folder, that each sidecar
+    example's entry has a `target` projection, and that the six packets' roles are negative or positive.
+  - **The change**: `build.py --index-only` regenerated both files. Nothing else changed:
+    - the 19 folders gained rows, tag links and index entries;
+    - 105's entry gained its migration notes and its `target` projection (role `calibration`). Its historical
+      `verdictLabel` stays as it was;
+    - no other entry changed.
+
+    `find.py --family spring-data-binding` now finds 286, 288, 299 and 306, and `--role positive` finds 305–307.
+    `--readiness` still matches nothing, as every projection's `readiness` is `null` until request 5.
+  - **Found, for request 6** (the companions, which edits 305–307's `example.json` anyway):
+    - the `external-target` tag lists 285–300 only, not 105 or 305–307, though all four have a sidecar;
+    - 306 is tagged `request-binding`, whose description is a handler parameter that can't bind. `PatternMatchUtils`
+      is closer to `data-binding`, the tag 286, 288 and 299 use.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (188, one new),
+    `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
+  - **Next**: request 5, `READINESS_IN_INDEX = True` in `workflow_discovery.py`, with `test_route.py:132` expecting
+    `"catalogued"`, then the index regenerated again.
 - Status: working
 
 ## Loop settings

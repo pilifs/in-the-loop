@@ -4358,10 +4358,62 @@
       "existingTestsPassed": null,
       "notes": [
         "Next: `pow(long, int)`, which the same pull request changed and the recorded run did not reach.",
-        "The confined-change proof did not finish in the default 300 s and took 1083 s with `--timeout 1500`: budget proofs over two full `int` ranges in tens of minutes."
+        "The confined-change proof did not finish in the default 300 s and took 1083 s with `--timeout 1500`: budget proofs over two full `int` ranges in tens of minutes.",
+        "Migrated to the external-target route on 2026-11-14 by the positive stream of llm-dlc/loops/example-targets.md (its P5): target.json, sources.lock.json, claims/, replay/, controls/ and records/ were added; README.md, the summary and the verdict label are the historical report of 2026-11-01 and stay as written. A receipt of the new route goes beside them, never in their place.",
+        "Revisions resolved afresh from github.com: before e7c172d2 (the only parent of the squash merge), after 8cfc04e8 (the merge), and the pull request's head 79aa4643, whose ArithmeticUtils.java is after's blob. Maven Central's commons-numbers-core 1.3 carries before's file (blob 153b3202, in its sources JAR too) and the same bytecode as that file compiled alone; no release carries after's, so the route is the upstream Maven build of each commit (runtime's preparation, not yet run).",
+        "The selected A5 obligation is claims/pow-minus-two.json: for k == -2 and 0 <= e <= 31, pow(int,int) returns (-2)^e. Native strict, expected established on after and refuted on before at (-2, 31), the witness the replay reproduces. It reaches no gap: jvmcontract gaps lists only the StringBuilder calls of the e < 0 message (records/pow-gaps.json), which its assume excludes. The report's confined-change row is predicted refused under strict for exactly those gaps.",
+        "Hand replay on 2026-11-14 (a note, not evidence): ArithmeticUtils.java of each commit compiled alone with JDK 11's javac --release 8, plus Central's 1.3 JAR, each with the driver (driver.jar sha256 315ecf00…) in its own JVM on JDK 21 and 25, over the 75 probes. controls/oracle.py: after meets the Javadoc's contract on all 75; before and 1.3 give byte-identical output and deviate at (-2, 31) alone (ArithmeticException); the property holds on all 32 points at after and fails at e = 31 alone at before. Checked with the wrong revision's output and a truncated file, the oracle fails, as it should."
       ],
       "source": "https://github.com/apache/commons-numbers/pull/223",
-      "target": null
+      "target": {
+        "family": "commons-numbers-pow",
+        "role": "calibration",
+        "case": "commons-numbers-pow-calibration",
+        "tasks": [
+          "replay",
+          "fix-property",
+          "fix-property-before",
+          "regression",
+          "confined-change"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "fix-property": "partial",
+          "fix-property-before": "partial",
+          "regression": "partial",
+          "confined-change": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "fix-property": "established",
+          "fix-property-before": "refuted",
+          "regression": "refuted",
+          "confined-change": "established"
+        },
+        "claims": {
+          "fix-property": null,
+          "fix-property-before": null,
+          "regression": null,
+          "confined-change": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "✗ the intended change found; ✓ confined to it; ✓ Javadoc proved",
+          "source": "https://github.com/apache/commons-numbers/pull/223",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 105 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
     },
     {
       "id": "106",
@@ -7041,6 +7093,1564 @@
       ],
       "source": null,
       "target": null
+    },
+    {
+      "id": "285",
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels",
+      "title": "CVE-2023-34055: Unbounded HTTP method labels in web metrics",
+      "summary": "Spring Boot 2.7.17 → 2.7.18, fixed by 5490e739: WebMvcTags.method emitted the raw HTTP method token as a metric label. A deep negative packet: the release pair selected and source-locked, a frozen bounded-label property shared by the vulnerable and fixed tasks, preservation of the eight known names and the null request, an independent oracle, a request carrier and driver, and a mutation control. No verifier task has run.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "spring-boot",
+          "metrics"
+        ],
+        "defect": [
+          "security-boundary",
+          "denial-of-service"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a negative packet scaffolded, its tasks frozen, no verifier verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The packet (N1 of llm-dlc/loops/example-targets-negative.md, 2026-11-14): target.json's tasks replay, vulnerable-security (expected refuted), fixed-security (expected established, the same claim file) and preservation (expected established outside the allowed change), all native strict and requiring the replay; sources.lock.json; claims/; replay/ (carrier, adapter, driver); controls/ (oracle, probes, mutation patch). README.md says how they fit.",
+        "The release pair is the execution pair, chosen before the claims were frozen: the exact-fix pair has no published artifact, while v2.7.17's WebMvcTags.java is the fix parent's blob (e5e2147b) and v2.7.18's the fix's (9f92c1ce), the sources JARs carry the same blobs, and Tag, ImmutableTag and HttpMethod are byte-identical across the two releases' closures, so within the method's reach the two releases differ by the fix alone.",
+        "The frozen label set is version-specific: spring-web 5.3's HttpMethod has GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS and TRACE (one source blob in 5.3.30 and 5.3.31), so the fix labels CONNECT, a standard method, UNKNOWN, and resolves case-sensitively (get is UNKNOWN). Both are recorded as the release's behaviour, not judged.",
+        "The claim fixes the set and the eight names' own labels, not the label of a token inside the allowed change: a case-folding fix (get to GET) would satisfy both claims too. That is what the patch's intent supports; a stronger per-token claim would be another claim.",
+        "Developer note, not evidence (2026-11-14, before runtime's acquisition is merged): the JARs of sources.lock.json fetched by hand from Maven Central (sha1 checked against Central, sha256 as recorded), the carrier, adapter and driver compiled with --release 21, the mutant built from controls/raw-method-fallback.patch, and each revision run in its own JVM on Temurin 21.0.13 and 25.0.5 over the 15 probes. controls/oracle.py check: 2.7.17 fails the property at exactly the five triggers (xscf, lowercase-get, empty-token, long-token, connect) with every legitimate probe passing; 2.7.18 holds and passes; the mutant fails at the same five and passes the legitimate probes, reading getMethod() twice; oracle.py compare 2.7.17 → 2.7.18 is preserved, with the changes only inside the allowed region; each revision's per-probe lines were identical on 21 and 25. No exception, and no probe reached the request beyond getMethod().",
+        "Not in the claim: a request whose getMethod() returns null (no container produces one; 2.7.17 would throw NullPointerException from ImmutableTag, 2.7.18 return UNKNOWN), WebFluxTags.method (the same commit, but there the fix trusts ServerHttpRequest.getMethod(), so its property rests on the server adapter's classification, another obligation), the uri, status, outcome and exception tags, total metric cardinality and the application's availability.",
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 1, priority P0): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Benign behaviour to preserve (research): Each supported HTTP method retains its correct label; preserve the documented null-request behavior of the MVC variant.",
+        "Proof boundary (research): Bounds only the method-label dimension. Total metric cardinality and application availability require additional properties. A preclassified enum-only adapter does not verify classification of raw HTTP strings.",
+        "Feasibility (research): Best first capability spike. Small control flow, but original bytecode still needs String, enum, interface-call, Tag object and class-initialization support. Both classes have unrelated static initialization that must remain soundly modeled.",
+        "Registry note: Boot 3.x mitigation also updates Spring Framework for the related observation vulnerability. This benchmark deliberately chooses the Boot 2.7 implementation.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, the fix commit and its parent read from github.com, the fix an ancestor of v2.7.18 and not of v2.7.17; on the same day WebMvcTags.java's blobs read at all four revisions (sources.lock.json).",
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/raw-method-fallback.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `fixed-release`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-security`, fixed-security's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `fixed-release`, which no task prepared."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/commit/5490e73922b37a7f0bdde43eb318cb1038b45d60",
+      "target": {
+        "family": "boot-method-metrics",
+        "role": "negative",
+        "case": "boot-method-labels-cve",
+        "tasks": [
+          "replay",
+          "vulnerable-security",
+          "fixed-security",
+          "preservation",
+          "mutant-replay",
+          "mutant-security"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "vulnerable-security": "partial",
+          "fixed-security": "partial",
+          "preservation": "partial",
+          "mutant-replay": "partial",
+          "mutant-security": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "vulnerable-security": "refuted",
+          "fixed-security": "established",
+          "preservation": "established",
+          "mutant-replay": null,
+          "mutant-security": "refuted"
+        },
+        "claims": {
+          "vulnerable-security": null,
+          "fixed-security": null,
+          "preservation": null,
+          "mutant-security": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a negative packet scaffolded, its tasks frozen, no verifier verdict",
+          "source": "https://github.com/spring-projects/spring-boot/commit/5490e73922b37a7f0bdde43eb318cb1038b45d60",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 285 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "286",
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields",
+      "title": "CVE-2022-22968: Case-sensitive DataBinder disallowedFields",
+      "summary": "Spring Framework 5.3.18 → 5.3.19, fixed by a7cf19ce: DataBinder matched disallowed field patterns case-sensitively, so a field listed as age could still be bound as Age (the bean wrapper resolves it to age), and one listed as AGE didn't protect age. A deep negative packet: the release pair source-locked, the decision lemma, preservation and the protected-state claim frozen as six tasks, with an oracle, 46 probes, a driver and a mutant; no verifier task has run.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.validation.DataBinder#isAllowed",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "data-binding"
+        ],
+        "defect": [
+          "security-boundary",
+          "case-normalization"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "low",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a negative packet scaffolded, its tasks frozen, no verifier verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Pair: the release pair (5.3.18 → 5.3.19, published JARs) is selected. Each release's DataBinder.java is the exact-fix pair's blob (612dfc56, 8ee5e43b, also in the sources JARs), and the decision's helpers (ObjectUtils, PatternMatchUtils, PropertyAccessorUtils) are byte-identical in both closures. The exact-fix pair has no published artifact. The release window's two CachedIntrospectionResults commits change property filters ProtectedBean doesn't reach; the driver prints the resolved properties on each run.",
+        "Three claims, kept apart: the decision lemma (claims/disallowed-field-denied-ignoring-case.json, vulnerable-security and fixed-security), preservation outside the case aliases (claims/permitted-fields-preserved.json), and the stronger protected-state claim on the actual binding (claims/protected-age-not-mutated.json, its own vulnerable and fixed tasks), which a decision proof never discharges.",
+        "Domain: ASCII names and patterns, a canonical field, and the default locale pinned to Locale.ROOT (the driver sets it before any Spring class loads). Two probes outside it show why: under tr-TR, 5.3.19 lower-cases FAVOURITECOLOUR's I to a dotless i and allows favouriteColour (example 288's locale property); and with the non-ASCII pattern dataΣ*, 5.3.19 lower-cases the pattern's Σ to a final sigma and the field dataΣx's to a medial one, so it allows a field 5.3.18 denies by exact match.",
+        "The upstream regression's own value (age=32x) doesn't convert, so on 5.3.18 age stays 0 with a typeMismatch error: that test fails on the suppressed fields only. The probes add the seed's age=32 and the advisory's Age=32, which write the protected age on 5.3.18.",
+        "Developer note, not evidence: on 2026-11-14 the stream ran the driver by hand (JARs from Maven Central, hashes as locked) on Temurin 21.0.13 and 25.0.5: 5.3.18 fails the property at exactly the 12 triggers and passes every legitimate probe, 5.3.19 holds and passes, preservation holds with changes only at the triggers and the regression's inputs, and the mutant fails 13 probes with every legitimate one passing; lines identical on both JDKs.",
+        "Imported on 2026-11-14 from the archived registry (rank 2, priority P0); its capability notes are from verifier 4c279ba6 and stale. The blockers in target.json are predictions until the capability probe reaches them.",
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/pattern-side-unnormalized.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `fixed-release`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-security`, fixed-security's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `fixed-release`, which no task prepared."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/a7cf19cec5ebd270f97a194d749e2d5701ad2ab7",
+      "target": {
+        "family": "spring-data-binding",
+        "role": "negative",
+        "case": "binder-case-aliases-cve",
+        "tasks": [
+          "replay",
+          "vulnerable-security",
+          "fixed-security",
+          "preservation",
+          "vulnerable-protected-state-mutation",
+          "fixed-protected-state-mutation",
+          "mutant-replay",
+          "mutant-security"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "vulnerable-security": "partial",
+          "fixed-security": "partial",
+          "preservation": "partial",
+          "vulnerable-protected-state-mutation": "partial",
+          "fixed-protected-state-mutation": "partial",
+          "mutant-replay": "partial",
+          "mutant-security": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "vulnerable-security": "refuted",
+          "fixed-security": "established",
+          "preservation": "established",
+          "vulnerable-protected-state-mutation": "refuted",
+          "fixed-protected-state-mutation": "established",
+          "mutant-replay": null,
+          "mutant-security": "refuted"
+        },
+        "claims": {
+          "vulnerable-security": null,
+          "fixed-security": null,
+          "preservation": null,
+          "vulnerable-protected-state-mutation": null,
+          "fixed-protected-state-mutation": null,
+          "mutant-security": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a negative packet scaffolded, its tasks frozen, no verifier verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/a7cf19cec5ebd270f97a194d749e2d5701ad2ab7",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 286 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "287",
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72",
+      "title": "CVE-2025-22228: BCryptPasswordEncoder does not enforce maximum password length",
+      "summary": "Spring Security 6.3.7 → 6.3.8, fixed by 46f0dc6d: BCrypt refuses passwords longer than 72 UTF-8 bytes, which it used to truncate, so a longer candidate authenticated by its 72-byte prefix. A deep negative packet, ready for Phase 5: three frozen claims (the public matches policy, preservation, and a narrower byte-array lemma), an independent oracle, 33 probes against independently made stored hashes, a replay driver and a character-counting mutant. No verifier has run.",
+      "origin": "real-world",
+      "system": "Spring Security",
+      "symbol": "org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder#matches",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "password-hashing",
+          "text-encoding"
+        ],
+        "defect": [
+          "security-boundary"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a negative packet ready for preparation, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Execution pair: the release pair, 6.3.7 → 6.3.8 (published-artifact: spring-security-crypto and spring-jcl). It carries the exact fix 36ea1b11 → 46f0dc6d faithfully: each release's BCrypt.java and BCryptPasswordEncoder.java are the exact-fix pair's blobs (0f8d082f, 17292840; d17511b0 in all four), also in the sources JARs, and only BCrypt.hashpw(byte[], String, boolean) differs in the class files (sources.lock.json).",
+        "Tasks (target.json): replay; vulnerable-security (expected refuted) and fixed-security (expected established) on claims/overlong-candidate-rejected.json, through example287.adapter.PasswordMatchAdapter (one call of the original matches); preservation (expected established) on claims/in-range-matching-preserved.json outside the allowed change 'a non-null candidate longer than 72 UTF-8 bytes'; vulnerable-guard and fixed-guard, the narrower byte-array lemma on BCrypt.checkpw(byte[], String) (claims/overlong-bytes-rejected.json, relation diagnostic, each with its security task as parent, which it never settles). All native strict.",
+        "Domain: a non-null candidate and a valid stored hash (minor a, b or y, cost 04 to 30, 53 base64 characters). Bounds: Strings of up to 80 UTF-16 units, so the rejected branch is reachable (73 bytes take at least 25 units; 8 never reach it). The byte count is the JDK's String.getBytes(UTF_8): an unpaired surrogate becomes one '?' byte. The driver prints the JDK's count for every candidate and the oracle refuses a run where it differs from its own.",
+        "Stored hashes are made independently, by pyca bcrypt 5.0.0 from recorded preimages (controls/probes.json's hashes), never by a revision under test and never as matches(overlong, encode(overlong)): upstream's enforcePasswordLength test does that, and passes on the fix because encode throws first.",
+        "The oracle (controls/oracle.py) names a violation's kind: authenticated (the advisory's defect), unrejected (an overlong candidate refused with false, not the frozen rejection), wrong-exception, in-range-exception. Its self-test rejects deny-all and reject-all implementations through the legitimate controls and preservation, and checks that probes.json's expectations are each revision's documented shape.",
+        "Mutation control: controls/char-count-guard.patch on 6.3.8 counts UTF-16 units instead of bytes (the String entries refuse more than 72 units, and the byte guard is gone). It lets 36 x U+00E9 plus x through (73 bytes, 37 characters).",
+        "Developer note, not evidence: by hand with the pinned JARs (sha256 in sources.lock.json) on Temurin 21.0.13 and 25.0.5, 6.3.7 failed at the 12 overlong probes (9 authenticated, 3 unrejected) and passed every legitimate probe; 6.3.8 held and passed; the mutant authenticated the 3 multibyte triggers and the 2 byte-array ones; preservation held, with changes only at the 12; every outcome was the one probes.json wrote before the run, and each revision's lines were identical on both JDKs.",
+        "For review: 25 unpaired surrogates authenticate against a hash of 25 '?' on every revision (the JDK's lossy encoding; in range, so not this CVE); a stored hash with cost 31 never terminates for an in-range candidate (an int loop counter against 2^31 rounds, read from the bytecode, not run); and the fix makes a legitimately stored long password unusable, since bcrypt's hash of a 73-byte password is the hash of its first 72 bytes: that is example 300's ground (CVE-2025-22234, 6.3.9's legacy matching).",
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 3, priority P0). Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions until the capability probe runs.",
+        "Proof boundary (research): input-length and rejection only; never a proof of bcrypt's security, of DaoAuthenticationProvider or of timing. Only the specified IllegalArgumentException counts as the rejection.",
+        "The claim fails on 6.3.9 by design. The repair c1aa99fd (CVE-2025-22234, example 300) allows matching overlong candidates again, and 6.3.9's outcomes on all 33 probes are 6.3.7's (run by hand, a note in 300). Never run this claim against 6.3.9 as a fixed revision.",
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/char-count-guard.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `fixed-release`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-security`, fixed-security's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `fixed-release`, which no task prepared."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
+      "target": {
+        "family": "bcrypt-input-limit",
+        "role": "negative",
+        "case": "bcrypt-byte-limit-cve",
+        "tasks": [
+          "replay",
+          "vulnerable-security",
+          "fixed-security",
+          "preservation",
+          "vulnerable-guard",
+          "fixed-guard",
+          "mutant-replay",
+          "mutant-security"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "vulnerable-security": "partial",
+          "fixed-security": "partial",
+          "preservation": "partial",
+          "vulnerable-guard": "partial",
+          "fixed-guard": "partial",
+          "mutant-replay": "partial",
+          "mutant-security": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "vulnerable-security": "refuted",
+          "fixed-security": "established",
+          "preservation": "established",
+          "vulnerable-guard": "refuted",
+          "fixed-guard": "established",
+          "mutant-replay": null,
+          "mutant-security": "refuted"
+        },
+        "claims": {
+          "vulnerable-security": null,
+          "fixed-security": null,
+          "preservation": null,
+          "vulnerable-guard": null,
+          "fixed-guard": null,
+          "mutant-security": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics",
+          "resources"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a negative packet ready for preparation, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 287 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "288",
+      "path": "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields",
+      "title": "CVE-2024-38820: Locale-sensitive DataBinder case normalization",
+      "summary": "Spring Framework 6.1.13 → 6.1.14, fixed by 23656aeb. Deny decisions stay correct across specified default locales. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.validation.DataBinder#isAllowed",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "data-binding"
+        ],
+        "defect": [
+          "security-boundary",
+          "case-normalization"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "low",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 4, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Locale changes do not suppress legitimate allowed fields; retain the earlier case-variant denial obligations.",
+        "Proof boundary (research): A locale-invariance theorem is separate from case-insensitive protection. The 2022 parent may satisfy the former while violating the latter; never call it generally secure.",
+        "Feasibility (research): Excellent paired follow-up. Requires honest String/Locale models; a solver stub treating all toLowerCase calls identically would conceal this CVE."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/23656aebc6c7d0f9faff1080981eb4d55eff296c",
+      "target": {
+        "family": "spring-data-binding",
+        "role": "catalog",
+        "case": "binder-locale-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/23656aebc6c7d0f9faff1080981eb4d55eff296c",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 288 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "289",
+      "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass",
+      "title": "CVE-2022-22978: Authorization bypass in RegexRequestMatcher",
+      "summary": "Spring Security 5.6.3 → 5.6.4, fixed by 70863952. Line terminators do not evade a protective wildcard request rule. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Security",
+      "symbol": "org.springframework.security.web.util.matcher.RegexRequestMatcher#matches",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "access-control"
+        ],
+        "defect": [
+          "security-boundary"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 5, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Existing intended case-sensitive and case-insensitive protected matches remain correct; legitimate authorized requests remain usable.",
+        "Proof boundary (research): Matcher classification depends on JDK regex behavior and servlet path representation. Proving the DOTALL flag alone is not a complete authorization theorem.",
+        "Feasibility (research): Medium. Small code delta, but the real property depends on java.util.regex.Pattern semantics and servlet canonicalization. Proving only that a flag equals Pattern.DOTALL is insufficient as an end-to-end security claim."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/commit/70863952aeb9733499027714d38821db05654856",
+      "target": {
+        "family": "regex-request-authorization",
+        "role": "catalog",
+        "case": "regex-request-matcher-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-security/commit/70863952aeb9733499027714d38821db05654856",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 289 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "290",
+      "path": "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules",
+      "title": "CVE-2023-34035: Authorization rules can be misconfigured when using multiple servlets",
+      "summary": "Spring Security 5.8.4 → 5.8.5, fixed by df239b64. Implicit matcher selection rejects ambiguous multi-servlet configuration. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Security",
+      "symbol": "org.springframework.security.config.annotation.web.AbstractRequestMatcherRegistry#requestMatchers",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "access-control"
+        ],
+        "defect": [
+          "security-boundary"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 6, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Unambiguous configurations and explicitly typed request matchers remain usable; intended ambiguous-startup rejection is permitted.",
+        "Proof boundary (research): Configuration selection or startup rejection is a local theorem. Authorization correctness requires composition with servlet mappings and actual request matching.",
+        "Feasibility (research): Medium. Strong configuration-selection example with new-API introduction. Needs classpath/reflection/servlet metadata models; preservation of every legacy configuration is not the correct fix contract because deliberate startup rejection is the mitigation."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/commit/df239b6448ccf138b0c95b5575a88f33ac35cd9a",
+      "target": {
+        "family": "multi-servlet-matchers",
+        "role": "catalog",
+        "case": "multi-servlet-matchers-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-security/commit/df239b6448ccf138b0c95b5575a88f33ac35cd9a",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 290 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "291",
+      "path": "examples/291-spring-security-cve-2022-31692-forward-include-dispatch-bypass",
+      "title": "CVE-2022-31692: Authorization bypass via forward/include dispatcher types",
+      "summary": "Spring Security 5.7.4 → 5.7.5, fixed by 1f481aaf. Required authorization runs on nested FORWARD/INCLUDE requests. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Security",
+      "symbol": "org.springframework.security.web.access.intercept.AuthorizationFilter#doFilter",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "access-control"
+        ],
+        "defect": [
+          "security-boundary"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 7, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Allowed dispatches reach their handlers, configured exclusions retain their semantics, and request markers are cleaned up correctly.",
+        "Proof boundary (research): Preserve state across at least the relevant nested dispatches. A boolean-only rewrite is not a proof of the original filter lifecycle.",
+        "Feasibility (research): Medium. Good stateful control-flow target; requires correct servlet re-entry/attribute semantics and configuration model. A method-only comparison of doFilterInternal misses the change in inherited behavior."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/commit/1f481aafff14f324ffe2b43a973d3d5f54ae92d4",
+      "target": {
+        "family": "dispatcher-authorization",
+        "role": "catalog",
+        "case": "dispatcher-authorization-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-security/commit/1f481aafff14f324ffe2b43a973d3d5f54ae92d4",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 291 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "292",
+      "path": "examples/292-spring-framework-cve-2024-22243-uri-host-parsing-first-report",
+      "title": "CVE-2024-22243: URL parsing with host validation, first report",
+      "summary": "Spring Framework 6.1.3 → 6.1.4, fixed by 120ea0a5. Accepted URL authority obeys policy under the chosen consuming parser. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.web.util.UriComponentsBuilder#fromUriString",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "uri-parsing"
+        ],
+        "defect": [
+          "security-boundary",
+          "parser-differential"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 8, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Unambiguous allowed URLs retain intended host, port and path semantics.",
+        "Proof boundary (research): Fix the actual downstream parser/client. Parsed-host checks alone do not prove complete SSRF prevention, DNS safety or redirect safety.",
+        "Feasibility (research): Medium/high. Small text patches but regex/string semantics and two-parser composition dominate; do not assume java.net.URI is identical to a browser or each HTTP client."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/120ea0a51c63171e624ca55dbd7cae627d53a042",
+      "target": {
+        "family": "uri-authority-parsing",
+        "role": "catalog",
+        "case": "uri-authority-first-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/120ea0a51c63171e624ca55dbd7cae627d53a042",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 292 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "293",
+      "path": "examples/293-spring-framework-cve-2024-22259-uri-host-parsing-second-report",
+      "title": "CVE-2024-22259: URL parsing with host validation, second report",
+      "summary": "Spring Framework 6.1.4 → 6.1.5, fixed by 381f7903. Follow-up URL inputs preserve validator/consumer agreement. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.web.util.UriComponentsBuilder#fromUriString",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "uri-parsing"
+        ],
+        "defect": [
+          "security-boundary",
+          "parser-differential"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 9, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Unambiguous allowed URLs remain usable and earlier URI-family obligations still hold.",
+        "Proof boundary (research): A later report is not evidence that the earlier fix introduced it. Maintain independent report-specific and cumulative properties.",
+        "Feasibility (research): Medium/high. Small text patches but regex/string semantics and two-parser composition dominate; do not assume java.net.URI is identical to a browser or each HTTP client."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/381f790329a48b74c2a49fc1384dd68ca9153501",
+      "target": {
+        "family": "uri-authority-parsing",
+        "role": "catalog",
+        "case": "uri-authority-second-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/381f790329a48b74c2a49fc1384dd68ca9153501",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 293 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "294",
+      "path": "examples/294-spring-framework-cve-2024-22262-uri-host-parsing-third-report",
+      "title": "CVE-2024-22262: URL parsing with host validation, third report",
+      "summary": "Spring Framework 6.1.5 → 6.1.6, fixed by 494ed4e8. Third-report inputs satisfy the cumulative URL-authority contract. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.web.util.UriComponentsBuilder#fromUriString",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "uri-parsing"
+        ],
+        "defect": [
+          "security-boundary",
+          "parser-differential"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 10, priority P1): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): All earlier URI-family obligations hold; ordinary allowed URLs retain intended behavior.",
+        "Proof boundary (research): An initial release fixed for one URI report can still violate another property. Do not preassign a global-safe verdict to earlier fixes.",
+        "Feasibility (research): Medium/high. Small text patches but regex/string semantics and two-parser composition dominate; do not assume java.net.URI is identical to a browser or each HTTP client."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/494ed4e852e11907107e978f56f24f0b0aef8680",
+      "target": {
+        "family": "uri-authority-parsing",
+        "role": "catalog",
+        "case": "uri-authority-third-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/494ed4e852e11907107e978f56f24f0b0aef8680",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 294 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "295",
+      "path": "examples/295-spring-framework-cve-2024-38816-functional-resource-traversal-first-report",
+      "title": "CVE-2024-38816: Functional resource path traversal, first report",
+      "summary": "Spring Framework 6.1.12 → 6.1.13, fixed by d86bf8b2. Resolved resources stay within the configured filesystem root. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.web.servlet.function.PathResourceLookupFunction#apply",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "resource-serving"
+        ],
+        "defect": [
+          "security-boundary",
+          "path-traversal"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 11, priority P2): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Valid resources beneath the configured root remain servable under the chosen encoding policy.",
+        "Proof boundary (research): Lexical containment is narrower than real-filesystem containment. State symlink, races, OS and decoder assumptions; the described report is blocked by Tomcat/Jetty or the Spring Security firewall.",
+        "Feasibility (research): Later-phase. String path slice feasible; complete web/server/filesystem property requires multiple faithful models and environment."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/d86bf8b2056429edf5494456cffcb2b243331c49",
+      "target": {
+        "family": "functional-resource-traversal",
+        "role": "catalog",
+        "case": "resource-traversal-first-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/d86bf8b2056429edf5494456cffcb2b243331c49",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 295 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "296",
+      "path": "examples/296-spring-framework-cve-2024-38819-functional-resource-traversal-second-report",
+      "title": "CVE-2024-38819: Functional resource path traversal, second report",
+      "summary": "Spring Framework 6.1.13 → 6.1.14, fixed by 3bfbe30a and fb7890d7. Containment survives follow-up encodings and decoder composition. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.web.servlet.function.PathResourceLookupFunction#apply",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "resource-serving"
+        ],
+        "defect": [
+          "security-boundary",
+          "path-traversal"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 12, priority P2): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Valid in-root resources and earlier traversal-family obligations continue to work.",
+        "Proof boundary (research): Unlike CVE-2024-38816, Tomcat/Jetty can be affected; firewall remains a mitigation. Use the final release or a verified complete commit set, not just the first patch.",
+        "Feasibility (research): Later-phase follow-up. Multi-commit fix; pin 6.1.14 release rather than claiming the first patch alone fixes every case."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/3bfbe30a7814c9ea1556d40df9bd87ddb3ba372d",
+      "target": {
+        "family": "functional-resource-traversal",
+        "role": "catalog",
+        "case": "resource-traversal-second-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "java-semantics",
+          "source-provenance"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/3bfbe30a7814c9ea1556d40df9bd87ddb3ba372d",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 296 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "297",
+      "path": "examples/297-spring-boot-cve-2023-20883-welcome-page-cache-poisoning",
+      "title": "CVE-2023-20883: Welcome-page cache poisoning denial of service",
+      "summary": "Spring Boot 2.7.11 → 2.7.12, fixed by 418dd1ba. Unacceptable welcome-page requests do not create cacheable 404 responses. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping#getHandlerInternal",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "spring-boot",
+          "caching"
+        ],
+        "defect": [
+          "security-boundary",
+          "denial-of-service"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 13, priority P2): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): HTML-accepting requests still receive the welcome page; preserve precedence of custom root handlers.",
+        "Proof boundary (research): Local HTTP-status theorem is distinct from a composed cache-poisoning theorem. Pin proxy cache key, 404 caching, Vary handling and content negotiation.",
+        "Feasibility (research): Later composition target. Requires handler order, servlet request/response models and a small cache state machine."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/commit/418dd1ba5bdad79b55a043000164bfcbda2acd78",
+      "target": {
+        "family": "boot-welcome-cache",
+        "role": "catalog",
+        "case": "boot-welcome-cache-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-boot/commit/418dd1ba5bdad79b55a043000164bfcbda2acd78",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 297 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "298",
+      "path": "examples/298-spring-cloud-function-cve-2022-22963-routing-expression-spel",
+      "title": "CVE-2022-22963: Untrusted routing expressions use powerful SpEL context",
+      "summary": "Spring Cloud Function 3.2.2 → 3.2.3, fixed by 03db9bae. Untrusted header expressions cannot acquire prohibited evaluation capabilities. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Cloud Function",
+      "symbol": "org.springframework.cloud.function.context.config.RoutingFunction#route",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "expression-evaluation"
+        ],
+        "defect": [
+          "security-boundary",
+          "hidden-capability"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 14, priority P2): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Allowed header data-selection expressions and trusted application-property routing continue to work under their separate contracts.",
+        "Proof boundary (research): Proving context selection is a local trust-boundary lemma. RCE prevention additionally requires a sound SpEL/evaluator capability contract and truthful input-origin tracking.",
+        "Feasibility (research): Stretch target for capability contracts; parser, dynamic evaluation, reflection and callbacks substantially expand the trusted model.",
+        "Registry note: Use inert observations or a sandboxed local witness; no deployed external target is required."
+      ],
+      "source": "https://github.com/spring-cloud/spring-cloud-function/commit/03db9baee65ba0ddcd2c2cbc1f4ebc3646a6872e",
+      "target": {
+        "family": "cloud-expression-routing",
+        "role": "catalog",
+        "case": "cloud-routing-expression-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-cloud/spring-cloud-function/commit/03db9baee65ba0ddcd2c2cbc1f4ebc3646a6872e",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 298 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "299",
+      "path": "examples/299-spring-framework-cve-2022-22965-spring4shell-property-traversal",
+      "title": "CVE-2022-22965: Spring4Shell data-binding property traversal",
+      "summary": "Spring Framework 5.3.17 → 5.3.18, fixed by 002546b3. Binding cannot traverse prohibited runtime-metadata properties. A catalog entry: research metadata with its revisions checked upstream, no build, no tasks, no verdict.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.beans.CachedIntrospectionResults#<init>",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "data-binding"
+        ],
+        "defect": [
+          "security-boundary",
+          "hidden-capability"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: a catalog entry, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 15, priority P2): nothing was built, replayed or proved. Its capability notes are from verifier 4c279ba6 and are stale; the blockers in target.json are predictions.",
+        "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, each fix commit and its parent read from github.com, and each fix an ancestor of the fixed release and not of the vulnerable one. The release pair and the exact-fix pair are separate, and no execution pair is selected yet.",
+        "Benign behaviour to preserve (research): Ordinary application-bean binding and explicitly allowed Class name metadata retain intended behavior.",
+        "Proof boundary (research): A local descriptor-filter lemma does not establish arbitrary RCE freedom; JDK introspection, type assignability, object graph and deployment assumptions are central.",
+        "Feasibility (research): Stretch integration case; reflection and JavaBeans metadata are outside documented current interpreter support.",
+        "Registry note: JDK changes can activate previously latent library behavior; record environment changes separately from library-source introducers."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/002546b3e4b8d791ea6acccb81eb3168f51abb15",
+      "target": {
+        "family": "spring-data-binding",
+        "role": "catalog",
+        "case": "spring4shell-binding-cve",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "build-or-dependency",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "not run: a catalog entry, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-framework/commit/002546b3e4b8d791ea6acccb81eb3168f51abb15",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 299 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "300",
+      "path": "examples/300-spring-security-cve-2025-22234-bcrypt-length-check-breaks-timing-mitigation",
+      "title": "CVE-2025-22234: BCrypt maximum password length breaks authentication timing mitigation",
+      "summary": "Spring Security 6.3.8 → 6.3.9, repaired by c1aa99fd: long new encodings are refused, and matching an overlong candidate is allowed again. The vendor attributes the broken DaoAuthenticationProvider timing mitigation to the CVE-2025-22228 fix (287). Research only: the 6.3.9 policy is a proposed contract, there is no timing oracle, no task and no verdict.",
+      "origin": "real-world",
+      "system": "Spring Security",
+      "symbol": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw",
+      "approach": "B11",
+      "approaches": [
+        "B11",
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "password-hashing",
+          "authentication"
+        ],
+        "defect": [
+          "security-boundary"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "security"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "not run: research only, no timing oracle, no proof verdict",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Added on 2026-11-14 from the seed file (llm-dlc/loops/example-targets-inputs/seeds.json, additional_catalog_entries) as a research-only challenge linked to 287; it is not in the archived registry of 2026-11-04.",
+        "The policy chronology. 46f0dc6d (March 2025, CVE-2025-22228, 287) rejects passwords over 72 UTF-8 bytes when hashing and when matching. c1aa99fd (April 2025) rejects them only for new encodings: the guard becomes `!for_check && passwordb.length > 72`. 287's blanket rejection property never silently becomes this different policy.",
+        "Matching on 6.3.9 is 6.3.7's again. 287's driver and oracle were run by hand on the 6.3.9 JAR (spring-jcl 6.1.19) on Temurin 21.0.13 and 25.0.5. Every line equals 6.3.7's: the 9 overlong candidates that share a stored password's first 72 bytes authenticate. 287's oracle reports its claim failing, and its compare reports 6.3.8 → 6.3.9 preserved, with the 12 overlong probes as the only changes. A note, not evidence.",
+        "Only BCrypt.hashpw(byte[], String, boolean) differs between the 6.3.8 and 6.3.9 class files. DaoAuthenticationProvider, its abstract parent, DelegatingPasswordEncoder and PasswordEncoderFactories are unchanged from 6.3.7 to 6.3.9 (sources.lock.json). Whatever timing changed, changed through the guard.",
+        "A reading of the source, not run. With an overlong candidate on 6.3.8, matches throws before hashing. So the user-not-found path (mitigateAgainstTimingAttack's dummy match) does no hashing and ends in IllegalArgumentException. A known user whose stored hash is not bcrypt is hashed and ends in BadCredentialsException. There the two paths differ in time and in the exception itself.",
+        "Output or attempted-call equality establishes no timing noninterference, and a timing or cost model is outside this wave (llm-dlc/loops/example-targets.md, Deferred). An output difference like the one above can refute a scoped functional claim, but that is not a timing result.",
+        "Revisions checked against upstream on 2026-11-14: the tags 6.3.8 and 6.3.9 resolved, c1aa99fd and its parent eb013944 read from github.com, and c1aa99fd an ancestor of 6.3.9 and not of 6.3.8.",
+        "The repair's legacy test hash for 73 characters is the hash of the first 72 bytes: pyca bcrypt 5.0.0 accepts the 72-byte prefix against it, and refuses the 73-byte password itself."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/commit/c1aa99fdd2113a232986e9c3a44673ae752de840",
+      "target": {
+        "family": "bcrypt-input-limit",
+        "role": "catalog",
+        "case": "bcrypt-timing-followup-catalog",
+        "tasks": [],
+        "readiness": null,
+        "taskReadiness": {},
+        "expected": {},
+        "claims": {},
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics",
+          "oracle-ambiguity"
+        ],
+        "historical": {
+          "verdictLabel": "not run: research only, no timing oracle, no proof verdict",
+          "source": "https://github.com/spring-projects/spring-security/commit/c1aa99fdd2113a232986e9c3a44673ae752de840",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 300 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "305",
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags",
+      "title": "spring-boot@e8de5a6d: the Outcome enum keeps WebMvcTags.outcome's tags (positive scaffold)",
+      "summary": "Boot's 2019 change that moves HTTP outcome classification into an `Outcome` enum and rewrites `WebMvcTags.outcome(HttpServletResponse)` to `Outcome.forStatus(status).asTag()`. The positive of the metric-label family: both revisions should give the same tag key and value for a null response and every int status, and each revision's tag takes one of six values. A partial scaffold: source-locked, claims frozen, oracle, driver, probes and mutant written; not yet built or run through the pipeline.",
+      "origin": "real-world",
+      "system": "Spring Boot Actuator",
+      "symbol": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome",
+      "approach": "B9",
+      "approaches": [
+        "B9",
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot",
+          "open-source-libraries"
+        ],
+        "defect": [
+          "off-by-one",
+          "special-values"
+        ],
+        "technique": []
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "scaffold: no verdict recorded",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A positive scaffold of llm-dlc/loops/example-targets.md (positive stream): an expected outcome for named claims on one upstream change, never a statement that the release is secure. Readiness and proof outcomes come from receipts, not from this file.",
+        "Source lock checked upstream on 2026-11-14 (sources.lock.json): e8de5a6d's only parent is 9b8decf9.",
+        "The exact-commit build is predicted irreproducible: both commits pin SNAPSHOT and milestone dependencies (Spring Data Moore-BUILD-SNAPSHOT, Spring Framework 5.2.0.RC2 and 12 more). No Central artifact has before's WebMvcTags; 2.2.0.RELEASE has after's, and 2.1.8.RELEASE's outcome() is different code (99 and 600 classify differently).",
+        "The old path calls Spring Framework's HttpStatus.Series.resolve(int), which divides by 100, truncating towards zero: so -99..99 give no series (UNKNOWN), as Outcome.forStatus does. That agreement is the preservation task's hypothesis, not a result.",
+        "WebMvcTags' static initializer compiles two regular expressions (TRAILING_SLASH_PATTERN, MULTIPLE_SLASH_PATTERN), and the response is a servlet interface: both are where a native proof is predicted to stop, until a probe reaches them.",
+        "The packet (2026-11-14): claims/outcome-preservation.json (a null response or a carrier whose getStatus() returns any int; the tag's key and value by value, never identity; unwind 16, which leaves the domain unbounded); claims/finite-outcome.json (key outcome and one of six values, nothing thrown; shared by finite-outcome-before and finite-outcome-after); replay/probes.json (27: the brief's 15, negative statuses, and codes past 599); controls/oracle.py (the status class from the decimal spelling, RFC 9110 section 15); replay/driver (a Proxy carrier of HttpServletResponse whose getStatus() returns the probe and whose other methods throw UnsupportedOperationException); controls/status-200.patch (the mutant, on after's Outcome.java, sha256 12099f89...).",
+        "A hand replay on 2026-11-14, a note and not evidence, since neither side is the commit's build output: the driver compiled with javac 21.0.13 --release 21 (driver.jar sha256 2366530c...), run on Temurin 21.0.13 and 25.0.5 against Central's micrometer-core 1.2.0, javax.servlet-api 4.0.1, and spring-web, spring-core, spring-jcl and spring-webmvc 5.2.0.RELEASE (whose HttpStatus.java is blob 466ad8dd, as at 5.2.0.RC2, the commits' pin; sha256s in records/outcome-gaps.json). Three sides: before's WebMvcTags.java compiled by javac 1.8.0_512 -source 8 -target 8 into a copy of spring-boot-actuator-2.2.0.RELEASE.jar (sha256 847da899...); after's WebMvcTags.java and Outcome.java compiled the same way (e33149a3...); and the published 2.2.0.RELEASE JAR itself (ba12a0fa...). All three agree with the oracle and with each other on all 27 probes, identically on both JDKs; every non-null probe called getStatus() once. The mutant, compiled into copies of the after-from-source JAR (5f36f64c...) and of the published JAR (1f52c8f0...), differs at 200 only (INFORMATIONAL where the statement says SUCCESS).",
+        "A static jvmcontract gaps scan (records/outcome-gaps.json, a note, with a binary one lib/src commit old) finds two gaps on both sides, each with no approximation: Pattern.compile in WebMvcTags.<clinit> and Objects.requireNonNull in micrometer 1.2.0's ImmutableTag.<init>. Neither is in the changed code. Every strict attempt of this packet is therefore predicted to be refused before it reaches the classification; with the library-interface parameter (a predicted input-construction refusal) these are predicted blockers in target.json, not observations.",
+        "The 200-boundary mutant satisfies the finite-outcome property by design (200 still gets one of the six values); its failing contract is the preservation claim on the pair (before, mutant) and the oracle's range statement. W1's planner (workflow commit wqsyopql, run from a temporary copy) plans all four tasks with these claim files.",
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/status-200.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `after`, which no task prepared."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+      "target": {
+        "family": "boot-method-metrics",
+        "role": "positive",
+        "case": "boot-outcome-enum-positive",
+        "tasks": [
+          "replay",
+          "preservation",
+          "finite-outcome-before",
+          "finite-outcome-after",
+          "mutant-replay",
+          "mutant-preservation"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "preservation": "partial",
+          "finite-outcome-before": "partial",
+          "finite-outcome-after": "partial",
+          "mutant-replay": "partial",
+          "mutant-preservation": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "preservation": "established",
+          "finite-outcome-before": "established",
+          "finite-outcome-after": "established",
+          "mutant-replay": null,
+          "mutant-preservation": "refuted"
+        },
+        "claims": {
+          "preservation": null,
+          "finite-outcome-before": null,
+          "finite-outcome-after": null,
+          "mutant-preservation": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "build-or-dependency",
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "scaffold: no verdict recorded",
+          "source": "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 305 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "306",
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith",
+      "title": "spring-framework@db9a10bf: simpleMatch's prefix check as startsWith (positive scaffold)",
+      "summary": "Framework's 2021 change of one expression in `PatternMatchUtils.simpleMatch(String,String)`, from `pattern.substring(0, i).equals(str.substring(0, i))` to `pattern.startsWith(str.substring(0, i))`. The positive of the binder decision-string family: both revisions should return the same boolean and exceptions over a bounded UTF-16 domain. Maven Central's spring-core 5.3.6 and 5.3.7 carry exactly the parent's and child's source. A scaffold: source-locked, tasks named, not yet run.",
+      "origin": "real-world",
+      "system": "Spring Framework (spring-core)",
+      "symbol": "org.springframework.util.PatternMatchUtils#simpleMatch",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "text-encoding"
+        ],
+        "defect": [
+          "request-binding",
+          "dropped-case"
+        ],
+        "technique": []
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "scaffold: no verdict recorded",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A positive scaffold of llm-dlc/loops/example-targets.md (positive stream): an expected outcome for named claims on one upstream change, never a statement that the release is secure. Readiness and proof outcomes come from receipts, not from this file.",
+        "Source lock checked upstream on 2026-11-14 (sources.lock.json): db9a10bf's only parent is 27bfcbbc. PatternMatchUtils.java at 27bfcbbc and v5.3.6, and in spring-core-5.3.6-sources.jar, is one blob (04301284); at db9a10bf and v5.3.7, and in spring-core-5.3.7-sources.jar, another (67871015). So the release pair 5.3.6 -> 5.3.7 runs the commits' original method bytecode from Maven Central, with no upstream build.",
+        "simpleMatch(String,String) calls only String methods and itself, and the class has no static initializer.",
+        "The native checker of application-core takes a String parameter as bounded UTF-16 with content and never null, and refuses null: the claim's null pattern and string are part of the declared domain, so a refusal there is reported, not dropped.",
+        "The packet (2026-11-14): claims/simple-match-preservation.json (each String null or at most 6 UTF-16 code units of any value, maxArrayLength 6, unwind 16); replay/probes.json (40 probes: the brief's nine, empty and no-star patterns, leading, internal, trailing and repeated stars, a prefix mismatch, non-ASCII, a surrogate pair, half a pair and isolated surrogates); controls/oracle.py (a dynamic-programming glob decision over code units, unlike either revision's search and recursion); replay/driver (one JSON line per probe, arguments as hex code units so surrogates arrive exactly); controls/drop-prefix.patch (the mutant, on release-after).",
+        "A hand replay on 2026-11-14, a note and not evidence: the driver compiled with javac 25.0.5 --release 21 (driver.jar sha256 bd9de983...) and run with the sidecar's pinned JARs on Temurin 21.0.13 and 25.0.5. Both releases agree with the oracle on all 40 probes and with each other, identically on both JDKs (22 true, 18 false). The mutant (the patched class compiled --release 8 into a copy of spring-core-5.3.7.jar, sha256 c0489de1...) disagrees on 6: abc* against xbcdef and abd, é* against ex and Éx, ABC* against abcdef, and \\ud800* against \\udc00x, all true where the statement says false.",
+        "A static jvmcontract gaps scan (records/simple-match-gaps.json, a note, with a binary one lib/src commit old) lists seven JDK String methods both revisions reach that the native checker approximates (substring, endsWith and indexOf), so the strict preservation attempt is predicted to be refused by name; the null cases are a second predicted refusal. Both are predicted blockers in target.json, not observations.",
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/drop-prefix.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `release-after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `release-after`, which no task prepared."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
+      "target": {
+        "family": "spring-data-binding",
+        "role": "positive",
+        "case": "pattern-match-prefix-positive",
+        "tasks": [
+          "replay",
+          "preservation",
+          "mutant-replay",
+          "mutant-preservation"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "preservation": "partial",
+          "mutant-replay": "partial",
+          "mutant-preservation": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "preservation": "established",
+          "mutant-replay": null,
+          "mutant-preservation": "refuted"
+        },
+        "claims": {
+          "preservation": null,
+          "mutant-preservation": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "scaffold: no verdict recorded",
+          "source": "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 306 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
+    },
+    {
+      "id": "307",
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8",
+      "title": "spring-security@fe9e4549: BCrypt.hashpw with StandardCharsets.UTF_8 (positive scaffold)",
+      "summary": "Security's 2019 change of `BCrypt.hashpw(String,String)` from `password.getBytes(\"UTF-8\")` with an AssertionError wrapper to `password.getBytes(StandardCharsets.UTF_8)`. The positive of the password-bytes family: on fixed salts from upstream's tests and a frozen password domain (null, malformed surrogates and invalid salts included), both revisions should return the same hash or exception class. A partial scaffold: source-locked, claim frozen, oracle, driver, probes and mutant written; not yet built or run through the pipeline.",
+      "origin": "real-world",
+      "system": "Spring Security (spring-security-crypto)",
+      "symbol": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "authentication",
+          "text-encoding",
+          "open-source-libraries"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": []
+      },
+      "categories": [
+        "functional",
+        "security"
+      ],
+      "severity": "none",
+      "changeKind": "cleanup",
+      "verdict": null,
+      "verdictLabel": "scaffold: no verdict recorded",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A positive scaffold of llm-dlc/loops/example-targets.md (positive stream): an expected outcome for named claims on one upstream change, never a statement that the release is secure. Readiness and proof outcomes come from receipts, not from this file.",
+        "Source lock checked upstream on 2026-11-14 (sources.lock.json): fe9e4549's only parent is fb39d9c2.",
+        "No Central artifact has either side's exact BCrypt.java: before's is 5.2.0.M4's (repo.spring.io only); 5.2.0.RELEASE drops an unused import and a `final` on private encipher. The upstream build needs services.gradle.org and repo.spring.io, allowed by decision 1's extension (2026-11-14), and pins no SNAPSHOT; but its build plugin spring-build-conventions 0.0.23.RELEASE is on no anonymous repository (repo.spring.io answers 401, plugins.gradle.org redirects to Central, which has 404; HEAD requests, 2026-11-14), so the build is predicted to stop at its buildscript.",
+        "This pair has no length restriction of its own: CVE-2025-22228's 72-byte guard came in 2025. BCrypt's key schedule uses at most 72 password bytes on both revisions, which the 71, 72 and 73-byte probes observe without importing the later policy.",
+        "The packet (2026-11-14): claims/hashpw-preservation.json (a null password or one of at most 80 UTF-16 code units of any values; seven fixed salts in an assume expression; the returned String or the exception class; maxArrayLength 80, unwind 513, which completes every loop on this domain); replay/probes.json (45 probes; the salts and three known answers from upstream's BCryptTests, blob dc242a49 at both commits); controls/oracle.py (UTF-8 encoded independently, a result decided by the salt and the first 72 bytes of the cyclic key with its NUL terminator, distinct keys assumed to give distinct results; no cipher); replay/driver (arguments as UTF-16 code units in hex); controls/us-ascii.patch (the mutant, on after's BCrypt.java, sha256 a2b4e97f...).",
+        "The domain decisions: a null password is in, NullPointerException even with a null salt (the conversion comes first); malformed surrogates are in, encoded as '?' as String.getBytes specifies for both overloads; four invalid salts from upstream's tests are in, IllegalArgumentException. The exception is observed by class only: since JDK 14 a NullPointerException's message names the method called on null, getBytes(String) at before and getBytes(Charset) at after, so the messages differ by the patch itself. One quirk is in the expectations: under the '$2$05$' salt (no minor revision, so no NUL terminator) an empty password is an empty key, and both revisions throw ArrayIndexOutOfBoundsException.",
+        "A hand replay on 2026-11-14, a note and not evidence, since no side is the commit's build output: each commit's BCrypt.java compiled alone by javac 1.8.0_512 -source 8 -target 8 (before.jar sha256 2dd39ba5..., after.jar c078d233...), Central's spring-security-crypto-5.2.0.RELEASE.jar (3d0017d9..., sha1 checked against Central), and the driver by javac 21.0.13 --release 21 (driver.jar 8e8dac4d...), run on Temurin 21.0.13 and 25.0.5. Before, after and the published class agree with the oracle and with each other on all 45 probes, byte-identically on both JDKs; the three upstream known answers hold. The mutant (mutant.jar c3c8688d..., and in a copy of the published JAR f565d289...) breaks the oracle's key rules nine times and differs from before on 17 probes, all with non-ASCII passwords, the one-character 'é' among them.",
+        "Bytecode, by javap on the hand-built classes: before and after differ only in hashpw(String,String), apart from constant-pool indices (which turn some ldc_w in <clinit> into ldc); the published 5.2.0.RELEASE class differs from after's only in encipher's ACC_FINAL. That is what a checked summary of the unchanged callee hashpw(byte[],String) would be bound to.",
+        "A static jvmcontract gaps scan (records/hashpw-gaps.json, a note, with a binary one lib/src commit old) refuses the changed conversion itself on both sides: String.getBytes(String), String.getBytes(Charset), and the read of StandardCharsets.UTF_8. In the callee it also refuses Arrays.copyOf(byte[],int), and finds Integer.parseInt and StringBuilder.charAt with no approximation. Unlike 305, the strict attempt is predicted to stop at the change, not around it. W1's planner (workflow commit wqsyopql, run from a temporary copy) plans both tasks with this claim file.",
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/us-ascii.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `after`, which no task prepared."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+      "target": {
+        "family": "bcrypt-input-limit",
+        "role": "positive",
+        "case": "bcrypt-standard-charset-positive",
+        "tasks": [
+          "replay",
+          "preservation",
+          "mutant-replay",
+          "mutant-preservation"
+        ],
+        "readiness": null,
+        "taskReadiness": {
+          "replay": "partial",
+          "preservation": "partial",
+          "mutant-replay": "partial",
+          "mutant-preservation": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "preservation": "established",
+          "mutant-replay": null,
+          "mutant-preservation": "refuted"
+        },
+        "claims": {
+          "preservation": null,
+          "mutant-preservation": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [
+          "build-or-dependency",
+          "input-construction",
+          "java-semantics"
+        ],
+        "historical": {
+          "verdictLabel": "scaffold: no verdict recorded",
+          "source": "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 307 TASK",
+        "unsupported": "readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the merge (workflow_discovery.READINESS_IN_INDEX)"
+      }
     }
   ]
 }
