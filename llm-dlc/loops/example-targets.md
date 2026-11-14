@@ -788,6 +788,31 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
   - **Next**: request 6, the companions: link 305–307 to 285–287, add the `external-target` tag to 105 and 305–307,
     and decide between `data-binding` and `request-binding` for 306.
+- 2026-11-14, **Phase 5 step 1, request 6 done: the companions linked, the tags fixed.**
+  - **Reproducer**: a new test, `test_packets.py`'s `CompanionTest`, failed 10 times. It checks three things:
+    - each family's negative and positive name each other in `identity.companions`, and the positive's `matching`
+      names its negative's number;
+    - `external-target` tags exactly the examples that have a `target.json`;
+    - each positive carries its family's domain tag (`metrics`, `data-binding`, `password-hashing`), and no packet
+      carries `request-binding`.
+  - **The change**:
+    - 305, 306 and 307's sidecars name 285, 286 and 287 as their companions. Each `matching` names that number beside
+      the CVE it already cited. 285–287 already named their positives.
+    - Tags: 105 gains `external-target`; 305 gains `metrics` and `external-target`; 307 gains `password-hashing` and
+      `external-target`.
+    - 306's `request-binding` became `data-binding`. `request-binding` is a defect tag for a handler parameter that
+      can't bind, and `PatternMatchUtils.simpleMatch` is not one. `data-binding` is the domain of `DataBinder`'s field
+      checks, which call it, and the tag 286, 288 and 299 use.
+    - Each of the four `example.json` files has a note saying what changed and why.
+    - `build.py --index-only` regenerated the router. `find.py --tag external-target --limit 50` now finds all 20
+      sidecar examples.
+  - **Left as it was**: 307's `authentication` tag, whose description is about tokens (JWT), fits it poorly.
+    `password-hashing` now carries the family. 306 doesn't link 288 or 299, which are 286's companions and not its own.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (192, three new),
+    `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
+  - **Next**: request 7, `PreparedTarget.workdir: Optional[str] = None` and `blocker: Optional[Mapping] = None` in
+    `interfaces.py`, with `run_controls` and ingestion reading them instead of `route.py`'s layout and
+    `source.blocker`.
 - Status: working
 
 ## Loop settings

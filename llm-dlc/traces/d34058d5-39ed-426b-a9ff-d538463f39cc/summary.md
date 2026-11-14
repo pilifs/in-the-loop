@@ -449,6 +449,12 @@ change `ymrtzmlsytuy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-trac
 
 Request 5 of the brief's merge-time interface requests. workflow_discovery.READINESS_IN_INDEX is now True. Phase 0's test_route.py IndexAndFindTest expects the stub sidecar's readiness to be 'catalogued', and that find.py --readiness catalogued finds it. test_workflow.py's two tests that assumed the flag was off now treat projected readiness as the default and keep the hold as the flag-off case. build.py --index-only regenerated examples/index.json; only each target's readiness changed, and the 'unsupported' hold line went.
 
+### example-targets Phase 5 step 1: 305-307 name 285-287 as companions, and the sidecar examples carry external-target and their family's domain tag
+
+change `krnmkrsmnqpr` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+Request 6 of Phase 5 step 1 in llm-dlc/loops/example-targets.md (the positive stream's request 3). Each family's CVE packet already named its positive, but the positives 305, 306 and 307 named no companion. Their target.json identities now name 285, 286 and 287, and each matching text gives that number. Tags: 105 and 305-307 gain external-target, which until now covered only 285-300 though all four have a sidecar. 305 gains metrics and 307 password-hashing, their families' domain tags. 306's request-binding, a defect tag for handler parameters that can't bind, becomes data-binding, the domain of DataBinder's field checks, which call PatternMatchUtils. Each example.json has a note, and build.py --index-only regenerated examples/README.md and index.json.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz) has every step in between: reasoning, tool calls and their results.

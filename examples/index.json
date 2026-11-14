@@ -4343,7 +4343,8 @@
         ],
         "technique": [
           "pull-request-review",
-          "confined-change"
+          "confined-change",
+          "external-target"
         ]
       },
       "categories": [
@@ -4362,7 +4363,8 @@
         "Migrated to the external-target route on 2026-11-14 by the positive stream of llm-dlc/loops/example-targets.md (its P5): target.json, sources.lock.json, claims/, replay/, controls/ and records/ were added; README.md, the summary and the verdict label are the historical report of 2026-11-01 and stay as written. A receipt of the new route goes beside them, never in their place.",
         "Revisions resolved afresh from github.com: before e7c172d2 (the only parent of the squash merge), after 8cfc04e8 (the merge), and the pull request's head 79aa4643, whose ArithmeticUtils.java is after's blob. Maven Central's commons-numbers-core 1.3 carries before's file (blob 153b3202, in its sources JAR too) and the same bytecode as that file compiled alone; no release carries after's, so the route is the upstream Maven build of each commit (runtime's preparation, not yet run).",
         "The selected A5 obligation is claims/pow-minus-two.json: for k == -2 and 0 <= e <= 31, pow(int,int) returns (-2)^e. Native strict, expected established on after and refuted on before at (-2, 31), the witness the replay reproduces. It reaches no gap: jvmcontract gaps lists only the StringBuilder calls of the e < 0 message (records/pow-gaps.json), which its assume excludes. The report's confined-change row is predicted refused under strict for exactly those gaps.",
-        "Hand replay on 2026-11-14 (a note, not evidence): ArithmeticUtils.java of each commit compiled alone with JDK 11's javac --release 8, plus Central's 1.3 JAR, each with the driver (driver.jar sha256 315ecf00…) in its own JVM on JDK 21 and 25, over the 75 probes. controls/oracle.py: after meets the Javadoc's contract on all 75; before and 1.3 give byte-identical output and deviate at (-2, 31) alone (ArithmeticException); the property holds on all 32 points at after and fails at e = 31 alone at before. Checked with the wrong revision's output and a truncated file, the oracle fails, as it should."
+        "Hand replay on 2026-11-14 (a note, not evidence): ArithmeticUtils.java of each commit compiled alone with JDK 11's javac --release 8, plus Central's 1.3 JAR, each with the driver (driver.jar sha256 315ecf00…) in its own JVM on JDK 21 and 25, over the 75 probes. controls/oracle.py: after meets the Javadoc's contract on all 75; before and 1.3 give byte-identical output and deviate at (-2, 31) alone (ArithmeticException); the property holds on all 32 points at after and fails at e = 31 alone at before. Checked with the wrong revision's output and a truncated file, the oracle fails, as it should.",
+        "Tag (2026-11-14, example-targets Phase 5): external-target, as every example with a sidecar is, so find.py --tag external-target reaches the calibration with the packets."
       ],
       "source": "https://github.com/apache/commons-numbers/pull/223",
       "target": {
@@ -8365,13 +8367,16 @@
       "tags": {
         "domain": [
           "spring-boot",
-          "open-source-libraries"
+          "open-source-libraries",
+          "metrics"
         ],
         "defect": [
           "off-by-one",
           "special-values"
         ],
-        "technique": []
+        "technique": [
+          "external-target"
+        ]
       },
       "categories": [
         "functional"
@@ -8393,7 +8398,8 @@
         "A hand replay on 2026-11-14, a note and not evidence, since neither side is the commit's build output: the driver compiled with javac 21.0.13 --release 21 (driver.jar sha256 2366530c...), run on Temurin 21.0.13 and 25.0.5 against Central's micrometer-core 1.2.0, javax.servlet-api 4.0.1, and spring-web, spring-core, spring-jcl and spring-webmvc 5.2.0.RELEASE (whose HttpStatus.java is blob 466ad8dd, as at 5.2.0.RC2, the commits' pin; sha256s in records/outcome-gaps.json). Three sides: before's WebMvcTags.java compiled by javac 1.8.0_512 -source 8 -target 8 into a copy of spring-boot-actuator-2.2.0.RELEASE.jar (sha256 847da899...); after's WebMvcTags.java and Outcome.java compiled the same way (e33149a3...); and the published 2.2.0.RELEASE JAR itself (ba12a0fa...). All three agree with the oracle and with each other on all 27 probes, identically on both JDKs; every non-null probe called getStatus() once. The mutant, compiled into copies of the after-from-source JAR (5f36f64c...) and of the published JAR (1f52c8f0...), differs at 200 only (INFORMATIONAL where the statement says SUCCESS).",
         "A static jvmcontract gaps scan (records/outcome-gaps.json, a note, with a binary one lib/src commit old) finds two gaps on both sides, each with no approximation: Pattern.compile in WebMvcTags.<clinit> and Objects.requireNonNull in micrometer 1.2.0's ImmutableTag.<init>. Neither is in the changed code. Every strict attempt of this packet is therefore predicted to be refused before it reaches the classification; with the library-interface parameter (a predicted input-construction refusal) these are predicted blockers in target.json, not observations.",
         "The 200-boundary mutant satisfies the finite-outcome property by design (200 still gets one of the six values); its failing contract is the preservation claim on the pair (before, mutant) and the oracle's range statement. W1's planner (workflow commit wqsyopql, run from a temporary copy) plans all four tasks with these claim files.",
-        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/status-200.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `after`, which no task prepared."
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/status-200.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `after`, which no task prepared.",
+        "Companions and tags (2026-11-14, example-targets Phase 5): target.json's identity names 285, this family's CVE packet, as its companion, as 285 names this one; the example is tagged external-target, as every example with a sidecar is, and metrics, its family's domain tag."
       ],
       "source": "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
       "target": {
@@ -8465,13 +8471,15 @@
       "tags": {
         "domain": [
           "open-source-libraries",
-          "text-encoding"
+          "text-encoding",
+          "data-binding"
         ],
         "defect": [
-          "request-binding",
           "dropped-case"
         ],
-        "technique": []
+        "technique": [
+          "external-target"
+        ]
       },
       "categories": [
         "functional"
@@ -8491,7 +8499,8 @@
         "The packet (2026-11-14): claims/simple-match-preservation.json (each String null or at most 6 UTF-16 code units of any value, maxArrayLength 6, unwind 16); replay/probes.json (40 probes: the brief's nine, empty and no-star patterns, leading, internal, trailing and repeated stars, a prefix mismatch, non-ASCII, a surrogate pair, half a pair and isolated surrogates); controls/oracle.py (a dynamic-programming glob decision over code units, unlike either revision's search and recursion); replay/driver (one JSON line per probe, arguments as hex code units so surrogates arrive exactly); controls/drop-prefix.patch (the mutant, on release-after).",
         "A hand replay on 2026-11-14, a note and not evidence: the driver compiled with javac 25.0.5 --release 21 (driver.jar sha256 bd9de983...) and run with the sidecar's pinned JARs on Temurin 21.0.13 and 25.0.5. Both releases agree with the oracle on all 40 probes and with each other, identically on both JDKs (22 true, 18 false). The mutant (the patched class compiled --release 8 into a copy of spring-core-5.3.7.jar, sha256 c0489de1...) disagrees on 6: abc* against xbcdef and abd, é* against ex and Éx, ABC* against abcdef, and \\ud800* against \\udc00x, all true where the statement says false.",
         "A static jvmcontract gaps scan (records/simple-match-gaps.json, a note, with a binary one lib/src commit old) lists seven JDK String methods both revisions reach that the native checker approximates (substring, endsWith and indexOf), so the strict preservation attempt is predicted to be refused by name; the null cases are a second predicted refusal. Both are predicted blockers in target.json, not observations.",
-        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/drop-prefix.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `release-after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `release-after`, which no task prepared."
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/drop-prefix.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `release-after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `release-after`, which no task prepared.",
+        "Companions and tags (2026-11-14, example-targets Phase 5): target.json's identity names 286, this family's CVE packet, as its companion, as 286 names this one; the example is tagged external-target, as every example with a sidecar is, and data-binding, its family's domain tag. It was tagged request-binding, a defect tag for a handler parameter that can't bind, which PatternMatchUtils.simpleMatch is not; data-binding is the domain of DataBinder's field checks, which call it."
       ],
       "source": "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
       "target": {
@@ -8555,12 +8564,15 @@
         "domain": [
           "authentication",
           "text-encoding",
-          "open-source-libraries"
+          "open-source-libraries",
+          "password-hashing"
         ],
         "defect": [
           "exceptions"
         ],
-        "technique": []
+        "technique": [
+          "external-target"
+        ]
       },
       "categories": [
         "functional",
@@ -8583,7 +8595,8 @@
         "A hand replay on 2026-11-14, a note and not evidence, since no side is the commit's build output: each commit's BCrypt.java compiled alone by javac 1.8.0_512 -source 8 -target 8 (before.jar sha256 2dd39ba5..., after.jar c078d233...), Central's spring-security-crypto-5.2.0.RELEASE.jar (3d0017d9..., sha1 checked against Central), and the driver by javac 21.0.13 --release 21 (driver.jar 8e8dac4d...), run on Temurin 21.0.13 and 25.0.5. Before, after and the published class agree with the oracle and with each other on all 45 probes, byte-identically on both JDKs; the three upstream known answers hold. The mutant (mutant.jar c3c8688d..., and in a copy of the published JAR f565d289...) breaks the oracle's key rules nine times and differs from before on 17 probes, all with non-ASCII passwords, the one-character 'é' among them.",
         "Bytecode, by javap on the hand-built classes: before and after differ only in hashpw(String,String), apart from constant-pool indices (which turn some ldc_w in <clinit> into ldc); the published 5.2.0.RELEASE class differs from after's only in encipher's ACC_FINAL. That is what a checked summary of the unchanged callee hashpw(byte[],String) would be bound to.",
         "A static jvmcontract gaps scan (records/hashpw-gaps.json, a note, with a binary one lib/src commit old) refuses the changed conversion itself on both sides: String.getBytes(String), String.getBytes(Charset), and the read of StandardCharsets.UTF_8. In the callee it also refuses Arrays.copyOf(byte[],int), and finds Integer.parseInt and StringBuilder.charAt with no approximation. Unlike 305, the strict attempt is predicted to stop at the change, not around it. W1's planner (workflow commit wqsyopql, run from a temporary copy) plans both tasks with this claim file.",
-        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/us-ascii.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `after`, which no task prepared."
+        "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/us-ascii.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `after`, which no task prepared.",
+        "Companions and tags (2026-11-14, example-targets Phase 5): target.json's identity names 287, this family's CVE packet, as its companion, as 287 names this one; the example is tagged external-target, as every example with a sidecar is, and password-hashing, its family's domain tag."
       ],
       "source": "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
       "target": {

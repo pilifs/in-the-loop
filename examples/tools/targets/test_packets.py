@@ -124,5 +124,42 @@ class RouterTest(unittest.TestCase):
                 self.assertNotIn("unsupported", t)
 
 
+class CompanionTest(unittest.TestCase):
+    """Request 6: each family's negative and positive name each other as companions, every sidecar example carries
+    the external-target tag (and only those), and a positive carries its family's domain tag."""
+
+    FAMILIES = {"285": ("305", "metrics"), "286": ("306", "data-binding"), "287": ("307", "password-hashing")}
+
+    def test_negative_and_positive_name_each_other(self):
+        for negative, (positive, _) in self.FAMILIES.items():
+            with self.subTest(negative):
+                _, _, n = packet(negative)
+                _, _, p = packet(positive)
+                self.assertEqual(n["identity"]["family"], p["identity"]["family"])
+                self.assertIn(positive, n["identity"].get("companions", []))
+                self.assertIn(negative, p["identity"].get("companions", []))
+                self.assertIn(negative, p["identity"]["matching"])
+
+    def test_external_target_tags_exactly_the_sidecar_examples(self):
+        for folder in sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and p.name[:3].isdigit()):
+            with self.subTest(folder.name):
+                tags = json.loads((folder / "example.json").read_text())["tags"]
+                self.assertEqual("external-target" in tags, (folder / "target.json").exists())
+
+    def test_a_positive_carries_its_familys_domain_tag(self):
+        vocabulary = json.loads((EXAMPLES / "tags.json").read_text())
+        for negative, (positive, domain) in self.FAMILIES.items():
+            with self.subTest(positive):
+                self.assertIn(domain, vocabulary["domain"])
+                for number in (negative, positive):
+                    _, example, _ = packet(number)
+                    self.assertIn(domain, example["tags"])
+                    for tag in example["tags"]:
+                        self.assertTrue(tag in vocabulary["domain"] or tag in vocabulary["defect"]
+                                        or tag in vocabulary.get("technique", {}), tag)
+                    # request-binding is a defect of handler parameters, not of a matching helper
+                    self.assertNotIn("request-binding", example["tags"])
+
+
 if __name__ == "__main__":
     unittest.main()

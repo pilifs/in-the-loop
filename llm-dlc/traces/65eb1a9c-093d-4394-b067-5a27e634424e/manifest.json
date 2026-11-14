@@ -12,48 +12,48 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T17:31:02.694Z",
-  "ended": "2026-11-14T20:34:24.445Z",
-  "duration_seconds": 11002,
+  "ended": "2026-11-14T20:34:54.564Z",
+  "duration_seconds": 11032,
   "stats": {
     "turns": 2,
-    "api_calls": 14,
-    "tool_calls": 14,
+    "api_calls": 19,
+    "tool_calls": 18,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 65542,
+    "peak_context_tokens": 74420,
     "usage": {
-      "input_tokens": 28,
-      "output_tokens": 5713,
-      "cache_read_input_tokens": 687882,
-      "cache_creation_input_tokens": 74924
+      "input_tokens": 38,
+      "output_tokens": 7953,
+      "cache_read_input_tokens": 1037701,
+      "cache_creation_input_tokens": 83802
     }
   },
   "tools": {
-    "Bash": 14
+    "Bash": 18
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-14T17:31:02.694Z",
-      "ended": "2026-11-14T20:34:24.445Z",
+      "ended": "2026-11-14T20:34:54.564Z",
       "turns": 2,
-      "api_calls": 14,
+      "api_calls": 19,
       "usage": {
-        "input_tokens": 28,
-        "output_tokens": 5713,
-        "cache_read_input_tokens": 687882,
-        "cache_creation_input_tokens": 74924
+        "input_tokens": 38,
+        "output_tokens": 7953,
+        "cache_read_input_tokens": 1037701,
+        "cache_creation_input_tokens": 83802
       },
-      "peak_context_tokens": 65542
+      "peak_context_tokens": 74420
     }
   ],
   "log": {
-    "sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b",
-    "bytes": 568569,
-    "lines": 136,
-    "gzip_bytes": 130075,
-    "path": "llm-dlc/traces/65eb1a9c-093d-4394-b067-5a27e634424e/logs/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz"
+    "sha256": "eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488",
+    "bytes": 631574,
+    "lines": 168,
+    "gzip_bytes": 139246,
+    "path": "llm-dlc/traces/65eb1a9c-093d-4394-b067-5a27e634424e/logs/eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -192,6 +192,14 @@
       "summary": "example-targets Phase 5 step 1: the index carries each target's readiness, so find.py --readiness reaches 288-300 (catalogued) and the packets (partial)",
       "body": "Request 5 of the brief's merge-time interface requests. workflow_discovery.READINESS_IN_INDEX is now True. Phase 0's test_route.py IndexAndFindTest expects the stub sidecar's readiness to be 'catalogued', and that find.py --readiness catalogued finds it. test_workflow.py's two tests that assumed the flag was off now treat projected readiness as the default and keep the hold as the flag-off case. build.py --index-only regenerated examples/index.json; only each target's readiness changed, and the 'unsupported' hold line went.",
       "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
+    },
+    {
+      "change_id": "krnmkrsmnqprxnqunsrztqzssnxvmzzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: 305-307 name 285-287 as companions, and the sidecar examples carry external-target and their family's domain tag",
+      "body": "Request 6 of Phase 5 step 1 in llm-dlc/loops/example-targets.md (the positive stream's request 3). Each family's CVE packet already named its positive, but the positives 305, 306 and 307 named no companion. Their target.json identities now name 285, 286 and 287, and each matching text gives that number. Tags: 105 and 305-307 gain external-target, which until now covered only 285-300 though all four have a sidecar. 305 gains metrics and 307 password-hashing, their families' domain tags. 306's request-binding, a defect tag for handler parameters that can't bind, becomes data-binding, the domain of DataBinder's field checks, which call PatternMatchUtils. Each example.json has a note, and build.py --index-only regenerated examples/README.md and index.json.",
+      "log_sha256": "eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488"
     }
   ],
   "logs": {
@@ -205,6 +213,12 @@
       "bytes": 522766,
       "lines": 119,
       "gzip_bytes": 121729,
+      "url": null
+    },
+    "eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488": {
+      "bytes": 631574,
+      "lines": 168,
+      "gzip_bytes": 139246,
       "url": null
     }
   },
