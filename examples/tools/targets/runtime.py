@@ -12,14 +12,19 @@ The two milestones stay apart (R1): a source lock fetches and builds nothing and
 artifacts-ready preparation does. A preparation never decides a claim, and a partial one is returned as failed with
 its stage, never as an empty success.
 
-Routes: `fixture` (a control's fixture revisions, built locally with build_fixtures.py's recipe) is implemented;
-`published-artifact` and `upstream-build` (R2) return Unsupported until they are.
+Routes: `fixture` (a control's fixture revisions, built locally with build_fixtures.py's recipe) and
+`published-artifact` (the revision's JAR and its declared dependencies from Maven Central, each by its recorded sha256,
+through runtime_maven.py's checked cache) are implemented; `upstream-build` (R2) returns Unsupported until it is. The
+adapter and driver are compiled separately, with the fixture recipe's --release and JAR date, on either route.
 
 On the classpath a preparation refuses: a class held by more than one entry (an adapter or driver shadowing the
 target, or two dependencies with one class), a target method missing from the original artifact, and an adapter that
 never references the target method (R3's "calls the selected upstream method"). The loaded target's origin, the
 ordered classpath, the JDK (by full path, `release` file and `java -version`) and every artifact's sha256 are
 recorded in the PreparedTarget and in `prepared.json` in the work directory.
+
+A failed preparation's `source` also carries a `blocker` for the handoff: the stage, the command that failed (or the
+one that runs the preparation), the diagnostic, the semantics it needs and the next action.
 """
 
 import hashlib
@@ -31,7 +36,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from targets import interfaces, runtime_jar, runtime_jdk
+from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
@@ -52,11 +57,35 @@ def sha256(path):
 
 
 class Refused(Exception):
-    """A preparation stops: `stage` is where (lock, workdir, toolchain, build, target, classpath, adapter)."""
+    """A preparation stops: `stage` is where (lock, workdir, acquire, toolchain, build, target, classpath, adapter),
+    and, for the handoff, the command that failed, the semantics needed and the next action, where known."""
 
-    def __init__(self, stage, diagnostic):
+    def __init__(self, stage, diagnostic, command=None, needs=None, next=None):
         super().__init__(diagnostic)
-        self.stage, self.diagnostic = stage, diagnostic
+        self.stage, self.diagnostic, self.command, self.needs, self.next = stage, diagnostic, command, needs, next
+
+    @classmethod
+    def blocked(cls, b):
+        return cls(b.stage, b.diagnostic, b.command, b.needs, b.next)
+
+
+# What each stage of a blocked preparation needs, and what to do next, unless the refusal says more precisely.
+NEEDS = {
+    "lock": ("an immutable, hash-pinned source lock: fixed coordinates or a full commit, every selected path inside "
+             "the example's folder, every published file's sha256", "correct the revision's entry in target.json, then "
+             "plan and prepare again"),
+    "workdir": ("a work directory that is empty or holds an earlier preparation", "give the preparation a fresh work "
+                "directory; the files there are not the runtime's to delete"),
+    "acquire": ("the recorded bytes from Maven Central or github.com", "check the network and the recorded sha256"),
+    "toolchain": ("a JDK to compile the adapter and driver with", "install the JDK under ~/.sdkman/candidates/java or "
+                  "set JAVA_HOME"),
+    "build": ("sources that compile with the recipe", "fix the adapter or driver source named in the diagnostic"),
+    "classpath": ("each class on the classpath held by exactly one entry, so the class loaded doesn't depend on order",
+                  "remove the duplicate: rename the adapter's class, or drop the dependency that repeats it"),
+    "target": ("the selected method, by name and descriptor, in the original artifact", "check the task's target "
+               "against the artifact's classes (javap -cp ARTIFACT CLASS)"),
+    "adapter": ("an adapter that invokes the selected original method", "make the adapter call the target method"),
+}
 
 
 # -- the source lock (offline)
@@ -131,6 +160,21 @@ def _main_class(folder, relative):
     return ".".join(path.relative_to(_source_root(folder, path)).with_suffix("").parts)
 
 
+def _controls_source(folder, entry):
+    """The parts a preparation compiles or copies besides the original, from the example's folder: the adapter (the
+    entry's `adapters`), the driver and oracle (the sidecar's controls), and the JDKs the controls run on."""
+    controls = {c["kind"]: c for c in _sidecar(folder).get("controls", []) if c["kind"] in ("driver", "oracle")}
+    return {
+        "adapter": _component(folder, entry.get("adapters") or [], "adapter") if entry.get("adapters") else None,
+        "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
+                       main=_main_class(folder, controls["driver"]["path"]))
+        if "driver" in controls else None,
+        "oracle": {"control": controls["oracle"]["id"], **_hashed(folder, [_inside(folder, controls["oracle"]["path"], "oracle")])[0]}
+        if "oracle" in controls else None,
+        "jdks": list(entry.get("jdks") or []),
+    }
+
+
 def _lock_fixture(plan, revision, entry, folder):
     top = _inside(folder, entry.get("fixture"), f"revision {revision}'s fixture")
     if not top.is_dir():
@@ -139,26 +183,58 @@ def _lock_fixture(plan, revision, entry, folder):
     original = sorted(_java_files(folder, top) + (_java_files(folder, shared) if shared.is_dir() else []))
     if not original:
         raise Refused("lock", f"revision {revision}'s fixture {entry['fixture']} holds no Java sources")
-    controls = {c["kind"]: c for c in _sidecar(folder).get("controls", []) if c["kind"] in ("driver", "oracle")}
     source = {
         "route": "fixture", "repository": entry.get("repository"), "revision": revision, "fixture": entry["fixture"],
         "provenance": "fixture sources in the example's folder, never an upstream commit",
         "original": {"roots": sorted({top.relative_to(folder).as_posix()}
                                      | ({shared.relative_to(folder).as_posix()} if shared.is_dir() else set())),
                      "files": _hashed(folder, original)},
-        "adapter": _component(folder, entry.get("adapters") or [], "adapter") if entry.get("adapters") else None,
-        "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
-                       main=_main_class(folder, controls["driver"]["path"]))
-        if "driver" in controls else None,
-        "oracle": {"control": controls["oracle"]["id"], **_hashed(folder, [_inside(folder, controls["oracle"]["path"], "oracle")])[0]}
-        if "oracle" in controls else None,
-        "jdks": list(entry.get("jdks") or []),
+        **_controls_source(folder, entry),
         "recipe": {"tool": "javac", "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe", **_fixture_recipe()},
     }
     return f"fixture:{entry['fixture']}", source
 
 
-ROUTES_TO_COME = {"published-artifact": "R2's published-artifact route", "upstream-build": "R2's pinned upstream build"}
+FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
+
+
+def _lock_published(plan, revision, entry, folder):
+    """A published revision's lock, offline: its JAR and each declared dependency (`dependencies`, in classpath order)
+    by fixed coordinates, an allowed URL and a recorded sha256; the commit and release it is linked to, as recorded."""
+    commit = entry.get("commit")
+    if not isinstance(commit, str) or not FULL_SHA.match(commit):
+        raise Refused("lock", f"revision {revision} names no full commit ({commit!r}): a published artifact is linked "
+                              f"to the source revision it was released from")
+    try:
+        items = [runtime_maven.check_item({k: entry.get(k) for k in ("coordinates", "url", "sha256")}, "original")]
+        dependencies = entry.get("dependencies") or []
+        if not isinstance(dependencies, list):
+            raise Refused("lock", f"revision {revision}'s dependencies are not a list")
+        items += [runtime_maven.check_item(d, "dependency") for d in dependencies]
+    except runtime_maven.Blocked as b:
+        raise Refused.blocked(b) from None
+    seen = {}
+    for item in items:
+        if item["coordinates"] in seen:
+            raise Refused("lock", f"{item['coordinates']} is listed twice on revision {revision}'s classpath")
+        seen[item["coordinates"]] = item
+    source = {
+        "route": "published-artifact", "repository": entry.get("repository"), "revision": revision,
+        "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they "
+                      "are fetched from",
+        "linkage": {"commit": commit, **{k: entry[k] for k in ("tag", "release") if entry.get(k)},
+                    "status": "recorded, not checked against the published bytes: a release label supports no source "
+                              "rebuild or introducing-commit experiment"},
+        "published": items,
+        **_controls_source(folder, entry),
+        "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
+                                          "the published JARs are used as fetched", **_fixture_recipe()},
+    }
+    return commit, source
+
+
+LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published}
+ROUTES_TO_COME = {"upstream-build": "R2's pinned upstream build"}
 
 
 def lock(plan, revision):
@@ -171,10 +247,10 @@ def lock(plan, revision):
         if route in ROUTES_TO_COME:
             return Unsupported("prepare", RUNTIME, f"{ROUTES_TO_COME[route]} is not implemented yet", stage="lock",
                                diagnostic=f"revision {revision}: route {route}")
-        if route != "fixture":
+        if route not in LOCKS:
             raise Refused("lock", f"revision {revision} has no known route ({route!r})")
         folder = Path(plan.folder).resolve()
-        commit, source = _lock_fixture(plan, revision, entry, folder)
+        commit, source = LOCKS[route](plan, revision, entry, folder)
     except Refused as e:
         return _failed(plan, revision, None, {"route": route}, e, (), ())
     return PreparedTarget(example=plan.example, task=plan.task, revision=revision, commit=commit, stage="source-locked",
@@ -182,8 +258,12 @@ def lock(plan, revision):
 
 
 def _failed(plan, revision, commit, source, refused, artifacts, logs, toolchain=None):
+    needs, next_ = NEEDS.get(refused.stage, (None, None))
+    blocker = {"stage": refused.stage,
+               "command": refused.command or f"python3 examples/tools/build.py {plan.example} --task {plan.task}",
+               "diagnostic": refused.diagnostic, "needs": refused.needs or needs, "next": refused.next or next_}
     return PreparedTarget(example=plan.example, task=plan.task, revision=revision, commit=commit or "", stage="failed",
-                          source=source, artifacts=tuple(artifacts), toolchain=toolchain or {},
+                          source={**(source or {}), "blocker": blocker}, artifacts=tuple(artifacts), toolchain=toolchain or {},
                           failedStage=refused.stage, diagnostic=refused.diagnostic, logs=tuple(logs))
 
 
@@ -224,7 +304,7 @@ class _Build:
         self.logs.append(log.as_posix())
         if code != 0:
             tail = "\n".join(out.strip().splitlines()[-15:])
-            raise Refused("build", f"{step} failed (exit {code}): {' '.join(argv)}\n{tail}")
+            raise Refused("build", f"{step} failed (exit {code}): {' '.join(argv)}\n{tail}", command=" ".join(argv))
 
     def compile(self, step, sources, classpath):
         classes = self.workdir / "classes" / step
@@ -272,50 +352,109 @@ def _check_classpath(plan, workdir, classpath, original, adapter):
             "classSha256": hashlib.sha256(data).hexdigest()}
 
 
-def _prepare_fixture(plan, revision, locked, workdir):
-    source = dict(locked.source)
-    folder = Path(plan.folder).resolve()
+def _builder(source, workdir):
     home = runtime_jdk.build_home()
     if home is None:
         raise Refused("toolchain", "no JDK to build with: JAVA_HOME is unset and no javac is on PATH")
-    build = _Build(workdir, home, source["recipe"])
+    recipe = source["recipe"]
     toolchain = {"jdk": runtime_jdk.identity(home),
-                 "build": {"tool": "javac", "release": source["recipe"]["release"], "date": source["recipe"]["date"],
-                           "flags": ["--release", source["recipe"]["release"], "-encoding", "UTF-8", "-implicit:none"],
-                           "jar": f"jar --date={source['recipe']['date']} --no-manifest, entries sorted"}}
+                 "build": {"tool": "javac", "release": recipe["release"], "date": recipe["date"],
+                           "flags": ["--release", recipe["release"], "-encoding", "UTF-8", "-implicit:none"],
+                           "jar": f"jar --date={recipe['date']} --no-manifest, entries sorted"}}
+    return _Build(workdir, home, recipe), toolchain
+
+
+def _files(folder, part):
+    return [folder / f["path"] for f in part["files"]]
+
+
+def _add_controls(build, source, folder, workdir, revision, below):
+    """The adapter and driver compiled against the classpath `below` them (the original, then its dependencies), and
+    the oracle copied, each hashed; the sources rechecked against the lock. (classpath, adapter JAR or None)."""
+    classpath = list(below)
+    adapter = None
+    if source.get("adapter"):
+        adapter = build.jar("adapter", build.compile("adapter", _files(folder, source["adapter"]), tuple(classpath)),
+                            f"adapter-{revision}.jar", "adapter", "built from " + ", ".join(source["adapter"]["roots"]))
+        classpath.insert(0, adapter)
+    if source.get("driver"):
+        driver = build.jar("driver", build.compile("driver", _files(folder, source["driver"]), tuple(classpath)),
+                           "driver.jar", "driver", "built from " + ", ".join(source["driver"]["roots"]))
+        classpath.insert(0, driver)
+    if source.get("oracle"):
+        copied = Path("controls") / Path(source["oracle"]["path"]).name
+        (workdir / copied).parent.mkdir(exist_ok=True)
+        shutil.copyfile(folder / source["oracle"]["path"], workdir / copied)
+        if sha256(workdir / copied) != source["oracle"]["sha256"]:
+            raise Refused("lock", f"the oracle {source['oracle']['path']} changed since it was locked")
+        build.artifacts.append(Artifact(copied.as_posix(), source["oracle"]["sha256"], "oracle",
+                                        origin=source["oracle"]["path"]))
+    for part in ("original", "adapter", "driver"):  # the sources compiled are still the ones locked
+        for f in (source.get(part) or {}).get("files", []):
+            if sha256(folder / f["path"]) != f["sha256"]:
+                raise Refused("lock", f"{f['path']} changed between its lock and its build: stale bytes")
+    return classpath, adapter
+
+
+def _prepare_fixture(plan, revision, locked, workdir):
+    source = dict(locked.source)
+    folder = Path(plan.folder).resolve()
+    build, toolchain = _builder(source, workdir)
     try:
-        files = lambda part: [folder / f["path"] for f in part["files"]]
-        original = build.jar("original", build.compile("original", files(source["original"]), ()), f"{revision}.jar",
-                             "original", f"built from {source['fixture']} by the fixture recipe")
-        classpath = [original]
-        adapter = None
-        if source.get("adapter"):
-            adapter = build.jar("adapter", build.compile("adapter", files(source["adapter"]), (original,)),
-                                f"adapter-{revision}.jar", "adapter", "built from " + ", ".join(source["adapter"]["roots"]))
-            classpath.insert(0, adapter)
-        if source.get("driver"):
-            driver = build.jar("driver", build.compile("driver", files(source["driver"]), tuple(classpath)),
-                               "driver.jar", "driver", "built from " + ", ".join(source["driver"]["roots"]))
-            classpath.insert(0, driver)
-        if source.get("oracle"):
-            copied = Path("controls") / Path(source["oracle"]["path"]).name
-            (workdir / copied).parent.mkdir(exist_ok=True)
-            shutil.copyfile(folder / source["oracle"]["path"], workdir / copied)
-            if sha256(workdir / copied) != source["oracle"]["sha256"]:
-                raise Refused("lock", f"the oracle {source['oracle']['path']} changed since it was locked")
-            build.artifacts.append(Artifact(copied.as_posix(), source["oracle"]["sha256"], "oracle",
-                                            origin=source["oracle"]["path"]))
-        for part in ("original", "adapter", "driver"):  # the sources compiled are still the ones locked
-            for f in (source.get(part) or {}).get("files", []):
-                if sha256(folder / f["path"]) != f["sha256"]:
-                    raise Refused("lock", f"{f['path']} changed between its lock and its build: stale bytes")
+        original = build.jar("original", build.compile("original", _files(folder, source["original"]), ()),
+                             f"{revision}.jar", "original", f"built from {source['fixture']} by the fixture recipe")
+        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
+    return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
+
+
+def _ready(plan, revision, locked, workdir, source, build, classpath, toolchain):
     shutil.rmtree(workdir / "classes", ignore_errors=True)
     return PreparedTarget(example=plan.example, task=plan.task, revision=revision, commit=locked.commit,
                           stage="artifacts-ready", source=source, artifacts=tuple(build.artifacts),
                           classpath=tuple(classpath), toolchain=toolchain, logs=tuple(build.logs))
+
+
+def _jar_path(coords):
+    group, artifact, version = runtime_maven.coordinates(coords)
+    return f"lib/{group}/{artifact}-{version}.jar"
+
+
+def _prepare_published(plan, revision, locked, workdir):
+    """Each published JAR acquired by its recorded sha256 (from the cache, rechecked, or fetched and checked), in the
+    lock's order (the original, then its dependencies); then the adapter and driver compiled against them. The cache
+    and fetch log is in logs/acquire.log: a cache hit is reuse, so it is not part of the source or any identity."""
+    source = dict(locked.source)
+    folder = Path(plan.folder).resolve()
+    build, toolchain = _builder(source, workdir)
+    acquired, log = [], []
+    cache = runtime_maven.Cache()
+    try:
+        for item in source["published"]:
+            path = _jar_path(item["coordinates"])
+            (workdir / path).parent.mkdir(parents=True, exist_ok=True)
+            try:
+                log += runtime_maven.acquire(item, workdir / path, cache, network=plan.network)
+            except runtime_maven.Blocked as b:
+                raise Refused.blocked(b) from None
+            finally:
+                (workdir / "logs").mkdir(exist_ok=True)
+                (workdir / "logs/acquire.log").write_text("\n".join(log) + "\n")
+                if "logs/acquire.log" not in build.logs:
+                    build.logs.append("logs/acquire.log")
+            build.artifacts.append(Artifact(path, item["sha256"], item["role"], coordinates=item["coordinates"],
+                                            origin=item["url"]))
+            acquired.append(path)
+        classpath, adapter = _add_controls(build, source, folder, workdir, revision, acquired)
+        source["target"] = _check_classpath(plan, workdir, classpath, acquired[0], adapter)
+    except Refused as e:
+        return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
+    return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
+
+
+PREPARES = {"fixture": _prepare_fixture, "published-artifact": _prepare_published}
 
 
 def prepare(plan, revision, workdir):
@@ -329,7 +468,10 @@ def prepare(plan, revision, workdir):
         workdir = _workdir(workdir)
     except Refused as e:
         return _failed(plan, revision, locked.commit, locked.source, e, (), ())
-    prepared = _prepare_fixture(plan, revision, locked, workdir)
+    try:
+        prepared = PREPARES[locked.source["route"]](plan, revision, locked, workdir)
+    except Refused as e:  # before any build step: no toolchain
+        prepared = _failed(plan, revision, locked.commit, locked.source, e, (), ())
     (workdir / RECORD).write_text(json.dumps(prepared.as_dict(), indent=2, ensure_ascii=False) + "\n")
     return prepared
 

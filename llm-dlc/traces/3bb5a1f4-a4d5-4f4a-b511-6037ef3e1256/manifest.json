@@ -12,33 +12,35 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T15:48:26.701Z",
-  "duration_seconds": 1299,
+  "ended": "2026-11-14T16:00:16.710Z",
+  "duration_seconds": 2009,
   "stats": {
-    "turns": 10,
-    "api_calls": 58,
-    "tool_calls": 62,
+    "turns": 15,
+    "api_calls": 86,
+    "tool_calls": 90,
     "tool_errors": 0,
-    "compactions": 2,
-    "peak_context_tokens": 142187,
+    "compactions": 3,
+    "peak_context_tokens": 162980,
     "usage": {
-      "input_tokens": 116,
-      "output_tokens": 65037,
-      "cache_read_input_tokens": 5740171,
-      "cache_creation_input_tokens": 276077
+      "input_tokens": 172,
+      "output_tokens": 107513,
+      "cache_read_input_tokens": 8943922,
+      "cache_creation_input_tokens": 429979
     }
   },
   "tools": {
-    "Bash": 50,
-    "Edit": 6,
-    "Write": 4,
-    "Read": 2
+    "Bash": 73,
+    "Edit": 7,
+    "Read": 5,
+    "Write": 5
   },
   "files_touched": [
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/runtime_jar.py",
     "examples/tools/targets/runtime_jdk.py",
-    "examples/tools/targets/test_runtime.py"
+    "examples/tools/targets/runtime_maven.py",
+    "examples/tools/targets/test_runtime.py",
+    "llm-dlc/loops/example-targets-runtime.md"
   ],
   "context_windows": [
     {
@@ -72,24 +74,38 @@
     {
       "index": 2,
       "started": "2026-11-14T15:39:10.620Z",
-      "ended": "2026-11-14T15:48:26.701Z",
-      "turns": 4,
-      "api_calls": 28,
+      "ended": "2026-11-14T15:48:55.395Z",
+      "turns": 5,
+      "api_calls": 31,
       "usage": {
-        "input_tokens": 56,
-        "output_tokens": 27689,
-        "cache_read_input_tokens": 2864316,
-        "cache_creation_input_tokens": 129001
+        "input_tokens": 62,
+        "output_tokens": 29295,
+        "cache_read_input_tokens": 3294438,
+        "cache_creation_input_tokens": 133109
       },
-      "peak_context_tokens": 142187
+      "peak_context_tokens": 146295
+    },
+    {
+      "index": 3,
+      "started": "2026-11-14T15:49:58.813Z",
+      "ended": "2026-11-14T16:00:16.710Z",
+      "turns": 4,
+      "api_calls": 25,
+      "usage": {
+        "input_tokens": 50,
+        "output_tokens": 40870,
+        "cache_read_input_tokens": 2773629,
+        "cache_creation_input_tokens": 149794
+      },
+      "peak_context_tokens": 162980
     }
   ],
   "log": {
-    "sha256": "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a",
-    "bytes": 2347292,
-    "lines": 718,
-    "gzip_bytes": 480577,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a.jsonl.gz"
+    "sha256": "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2",
+    "bytes": 3785869,
+    "lines": 1080,
+    "gzip_bytes": 785165,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -108,6 +124,14 @@
       "summary": "example-targets runtime R4: each fixture revision's controls in its own JVM, per JDK",
       "body": "runtime.run_controls() replaces Phase 0's stub. Each revision's driver runs in its own JVM on its prepared classpath, on each JDK the artifact entry names (21 and 25 for the fixture), selected by full path, with the oracle's PROBES as inputs. The JVM gets a fixed environment (C.UTF-8, UTC, en-US, UTF-8 streams) and inherits nothing from the caller, JAVA_TOOL_OPTIONS and CLASSPATH included. Each raw ExecutionRecord names the JDK (java -version, home, release file), the commit, each classpath entry's sha256 and role, the driver, the inputs' source and hash, and whether this is original-JVM or model replay. Before any JVM starts, the classpath bytes are rechecked against the preparation. A revision that is unprepared, failed or stale, a missing JDK, or a JDK too old for the class files gives a not-started record, never a skipped one. A kill, a timeout, malformed output, or inputs missing or out of order give no observations; exit 1 with complete output stays raw. Nothing here applies the oracle.\n\nVerified inline: contract A3/A4 pass (contract: 8 pass, 8 skip: 6 at workflow's stubs, A5's 2 for want of a built jvmcontract). test_runtime.py has 28 tests, among them the kill (signal 9), timeout, malformed, incomplete and exit-1 drivers, a one-sided pair, stale bytes and the inherited-options check. llm-dlc/tools/example-targets-integration.sh exits 0 (targets suite 68, test_build 190, test_pipeline 29).\n\nBrief note: PreparedTarget carries no work directory. run_controls therefore finds a preparation by route.py's layout and checks its prepared.json. An additive field is recorded as an interface request under Progress.",
       "log_sha256": "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a"
+    },
+    {
+      "change_id": "uoztsmtquttrvzrlvslxmqnwzpqtqxtv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: the published-artifact route, hash-pinned acquisition and a rechecked cache",
+      "body": "runtime.lock() and prepare() now take route: published-artifact. The lock stays offline. It records the revision's commit as unchecked release linkage, and the JAR and each declared dependency (in classpath order) by fixed coordinates, an allowed URL and a recorded sha256. A dynamic version, a missing hash, a host other than Maven Central or github.com, and a Central URL naming another file are lock blockers. The new runtime_maven.py (stdlib only, so it runs under python3 -I) acquires each JAR from a content-addressed cache that rechecks every restore and moves a corrupt entry aside. On a miss it fetches into a new empty directory and checks the bytes against the lock before caching or using them. A mismatch fails at acquire and is never cached or rebuilt. It fetches only when the plan's network flag allows. The cache log stays out of the PreparedTarget, so a cache hit is reuse, not identity. Every failed preparation now carries source.blocker (stage, command, diagnostic, needed semantics, next action). A missing hash points at 'runtime_maven.py pin G:A:V', which records it after checking Maven Central's .sha1.",
+      "log_sha256": "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2"
     }
   ],
   "logs": {
@@ -121,6 +145,12 @@
       "bytes": 1111220,
       "lines": 322,
       "gzip_bytes": 225032,
+      "url": null
+    },
+    "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2": {
+      "bytes": 3785869,
+      "lines": 1080,
+      "gzip_bytes": 785165,
       "url": null
     }
   },

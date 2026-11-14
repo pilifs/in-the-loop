@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Tests of runtime.py and its modules (runtime_jdk.py, runtime_jar.py), owned by the runtime stream with them: the
-source lock and the fixture route's preparation (R1) and the separate-JVM controls (R4), on a copy of Phase 0's
-fixtures. run_verifier() is still Phase 0's stub, and fails closed.
+"""Tests of runtime.py and its modules (runtime_jdk.py, runtime_jar.py, runtime_maven.py), owned by the runtime stream
+with them: the source lock and the fixture route's preparation (R1), the published-artifact route's hash-pinned
+acquisition and cache (R2, against a local stand-in for Maven Central: nothing here uses the network) and the
+separate-JVM controls (R4), on a copy of Phase 0's fixtures. run_verifier() is still Phase 0's stub, and fails closed.
 
   python3 examples/tools/targets/test_runtime.py
 """
@@ -22,7 +23,7 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "fixtures"))
 import build_fixtures  # noqa: E402
-from targets import interfaces, runtime, runtime_jar, runtime_jdk  # noqa: E402
+from targets import interfaces, runtime, runtime_jar, runtime_jdk, runtime_maven  # noqa: E402
 from test_interfaces import plan  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
@@ -98,7 +99,7 @@ class LockTest(FixtureCopy):
         self.assertEqual(locked.failedStage, "lock")
 
     def test_the_routes_to_come_are_unsupported_not_stubs(self):
-        for route in ("published-artifact", "upstream-build"):
+        for route in ("upstream-build",):
             value = runtime.prepare(fixture_plan(self.folder, route=route), "after", self.work)
             self.assertTrue(interfaces.unsupported(value), route)
             self.assertEqual((value.interface, value.owner), ("prepare", interfaces.RUNTIME))
@@ -237,6 +238,227 @@ public final class GateDriver {
 }
 """
 # Drivers that go wrong in each way a control can: none of them may give observations.
+COMMIT = "0123456789abcdef0123456789abcdef01234567"
+
+
+class Repository:
+    """A local stand-in for Maven Central: {url: file}, served by runtime_maven.FETCH, every request counted."""
+
+    def __init__(self, test, root):
+        self.root, self.files, self.requests = Path(root), {}, []
+        test.addCleanup(mock.patch.stopall)
+        mock.patch.object(runtime_maven, "FETCH", self.fetch).start()
+        mock.patch.object(runtime_maven, "CACHE", self.root / "cache").start()
+
+    def publish(self, coords, source):
+        url = runtime_maven.central_url(coords)
+        self.files[url] = Path(source)
+        return {"coordinates": coords, "url": url, "sha256": runtime.sha256(source)}
+
+    def fetch(self, url, dest):
+        self.requests.append(url)
+        if url not in self.files:
+            raise runtime_maven.Blocked("acquire", f"GET {url} failed: HTTP Error 404")
+        shutil.copyfile(self.files[url], dest)
+
+
+def dependency_jar(path, entries):
+    """A JAR holding real class bytes under the given names (never loaded: only listed and hashed)."""
+    import zipfile
+    data = runtime_jar.read_class(Path(manifest()["dir"]) / "after.jar", "fixture/Gate")
+    with zipfile.ZipFile(path, "w") as z:
+        for name in entries:
+            z.writestr(name + ".class", data)
+    return path
+
+
+def published_plan(folder, revisions, items, task="replay", network=True, jdks=("21", "25")):
+    """items: {revision: (original item, [dependency items])}."""
+    artifacts = tuple({"revision": r, "route": "published-artifact", "repository": "https://github.com/pilifs/in-the-loop",
+                       "commit": COMMIT, "tag": f"v-{r}", **items[r][0], "dependencies": list(items[r][1]),
+                       "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"], "jdks": list(jdks)}
+                      for r in revisions)
+    return interfaces.TaskPlan(
+        example="999", task=task, kind="replay", relation="security", target="fixture.Gate#allowed(I)Z",
+        revisions=tuple(revisions), claim={"task": task}, prerequisites=(), artifacts=artifacts,
+        tools={"required": ["java", "javac"], "optional": []}, engine=None, gaps=None, expected=None,
+        outputs={"receipts": f"receipts/{task}"}, folder=str(folder), network=network)
+
+
+class PublishedTest(FixtureCopy):
+    """R2's published-artifact route: build_fixtures.py's JARs published as fixture.example:gate:1.0 (before) and 1.1
+    (after), with a dependency that holds a class of its own."""
+
+    def setUp(self):
+        super().setUp()
+        self.repo = Repository(self, self.dir / "repo")
+        jars = Path(manifest()["dir"])
+        self.dep = self.repo.publish("fixture.example:gate-util:2.0",
+                                     dependency_jar(self.dir / "util.jar", ["fixture/util/Helper"]))
+        self.items = {"before": (self.repo.publish("fixture.example:gate:1.0", jars / "before.jar"), [self.dep]),
+                      "after": (self.repo.publish("fixture.example:gate:1.1", jars / "after.jar"), [self.dep])}
+
+    def plan(self, revisions=("after",), **kw):
+        return published_plan(self.folder, revisions, self.items, **kw)
+
+    def prepare(self, revision="after", workdir=None, plan=None):
+        return runtime.prepare(plan or self.plan((revision,)), revision, workdir or self.work / revision)
+
+    def test_a_published_lock_fetches_nothing_and_keeps_the_release_linkage_apart(self):
+        with mock.patch.object(runtime_maven, "FETCH", side_effect=AssertionError("a source lock fetched")):
+            locked = runtime.lock(self.plan(), "after")
+        self.assertEqual((locked.stage, locked.commit), ("source-locked", COMMIT), locked.diagnostic)
+        self.assertEqual([(i["coordinates"], i["role"]) for i in locked.source["published"]],
+                         [("fixture.example:gate:1.1", "original"), ("fixture.example:gate-util:2.0", "dependency")])
+        self.assertEqual(locked.source["linkage"]["tag"], "v-after")
+        self.assertIn("not checked against the published bytes", locked.source["linkage"]["status"])
+        self.assertEqual(locked.source["driver"]["main"], "fixture.driver.GateDriver")
+        self.assertFalse((self.dir / "repo/cache").exists())
+
+    def test_artifacts_ready_records_each_jar_in_classpath_order_with_its_origin(self):
+        prepared = self.prepare()
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        self.assertEqual(prepared.classpath, ("driver.jar", "adapter-after.jar", "lib/fixture.example/gate-1.1.jar",
+                                              "lib/fixture.example/gate-util-2.0.jar"))
+        by_path = {a.path: a for a in prepared.artifacts}
+        original = by_path["lib/fixture.example/gate-1.1.jar"]
+        self.assertEqual((original.role, original.coordinates, original.sha256, original.origin),
+                         ("original", "fixture.example:gate:1.1", manifest()["jars"]["after"]["sha256"],
+                          self.items["after"][0]["url"]))
+        self.assertEqual(by_path["lib/fixture.example/gate-util-2.0.jar"].role, "dependency")
+        self.assertEqual(by_path["adapter-after.jar"].sha256, manifest()["jars"]["adapter-after"]["sha256"],
+                         "the adapter compiled against the published JAR is not build_fixtures.py's")
+        self.assertEqual(prepared.source["target"]["loadedFrom"], "lib/fixture.example/gate-1.1.jar")
+        for a in prepared.artifacts:
+            self.assertEqual(runtime.sha256(self.work / "after" / a.path), a.sha256, a.path)
+        self.assertEqual(sorted(self.repo.requests), sorted([self.items["after"][0]["url"], self.dep["url"]]))
+        self.assertIn("logs/acquire.log", prepared.logs)
+
+    def test_a_second_preparation_is_a_rechecked_cache_hit_and_the_same_preparation(self):
+        first = self.prepare(workdir=self.work / "one")
+        self.repo.requests.clear()
+        second = self.prepare(workdir=self.work / "two")
+        self.assertEqual(self.repo.requests, [], "a cached artifact was fetched again")
+        self.assertEqual(first, second, "a cache hit changed the preparation: reuse is not part of any identity")
+        self.assertIn("cache hit", (self.work / "two/logs/acquire.log").read_text())
+
+    def test_a_corrupt_cache_entry_is_moved_aside_and_fetched_again(self):
+        self.prepare(workdir=self.work / "one")
+        cached = runtime_maven.Cache().path(self.items["after"][0]["sha256"])
+        cached.write_bytes(b"not the jar")
+        self.repo.requests.clear()
+        prepared = self.prepare(workdir=self.work / "two")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        self.assertEqual(self.repo.requests, [self.items["after"][0]["url"]])
+        self.assertIn("moved aside", (self.work / "two/logs/acquire.log").read_text())
+        self.assertEqual(runtime.sha256(cached), self.items["after"][0]["sha256"])
+
+    def test_bytes_that_differ_from_the_lock_are_refused_never_cached_or_used(self):
+        self.repo.files[self.items["after"][0]["url"]] = Path(manifest()["dir"]) / "before.jar"
+        prepared = self.prepare()
+        self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "acquire"))
+        self.assertIn("not the recorded", prepared.diagnostic)
+        self.assertEqual(prepared.artifacts, ())
+        self.assertFalse(runtime_maven.Cache().path(manifest()["jars"]["before"]["sha256"]).exists())
+        blocker = prepared.source["blocker"]
+        self.assertEqual(blocker["command"], f"GET {self.items['after'][0]['url']}")
+        self.assertTrue(blocker["needs"] and blocker["next"] and blocker["diagnostic"] == prepared.diagnostic)
+
+    def test_a_missing_hash_or_a_dynamic_version_blocks_the_lock_with_the_command_that_pins_it(self):
+        original = dict(self.items["after"][0])
+        cases = {"missing": dict(original, sha256=None),
+                 "snapshot": dict(original, coordinates="fixture.example:gate:1.1-SNAPSHOT", url=None),
+                 "range": dict(original, coordinates="fixture.example:gate:[1.0,2.0)", url=None),
+                 "plus": dict(original, coordinates="fixture.example:gate:1.+", url=None),
+                 "latest": dict(original, coordinates="fixture.example:gate:LATEST", url=None),
+                 "elsewhere": dict(original, url="https://example.com/maven2/gate-1.1.jar"),
+                 "http": dict(original, url=original["url"].replace("https:", "http:")),
+                 "other-file": dict(original, url=runtime_maven.central_url("fixture.example:gate:1.0"))}
+        for name, item in cases.items():
+            self.items["after"] = (item, [self.dep])
+            prepared = self.prepare()
+            self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "lock"), name)
+            self.assertEqual(self.repo.requests, [], name)
+            self.assertTrue(set(prepared.source["blocker"]) >= {"command", "diagnostic", "needs", "next"}, name)
+        self.items["after"] = (dict(original, sha256=None), [self.dep])
+        blocker = self.prepare().source["blocker"]
+        self.assertEqual(blocker["command"], runtime_maven.pin_command("fixture.example:gate:1.1"))
+        self.assertIn("no recorded sha256", blocker["diagnostic"])
+
+    def test_a_dependency_that_repeats_a_class_is_refused_as_shadowing(self):
+        clash = self.repo.publish("fixture.example:gate-copy:1.0",
+                                  dependency_jar(self.dir / "copy.jar", ["fixture/Gate"]))
+        self.items["after"] = (self.items["after"][0], [self.dep, clash])
+        prepared = self.prepare()
+        self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "classpath"))
+        self.assertIn("fixture.Gate in lib/fixture.example/gate-1.1.jar, lib/fixture.example/gate-copy-1.0.jar",
+                      prepared.diagnostic)
+        self.assertTrue({a.role for a in prepared.artifacts} >= {"original", "dependency", "adapter"})
+
+    def test_without_acquisition_in_the_plan_only_the_cache_is_used(self):
+        refused = self.prepare(plan=self.plan(network=False))
+        self.assertEqual((refused.failedStage, self.repo.requests), ("acquire", []))
+        self.assertIn("network: false", refused.diagnostic)
+        self.prepare(workdir=self.work / "fetched")
+        self.repo.requests.clear()
+        cached = self.prepare(workdir=self.work / "cached", plan=self.plan(network=False))
+        self.assertEqual((cached.stage, self.repo.requests), ("artifacts-ready", []), cached.diagnostic)
+
+    def test_each_published_revision_runs_in_its_own_jvm(self):
+        if not {"21", "25"} <= set(runtime_jdk.homes()):
+            self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
+        plan = self.plan(("before", "after"))
+        attempt = self.work / "attempt"
+        prepared = {r: runtime.prepare(plan, r, attempt / "prepare" / r) for r in plan.revisions}
+        records = runtime.run_controls(plan, prepared, attempt / "controls")
+        self.assertEqual([(r.revision, r.identities["jdkFeature"], r.status, r.exitCode) for r in records],
+                         [("before", "21", "exited", 0), ("before", "25", "exited", 0),
+                          ("after", "21", "exited", 0), ("after", "25", "exited", 0)])
+        problems = {}
+        for r in records:
+            self.assertIsNotNone(r.observations, r)
+            self.assertEqual(r.identities["replay"], "original-jvm")
+            self.assertIn({"path": "lib/fixture.example/gate-util-2.0.jar", "sha256": self.dep["sha256"],
+                           "role": "dependency"}, r.identities["classpath"])
+            problems.setdefault(r.revision, set()).add(
+                tuple(c for c, _ in oracle().check([json.dumps(o) for o in r.observations])))
+        self.assertEqual(problems, {"before": {(97,)}, "after": {()}}, "the published JARs replay as the fixture's")
+
+
+class MavenTest(unittest.TestCase):
+    def test_coordinates_and_urls(self):
+        self.assertEqual(runtime_maven.central_url("org.springframework:spring-core:5.3.18"),
+                         "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.18/"
+                         "spring-core-5.3.18.jar")
+        for bad in ("a:b", "a:b:c:d", "a:b:1.0-SNAPSHOT", "a:b:[1,2)", "a:b:1.+", "a:b:LATEST", "a:b:RELEASE", None):
+            with self.assertRaises(runtime_maven.Blocked, msg=bad):
+                runtime_maven.coordinates(bad)
+        for url in ("https://repo.maven.apache.org/maven2/x", "https://github.com/o/r/releases/download/v1/x.jar"):
+            self.assertTrue(runtime_maven.allowed(url), url)
+        for url in ("http://repo.maven.apache.org/maven2/x", "https://repo1.maven.org/maven2/x",
+                    "https://user@github.com/x", "https://github.com:8443/x", "file:///etc/passwd"):
+            self.assertFalse(runtime_maven.allowed(url), url)
+        self.assertFalse(runtime_maven.allowed("https://objects.githubusercontent.com/x"))
+        self.assertTrue(runtime_maven.allowed("https://objects.githubusercontent.com/x", runtime_maven.REDIRECT_HOSTS))
+
+    def test_pin_checks_centrals_sha1_and_caches_the_bytes(self):
+        root = Path(tempfile.mkdtemp(prefix="test-runtime-"))
+        self.addCleanup(shutil.rmtree, root, True)
+        jar = Path(manifest()["dir"]) / "after.jar"
+        import hashlib
+        files = {runtime_maven.central_url("g.x:a:1.0"): jar.read_bytes(),
+                 runtime_maven.central_url("g.x:a:1.0") + ".sha1": hashlib.sha1(jar.read_bytes()).hexdigest().encode()}
+        fetch = lambda url, dest: Path(dest).write_bytes(files[url])
+        cache = runtime_maven.Cache(root)
+        entry = runtime_maven.pin("g.x:a:1.0", cache, fetch)
+        self.assertEqual(entry["sha256"], runtime.sha256(jar))
+        self.assertTrue(cache.path(entry["sha256"]).is_file())
+        files[runtime_maven.central_url("g.x:a:1.0") + ".sha1"] = b"0" * 40
+        with self.assertRaises(runtime_maven.Blocked):
+            runtime_maven.pin("g.x:a:1.0", runtime_maven.Cache(root / "other"), fetch)
+        self.assertEqual(list((root / "tmp").iterdir()), [], "a scratch directory was left behind")
+
+
 BAD_DRIVERS = {
     "killed": 'System.out.println(line(args[0])); System.out.flush(); new ProcessBuilder("/bin/kill", "-KILL", '
               'String.valueOf(ProcessHandle.current().pid())).start().waitFor(); Thread.sleep(60000);',

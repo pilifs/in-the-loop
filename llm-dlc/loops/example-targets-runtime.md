@@ -178,9 +178,57 @@ Small unit and JVM conformance checks run inline.
   temporary path into what claims are bound to.
 - For review (workflow's W2): a killed record's `exitCode` is the negative signal, as `build.py`'s stages record it
   (`-9`). The constructed `bad-runs.json` record has `None`. Either way `status` is `killed`.
-- Next: R2's published-artifact route, with Maven Central acquisition and a hash-checked cache. Then R3's
-  `run_verifier` (needs `jvmcontract` built in this workspace, compiled inline), the upstream-build route as a job,
-  and R5's slice on `PatternMatchUtils.simpleMatch`.
+- 2026-11-14, **R2's published-artifact route**: `lock()` and `prepare()` take `route: published-artifact`. The lock
+  is offline. It needs the revision's full commit, kept as recorded linkage beside any `tag` and `release` and marked
+  unchecked against the bytes. It also needs the JAR's `coordinates`, `url` and `sha256`, and each declared dependency
+  under `dependencies`, in classpath order. The lock refuses:
+  - a dynamic or mutable version (a range, `+`, LATEST, RELEASE, a SNAPSHOT);
+  - a missing or malformed sha256;
+  - a URL that isn't https on Maven Central or github.com;
+  - a Central URL that names another file;
+  - an artifact listed twice.
+
+  Preparation acquires each JAR through the new `runtime_maven.py`:
+  - it uses a content-addressed cache (`~/.cache/in-the-loop/targets`, or `TARGETS_CACHE`) and rechecks every
+    restore. A corrupt entry is moved aside, reported and fetched again;
+  - on a miss it fetches into a new empty directory, over https, following redirects only to github's content hosts.
+    It checks the bytes against the lock before caching or using them. Different bytes fail at `acquire`, uncached and
+    unbuilt;
+  - it fetches only when the plan's `network` allows. Otherwise it uses the cache alone.
+
+  The cache and fetch log (`logs/acquire.log`) stays out of `source`, so a cache hit gives the same PreparedTarget.
+  Each JAR is an Artifact with its coordinates and origin URL. The classpath is driver, adapter, original, then the
+  dependencies in order. The fixture route's checks apply: shadowing across dependencies, the target method and the
+  adapter's call. Every failed preparation now carries `source.blocker`: stage, command, diagnostic, needed semantics
+  and next action (the acceptance's handoff row). A missing hash's command is the one that records it:
+  `python3 -I examples/tools/targets/runtime_maven.py pin G:A:V`. That command fetches the JAR from Central, checks
+  it against Central's `.sha1`, caches it and prints the sidecar entry. `test_runtime.py`: 39 tests, against a local
+  stand-in for Central. They cover:
+  - a lock that fetches nothing;
+  - classpath order and origins;
+  - a cache hit and a corrupt cache entry;
+  - a hash mismatch;
+  - eight lock blockers;
+  - a shadowing dependency;
+  - `network: false`;
+  - both published revisions' controls on JDK 21 and 25, read by the fixture's oracle.
+
+  The integration script exits 0: contract 8 pass and 8 skip, targets suite 79, `test_build` 190, `test_pipeline` 29.
+  Note, not evidence: `pin org.springframework:spring-core:5.3.19` fetched the real JAR, sha256 `1af06bd4…7992`, and
+  it matched Central's `.sha1`.
+- **Interface request** (workflow's W1, `plan_task`): a published revision's `artifacts` entry should carry:
+  - the history's `commit`, and its `tag`/`release`;
+  - the JAR's `coordinates`/`url`/`sha256`;
+  - its other `preparation.artifacts` items as `dependencies`, in classpath order. The sidecar allows several items
+    per revision, and the TaskPlan has one entry per revision;
+  - `network: true` on the plan.
+- For review: the blocker sits in `source` because PreparedTarget has no field for it. An additive
+  `blocker: Optional[Mapping] = None` would be cleaner. The dependency closure is what the lock declares: no POM is
+  resolved (no Maven emulation). A missing dependency shows up as a NoClassDefFoundError in the controls, which is a
+  replay failure, not a result.
+- Next: R5's slice on `PatternMatchUtils.simpleMatch` from the pinned spring-core JAR (a runtime-owned test folder,
+  driver and oracle). Then R3's `run_verifier` (needs `jvmcontract` built in this workspace, compiled inline), and the
+  upstream-build route as a job.
 - Status: working
 
 ## Loop settings
