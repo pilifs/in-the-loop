@@ -839,6 +839,27 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
   - **Next**: request 8, `result.schema.json`: null `existingTests` and `before`/`after` allowed when `claim.target`
     is present, and `claim.target.revisions`' description fixed.
+- 2026-11-14, **Phase 5 step 1, request 8 done: a target receipt says it ran no module tests.**
+  - **Reproducer**: a new test, `test_workflow.py`'s
+    `test_a_target_receipt_runs_no_module_tests_and_has_no_patch_excerpt`, failed on `ptnszuvl`. A replay's receipt
+    carried `existingTests` with the "none: …" task and `passed: false`.
+  - **The schema** (`result.schema.json`):
+    - `existingTests`, `before` and `after` may be null. A top-level `if`/`then` keeps all three objects unless the
+      result has a `claim` with a `target`. So a constructed example's result, or a format-1 result without a claim,
+      still needs them. The test checks each of the three refused as null without `claim.target`.
+    - `claim.target.revisions`' description now gives each identity: a commit SHA; for a fixture revision, the git
+      tree id of its source directory; for a mutant, its base's, with the patch among the claim's files.
+  - **Ingestion** (`workflow_ingest.publish`) writes `existingTests: null`, so no test failure is implied. It keeps
+    `before` and `after` as the lines of target.json that name the first and last revision. `before` is null for a
+    task on one revision, where it used to repeat `after`. The `NOT_RUN` placeholder is gone.
+  - **Old receipts**: all 259 stored results (examples, the fixtures and `verification/results/`) give the same
+    outcome under the old and the new schema. 258 are valid, and the fixtures' deliberately incomplete receipt is
+    refused by both. No reader outside ingestion meets a target receipt's `existingTests`: `render_index()` loads
+    `result.json` only for constructed examples.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (196, one new),
+    `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
+  - **Next**: request 9, a `driver` control's invocation (main class, arguments, the oracle's `check` and `compare`)
+    for 285–287, checked against runtime's lock and controls runner.
 - Status: working
 
 ## Loop settings

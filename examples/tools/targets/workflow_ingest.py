@@ -54,8 +54,6 @@ ORACLE_TIMEOUT = 60
 SIDES = {"exact-fix": ("violates", "holds"), "release": ("violates", "holds"), "introduction": ("holds", "violates"),
          "mutation": ("holds", "violates"), "positive": ("holds", "holds")}
 PRIORITY = ("killed", "timed-out", "tool-error", "invalid-output")
-NOT_RUN = ("none: a target task's attempt runs no module tests; its concrete controls are its records "
-           f"(records/{EXECUTION})")
 # Reads each record's observation lines with the oracle's check(lines), in a separate interpreter (-I: the oracle sees
 # only the standard library). A ValueError from check() is the oracle refusing an incomplete replay.
 ORACLE_RUNNER = r"""
@@ -541,8 +539,11 @@ def publish(plan, prepared, records, out):
             attempt["exploration"] = {"unwind": bounds.get("unwind"), "maxArrayLength": bounds.get("maxArrayLength"),
                                       "complete": True if fields["verdict"] == "verified" and fields["proof"]
                                       and "with unwinding assertions" in fields["proof"] else None}
-        result = {"existingTests": {"task": NOT_RUN, "passed": False, "failures": []},
-                  "before": excerpt(target_path, names[0]), "after": excerpt(target_path, names[-1]),
+        # A target task's attempt runs no module tests (its concrete controls are its records), so existingTests is
+        # null, never a run that didn't pass; one revision has no before (result.schema.json allows both with a target).
+        result = {"existingTests": None,
+                  "before": excerpt(target_path, names[0]) if len(names) > 1 else None,
+                  "after": excerpt(target_path, names[-1]),
                   "casesTotal": None, "purityViolations": [], "trustedCalls": [], "sarif": None, "output": f"records/{output}",
                   "statement": None, **fields, "matchesExpected": fields["expectation"] == "yes",
                   "claim": claim, "attempt": attempt}

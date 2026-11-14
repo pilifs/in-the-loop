@@ -18,12 +18,6 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Record session traces
-
-change `svrtnrloymnp` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
-
-The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.
-
 ### example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)
 
 change `nptowlpnxuzn` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
@@ -52,18 +46,6 @@ VF-025 (the job's three 1.4 MiB spring-core JARs exceed jj's snapshot limit): th
 
 The brief's Progress records the result and the acceptance evidence row by row, and its status is now done. What remains is for the merge, listed under Progress. Verified: test_runtime and test_runtime_upstream, 85 tests, pass.
 
-### Record session traces
-
-change `xvvuxmqsstpt` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
-
-The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.
-
-### Record session traces
-
-change `kxqozyuslzvr` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
-
-The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).
-
 ### Record verification results: example-targets runtime R2 upstream-build route rerun passes
 
 change `tlmknmszwupw` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
@@ -85,6 +67,24 @@ Reconcile steps 1-3 of llm-dlc/loops/example-targets.md. All four streams finish
 Step 4, the merge (jj new of the default line and the four branches, then sync.py regenerate), leaves exactly one conflict: llm-dlc/allowlist.json, where positive added 15 proposals and negative 8 to the same base of 23. Their union is 46 entries with no id differing between the sides, but this loop may not write that file, and taking one side with jj restore was refused as undermining oversight. So the merge was backed out uncommitted, and the brief's status is blocked on the user: resolve that one file in the merge, or allow the loop to.
 
 Before backing out, example-targets-integration.sh ran on the merged tree: everything passes (targets suite 181, test_build.py 190, test_pipeline.py 29, every sidecar's plan, contract rows A0-A4, A6, A7) except contract A5. There all four fixture proof tasks are unresolved, because the claims name the parameter 'code' while the fixture's classes record no parameter names (arg0): VF-024's first point, reached now that the whole route runs. It waits for runtime's interface request to compile Phase 0's fixture recipe with -parameters, Phase 5 step 1's first item. The brief's reconcile step 4 doesn't anticipate a conflict in a file only a person may write; otherwise the brief is current.
+
+### Record session traces
+
+change `kxqozyuslzvr` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
+
+The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).
+
+### Record session traces
+
+change `xvvuxmqsstpt` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
+
+The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.
+
+### Record session traces
+
+change `svrtnrloymnp` · [log `28e515b16a47`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)
+
+The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.
 
 ### example-targets reconcile step 4: streams merged, allow-list conflict resolved
 

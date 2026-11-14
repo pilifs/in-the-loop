@@ -58,14 +58,6 @@
   "subagents": [],
   "commits": [
     {
-      "change_id": "svrtnrloymnpursvnuqmumvtovvmuwol",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record session traces",
-      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.",
-      "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
-    },
-    {
       "change_id": "nptowlpnxuznnuovzylrwmwnzutsmzyt",
       "commit_id": null,
       "immutable": false,
@@ -87,22 +79,6 @@
       "immutable": false,
       "summary": "example-targets runtime: the constructed-mutant job passed, R1-R5 and the acceptance done; VF-025's JARs needn't be in the history",
       "body": "Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e26, collected as msotkvrv) passed. It ran the published-artifact route on real bytes: spring-core 5.3.19's PatternMatchUtils was recompiled from the v5.3.19 commit with suffix-anywhere.patch applied, using javac 25 with --release 8 -g -parameters read off the published class, into a copy of the JAR. On JDK 21 and 25, 5.3.19 agrees with the Javadoc oracle on all 45 probes, and the mutant disagrees at exactly the three predicted inputs. The unpatched recompile isn't byte-identical to the published class, and the record says so.\n\nVF-025 (the job's three 1.4 MiB spring-core JARs exceed jj's snapshot limit): the runtime loop's decision is that they needn't be in the history. Two are re-acquired by sha256, and the mutant is rebuilt by runtime_slice.py --case simplematch-mutant, with its hashes in prepared.json. runtime_simplematch/README.md now records the job's result and this. Closing the finding needs the files ignored on main (.gitignore is shared), so it is left for the user or the coordinator.\n\nThe brief's Progress records the result and the acceptance evidence row by row, and its status is now done. What remains is for the merge, listed under Progress. Verified: test_runtime and test_runtime_upstream, 85 tests, pass.",
-      "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
-    },
-    {
-      "change_id": "xvvuxmqsstptmlwwowmomuulwksuvkwn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record session traces",
-      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.",
-      "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
-    },
-    {
-      "change_id": "kxqozyuslzvrkkzzpyznntksrwmostwl",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record session traces",
-      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).",
       "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
     },
     {
@@ -128,6 +104,30 @@
       "summary": "example-targets reconcile: streams' traces recorded and logs copied; the merge blocked on an allow-list conflict only the user may resolve",
       "body": "Reconcile steps 1-3 of llm-dlc/loops/example-targets.md. All four streams finished done (runtime qrsyzzwu, negative zuoknpln, positive uzxpwmku, workflow nqztmpwy), and no stream or integration scope was active, nor any job pending. Each stream's last turns are recorded on its own branch (Record session traces: xvvuxmqs, mqnnxzkt, kxqozyus, svrtnrlo; negative's also carries the 8 allow-list proposals its last turn left uncommitted), and the 35 gitignored logs not yet in the default workspace were copied in. Those commits ran the workspaces' old sync.py, so their checks reported only the cross-workspace 'session ... has no manifest' errors that xyootzvm ends at the merge.\n\nStep 4, the merge (jj new of the default line and the four branches, then sync.py regenerate), leaves exactly one conflict: llm-dlc/allowlist.json, where positive added 15 proposals and negative 8 to the same base of 23. Their union is 46 entries with no id differing between the sides, but this loop may not write that file, and taking one side with jj restore was refused as undermining oversight. So the merge was backed out uncommitted, and the brief's status is blocked on the user: resolve that one file in the merge, or allow the loop to.\n\nBefore backing out, example-targets-integration.sh ran on the merged tree: everything passes (targets suite 181, test_build.py 190, test_pipeline.py 29, every sidecar's plan, contract rows A0-A4, A6, A7) except contract A5. There all four fixture proof tasks are unresolved, because the claims name the parameter 'code' while the fixture's classes record no parameter names (arg0): VF-024's first point, reached now that the whole route runs. It waits for runtime's interface request to compile Phase 0's fixture recipe with -parameters, Phase 5 step 1's first item. The brief's reconcile step 4 doesn't anticipate a conflict in a file only a person may write; otherwise the brief is current.",
       "log_sha256": "d7c8b8e9c4a0ab1af50ffc0a47328875a3deccb866b9e08b7dd62227b34be53c"
+    },
+    {
+      "change_id": "kxqozyuslzvrkkzzpyznntksrwmostwl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).",
+      "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
+    },
+    {
+      "change_id": "xvvuxmqsstptmlwwowmomuulwksuvkwn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.",
+      "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
+    },
+    {
+      "change_id": "svrtnrloymnpursvnuqmumvtovvmuwol",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.",
+      "log_sha256": "28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b"
     },
     {
       "change_id": "ptyqvxxlyvskrmvxvoprznryxqvttzpz",

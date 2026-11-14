@@ -769,6 +769,39 @@ class IngestTest(Fixture):
         vacuous = self.ingest("fixed-security", (self.verifier([outcome("verified", vacuous="no input reaches the call")], 0, revision="after"),))
         self.assertEqual(self.receipt(vacuous)["conclusion"]["expectation"], "no", "a vacuous proof isn't the expected one")
 
+    def test_a_target_receipt_runs_no_module_tests_and_has_no_patch_excerpt(self):
+        """Phase 5's request 8: a target task's attempt runs no module tests, so its receipt says none (null) rather
+        than a test run that didn't pass; one revision has no `before`. Only a target claim may leave them null."""
+        import jsonschema
+        import result_format
+        replay = self.receipt(self.ingest("replay", self.recorded(("before", "after"))))
+        flat = result_format.view(replay)
+        self.assertIsNone(flat["existingTests"], "no module test ran, and none failed")
+        self.assertEqual((flat["before"]["file"], flat["after"]["file"]), ("target.json", "target.json"),
+                         "a pair's two revisions, where target.json names them")
+        self.assertNotEqual(flat["before"]["startLine"], flat["after"]["startLine"])
+        single = result_format.view(self.receipt(self.ingest(
+            "fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),))))
+        self.assertIsNone(single["before"], "a task on one revision has no before")
+        self.assertEqual(single["after"]["file"], "target.json")
+        schema = json.loads((HERE.parents[1] / "schema" / "result.schema.json").read_text())
+        description = schema["properties"]["claim"]["properties"]["target"]["properties"]["revisions"]["description"]
+        self.assertIn("git tree id", description)
+        self.assertIn("mutant", description)
+        constructed = copy.deepcopy(flat)
+        del constructed["claim"]["target"]
+        constructed["claim"]["inputs"]["patch"] = "0" * 64
+        constructed.update(existingTests={"task": "gradle test", "passed": True, "failures": []},
+                           before=flat["after"], after=flat["after"])
+        jsonschema.validate(constructed, schema)
+        for field in ("existingTests", "before", "after"):
+            with self.subTest(field):
+                with self.assertRaises(jsonschema.ValidationError, msg=f"{field}: null only with claim.target"):
+                    jsonschema.validate({**constructed, field: None}, schema)
+        no_claim = {k: v for k, v in constructed.items() if k not in ("claim", "attempt", "conclusion", "bundle")}
+        with self.assertRaises(jsonschema.ValidationError, msg="a format-1 result has no claim, so no null"):
+            jsonschema.validate({**no_claim, "existingTests": None}, schema)
+
     def test_readiness_reads_the_receipts_ingestion_publishes(self):
         def readiness():
             with offline():

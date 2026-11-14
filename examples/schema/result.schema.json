@@ -19,6 +19,13 @@
     "output"
   ],
   "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "Only a target task's receipt (claim.target) may leave existingTests, before and after null: it runs no module tests and has no patch.",
+      "if": { "not": { "required": ["claim"], "properties": { "claim": { "required": ["target"] } } } },
+      "then": { "properties": { "existingTests": { "type": "object" }, "before": { "type": "object" }, "after": { "type": "object" } } }
+    }
+  ],
   "$defs": {
     "advice": {
       "description": "What a run under --gaps advised returns when it reaches gaps with no contract (lib/src/advice.rs).",
@@ -567,8 +574,8 @@
       "type": "boolean"
     },
     "existingTests": {
-      "description": "The module's existing unit tests, run against the patched code: would they have caught the change without the verifier?",
-      "type": "object",
+      "description": "The module's existing unit tests, run against the patched code: would they have caught the change without the verifier? Null only for a target task's receipt (claim.target), whose attempt runs no module tests: its concrete controls are its records.",
+      "type": ["object", "null"],
       "required": [
         "task",
         "passed",
@@ -592,12 +599,12 @@
       }
     },
     "before": {
-      "description": "The changed region before the patch, with context.",
-      "$ref": "#/$defs/excerpt"
+      "description": "The changed region before the patch, with context. A target task's receipt (claim.target) has no patch: its before and after are where target.json names its first and last revision, and its before is null when the task uses one revision.",
+      "anyOf": [{ "$ref": "#/$defs/excerpt" }, { "type": "null" }]
     },
     "after": {
-      "description": "The changed region after the patch, with context.",
-      "$ref": "#/$defs/excerpt"
+      "description": "The changed region after the patch, with context, or, for a target task's receipt, where target.json names its last revision. Null only with claim.target.",
+      "anyOf": [{ "$ref": "#/$defs/excerpt" }, { "type": "null" }]
     },
     "casesTotal": {
       "description": "Size of the input domain when it is finite (B8), or null.",
@@ -1265,7 +1272,7 @@
           "properties": {
             "task": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
             "sidecar": { "description": "The SHA-256 of target.json as the task was planned from it.", "type": "string", "pattern": "^[0-9a-f]{64}$" },
-            "revisions": { "description": "Each revision the task uses, by its name in target.json, with its full commit SHA.", "type": "object", "minProperties": 1, "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{40}$" } },
+            "revisions": { "description": "Each revision the task uses, by its name in target.json, with its identity: its full commit SHA; for a fixture revision, which has no commit, the git tree id of its source directory (`git rev-parse <commit>:<path>`); for a constructed mutant, its base's, the mutant's patch being among the claim's files.", "type": "object", "minProperties": 1, "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{40}$" } },
             "dependencies": {
               "description": "Every classpath entry of each revision, in classpath order: the original artifact, its dependencies, the adapter and driver, each by content.",
               "type": "array",
