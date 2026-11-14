@@ -293,10 +293,18 @@ def dependency_jar(path, entries):
     return path
 
 
-def published_plan(folder, revisions, items, task="replay", network=True, jdks=("21", "25")):
+def published_jars(original, dependencies, shape="published"):
+    """A revision entry's JAR keys: workflow's W1 shape (`published`, in classpath order, a lone item's keys copied
+    up), or the original's keys with `dependencies` beside them."""
+    if shape == "published":
+        return {"published": [original, *dependencies], **(original if not dependencies else {})}
+    return {**original, "dependencies": list(dependencies)}
+
+
+def published_plan(folder, revisions, items, task="replay", network=True, jdks=("21", "25"), shape="published"):
     """items: {revision: (original item, [dependency items])}."""
     artifacts = tuple({"revision": r, "route": "published-artifact", "repository": "https://github.com/pilifs/in-the-loop",
-                       "commit": COMMIT, "tag": f"v-{r}", **items[r][0], "dependencies": list(items[r][1]),
+                       "commit": COMMIT, "tag": f"v-{r}", **published_jars(*items[r], shape=shape),
                        "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"], "jdks": list(jdks)}
                       for r in revisions)
     return interfaces.TaskPlan(
@@ -335,6 +343,29 @@ class PublishedTest(FixtureCopy):
         self.assertIn("not checked against the published bytes", locked.source["linkage"]["status"])
         self.assertEqual(locked.source["driver"]["main"], "fixture.driver.GateDriver")
         self.assertFalse((self.dir / "repo/cache").exists())
+
+    def test_both_entry_shapes_lock_alike_and_a_mix_or_a_disagreement_is_refused(self):
+        """W1's `published` list and the original-plus-`dependencies` shape give the same lock; one with a lone item
+        copied up does too. Both lists at once, an empty list, or a copied-up key that isn't the list's first item's
+        is refused at `lock`, never one of them silently preferred."""
+        locked = {shape: runtime.lock(self.plan(shape=shape), "after") for shape in ("published", "dependencies")}
+        self.assertEqual(locked["published"].stage, "source-locked", locked["published"].diagnostic)
+        self.assertEqual(locked["published"], locked["dependencies"])
+        lone = {"after": (self.items["after"][0], [])}
+        self.assertEqual(runtime.lock(published_plan(self.folder, ("after",), lone), "after").stage, "source-locked")
+
+        def refused(**change):
+            entry = {**self.plan().artifacts[0], **change}
+            return runtime.lock(dataclasses.replace(self.plan(), artifacts=(entry,)), "after")
+        dep = self.items["after"][1]
+        for change, says in (({"dependencies": dep}, "both `published` and `dependencies`"),
+                             ({"published": []}, "not a non-empty list"),
+                             ({"published": "gate.jar"}, "not a non-empty list"),
+                             ({"sha256": self.dep["sha256"]}, "is not its first published JAR's")):
+            with self.subTest(change=sorted(change)):
+                r = refused(**change)
+                self.assertEqual((r.stage, r.failedStage), ("failed", "lock"))
+                self.assertIn(says, r.diagnostic)
 
     def test_artifacts_ready_records_each_jar_in_classpath_order_with_its_origin(self):
         prepared = self.prepare()

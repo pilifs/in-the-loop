@@ -337,10 +337,22 @@ Small unit and JVM conformance checks run inline.
 - Interface request, for review: the verifier can't yet go *through* an adapter (an instance method whose receiver
   only the adapter can construct, for example). The claim schema has no key that names an adapter entry point.
   Until it has, such a task needs a construction plan (`--plan`) or stays a capability gap.
+- 2026-11-14, **W1's `published` list accepted**: a published revision's entry may now carry its JARs as workflow's
+  W1 gives them, `published` in classpath order (the original first, then the dependencies), a lone item's keys copied
+  up. The earlier shape (the original's keys on the entry, `dependencies` beside them) still locks, to the same lock.
+  Refused at `lock`: both lists at once, an empty or malformed list, and a copied-up key that isn't the first item's.
+  The slice now builds W1's shape. `test_runtime.py`: 52 tests. The slice's end-to-end run passed offline from the
+  cache.
+- The integration report of 2026-11-14 16:28 shows the streams conflicting only in generated files
+  (`llm-dlc/README.md`, `llm-dlc/index.json`, `llm-dlc/traces/README.md`, `llm-dlc/traces/metrics.json`), none of them
+  runtime's: the script didn't run. Nothing to coordinate from here; `sync.py` regenerates them.
+- Read-only over the case streams' sidecars: 105, 305 and 307 use `upstream-build` (Maven, the Maven wrapper and the
+  Gradle wrapper, on JDK 11, 8 and 8). No sidecar declares a mutant yet. So the upstream-build route comes before
+  mutant preparation.
 - Next:
-  1. The calibration job's result (`20261114-162937-example-targets-runtime-r3-run-verifier`).
-  2. Accept W1's `published` shape, and prepare a constructed `mutant` (its base patched, then built).
-  3. The upstream-build route as a job.
+  1. The calibration job's result (`20261114-162937-example-targets-runtime-r3-run-verifier`, running).
+  2. The upstream-build route, with 105's pinned revisions as its job.
+  3. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
 - Status: working
 
 ## Loop settings

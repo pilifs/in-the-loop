@@ -206,17 +206,17 @@ FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 
 
 def _lock_published(plan, revision, entry, folder):
-    """A published revision's lock, offline: its JAR and each declared dependency (`dependencies`, in classpath order)
-    by fixed coordinates, an allowed URL and a recorded sha256; the commit and release it is linked to, as recorded."""
+    """A published revision's lock, offline: its JAR and each declared dependency, in classpath order, by fixed
+    coordinates, an allowed URL and a recorded sha256; the commit and release it is linked to, as recorded. The JARs
+    are workflow's W1 `published` list (the original first, then the dependencies, as the sidecar lists them), or the
+    original's keys on the entry itself with `dependencies` beside them."""
     commit = entry.get("commit")
     if not isinstance(commit, str) or not FULL_SHA.match(commit):
         raise Refused("lock", f"revision {revision} names no full commit ({commit!r}): a published artifact is linked "
                               f"to the source revision it was released from")
+    original, dependencies = _published_items(revision, entry)
     try:
-        items = [runtime_maven.check_item({k: entry.get(k) for k in ("coordinates", "url", "sha256")}, "original")]
-        dependencies = entry.get("dependencies") or []
-        if not isinstance(dependencies, list):
-            raise Refused("lock", f"revision {revision}'s dependencies are not a list")
+        items = [runtime_maven.check_item(original, "original")]
         items += [runtime_maven.check_item(d, "dependency") for d in dependencies]
     except runtime_maven.Blocked as b:
         raise Refused.blocked(b) from None
@@ -238,6 +238,30 @@ def _lock_published(plan, revision, entry, folder):
                                           "the published JARs are used as fetched", **_fixture_recipe()},
     }
     return commit, source
+
+
+JAR_KEYS = ("coordinates", "url", "sha256")
+
+
+def _published_items(revision, entry):
+    """The original JAR's item and the dependencies' items, in classpath order, from either shape; never a mix of
+    the two, and never a copied-up key that disagrees with the list it was copied from."""
+    if "published" not in entry:
+        dependencies = entry.get("dependencies") or []
+        if not isinstance(dependencies, list):
+            raise Refused("lock", f"revision {revision}'s dependencies are not a list")
+        return {k: entry.get(k) for k in JAR_KEYS}, dependencies
+    published = entry["published"]
+    if not isinstance(published, list) or not published or not all(isinstance(i, dict) for i in published):
+        raise Refused("lock", f"revision {revision}'s published JARs are not a non-empty list of items")
+    if entry.get("dependencies"):
+        raise Refused("lock", f"revision {revision} names both `published` and `dependencies`: one ordered list says "
+                              f"what is on the classpath, and in which order")
+    for k in JAR_KEYS:
+        if k in entry and entry[k] != published[0].get(k):
+            raise Refused("lock", f"revision {revision}'s {k} {entry[k]!r} is not its first published JAR's "
+                                  f"({published[0].get(k)!r})")
+    return published[0], published[1:]
 
 
 LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published}

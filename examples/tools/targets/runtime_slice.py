@@ -37,8 +37,8 @@ EXAMPLE = "315"  # reserved by the runtime stream (315-319) for this slice; the 
 
 def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
     """The TaskPlan of `task` from the sidecar in `folder`. Each revision's artifact entry carries its commit and tag,
-    its first `preparation.artifacts` item as the original JAR and the rest as `dependencies`, in that order: the
-    shape asked of workflow's W1 under Progress."""
+    and its `preparation.artifacts` items as `published`, in order (the original JAR, then its dependencies), with the
+    keys of a lone item copied up: the shape workflow's W1 `artifact_sources` gives on its branch."""
     folder = Path(folder)
     target = json.loads((folder / "target.json").read_text())
     t = next(x for x in target["tasks"] if x["id"] == task)
@@ -55,7 +55,7 @@ def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
                  for a in prep.get("artifacts", []) if a["revision"] == name]
         entry = {"revision": name, "route": prep["route"], "repository": history["repository"],
                  "commit": revision.get("commit"), **{k: revision[k] for k in ("tag", "release") if k in revision},
-                 **(items[0] if items else {}), "dependencies": items[1:],
+                 "published": items, **(items[0] if len(items) == 1 else {}),
                  "adapters": list(prep.get("adapters", [])), "jdks": list(prep.get("jdks", []))}
         artifacts.append(entry)
     return interfaces.TaskPlan(

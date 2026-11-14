@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T16:29:54.207Z",
-  "duration_seconds": 3787,
+  "ended": "2026-11-14T16:35:53.318Z",
+  "duration_seconds": 4146,
   "stats": {
-    "turns": 25,
-    "api_calls": 201,
-    "tool_calls": 211,
+    "turns": 30,
+    "api_calls": 227,
+    "tool_calls": 236,
     "tool_errors": 3,
-    "compactions": 5,
-    "peak_context_tokens": 228854,
+    "compactions": 6,
+    "peak_context_tokens": 232967,
     "usage": {
-      "input_tokens": 404,
-      "output_tokens": 214741,
-      "cache_read_input_tokens": 24810614,
-      "cache_creation_input_tokens": 782076
+      "input_tokens": 456,
+      "output_tokens": 231118,
+      "cache_read_input_tokens": 27042185,
+      "cache_creation_input_tokens": 868624
     }
   },
   "tools": {
-    "Bash": 174,
+    "Bash": 198,
+    "Read": 13,
     "Edit": 12,
-    "Read": 12,
     "Write": 11,
     "Monitor": 1,
     "ToolSearch": 1
@@ -124,24 +124,38 @@
     {
       "index": 5,
       "started": "2026-11-14T16:13:31.767Z",
-      "ended": "2026-11-14T16:29:54.207Z",
-      "turns": 4,
-      "api_calls": 71,
+      "ended": "2026-11-14T16:30:22.493Z",
+      "turns": 5,
+      "api_calls": 74,
       "usage": {
-        "input_tokens": 144,
-        "output_tokens": 61742,
-        "cache_read_input_tokens": 11278764,
-        "cache_creation_input_tokens": 215668
+        "input_tokens": 150,
+        "output_tokens": 63369,
+        "cache_read_input_tokens": 11969243,
+        "cache_creation_input_tokens": 219781
       },
-      "peak_context_tokens": 228854
+      "peak_context_tokens": 232967
+    },
+    {
+      "index": 6,
+      "started": "2026-11-14T16:31:20.452Z",
+      "ended": "2026-11-14T16:35:53.318Z",
+      "turns": 4,
+      "api_calls": 23,
+      "usage": {
+        "input_tokens": 46,
+        "output_tokens": 14750,
+        "cache_read_input_tokens": 1541092,
+        "cache_creation_input_tokens": 82435
+      },
+      "peak_context_tokens": 95621
     }
   ],
   "log": {
-    "sha256": "bf0f69960c2ca887a2f1c49f02bd7026b36af1d5b56a6d571f09bf8d79debfa4",
-    "bytes": 7179631,
-    "lines": 2318,
-    "gzip_bytes": 1409615,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/bf0f69960c2ca887a2f1c49f02bd7026b36af1d5b56a6d571f09bf8d79debfa4.jsonl.gz"
+    "sha256": "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee",
+    "bytes": 8069568,
+    "lines": 2635,
+    "gzip_bytes": 1595214,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -184,6 +198,14 @@
       "summary": "example-targets runtime R3: run_verifier, jvmcontract on the prepared original artifacts (verification pending)",
       "body": "runtime.run_verifier replaces Phase 0's stub. A prove task runs jvmcontract prove on its revision's original JAR, with its dependencies in classpath order and the claim's assume, assert, throws, nullable and may-alias. An equivalence task runs jvmcontract equivalence between the pair's originals, --unchanged-unless the allowed change. Both get the plan's explicit --engine and --gaps, the claim's bounds, its plan and contracts files (rechecked by sha256) and --json. The run uses a fixed environment with JDK 25 by full path. The result is one raw verifier ExecutionRecord. Its identities record the jvmcontract digest, the JDK, each revision's classpath and commit, a scope label with the loaded class and its origin, models and assumptions, and a capability probe (jvmcontract gaps, a static scan). A one-sided pair, stale bytes or a preparation that isn't ready gives a not-started record. A kill, a timeout or output that isn't the --json outcome gives no observations. What can't be attempted as stated is Unsupported: a replay task, a missing engine, claim models, a changed claim file, differing dependency closures, or no jvmcontract.\n\nFound while dry-running: the fixture's regex-probe failed preparation, because its adapter calls Gate, not RegexGate, so after the merge contract A5's regex-probe row would have failed on runtime's adapter check. Only a replay task's adapter must now call the target. A proof task records the original methods its adapter calls, and run_controls doesn't run controls whose adapter doesn't call the task's target. A plan entry naming a constructed mutant (workflow's W1) is now Unsupported in lock, never prepared as its base. For the merge, recorded under Progress: W1 gives published JARs as a 'published' list, which runtime doesn't read yet.",
       "log_sha256": "bf0f69960c2ca887a2f1c49f02bd7026b36af1d5b56a6d571f09bf8d79debfa4"
+    },
+    {
+      "change_id": "qlvsxysynnkssmqkmszpusxropnvnwkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: accept workflow W1's published JAR list in the published-artifact lock",
+      "body": "A published revision's TaskPlan entry may now carry its JARs the way workflow's W1 artifact_sources gives them on its branch: a published list in classpath order, the original first and then its dependencies, with a lone item's coordinates/url/sha256 copied up. The earlier shape (the original's keys on the entry, dependencies beside them) still locks, to an identical lock. The lock refuses both lists at once, an empty or malformed list, and a copied-up key that disagrees with the list's first item, rather than silently preferring one. runtime_slice.py now builds W1's shape.\n\nVerified: test_runtime.py 52 tests pass (one new, covering both shapes, a lone item and the four refusals); the R5 slice's end-to-end test ran offline from the acquisition cache with the new shape. Progress also notes that the 16:28 integration report's conflicts are only in generated llm-dlc files, and that 105, 305 and 307 need the upstream-build route, which is next.",
+      "log_sha256": "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee"
     }
   ],
   "logs": {
@@ -209,6 +231,12 @@
       "bytes": 7179631,
       "lines": 2318,
       "gzip_bytes": 1409615,
+      "url": null
+    },
+    "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee": {
+      "bytes": 8069568,
+      "lines": 2635,
+      "gzip_bytes": 1595214,
       "url": null
     },
     "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2": {
