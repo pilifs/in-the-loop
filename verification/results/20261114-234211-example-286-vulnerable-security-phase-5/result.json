@@ -1,0 +1,219 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234211-example-286-vulnerable-security-phase-5",
+  "title": "example 286 vulnerable-security (Phase 5 step 1): DataBinder.isAllowed on vulnerable-release, native strict, expected refuted",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2.6s, peak 128.3 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 286 task vulnerable-security (prove)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234211-example-286-vulnerable-security-phase-5.json",
+    "sha256": "e6d010a3560a14f798c23dfcbc1956ba7aa946e1b02cc18548f3a939bb08d1eb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234211-example-286-vulnerable-security-phase-5",
+      "title": "example 286 vulnerable-security (Phase 5 step 1): DataBinder.isAllowed on vulnerable-release, native strict, expected refuted",
+      "description": "The job runs python3 examples/tools/build.py 286 --task vulnerable-security, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 286 is CVE-2022-22968 (Spring Framework 5.3.18 -> 5.3.19, case-sensitive disallowed-field patterns in DataBinder), prepared by the published-artifact route (pinned Central JARs). Workflow plans the task from target.json; runtime prepares vulnerable-release, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z with claims/disallowed-field-denied-ignoring-case.json (claim key d28be1f2f6e9edcd, property, bounds unwind 16, maxArrayLength 8). The claim: With a DataBinder configured through setAllowedFields(allowedPatterns) and setDisallowedFields(disallowedPatterns), isAllowed(field) returns false, and throws nothing, whenever some disallowed pattern, in its canonical form, matches field ignoring ASCII case, a '*' in the pattern matching any sequence (possibly empty) and every other character itself: the documented contract of 5.3.19 (matching against disallowed field patterns is case-insensitive) and the advisory's intent (a disallowed field is protected whatever the case of its characters). For ASCII names and patterns under the root locale. One property and one domain for the vulnerable release (expected refuted: the upstream regression, AGE disallowed, age allowed) and the fixed release (expected established). It is the decision lemma only: that a denied name can't change the bean is the separate protected-state claim (claims/protected-age-not-mutated.json), and nested property paths through a nested bean are a further obligation. Workflow ingests every record into one format-2 receipt under receipts/vulnerable-security/, and build.py exits 0 only when the receipt's matchesExpected is true. Its receiver is a DataBinder, which only the packet's adapter builds and the claim has no construction plan for, so a receiver or toLowerCase/Locale refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/target.json",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/disallowed-field-denied-ignoring-case.json"
+        ],
+        "examples": [
+          "286"
+        ]
+      },
+      "expected": "example 286 task vulnerable-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:11+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+      },
+      "steps": [
+        {
+          "name": "example 286 task vulnerable-security (prove)",
+          "run": "python3 examples/tools/build.py 286 --task vulnerable-security",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:49:51+00:00",
+  "finishedAt": "2026-11-14T23:49:56+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 134557696,
+    "wallSeconds": 2.6,
+    "cpuSeconds": 3.8,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 286 task vulnerable-security (prove)",
+      "run": "python3 examples/tools/build.py 286 --task vulnerable-security",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.605,
+      "cpuSeconds": 3.834,
+      "cpuThrottledSeconds": 0.306,
+      "peakMemoryBytes": 134557696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-286-task-vulnerable-se.log",
+        "lines": 2,
+        "bytes": 340,
+        "sha256": "d0d304fc896e1757b3ecf89e761c49630afc82000a1b2a01205605823ea99738",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-security/20261114T234956Z-0a460582/result.json",
+          "groups": [
+            "286",
+            "vulnerable-security",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task vulnerable-security (target route)",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-security/20261114T234956Z-0a460582/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/plan.json",
+      "change": "added",
+      "bytes": 17858,
+      "sha256": "5393964102750568cbb91c06e30e1407445fcb4b574a1e3e07718cde4e3b321f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/records/execution.json",
+      "change": "added",
+      "bytes": 78665,
+      "sha256": "2010ea0d0463a2ee705504a31c4e6f328579d9e2674526a71a6ee91f01a9e863",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 399,
+      "sha256": "480de09ee26adea41c4cda914dca581a93662adcea0cf0dde32884b810ffe499",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/result.json",
+      "change": "added",
+      "bytes": 17997,
+      "sha256": "16ac11d4ba1fd8812ba00e4acbaca95b9169c646ac69afc0355ce2e4e56300ed",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/plan.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/records/execution.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/records/verifier-output.txt",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261114T234956Z-0a460582/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234211-example-286-vulnerable-security-phase-5"
+}

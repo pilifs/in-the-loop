@@ -1,0 +1,219 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234212-example-286-fixed-protected-state-mutati",
+  "title": "example 286 fixed-protected-state-mutation (Phase 5 step 1): DataBinder.bind on fixed-release, native strict, expected established",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2m02s, peak 156.2 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 286 task fixed-protected-state-mutation (prove)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234212-example-286-fixed-protected-state-mutati.json",
+    "sha256": "27e1b620c489d54600e9e27aeff07f82b76859c66f9caa49f341a170a908a7ec",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234212-example-286-fixed-protected-state-mutati",
+      "title": "example 286 fixed-protected-state-mutation (Phase 5 step 1): DataBinder.bind on fixed-release, native strict, expected established",
+      "description": "The job runs python3 examples/tools/build.py 286 --task fixed-protected-state-mutation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 286 is CVE-2022-22968 (Spring Framework 5.3.18 -> 5.3.19, case-sensitive disallowed-field patterns in DataBinder), prepared by the published-artifact route (pinned Central JARs). Workflow plans the task from target.json; runtime prepares fixed-release, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.validation.DataBinder#bind(Lorg/springframework/beans/PropertyValues;)V with claims/protected-age-not-mutated.json (claim key c4c154224b13e3e2, property, bounds unwind 16, maxArrayLength 8). The claim: The protected-state claim, on the actual binding: with age protected by the single disallowed pattern \"AGE\" (the upstream regression's spelling, upperCasePattern true) or \"age\" (the advisory's), and no allowed patterns, DataBinder.bind of one property value named field with the value \"32\" onto a fresh ProtectedBean (age 0) returns normally and leaves age 0, for every simple property name field. One property and one domain for the vulnerable release (expected refuted: Age, which the bean wrapper's lenient lookup resolves to age, or age against AGE, writes 32) and the fixed release (expected established). Stronger than the decision lemma (it runs the binder's property resolution and conversion) and narrower in configuration (one protected property). Workflow ingests every record into one format-2 receipt under receipts/fixed-protected-state-mutation/, and build.py exits 0 only when the receipt's matchesExpected is true. Its receiver is a DataBinder, which only the packet's adapter builds and the claim has no construction plan for, so a receiver or toLowerCase/Locale refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/target.json",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json"
+        ],
+        "examples": [
+          "286"
+        ]
+      },
+      "expected": "example 286 task fixed-protected-state-mutation gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:12+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+      },
+      "steps": [
+        {
+          "name": "example 286 task fixed-protected-state-mutation (prove)",
+          "run": "python3 examples/tools/build.py 286 --task fixed-protected-state-mutation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:49:51+00:00",
+  "finishedAt": "2026-11-14T23:51:56+00:00",
+  "wallSeconds": 125.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 163840000,
+    "wallSeconds": 122.5,
+    "cpuSeconds": 123.8,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 286 task fixed-protected-state-mutation (prove)",
+      "run": "python3 examples/tools/build.py 286 --task fixed-protected-state-mutation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 122.485,
+      "cpuSeconds": 123.842,
+      "cpuThrottledSeconds": 0.338,
+      "peakMemoryBytes": 163840000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-286-task-fixed-protect.log",
+        "lines": 2,
+        "bytes": 377,
+        "sha256": "40450e8b368d118e27ec6465d3d5c3a9792e1fbc77626cb1c0a5c11f05bc3330",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-protected-state-mutation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/result.json",
+          "groups": [
+            "286",
+            "fixed-protected-state-mutation",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task fixed-protected-state-mutation (target route)",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-protected-state-mutation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/plan.json",
+      "change": "added",
+      "bytes": 13828,
+      "sha256": "475c99e2b5e49b8ff3fe4a91b230d098d8502cafe03805d66fa1792837b98137",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/records/execution.json",
+      "change": "added",
+      "bytes": 68311,
+      "sha256": "9b2d34715cb95a633fb9a35fe4aaff2bf4ba76a97990b9e90988951b91c073db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 413,
+      "sha256": "d20787c49a89491c5b3816db435dfc890878345de66d4bf842180f611386e9d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/result.json",
+      "change": "added",
+      "bytes": 13117,
+      "sha256": "a95a14c8cf72ea624b774b74a85fed5e4cf722fe1fb737fae07673963d807520",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/plan.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/records/execution.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/records/verifier-output.txt",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/fixed-protected-state-mutation/20261114T235155Z-c7021f51/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234212-example-286-fixed-protected-state-mutati"
+}

@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234212-example-286-mutant-security-phase-5-step",
+  "title": "example 286 mutant-security (Phase 5 step 1): DataBinder.isAllowed on mutant, native strict, expected refuted",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 6.6s, peak 243.8 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 286 task mutant-security (prove)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234212-example-286-mutant-security-phase-5-step.json",
+    "sha256": "d2ab47d4ee05acd130477a87d9065641730376b46c8cf2f608948a8e1b455bf5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234212-example-286-mutant-security-phase-5-step",
+      "title": "example 286 mutant-security (Phase 5 step 1): DataBinder.isAllowed on mutant, native strict, expected refuted",
+      "description": "The job runs python3 examples/tools/build.py 286 --task mutant-security, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 286 is CVE-2022-22968 (Spring Framework 5.3.18 -> 5.3.19, case-sensitive disallowed-field patterns in DataBinder), prepared by the published-artifact route (pinned Central JARs). Workflow plans the task from target.json; runtime prepares mutant, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z with claims/disallowed-field-denied-ignoring-case.json (claim key d28be1f2f6e9edcd, property, bounds unwind 16, maxArrayLength 8). The claim: With a DataBinder configured through setAllowedFields(allowedPatterns) and setDisallowedFields(disallowedPatterns), isAllowed(field) returns false, and throws nothing, whenever some disallowed pattern, in its canonical form, matches field ignoring ASCII case, a '*' in the pattern matching any sequence (possibly empty) and every other character itself: the documented contract of 5.3.19 (matching against disallowed field patterns is case-insensitive) and the advisory's intent (a disallowed field is protected whatever the case of its characters). For ASCII names and patterns under the root locale. One property and one domain for the vulnerable release (expected refuted: the upstream regression, AGE disallowed, age allowed) and the fixed release (expected established). It is the decision lemma only: that a denied name can't change the bean is the separate protected-state claim (claims/protected-age-not-mutated.json), and nested property paths through a nested bean are a further obligation. Workflow ingests every record into one format-2 receipt under receipts/mutant-security/, and build.py exits 0 only when the receipt's matchesExpected is true. Its receiver is a DataBinder, which only the packet's adapter builds and the claim has no construction plan for, so a receiver or toLowerCase/Locale refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/target.json",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/disallowed-field-denied-ignoring-case.json"
+        ],
+        "examples": [
+          "286"
+        ]
+      },
+      "expected": "example 286 task mutant-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:12+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+      },
+      "steps": [
+        {
+          "name": "example 286 task mutant-security (prove)",
+          "run": "python3 examples/tools/build.py 286 --task mutant-security",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:49:56+00:00",
+  "finishedAt": "2026-11-14T23:50:04+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 255619072,
+    "wallSeconds": 6.6,
+    "cpuSeconds": 7.7,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 286 task mutant-security (prove)",
+      "run": "python3 examples/tools/build.py 286 --task mutant-security",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.613,
+      "cpuSeconds": 7.652,
+      "cpuThrottledSeconds": 0.705,
+      "peakMemoryBytes": 255619072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-286-task-mutant-securi.log",
+        "lines": 2,
+        "bytes": 328,
+        "sha256": "d09d2d1b0ec41edaad50d519f11afde7dea66af91d9357ea75947e92b7b850aa",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261114T235004Z-4a39a02a/result.json",
+          "groups": [
+            "286",
+            "mutant-security",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task mutant-security (target route)",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261114T235004Z-4a39a02a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/plan.json",
+      "change": "added",
+      "bytes": 20041,
+      "sha256": "bfaa6620b3593ebc5a59d4ef1b25c20a0a25a92369cb315a254924824e0dd05d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/records/execution.json",
+      "change": "added",
+      "bytes": 80106,
+      "sha256": "1df9d2bf941bd2684768b485fa234029e703890e4cbe278e54b5a39a8ccdbf95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 399,
+      "sha256": "480de09ee26adea41c4cda914dca581a93662adcea0cf0dde32884b810ffe499",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/result.json",
+      "change": "added",
+      "bytes": 18037,
+      "sha256": "b13d1dd914225a3264b2116cfdea1da70f90cab6a04a7fa8faa81394cc9e3218",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/plan.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/records/execution.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/records/verifier-output.txt",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261114T235004Z-4a39a02a/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234212-example-286-mutant-security-phase-5-step"
+}

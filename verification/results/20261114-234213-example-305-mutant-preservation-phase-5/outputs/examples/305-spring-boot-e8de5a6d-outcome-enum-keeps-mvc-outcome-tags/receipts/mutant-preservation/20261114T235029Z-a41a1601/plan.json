@@ -1,0 +1,479 @@
+{
+  "plan": {
+    "example": "305",
+    "task": "mutant-preservation",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+    "revisions": [
+      "after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "file": "claims/outcome-preservation.json",
+      "sha256": "1f5db90c01ae8c674b2257a25caf28067ed2dd99c82707cdcbb7c56484dd315b",
+      "property": "mvc-outcome-tag-preserved",
+      "claimKind": "preservation",
+      "statement": "Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [
+        "response"
+      ],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
+          "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
+        },
+        {
+          "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
+          "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
+        },
+        {
+          "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
+          "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
+        },
+        {
+          "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
+          "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "outcome-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
+        },
+        {
+          "id": "outcome-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p305/OutcomeDriver.java",
+          "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
+        },
+        {
+          "id": "outcome-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
+        },
+        {
+          "id": "status-200-mutant",
+          "kind": "mutation",
+          "path": "controls/status-200.patch",
+          "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+        }
+      ],
+      "key": "98f4a389c1ccd7ff"
+    },
+    "prerequisites": [
+      "mutant-replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+          },
+          {
+            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+          },
+          {
+            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+          },
+          {
+            "coordinates": "io.micrometer:micrometer-core:1.2.0",
+            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+          },
+          {
+            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+          }
+        ],
+        "slice": {
+          "files": [
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-parameters",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "mutant": {
+          "base": {
+            "revision": "after",
+            "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+                "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+              },
+              {
+                "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+                "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+              },
+              {
+                "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+                "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+                "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+              },
+              {
+                "coordinates": "io.micrometer:micrometer-core:1.2.0",
+                "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+                "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+              },
+              {
+                "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+                "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+                "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+              }
+            ],
+            "slice": {
+              "files": [
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+              ],
+              "jdk": "8",
+              "flags": [
+                "-g",
+                "-parameters",
+                "-source",
+                "1.8",
+                "-target",
+                "1.8",
+                "-encoding",
+                "UTF-8"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/status-200.patch",
+            "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+          },
+          "description": "Outcome.forStatus's first range takes 200 too (status <= 200), so WebMvcTags.outcome labels a 200 response INFORMATIONAL instead of SUCCESS. It breaks preservation at status 200 and only there; the label stays in the finite set, so the finite-outcome property holds on the mutant by design."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/mutant-preservation"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234213-example-305-mutant-preservation-phase-5/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags",
+    "network": true
+  },
+  "inputs": {
+    "example": "305",
+    "task": "mutant-preservation",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+    "revisions": [
+      "after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "file": "claims/outcome-preservation.json",
+      "sha256": "1f5db90c01ae8c674b2257a25caf28067ed2dd99c82707cdcbb7c56484dd315b",
+      "property": "mvc-outcome-tag-preserved",
+      "claimKind": "preservation",
+      "statement": "Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [
+        "response"
+      ],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
+          "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
+        },
+        {
+          "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
+          "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
+        },
+        {
+          "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
+          "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
+        },
+        {
+          "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
+          "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "outcome-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
+        },
+        {
+          "id": "outcome-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p305/OutcomeDriver.java",
+          "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
+        },
+        {
+          "id": "outcome-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
+        },
+        {
+          "id": "status-200-mutant",
+          "kind": "mutation",
+          "path": "controls/status-200.patch",
+          "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+        }
+      ],
+      "key": "98f4a389c1ccd7ff"
+    },
+    "artifacts": [
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+          },
+          {
+            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+          },
+          {
+            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+          },
+          {
+            "coordinates": "io.micrometer:micrometer-core:1.2.0",
+            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+          },
+          {
+            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+          }
+        ],
+        "slice": {
+          "files": [
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-parameters",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "mutant": {
+          "base": {
+            "revision": "after",
+            "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+                "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+              },
+              {
+                "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+                "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+              },
+              {
+                "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+                "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+                "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+              },
+              {
+                "coordinates": "io.micrometer:micrometer-core:1.2.0",
+                "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+                "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+              },
+              {
+                "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+                "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+                "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+              }
+            ],
+            "slice": {
+              "files": [
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+              ],
+              "jdk": "8",
+              "flags": [
+                "-g",
+                "-parameters",
+                "-source",
+                "1.8",
+                "-target",
+                "1.8",
+                "-encoding",
+                "UTF-8"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/status-200.patch",
+            "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+          },
+          "description": "Outcome.forStatus's first range takes 200 too (status <= 200), so WebMvcTags.outcome labels a 200 response INFORMATIONAL instead of SUCCESS. It breaks preservation at status 200 and only there; the label stays in the finite set, so the finite-outcome property holds on the mutant by design."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "17554e4ab539a36b8637a0803083f5131af2bd0b8817c863e760a3803e6a95c1"
+}

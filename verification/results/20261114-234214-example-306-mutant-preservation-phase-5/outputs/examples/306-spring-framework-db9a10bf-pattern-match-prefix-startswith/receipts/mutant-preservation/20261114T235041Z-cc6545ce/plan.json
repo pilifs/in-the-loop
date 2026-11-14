@@ -1,0 +1,321 @@
+{
+  "plan": {
+    "example": "306",
+    "task": "mutant-preservation",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+    "revisions": [
+      "release-after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "file": "claims/simple-match-preservation.json",
+      "sha256": "a1687c4fcd05a1a1a47b8d0ef383c4490e1e247c2d673cca7c12f84ec3d17073",
+      "property": "simple-match-decision-preserved",
+      "claimKind": "preservation",
+      "statement": "Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [
+        "pattern",
+        "str"
+      ],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
+          "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
+        },
+        {
+          "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
+          "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
+        },
+        {
+          "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
+          "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 6
+      },
+      "explicitBounds": {
+        "maxArrayLength": 6,
+        "unwind": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "glob-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
+        },
+        {
+          "id": "simple-match-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
+          "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
+        },
+        {
+          "id": "simple-match-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
+        },
+        {
+          "id": "drop-prefix-mutant",
+          "kind": "mutation",
+          "path": "controls/drop-prefix.patch",
+          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+        }
+      ],
+      "key": "51d7f1127b4df870"
+    },
+    "prerequisites": [
+      "mutant-replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release-after",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-core:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "mutant": {
+          "base": {
+            "revision": "release-after",
+            "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-core:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+                "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+                "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/drop-prefix.patch",
+            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+          },
+          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/mutant-preservation"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234214-example-306-mutant-preservation-phase-5/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith",
+    "network": true
+  },
+  "inputs": {
+    "example": "306",
+    "task": "mutant-preservation",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+    "revisions": [
+      "release-after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "file": "claims/simple-match-preservation.json",
+      "sha256": "a1687c4fcd05a1a1a47b8d0ef383c4490e1e247c2d673cca7c12f84ec3d17073",
+      "property": "simple-match-decision-preserved",
+      "claimKind": "preservation",
+      "statement": "Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [
+        "pattern",
+        "str"
+      ],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
+          "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
+        },
+        {
+          "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
+          "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
+        },
+        {
+          "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
+          "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 6
+      },
+      "explicitBounds": {
+        "maxArrayLength": 6,
+        "unwind": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "glob-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
+        },
+        {
+          "id": "simple-match-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
+          "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
+        },
+        {
+          "id": "simple-match-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
+        },
+        {
+          "id": "drop-prefix-mutant",
+          "kind": "mutation",
+          "path": "controls/drop-prefix.patch",
+          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+        }
+      ],
+      "key": "51d7f1127b4df870"
+    },
+    "artifacts": [
+      {
+        "revision": "release-after",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-core:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "mutant": {
+          "base": {
+            "revision": "release-after",
+            "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-core:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+                "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+                "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/drop-prefix.patch",
+            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+          },
+          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "0a5b26dd0822d2601b2b395b7169018cd96f66e888c16b7d9b24c1dc0e24c8cb"
+}

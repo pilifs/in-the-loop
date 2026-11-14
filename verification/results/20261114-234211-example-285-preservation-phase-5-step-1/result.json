@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234211-example-285-preservation-phase-5-step-1",
+  "title": "example 285 preservation (Phase 5 step 1): WebMvcTags.method on vulnerable-release and fixed-release, native strict, expected established",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.8s, peak 125.8 MiB (estimated 30m00s, 4.0 GiB); signals: example:not-executed×1",
+  "attention": [
+    "declared output examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation was not produced",
+    "step 1 (example 285 task preservation (equivalence)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234211-example-285-preservation-phase-5-step-1.json",
+    "sha256": "055536ce897d6bee1bdd86dcc8386931502074b097b68863540d025008588651",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234211-example-285-preservation-phase-5-step-1",
+      "title": "example 285 preservation (Phase 5 step 1): WebMvcTags.method on vulnerable-release and fixed-release, native strict, expected established",
+      "description": "The job runs python3 examples/tools/build.py 285 --task preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 285 is CVE-2023-34055 (Spring Boot 2.7.17 -> 2.7.18, unbounded HTTP method labels in WebMvcTags.method), prepared by the published-artifact route (14 pinned JARs from Maven Central, each sha256-checked). Workflow plans the task from target.json; runtime prepares vulnerable-release and fixed-release, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag; with claims/known-method-labels-preserved.json (claim key daec01225d6313a5, preservation, bounds unwind 16, maxArrayLength 8). The claim: Outside the allowed-change region (the preservation task's allowedChange: a non-null request whose method is none of GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS and TRACE), the vulnerable and fixed releases give the same outcome: for each of those eight names, spelled exactly so, the tag method=<name>; for a null request, the tag method=UNKNOWN; neither throws. Tags are compared by key and value (micrometer's ImmutableTag.equals), not by identity. Inside the region the fix may change the label (to UNKNOWN), which the security property constrains, not this claim. Workflow ingests every record into one format-2 receipt under receipts/preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletRequest, a library interface: application-core's native checker passes an application-interface dependency as null and refuses it if reached, so an interface-argument refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/target.json",
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/claims/known-method-labels-preserved.json"
+        ],
+        "examples": [
+          "285"
+        ]
+      },
+      "expected": "example 285 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:11+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+      },
+      "steps": [
+        {
+          "name": "example 285 task preservation (equivalence)",
+          "run": "python3 examples/tools/build.py 285 --task preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:49:51+00:00",
+  "finishedAt": "2026-11-14T23:49:57+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 131878912,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 6.1,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 285 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 285 --task preservation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.807,
+      "cpuSeconds": 6.071,
+      "cpuThrottledSeconds": 0.414,
+      "peakMemoryBytes": 131878912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-preservation.log",
+        "lines": 3,
+        "bytes": 475,
+        "sha256": "8aadb277bd6c33cdf4b30629f896df69f79735db5c28b7c2b2210a1c035ca692",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:not-executed": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 2,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both)",
+          "groups": [
+            "285",
+            "task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both"
+          ]
+        }
+      ],
+      "tail": [
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task preservation (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both)",
+        "Not executed: 285-spring-boot-cve-2023-34055-unbounded-http-method-labels"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234211-example-285-preservation-phase-5-step-1"
+}

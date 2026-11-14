@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234213-example-305-mutant-preservation-phase-5",
+  "title": "example 305 mutant-preservation (Phase 5 step 1): WebMvcTags.outcome on after and mutant, native strict, expected refuted",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 7.2s, peak 273.8 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 305 task mutant-preservation (equivalence)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234213-example-305-mutant-preservation-phase-5.json",
+    "sha256": "68247aedddf600f70e894ccff4c0bd2c89d047ca4249784df3353b2ccd94e290",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234213-example-305-mutant-preservation-phase-5",
+      "title": "example 305 mutant-preservation (Phase 5 step 1): WebMvcTags.outcome on after and mutant, native strict, expected refuted",
+      "description": "The job runs python3 examples/tools/build.py 305 --task mutant-preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 305 is Spring Boot e8de5a6d (the Outcome enum keeps WebMvcTags' MVC outcome tags), the independent positive of CVE-2023-34055's family, prepared by the source-slice route the user decided: each commit's WebMvcTags and Outcome compiled alone with javac 8 against six pinned JARs; scope extracted-source-slice (the after slice is byte-identical to Boot 2.2.0.M6's published classes, and job 20261114-232734's m6-replay showed the same observations). Workflow plans the task from target.json; runtime prepares after and mutant, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag; with claims/outcome-preservation.json (claim key 98f4a389c1ccd7ff, preservation, bounds unwind 16, maxArrayLength 8). The claim: Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it. Workflow ingests every record into one format-2 receipt under receipts/mutant-preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletResponse, a library interface, and after's Outcome enum has a static initializer outside the fragment: either is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/claims/outcome-preservation.json"
+        ],
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "example 305 task mutant-preservation gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:13+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+      },
+      "steps": [
+        {
+          "name": "example 305 task mutant-preservation (equivalence)",
+          "run": "python3 examples/tools/build.py 305 --task mutant-preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:50:21+00:00",
+  "finishedAt": "2026-11-14T23:50:29+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+  },
+  "usage": {
+    "peakMemoryBytes": 287141888,
+    "wallSeconds": 7.2,
+    "cpuSeconds": 7.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task mutant-preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 305 --task mutant-preservation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 7.214,
+      "cpuSeconds": 7.231,
+      "cpuThrottledSeconds": 0.366,
+      "peakMemoryBytes": 287141888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-mutant-preser.log",
+        "lines": 2,
+        "bytes": 324,
+        "sha256": "1c954f20e02a3b2b7b8df356c4c2d15bce32180ada3a8de49c997c3982f11529",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261114T235029Z-a41a1601/result.json",
+          "groups": [
+            "305",
+            "mutant-preservation",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task mutant-preservation (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261114T235029Z-a41a1601/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/plan.json",
+      "change": "added",
+      "bytes": 24455,
+      "sha256": "609cbad619672779744575fd53ddae284a292b1a8689bae2301d9d3012aafd94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/records/execution.json",
+      "change": "added",
+      "bytes": 55023,
+      "sha256": "2696c4efbe36a3dd3043de17210556b4c128210b3dc1ae522508ea253d192a6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 364,
+      "sha256": "6867e320e32baef09b9115492d291b585f9ac9256e24419cd386d30363682d2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/result.json",
+      "change": "added",
+      "bytes": 16215,
+      "sha256": "0adcde205bf02b580f18bb03b16cfa0b2fe15d018e515a3af6955511284493dd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/records/verifier-output.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234213-example-305-mutant-preservation-phase-5"
+}

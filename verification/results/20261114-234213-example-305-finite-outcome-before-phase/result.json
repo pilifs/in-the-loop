@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234213-example-305-finite-outcome-before-phase",
+  "title": "example 305 finite-outcome-before (Phase 5 step 1): WebMvcTags.outcome on before, native strict, expected established",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.8s, peak 186.7 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 305 task finite-outcome-before (prove)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234213-example-305-finite-outcome-before-phase.json",
+    "sha256": "c8f1a80d27eaa5780e9d0b59d9ca350da83725a5a1ea830eb8c5575d5a6045d0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234213-example-305-finite-outcome-before-phase",
+      "title": "example 305 finite-outcome-before (Phase 5 step 1): WebMvcTags.outcome on before, native strict, expected established",
+      "description": "The job runs python3 examples/tools/build.py 305 --task finite-outcome-before, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 305 is Spring Boot e8de5a6d (the Outcome enum keeps WebMvcTags' MVC outcome tags), the independent positive of CVE-2023-34055's family, prepared by the source-slice route the user decided: each commit's WebMvcTags and Outcome compiled alone with javac 8 against six pinned JARs; scope extracted-source-slice (the after slice is byte-identical to Boot 2.2.0.M6's published classes, and job 20261114-232734's m6-replay showed the same observations). Workflow plans the task from target.json; runtime prepares before, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag; with claims/finite-outcome.json (claim key 46b0bb5f1f51a112, property, bounds unwind 16, maxArrayLength 8). The claim: WebMvcTags.outcome(HttpServletResponse response) keeps its tag dimension finite: for a null response, and for a response whose getStatus() returns any int, the result is a Tag whose key is \"outcome\" and whose value is one of INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR and UNKNOWN, and nothing is thrown. Shared by the tasks finite-outcome-before and finite-outcome-after: one property and domain, two artifact-bound claim identities. Established says this one tag dimension of this one entry has at most six values; it says nothing about the server, the release, or the other tags. Workflow ingests every record into one format-2 receipt under receipts/finite-outcome-before/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletResponse, a library interface, and after's Outcome enum has a static initializer outside the fragment: either is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/claims/finite-outcome.json"
+        ],
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "example 305 task finite-outcome-before gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:13+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+      },
+      "steps": [
+        {
+          "name": "example 305 task finite-outcome-before (prove)",
+          "run": "python3 examples/tools/build.py 305 --task finite-outcome-before",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:50:17+00:00",
+  "finishedAt": "2026-11-14T23:50:22+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+  },
+  "usage": {
+    "peakMemoryBytes": 195805184,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 3.7,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task finite-outcome-before (prove)",
+      "run": "python3 examples/tools/build.py 305 --task finite-outcome-before",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.809,
+      "cpuSeconds": 3.712,
+      "cpuThrottledSeconds": 0.234,
+      "peakMemoryBytes": 195805184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-finite-outcom.log",
+        "lines": 2,
+        "bytes": 334,
+        "sha256": "58b13151a7357638f519cc163762425963ba07defd11bf1d8ccf41ac579c06e6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/finite-outcome-before/20261114T235022Z-a2d6485c/result.json",
+          "groups": [
+            "305",
+            "finite-outcome-before",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task finite-outcome-before (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/finite-outcome-before/20261114T235022Z-a2d6485c/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/plan.json",
+      "change": "added",
+      "bytes": 14020,
+      "sha256": "5b713cc867ce45e49a2d3a7455bf400bc5eed6dc09da721c25487de986b68dbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/records/execution.json",
+      "change": "added",
+      "bytes": 29734,
+      "sha256": "b65506c0ac80c6fadbd99ec00e171d39ca53699251ac9425eedecf14052bae5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 362,
+      "sha256": "966ed3f7c045469822bd505f553c09bf00336bfc1153f10a1a9371895a2d3d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/result.json",
+      "change": "added",
+      "bytes": 13848,
+      "sha256": "e848fba591787b5920d358c5a85c08fadf068f740035254bb3a9678c29617884",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/records/verifier-output.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261114T235022Z-a2d6485c/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234213-example-305-finite-outcome-before-phase"
+}

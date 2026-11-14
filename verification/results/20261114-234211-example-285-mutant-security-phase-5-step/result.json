@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234211-example-285-mutant-security-phase-5-step",
+  "title": "example 285 mutant-security (Phase 5 step 1): WebMvcTags.method on mutant, native strict, expected refuted",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2m05s, peak 252.6 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 285 task mutant-security (prove)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234211-example-285-mutant-security-phase-5-step.json",
+    "sha256": "974d37bd8d1d45f0411830f5c2e97bb06799083eeb30eb52f7ca26f16efec8d7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234211-example-285-mutant-security-phase-5-step",
+      "title": "example 285 mutant-security (Phase 5 step 1): WebMvcTags.method on mutant, native strict, expected refuted",
+      "description": "The job runs python3 examples/tools/build.py 285 --task mutant-security, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 285 is CVE-2023-34055 (Spring Boot 2.7.17 -> 2.7.18, unbounded HTTP method labels in WebMvcTags.method), prepared by the published-artifact route (14 pinned JARs from Maven Central, each sha256-checked). Workflow plans the task from target.json; runtime prepares mutant, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag; with claims/bounded-method-label.json (claim key 196346d46d4d81fb, property, bounds unwind 16, maxArrayLength 8). The claim: For a null request, or a request whose getMethod() returns any non-null String, WebMvcTags.method(request) returns a tag whose key is \"method\" and whose value is one of GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE and UNKNOWN, and throws nothing. The set is version-specific and frozen: the constants of Spring Framework 5.3's HttpMethod (5.3.30 and 5.3.31, the same source) and the UNKNOWN sentinel. One property and one domain for the vulnerable release (expected refuted: it emits the raw token, XSCF among the probes) and the fixed release (expected established). It bounds one label dimension of one metric entry point: it says nothing of the uri, status, outcome or exception tags, of WebFluxTags.method, of total metric cardinality or of the application's availability. Workflow ingests every record into one format-2 receipt under receipts/mutant-security/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletRequest, a library interface: application-core's native checker passes an application-interface dependency as null and refuses it if reached, so an interface-argument refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/target.json",
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/claims/bounded-method-label.json"
+        ],
+        "examples": [
+          "285"
+        ]
+      },
+      "expected": "example 285 task mutant-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:11+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+      },
+      "steps": [
+        {
+          "name": "example 285 task mutant-security (prove)",
+          "run": "python3 examples/tools/build.py 285 --task mutant-security",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:49:51+00:00",
+  "finishedAt": "2026-11-14T23:51:59+00:00",
+  "wallSeconds": 128.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 264830976,
+    "wallSeconds": 125.7,
+    "cpuSeconds": 126.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 285 task mutant-security (prove)",
+      "run": "python3 examples/tools/build.py 285 --task mutant-security",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 125.691,
+      "cpuSeconds": 126.308,
+      "cpuThrottledSeconds": 0.33,
+      "peakMemoryBytes": 264830976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-mutant-securi.log",
+        "lines": 2,
+        "bytes": 310,
+        "sha256": "caea9848262b7fd80fe0ecc38b3849df552d672a8fb15a8f915df6862b0f5822",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261114T235158Z-ca070d91/result.json",
+          "groups": [
+            "285",
+            "mutant-security",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task mutant-security (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261114T235158Z-ca070d91/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/plan.json",
+      "change": "added",
+      "bytes": 17546,
+      "sha256": "883e095cac8e5c3013b00a44844c9b2e0de79c1d0d415f48b4c53e43e8dccac9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/records/execution.json",
+      "change": "added",
+      "bytes": 32934,
+      "sha256": "e9e9b441ae1f4c6431e1c61ec025f19ca065fd83a99cda8216544a5e18d2483f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 357,
+      "sha256": "814347b9151a8a65de308c56d4aba5f6d35b3832092dc402b0cf361181f6c343",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/result.json",
+      "change": "added",
+      "bytes": 15427,
+      "sha256": "7101e53ce67dfb22338a266bbe582444babd27eadfaa8da0931688154157f94e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/plan.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/records/execution.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/records/verifier-output.txt",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security/20261114T235158Z-ca070d91/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234211-example-285-mutant-security-phase-5-step"
+}

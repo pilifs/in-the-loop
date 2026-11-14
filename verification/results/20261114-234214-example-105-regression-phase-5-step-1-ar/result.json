@@ -1,0 +1,217 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234214-example-105-regression-phase-5-step-1-ar",
+  "title": "example 105 regression (Phase 5 step 1): ArithmeticUtils.pow on before and after, native strict, expected refuted",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m41s, peak 808.8 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-234214-example-105-regression-phase-5-step-1-ar.json",
+    "sha256": "a4282e8269934b02136a2f7259d4be1985e0547ff264892cd4db899b65bc7ad7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234214-example-105-regression-phase-5-step-1-ar",
+      "title": "example 105 regression (Phase 5 step 1): ArithmeticUtils.pow on before and after, native strict, expected refuted",
+      "description": "The job runs python3 examples/tools/build.py 105 --task regression, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 105 is commons-numbers pull request 223 (ArithmeticUtils.pow(int,int), e7c172d2 -> 8cfc04e8), the calibration migrated to the target route; its fix-property tasks gave gate A5 (established and refuted with the witness (-2, 31)). Workflow plans the task from target.json; runtime prepares before and after, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I with claims/pow-preservation.json (claim key 1d76c0d0c405f392, preservation, bounds unwind 16, maxArrayLength 8). The claim: Preservation of ArithmeticUtils.pow(int k, int e) between e7c172d2 and 8cfc04e8: on every (k, e) outside the task's allowedChange, both revisions return the same int or throw the same exception class. Two tasks share it. regression has no allowedChange and is expected refuted, at k = -2, e = 31, the change the pull request intends (the historical report's first row). confined-change has allowedChange 'k == -2 && e == 31', the pull request's stated intent, and is expected established on the other 2^64 - 1 inputs (the report's second row). The exception's message is not observed. Workflow ingests every record into one format-2 receipt under receipts/regression/, and build.py exits 0 only when the receipt's matchesExpected is true. Both parameters are ints, inside the native checker's supported domain. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/target.json",
+          "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/claims/pow-preservation.json"
+        ],
+        "examples": [
+          "105"
+        ]
+      },
+      "expected": "example 105 task regression gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:14+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "one Maven build of one module per commit on JDK 11 (59 s in runtime's R2), two short JVM runs, one native strict proof over two ints"
+      },
+      "steps": [
+        {
+          "name": "example 105 task regression (equivalence)",
+          "run": "python3 examples/tools/build.py 105 --task regression",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:50:32+00:00",
+  "finishedAt": "2026-11-14T23:55:16+00:00",
+  "wallSeconds": 284.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "one Maven build of one module per commit on JDK 11 (59 s in runtime's R2), two short JVM runs, one native strict proof over two ints"
+  },
+  "usage": {
+    "peakMemoryBytes": 848060416,
+    "wallSeconds": 281.8,
+    "cpuSeconds": 306.6,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task regression (equivalence)",
+      "run": "python3 examples/tools/build.py 105 --task regression",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 281.763,
+      "cpuSeconds": 306.604,
+      "cpuThrottledSeconds": 7.552,
+      "peakMemoryBytes": 848060416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-regression-eq.log",
+        "lines": 2,
+        "bytes": 260,
+        "sha256": "2874ac9995a7ca0db6bd3514793a0a6fb7af5a3784dd2338960a3e91ade016d1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task regression: refuted (completed; as expected), receipt receipts/regression/20261114T235516Z-061637d0/result.json",
+          "groups": [
+            "105",
+            "regression",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task regression (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task regression: refuted (completed; as expected), receipt receipts/regression/20261114T235516Z-061637d0/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/plan.json",
+      "change": "added",
+      "bytes": 11431,
+      "sha256": "ac2346d1c8fd2e234a37042f4f78b2a004a42e23480ebbeaa1e01459b90d060b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/records/execution.json",
+      "change": "added",
+      "bytes": 75179,
+      "sha256": "33117d62ffb3b396f82d9a50f97d6f5d8f1b646c215c82cc5f3cbb403b1012e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 509,
+      "sha256": "607d616d8ca4d9e08a7629e83f2254c75526cd5fd334d6f0e3fd9d98d4f68663",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/result.json",
+      "change": "added",
+      "bytes": 11762,
+      "sha256": "17042189f74c53fa6f3255d486aec86aba8db8945fba5aa709fbd273d9bf464a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/plan.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/records/execution.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/records/verifier-output.txt",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/regression/20261114T235516Z-061637d0/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

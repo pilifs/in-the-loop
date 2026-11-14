@@ -12,30 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T23:48:25.644Z",
-  "duration_seconds": 19385,
+  "ended": "2026-11-14T23:58:09.471Z",
+  "duration_seconds": 19969,
   "stats": {
-    "turns": 114,
-    "api_calls": 857,
-    "tool_calls": 872,
-    "tool_errors": 17,
-    "compactions": 20,
+    "turns": 118,
+    "api_calls": 910,
+    "tool_calls": 932,
+    "tool_errors": 18,
+    "compactions": 21,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 1742,
-      "output_tokens": 574076,
-      "cache_read_input_tokens": 103487566,
-      "cache_creation_input_tokens": 2842254
+      "input_tokens": 1850,
+      "output_tokens": 611148,
+      "cache_read_input_tokens": 110898077,
+      "cache_creation_input_tokens": 3031776
     }
   },
   "tools": {
-    "Bash": 752,
-    "Read": 58,
-    "Edit": 51,
-    "Agent": 4,
+    "Bash": 800,
+    "Read": 63,
+    "Edit": 56,
+    "Agent": 5,
+    "Write": 3,
     "AskUserQuestion": 2,
     "ToolSearch": 2,
-    "Write": 2,
     "WebFetch": 1
   },
   "files_touched": [
@@ -45,10 +45,13 @@
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/runtime_simplematch/README.md",
     "examples/tools/targets/runtime_upstream.py",
+    "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_runtime.py",
     "examples/tools/targets/test_workflow.py",
+    "examples/tools/targets/workflow.py",
+    "examples/tools/targets/workflow_handoff.py",
     "llm-dlc/loops/example-targets.md",
     "verification/pipeline.py",
     "verification/test_pipeline.py",
@@ -348,16 +351,57 @@
         "cache_creation_input_tokens": 127275
       },
       "peak_context_tokens": 140461
+    },
+    {
+      "index": 21,
+      "started": "2026-11-14T23:49:16.687Z",
+      "ended": "2026-11-14T23:58:09.471Z",
+      "turns": 4,
+      "api_calls": 53,
+      "usage": {
+        "input_tokens": 108,
+        "output_tokens": 37072,
+        "cache_read_input_tokens": 7410511,
+        "cache_creation_input_tokens": 189522
+      },
+      "peak_context_tokens": 202710
     }
   ],
   "log": {
-    "sha256": "317af522321d27f364f68ede4467147297fdc8398fd47b2e2353e1d078646183",
-    "bytes": 28229246,
-    "lines": 8933,
-    "gzip_bytes": 5953478,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/317af522321d27f364f68ede4467147297fdc8398fd47b2e2353e1d078646183.jsonl.gz"
+    "sha256": "13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff",
+    "bytes": 29848021,
+    "lines": 9470,
+    "gzip_bytes": 6260999,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff.jsonl.gz"
   },
   "subagents": [
+    {
+      "agent": "agent-a0598c3d80b58c0bf",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "stats": {
+        "turns": 0,
+        "api_calls": 8,
+        "tool_calls": 9,
+        "tool_errors": 0,
+        "compactions": 0,
+        "peak_context_tokens": 34293,
+        "usage": {
+          "input_tokens": 16,
+          "output_tokens": 5048,
+          "cache_read_input_tokens": 200791,
+          "cache_creation_input_tokens": 34291
+        }
+      },
+      "log": {
+        "sha256": "c8f8266e2e5e822449b62c06bb531ab3443dd2d44a7c600287b903650d2af52e",
+        "bytes": 287627,
+        "lines": 60,
+        "gzip_bytes": 65228,
+        "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/c8f8266e2e5e822449b62c06bb531ab3443dd2d44a7c600287b903650d2af52e.jsonl.gz"
+      }
+    },
     {
       "agent": "agent-a44c5aa25a6cab303",
       "models": [
@@ -741,20 +785,28 @@
       "log_sha256": "8357cd68475cb36a579983cbc98d20770254209274f719d723c4ece2c3b8555f"
     },
     {
-      "change_id": "uwuovwummznmwqlolnslmuluxtokomxx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "317af522321d27f364f68ede4467147297fdc8398fd47b2e2353e1d078646183"
-    },
-    {
       "change_id": "mtvwvktkzotppxxkylzyonntsutntvuv",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 4 job(s): example 105's replay and the 285-287 mutant replays pass",
       "body": "Jobs 20261114-233239 example-105 replay and example-285/286/287 mutant-replay all passed (one step each, 6-54 s, peaks under 1 GiB against 3 GiB estimated; estimates far high). Each task result was as expected; the receipts and results were applied. Run on vm-1 with the streams row (38G, 18 CPUs, 9 workers). No findings.",
       "log_sha256": "317af522321d27f364f68ede4467147297fdc8398fd47b2e2353e1d078646183"
+    },
+    {
+      "change_id": "rlozrppxlzsstoqqomoqvtqvvsuuynxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff"
+    },
+    {
+      "change_id": "ynvtsvxsskomosnnnsvopwrmuqrqxuzv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 24 job(s): 105's regression passes; 23 Phase 5 proof jobs give no verdict (VF-027)",
+      "body": "Jobs 20261114-234211..234214 (285, 286, 287, 305, 306 and 105, queued at 72a1337a1529 by the example-targets loop) ran on vm-1. 20261114-234214-example-105-regression passed (refuted, as expected; outputs applied). The other 23 failed without a verdict: the task subjects are interfaces, receivers or String parameters the checker cannot build, the four preservation tasks have different before/after dependency closures, and 105's confined-change meets a StringBuilder gap under --gaps strict. Recorded as VF-027 for the example-targets loop; nothing was changed or resubmitted.",
+      "log_sha256": "13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff"
     }
   ],
   "logs": {
@@ -768,6 +820,12 @@
       "bytes": 10091195,
       "lines": 3130,
       "gzip_bytes": 2167342,
+      "url": null
+    },
+    "13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff": {
+      "bytes": 29848021,
+      "lines": 9470,
+      "gzip_bytes": 6260999,
       "url": null
     },
     "1de356b88c17c3c9f73b02ef570f7bf5117ac4c8e3f417f562f63041b90a3dc0": {
@@ -900,6 +958,12 @@
       "bytes": 18877785,
       "lines": 6116,
       "gzip_bytes": 3973630,
+      "url": null
+    },
+    "c8f8266e2e5e822449b62c06bb531ab3443dd2d44a7c600287b903650d2af52e": {
+      "bytes": 287627,
+      "lines": 60,
+      "gzip_bytes": 65228,
       "url": null
     },
     "cb18941a9608eaafcc48d89c8fe47fec089843300dab11ffd48d783ef90e7e05": {

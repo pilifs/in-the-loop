@@ -12,48 +12,51 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-14T23:38:54.425Z",
-  "ended": "2026-11-14T23:49:12.968Z",
-  "duration_seconds": 619,
+  "ended": "2026-11-15T00:00:40.425Z",
+  "duration_seconds": 1306,
   "stats": {
     "turns": 1,
-    "api_calls": 5,
-    "tool_calls": 6,
+    "api_calls": 19,
+    "tool_calls": 20,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 39631,
+    "peak_context_tokens": 60148,
     "usage": {
-      "input_tokens": 10,
-      "output_tokens": 1170,
-      "cache_read_input_tokens": 144244,
-      "cache_creation_input_tokens": 26405
+      "input_tokens": 38,
+      "output_tokens": 6388,
+      "cache_read_input_tokens": 831951,
+      "cache_creation_input_tokens": 46922
     }
   },
   "tools": {
-    "Bash": 6
+    "Bash": 19,
+    "Edit": 1
   },
-  "files_touched": [],
+  "files_touched": [
+    "verification/findings.md"
+  ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-14T23:38:54.425Z",
-      "ended": "2026-11-14T23:49:12.968Z",
+      "ended": "2026-11-15T00:00:40.425Z",
       "turns": 1,
-      "api_calls": 5,
+      "api_calls": 19,
       "usage": {
-        "input_tokens": 10,
-        "output_tokens": 1170,
-        "cache_read_input_tokens": 144244,
-        "cache_creation_input_tokens": 26405
+        "input_tokens": 38,
+        "output_tokens": 6388,
+        "cache_read_input_tokens": 831951,
+        "cache_creation_input_tokens": 46922
       },
-      "peak_context_tokens": 39631
+      "peak_context_tokens": 60148
     }
   ],
   "log": {
-    "sha256": "561721e1e83a31c1e8fe044431668d9ec4b4f1743a0091a763fa86f60e3d608a",
-    "bytes": 320450,
-    "lines": 60,
-    "gzip_bytes": 78360,
-    "path": "llm-dlc/traces/1d75f339-9e21-4d1a-b631-a40985de271f/logs/561721e1e83a31c1e8fe044431668d9ec4b4f1743a0091a763fa86f60e3d608a.jsonl.gz"
+    "sha256": "d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc",
+    "bytes": 528944,
+    "lines": 152,
+    "gzip_bytes": 100498,
+    "path": "llm-dlc/traces/1d75f339-9e21-4d1a-b631-a40985de271f/logs/d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -66,20 +69,28 @@
       "log_sha256": "4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4"
     },
     {
-      "change_id": "uwuovwummznmwqlolnslmuluxtokomxx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "561721e1e83a31c1e8fe044431668d9ec4b4f1743a0091a763fa86f60e3d608a"
-    },
-    {
       "change_id": "mtvwvktkzotppxxkylzyonntsutntvuv",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 4 job(s): example 105's replay and the 285-287 mutant replays pass",
       "body": "Jobs 20261114-233239 example-105 replay and example-285/286/287 mutant-replay all passed (one step each, 6-54 s, peaks under 1 GiB against 3 GiB estimated; estimates far high). Each task result was as expected; the receipts and results were applied. Run on vm-1 with the streams row (38G, 18 CPUs, 9 workers). No findings.",
       "log_sha256": "561721e1e83a31c1e8fe044431668d9ec4b4f1743a0091a763fa86f60e3d608a"
+    },
+    {
+      "change_id": "rlozrppxlzsstoqqomoqvtqvvsuuynxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc"
+    },
+    {
+      "change_id": "ynvtsvxsskomosnnnsvopwrmuqrqxuzv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 24 job(s): 105's regression passes; 23 Phase 5 proof jobs give no verdict (VF-027)",
+      "body": "Jobs 20261114-234211..234214 (285, 286, 287, 305, 306 and 105, queued at 72a1337a1529 by the example-targets loop) ran on vm-1. 20261114-234214-example-105-regression passed (refuted, as expected; outputs applied). The other 23 failed without a verdict: the task subjects are interfaces, receivers or String parameters the checker cannot build, the four preservation tasks have different before/after dependency closures, and 105's confined-change meets a StringBuilder gap under --gaps strict. Recorded as VF-027 for the example-targets loop; nothing was changed or resubmitted.",
+      "log_sha256": "d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc"
     }
   ],
   "logs": {
@@ -93,6 +104,12 @@
       "bytes": 320450,
       "lines": 60,
       "gzip_bytes": 78360,
+      "url": null
+    },
+    "d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc": {
+      "bytes": 528944,
+      "lines": 152,
+      "gzip_bytes": 100498,
       "url": null
     }
   },

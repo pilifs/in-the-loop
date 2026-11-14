@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-234213-example-305-preservation-phase-5-step-1",
+  "title": "example 305 preservation (Phase 5 step 1): WebMvcTags.outcome on before and after, native strict, expected established",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 7.0s, peak 265.1 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 305 task preservation (equivalence)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-234213-example-305-preservation-phase-5-step-1.json",
+    "sha256": "f62063ddbab9f9cbd7718bab006f1cd1d6c669a899aeef7b6b2f7e4d0c6d8caf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-234213-example-305-preservation-phase-5-step-1",
+      "title": "example 305 preservation (Phase 5 step 1): WebMvcTags.outcome on before and after, native strict, expected established",
+      "description": "The job runs python3 examples/tools/build.py 305 --task preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 305 is Spring Boot e8de5a6d (the Outcome enum keeps WebMvcTags' MVC outcome tags), the independent positive of CVE-2023-34055's family, prepared by the source-slice route the user decided: each commit's WebMvcTags and Outcome compiled alone with javac 8 against six pinned JARs; scope extracted-source-slice (the after slice is byte-identical to Boot 2.2.0.M6's published classes, and job 20261114-232734's m6-replay showed the same observations). Workflow plans the task from target.json; runtime prepares before and after, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag; with claims/outcome-preservation.json (claim key 98f4a389c1ccd7ff, preservation, bounds unwind 16, maxArrayLength 8). The claim: Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it. Workflow ingests every record into one format-2 receipt under receipts/preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletResponse, a library interface, and after's Outcome enum has a static initializer outside the fragment: either is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/claims/outcome-preservation.json"
+        ],
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "example 305 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-14T23:42:13+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+      },
+      "steps": [
+        {
+          "name": "example 305 task preservation (equivalence)",
+          "run": "python3 examples/tools/build.py 305 --task preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation"
+      ]
+    }
+  },
+  "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+  "startedAt": "2026-11-14T23:50:23+00:00",
+  "finishedAt": "2026-11-14T23:50:32+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2934842,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+  },
+  "usage": {
+    "peakMemoryBytes": 277999616,
+    "wallSeconds": 7.0,
+    "cpuSeconds": 7.2,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 305 --task preservation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 7.012,
+      "cpuSeconds": 7.153,
+      "cpuThrottledSeconds": 0.286,
+      "peakMemoryBytes": 277999616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-preservation.log",
+        "lines": 2,
+        "bytes": 307,
+        "sha256": "386d4f8bae9e080fd08db85450da63f5fdd4cfa006f75647b4d31959f3dd32be",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation/20261114T235032Z-03132dce/result.json",
+          "groups": [
+            "305",
+            "preservation",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task preservation (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation/20261114T235032Z-03132dce/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/plan.json",
+      "change": "added",
+      "bytes": 22143,
+      "sha256": "0a3a590a28ada5c545444c5e1cd1ba392b95d3a76feda39f0d98b892e365daec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/records/execution.json",
+      "change": "added",
+      "bytes": 53726,
+      "sha256": "3a25b429ae1cb31c0b6bc9a9ccb7537d17a81e2f21e59676554e5b9ff1a73f52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 364,
+      "sha256": "6867e320e32baef09b9115492d291b585f9ac9256e24419cd386d30363682d2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/result.json",
+      "change": "added",
+      "bytes": 15844,
+      "sha256": "380bb3eace97c28bf79d0e2da420e35603827fc7c8e4ec66ba7bfe6ef3d90f57",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:59:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/records/verifier-output.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261114T235032Z-03132dce/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234213-example-305-preservation-phase-5-step-1"
+}

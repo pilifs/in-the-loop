@@ -1,0 +1,363 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "1e8128d965200158",
+    "format": 1,
+    "example": "105",
+    "statement": {
+      "approach": "target",
+      "task": "regression",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "revisions": [
+        "before",
+        "after"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "regression",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+        "file": "claims/pow-preservation.json",
+        "sha256": "ff57cd78c3fe2bc8a4550cda4180783882e085133e3b8c10167fc64844b8dd6c",
+        "property": "pow-int-preserved",
+        "claimKind": "preservation",
+        "statement": "Preservation of ArithmeticUtils.pow(int k, int e) between e7c172d2 and 8cfc04e8: on every (k, e) outside the task's allowedChange, both revisions return the same int or throw the same exception class. Two tasks share it. regression has no allowedChange and is expected refuted, at k = -2, e = 31, the change the pull request intends (the historical report's first row). confined-change has allowedChange 'k == -2 && e == 31', the pull request's stated intent, and is expected established on the other 2^64 - 1 inputs (the report's second row). The exception's message is not observed.",
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [
+          {
+            "text": "unwind 16 completes the loop on every input: it runs at most once per bit of e, so at most 5 times: with |k| >= 2, e >= 31 at before and e > 31 at after throw before it, and k in {-1, 0, 1} returns before it.",
+            "basis": "Read from pow(int,int)'s bytecode at both revisions; the comparisons e >= 31 and e > 31 are the only difference (records/pow-gaps.json, and the masked javap diff noted in example.json)."
+          },
+          {
+            "text": "The exception is observed by class only.",
+            "basis": "The IllegalArgumentException's message contains e, and the ArithmeticException's is 'integer overflow' at both revisions from pow's own throw, and from Math.multiplyExact when the loop overflows; callers can observe the class through the Javadoc's @throws clauses, which name classes only."
+          }
+        ],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 16
+        },
+        "defaultBounds": [
+          "maxArrayLength"
+        ],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "javadoc-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+          },
+          {
+            "id": "pow-driver",
+            "kind": "driver",
+            "path": "replay/driver/inloop/p105/PowDriver.java",
+            "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+          },
+          {
+            "id": "pow-probes",
+            "kind": "probe",
+            "path": "replay/probes.json",
+            "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+          }
+        ],
+        "key": "1d76c0d0c405f392"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "regression",
+      "sidecar": "2c4cd533a6647041a69dbaf417923b1db34d29422e3760e62a769f23a27e5cbc",
+      "revisions": {
+        "before": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "after": "8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+      },
+      "dependencies": [
+        {
+          "revision": "before",
+          "position": 0,
+          "role": "driver",
+          "sha256": "369ee0485f1f717e2309103649e4a04ece29f8a00ce85b1f15297fcde9a33833"
+        },
+        {
+          "revision": "before",
+          "position": 1,
+          "role": "original",
+          "sha256": "e3a1b00d529d504cf8fdff8c3fb2d2150df154c98687b204aac49a35d33f9bcc"
+        },
+        {
+          "revision": "after",
+          "position": 0,
+          "role": "driver",
+          "sha256": "369ee0485f1f717e2309103649e4a04ece29f8a00ce85b1f15297fcde9a33833"
+        },
+        {
+          "revision": "after",
+          "position": 1,
+          "role": "original",
+          "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/pow-preservation.json": "ff57cd78c3fe2bc8a4550cda4180783882e085133e3b8c10167fc64844b8dd6c",
+        "controls/oracle.py": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797",
+        "replay/driver/inloop/p105/PowDriver.java": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3",
+        "replay/probes.json": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261114T235516Z-061637d0",
+    "claim": "1e8128d965200158",
+    "startedAt": "2026-11-14T23:55:16+00:00",
+    "seconds": 223.6,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/before",
+      "--after",
+      "verifier/classes/after",
+      "--target",
+      "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "7334896cbdae5368813bac5f5d99aa23f5571d46ce6893d68d78fd4228e0434f",
+        "files": 1
+      },
+      "after": {
+        "sha256": "271368dc574a59644b8bca149f2a519e9288aa9f78edb6649ecfe53cecff7de7",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261114-234214-example-105-regression-phase-5-step-1-ar",
+      "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234214-example-105-regression-phase-5-step-1-ar"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control before on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "controls/control-before-jdk21.stdout",
+        "stderr": "controls/control-before-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control before on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-before-jdk25.stdout",
+        "stderr": "controls/control-before-jdk25.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-after-jdk21.stdout",
+        "stderr": "controls/control-after-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-after-jdk25.stdout",
+        "stderr": "controls/control-after-jdk25.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 25",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 223.254,
+        "stdout": "verifier/verifier.stdout",
+        "stderr": "verifier/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    }
+  },
+  "conclusion": {
+    "claim": "1e8128d965200158",
+    "attempt": "20261114T235516Z-061637d0",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✗ Violation",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 14,
+      "code": "\"before\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"after\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "pow(k=-2, e=31)",
+        "contract": "throws ArithmeticException(\"integer overflow\")",
+        "actual": "-2147483648",
+        "shrinkRuns": 8,
+        "witness": {
+          "inputs": [
+            {
+              "name": "k",
+              "type": "int",
+              "value": -2
+            },
+            {
+              "name": "e",
+              "type": "int",
+              "value": 31
+            }
+          ],
+          "call": {
+            "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+            "classFile": "org/apache/commons/numbers/core/ArithmeticUtils.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "pow",
+            "descriptor": "(II)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "k",
+                "type": "int",
+                "value": -2,
+                "from": "k"
+              },
+              {
+                "name": "e",
+                "type": "int",
+                "value": 31,
+                "from": "e"
+              }
+            ]
+          },
+          "previousCall": {
+            "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+            "classFile": "org/apache/commons/numbers/core/ArithmeticUtils.class",
+            "classFileSha256": null,
+            "classes": "before",
+            "method": "pow",
+            "descriptor": "(II)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "k",
+                "type": "int",
+                "value": -2,
+                "from": "k"
+              },
+              {
+                "name": "e",
+                "type": "int",
+                "value": 31,
+                "from": "e"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 223.2 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int",
+    "problem": null,
+    "domain": "k: int × e: int",
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "33117d62ffb3b396f82d9a50f97d6f5d8f1b646c215c82cc5f3cbb403b1012e2",
+        "bytes": 75179
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "607d616d8ca4d9e08a7629e83f2254c75526cd5fd334d6f0e3fd9d98d4f68663",
+        "bytes": 509
+      }
+    ]
+  }
+}

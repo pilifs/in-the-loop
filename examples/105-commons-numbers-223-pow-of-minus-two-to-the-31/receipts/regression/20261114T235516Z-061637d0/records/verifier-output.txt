@@ -1,0 +1,7 @@
+✗ Behaviour of org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int) changed:
+  pow(k=-2, e=31)
+    before: throws ArithmeticException("integer overflow")
+    after:  -2147483648
+  (found by jvmcontract's own checker (CaDiCaL) in 223.2 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

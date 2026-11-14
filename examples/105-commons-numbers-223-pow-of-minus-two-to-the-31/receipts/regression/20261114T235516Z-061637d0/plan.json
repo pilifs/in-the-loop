@@ -1,0 +1,324 @@
+{
+  "plan": {
+    "example": "105",
+    "task": "regression",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+    "revisions": [
+      "before",
+      "after"
+    ],
+    "claim": {
+      "task": "regression",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "file": "claims/pow-preservation.json",
+      "sha256": "ff57cd78c3fe2bc8a4550cda4180783882e085133e3b8c10167fc64844b8dd6c",
+      "property": "pow-int-preserved",
+      "claimKind": "preservation",
+      "statement": "Preservation of ArithmeticUtils.pow(int k, int e) between e7c172d2 and 8cfc04e8: on every (k, e) outside the task's allowedChange, both revisions return the same int or throw the same exception class. Two tasks share it. regression has no allowedChange and is expected refuted, at k = -2, e = 31, the change the pull request intends (the historical report's first row). confined-change has allowedChange 'k == -2 && e == 31', the pull request's stated intent, and is expected established on the other 2^64 - 1 inputs (the report's second row). The exception's message is not observed.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "unwind 16 completes the loop on every input: it runs at most once per bit of e, so at most 5 times: with |k| >= 2, e >= 31 at before and e > 31 at after throw before it, and k in {-1, 0, 1} returns before it.",
+          "basis": "Read from pow(int,int)'s bytecode at both revisions; the comparisons e >= 31 and e > 31 are the only difference (records/pow-gaps.json, and the masked javap diff noted in example.json)."
+        },
+        {
+          "text": "The exception is observed by class only.",
+          "basis": "The IllegalArgumentException's message contains e, and the ArithmeticException's is 'integer overflow' at both revisions from pow's own throw, and from Math.multiplyExact when the loop overflows; callers can observe the class through the Javadoc's @throws clauses, which name classes only."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "javadoc-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+        },
+        {
+          "id": "pow-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p105/PowDriver.java",
+          "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+        },
+        {
+          "id": "pow-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+        }
+      ],
+      "key": "1d76c0d0c405f392"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "before",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-numbers",
+        "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "11"
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "after",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-numbers",
+        "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+        "parent": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "11"
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/regression"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261114-234214-example-105-regression-phase-5-step-1-ar/examples/105-commons-numbers-223-pow-of-minus-two-to-the-31",
+    "network": true
+  },
+  "inputs": {
+    "example": "105",
+    "task": "regression",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+    "revisions": [
+      "before",
+      "after"
+    ],
+    "claim": {
+      "task": "regression",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "file": "claims/pow-preservation.json",
+      "sha256": "ff57cd78c3fe2bc8a4550cda4180783882e085133e3b8c10167fc64844b8dd6c",
+      "property": "pow-int-preserved",
+      "claimKind": "preservation",
+      "statement": "Preservation of ArithmeticUtils.pow(int k, int e) between e7c172d2 and 8cfc04e8: on every (k, e) outside the task's allowedChange, both revisions return the same int or throw the same exception class. Two tasks share it. regression has no allowedChange and is expected refuted, at k = -2, e = 31, the change the pull request intends (the historical report's first row). confined-change has allowedChange 'k == -2 && e == 31', the pull request's stated intent, and is expected established on the other 2^64 - 1 inputs (the report's second row). The exception's message is not observed.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "unwind 16 completes the loop on every input: it runs at most once per bit of e, so at most 5 times: with |k| >= 2, e >= 31 at before and e > 31 at after throw before it, and k in {-1, 0, 1} returns before it.",
+          "basis": "Read from pow(int,int)'s bytecode at both revisions; the comparisons e >= 31 and e > 31 are the only difference (records/pow-gaps.json, and the masked javap diff noted in example.json)."
+        },
+        {
+          "text": "The exception is observed by class only.",
+          "basis": "The IllegalArgumentException's message contains e, and the ArithmeticException's is 'integer overflow' at both revisions from pow's own throw, and from Math.multiplyExact when the loop overflows; callers can observe the class through the Javadoc's @throws clauses, which name classes only."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "javadoc-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+        },
+        {
+          "id": "pow-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p105/PowDriver.java",
+          "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+        },
+        {
+          "id": "pow-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+        }
+      ],
+      "key": "1d76c0d0c405f392"
+    },
+    "artifacts": [
+      {
+        "revision": "before",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-numbers",
+        "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "11"
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "after",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-numbers",
+        "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+        "parent": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "11"
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "931d26dbfb3b4d694f1bb5769d60899e7a11151174707f11e3c2ebcc5c42250e"
+}
