@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 84, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 15:21 UTC |
-| Prompts | 2,027 |
-| Model calls | 19,706 |
-| Tool calls | 20,670 (349 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 15:23 UTC |
+| Prompts | 2,028 |
+| Model calls | 19,711 |
+| Tool calls | 20,674 (349 failed) |
 | Compactions | 307 |
 | Subagents | 12 |
-| Tokens written | 20,352,143 |
-| Tokens read | 3,112,773,466 (97.9% from cache) |
-| Commits with a trace | 598 |
-| Log snapshots | 731 (1639.8 MB gzipped, 729 uploaded) |
+| Tokens written | 20,355,723 |
+| Tokens read | 3,113,404,950 (97.9% from cache) |
+| Commits with a trace | 599 |
+| Log snapshots | 732 (1640.0 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -110,7 +110,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 18:04 UTC | [5797b2b5-cc8e-4306-969d-6366320e1840](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 7 | 7 | 1 | 0 | 37,107 | 2 |
 | 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 8 | 7 | 1 | 0 | 36,075 | 2 |
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | ended | 13 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 37,319 | 7 |
-| 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | open | 10 min | `claude-opus-5-5` | 3 | 37 | 36 | 0 | 0 | 123,655 | 3 |
+| 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | open | 12 min | `claude-opus-5-5` | 4 | 42 | 40 | 0 | 0 | 128,012 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -203,13 +203,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`5797b2b5`](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 1,453 | 14 | 25,723 | 202,144 | 88.7% | 157 |
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1,587 | 16 | 24,690 | 229,016 | 90.3% | 160 |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 2,191 | 20 | 25,935 | 291,628 | 91.8% | 145 |
-| [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 31,979 | 78 | 93,871 | 3,095,948 | 97.1% | 100 |
+| [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 35,559 | 90 | 97,062 | 3,724,229 | 97.5% | 107 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 18,135 | 87.7% | 84 |
+| `Bash` | 18,139 | 87.7% | 84 |
 | `Read` | 972 | 4.7% | 40 |
 | `Edit` | 747 | 3.6% | 40 |
 | `Write` | 455 | 2.2% | 36 |
@@ -828,8 +828,9 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 594 | [`0267b0ab`](https://github.com/pilifs/in-the-loop/commit/0267b0ab86e0a3199174197c35cb24eb585b70a4) | example-targets Phase 0 step 5: the integration contract, examples/tools/test_targets_contract.py | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3.jsonl.gz)) |
 | 595 | [`854dacc8`](https://github.com/pilifs/in-the-loop/commit/854dacc8ad35d92f79e72891842c8990ed2e1787) | example-targets Phase 0 step 6: numbers and names, the integration script, and the briefs brought up to date | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b.jsonl.gz)) |
 | 596 | [`88245934`](https://github.com/pilifs/in-the-loop/commit/882459346039929237bb14a12682ada2bf5e1121) | Record session traces | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8ae6d8420f559532d1b63e5af345400565d5176212f4cc8f154b66daab044561.jsonl.gz)), [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53.jsonl.gz)) |
-| 597 | change `nkorlnln` | example-targets ready to launch: status working, and memory caps raised for the resized VM | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36.jsonl.gz)) |
-| 598 | change `uwpnpzsn` | Share the resized VM between feature loops, verification jobs and the user's terminals | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf.jsonl.gz)) |
+| 597 | [`1715bfbd`](https://github.com/pilifs/in-the-loop/commit/1715bfbd07a623ee8a613edc33b96c5c271f0494) | example-targets ready to launch: status working, and memory caps raised for the resized VM | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36.jsonl.gz)) |
+| 598 | [`1b9cc03d`](https://github.com/pilifs/in-the-loop/commit/1b9cc03d50a12cce6a580b0456f91ffadbe0889c) | Share the resized VM between feature loops, verification jobs and the user's terminals | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf.jsonl.gz)) |
+| 599 | change `qpvlyptu` | Record session traces | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz)) |
 
 ## Logs
 
@@ -920,7 +921,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`5797b2b5`](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 2 | 2 | 0.2 MB | [`0d3ef933f260`](https://terminalvalue.net/raw-traces/5797b2b5-cc8e-4306-969d-6366320e1840/0d3ef933f260aae9ceff66599661cdb24b4829ccd39943e5de5a152fc56684a7.jsonl.gz) |
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 2 | 2 | 0.2 MB | [`f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz) |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 4 | 4 | 0.3 MB | [`891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz) |
-| [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 3 | 1 | 0.5 MB | `8be4ed69e783`, not uploaded |
+| [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 4 | 4 | 0.7 MB | [`289209a3a4c5`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz) |
 
 ## Session notes
 

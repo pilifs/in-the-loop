@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:11:22.420Z",
-  "ended": "2026-11-14T15:21:23.187Z",
-  "duration_seconds": 601,
+  "ended": "2026-11-14T15:23:57.019Z",
+  "duration_seconds": 755,
   "stats": {
-    "turns": 3,
-    "api_calls": 37,
-    "tool_calls": 36,
+    "turns": 4,
+    "api_calls": 42,
+    "tool_calls": 40,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 123655,
+    "peak_context_tokens": 128012,
     "usage": {
-      "input_tokens": 78,
-      "output_tokens": 31979,
-      "cache_read_input_tokens": 3095948,
-      "cache_creation_input_tokens": 93871
+      "input_tokens": 90,
+      "output_tokens": 35559,
+      "cache_read_input_tokens": 3724229,
+      "cache_creation_input_tokens": 97062
     }
   },
   "tools": {
-    "Bash": 32,
+    "Bash": 36,
     "Write": 2,
     "AskUserQuestion": 1,
     "Edit": 1
@@ -42,24 +42,24 @@
     {
       "index": 0,
       "started": "2026-11-14T15:11:22.420Z",
-      "ended": "2026-11-14T15:21:23.187Z",
-      "turns": 3,
-      "api_calls": 37,
+      "ended": "2026-11-14T15:23:57.019Z",
+      "turns": 4,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 31979,
-        "cache_read_input_tokens": 3095948,
-        "cache_creation_input_tokens": 93871
+        "input_tokens": 90,
+        "output_tokens": 35559,
+        "cache_read_input_tokens": 3724229,
+        "cache_creation_input_tokens": 97062
       },
-      "peak_context_tokens": 123655
+      "peak_context_tokens": 128012
     }
   ],
   "log": {
-    "sha256": "8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf",
-    "bytes": 1052506,
-    "lines": 293,
-    "gzip_bytes": 210300,
-    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf.jsonl.gz"
+    "sha256": "289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede",
+    "bytes": 1142317,
+    "lines": 317,
+    "gzip_bytes": 226274,
+    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -73,7 +73,7 @@
     },
     {
       "change_id": "nkorlnlnwsyuwxxqprknzoyqvrmqvnws",
-      "commit_id": null,
+      "commit_id": "1715bfbd07a623ee8a613edc33b96c5c271f0494",
       "immutable": false,
       "summary": "example-targets ready to launch: status working, and memory caps raised for the resized VM",
       "body": "The push (prerequisite 7) was done, so the main brief's status is now working. The VM was resized from 28 vCPUs / 46 GiB to 30 vCPUs / 105 GiB. The 4G cap per feature loop OOM-killed processes 8 times during application-core (journalctl: reuse once, values four times, the merge loop three times on 2026-11-08), so each example-targets loop now gets 12G: the four stream briefs' '- memory:', a new '- memory: 12G' in the main brief, and the launch command's FEATURE_LOOP_MEMORY_MAX (which overrides the briefs, as does ~/.profile, now also 12G). run-streams.sh's integration check scope goes from 3.5G to 6G. The runner's machine-local pipeline.local.toml (not committed) was rescaled to 13 workers, 26 CPUs, 76G, 24G per job and 8G for builds, which leaves about 34G for jobs while the four streams and the integration check run. Verified: bash -n on run-streams.sh, pipeline.py validate reports 0 problems, and the queue is empty.",
@@ -81,11 +81,19 @@
     },
     {
       "change_id": "uwpnpzsntxrnuzrnktysrvpmrpzwvwpn",
-      "commit_id": null,
+      "commit_id": "1b9cc03d50a12cce6a580b0456f91ffadbe0889c",
       "immutable": false,
       "summary": "Share the resized VM between feature loops, verification jobs and the user's terminals",
       "body": "On the 30 vCPU / 105 GiB VM, 13 GiB and 2 vCPUs are now never handed out (the user's one or two Claude Code terminals, tmux and the background loops' own sessions, the OS and Docker, slack), leaving a pool of 92 GiB and 28 CPUs. Each feature loop takes its 12G cap and about 2 CPUs; the runner takes the rest. The run-verification skill's step 2 no longer describes only the 9 GB laptop: it tells the runner's agent to pick the row of the machine-local pipeline.local.toml's budget table that matches what is running (38G/18 CPUs/9 workers while run-streams.sh's streams run, 80G/26/13 with one loop, 92G/28/14 with none), and that file's [runner] defaults are the streams row, so a plain run is always safe even though a run keeps its budget until the queue empties and run-streams.sh starts the verification loop before the streams' scopes exist. feature-loop.sh's scope and run-streams.sh's integration-check scope now run at CPUWeight=50, so the user's terminals (weight 100, in the same user@ service) win when CPUs are contended; jobs were already held to their CPUQuota. Verified: CPUWeight=50 applies in a user scope on this machine (cpu.weight reads 50), bash -n on both scripts, pipeline.py loads 9 workers / 18 CPUs / 38 GiB from the local file, validate reports 0 problems, and each row adds up to 105 GiB and 30 CPUs.",
       "log_sha256": "8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf"
+    },
+    {
+      "change_id": "qpvlyptuzssruqtxruvqznvkntkoknup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede"
     }
   ],
   "logs": {
@@ -95,17 +103,23 @@
       "gzip_bytes": 117759,
       "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53.jsonl.gz"
     },
+    "289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede": {
+      "bytes": 1142317,
+      "lines": 317,
+      "gzip_bytes": 226274,
+      "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz"
+    },
     "874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36": {
       "bytes": 759038,
       "lines": 184,
       "gzip_bytes": 158033,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36.jsonl.gz"
     },
     "8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf": {
       "bytes": 1052506,
       "lines": 293,
       "gzip_bytes": 210300,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf.jsonl.gz"
     }
   },
   "redaction_policy": 4,
