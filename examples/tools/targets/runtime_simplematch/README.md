@@ -41,9 +41,14 @@ What the mutant job showed (`20261114-180443-example-targets-runtime-r2-a-constr
   `("a*c*e","abced")` and `("*a*b","acba")` alone, each `true` where the statement says `false`. The JDKs agree.
 - The unpatched recompile isn't byte-identical to the published class (`b45705e5…` against `8562b278…`). So the
   mutant differs from 5.3.19 by the patch and by the compiler. Its class is `93f15dfe…`, its JAR `7887b8fe…`.
-- The job's outputs are in the history under `runtime-mutant/attempt/` (the records, logs and small JARs), but the
-  three spring-core JARs aren't: at 1.4 MiB they exceed jj's snapshot limit (VF-025). Nothing is lost. The two
+- The job's outputs are in the history under `runtime-mutant/attempt/`, the three 1.4 MiB spring-core JARs included.
+  VF-025 first said those were left out, over jj's 1 MiB snapshot limit. But the collect commit (`msotkvrv`) was
+  made by `sync.py`, which snapshots with a 100 MiB limit, so they went in. Whether they stay in the published history
+  is for the user (`llm-dlc/loops/example-targets.md`'s for-review list). Nothing depends on them: the two
   published ones are acquired again by their recorded sha256, and the mutant JAR is rebuilt by the command above.
   `prepared.json` records its hash and its classes'.
+- A later job that keeps a preparation directory as its output should delete `prepare/*/lib/`, as this one deleted
+  `prepare/*/checkout`, so a fetched JAR enters the history only by its lock's sha256. A packet task's job
+  (`pipeline.py submit --example NNN --task T`) prepares in scratch space and keeps only its `receipts/` folder.
 
 This is a conformance replay of the route, not a claim, and no part of the matching-predicates packets.

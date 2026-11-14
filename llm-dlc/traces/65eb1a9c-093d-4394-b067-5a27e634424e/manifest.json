@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "65eb1a9c-093d-4394-b067-5a27e634424e",
-  "status": "ended",
+  "status": "open",
   "title": "Feature loop run status",
   "first_prompt": "Give me a status report on the current feature loop run",
   "client": {
@@ -199,6 +199,14 @@
       "immutable": false,
       "summary": "example-targets Phase 5 step 1: 305-307 name 285-287 as companions, and the sidecar examples carry external-target and their family's domain tag",
       "body": "Request 6 of Phase 5 step 1 in llm-dlc/loops/example-targets.md (the positive stream's request 3). Each family's CVE packet already named its positive, but the positives 305, 306 and 307 named no companion. Their target.json identities now name 285, 286 and 287, and each matching text gives that number. Tags: 105 and 305-307 gain external-target, which until now covered only 285-300 though all four have a sidecar. 305 gains metrics and 307 password-hashing, their families' domain tags. 306's request-binding, a defect tag for handler parameters that can't bind, becomes data-binding, the domain of DataBinder's field checks, which call PatternMatchUtils. Each example.json has a note, and build.py --index-only regenerated examples/README.md and index.json.",
+      "log_sha256": "eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488"
+    },
+    {
+      "change_id": "wxmnlqpyqnqvzyrlxqkmsrnwztyqvmpx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: VF-025 closed; the spring-core JARs were committed by sync.py's 100 MiB snapshot, so no ignore rule",
+      "body": "Request 11, the last of the interface requests that waited for the merge, asked to gitignore runtime-mutant/**/spring-core-5.3.19.jar, the three 1.4 MiB JARs of the runtime stream's job 20261114-180443 that VF-025 said jj's 1 MiB snapshot limit had left out of the commit. They are in fact in the history: the collect commit msotkvrv lists all three, and jj st shows no refused file. The reason is that sync.py runs every jj command with snapshot.max-new-file-size=100MiB, so a sync.py commit takes a file a plain jj command refuses. That also explains VF-020's two diffs that 'got past the limit'. An ignore rule does nothing to tracked files, so none was added. The brief's request 11 (and its Next line) was out of date on this point.\n\nVF-025 moves to findings.md's closed entries, with a correction under its original text. The runtime slice's README, runtime_simplematch/README.md, now says the JARs are in the history. It also gives the cleanup rule for later jobs that keep a preparation directory as their output: delete prepare/*/lib/. A packet task's job via pipeline.py submit --example --task prepares in scratch space and keeps only its receipts. msotkvrv is not pushed, so whether the roughly 3 MB of JARs go into the published history is a question for the user, on the for-review list. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 203, test_build.py 190, test_pipeline.py 30, build.py --plan).",
       "log_sha256": "eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488"
     }
   ],

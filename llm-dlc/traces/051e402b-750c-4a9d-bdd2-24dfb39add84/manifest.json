@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T21:23:46.146Z",
-  "duration_seconds": 10706,
+  "ended": "2026-11-14T21:31:44.845Z",
+  "duration_seconds": 11184,
   "stats": {
-    "turns": 65,
-    "api_calls": 410,
-    "tool_calls": 413,
+    "turns": 70,
+    "api_calls": 436,
+    "tool_calls": 440,
     "tool_errors": 8,
-    "compactions": 11,
+    "compactions": 12,
     "peak_context_tokens": 182954,
     "usage": {
-      "input_tokens": 840,
-      "output_tokens": 251290,
-      "cache_read_input_tokens": 38556451,
-      "cache_creation_input_tokens": 1347442
+      "input_tokens": 892,
+      "output_tokens": 266221,
+      "cache_read_input_tokens": 40853640,
+      "cache_creation_input_tokens": 1444765
     }
   },
   "tools": {
-    "Bash": 356,
-    "Read": 28,
-    "Edit": 23,
+    "Bash": 378,
+    "Read": 31,
+    "Edit": 25,
     "Agent": 4,
     "Write": 2
   },
   "files_touched": [
     "CLAUDE.md",
+    "examples/tools/targets/runtime_simplematch/README.md",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/test_runtime.py",
     "examples/tools/targets/test_workflow.py",
@@ -202,24 +203,38 @@
     {
       "index": 11,
       "started": "2026-11-14T21:14:35.234Z",
-      "ended": "2026-11-14T21:23:46.146Z",
-      "turns": 4,
-      "api_calls": 39,
+      "ended": "2026-11-14T21:24:05.275Z",
+      "turns": 5,
+      "api_calls": 41,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 20938,
-        "cache_read_input_tokens": 4588828,
-        "cache_creation_input_tokens": 135844
+        "input_tokens": 82,
+        "output_tokens": 21897,
+        "cache_read_input_tokens": 4888053,
+        "cache_creation_input_tokens": 138662
       },
-      "peak_context_tokens": 149030
+      "peak_context_tokens": 151848
+    },
+    {
+      "index": 12,
+      "started": "2026-11-14T21:24:42.749Z",
+      "ended": "2026-11-14T21:31:44.845Z",
+      "turns": 4,
+      "api_calls": 24,
+      "usage": {
+        "input_tokens": 48,
+        "output_tokens": 13972,
+        "cache_read_input_tokens": 1997964,
+        "cache_creation_input_tokens": 94505
+      },
+      "peak_context_tokens": 107691
     }
   ],
   "log": {
-    "sha256": "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a",
-    "bytes": 14008625,
-    "lines": 4401,
-    "gzip_bytes": 2964775,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a.jsonl.gz"
+    "sha256": "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832",
+    "bytes": 15005228,
+    "lines": 4705,
+    "gzip_bytes": 3200159,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832.jsonl.gz"
   },
   "subagents": [
     {
@@ -475,6 +490,14 @@
       "summary": "example-targets Phase 5 step 1: a verifier record names the lib/ commit and tree its jvmcontract was built from; no adapter entry-point key",
       "body": "Request 10 of the merge's interface requests. A pipeline job that requires jvmcontract now gets JVMCONTRACT_LIB_TREE, the git tree id of the lib/ its binary was built from, and drops one inherited from the runner. runtime.run_verifier records identities.commit (the job's VERIFY_SOURCE_COMMIT) and identities.libTree, only when $JVMCONTRACT is the binary that ran and both are 40 hex digits; a developer build names neither, never a guess. The handoff's gap packet keeps libTree with its verifier, and still lists verifier.commit as missing when it is null (the fixture's developer-built gap record does). verification/README.md documents the variable.\n\nThe adapter entry-point claim key is left a gap, as the request allowed: all 41 tasks of the seven packets name their original method, the claim schema's plan already builds receivers, and verifying through an adapter would put its code inside the proof and need a lib/ capability this wave doesn't edit. run_verifier's docstring says so; it enters the v1 gap inventory when a packet's verifier job observes it. The optional handoff-beside---plan and find.py task readiness were not done.",
       "log_sha256": "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a"
+    },
+    {
+      "change_id": "wxmnlqpyqnqvzyrlxqkmsrnwztyqvmpx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: VF-025 closed; the spring-core JARs were committed by sync.py's 100 MiB snapshot, so no ignore rule",
+      "body": "Request 11, the last of the interface requests that waited for the merge, asked to gitignore runtime-mutant/**/spring-core-5.3.19.jar, the three 1.4 MiB JARs of the runtime stream's job 20261114-180443 that VF-025 said jj's 1 MiB snapshot limit had left out of the commit. They are in fact in the history: the collect commit msotkvrv lists all three, and jj st shows no refused file. The reason is that sync.py runs every jj command with snapshot.max-new-file-size=100MiB, so a sync.py commit takes a file a plain jj command refuses. That also explains VF-020's two diffs that 'got past the limit'. An ignore rule does nothing to tracked files, so none was added. The brief's request 11 (and its Next line) was out of date on this point.\n\nVF-025 moves to findings.md's closed entries, with a correction under its original text. The runtime slice's README, runtime_simplematch/README.md, now says the JARs are in the history. It also gives the cleanup rule for later jobs that keep a preparation directory as their output: delete prepare/*/lib/. A packet task's job via pipeline.py submit --example --task prepares in scratch space and keeps only its receipts. msotkvrv is not pushed, so whether the roughly 3 MB of JARs go into the published history is a question for the user, on the for-review list. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 203, test_build.py 190, test_pipeline.py 30, build.py --plan).",
+      "log_sha256": "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832"
     }
   ],
   "logs": {
@@ -554,6 +577,12 @@
       "bytes": 1094221,
       "lines": 357,
       "gzip_bytes": 217982,
+      "url": null
+    },
+    "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832": {
+      "bytes": 15005228,
+      "lines": 4705,
+      "gzip_bytes": 3200159,
       "url": null
     },
     "cf84d0086e69d1643e95c10d04fc0644e4db466b54aebab6fa31bf1d813d4edc": {

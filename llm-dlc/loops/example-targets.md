@@ -946,6 +946,29 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: request 11, VF-025: ignore `runtime-mutant/**/spring-core-5.3.19.jar` in `.gitignore`, note it in that
     example's notes, and have later runtime jobs delete `prepare/*/lib/` in cleanup. Then the packets' preparation
     jobs.
+- 2026-11-14, **Phase 5 step 1, request 11 done: VF-025 closed. The JARs were committed, so no ignore rule was
+  added.** This finishes step 1's interface requests.
+  - **What was found**: the request assumed the three 1.4 MiB spring-core JARs of job `20261114-180443` were outside
+    the history. They aren't. `jj file list` shows all three at the collect commit `msotkvrv`, and `jj st` shows no
+    refused file. The reason is `sync.py`'s `jj()`, which snapshots with `snapshot.max-new-file-size=100MiB` ("must
+    not skip files"). So a `sync.py commit` takes what a plain `jj` command refused, and the warning VF-025 saw lasted
+    only until the collect's own commit. This also explains how VF-020's two diffs "got past the limit". A
+    `.gitignore` rule does nothing to tracked files, so it was left out.
+  - **The change**:
+    - VF-025 moved to `verification/findings.md`'s closed entries, with a correction under its original text, which
+      is kept;
+    - `runtime_simplematch/README.md`, the slice's notes, now says the JARs are in the history. It also gives the
+      cleanup rule for later jobs: a job that keeps a preparation directory as its output deletes `prepare/*/lib/`
+      beside the checkout. A packet task's job (`pipeline.py submit --example NNN --task T`) needs no cleanup step:
+      it prepares under scratch space (`build.py`'s `scratch()/targets`), and its one output is `receipts/<task>`.
+  - **For the for-review list**: `msotkvrv` is not pushed. Whether its JARs (two distinct blobs, about 3 MB:
+    Apache-2.0 published artifacts and a mutant `runtime_slice.py` rebuilds) go into the published history is the
+    user's call. Keeping them out means rewriting that commit before the push, which is not this loop's to do.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (203), `test_build.py`
+    (190), `test_pipeline.py` (30) and `build.py --plan`. `jj st` lists only this commit's two files.
+  - **Next**: the packets through the merged path. First submit the preparation and replay jobs of the six packets
+    and 105 with `pipeline.py submit --example NNN --task T`. Start with the replay tasks that gates A3 (285–287) and
+    A4 (306, with `mutant-replay`) need. Each job names its revision, task, expected outcome and resources.
 - Status: working
 
 ## Loop settings
