@@ -1,0 +1,462 @@
+#!/usr/bin/env python3
+"""Tests of the upstream-build route (runtime.py with runtime_upstream.py, R2), the runtime stream's: a local git
+repository stands in for github.com (runtime_upstream.REMOTE) and a stand-in `mvn` (runtime_upstream.MAVEN) builds
+the fixture's sources with javac and records how it was called, so nothing here uses the network or a real Maven.
+The real build of a pinned upstream revision is a pipeline job (runtime_slice.py --case numbers).
+
+  python3 examples/tools/targets/test_runtime_upstream.py
+"""
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+import zipfile
+from pathlib import Path
+from unittest import mock
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE / "fixtures"))
+from targets import interfaces, runtime, runtime_jdk, runtime_maven, runtime_upstream  # noqa: E402
+from targets import test_runtime as base  # noqa: E402  (its helpers; its tests stay in its own module)
+
+GIT_ENV = {"PATH": "/usr/bin:/bin", "HOME": "/nonexistent", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+           "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.invalid", "GIT_COMMITTER_NAME": "t",
+           "GIT_COMMITTER_EMAIL": "t@example.invalid", "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z",
+           "GIT_COMMITTER_DATE": "2026-01-01T00:00:00Z"}
+
+# The stand-in for Maven: it records each call, answers --version, writes the dependency listing the plugin would,
+# and otherwise "builds" the gate module with the JDK it was given (JAVA_HOME), as told by standin.json beside it.
+STANDIN = r'''#!{python}
+import json, os, shutil, subprocess, sys
+from pathlib import Path
+here = Path(__file__).resolve().parent
+knobs = json.loads((Path({knobs!r})).read_text())
+with open({calls!r}, "a") as f:
+    f.write(json.dumps({{"argv": sys.argv, "cwd": os.getcwd(), "env": dict(os.environ)}}) + "\n")
+args = sys.argv[1:]
+if args == ["--version"]:
+    print("Apache Maven 0.0 (stand-in)"); sys.exit(0)
+repo = Path(next(a for a in args if a.startswith("-Dmaven.repo.local=")).split("=", 1)[1])
+if any(a.endswith(":build-classpath") for a in args):
+    out = Path(next(a for a in args if a.startswith("-Dmdep.outputFile=")).split("=", 1)[1])
+    paths = []
+    for rel, source in knobs.get("dependencies", []):
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, repo / rel)
+        paths.append(str(repo / rel))
+    (repo / "org/apache/maven/plugins/maven-dependency-plugin/maven-metadata-central.xml").parent.mkdir(parents=True, exist_ok=True)
+    (repo / "org/apache/maven/plugins/maven-dependency-plugin/maven-metadata-central.xml").write_text(
+        "<metadata><versioning><latest>9</latest></versioning></metadata>")
+    out.write_text(os.pathsep.join(paths)); sys.exit(0)
+if knobs.get("fail"):
+    print("[ERROR] BUILD FAILURE (stand-in)"); sys.exit(1)
+if knobs.get("touch"):
+    Path("gate/src/main/java/fixture/Gate.java").write_text("// changed by the build\n")
+java = Path(os.environ["JAVA_HOME"]) / "bin"
+classes = Path("gate/target/classes"); classes.mkdir(parents=True, exist_ok=True)
+sources = sorted(str(p) for p in Path("gate/src/main/java").rglob("*.java"))
+subprocess.run([str(java / "javac"), "--release", "21", "-d", str(classes), *sources], check=True)
+(repo / "org/example/plugin/1.0").mkdir(parents=True, exist_ok=True)
+(repo / "org/example/plugin/1.0/plugin-1.0.jar").write_bytes(b"plugin bytes")
+if not knobs.get("noJar"):
+    subprocess.run([str(java / "jar"), "--create", "--file", "gate/target/gate-1.0.jar", "-C", str(classes), "."], check=True)
+    subprocess.run([str(java / "jar"), "--create", "--file", "gate/target/gate-1.0-sources.jar", "-C", str(classes), "."], check=True)
+if knobs.get("extraJar"):
+    subprocess.run([str(java / "jar"), "--create", "--file", "gate/target/gate-1.0-all.jar", "-C", str(classes), "."], check=True)
+print("[INFO] BUILD SUCCESS (stand-in)")
+'''
+
+
+def git(cwd, *args):
+    return subprocess.run(["git", *args], cwd=cwd, env=GIT_ENV, check=True, capture_output=True, text=True).stdout.strip()
+
+
+def make_upstream(root, extra=None):
+    """A two-commit repository, before then after, holding the fixture's Gate sources as a Maven-shaped module
+    (gate/pom.xml, gate/src/main/java), and the files `extra` names ({path: text}) in both: (path, before, after)."""
+    root.mkdir(parents=True)
+    git(root, "init", "-q", "-b", "main")
+    module = root / "gate/src/main/java/fixture"
+    module.mkdir(parents=True)
+    (root / "pom.xml").write_text("<project><modules><module>gate</module></modules></project>\n")
+    (root / "gate/pom.xml").write_text("<project><artifactId>gate</artifactId></project>\n")
+    (root / ".gitignore").write_text("target/\n")
+    for path, text in (extra or {}).items():
+        (root / path).parent.mkdir(parents=True, exist_ok=True)
+        (root / path).write_text(text)
+    shutil.copyfile(base.FIXTURES / "gate/both/fixture/RegexGate.java", module / "RegexGate.java")
+    commits = []
+    for revision in ("before", "after"):
+        shutil.copyfile(base.FIXTURES / f"gate/{revision}/fixture/Gate.java", module / "Gate.java")
+        git(root, "add", "-A")
+        git(root, "commit", "-q", "-m", revision)
+        commits.append(git(root, "rev-parse", "HEAD"))
+    return root, commits[0], commits[1]
+
+
+ARGV = ["mvn", "--batch-mode", "--projects", "gate", "-Dmaven.test.skip=true", "-Pquick", "package"]
+
+
+def upstream_plan(folder, revisions, commits, parents=None, tool="maven", argv=ARGV, jdk="21", network=True,
+                  repository="https://github.com/example/gate", task="replay", **extra):
+    artifacts = tuple({"revision": r, "route": "upstream-build", "repository": repository, "commit": commits[r],
+                       **({"parent": parents[r]} if parents and r in parents else {}),
+                       "build": {"tool": tool, "argv": list(argv), "jdk": jdk},
+                       "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"], "jdks": ["21", "25"], **extra}
+                      for r in revisions)
+    return interfaces.TaskPlan(
+        example="999", task=task, kind="replay", relation="security", target="fixture.Gate#allowed(I)Z",
+        revisions=tuple(revisions), claim={"task": task}, prerequisites=(), artifacts=artifacts,
+        tools={"required": ["java", "javac"], "optional": []}, engine=None, gaps=None, expected=None,
+        outputs={"receipts": f"receipts/{task}"}, folder=str(folder), network=network)
+
+
+class UpstreamTest(base.FixtureCopy):
+    def setUp(self):
+        super().setUp()
+        if "21" not in runtime_jdk.homes():
+            self.skipTest(f"JDK 21 is not under {runtime_jdk.CANDIDATES}")
+        self.upstream, before, after = make_upstream(self.dir / "upstream")
+        self.commits = {"before": before, "after": after}
+        self.calls, self.knobs = self.dir / "calls.jsonl", self.dir / "standin.json"
+        self.dep = base.dependency_jar(self.dir / "util.jar", ["fixture/util/Helper"])
+        self.set_knobs()
+        self.mvn = self.standin(self.dir / "maven/bin/mvn")
+        self.addCleanup(mock.patch.stopall)
+        mock.patch.object(runtime_upstream, "REMOTE", self.remote).start()
+        mock.patch.object(runtime_upstream, "MAVEN", lambda: self.mvn).start()
+        mock.patch.object(runtime_maven, "CACHE", self.dir / "cache").start()
+        self.remotes = []
+
+    def remote(self, url):
+        self.remotes.append(url)
+        return self.upstream
+
+    def standin(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(STANDIN.format(python=sys.executable, knobs=str(self.knobs), calls=str(self.calls)))
+        path.chmod(0o755)
+        return path
+
+    def set_knobs(self, **knobs):
+        knobs.setdefault("dependencies", [["fixture/example/gate-util/2.0/gate-util-2.0.jar", str(self.dep)]])
+        self.knobs.write_text(json.dumps(knobs))
+
+    def made_calls(self):
+        return [json.loads(line) for line in self.calls.read_text().splitlines()] if self.calls.is_file() else []
+
+    def plan(self, revisions=("after",), **kw):
+        kw.setdefault("parents", {"after": self.commits["before"]})
+        return upstream_plan(self.folder, revisions, kw.pop("commits", self.commits), **kw)
+
+    def prepare(self, revision="after", workdir=None, plan=None, **kw):
+        return runtime.prepare(plan or self.plan((revision,), **kw), revision, workdir or self.work / revision)
+
+    def test_an_upstream_lock_fetches_nothing_and_refuses_a_recipe_that_is_not_immutable(self):
+        with mock.patch.object(runtime_upstream, "REMOTE", side_effect=AssertionError("a source lock fetched")), \
+                mock.patch.object(subprocess, "run", side_effect=AssertionError("a source lock ran a process")):
+            locked = runtime.lock(self.plan(), "after")
+        self.assertEqual((locked.stage, locked.commit), ("source-locked", self.commits["after"]), locked.diagnostic)
+        self.assertEqual(locked.source["history"], {"commit": self.commits["after"], "parent": self.commits["before"]})
+        self.assertEqual(locked.source["upstream"], {"tool": "maven", "argv": ARGV, "jdk": "21"})
+        self.assertEqual(locked.source["driver"]["main"], "fixture.driver.GateDriver")
+        refused = {
+            "a host other than github.com": dict(repository="https://gitlab.com/example/gate"),
+            "plain http": dict(repository="http://github.com/example/gate"),
+            "a short commit": dict(commits={"after": self.commits["after"][:12]}),
+            "a branch": dict(commits={"after": "main"}),
+            "a short parent": dict(parents={"after": self.commits["before"][:7]}),
+            "an unknown tool": dict(tool="ant"),
+            "an argv that is not the tool's": dict(argv=["./mvnw", "package"]),
+            "its own settings": dict(argv=["mvn", "-s", "/tmp/settings.xml", "package"]),
+            "its own local repository": dict(argv=["mvn", "-Dmaven.repo.local=/tmp/r", "package"]),
+            "offline": dict(argv=["mvn", "-o", "package"]),
+            "a JDK that is no feature": dict(jdk="latest"),
+        }
+        for why, change in refused.items():
+            value = runtime.lock(self.plan(**change), "after")
+            self.assertEqual(value.failedStage, "lock", why)
+            self.assertIn("next", value.source["blocker"], why)
+        self.assertEqual(self.remotes, [])
+
+    def test_artifacts_ready_records_the_checkout_toolchain_build_and_every_output(self):
+        with mock.patch.dict(os.environ, {"MAVEN_OPTS": "-Dleak=1", "JAVA_TOOL_OPTIONS": "-Dleak=2",
+                                          "MAVEN_ARGS": "-Dleak=3"}):
+            prepared = self.prepare()
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        work = self.work / "after"
+        checkout = prepared.source["checkout"]
+        self.assertEqual(checkout["commit"], self.commits["after"])
+        self.assertEqual(checkout["tree"], git(self.upstream, "rev-parse", f"{self.commits['after']}^{{tree}}"))
+        self.assertEqual((checkout["parents"], checkout["parentChecked"]), ([self.commits["before"]], self.commits["before"]))
+        self.assertEqual((checkout["fetchedFrom"], checkout["changedByBuild"]), ("https://github.com/example/gate", []))
+        self.assertEqual(self.remotes, ["https://github.com/example/gate"])
+        # the produced JARs, auxiliary ones included and marked; the original is the one main JAR holding the target
+        built = prepared.source["built"]
+        self.assertEqual([(j["path"], j["auxiliary"]) for j in built["jars"]],
+                         [("gate/target/gate-1.0-sources.jar", True), ("gate/target/gate-1.0.jar", False)])
+        self.assertEqual(built["original"], "gate/target/gate-1.0.jar")
+        self.assertEqual(prepared.classpath, ("driver.jar", "adapter-after.jar", "built/gate-1.0.jar",
+                                              "lib/fixture/example/gate-util/2.0/gate-util-2.0.jar"))
+        by_path = {a.path: a for a in prepared.artifacts}
+        self.assertEqual(by_path["built/gate-1.0.jar"].sha256, built["jars"][1]["sha256"])
+        self.assertIn(self.commits["after"], by_path["built/gate-1.0.jar"].origin)
+        dep = by_path["lib/fixture/example/gate-util/2.0/gate-util-2.0.jar"]
+        self.assertEqual((dep.role, dep.coordinates, dep.sha256), ("dependency", "fixture.example:gate-util:2.0",
+                                                                   runtime.sha256(self.dep)))
+        self.assertEqual(prepared.source["target"]["loadedFrom"], "built/gate-1.0.jar")
+        # the toolchain: the JDK by full path, the tool's version, the argv recorded and run, the isolation
+        upstream = prepared.toolchain["upstream"]
+        self.assertEqual(upstream["jdk"]["home"], runtime_jdk.home("21"))
+        self.assertEqual(upstream["maven"]["version"], ["Apache Maven 0.0 (stand-in)"])
+        self.assertEqual(upstream["argv"]["recorded"], ARGV)
+        run = upstream["argv"]["run"]
+        self.assertEqual((run[0], run[1:3], run[5:7]), (str(self.mvn), ["-s", str(work / "maven/settings.xml")],
+                                                        [f"-Dmaven.repo.local={work / 'maven/repository'}",
+                                                         "--strict-checksums"]))
+        self.assertEqual(run[7:], ARGV[1:])
+        settings = (work / "maven/settings.xml").read_text()
+        self.assertIn("<mirrorOf>*</mirrorOf><url>https://repo.maven.apache.org/maven2</url>", settings)
+        self.assertEqual(upstream["settings"]["sha256"], runtime.sha256(work / "maven/settings.xml"))
+        # what the build resolved, hashed; the version lookup named; the local repository itself gone
+        resolution = json.loads((work / "maven/resolution.json").read_text())
+        self.assertIn("org/example/plugin/1.0/plugin-1.0.jar", [f["path"] for f in resolution["files"]])
+        self.assertEqual(upstream["resolution"]["versionLookups"],
+                         ["org/apache/maven/plugins/maven-dependency-plugin/maven-metadata-central.xml"])
+        self.assertFalse((work / "maven/repository").exists())
+        # each Maven call: in the checkout, with a fixed environment that inherits nothing
+        calls = self.made_calls()
+        self.assertEqual([c["argv"][1:] == ["--version"] for c in calls], [True, False, False])
+        for call in calls:
+            self.assertEqual(Path(call["cwd"]).resolve(), (work / "checkout").resolve())
+            env = call["env"]
+            self.assertFalse({"MAVEN_OPTS", "JAVA_TOOL_OPTIONS", "MAVEN_ARGS"} & set(env), env)
+            self.assertEqual((env["HOME"], env["JAVA_HOME"], env["MAVEN_SKIP_RC"]),
+                             (str(work / "home"), runtime_jdk.home("21"), "1"))
+        listing = calls[2]["argv"]
+        self.assertIn(f"{runtime_upstream.DEPENDENCY_PLUGIN}:build-classpath", listing)
+        self.assertIn("-Pquick", listing)
+        self.assertIn(str(work / "checkout/gate/pom.xml"), listing)
+        # the checkout is as fetched, and the logs say what ran
+        self.assertEqual(git(work / "checkout", "status", "--porcelain", "--untracked-files=no"), "")
+        for log in ("logs/git-fetch.log", "logs/build.log", "logs/dependencies.log"):
+            self.assertIn(log, prepared.logs)
+        self.assertEqual(json.loads((work / runtime.RECORD).read_text()), json.loads(json.dumps(prepared.as_dict())))
+
+    def test_a_parent_the_commit_does_not_have_is_a_history_blocker(self):
+        prepared = self.prepare(parents={"after": "1" * 40})
+        self.assertEqual(prepared.failedStage, "history", prepared.diagnostic)
+        self.assertIn("1" * 40, prepared.diagnostic)
+        self.assertIn("history", prepared.source["blocker"]["next"])
+        self.assertEqual(prepared.source["checkout"]["parents"], [self.commits["before"]])
+        self.assertEqual(self.made_calls(), [], "a build ran on a history that is wrong")
+
+    def test_a_commit_the_repository_lacks_is_an_acquire_blocker_with_its_command(self):
+        prepared = self.prepare(commits={"after": "f" * 40}, parents={})
+        self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
+        self.assertIn("fetch", prepared.source["blocker"]["command"])
+        self.assertIn("logs/git-fetch.log", prepared.logs)
+
+    def test_without_acquisition_nothing_is_fetched_or_built(self):
+        prepared = self.prepare(network=False)
+        self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
+        self.assertEqual((self.remotes, self.made_calls()), ([], []))
+
+    def test_a_failing_build_or_one_that_changes_tracked_sources_is_refused(self):
+        self.set_knobs(fail=True)
+        failed = self.prepare(workdir=self.work / "fail")
+        self.assertEqual(failed.failedStage, "build", failed.diagnostic)
+        self.assertIn("BUILD FAILURE", failed.diagnostic)
+        self.assertEqual(failed.source["blocker"]["command"], " ".join(ARGV))
+        self.assertIn("logs/build.log", failed.logs)
+        self.set_knobs(touch=True)
+        touched = self.prepare(workdir=self.work / "touch")
+        self.assertEqual(touched.failedStage, "build", touched.diagnostic)
+        self.assertIn("changed tracked files", touched.diagnostic)
+        self.assertEqual(touched.source["checkout"]["changedByBuild"], [" M gate/src/main/java/fixture/Gate.java"])
+
+    def test_the_original_is_the_one_produced_jar_that_holds_the_target(self):
+        self.set_knobs(noJar=True)
+        none = self.prepare(workdir=self.work / "none")
+        self.assertEqual(none.failedStage, "build", none.diagnostic)
+        self.assertIn("no JAR the build produced holds fixture/Gate.class", none.diagnostic)
+        self.set_knobs(extraJar=True)
+        two = self.prepare(workdir=self.work / "two")
+        self.assertEqual(two.failedStage, "classpath", two.diagnostic)
+        self.assertIn("gate/target/gate-1.0-all.jar", two.diagnostic)
+
+    def test_a_dependency_that_repeats_the_targets_class_is_refused_as_shadowing(self):
+        shadow = base.dependency_jar(self.dir / "shadow.jar", ["fixture/Gate"])
+        self.set_knobs(dependencies=[["x/y/shadow/1.0/shadow-1.0.jar", str(shadow)]])
+        prepared = self.prepare()
+        self.assertEqual(prepared.failedStage, "classpath", prepared.diagnostic)
+        self.assertIn("fixture.Gate", prepared.diagnostic)
+
+    def test_gradle_is_a_toolchain_blocker_naming_the_distribution_it_would_need(self):
+        props = ("distributionUrl=https\\://services.gradle.org/distributions/gradle-8.5-bin.zip\n"
+                 "distributionSha256Sum=" + "a" * 64 + "\n")
+        self.upstream, before, after = make_upstream(self.dir / "gradle-upstream",
+                                                     {"gradle/wrapper/gradle-wrapper.properties": props})
+        commits = {"before": before, "after": after}
+        wrapper = self.prepare(plan=self.plan(commits=commits, parents={}, tool="gradle-wrapper",
+                                              argv=["./gradlew", "--no-daemon", "jar"]), workdir=self.work / "wrapper")
+        self.assertEqual(wrapper.failedStage, "toolchain", wrapper.diagnostic)
+        self.assertIn("https://services.gradle.org/distributions/gradle-8.5-bin.zip", wrapper.diagnostic)
+        self.assertIn("a" * 64, wrapper.diagnostic)
+        self.assertIn("user decides", wrapper.source["blocker"]["next"])
+        self.assertEqual(wrapper.source["checkout"]["commit"], after)
+        self.remotes.clear()
+        plain = self.prepare(plan=self.plan(commits=commits, parents={}, tool="gradle", argv=["gradle", "jar"]),
+                             workdir=self.work / "plain")
+        self.assertEqual(plain.failedStage, "toolchain", plain.diagnostic)
+        self.assertEqual((self.remotes, self.made_calls()), ([], []))
+
+    def test_a_maven_wrapper_runs_its_own_distribution_from_central_by_sha256(self):
+        dist = self.dir / "dist/apache-maven-9.9.9-bin.zip"
+        dist.parent.mkdir()
+        script = self.standin(self.dir / "dist-src/mvn")
+        with zipfile.ZipFile(dist, "w") as z:
+            z.write(script, "apache-maven-9.9.9/bin/mvn")
+        url = "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/9.9.9/apache-maven-9.9.9-bin.zip"
+        import hashlib
+        files = {url: dist.read_bytes(), url + ".sha1": hashlib.sha1(dist.read_bytes()).hexdigest().encode()}
+        fetched = []
+
+        def fetch(u, dest):
+            fetched.append(u)
+            Path(dest).write_bytes(files[u])
+        mock.patch.object(runtime_maven, "FETCH", fetch).start()
+        # an older wrapper's properties: escaped, and Central under its older name
+        props = "distributionUrl=https\\://repo1.maven.org/maven2/org/apache/maven/apache-maven/9.9.9/apache-maven-9.9.9-bin.zip\n"
+        self.upstream, before, after = make_upstream(self.dir / "wrapper-upstream",
+                                                     {".mvn/wrapper/maven-wrapper.properties": props})
+        plan = self.plan(commits={"before": before, "after": after}, parents={}, tool="maven-wrapper",
+                         argv=["./mvnw", *ARGV[1:]])
+        prepared = self.prepare(plan=plan)
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        wrapper = prepared.toolchain["upstream"]["wrapper"]
+        self.assertEqual((wrapper["fetchedFrom"], wrapper["sha256"]), (url, runtime.sha256(dist)))
+        self.assertIn(".sha1", wrapper["checked"])
+        self.assertEqual(fetched, [url, url + ".sha1"], "fetched once, checked, then restored from the cache")
+        ran = self.work / "after/tools/maven/apache-maven-9.9.9/bin/mvn"
+        self.assertEqual([c["argv"][0] for c in self.made_calls()], [str(ran)] * 3)
+        # a recorded distributionSha256Sum the bytes don't match: refused, never run
+        self.upstream, before, after = make_upstream(self.dir / "wrong-upstream", {
+            ".mvn/wrapper/maven-wrapper.properties": props + "distributionSha256Sum=" + "0" * 64 + "\n"})
+        mock.patch.object(runtime_maven, "CACHE", self.dir / "cache2").start()
+        wrong = self.prepare(plan=self.plan(commits={"before": before, "after": after}, parents={},
+                                            tool="maven-wrapper", argv=["./mvnw", *ARGV[1:]]), workdir=self.work / "wrong")
+        self.assertEqual(wrong.failedStage, "acquire", wrong.diagnostic)
+        self.assertIn("not the recorded", wrong.diagnostic)
+
+    def test_a_zip_entry_outside_its_root_is_never_unpacked(self):
+        evil = self.dir / "evil.zip"
+        with zipfile.ZipFile(evil, "w") as z:
+            z.writestr("apache-maven-1/../../escaped", "x")
+        with self.assertRaises(runtime_maven.Blocked):
+            runtime_upstream._unzip(evil, self.dir / "into")
+        self.assertFalse((self.dir / "escaped").exists())
+
+    def test_each_built_revision_runs_in_its_own_jvm(self):
+        if not {"21", "25"} <= set(runtime_jdk.homes()):
+            self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
+        plan = self.plan(("before", "after"))
+        attempt = self.work / "attempt"
+        prepared = {r: runtime.prepare(plan, r, attempt / "prepare" / r) for r in plan.revisions}
+        self.assertEqual({r: p.stage for r, p in prepared.items()}, {"before": "artifacts-ready", "after": "artifacts-ready"})
+        records = runtime.run_controls(plan, prepared, attempt / "controls")
+        self.assertEqual([(r.revision, r.identities["jdkFeature"], r.status, r.exitCode) for r in records],
+                         [("before", "21", "exited", 0), ("before", "25", "exited", 0),
+                          ("after", "21", "exited", 0), ("after", "25", "exited", 0)])
+        problems = {}
+        for r in records:
+            self.assertEqual(r.identities["commit"], self.commits[r.revision])
+            problems.setdefault(r.revision, set()).add(
+                tuple(c for c, _ in base.oracle().check([json.dumps(o) for o in r.observations])))
+        self.assertEqual(problems, {"before": {(97,)}, "after": {()}}, "the built revisions replay as the fixture's")
+
+
+class NumbersCaseTest(unittest.TestCase):
+    """The case the upstream-build job runs (runtime_slice.py --case numbers, runtime_numbers/): example 105's two
+    pinned commons-numbers commits. Nothing here fetches or builds; the job does."""
+
+    def setUp(self):
+        import runtime_slice
+        self.slice = runtime_slice
+        self.folder = runtime_slice.CASES["numbers"]["folder"]
+        self.target = json.loads((self.folder / "target.json").read_text())
+        self.addCleanup(mock.patch.stopall)
+        mock.patch.object(runtime_upstream, "REMOTE", side_effect=AssertionError("the case's tests fetched")).start()
+
+    def test_the_sidecar_is_valid_and_both_commits_lock_offline_with_the_recipe(self):
+        from targets import sidecar
+        sidecar.check(self.target, self.folder)
+        p = self.slice.plan(self.folder, network=True, example="316")
+        self.assertEqual((p.example, p.kind, p.revisions), ("316", "replay", ("before", "after")))
+        before, after = "e7c172d2f4c7d171fed9060e77b5f91a20c36c91", "8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+        for revision, commit, parent in (("before", before, None), ("after", after, before)):
+            locked = runtime.lock(p, revision)
+            self.assertEqual((locked.stage, locked.commit), ("source-locked", commit), locked.diagnostic)
+            self.assertEqual(locked.source["history"].get("parent"), parent)
+            self.assertEqual(locked.source["upstream"]["jdk"], "11")
+            self.assertEqual(locked.source["upstream"]["argv"][:5],
+                             ["mvn", "--batch-mode", "--no-transfer-progress", "--projects", "commons-numbers-core"])
+            self.assertEqual(locked.source["driver"]["main"], "upstream.driver.PowDriver")
+
+    def test_offline_the_build_is_a_blocker_at_acquire(self):
+        p = self.slice.plan(self.folder, network=False, example="316")
+        with tempfile.TemporaryDirectory(prefix="test-numbers-") as d:
+            prepared = runtime.prepare(p, "after", Path(d) / "attempt/prepare/after")
+        self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
+        self.assertTrue(all(prepared.source["blocker"][k] for k in ("command", "needs", "next")))
+
+    def test_the_oracle_is_not_vacuous_and_tells_the_two_commits_apart(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("numbers_oracle", self.folder / "oracle.py")
+        oracle = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(oracle)
+
+        def int32(v):
+            return (v + 2 ** 31) % 2 ** 32 - 2 ** 31
+
+        def model(fixed, wrap=False, deny=False):  # Python stand-ins for implementations, right and wrong
+            def pow_(k, e):
+                if deny:
+                    return "threw", "java.lang.ArithmeticException"
+                if e < 0:
+                    return "threw", "java.lang.IllegalArgumentException"
+                if k in (0, 1, -1):
+                    return "returned", k ** e
+                if e >= (32 if fixed else 31) and not wrap:
+                    return "threw", "java.lang.ArithmeticException"
+                exact = k ** e if e <= 64 else None
+                if exact is not None and -2 ** 31 <= exact < 2 ** 31:
+                    return "returned", exact
+                return ("returned", int32(k ** min(e, 64))) if wrap else ("threw", "java.lang.ArithmeticException")
+            return pow_
+
+        def lines(impl):
+            out = []
+            for k, e in oracle.PROBES:
+                outcome, what = impl(k, e)
+                out.append(json.dumps({"input": [k, e], "outcome": outcome,
+                                       **({"value": what} if outcome == "returned" else {"exception": what})}))
+            return out
+
+        self.assertEqual([p for p, _ in oracle.check(lines(model(fixed=True)))], [])
+        self.assertEqual([p for p, _ in oracle.check(lines(model(fixed=False)))],
+                         self.slice.CASES["numbers"]["expected"]["before"])
+        self.assertGreater(len(oracle.check(lines(model(fixed=True, deny=True)))), 10)
+        self.assertGreater(len(oracle.check(lines(model(fixed=True, wrap=True)))), 5)
+        with self.assertRaises(ValueError):
+            oracle.check(lines(model(fixed=True))[1:])
+
+
+if __name__ == "__main__":
+    unittest.main()

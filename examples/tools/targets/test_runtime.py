@@ -100,13 +100,13 @@ class LockTest(FixtureCopy):
         locked = runtime.lock(fixture_plan(self.folder), "before")
         self.assertEqual(locked.failedStage, "lock")
 
-    def test_the_routes_to_come_are_unsupported_not_stubs(self):
-        for route in ("upstream-build",):
+    def test_every_route_is_implemented_and_an_unknown_one_is_refused_at_the_lock(self):
+        self.assertEqual(runtime.ROUTES_TO_COME, {})
+        self.assertEqual(set(runtime.LOCKS), set(runtime.PREPARES))
+        for route in ("upstream-build", "ftp"):  # a fixture entry has no commit or build to build upstream
             value = runtime.prepare(fixture_plan(self.folder, route=route), "after", self.work)
-            self.assertTrue(interfaces.unsupported(value), route)
-            self.assertEqual((value.interface, value.owner), ("prepare", interfaces.RUNTIME))
-            self.assertNotIn(STUB, value.reason, "only Phase 0's stubs may say so")
-        self.assertFalse(self.work.exists(), "an unsupported route made its work directory")
+            self.assertEqual((value.stage, value.failedStage), ("failed", "lock"), route)
+        self.assertFalse(self.work.exists(), "a refused lock made its work directory")
 
 
 class PrepareTest(FixtureCopy):

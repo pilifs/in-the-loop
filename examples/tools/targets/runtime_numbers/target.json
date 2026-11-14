@@ -1,0 +1,98 @@
+{
+  "$schema": "../../../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "runtime-upstream-build-pow",
+    "family": "runtime-upstream-build",
+    "role": "calibration",
+    "matching": "The runtime stream's check of the upstream-build route (R2 of llm-dlc/loops/example-targets-runtime.md): one pinned commit pair built by its own Maven, then run through preparation and a separate-JVM driver. It checks the route, not a claim. The revisions and recipe are example 105's, as the positive stream's sidecar records them (read-only on its branch, 2026-11-14); 105's packet, task, oracle and controls are the positive stream's, and this is no part of them.",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-numbers",
+    "researchedOn": "2026-11-14",
+    "revisions": {
+      "before": {
+        "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "checked": "2026-11-14: fetched from github.com by full commit (blobless, depth 1); its ArithmeticUtils.pow(int, int) throws ArithmeticException for e >= 31 after the k in {0, 1, -1} cases. The positive stream's 105 sidecar records it as after's only parent."
+      },
+      "after": {
+        "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+        "parent": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "checked": "2026-11-14: taken from the positive stream's 105 sidecar, which fetched it from github.com: the squash merge of pull request #223 (NUMBERS-218), e >= 31 changed to e > 31. The build checks the recorded parent."
+      }
+    },
+    "pairs": [
+      {
+        "name": "fix",
+        "kind": "exact-fix",
+        "before": "before",
+        "after": "after",
+        "selected": true
+      }
+    ],
+    "links": [
+      "https://github.com/apache/commons-numbers/pull/223"
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "--projects",
+        "commons-numbers-core",
+        "-Dmaven.test.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dpmd.skip=true",
+        "-Dcpd.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Djapicmp.skip=true",
+        "-Danimal.sniffer.skip=true",
+        "-Djacoco.skip=true",
+        "-Dmaven.javadoc.skip=true",
+        "-Dmaven.source.skip=true",
+        "package"
+      ],
+      "jdk": "11"
+    },
+    "jdks": [
+      "21",
+      "25"
+    ],
+    "adapters": [
+      "adapter/upstream/adapter/PowAdapter.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fix",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "notes": [
+        "Concrete controls only: each commit built by its own Maven (the recipe of the positive stream's 105 sidecar, JDK 11), then its driver in its own JVM on JDK 21 and 25. The oracle is written from the method's Javadoc. Expected: before disagrees with it at pow(-2, 31) alone (it throws ArithmeticException where -2^31 is an int), after nowhere."
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "pow-driver",
+      "kind": "driver",
+      "path": "driver/upstream/driver/PowDriver.java"
+    },
+    {
+      "id": "pow-oracle",
+      "kind": "oracle",
+      "path": "oracle.py"
+    }
+  ]
+}

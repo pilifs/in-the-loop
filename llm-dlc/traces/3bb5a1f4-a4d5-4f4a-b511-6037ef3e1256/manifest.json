@@ -12,29 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T16:46:21.344Z",
-  "duration_seconds": 4774,
+  "ended": "2026-11-14T17:07:31.233Z",
+  "duration_seconds": 6044,
   "stats": {
-    "turns": 31,
-    "api_calls": 266,
-    "tool_calls": 274,
+    "turns": 37,
+    "api_calls": 322,
+    "tool_calls": 332,
     "tool_errors": 3,
-    "compactions": 6,
-    "peak_context_tokens": 232967,
+    "compactions": 7,
+    "peak_context_tokens": 240654,
     "usage": {
-      "input_tokens": 538,
-      "output_tokens": 266051,
-      "cache_read_input_tokens": 32342333,
-      "cache_creation_input_tokens": 942719
+      "input_tokens": 654,
+      "output_tokens": 358281,
+      "cache_read_input_tokens": 41869004,
+      "cache_creation_input_tokens": 1173910
     }
   },
   "tools": {
-    "Bash": 234,
-    "Read": 13,
-    "Edit": 12,
-    "Write": 11,
-    "Monitor": 2,
-    "ToolSearch": 2
+    "Bash": 277,
+    "Read": 17,
+    "Write": 17,
+    "Edit": 14,
+    "Monitor": 3,
+    "ToolSearch": 3,
+    "ScheduleWakeup": 1
   },
   "files_touched": [
     "examples/tools/targets/runtime.py",
@@ -42,12 +43,18 @@
     "examples/tools/targets/runtime_jar.py",
     "examples/tools/targets/runtime_jdk.py",
     "examples/tools/targets/runtime_maven.py",
+    "examples/tools/targets/runtime_numbers/README.md",
+    "examples/tools/targets/runtime_numbers/adapter/upstream/adapter/PowAdapter.java",
+    "examples/tools/targets/runtime_numbers/driver/upstream/driver/PowDriver.java",
+    "examples/tools/targets/runtime_numbers/oracle.py",
     "examples/tools/targets/runtime_simplematch/adapter/slice/adapter/SimpleMatchAdapter.java",
     "examples/tools/targets/runtime_simplematch/driver/slice/driver/SimpleMatchDriver.java",
     "examples/tools/targets/runtime_simplematch/oracle.py",
     "examples/tools/targets/runtime_simplematch/target.json",
     "examples/tools/targets/runtime_slice.py",
+    "examples/tools/targets/runtime_upstream.py",
     "examples/tools/targets/test_runtime.py",
+    "examples/tools/targets/test_runtime_upstream.py",
     "llm-dlc/loops/example-targets-runtime.md"
   ],
   "context_windows": [
@@ -138,24 +145,38 @@
     {
       "index": 6,
       "started": "2026-11-14T16:31:20.452Z",
-      "ended": "2026-11-14T16:46:21.344Z",
-      "turns": 5,
-      "api_calls": 62,
+      "ended": "2026-11-14T16:46:44.974Z",
+      "turns": 6,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 49683,
-        "cache_read_input_tokens": 6841240,
-        "cache_creation_input_tokens": 156530
+        "input_tokens": 132,
+        "output_tokens": 51133,
+        "cache_read_input_tokens": 7182324,
+        "cache_creation_input_tokens": 160253
       },
-      "peak_context_tokens": 169716
+      "peak_context_tokens": 173439
+    },
+    {
+      "index": 7,
+      "started": "2026-11-14T16:47:48.454Z",
+      "ended": "2026-11-14T17:07:31.233Z",
+      "turns": 5,
+      "api_calls": 54,
+      "usage": {
+        "input_tokens": 112,
+        "output_tokens": 90780,
+        "cache_read_input_tokens": 9185587,
+        "cache_creation_input_tokens": 227468
+      },
+      "peak_context_tokens": 240654
     }
   ],
   "log": {
-    "sha256": "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0",
-    "bytes": 8844628,
-    "lines": 2999,
-    "gzip_bytes": 1697164,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0.jsonl.gz"
+    "sha256": "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb",
+    "bytes": 10838124,
+    "lines": 3606,
+    "gzip_bytes": 2116610,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -214,9 +235,23 @@
       "summary": "example-targets runtime: VF-024, equivalence on class directories, recorded parameter names, the fixture recipe's flags (verification pending)",
       "body": "Job 20261114-162937-example-targets-runtime-r3-run-verifier (VF-024) got no expected verdict from the fixture's five proof tasks. The causes, and the changes: (1) Phase 0's build_fixtures.py compiles without -parameters or -g, so jvmcontract names Gate.allowed's parameter arg0, while Phase 0's sidecar and workflow's claim files say code (and RegexGate's say field). That is an inconsistency in Phase 0 that runtime can't fix alone, because the fixture route must reproduce build_fixtures.py byte for byte (contract A2). Runtime now takes an optional JAVAC_FLAGS from build_fixtures.py for every javac of the route. Progress asks the coordinator for JAVAC_FLAGS = ('-parameters',), and notes that until then contract A5's fixture rows will fail the same way at the merge. The verifier's scope now records the target's parameter names as the loaded class has them, and where they come from (new runtime_jar.parameter_names, reading MethodParameters, then the LocalVariableTable, as jvmcontract does). (2) jvmcontract equivalence takes directories of classes, not JARs: run_verifier extracts each side's original JAR into verifier/classes/<revision>, records the extraction, and refuses an entry outside the JAR's root. (3) regex-probe's strict proof stops at its String parameter before it reaches java.util.regex. The capability probe names the regex calls, and runtime_calibrate.py now reports the refusal's and the probe's naming apart.\n\nRerun queued as job 20261114-164239-example-targets-runtime-r3-after-vf-024. Its calibration runs with --fixture-javac-flag=-parameters, recorded as that variant (the asked-for recipe, not Phase 0's bytes); its contract step runs on Phase 0's bytes. Verified inline: test_runtime.py 55 tests pass (3 new); a calibration dry run without jvmcontract gives the toolchain Unsupported with the variant recorded; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 94, test_build 190, test_pipeline 29). The brief's rest isn't wrong, but Phase 0's fixture recipe and its parameter names disagree, as recorded under Progress.",
       "log_sha256": "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0"
+    },
+    {
+      "change_id": "npvxmlwzpwmkpyukouootnlpyxyusmnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: the upstream-build route, the pinned commit checked out and built by its own Maven (verification pending)",
+      "body": "runtime.py's lock() and prepare() now take route: upstream-build, through the new runtime_upstream.py, so every route of the sidecar schema is implemented. The lock is offline: a github.com repository, the full commit and its recorded parent, and the build recipe (tool, argv starting with that tool's command, JDK by feature), refusing an argv that sets its own settings, local repository or offline mode. Preparation fetches the exact commit by full SHA into an isolated checkout (https only, no tags, hooks, submodules or user configuration), records its tree and parents (a recorded parent the commit doesn't have is a history blocker), runs the recorded argv with the revision's JDK and Maven by full path, with Maven Central as the one repository, a fresh local repository, strict checksums and no inherited environment, refuses a build that changes tracked sources, takes the one produced non-auxiliary JAR holding the target class as the original, resolves the module's runtime classpath with maven-dependency-plugin 3.9.0 (pinned), and hashes every produced JAR and every file the build resolved (maven/resolution.json, version lookups named). A Maven wrapper's distribution is fetched from Maven Central by sha256 (its properties' own, or Central's .sha1 checked through the new runtime_maven.pin_file) and run directly; Gradle is a toolchain blocker naming the distribution it would need, since services.gradle.org is outside the downloads policy (307 needs the user's decision on that).\n\nVerified: the new test_runtime_upstream.py (15 tests, against a local git repository standing in for github.com and a stand-in mvn recording its argv, cwd and environment: lock refusals, every record of a ready build, wrong parent, missing commit, no network, failing and source-editing builds, no or two original JARs, shadowing, both Gradle tools, the wrapper with its sha256 rechecked and a mismatch, an escaping zip entry, controls of both built revisions on JDK 21 and 25, and the job's case) and test_runtime.py (55) pass; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 110, test_build 190, test_pipeline 29, build.py --plan).\n\nThe acceptance's real pinned revision is queued as job 20261114-170353-example-targets-runtime-r2-the-upstream: runtime_slice.py --case numbers builds example 105's two commons-numbers commits (e7c172d2, 8cfc04e8; the positive stream's recipe, Maven on JDK 11) and replays ArithmeticUtils.pow in separate JVMs on JDK 21 and 25 through runtime_numbers/, this stream's own case folder (adapter, driver, Javadoc oracle, number 316). Expected: before disagrees at pow(-2, 31) alone, after nowhere.",
+      "log_sha256": "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb"
     }
   ],
   "logs": {
+    "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb": {
+      "bytes": 10838124,
+      "lines": 3606,
+      "gzip_bytes": 2116610,
+      "url": null
+    },
     "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a": {
       "bytes": 2347292,
       "lines": 718,

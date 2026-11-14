@@ -383,10 +383,81 @@ Small unit and JVM conformance checks run inline.
     entry; and recipe flags reaching javac, giving other bytes and recorded names). The integration script exits 0:
     contract 8 pass and 8 skip, targets suite 94 (run before the escaping-entry test was added), `test_build` 190,
     `test_pipeline` 29.
+- 2026-11-14, **R2's upstream-build route**: `lock()` and `prepare()` take `route: upstream-build`, through the new
+  `runtime_upstream.py`. `ROUTES_TO_COME` is now empty.
+
+  The lock is offline. It needs:
+  - an https repository on github.com;
+  - the full commit, and the recorded parent if there is one, also a full commit;
+  - the build: a known tool, an argv that starts with that tool's own command (`mvn`, `./mvnw`), and a JDK by
+    feature.
+
+  It refuses an argv that sets what preparation sets itself: `-s`/`-gs`/`--settings`, `-Dmaven.repo.local` and
+  `-o`.
+
+  Preparation, recorded as it goes, so a refusal keeps what exists:
+  1. **The checkout.** It runs `git init`, then fetches the exact commit by full SHA (https only, no tags, hooks,
+     submodules or user configuration), with depth 2 when a parent is recorded. It records the commit, its tree, its
+     parents and where it came from. A parent the commit doesn't have is a `history` blocker. Its next action is to
+     check the sidecar, never to change the lock to fit.
+  2. **The build.** The recorded argv runs in the checkout with the revision's JDK and Maven, each by full path. Maven
+     gets a fresh local repository, a settings file that makes Maven Central the one repository (a mirror of every
+     other), `--strict-checksums`, HOME in the work directory and `MAVEN_SKIP_RC`, and inherits nothing else. The
+     recorded argv and the argv that ran are both kept.
+  3. **The checks.** The build must leave every tracked file as checked out (`git status`). Otherwise it is a
+     `build` blocker: a build-enabling change is separate recorded bytes.
+  4. **The original.** It is the one produced JAR, not a sources, javadoc or tests JAR, that holds the target class.
+     None or several is a blocker. Every produced JAR is hashed.
+  5. **The dependencies.** The module's runtime classpath comes, in Maven's order, from
+     `maven-dependency-plugin:3.9.0:build-classpath`, named by full version, so no plugin lookup. The recipe's `-D`
+     and `-P` options are passed through. Every file the build resolved is hashed in `maven/resolution.json`. Version
+     lookups (artifact metadata Maven read to choose a version) are named there, and recorded rather than refused,
+     because the bytes chosen are hashed. Then the local repository is deleted.
+  6. **The rest, as on the other routes.** The adapter and driver are compiled against the result, and shadowing,
+     the target method and the adapter's call are checked.
+
+  The other tools:
+  - **A Maven wrapper.** Its distribution comes from Maven Central only (`repo1.maven.org` is read as
+    `repo.maven.apache.org`), by the sha256 its properties record. Without one, it is checked against Central's
+    `.sha1` (the new `runtime_maven.pin_file`) and its sha256 recorded. It goes through the checked cache, is
+    unpacked with no entry escaping its root, and its `bin/mvn` runs in place of `./mvnw`.
+  - **Gradle.** It is a `toolchain` blocker. A wrapper's blocker names its distribution URL and its
+    `distributionSha256Sum` from the checkout. The distribution is on services.gradle.org, outside the downloads
+    policy.
+
+  New `test_runtime_upstream.py`, 15 tests, against a local git repository standing in for github.com and a stand-in
+  `mvn` that records its argv, cwd and environment. They cover:
+  - an offline lock and 11 lock refusals;
+  - every record of a ready preparation;
+  - a wrong parent, a missing commit, and `network: false`;
+  - a failing build, and a build that edits a tracked source;
+  - no original JAR, or two;
+  - a shadowing dependency;
+  - both Gradle tools;
+  - the wrapper, from the stand-in for Central, its sha256 rechecked, and a mismatching recorded sha256;
+  - a zip entry that escapes its root;
+  - both built revisions' controls on JDK 21 and 25, read by the fixture's oracle;
+  - the job's case: its sidecar, the oracle's non-vacuity and the offline blocker.
+
+  `test_runtime.py`'s routes-to-come test is now the check that every route is implemented. The integration script
+  exits 0: contract 8 pass and 8 skip, targets suite 110, `test_build` 190, `test_pipeline` 29, `build.py --plan` ok.
+- **The job, the acceptance's real pinned revision:** `20261114-170353-example-targets-runtime-r2-the-upstream`.
+  - It runs `runtime_slice.py --case numbers` (now with a `--case`) on `runtime_numbers/`. That is a case folder of
+    this stream's, using number 316 in its plan.
+  - Its revisions and recipe are 105's from the positive stream's sidecar: `e7c172d2` and `8cfc04e8`, Maven on JDK 11.
+    The adapter, driver and 45-probe Javadoc oracle are its own. 105's packet stays the positive stream's.
+  - Expected: before disagrees at `pow(-2, 31)` alone, and after nowhere, on JDK 21 and 25.
+  - Read upstream, not built, while writing it. Both commits' POMs need `commons-parent` 105 and `commons-rng-bom` 1.7
+    from Central; both are there. Neither commit has a Maven wrapper. The installed Maven 3.10.0 runs on JDK 11.
+    `pow` throws the two classes its Javadoc names.
+
+  Result pending.
+- For review: no checkout or build cache yet. Each preparation fetches its commit and the build's plugins again. A
+  cache is allowed ("may"), not needed for the acceptance.
 - Next:
-  1. The rerun's result (`20261114-164239-example-targets-runtime-r3-after-vf-024`).
-  2. The upstream-build route, with 105's pinned revisions as its job.
-  3. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
+  1. The two jobs' results: `20261114-164239-example-targets-runtime-r3-after-vf-024` and
+     `20261114-170353-example-targets-runtime-r2-the-upstream`.
+  2. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
 - Status: working
 
 ## Loop settings

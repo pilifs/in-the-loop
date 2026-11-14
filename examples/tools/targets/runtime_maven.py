@@ -239,24 +239,33 @@ def _scratch(cache):
     return path
 
 
+def pin_file(url, cache=None, fetcher=None):
+    """The first fetch of a file on Maven Central: (sha256, sha1), after checking the bytes against Central's own
+    .sha1. The bytes go into the cache; nothing is written anywhere else."""
+    cache = cache or Cache()
+    if urllib.parse.urlsplit(url).hostname != "repo.maven.apache.org" or not allowed(url):
+        raise Blocked("acquire", f"{url} is not on Maven Central, whose .sha1 files this checks against")
+    scratch = Path(tempfile.mkdtemp(prefix="pin-", dir=_scratch(cache)))
+    try:
+        data, sha1 = scratch / "artifact", scratch / "artifact.sha1"
+        (fetcher or FETCH)(url, data)
+        (fetcher or FETCH)(url + ".sha1", sha1)
+        published = sha1.read_text(errors="replace").split()[0].lower() if sha1.stat().st_size else ""
+        actual = hashlib.sha1(data.read_bytes()).hexdigest()
+        if published != actual:
+            raise Blocked("acquire", f"{url} has sha1 {actual}, but Maven Central's .sha1 says {published!r}")
+        digest = sha256_of(data)
+        cache.store(data, digest)
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+    return digest, actual
+
+
 def pin(coords, cache=None, fetcher=None):
     """The first fetch of a published JAR, from Maven Central: its sha256 and Central's .sha1, which must agree with
     the bytes. Returns the sidecar entry. Its bytes go into the cache; nothing is written anywhere else."""
-    cache = cache or Cache()
     url = central_url(coords)
-    scratch = Path(tempfile.mkdtemp(prefix="pin-", dir=_scratch(cache)))
-    try:
-        jar, sha1 = scratch / "artifact.jar", scratch / "artifact.jar.sha1"
-        (fetcher or FETCH)(url, jar)
-        (fetcher or FETCH)(url + ".sha1", sha1)
-        published = sha1.read_text(errors="replace").split()[0].lower() if sha1.stat().st_size else ""
-        actual = hashlib.sha1(jar.read_bytes()).hexdigest()
-        if published != actual:
-            raise Blocked("acquire", f"{url} has sha1 {actual}, but Maven Central's .sha1 says {published!r}")
-        digest = sha256_of(jar)
-        cache.store(jar, digest)
-    finally:
-        shutil.rmtree(scratch, ignore_errors=True)
+    digest, actual = pin_file(url, cache, fetcher)
     return {"coordinates": coords, "url": url, "sha256": digest,
             "checked": f"sha1 {actual} matches Maven Central's .sha1, {time.strftime('%Y-%m-%d')}"}
 

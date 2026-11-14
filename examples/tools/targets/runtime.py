@@ -13,10 +13,12 @@ The two milestones stay apart (R1): a source lock fetches and builds nothing and
 artifacts-ready preparation does. A preparation never decides a claim, and a partial one is returned as failed with
 its stage, never as an empty success.
 
-Routes: `fixture` (a control's fixture revisions, built locally with build_fixtures.py's recipe) and
+Routes: `fixture` (a control's fixture revisions, built locally with build_fixtures.py's recipe),
 `published-artifact` (the revision's JAR and its declared dependencies from Maven Central, each by its recorded sha256,
-through runtime_maven.py's checked cache) are implemented; `upstream-build` (R2) returns Unsupported until it is. The
-adapter and driver are compiled separately, with the fixture recipe's --release and JAR date, on either route.
+through runtime_maven.py's checked cache) and `upstream-build` (the exact commit fetched from github.com and built by
+its recorded recipe with its own tool and JDK, through runtime_upstream.py: Maven and the Maven wrapper; Gradle is a
+blocker). The adapter and driver are compiled separately, with the fixture recipe's --release and JAR date, on every
+route.
 
 On the classpath a preparation refuses: a class held by more than one entry (an adapter or driver shadowing the
 target, or two dependencies with one class), a target method missing from the original artifact, and an adapter that
@@ -43,7 +45,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven
+from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
@@ -66,8 +68,8 @@ def sha256(path):
 
 
 class Refused(Exception):
-    """A preparation stops: `stage` is where (lock, workdir, acquire, toolchain, build, target, classpath, adapter),
-    and, for the handoff, the command that failed, the semantics needed and the next action, where known."""
+    """A preparation stops: `stage` is where (lock, workdir, acquire, history, toolchain, build, target, classpath,
+    adapter), and, for the handoff, the command that failed, the semantics needed and the next action, where known."""
 
     def __init__(self, stage, diagnostic, command=None, needs=None, next=None):
         super().__init__(diagnostic)
@@ -266,8 +268,29 @@ def _published_items(revision, entry):
     return published[0], published[1:]
 
 
-LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published}
-ROUTES_TO_COME = {"upstream-build": "R2's pinned upstream build"}
+def _lock_upstream(plan, revision, entry, folder):
+    """An upstream-build revision's lock, offline: the github.com repository, the full commit and its recorded
+    parent, and the build recipe (tool, exact argv, JDK), checked by runtime_upstream.check_recipe. Nothing is
+    fetched: the checkout is preparation's."""
+    try:
+        recipe = runtime_upstream.check_recipe(revision, entry)
+    except runtime_maven.Blocked as b:
+        raise Refused.blocked(b) from None
+    source = {
+        "route": "upstream-build", "repository": recipe["repository"], "revision": revision,
+        "provenance": "the exact commit, fetched from github.com into an isolated checkout and built there by its "
+                      "recorded recipe with its own build tool; the original sources stay untouched",
+        "history": {"commit": recipe["commit"], **({"parent": recipe["parent"]} if recipe["parent"] else {})},
+        "upstream": {k: recipe[k] for k in ("tool", "argv", "jdk")},
+        **_controls_source(folder, entry),
+        "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
+                                          "the original is built by the upstream recipe", **_fixture_recipe()},
+    }
+    return recipe["commit"], source
+
+
+LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published, "upstream-build": _lock_upstream}
+ROUTES_TO_COME = {}  # a route named here is Unsupported (not implemented yet), never a stub
 
 
 def lock(plan, revision):
@@ -497,7 +520,37 @@ def _prepare_published(plan, revision, locked, workdir):
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
 
 
-PREPARES = {"fixture": _prepare_fixture, "published-artifact": _prepare_published}
+def _prepare_upstream(plan, revision, locked, workdir):
+    """The pinned commit checked out and built by its recipe (runtime_upstream.build: the checkout, the toolchain,
+    the build, the produced JARs and the resolution, recorded as they happen), then the adapter and driver compiled
+    against the original and its runtime dependencies. A failure keeps what was recorded and built so far."""
+    source = dict(locked.source)
+    folder = Path(plan.folder).resolve()
+    build, toolchain = _builder(source, workdir)
+    upstream = {}
+    try:
+        cls = runtime_jar.parse_target(plan.target)[0]
+        recipe = {"repository": source["repository"], "commit": locked.commit,
+                  "parent": source["history"].get("parent"), **source["upstream"]}
+        try:
+            built = runtime_upstream.build(recipe, workdir, runtime_jar.internal(cls), build.logs, upstream,
+                                           network=plan.network)
+        except runtime_maven.Blocked as b:
+            raise Refused.blocked(b) from None
+        finally:
+            source["checkout"] = upstream.get("checkout")
+            source["built"] = upstream.get("outputs")
+            toolchain["upstream"] = {**(upstream.get("toolchain") or {}), "steps": upstream.get("steps", [])}
+        for path, digest, role, coords, origin in built:
+            build.artifacts.append(Artifact(path, digest, role, coordinates=coords, origin=origin))
+        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [p for p, *_ in built])
+        source["target"] = _check_classpath(plan, workdir, classpath, built[0][0], adapter)
+    except Refused as e:
+        return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
+    return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
+
+
+PREPARES = {"fixture": _prepare_fixture, "published-artifact": _prepare_published, "upstream-build": _prepare_upstream}
 
 
 def prepare(plan, revision, workdir):
