@@ -1,0 +1,246 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "9af0486e9e1d937f",
+    "format": 1,
+    "example": "105",
+    "statement": {
+      "approach": "target",
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "revisions": [
+        "before",
+        "after"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "javadoc-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+          },
+          {
+            "id": "pow-driver",
+            "kind": "driver",
+            "path": "replay/driver/inloop/p105/PowDriver.java",
+            "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+          },
+          {
+            "id": "pow-probes",
+            "kind": "probe",
+            "path": "replay/probes.json",
+            "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+          }
+        ],
+        "key": "ea0558fcb8845587"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay",
+      "sidecar": "2c4cd533a6647041a69dbaf417923b1db34d29422e3760e62a769f23a27e5cbc",
+      "revisions": {
+        "before": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "after": "8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+      },
+      "dependencies": [
+        {
+          "revision": "before",
+          "position": 0,
+          "role": "driver",
+          "sha256": "369ee0485f1f717e2309103649e4a04ece29f8a00ce85b1f15297fcde9a33833"
+        },
+        {
+          "revision": "before",
+          "position": 1,
+          "role": "original",
+          "sha256": "e3a1b00d529d504cf8fdff8c3fb2d2150df154c98687b204aac49a35d33f9bcc"
+        },
+        {
+          "revision": "after",
+          "position": 0,
+          "role": "driver",
+          "sha256": "369ee0485f1f717e2309103649e4a04ece29f8a00ce85b1f15297fcde9a33833"
+        },
+        {
+          "revision": "after",
+          "position": 1,
+          "role": "original",
+          "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797",
+        "replay/driver/inloop/p105/PowDriver.java": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3",
+        "replay/probes.json": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261114T234007Z-435a8163",
+    "claim": "9af0486e9e1d937f",
+    "startedAt": "2026-11-14T23:40:07+00:00",
+    "seconds": 0.3,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "7334896cbdae5368813bac5f5d99aa23f5571d46ce6893d68d78fd4228e0434f",
+        "files": 1
+      },
+      "after": {
+        "sha256": "271368dc574a59644b8bca149f2a519e9288aa9f78edb6649ecfe53cecff7de7",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261114-233239-example-105-replay-phase-5-commons-numbe",
+      "sourceCommit": "d2921a8e65085e40e0817a0ebe004daec720b26f",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-233239-example-105-replay-phase-5-commons-numbe"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control before on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.065,
+        "stdout": "controls/control-before-jdk21.stdout",
+        "stderr": "controls/control-before-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control before on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-before-jdk25.stdout",
+        "stderr": "controls/control-before-jdk25.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-after-jdk21.stdout",
+        "stderr": "controls/control-after-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-after-jdk25.stdout",
+        "stderr": "controls/control-after-jdk25.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "9af0486e9e1d937f",
+    "attempt": "20261114T234007Z-435a8163",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: before violates the oracle at [-2, 31]; after holds the oracle, on every JDK named: as the fix pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 14,
+      "code": "\"before\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"after\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "[-2, 31]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision before on JDK 21: threw java.lang.ArithmeticException, the contract says returned -2147483648"
+      },
+      {
+        "input": "[-2, 31]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision before on JDK 25: threw java.lang.ArithmeticException, the contract says returned -2147483648"
+      }
+    ],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 4 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "9dcd45948135b6f01f580c4157adf7c476a28e5df4d6872e742ce8dd2a9bc2f8",
+        "bytes": 56288
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "157085b06c1af2fdadbdceb855ab7948f6c3aeea0d4be39fb000ef6bf87b21ed",
+        "bytes": 669
+      }
+    ]
+  }
+}

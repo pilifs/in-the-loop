@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-233239-example-286-mutant-replay-phase-5-step-1",
+  "title": "example 286 mutant-replay (Phase 5 step 1): the constructed pattern-side-unnormalized mutant of Framework 5.3.19 fails the case-protected binding oracle where 5.3.19 holds",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.2s, peak 243.2 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-233239-example-286-mutant-replay-phase-5-step-1.json",
+    "sha256": "a6aaa3731be61d77d4e43822aa9bbc2cb0ddc3fe0c159c3b80f7767ee56c6979",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-233239-example-286-mutant-replay-phase-5-step-1",
+      "title": "example 286 mutant-replay (Phase 5 step 1): the constructed pattern-side-unnormalized mutant of Framework 5.3.19 fails the case-protected binding oracle where 5.3.19 holds",
+      "description": "The job runs python3 examples/tools/build.py 286 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision (every pinned file acquired by the sha256 its sidecar records, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. For a mutation pair, runtime prepares the constructed mutant on the published-artifact route: it fetches the base commit from github.com by full SHA at depth 1, checks and applies the patch, recompiles the changed classes against the published JARs with the base class's --release and debugging flags, and puts them in place of the base JAR's classes in a copy of the JAR. The mutant is a sensitivity control (the same oracle must catch a nearby break of the fix), never a revision of Spring. The base must hold and the mutant fail. Example 286 (CVE-2022-22968, DataBinder.isAllowed and bind): fixed-release is Framework 5.3.19 (cedb5874); the mutant is 5.3.19 with controls/pattern-side-unnormalized.patch (sha256 f0a7d64a...), which drops the fix's toLowerCase() on the pattern side of setDisallowedFields, so only the field side is normalized. Gate A3 already passed on 286's release replay (after VF-026's fix); this is the packet's mutation control.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py"
+        ],
+        "examples": [
+          "286"
+        ]
+      },
+      "expected": "build.py prints '286-...: task mutant-replay: none (completed; as expected)' and exits 0: fixed-release holds, and the mutant violates the oracle at 13 probes, the exact-case favouriteColour among them, and at no legitimate probe, on JDK 21 and 25 alike; a receipt under examples/286-*/receipts/mutant-replay/",
+      "submitted": {
+        "at": "2026-11-14T23:32:39+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "a depth-1 fetch of a spring-framework commit from github.com (a few hundred MB), one small javac run, four short JVM runs; 306's comparable mutant replay passed in a few minutes"
+      },
+      "steps": [
+        {
+          "name": "example 286 task mutant-replay (replay)",
+          "run": "python3 examples/tools/build.py 286 --task mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "d2921a8e65085e40e0817a0ebe004daec720b26f",
+  "startedAt": "2026-11-14T23:39:11+00:00",
+  "finishedAt": "2026-11-14T23:39:21+00:00",
+  "wallSeconds": 10.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2854768,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "a depth-1 fetch of a spring-framework commit from github.com (a few hundred MB), one small javac run, four short JVM runs; 306's comparable mutant replay passed in a few minutes"
+  },
+  "usage": {
+    "peakMemoryBytes": 254980096,
+    "wallSeconds": 8.2,
+    "cpuSeconds": 10.4,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 286 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 286 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 8.216,
+      "cpuSeconds": 10.407,
+      "cpuThrottledSeconds": 0.973,
+      "peakMemoryBytes": 254980096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-286-task-mutant-replay.log",
+        "lines": 2,
+        "bytes": 302,
+        "sha256": "6d2459530f97a7a647a6caa0ac711753675538a0c4197d260fc04798262f60fc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T233921Z-8487747e/result.json",
+          "groups": [
+            "286",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task mutant-replay (target route)",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T233921Z-8487747e/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/plan.json",
+      "change": "added",
+      "bytes": 14336,
+      "sha256": "bf00cf04e7152938f21fa1fc5b1884f9c99084afb42e87831697636b674935f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/records/execution.json",
+      "change": "added",
+      "bytes": 122145,
+      "sha256": "8cc42fb6082d58aa1fbe5dde02c9bcf6022e2812b36db9b25eae9e8a152bd2f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/records/summary.txt",
+      "change": "added",
+      "bytes": 3864,
+      "sha256": "b011be35b4f30906ce384677419efbd557363ae8546ec513d2d7b5f33e74e5ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/result.json",
+      "change": "added",
+      "bytes": 16943,
+      "sha256": "ba80ddc9cabd9cd90cfcb32c40c352372367f6c25dc06253370e12f8a38037c5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:49:06+00:00",
+    "applied": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/plan.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/records/execution.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/records/summary.txt",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay/20261114T233921Z-8487747e/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

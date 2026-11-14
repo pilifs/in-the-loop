@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-233239-example-105-replay-phase-5-commons-numbe",
+  "title": "example 105 replay (Phase 5): commons-numbers pow, before deviates from the Javadoc's contract at (-2, 31) alone and after meets it, from each commit's Maven build",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 54.1s, peak 810.1 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-233239-example-105-replay-phase-5-commons-numbe.json",
+    "sha256": "a756e1ce3c235492efb3fbceebaae613af09cc315fd175f25f3ad54c9f98b4fd",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-233239-example-105-replay-phase-5-commons-numbe",
+      "title": "example 105 replay (Phase 5): commons-numbers pow, before deviates from the Javadoc's contract at (-2, 31) alone and after meets it, from each commit's Maven build",
+      "description": "The job runs python3 examples/tools/build.py 105 --task replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision (every pinned file acquired by the sha256 its sidecar records, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. Example 105 (commons-numbers pull request 223, ArithmeticUtils.pow(int,int)), the calibration packet: runtime prepares before (e7c172d2) and after (8cfc04e8) by the upstream-build route, each commit checked out from github.com and built with Maven 3.10.0 on JDK 11 (dependencies from Maven Central, every resolved file hashed), then the driver runs replay/probes.json's 75 probes, every point of the fix-property domain, on JDK 21 and 25. Its two proof tasks already passed gate A5 (jobs 20261114-215343 and 20261114-215345, established and refuted with the witness (-2, 31)); this is the concrete replay task on its own receipt, which those proof receipts don't carry (ingestion bundles no raw streams).",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py"
+        ],
+        "examples": [
+          "105"
+        ]
+      },
+      "expected": "build.py prints '105-...: task replay: none (completed; as expected)' and exits 0: before violates the oracle at (-2, 31) alone (ArithmeticException), after shows no problem, on JDK 21 and 25 alike; a receipt under examples/105-*/receipts/replay/",
+      "submitted": {
+        "at": "2026-11-14T23:32:39+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "two shallow github.com fetches of commons-numbers and two Maven builds on JDK 11 (runtime's job 20261114-174017 built both in 59 s with a warm cache), four short JVM runs"
+      },
+      "steps": [
+        {
+          "name": "example 105 task replay (replay)",
+          "run": "python3 examples/tools/build.py 105 --task replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay"
+      ]
+    }
+  },
+  "sourceCommit": "d2921a8e65085e40e0817a0ebe004daec720b26f",
+  "startedAt": "2026-11-14T23:39:11+00:00",
+  "finishedAt": "2026-11-14T23:40:07+00:00",
+  "wallSeconds": 56.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2854768,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "two shallow github.com fetches of commons-numbers and two Maven builds on JDK 11 (runtime's job 20261114-174017 built both in 59 s with a warm cache), four short JVM runs"
+  },
+  "usage": {
+    "peakMemoryBytes": 849494016,
+    "wallSeconds": 54.1,
+    "cpuSeconds": 73.7,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task replay (replay)",
+      "run": "python3 examples/tools/build.py 105 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 54.125,
+      "cpuSeconds": 73.672,
+      "cpuThrottledSeconds": 7.673,
+      "peakMemoryBytes": 849494016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-replay-replay.log",
+        "lines": 2,
+        "bytes": 245,
+        "sha256": "fdef91455a5d751a39bf0bbedb5828dacf4fa1df0d01b7e15fc9cef67464e43c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task replay: none (completed; as expected), receipt receipts/replay/20261114T234007Z-435a8163/result.json",
+          "groups": [
+            "105",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task replay (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task replay: none (completed; as expected), receipt receipts/replay/20261114T234007Z-435a8163/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/plan.json",
+      "change": "added",
+      "bytes": 7893,
+      "sha256": "be176ec0acf2504a4492403a096a58cd140b1b3b50fc26c0ef9a75aa30e5eaf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/records/execution.json",
+      "change": "added",
+      "bytes": 56288,
+      "sha256": "9dcd45948135b6f01f580c4157adf7c476a28e5df4d6872e742ce8dd2a9bc2f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/records/summary.txt",
+      "change": "added",
+      "bytes": 669,
+      "sha256": "157085b06c1af2fdadbdceb855ab7948f6c3aeea0d4be39fb000ef6bf87b21ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/result.json",
+      "change": "added",
+      "bytes": 7493,
+      "sha256": "21a4c9edfd2fb3727211506077b58a700a7d67cc428e0095e685eabcc7f40d1c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:49:06+00:00",
+    "applied": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/plan.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/records/execution.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/records/summary.txt",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay/20261114T234007Z-435a8163/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

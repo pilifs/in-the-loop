@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-233239-example-287-mutant-replay-phase-5-step-1",
+  "title": "example 287 mutant-replay (Phase 5 step 1): the constructed char-count-guard mutant of Security 6.3.8 fails the 72-byte oracle where 6.3.8 holds",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.2s, peak 181.4 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-233239-example-287-mutant-replay-phase-5-step-1.json",
+    "sha256": "f13d4ec4b61e126cf6feb5c0a26bc1df7aa24f83109c9cb9bbca7e7c4d138e08",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-233239-example-287-mutant-replay-phase-5-step-1",
+      "title": "example 287 mutant-replay (Phase 5 step 1): the constructed char-count-guard mutant of Security 6.3.8 fails the 72-byte oracle where 6.3.8 holds",
+      "description": "The job runs python3 examples/tools/build.py 287 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision (every pinned file acquired by the sha256 its sidecar records, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. For a mutation pair, runtime prepares the constructed mutant on the published-artifact route: it fetches the base commit from github.com by full SHA at depth 1, checks and applies the patch, recompiles the changed classes against the published JARs with the base class's --release and debugging flags, and puts them in place of the base JAR's classes in a copy of the JAR. The mutant is a sensitivity control (the same oracle must catch a nearby break of the fix), never a revision of Spring. The base must hold and the mutant fail. Example 287 (CVE-2025-22228, BCryptPasswordEncoder.matches): fixed-release is Security 6.3.8 (147081f7); the mutant is 6.3.8 with controls/char-count-guard.patch (sha256 7c268796...), whose guard counts characters instead of UTF-8 bytes and drops hashpw(byte[], String)'s byte-length guard. Gate A3 already passed on 287's release replay; this is the packet's mutation control.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "expected": "build.py prints '287-...: task mutant-replay: none (completed; as expected)' and exits 0: fixed-release holds, and the mutant violates the oracle at the multibyte triggers (37 characters, 73 bytes) and the unguarded byte entry, holds at the ASCII ones, and fails no legitimate probe, on JDK 21 and 25 alike; a receipt under examples/287-*/receipts/mutant-replay/",
+      "submitted": {
+        "at": "2026-11-14T23:32:39+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "a depth-1 fetch of a spring-security commit from github.com (about 100 MB), one small javac run, four short JVM runs of BCrypt at cost 4-10"
+      },
+      "steps": [
+        {
+          "name": "example 287 task mutant-replay (replay)",
+          "run": "python3 examples/tools/build.py 287 --task mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "d2921a8e65085e40e0817a0ebe004daec720b26f",
+  "startedAt": "2026-11-14T23:39:11+00:00",
+  "finishedAt": "2026-11-14T23:39:19+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2854768,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "a depth-1 fetch of a spring-security commit from github.com (about 100 MB), one small javac run, four short JVM runs of BCrypt at cost 4-10"
+  },
+  "usage": {
+    "peakMemoryBytes": 190185472,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 8.4,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 287 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 287 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 6.212,
+      "cpuSeconds": 8.38,
+      "cpuThrottledSeconds": 0.495,
+      "peakMemoryBytes": 190185472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-287-task-mutant-replay.log",
+        "lines": 2,
+        "bytes": 292,
+        "sha256": "8e1ab3c0f54c86d63d4ce18708dd8b3d51ba0bd9f1d54a0daa834ecc7337d766",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T233919Z-431c44ed/result.json",
+          "groups": [
+            "287",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task mutant-replay (target route)",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T233919Z-431c44ed/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/plan.json",
+      "change": "added",
+      "bytes": 10537,
+      "sha256": "d1bf19b052087968960ad71e72703a7d3a079818ef36d146148cb384f80f5979",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/records/execution.json",
+      "change": "added",
+      "bytes": 142389,
+      "sha256": "a63a9d4991404dd84b929b164c1b6916c92de9e97fe696ef3e668ed7d42b8047",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/records/summary.txt",
+      "change": "added",
+      "bytes": 1652,
+      "sha256": "4816f00252981d0f50cdc66f0aa6d1296a177fce6e73d05819af0112da0a2e46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/result.json",
+      "change": "added",
+      "bytes": 11764,
+      "sha256": "76b4568a906a08833a6ca7d8080fb4e56155fe3a0f2788ea2233b895168f600e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:49:06+00:00",
+    "applied": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/plan.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/records/execution.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/records/summary.txt",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-replay/20261114T233919Z-431c44ed/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-233239-example-285-mutant-replay-phase-5-step-1",
+  "title": "example 285 mutant-replay (Phase 5 step 1): the constructed raw-method-fallback mutant of Boot 2.7.18 fails the bounded-label oracle where 2.7.18 holds",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.4s, peak 213.9 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-233239-example-285-mutant-replay-phase-5-step-1.json",
+    "sha256": "cf659b8efbf0f306c758082345fef4174b89afed50bbe420fae247784373de88",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-233239-example-285-mutant-replay-phase-5-step-1",
+      "title": "example 285 mutant-replay (Phase 5 step 1): the constructed raw-method-fallback mutant of Boot 2.7.18 fails the bounded-label oracle where 2.7.18 holds",
+      "description": "The job runs python3 examples/tools/build.py 285 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision (every pinned file acquired by the sha256 its sidecar records, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. For a mutation pair, runtime prepares the constructed mutant on the published-artifact route: it fetches the base commit from github.com by full SHA at depth 1, checks and applies the patch, recompiles the changed classes against the published JARs with the base class's --release and debugging flags, and puts them in place of the base JAR's classes in a copy of the JAR. The mutant is a sensitivity control (the same oracle must catch a nearby break of the fix), never a revision of Spring. The base must hold and the mutant fail. Example 285 (CVE-2023-34055, WebMvcTags.method): fixed-release is Boot 2.7.18 (0c8b382d, 14 pinned JARs from Maven Central); the mutant is 2.7.18 with controls/raw-method-fallback.patch (sha256 895a1372...), which returns the raw request method as the label when HttpMethod.resolve gives null, as 2.7.17 did. Gate A3 already passed on 285's release replay; this is the packet's mutation control.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py"
+        ],
+        "examples": [
+          "285"
+        ]
+      },
+      "expected": "build.py prints '285-...: task mutant-replay: none (completed; as expected)' and exits 0: fixed-release holds, and the mutant violates the oracle at the five trigger probes (connect, empty-token, long-token, lowercase-get, xscf) and at no legitimate probe, on JDK 21 and 25 alike; a receipt under examples/285-*/receipts/mutant-replay/",
+      "submitted": {
+        "at": "2026-11-14T23:32:39+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "a depth-1 fetch of a spring-boot commit from github.com (a few hundred MB), one small javac run, four short JVM runs; 285's release replay took under a minute with its JARs"
+      },
+      "steps": [
+        {
+          "name": "example 285 task mutant-replay (replay)",
+          "run": "python3 examples/tools/build.py 285 --task mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "d2921a8e65085e40e0817a0ebe004daec720b26f",
+  "startedAt": "2026-11-14T23:39:11+00:00",
+  "finishedAt": "2026-11-14T23:39:20+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2854768,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "a depth-1 fetch of a spring-boot commit from github.com (a few hundred MB), one small javac run, four short JVM runs; 285's release replay took under a minute with its JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 224260096,
+    "wallSeconds": 7.4,
+    "cpuSeconds": 9.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 285 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 285 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 7.414,
+      "cpuSeconds": 9.202,
+      "cpuThrottledSeconds": 0.661,
+      "peakMemoryBytes": 224260096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-mutant-replay.log",
+        "lines": 2,
+        "bytes": 284,
+        "sha256": "78d86724a22f32e799f28eee9c9feb5d158026286d70ea0704588d1621a0e0ec",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T233920Z-4ee04219/result.json",
+          "groups": [
+            "285",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task mutant-replay (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T233920Z-4ee04219/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/plan.json",
+      "change": "added",
+      "bytes": 17317,
+      "sha256": "70f936d9d6b2f8b44b9a94d627b0d33c640c90cabf37fd5898f135a469aeef2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/records/execution.json",
+      "change": "added",
+      "bytes": 42659,
+      "sha256": "74f30329b6be66c17cc705ebf1ed081268c84f832844224cf0e97fbeae6864f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/records/summary.txt",
+      "change": "added",
+      "bytes": 1247,
+      "sha256": "4e1d75e5cbf604c3f7f41b55bf33022bdb8a34cdd60fa28826099a1eba061af9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/result.json",
+      "change": "added",
+      "bytes": 13705,
+      "sha256": "7c0abb39c6d67e4748d6ab34da05bc4037dd286a5413d53a32ecbf1c63a686eb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:49:06+00:00",
+    "applied": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/plan.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/records/execution.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/records/summary.txt",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-replay/20261114T233920Z-4ee04219/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
