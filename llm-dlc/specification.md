@@ -152,7 +152,8 @@ The **usage block** is the same everywhere: `api_calls`, `tool_calls`, `input_to
 python3 llm-dlc/tools/sync.py init      # once per clone: jj file-size limit and the two aliases below
 jj trace-commit -m "Summary line" -m "Body"   # finish @; its message and its manifest point at the same log
 jj trace-push --bookmark main          # record outstanding traces, upload, check, push; leaves @ empty
-python3 llm-dlc/tools/sync.py check     # verify hashes, trailers and redaction
+python3 llm-dlc/tools/sync.py check     # verify hashes, trailers (in the history of @) and redaction
+python3 llm-dlc/tools/sync.py regenerate  # after a merge: rewrite the generated trace files, settling their conflicts
 python3 llm-dlc/tools/sync.py check --full  # the same, trusting no cached result (LLM_TRACES_FULL=1 for sync and push too)
 python3 llm-dlc/tools/sync.py scan      # preview a publish: what was redacted, what to look at (writes nothing)
 python3 llm-dlc/tools/sync.py sync --all  # backfill every session of this repo (plain `sync`: only those that changed)

@@ -36,6 +36,9 @@ Commands:
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
                                 each -m is one paragraph, as in git; then runs `check` on the result,
                                 counting its notes, and fails if it finds an error
+  sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json and
+                                README.md's index table from the session files, which settles their conflicts;
+                                lists any other conflict and exits 1 if one is left
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
@@ -2010,7 +2013,7 @@ HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook
 # only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
 LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "commit": "exclusive", "push": "exclusive",
            "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
-           "review": "exclusive", "init": "exclusive"}
+           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive"}
 
 
 def _terminated(signum, frame) -> None:
@@ -3346,12 +3349,15 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
 
 
 def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
-    """(errors, notes) for every commit with a trace trailer: its session and log are known, and
-    the manifest committed with it names the same log."""
+    """(errors, notes) for every commit with a trace trailer in the history of @: its session and log
+    are known, and the manifest committed with it names the same log. Commits only another workspace's
+    line holds are left to that workspace's own check (each `commit` runs one), and to this one once
+    they are merged: until then their manifests are not in this tree, so every one would be reported
+    missing (a feature loop's streams, each in its own workspace, made 26 such false errors at once)."""
     errors, notes = [], []
     if not has_jj():
         return errors, notes
-    traced = jj_commits(f'description(substring:"{TRAILER}:")')
+    traced = jj_commits(f'::@ & description(substring:"{TRAILER}:")')
     paths = lambda sid: (str(manifest_path(sid).relative_to(REPO)), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES))
     with perf.phase("read trees"):
         files = tree_files([(c["commit_id"], path) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
@@ -3373,6 +3379,59 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                     notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
                                  f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
     return errors, notes
+
+
+CONFLICT_MARKER_RE = re.compile(r"^(?:<{7,}|>{7,})", re.M)  # a hunk's first and last line, in every marker style
+RESOLVE_LIST_RE = re.compile(r"^(.+?)\s+\d+-sided conflict")  # a line of `jj resolve --list`
+
+
+def conflicted_paths() -> list[str]:
+    """The files in conflict at @, as repo paths: `jj resolve --list`, which snapshots first.
+    Nothing without jj, and nothing when there is no conflict (jj then exits non-zero)."""
+    if not has_jj():
+        return []
+    r = jj("resolve", "--list")
+    return [m[1] for line in r.stdout.splitlines() if (m := RESOLVE_LIST_RE.match(line))] if r.returncode == 0 else []
+
+
+def cmd_regenerate(args: list[str]) -> int:
+    """After a merge: rewrite the four files generated from the per-session files (index.json,
+    traces/README.md, traces/metrics.json, and README.md's index table), whether or not they
+    conflict. Two lines that each committed a session conflict in all four, and a clean textual
+    merge of them can still be wrong; every input (a session's manifest and metrics.json) is in a
+    directory of its own, so it merges cleanly and regenerating is always the right resolution.
+    A conflict anywhere else is left for a person or an agent and listed, and so is one in
+    README.md outside its index table: nothing is regenerated then if a session file conflicts,
+    since its outputs would be read from conflict markers. Exits 0 when no conflict is left."""
+    if args:
+        print("usage: sync.py regenerate", file=sys.stderr)
+        return 2
+    rollups = {INDEX, TRACES_README, METRICS_ROLLUP}
+    conflicted = conflicted_paths()
+    inputs = [p for p in conflicted if (REPO / p).resolve() not in rollups and (REPO / p).resolve() != CHANGES_README
+              and (REPO / p).resolve().is_relative_to(TRACES)]
+    if inputs:
+        print("not regenerated: these session files are in conflict, and the generated files are read from them:",
+              *(f"  {p}" for p in inputs), sep="\n", file=sys.stderr)
+        return 1
+    readme_conflicted = any((REPO / p).resolve() == CHANGES_README for p in conflicted)
+    if readme_conflicted:
+        text = CHANGES_README.read_text()
+        start, end = text.find(INDEX_BEGIN), text.rfind(INDEX_END)
+        hunks = [m.start() for m in CONFLICT_MARKER_RE.finditer(text)]
+        if 0 <= start < end and all(start < at < end for at in hunks):
+            atomic_write(CHANGES_README, text[:start + len(INDEX_BEGIN)] + "\n" + text[end:])  # write_index fills it
+    write_index()
+    left = conflicted_paths()
+    resolved = [p for p in conflicted if p not in left]
+    for p in resolved:
+        print(f"regenerated: {p}")
+    if left:
+        print("still in conflict (not generated files, or README.md outside its index table):",
+              *(f"  {p}" for p in left), sep="\n", file=sys.stderr)
+        return 1
+    print("no conflict left" if conflicted else "regenerated; there was no conflict")
+    return 0
 
 
 def tree_files(wanted: list[tuple[str, str]]) -> dict[tuple[str, str], bytes | None]:
@@ -3548,6 +3607,8 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_allow(args)
     elif cmd == "stamp":
         return cmd_stamp(args)
+    elif cmd == "regenerate":
+        return cmd_regenerate(args)
     elif cmd == "langfuse":
         return cmd_langfuse(args)
     elif cmd == "perf":

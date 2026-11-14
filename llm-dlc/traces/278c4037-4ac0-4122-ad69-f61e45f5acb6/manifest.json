@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "278c4037-4ac0-4122-ad69-f61e45f5acb6",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-14T17:08:08.206Z",
+  "ended": "2026-11-14T17:08:39.959Z",
+  "duration_seconds": 32,
+  "stats": {
+    "turns": 1,
+    "api_calls": 4,
+    "tool_calls": 4,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 32032,
+    "usage": {
+      "input_tokens": 8,
+      "output_tokens": 606,
+      "cache_read_input_tokens": 102294,
+      "cache_creation_input_tokens": 18806
+    }
+  },
+  "tools": {
+    "Bash": 3,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T17:08:08.206Z",
+      "ended": "2026-11-14T17:08:39.959Z",
+      "turns": 1,
+      "api_calls": 4,
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 606,
+        "cache_read_input_tokens": 102294,
+        "cache_creation_input_tokens": 18806
+      },
+      "peak_context_tokens": 32032
+    }
+  ],
+  "log": {
+    "sha256": "6797b30a5db2798cea9780697b5b160856b9e1d2b3edb2f4befc58740149bca5",
+    "bytes": 270327,
+    "lines": 53,
+    "gzip_bytes": 70940,
+    "path": "llm-dlc/traces/278c4037-4ac0-4122-ad69-f61e45f5acb6/logs/6797b30a5db2798cea9780697b5b160856b9e1d2b3edb2f4befc58740149bca5.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "xyootzvmznrntsstotltlwuplmvruwoo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merged streams: regenerate the generated trace files, and check only the history of @",
+      "body": "Two false flags stopped work whenever feature-loop streams ran in parallel. First, every sync.py commit rewrites llm-dlc/index.json, traces/README.md, traces/metrics.json and README.md's session table, so once two streams had committed, run-streams.sh's integration check found the merge in conflict and never ran its script again (foundations, cleanup, application-core and example-targets all hit this; in foundations it hid a real serde bug until the merge), and every merge loop resolved the four files by hand. The new sync.py regenerate rewrites them from the per-session manifests and metrics, which sit in a directory per session and merge cleanly; it leaves and lists any other conflict, including one in README.md outside its index table, refuses if a session file itself conflicts, and exits 1 while anything is left. run-streams.sh's integration check now runs the merged tree's regenerate before deciding, and names what it regenerated in its report (installed by rename, so the running example-targets run keeps its old copy). The merge steps in engine-priorities.md (the worked example) and example-targets.md, and llm-dlc/README.md, now say to run it. Second, check_trailers read every commit in the repository with an LLM-Trace line, including other workspaces' lines, against this tree's manifests, so each stream's commits were reported as 'session ... has no manifest' everywhere else (26 errors today). It now reads ::@ only: a stream's commits are checked by its own commit in its workspace, and here once merged. Verified: new llm-dlc/tools/test_workspaces.py (7 tests, real jj repos with two workspaces: off-line commits not flagged, a bad trailer in this history still flagged, both lines checked after the merge, the four files settled, a README prose conflict and a session-file conflict reported; the off-line test fails with the old revset); test_review, test_runs, test_performance (103) and test_metrics pass. On real data, a scratch workspace merging the default line with the four example-targets streams' @- had all four files 5-sided in conflict; regenerate settled them (91 sessions), check then reported 0 errors once the streams' logs were copied in, as the reconcile does; and the integration script ran on the merge for the first time since the streams began committing (contract 14 pass, 2 skipped for want of a built jvmcontract; test_build, test_pipeline and build.py --plan pass), finding 3 runtime x workflow test errors described in the session. check in the default workspace now reports 0 errors (was 26).",
+      "log_sha256": "6797b30a5db2798cea9780697b5b160856b9e1d2b3edb2f4befc58740149bca5"
+    }
+  ],
+  "logs": {
+    "6797b30a5db2798cea9780697b5b160856b9e1d2b3edb2f4befc58740149bca5": {
+      "bytes": 270327,
+      "lines": 53,
+      "gzip_bytes": 70940,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

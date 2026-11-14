@@ -397,7 +397,10 @@ As [`application-core.md`](application-core.md#reconciling) does, for four strea
 2. Wait for the verification loop to commit what it left in this working copy. Don't move or commit its files.
 3. Record each stream's last turns, and copy their logs.
 4. Merge with `jj new @- example-targets-runtime@- example-targets-negative@- example-targets-positive@-
-   example-targets-workflow@-`, and commit.
+   example-targets-workflow@-`, then run `python3 llm-dlc/tools/sync.py regenerate`, which settles the generated trace
+   files' conflicts and lists any other (exit 1). Resolve those, and commit. Commits only a stream's line held are
+   checked here once merged: `check` reads the history of `@`, so the streams' "has no manifest" errors end with the
+   merge.
 5. Fold their Progress here, every timebox deferral and every interface request first.
 6. Forget the five workspaces. Their directories are the user's to delete.
 

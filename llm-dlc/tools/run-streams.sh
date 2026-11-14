@@ -69,8 +69,12 @@
 # feature-loop-NAME-integration.scope with a 6 GB cap and a loop's CPU weight, so the
 # verification runner leaves it room as it does a loop. What it found, with the
 # commits it merged, goes to llm-dlc/loop-summaries/NAME-integration.md here
-# (NAME being the brief's), which each stream reads every cycle. A merge with
-# conflicts is reported, not resolved, and SCRIPT isn't run on it. The previous
+# (NAME being the brief's), which each stream reads every cycle. The generated
+# trace files (llm-dlc/index.json, traces/README.md, traces/metrics.json and
+# README.md's index table) conflict whenever two streams have committed: the
+# merged tree's `sync.py regenerate` rewrites them from the session files, which
+# merge cleanly, and the report names them. A merge with any other conflict is
+# reported, not resolved, and SCRIPT isn't run on it. The previous
 # check's merge is abandoned at the next; the reconcile loop forgets the
 # workspace. (Before 2026-11-07 it was named integration, for every brief.) Neither the streams' branches nor the default workspace change.
 #
@@ -390,7 +394,7 @@ stream_heads() {
 
 # One check of the streams' current commits: merge, run the script, report.
 integrate_once() {
-  local heads=$1 s revs=() previous conflicted code tmp
+  local heads=$1 s revs=() previous conflicted regenerated code tmp
   for s in "${STREAMS[@]}"; do revs+=("${WS[$s]}@-"); done
   tmp=$(mktemp) || return 1
   {
@@ -408,6 +412,13 @@ integrate_once() {
   fi
   [[ -n "$previous" ]] && (cd "$INTEGRATION_DIR" && jj abandon --quiet "$previous" >/dev/null 2>&1)
   conflicted=$(cd "$INTEGRATION_DIR" && jj resolve --list 2>/dev/null)
+  if [[ -n "$conflicted" ]]; then
+    # Settle the generated trace files' conflicts; a sync.py without the command settles none.
+    regenerated=$(cd "$INTEGRATION_DIR" && python3 llm-dlc/tools/sync.py regenerate </dev/null 2>/dev/null |
+                  sed -n 's/^regenerated: //p' | paste -sd' ')
+    [[ -n "$regenerated" ]] && printf -- '- Regenerated, as generated trace files in conflict: %s\n' "$regenerated" >>"$tmp"
+    conflicted=$(cd "$INTEGRATION_DIR" && jj resolve --list 2>/dev/null)
+  fi
   if [[ -n "$conflicted" ]]; then
     printf -- '- Result: the streams conflict; the script was not run. Files in conflict:\n\n```\n%s\n```\n' "$conflicted" >>"$tmp"
     mv "$tmp" "$INTEGRATION_REPORT"

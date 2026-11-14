@@ -193,9 +193,10 @@ loop does nothing and makes no commit, which stops the loop. In order:
    from here.
 4. **Merge.** `jj new @- jbmc@- native@-`. Do this only while this working copy holds no other session's files; if it
    does, wait for that session to commit them (the runner commits each collection) rather than moving them.
-   - The trace files that every commit regenerates may conflict: `llm-dlc/index.json`, `llm-dlc/traces/README.md`,
-     `llm-dlc/traces/metrics.json`, and the session table in `llm-dlc/README.md`. Take either side: the commit rewrites
-     them from the manifests, which don't conflict.
+   - The trace files that every commit regenerates conflict: `llm-dlc/index.json`, `llm-dlc/traces/README.md`,
+     `llm-dlc/traces/metrics.json`, and the session table in `llm-dlc/README.md`. Run
+     `python3 llm-dlc/tools/sync.py regenerate`: it rewrites them from the manifests, which don't conflict, and lists
+     any conflict left (exit 1), which is real work to resolve. (Before 2026-11-14 the advice was to take either side.)
    - Resolve code and docs using the streams' Progress notes on the shared files.
    - Where a result the runner collected for a stream's job conflicts with that stream's own edits, the stream's code
      wins and the result stands as recorded.
