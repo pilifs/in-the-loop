@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "1d75f339-9e21-4d1a-b631-a40985de271f",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-14T23:38:54.425Z",
+  "ended": "2026-11-14T23:40:07.933Z",
+  "duration_seconds": 74,
+  "stats": {
+    "turns": 1,
+    "api_calls": 3,
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 35460,
+    "usage": {
+      "input_tokens": 6,
+      "output_tokens": 551,
+      "cache_read_input_tokens": 72389,
+      "cache_creation_input_tokens": 22234
+    }
+  },
+  "tools": {
+    "Bash": 4
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T23:38:54.425Z",
+      "ended": "2026-11-14T23:40:07.933Z",
+      "turns": 1,
+      "api_calls": 3,
+      "usage": {
+        "input_tokens": 6,
+        "output_tokens": 551,
+        "cache_read_input_tokens": 72389,
+        "cache_creation_input_tokens": 22234
+      },
+      "peak_context_tokens": 35460
+    }
+  ],
+  "log": {
+    "sha256": "4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4",
+    "bytes": 285212,
+    "lines": 47,
+    "gzip_bytes": 74293,
+    "path": "llm-dlc/traces/1d75f339-9e21-4d1a-b631-a40985de271f/logs/4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wnywrrutntnknstmvwsqxnszrsoouvrz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: every claim task of 285-287, 305 and 306, and 105's two preservation tasks, queued as native strict proof jobs (verification pending)",
+      "body": "Step 1 of Phase 5 attempts each deep packet's claim tasks once through the merged path. All 25 claim plans were checked offline with build.py --plan NNN --task T and are executable; 24 jobs are queued: 285's four (vulnerable/fixed security on Boot 2.7.17/2.7.18's WebMvcTags.method, preservation, the mutant), 286's six (DataBinder.isAllowed and bind on Framework 5.3.18/5.3.19, preservation, the mutant), 287's six (BCryptPasswordEncoder.matches and the BCrypt.checkpw byte guard on Security 6.3.7/6.3.8, preservation, the mutant), 305's four on the user's source slice, 306's preservation and mutant-preservation on spring-core 5.3.6/5.3.7, and 105's regression and confined-change. 307's preservation is not queued: its plan is executable but its preparation stops at the Gradle route the user still has to choose. Each job states its expected conclusion and the stop this loop predicts (library-interface arguments for 285 and 305, the DataBinder receiver for 286, String conversion and the encoder receiver for 287); a capability refusal exits 1 with an unresolved receipt and is read as an observed gap, never a pass. The four replays queued last cycle have finished as passed and await collection.\n\nJobs: 20261114-234211-example-285-vulnerable-security-phase-5, 20261114-234211-example-285-fixed-security-phase-5-step, 20261114-234211-example-285-preservation-phase-5-step-1, 20261114-234211-example-285-mutant-security-phase-5-step, 20261114-234211-example-286-vulnerable-security-phase-5, 20261114-234212-example-286-fixed-security-phase-5-step, 20261114-234212-example-286-preservation-phase-5-step-1, 20261114-234212-example-286-vulnerable-protected-state-m, 20261114-234212-example-286-fixed-protected-state-mutati, 20261114-234212-example-286-mutant-security-phase-5-step, 20261114-234212-example-287-vulnerable-security-phase-5, 20261114-234212-example-287-fixed-security-phase-5-step, 20261114-234213-example-287-preservation-phase-5-step-1, 20261114-234213-example-287-vulnerable-guard-phase-5-ste, 20261114-234213-example-287-fixed-guard-phase-5-step-1-b, 20261114-234213-example-287-mutant-security-phase-5-step, 20261114-234213-example-305-preservation-phase-5-step-1, 20261114-234213-example-305-finite-outcome-before-phase, 20261114-234213-example-305-finite-outcome-after-phase-5, 20261114-234213-example-305-mutant-preservation-phase-5, 20261114-234213-example-306-preservation-phase-5-step-1, 20261114-234214-example-306-mutant-preservation-phase-5, 20261114-234214-example-105-regression-phase-5-step-1-ar, 20261114-234214-example-105-confined-change-phase-5-step.",
+      "log_sha256": "4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4"
+    }
+  ],
+  "logs": {
+    "4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4": {
+      "bytes": 285212,
+      "lines": 47,
+      "gzip_bytes": 74293,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

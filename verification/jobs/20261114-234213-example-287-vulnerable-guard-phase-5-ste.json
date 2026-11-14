@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234213-example-287-vulnerable-guard-phase-5-ste",
+  "title": "example 287 vulnerable-guard (Phase 5 step 1): BCrypt.checkpw on vulnerable-release, native strict, expected refuted",
+  "description": "The job runs python3 examples/tools/build.py 287 --task vulnerable-guard, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 287 is CVE-2025-22228 (Spring Security 6.3.7 -> 6.3.8, BCrypt ignored password bytes past 72), prepared by the published-artifact route (pinned Central JARs). Workflow plans the task from target.json; runtime prepares vulnerable-release, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z with claims/overlong-bytes-rejected.json (claim key da7512fb3d0a6e45, property, bounds unwind 16, maxArrayLength 80). The claim: The byte-array guard lemma, narrower than the public claim and kept apart from it: for a valid stored bcrypt hash and a non-null byte array, BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes, and never returns true for such an array. No UTF-8 conversion and no encoder pattern check are on this path; it says nothing about BCryptPasswordEncoder.matches, whose String candidates reach it through String.getBytes, and it can't stand in for claims/overlong-candidate-rejected.json without that connection checked. One property and one domain for the vulnerable release (expected refuted) and the fixed release (expected established). Workflow ingests every record into one format-2 receipt under receipts/vulnerable-guard/, and build.py exits 0 only when the receipt's matchesExpected is true. BCrypt.checkpw(byte[], String) is static and takes no String conversion; predicted stops are the stored hash's parsing (a String argument in a property check, which the native checker refuses) and the key schedule's loops under unwind 16. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/target.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/overlong-bytes-rejected.json"
+    ],
+    "examples": [
+      "287"
+    ]
+  },
+  "expected": "example 287 task vulnerable-guard gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:13+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "steps": [
+    {
+      "name": "example 287 task vulnerable-guard (prove)",
+      "run": "python3 examples/tools/build.py 287 --task vulnerable-guard",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard"
+  ]
+}

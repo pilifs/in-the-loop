@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234211-example-285-preservation-phase-5-step-1",
+  "title": "example 285 preservation (Phase 5 step 1): WebMvcTags.method on vulnerable-release and fixed-release, native strict, expected established",
+  "description": "The job runs python3 examples/tools/build.py 285 --task preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 285 is CVE-2023-34055 (Spring Boot 2.7.17 -> 2.7.18, unbounded HTTP method labels in WebMvcTags.method), prepared by the published-artifact route (14 pinned JARs from Maven Central, each sha256-checked). Workflow plans the task from target.json; runtime prepares vulnerable-release and fixed-release, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag; with claims/known-method-labels-preserved.json (claim key daec01225d6313a5, preservation, bounds unwind 16, maxArrayLength 8). The claim: Outside the allowed-change region (the preservation task's allowedChange: a non-null request whose method is none of GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS and TRACE), the vulnerable and fixed releases give the same outcome: for each of those eight names, spelled exactly so, the tag method=<name>; for a null request, the tag method=UNKNOWN; neither throws. Tags are compared by key and value (micrometer's ImmutableTag.equals), not by identity. Inside the region the fix may change the label (to UNKNOWN), which the security property constrains, not this claim. Workflow ingests every record into one format-2 receipt under receipts/preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletRequest, a library interface: application-core's native checker passes an application-interface dependency as null and refuses it if reached, so an interface-argument refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/target.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/claims/known-method-labels-preserved.json"
+    ],
+    "examples": [
+      "285"
+    ]
+  },
+  "expected": "example 285 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:11+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "steps": [
+    {
+      "name": "example 285 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 285 --task preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation"
+  ]
+}

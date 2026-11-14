@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234214-example-105-confined-change-phase-5-step",
+  "title": "example 105 confined-change (Phase 5 step 1): ArithmeticUtils.pow on before and after, native strict, expected established",
+  "description": "The job runs python3 examples/tools/build.py 105 --task confined-change, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 105 is commons-numbers pull request 223 (ArithmeticUtils.pow(int,int), e7c172d2 -> 8cfc04e8), the calibration migrated to the target route; its fix-property tasks gave gate A5 (established and refuted with the witness (-2, 31)). Workflow plans the task from target.json; runtime prepares before and after, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I with claims/pow-preservation.json (claim key 6bef0dff1140dc6d, preservation, bounds unwind 16, maxArrayLength 8). The claim: Preservation of ArithmeticUtils.pow(int k, int e) between e7c172d2 and 8cfc04e8: on every (k, e) outside the task's allowedChange, both revisions return the same int or throw the same exception class. Two tasks share it. regression has no allowedChange and is expected refuted, at k = -2, e = 31, the change the pull request intends (the historical report's first row). confined-change has allowedChange 'k == -2 && e == 31', the pull request's stated intent, and is expected established on the other 2^64 - 1 inputs (the report's second row). The exception's message is not observed. Workflow ingests every record into one format-2 receipt under receipts/confined-change/, and build.py exits 0 only when the receipt's matchesExpected is true. Both parameters are ints, inside the native checker's supported domain. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/target.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/claims/pow-preservation.json"
+    ],
+    "examples": [
+      "105"
+    ]
+  },
+  "expected": "example 105 task confined-change gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:14+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "maven",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "notes": "one Maven build of one module per commit on JDK 11 (59 s in runtime's R2), two short JVM runs, one native strict proof over two ints"
+  },
+  "steps": [
+    {
+      "name": "example 105 task confined-change (equivalence)",
+      "run": "python3 examples/tools/build.py 105 --task confined-change",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change"
+  ]
+}

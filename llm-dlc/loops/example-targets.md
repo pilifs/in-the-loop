@@ -1311,6 +1311,45 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     preservation and mutant claim tasks (305's four on the slice; 307's wait on the user's route choice), each
     expected to reach its stated conclusion or an observed capability refusal. Then read the four replays above when
     collected, then the joint acceptance (A1, A2, A6, A7, A8), the gap inventory and the for-review list.
+- 2026-11-14, **Phase 5 step 1: every claim task of the five buildable packets queued, and 105's two preservation
+  tasks** (24 jobs). Each is `build.py NNN --task T`, native and strict, with the runner's own jvmcontract.
+  - **The plans, checked offline first**: `build.py --plan NNN --task T` gives an executable plan for all 25 claim
+    tasks, 307's `preservation` included. 307's isn't queued, because its route still waits on the user's choice: its
+    plan is executable, but its preparation would stop at the Gradle blocker.
+  - **What each job states**: its expected conclusion, from the task's `expected` (`refuted` for the vulnerable
+    releases and the mutants, `established` for the fixed releases and the preservation tasks, `refuted` for 105's
+    plain `regression`). It also names the stop this loop predicts, and says that a capability refusal is a
+    diagnostic, not a pass. Such a refusal gives an unresolved receipt, prints NOT AS EXPECTED and exits 1. It is read
+    as an observed gap for step 4, and the claim stays unresolved. The receipt comes back under the result's
+    `outputs/` either way.
+  - **The predictions, still predictions**:
+    - 285 and 305: the argument is a library interface (`HttpServletRequest`, `HttpServletResponse`);
+    - 305: also `Outcome`'s static initializer;
+    - 286: the `DataBinder` receiver, which only the adapter builds and no claim gives a `plan` for;
+    - 287: the encoder receiver, `String.getBytes(UTF_8)`, and the stored hash as a String in a property check.
+    306 (two Strings, maxArrayLength 6) and 105 (two ints) are inside the supported domain.
+  - **Queued**, 2 CPUs each; 4 GiB and 30 minutes for 285–287 and 305, 3 GiB and 20 minutes for 306 and 105:
+    - 285: `20261114-234211-example-285-vulnerable-security-phase-5`, `…-285-fixed-security-phase-5-step`,
+      `…-285-preservation-phase-5-step-1`, `…-285-mutant-security-phase-5-step`;
+    - 286: `20261114-234211-example-286-vulnerable-security-phase-5`, `20261114-234212-example-286-fixed-security-
+      phase-5-step`, `…-286-preservation-phase-5-step-1`, `…-286-vulnerable-protected-state-m`,
+      `…-286-fixed-protected-state-mutati`, `…-286-mutant-security-phase-5-step`;
+    - 287: `20261114-234212-example-287-vulnerable-security-phase-5`, `…-287-fixed-security-phase-5-step`,
+      `20261114-234213-example-287-preservation-phase-5-step-1`, `…-287-vulnerable-guard-phase-5-ste`,
+      `…-287-fixed-guard-phase-5-step-1-b`, `…-287-mutant-security-phase-5-step`;
+    - 305: `20261114-234213-example-305-preservation-phase-5-step-1`, `…-305-finite-outcome-before-phase`,
+      `…-305-finite-outcome-after-phase-5`, `…-305-mutant-preservation-phase-5`;
+    - 306: `20261114-234213-example-306-preservation-phase-5-step-1`, `20261114-234214-example-306-mutant-preservation-
+      phase-5`;
+    - 105: `20261114-234214-example-105-regression-phase-5-step-1-ar`, `…-105-confined-change-phase-5-step`.
+  - **The four replays queued last cycle** have all finished as passed, but the verification loop hasn't collected
+    them yet. Their receipts are read once it has.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (220), `test_build.py`
+    (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Next**: the joint acceptance's rows that the receipts already in the tree can show: A1 (offline planning, lint,
+    discovery and handoff), A2 (preparation integrity, from the replay receipts), A6 (distinct receipts) and A7 (an
+    isolated session following one packet's exported handoff). Then read the four replays once collected, and the 24
+    jobs above, for A8, the gap inventory and the for-review list.
 - Status: working
 
 ## Loop settings

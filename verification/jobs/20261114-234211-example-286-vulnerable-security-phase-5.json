@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234211-example-286-vulnerable-security-phase-5",
+  "title": "example 286 vulnerable-security (Phase 5 step 1): DataBinder.isAllowed on vulnerable-release, native strict, expected refuted",
+  "description": "The job runs python3 examples/tools/build.py 286 --task vulnerable-security, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 286 is CVE-2022-22968 (Spring Framework 5.3.18 -> 5.3.19, case-sensitive disallowed-field patterns in DataBinder), prepared by the published-artifact route (pinned Central JARs). Workflow plans the task from target.json; runtime prepares vulnerable-release, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z with claims/disallowed-field-denied-ignoring-case.json (claim key d28be1f2f6e9edcd, property, bounds unwind 16, maxArrayLength 8). The claim: With a DataBinder configured through setAllowedFields(allowedPatterns) and setDisallowedFields(disallowedPatterns), isAllowed(field) returns false, and throws nothing, whenever some disallowed pattern, in its canonical form, matches field ignoring ASCII case, a '*' in the pattern matching any sequence (possibly empty) and every other character itself: the documented contract of 5.3.19 (matching against disallowed field patterns is case-insensitive) and the advisory's intent (a disallowed field is protected whatever the case of its characters). For ASCII names and patterns under the root locale. One property and one domain for the vulnerable release (expected refuted: the upstream regression, AGE disallowed, age allowed) and the fixed release (expected established). It is the decision lemma only: that a denied name can't change the bean is the separate protected-state claim (claims/protected-age-not-mutated.json), and nested property paths through a nested bean are a further obligation. Workflow ingests every record into one format-2 receipt under receipts/vulnerable-security/, and build.py exits 0 only when the receipt's matchesExpected is true. Its receiver is a DataBinder, which only the packet's adapter builds and the claim has no construction plan for, so a receiver or toLowerCase/Locale refusal is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/target.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/disallowed-field-denied-ignoring-case.json"
+    ],
+    "examples": [
+      "286"
+    ]
+  },
+  "expected": "example 286 task vulnerable-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:11+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "steps": [
+    {
+      "name": "example 286 task vulnerable-security (prove)",
+      "run": "python3 examples/tools/build.py 286 --task vulnerable-security",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security"
+  ]
+}

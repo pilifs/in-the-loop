@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `577f63c1-0bd5-4fa4-9f0e-3c96500c2881` (open) |
+| Session | `577f63c1-0bd5-4fa4-9f0e-3c96500c2881` (ended) |
 | When | 2026-11-14 23:29 UTC to 2026-11-14 23:30 UTC (1 min) |
 | Models | `claude-sonnet-5-5` |
 | Client | claude-code 2.1.325 |
@@ -23,10 +23,6 @@ The commits this session made, oldest first, with the message the agent wrote fo
 change `xoqmqynmltox` · [log `35ff9984f485`](https://terminalvalue.net/raw-traces/577f63c1-0bd5-4fa4-9f0e-3c96500c2881/35ff9984f485f9faf131537324090a6f8f0466ce8743ffab13eab93cb12ff045.jsonl.gz)
 
 The three jobs queued by 6f0e54a8 ran on vm-1 (38G/18 CPUs/9 workers, the streams row) and passed in 6-8 s each, with the example task as expected. Their outputs (the three receipts under example 305, the regenerated examples index) were applied. No findings opened or closed.
-
-### (in progress)
-
-change `zrowtuzryzqk`, not yet described
 
 ### example-targets Phase 5: 305's slice replays read (all pass, a reproducible scaffold at the slice's scope); 285-287 mutant-replay and 105 replay queued (verification pending)
 

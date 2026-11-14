@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234213-example-305-finite-outcome-after-phase-5",
+  "title": "example 305 finite-outcome-after (Phase 5 step 1): WebMvcTags.outcome on after, native strict, expected established",
+  "description": "The job runs python3 examples/tools/build.py 305 --task finite-outcome-after, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 305 is Spring Boot e8de5a6d (the Outcome enum keeps WebMvcTags' MVC outcome tags), the independent positive of CVE-2023-34055's family, prepared by the source-slice route the user decided: each commit's WebMvcTags and Outcome compiled alone with javac 8 against six pinned JARs; scope extracted-source-slice (the after slice is byte-identical to Boot 2.2.0.M6's published classes, and job 20261114-232734's m6-replay showed the same observations). Workflow plans the task from target.json; runtime prepares after, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag; with claims/finite-outcome.json (claim key 46b0bb5f1f51a112, property, bounds unwind 16, maxArrayLength 8). The claim: WebMvcTags.outcome(HttpServletResponse response) keeps its tag dimension finite: for a null response, and for a response whose getStatus() returns any int, the result is a Tag whose key is \"outcome\" and whose value is one of INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR and UNKNOWN, and nothing is thrown. Shared by the tasks finite-outcome-before and finite-outcome-after: one property and domain, two artifact-bound claim identities. Established says this one tag dimension of this one entry has at most six values; it says nothing about the server, the release, or the other tags. Workflow ingests every record into one format-2 receipt under receipts/finite-outcome-after/, and build.py exits 0 only when the receipt's matchesExpected is true. Its argument is an HttpServletResponse, a library interface, and after's Outcome enum has a static initializer outside the fragment: either is the predicted stop. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/claims/finite-outcome.json"
+    ],
+    "examples": [
+      "305"
+    ]
+  },
+  "expected": "example 305 task finite-outcome-after gives its expected conclusion, established: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:13+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "the slice's six JARs from repo.spring.io/milestone and Central, the commit checked out from github.com, javac 8 on two files, two short JVM runs, one native strict proof"
+  },
+  "steps": [
+    {
+      "name": "example 305 task finite-outcome-after (prove)",
+      "run": "python3 examples/tools/build.py 305 --task finite-outcome-after",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-after"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234213-example-287-mutant-security-phase-5-step",
+  "title": "example 287 mutant-security (Phase 5 step 1): BCryptPasswordEncoder.matches on mutant, native strict, expected refuted",
+  "description": "The job runs python3 examples/tools/build.py 287 --task mutant-security, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 287 is CVE-2025-22228 (Spring Security 6.3.7 -> 6.3.8, BCrypt ignored password bytes past 72), prepared by the published-artifact route (pinned Central JARs). Workflow plans the task from target.json; runtime prepares mutant, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder#matches(Ljava/lang/CharSequence;Ljava/lang/String;)Z with claims/overlong-candidate-rejected.json (claim key 6e18bbdf576aaa29, property, bounds unwind 16, maxArrayLength 80). The claim: For a valid stored bcrypt hash and a non-null candidate, BCryptPasswordEncoder.matches throws IllegalArgumentException exactly when the candidate's UTF-8 encoding is longer than 72 bytes, and so never returns true for such a candidate: the March 2025 policy of the length patch (46f0dc6d, released in 6.3.8), frozen as that revision's behaviour, and the advisory's intent (a password longer than bcrypt's 72-byte input must not authenticate by its prefix). One property and one domain for the vulnerable release (expected refuted: the upstream test's 72 characters plus one more authenticate against a hash of the 72) and the fixed release (expected established). The only rejection that counts is the specified IllegalArgumentException; returning false, or any other exception, is not it. It is about one public entry with any valid stored hash, not about DaoAuthenticationProvider, timing or bcrypt's strength, and it is not 6.3.9's later policy (example 300). Workflow ingests every record into one format-2 receipt under receipts/mutant-security/, and build.py exits 0 only when the receipt's matchesExpected is true. Predicted stops: the BCryptPasswordEncoder receiver, String.getBytes(UTF_8), BCrypt's stored-hash regex and its key schedule loops under unwind 16. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/target.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/overlong-candidate-rejected.json"
+    ],
+    "examples": [
+      "287"
+    ]
+  },
+  "expected": "example 287 task mutant-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:13+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "steps": [
+    {
+      "name": "example 287 task mutant-security (prove)",
+      "run": "python3 examples/tools/build.py 287 --task mutant-security",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/mutant-security"
+  ]
+}

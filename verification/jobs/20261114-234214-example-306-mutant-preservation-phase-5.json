@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-234214-example-306-mutant-preservation-phase-5",
+  "title": "example 306 mutant-preservation (Phase 5 step 1): PatternMatchUtils.simpleMatch on release-after and mutant, native strict, expected refuted",
+  "description": "The job runs python3 examples/tools/build.py 306 --task mutant-preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 306 is Spring Framework db9a10bf (PatternMatchUtils.simpleMatch compares the prefix with startsWith), the independent positive of CVE-2022-22968's family, prepared from spring-core 5.3.6 and 5.3.7 as published, gate A4's packet (its replay and drop-prefix mutant-replay passed). Workflow plans the task from target.json; runtime prepares release-after and mutant, runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z with claims/simple-match-preservation.json (claim key 51d7f1127b4df870, preservation, bounds unwind 16, maxArrayLength 6). The claim: Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim. Workflow ingests every record into one format-2 receipt under receipts/mutant-preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. Both parameters are Strings, which the native checker supports in a regression check as bounded UTF-16 (maxArrayLength 6), so this is the likeliest of the packets to reach an actual conclusion. A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is read as an observed gap for the v1 gap inventory, with the claim left unresolved and never weakened. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/target.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/claims/simple-match-preservation.json"
+    ],
+    "examples": [
+      "306"
+    ]
+  },
+  "expected": "example 306 task mutant-preservation gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-14T23:42:14+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "notes": "one pinned acquisition from Central (cached by sha256 after the first job), two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached; the replay jobs of the same packet took a few minutes at under 1 GiB"
+  },
+  "steps": [
+    {
+      "name": "example 306 task mutant-preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 306 --task mutant-preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation"
+  ]
+}
