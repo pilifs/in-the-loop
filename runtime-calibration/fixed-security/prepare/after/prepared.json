@@ -1,0 +1,155 @@
+{
+  "example": "999",
+  "task": "fixed-security",
+  "revision": "after",
+  "commit": "fixture:gate/after",
+  "stage": "artifacts-ready",
+  "source": {
+    "route": "fixture",
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revision": "after",
+    "fixture": "gate/after",
+    "provenance": "fixture sources in the example's folder, never an upstream commit",
+    "original": {
+      "roots": [
+        "gate/after",
+        "gate/both"
+      ],
+      "files": [
+        {
+          "path": "gate/after/fixture/Gate.java",
+          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
+        },
+        {
+          "path": "gate/both/fixture/RegexGate.java",
+          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
+        }
+      ]
+    },
+    "adapter": {
+      "roots": [
+        "gate/adapter"
+      ],
+      "files": [
+        {
+          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
+          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
+        }
+      ]
+    },
+    "driver": {
+      "roots": [
+        "gate/driver"
+      ],
+      "files": [
+        {
+          "path": "gate/driver/fixture/driver/GateDriver.java",
+          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
+        }
+      ],
+      "control": "gate-driver",
+      "main": "fixture.driver.GateDriver"
+    },
+    "oracle": {
+      "control": "gate-oracle",
+      "path": "gate/oracle.py",
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
+    },
+    "jdks": [
+      "21",
+      "25"
+    ],
+    "recipe": {
+      "tool": "javac",
+      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
+      "release": "21",
+      "date": "2026-01-01T00:00:00Z",
+      "flags": [
+        "-parameters"
+      ]
+    },
+    "target": {
+      "class": "fixture.Gate",
+      "method": "allowed",
+      "descriptor": "(I)Z",
+      "loadedFrom": "after.jar",
+      "classSha256": "b57e231f492fc406672057d9b934d55134ac4dd63c993c6e801e172654b029a4",
+      "adapterCalls": [
+        "fixture.Gate#allowed(I)Z"
+      ],
+      "adapterCallsTarget": true
+    }
+  },
+  "artifacts": [
+    {
+      "path": "after.jar",
+      "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built from gate/after by the fixture recipe"
+    },
+    {
+      "path": "adapter-after.jar",
+      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
+      "role": "adapter",
+      "coordinates": null,
+      "origin": "built from gate/adapter"
+    },
+    {
+      "path": "driver.jar",
+      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
+      "role": "driver",
+      "coordinates": null,
+      "origin": "built from gate/driver"
+    },
+    {
+      "path": "controls/oracle.py",
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "role": "oracle",
+      "coordinates": null,
+      "origin": "gate/oracle.py"
+    }
+  ],
+  "classpath": [
+    "driver.jar",
+    "adapter-after.jar",
+    "after.jar"
+  ],
+  "toolchain": {
+    "jdk": {
+      "feature": "25",
+      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "release": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "build": {
+      "tool": "javac",
+      "release": "21",
+      "date": "2026-01-01T00:00:00Z",
+      "flags": [
+        "--release",
+        "21",
+        "-encoding",
+        "UTF-8",
+        "-implicit:none"
+      ],
+      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
+    }
+  },
+  "failedStage": null,
+  "diagnostic": null,
+  "logs": [
+    "logs/javac-original.log",
+    "logs/jar-original.log",
+    "logs/javac-adapter.log",
+    "logs/jar-adapter.log",
+    "logs/javac-driver.log",
+    "logs/jar-driver.log"
+  ]
+}

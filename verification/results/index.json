@@ -2,6 +2,44 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261114-164239-example-targets-runtime-r3-after-vf-024",
+      "title": "example-targets runtime R3 after VF-024: run_verifier on the fixture's five proof tasks, equivalence on class directories, the fixture recipe with -parameters",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 43.9s, peak 98.8 MiB (estimated 5m00s, 2.0 GiB); 211 output file(s) changed",
+      "attention": [
+        "step 1 (the fixture's proof tasks through run_verifier, recipe plus -parameters) was held back 14.5s by its 1-CPU quota in 16.0s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (the integration contract with jvmcontract present) was held back 25.4s by its 1-CPU quota in 27.9s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jvmcontract:gaps",
+        "bmc:native",
+        "targets:run-verifier"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py",
+          "examples/tools/targets/runtime_calibrate.py",
+          "examples/tools/targets/runtime_jar.py",
+          "llm-dlc/loops/example-targets-runtime.md",
+          "verification/findings.md"
+        ]
+      },
+      "sourceCommit": "ba4ec0f17f057dbbeda8018040b6362c8885c84b",
+      "finishedAt": "2026-11-14T16:48:49+00:00",
+      "wallSeconds": 43.9,
+      "peakMemoryBytes": 103604224,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 300.0,
+        "notes": "the first run took 45 s; five native strict proofs of one-line methods, five gap scans, ten small javac/jar builds"
+      },
+      "host": "vm-1",
+      "result": "20261114-164239-example-targets-runtime-r3-after-vf-024/result.json"
+    },
+    {
       "id": "20261114-162937-example-targets-runtime-r3-run-verifier",
       "title": "example-targets runtime R3: run_verifier on the fixture's five proof tasks, native strict, with the real jvmcontract",
       "status": "failed",

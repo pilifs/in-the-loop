@@ -1,0 +1,4495 @@
+--- /dev/null
++++ b/runtime-calibration/calibration.json
+@@ -0,0 +1,310 @@
++{
++  "calibration": "runtime R3: run_verifier on the fixture's proof tasks",
++  "ok": true,
++  "jvmcontract": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++  "variant": "the fixture recipe plus javac -parameters: not Phase 0's bytes, the recipe asked of the coordinator under the runtime brief's Progress (VF-024)",
++  "tasks": [
++    {
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "revisions": [
++        "before"
++      ],
++      "expected": "refuted",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.Gate#allowed(int)",
++        "--classes",
++        "prepare/before/before.jar",
++        "--assert",
++        "!result || (code != 65 && code != 97)",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "violation",
++      "scope": "constructed-fixture",
++      "parameters": {
++        "before": {
++          "names": [
++            "code"
++          ],
++          "recordedIn": "MethodParameters"
++        }
++      },
++      "probe": {
++        "before": []
++      },
++      "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++      "stderrTail": "",
++      "ok": true,
++      "witnessNamesTrigger": true,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "fixed-security",
++      "kind": "prove",
++      "revisions": [
++        "after"
++      ],
++      "expected": "established",
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.Gate#allowed(int)",
++        "--classes",
++        "prepare/after/after.jar",
++        "--assert",
++        "!result || (code != 65 && code != 97)",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "verified",
++      "scope": "constructed-fixture",
++      "parameters": {
++        "after": {
++          "names": [
++            "code"
++          ],
++          "recordedIn": "MethodParameters"
++        }
++      },
++      "probe": {
++        "after": []
++      },
++      "output": "✓ fixture.Gate#allowed(int) satisfies `!result || (code != 65 && code != 97)` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n",
++      "stderrTail": "",
++      "ok": true,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "mutant-security",
++      "kind": "prove",
++      "revisions": [
++        "mutant"
++      ],
++      "expected": "refuted",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.Gate#allowed(int)",
++        "--classes",
++        "prepare/mutant/mutant.jar",
++        "--assert",
++        "!result || (code != 65 && code != 97)",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "violation",
++      "scope": "constructed-fixture",
++      "parameters": {
++        "mutant": {
++          "names": [
++            "code"
++          ],
++          "recordedIn": "MethodParameters"
++        }
++      },
++      "probe": {
++        "mutant": []
++      },
++      "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=65)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++      "stderrTail": "",
++      "ok": true,
++      "witnessNamesTrigger": true,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "preservation",
++      "kind": "equivalence",
++      "revisions": [
++        "before",
++        "after"
++      ],
++      "expected": "established",
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "equivalence",
++        "--before",
++        "verifier/classes/before",
++        "--after",
++        "verifier/classes/after",
++        "--target",
++        "fixture.Gate#allowed(int)",
++        "--unchanged-unless",
++        "code == 97",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "verified",
++      "scope": "constructed-fixture",
++      "parameters": {
++        "before": {
++          "names": [
++            "code"
++          ],
++          "recordedIn": "MethodParameters"
++        },
++        "after": {
++          "names": [
++            "code"
++          ],
++          "recordedIn": "MethodParameters"
++        }
++      },
++      "probe": {
++        "before": [],
++        "after": []
++      },
++      "output": "✓ fixture.Gate#allowed(int) behaves as before on every input where !(code == 97) (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: allowed(code=20) reaches the calls\n",
++      "stderrTail": "",
++      "ok": true,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "regex-probe",
++      "kind": "prove",
++      "revisions": [
++        "after"
++      ],
++      "expected": "unresolved",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.003,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.RegexGate#allowed(java.lang.String)",
++        "--classes",
++        "prepare/after/after.jar",
++        "--assert",
++        "!result || field != null",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "unverifiable",
++      "scope": "constructed-fixture",
++      "parameters": {
++        "after": {
++          "names": [
++            "field"
++          ],
++          "recordedIn": "MethodParameters"
++        }
++      },
++      "probe": {
++        "after": [
++          {
++            "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
++            "kind": "jdk-reference-method",
++            "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
++            "sites": [
++              "fixture.RegexGate.allowed:14"
++            ]
++          },
++          {
++            "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
++            "kind": "jdk-primitive-method",
++            "call": "java.util.regex.Matcher.matches()",
++            "sites": [
++              "fixture.RegexGate.allowed:14"
++            ]
++          },
++          {
++            "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++            "kind": "jdk-static-method",
++            "call": "java.util.regex.Pattern.compile(java.lang.String)",
++            "sites": [
++              "fixture.RegexGate.<clinit>:8"
++            ]
++          }
++        ]
++      },
++      "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++      "stderrTail": "",
++      "ok": true,
++      "refusalNamesRegex": false,
++      "probeNamesRegex": true,
++      "namesRegex": true,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    }
++  ],
++  "reading": "the verdicts are read here to check R3's plumbing against the fixture's authored expectations; ingestion judges records in the route"
++}
+Binary file runtime-calibration/fixed-security/prepare/after/adapter-after.jar changed
+Binary file runtime-calibration/fixed-security/prepare/after/after.jar changed
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/fixed-security/prepare/after/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/adapter-after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.112s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.102s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/original fixture/RegexGate.class
++
++exit 0 after 0.110s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.703s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/adapter-after.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.859s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security/prepare/after/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/after/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.757s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/prepared.json
+@@ -0,0 +1,155 @@
++{
++  "example": "999",
++  "task": "fixed-security",
++  "revision": "after",
++  "commit": "fixture:gate/after",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "after",
++    "fixture": "gate/after",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/after",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/after/fixture/Gate.java",
++          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "-parameters"
++      ]
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "after.jar",
++      "classSha256": "b57e231f492fc406672057d9b934d55134ac4dd63c993c6e801e172654b029a4",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "after.jar",
++      "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/after by the fixture recipe"
++    },
++    {
++      "path": "adapter-after.jar",
++      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-after.jar",
++    "after.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/probe-after.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/report/property.sarif
+@@ -0,0 +1,65 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": []
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/verifier.json
+@@ -0,0 +1,267 @@
++{
++  "task": "fixed-security",
++  "record": {
++    "kind": "verifier",
++    "revision": "after",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.Gate#allowed(int)",
++      "--classes",
++      "prepare/after/after.jar",
++      "--assert",
++      "!result || (code != 65 && code != 97)",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 0,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "after": {
++            "commit": "fixture:gate/after",
++            "loadedFrom": "after.jar",
++            "classSha256": "b57e231f492fc406672057d9b934d55134ac4dd63c993c6e801e172654b029a4",
++            "origin": "built from gate/after by the fixture recipe",
++            "parameters": {
++              "names": [
++                "code"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "after": [
++          {
++            "path": "after.jar",
++            "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "after": "fixture:gate/after"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "after": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/after/after.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-after.stdout",
++          "stderr": "verifier/probe-after.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "verified",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": "code: int",
++        "assume": null,
++        "assert": "!result || (code != 65 && code != 97)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "verifier/work/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "✓ fixture.Gate#allowed(int) satisfies `!result || (code != 65 && code != 97)` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n",
++        "work": "verifier/work",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.0005924,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 3,
++            "merges": 0,
++            "solver_calls": 2,
++            "solving_seconds": 1.2774e-05,
++            "gates_evaluated": 89,
++            "evaluating_seconds": 5.771e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 91,
++            "clauses": 175,
++            "seconds": 0.000198492,
++            "loading_seconds": 1.8464e-05,
++            "decoding_seconds": 1.3145e-05,
++            "encoding_seconds": 3.0777e-05,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 600.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 600.0,
++              "seconds": 0.0,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.0,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 91,
++                "clauses": 175
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.008,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.0,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.007
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "code",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "code: int"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++            "classes": 17,
++            "jdk": "25.0.5"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/fixed-security"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/verifier.stdout
+@@ -0,0 +1,144 @@
++[
++  {
++    "verdict": "verified",
++    "target": "fixture.Gate#allowed(int)",
++    "domain": "code: int",
++    "assume": null,
++    "assert": "!result || (code != 65 && code != 97)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "verifier/work/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ fixture.Gate#allowed(int) satisfies `!result || (code != 65 && code != 97)` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n",
++    "work": "verifier/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.0005924,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000012774,
++        "gates_evaluated": 89,
++        "evaluating_seconds": 5.771e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 91,
++        "clauses": 175,
++        "seconds": 0.000198492,
++        "loading_seconds": 0.000018464,
++        "decoding_seconds": 0.000013145,
++        "encoding_seconds": 0.000030777,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.0,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 91,
++            "clauses": 175
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.008,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.0,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.007
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/work/bmc.log
+@@ -0,0 +1,2 @@
++jvmcontract's own checker on PropertyHarness.check
++Verified: 3 paths, 0 merged at joins, 2 solver calls (0.00 s), 89 gates evaluated in path models (0.00 s), 0 of 0 divisions and 0 of 0 multiplications built in full, 91 variables, 175 clauses, 0.00 s
+Binary file runtime-calibration/fixed-security/verifier/work/harness/PropertyHarness.class changed
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/work/harness/PropertyHarness.java
+@@ -0,0 +1,9 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(int code) {
++        boolean result = false;
++        int e = 0;
++        try { result = fixture.Gate.allowed(code); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result || (code != 65 && code != 97)); // no exception, and the property
++    }
++}
+Binary file runtime-calibration/fixed-security/verifier/work/jdk/java/lang/Byte.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/jdk/java/lang/Integer.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/jdk/java/lang/Long.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/jdk/java/lang/Math.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/jdk/java/lang/Short.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/jdk/java/lang/StrictMath.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/lang/Byte$ByteCache.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/lang/Character.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/lang/Enum.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/lang/Integer$IntegerCache.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/lang/Long$LongCache.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/lang/Short$ShortCache.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/nio/charset/Charset.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/nio/charset/IllegalCharsetNameException.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/nio/charset/StandardCharsets$Standard.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/nio/charset/StandardCharsets.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/nio/charset/UnsupportedCharsetException.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/util/ImmutableCollections$AbstractImmutableList.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/util/ImmutableCollections$List12.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/util/ImmutableCollections$ListItr.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/util/ImmutableCollections$ListN.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/util/ImmutableCollections.class changed
+Binary file runtime-calibration/fixed-security/verifier/work/models/java/util/List.class changed
+Binary file runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/mutant-security/prepare/mutant/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.097s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.104s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/mutant.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/original fixture/RegexGate.class
++
++exit 0 after 0.102s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/mutant.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.795s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/mutant.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.812s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security/prepare/mutant/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/mutant/fixture/Gate.java
++
++exit 0 after 0.751s
+Binary file runtime-calibration/mutant-security/prepare/mutant/mutant.jar changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/prepared.json
+@@ -0,0 +1,155 @@
++{
++  "example": "999",
++  "task": "mutant-security",
++  "revision": "mutant",
++  "commit": "fixture:gate/mutant",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "mutant",
++    "fixture": "gate/mutant",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/both",
++        "gate/mutant"
++      ],
++      "files": [
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        },
++        {
++          "path": "gate/mutant/fixture/Gate.java",
++          "sha256": "f4e76918a0ebb213967df09b58634bfd4f199e8c2ff50df2bcab8cac387b1cf3"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "-parameters"
++      ]
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "mutant.jar",
++      "classSha256": "3b356144946964c4d66a08b0fff2b7e2037cca441fad7a366d0fee621746bcf3",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "mutant.jar",
++      "sha256": "398a30873613f37b610d4d957e456562c1f7a9e7bcc5a49e4d7bab82b096e380",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/mutant by the fixture recipe"
++    },
++    {
++      "path": "adapter-mutant.jar",
++      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-mutant.jar",
++    "mutant.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/probe-mutant.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "property-violated",
++          "level": "error",
++          "message": {
++            "text": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=65)\n    outcome: true"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/verifier.json
+@@ -0,0 +1,303 @@
++{
++  "task": "mutant-security",
++  "record": {
++    "kind": "verifier",
++    "revision": "mutant",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.Gate#allowed(int)",
++      "--classes",
++      "prepare/mutant/mutant.jar",
++      "--assert",
++      "!result || (code != 65 && code != 97)",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "mutant": {
++            "commit": "fixture:gate/mutant",
++            "loadedFrom": "mutant.jar",
++            "classSha256": "3b356144946964c4d66a08b0fff2b7e2037cca441fad7a366d0fee621746bcf3",
++            "origin": "built from gate/mutant by the fixture recipe",
++            "parameters": {
++              "names": [
++                "code"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "mutant": [
++          {
++            "path": "mutant.jar",
++            "sha256": "398a30873613f37b610d4d957e456562c1f7a9e7bcc5a49e4d7bab82b096e380",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "mutant": "fixture:gate/mutant"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "mutant": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/mutant/mutant.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-mutant.stdout",
++          "stderr": "verifier/probe-mutant.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "violation",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": "code: int",
++        "assume": null,
++        "assert": "!result || (code != 65 && code != 97)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": {
++          "input": "allowed(code=65)",
++          "outcome": "true",
++          "values": [
++            "65"
++          ],
++          "shrink_runs": 8,
++          "inputs": [
++            {
++              "name": "code",
++              "type": "int",
++              "value": 65
++            }
++          ],
++          "call": {
++            "class": "fixture.Gate",
++            "class_file": "fixture/Gate.class",
++            "classes": "after",
++            "method": "allowed",
++            "descriptor": "(I)Z",
++            "static": true,
++            "arguments": [
++              {
++                "name": "code",
++                "type": "int",
++                "value": 65,
++                "from": "code"
++              }
++            ]
++          }
++        },
++        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
++        "problem": null,
++        "statement": "verifier/work/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "property-violated",
++            "message": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=65)\n    outcome: true",
++            "uri": null,
++            "line": 15
++          }
++        ],
++        "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=65)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++        "work": "verifier/work",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.000824465,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": "[-100000:100000]",
++          "native": {
++            "paths": 3,
++            "merges": 0,
++            "solver_calls": 5,
++            "solving_seconds": 3.1158e-05,
++            "gates_evaluated": 89,
++            "evaluating_seconds": 6.252e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 282,
++            "clauses": 834,
++            "seconds": 0.000406312,
++            "loading_seconds": 8.7606e-05,
++            "decoding_seconds": 1.2624e-05,
++            "encoding_seconds": 0.000132902,
++            "witness_seconds": 7.042e-06
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 600.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 600.0,
++              "seconds": 0.0,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.0,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 282,
++                "clauses": 834
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.008,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.0,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.007
++          }
++        },
++        "replay": {
++          "by": "interpreter",
++          "reproduced": true
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "code",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "code: int"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++            "classes": 17,
++            "jdk": "25.0.5"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/mutant-security"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/verifier.stdout
+@@ -0,0 +1,180 @@
++[
++  {
++    "verdict": "violation",
++    "target": "fixture.Gate#allowed(int)",
++    "domain": "code: int",
++    "assume": null,
++    "assert": "!result || (code != 65 && code != 97)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "allowed(code=65)",
++      "outcome": "true",
++      "values": [
++        "65"
++      ],
++      "shrink_runs": 8,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 65
++        }
++      ],
++      "call": {
++        "class": "fixture.Gate",
++        "class_file": "fixture/Gate.class",
++        "classes": "after",
++        "method": "allowed",
++        "descriptor": "(I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 65,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
++    "problem": null,
++    "statement": "verifier/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=65)\n    outcome: true",
++        "uri": null,
++        "line": 15
++      }
++    ],
++    "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=65)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verifier/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.000824465,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.000031158,
++        "gates_evaluated": 89,
++        "evaluating_seconds": 6.252e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 282,
++        "clauses": 834,
++        "seconds": 0.000406312,
++        "loading_seconds": 0.000087606,
++        "decoding_seconds": 0.000012624,
++        "encoding_seconds": 0.000132902,
++        "witness_seconds": 7.042e-6
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.0,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 282,
++            "clauses": 834
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.008,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.0,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.007
++      }
++    },
++    "replay": {
++      "by": "interpreter",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/work/bmc.log
+@@ -0,0 +1,2 @@
++jvmcontract's own checker on PropertyHarness.check
++Violation: 3 paths, 0 merged at joins, 5 solver calls (0.00 s), 89 gates evaluated in path models (0.00 s), 0 of 0 divisions and 0 of 0 multiplications built in full, 282 variables, 834 clauses, 0.00 s
+Binary file runtime-calibration/mutant-security/verifier/work/harness/PropertyHarness.class changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/work/harness/PropertyHarness.java
+@@ -0,0 +1,9 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(int code) {
++        boolean result = false;
++        int e = 0;
++        try { result = fixture.Gate.allowed(code); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result || (code != 65 && code != 97)); // no exception, and the property
++    }
++}
+Binary file runtime-calibration/mutant-security/verifier/work/jdk/java/lang/Byte.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/jdk/java/lang/Integer.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/jdk/java/lang/Long.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/jdk/java/lang/Math.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/jdk/java/lang/Short.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/jdk/java/lang/StrictMath.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/lang/Byte$ByteCache.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/lang/Character.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/lang/Enum.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/lang/Integer$IntegerCache.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/lang/Long$LongCache.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/lang/Short$ShortCache.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/nio/charset/Charset.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/nio/charset/IllegalCharsetNameException.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/nio/charset/StandardCharsets$Standard.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/nio/charset/StandardCharsets.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/nio/charset/UnsupportedCharsetException.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/util/ImmutableCollections$AbstractImmutableList.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/util/ImmutableCollections$List12.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/util/ImmutableCollections$ListItr.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/util/ImmutableCollections$ListN.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/util/ImmutableCollections.class changed
+Binary file runtime-calibration/mutant-security/verifier/work/models/java/util/List.class changed
+Binary file runtime-calibration/preservation/prepare/after/adapter-after.jar changed
+Binary file runtime-calibration/preservation/prepare/after/after.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/preservation/prepare/after/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/adapter-after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.106s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.114s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/original fixture/RegexGate.class
++
++exit 0 after 0.105s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.696s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/adapter-after.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.802s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/after/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/after/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.724s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/prepared.json
+@@ -0,0 +1,155 @@
++{
++  "example": "999",
++  "task": "preservation",
++  "revision": "after",
++  "commit": "fixture:gate/after",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "after",
++    "fixture": "gate/after",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/after",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/after/fixture/Gate.java",
++          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "-parameters"
++      ]
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "after.jar",
++      "classSha256": "b57e231f492fc406672057d9b934d55134ac4dd63c993c6e801e172654b029a4",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "after.jar",
++      "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/after by the fixture recipe"
++    },
++    {
++      "path": "adapter-after.jar",
++      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-after.jar",
++    "after.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+Binary file runtime-calibration/preservation/prepare/before/adapter-before.jar changed
+Binary file runtime-calibration/preservation/prepare/before/before.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/preservation/prepare/before/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/adapter-before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.104s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.098s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/original fixture/RegexGate.class
++
++exit 0 after 0.099s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.701s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/adapter-before.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.793s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation/prepare/before/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/before/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.737s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/prepared.json
+@@ -0,0 +1,155 @@
++{
++  "example": "999",
++  "task": "preservation",
++  "revision": "before",
++  "commit": "fixture:gate/before",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "before",
++    "fixture": "gate/before",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/before",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/before/fixture/Gate.java",
++          "sha256": "92bb0bd6780f029ca862c4b6df5fd378cf911f28fd15bb951e0564097ccd6ed6"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "-parameters"
++      ]
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "before.jar",
++      "classSha256": "97fafe85c6aa177da2ccbbeac378bc49c82d2c792fbb401fe6872c5ee7990456",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "before.jar",
++      "sha256": "f6d24f4fc258677b1235689e4eed4902956d38f3c610b911b7c6ae1b54103c25",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/before by the fixture recipe"
++    },
++    {
++      "path": "adapter-before.jar",
++      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-before.jar",
++    "before.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+Binary file runtime-calibration/preservation/verifier/classes/after/fixture/Gate.class changed
+Binary file runtime-calibration/preservation/verifier/classes/after/fixture/RegexGate.class changed
+Binary file runtime-calibration/preservation/verifier/classes/before/fixture/Gate.class changed
+Binary file runtime-calibration/preservation/verifier/classes/before/fixture/RegexGate.class changed
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/probe-after.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/probe-before.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/report/equivalence.sarif
+@@ -0,0 +1,65 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": []
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/verifier.json
+@@ -0,0 +1,345 @@
++{
++  "task": "preservation",
++  "record": {
++    "kind": "verifier",
++    "revision": null,
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "equivalence",
++      "--before",
++      "verifier/classes/before",
++      "--after",
++      "verifier/classes/after",
++      "--target",
++      "fixture.Gate#allowed(int)",
++      "--unchanged-unless",
++      "code == 97",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 0,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "equivalence",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "before": {
++            "commit": "fixture:gate/before",
++            "loadedFrom": "before.jar",
++            "classSha256": "97fafe85c6aa177da2ccbbeac378bc49c82d2c792fbb401fe6872c5ee7990456",
++            "origin": "built from gate/before by the fixture recipe",
++            "parameters": {
++              "names": [
++                "code"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          },
++          "after": {
++            "commit": "fixture:gate/after",
++            "loadedFrom": "after.jar",
++            "classSha256": "b57e231f492fc406672057d9b934d55134ac4dd63c993c6e801e172654b029a4",
++            "origin": "built from gate/after by the fixture recipe",
++            "parameters": {
++              "names": [
++                "code"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "before": [
++          {
++            "path": "before.jar",
++            "sha256": "f6d24f4fc258677b1235689e4eed4902956d38f3c610b911b7c6ae1b54103c25",
++            "role": "original"
++          }
++        ],
++        "after": [
++          {
++            "path": "after.jar",
++            "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "before": "fixture:gate/before",
++        "after": "fixture:gate/after"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "classes": {
++        "before": {
++          "dir": "verifier/classes/before",
++          "from": "prepare/before/before.jar",
++          "sha256": "f6d24f4fc258677b1235689e4eed4902956d38f3c610b911b7c6ae1b54103c25",
++          "entries": 2
++        },
++        "after": {
++          "dir": "verifier/classes/after",
++          "from": "prepare/after/after.jar",
++          "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++          "entries": 2
++        }
++      },
++      "probe": {
++        "before": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/before/before.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.064,
++          "stdout": "verifier/probe-before.stdout",
++          "stderr": "verifier/probe-before.stderr",
++          "gaps": []
++        },
++        "after": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/after/after.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-after.stdout",
++          "stderr": "verifier/probe-after.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "verified",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": "code: int",
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "verifier/work/harness/EquivalenceHarness.java",
++        "findings": [],
++        "output": "✓ fixture.Gate#allowed(int) behaves as before on every input where !(code == 97) (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: allowed(code=20) reaches the calls\n",
++        "work": "verifier/work",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.000897101,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 3,
++            "merges": 0,
++            "solver_calls": 2,
++            "solving_seconds": 1.1912e-05,
++            "gates_evaluated": 89,
++            "evaluating_seconds": 4.769e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 91,
++            "clauses": 175,
++            "seconds": 0.000217377,
++            "loading_seconds": 1.9978e-05,
++            "decoding_seconds": 1.4427e-05,
++            "encoding_seconds": 3.2081e-05,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 600.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 600.0,
++              "seconds": 0.0,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.0,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 91,
++                "clauses": 175
++              }
++            },
++            {
++              "checker": "native",
++              "purpose": "probe",
++              "stage": null,
++              "budget_seconds": 599.999,
++              "seconds": 0.0,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.0,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 130,
++                "clauses": 323
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.009,
++            "setup": 0.0,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.0,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.009
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "code",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "code: int"
++          },
++          "assumptions": [
++            {
++              "kind": "intended-inputs",
++              "text": "!(code == 97): the input is not among those the change is meant for",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, equal in both versions",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++            "classes": 17,
++            "jdk": "25.0.5"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "probe",
++            "text": "Some input in the domain reaches the calls: the tool's own checker found allowed(code=20).",
++            "witness": "allowed(code=20)"
++          }
++        }
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/preservation"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/verifier.stdout
+@@ -0,0 +1,166 @@
++{
++  "verdict": "verified",
++  "target": "fixture.Gate#allowed(int)",
++  "domain": "code: int",
++  "counterexample": null,
++  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++  "problem": null,
++  "statement": "verifier/work/harness/EquivalenceHarness.java",
++  "findings": [],
++  "output": "✓ fixture.Gate#allowed(int) behaves as before on every input where !(code == 97) (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: allowed(code=20) reaches the calls\n",
++  "work": "verifier/work",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 0.000897101,
++    "properties": 1,
++    "unwind": 16,
++    "max_array_length": 8,
++    "stage": null,
++    "native": {
++      "paths": 3,
++      "merges": 0,
++      "solver_calls": 2,
++      "solving_seconds": 0.000011912,
++      "gates_evaluated": 89,
++      "evaluating_seconds": 4.769e-6,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 91,
++      "clauses": 175,
++      "seconds": 0.000217377,
++      "loading_seconds": 0.000019978,
++      "decoding_seconds": 0.000014427,
++      "encoding_seconds": 0.000032081,
++      "witness_seconds": 0.0
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 600.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 600.0,
++        "seconds": 0.0,
++        "ended": "verified",
++        "ending": "verified",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.0,
++          "encoding": 0.0,
++          "solving": 0.0,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 91,
++          "clauses": 175
++        }
++      },
++      {
++        "checker": "native",
++        "purpose": "probe",
++        "stage": null,
++        "budget_seconds": 599.999,
++        "seconds": 0.0,
++        "ended": "violation",
++        "ending": "counterexample",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.0,
++          "encoding": 0.0,
++          "solving": 0.0,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 130,
++          "clauses": 323
++        }
++      }
++    ],
++    "phases": {
++      "seconds": 0.009,
++      "setup": 0.0,
++      "harness": 0.0,
++      "gaps": 0.0,
++      "contracts": 0.0,
++      "runs": 0.0,
++      "replay": 0.0,
++      "jvm": 0.0,
++      "other": 0.009
++    }
++  },
++  "stated": {
++    "kind": "regression",
++    "domain": {
++      "parameters": [
++        {
++          "name": "code",
++          "type": "int",
++          "kind": "primitive",
++          "null": false
++        }
++      ],
++      "shared_arrays": false,
++      "text": "code: int"
++    },
++    "assumptions": [
++      {
++        "kind": "intended-inputs",
++        "text": "!(code == 97): the input is not among those the change is meant for",
++        "basis": "stated"
++      },
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result, equal in both versions",
++      "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++    },
++    "bounds": {
++      "unwind": 16,
++      "max_array_length": null,
++      "complete": true
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++      "classes": 17,
++      "jdk": "25.0.5"
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null,
++    "vacuity": {
++      "status": "non-vacuous",
++      "basis": "probe",
++      "text": "Some input in the domain reaches the calls: the tool's own checker found allowed(code=20).",
++      "witness": "allowed(code=20)"
++    }
++  }
++}
+Binary file runtime-calibration/preservation/verifier/work/before-classes/before/fixture/Gate.class changed
+Binary file runtime-calibration/preservation/verifier/work/before-classes/before/fixture/RegexGate.class changed
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/work/bmc.log
+@@ -0,0 +1,2 @@
++jvmcontract's own checker on EquivalenceHarness.check
++Verified: 3 paths, 0 merged at joins, 2 solver calls (0.00 s), 89 gates evaluated in path models (0.00 s), 0 of 0 divisions and 0 of 0 multiplications built in full, 91 variables, 175 clauses, 0.00 s
+Binary file runtime-calibration/preservation/verifier/work/harness/EquivalenceHarness.class changed
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/work/harness/EquivalenceHarness.java
+@@ -0,0 +1,13 @@
++/** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class EquivalenceHarness {
++    public static void check(int code) {
++        if (code == 97) { return; } // the inputs the developer meant to change
++        boolean a = false;
++        int ea = 0;
++        try { a = before.fixture.Gate.allowed(code); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
++        boolean b = false;
++        int eb = 0;
++        try { b = fixture.Gate.allowed(code); } catch (java.lang.NumberFormatException t) { eb = 1; } catch (java.lang.ArithmeticException t) { eb = 2; } catch (java.lang.NullPointerException t) { eb = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { eb = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { eb = 5; } catch (java.lang.IndexOutOfBoundsException t) { eb = 6; } catch (java.lang.NegativeArraySizeException t) { eb = 7; } catch (java.lang.ClassCastException t) { eb = 8; } catch (java.lang.IllegalStateException t) { eb = 9; } catch (java.lang.IllegalArgumentException t) { eb = 10; } catch (java.lang.UnsupportedOperationException t) { eb = 11; } catch (java.util.NoSuchElementException t) { eb = 12; } catch (java.util.ConcurrentModificationException t) { eb = 13; } catch (java.lang.RuntimeException t) { eb = 14; } catch (java.lang.Error t) { eb = 15; }
++        assert ea == eb && (ea != 0 || a == b);
++    }
++}
+Binary file runtime-calibration/preservation/verifier/work/jdk/java/lang/Byte.class changed
+Binary file runtime-calibration/preservation/verifier/work/jdk/java/lang/Integer.class changed
+Binary file runtime-calibration/preservation/verifier/work/jdk/java/lang/Long.class changed
+Binary file runtime-calibration/preservation/verifier/work/jdk/java/lang/Math.class changed
+Binary file runtime-calibration/preservation/verifier/work/jdk/java/lang/Short.class changed
+Binary file runtime-calibration/preservation/verifier/work/jdk/java/lang/StrictMath.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/lang/Byte$ByteCache.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/lang/Character.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/lang/Enum.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/lang/Integer$IntegerCache.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/lang/Long$LongCache.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/lang/Short$ShortCache.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/nio/charset/Charset.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/nio/charset/IllegalCharsetNameException.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/nio/charset/StandardCharsets$Standard.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/nio/charset/StandardCharsets.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/nio/charset/UnsupportedCharsetException.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/util/ImmutableCollections$AbstractImmutableList.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/util/ImmutableCollections$List12.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/util/ImmutableCollections$ListItr.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/util/ImmutableCollections$ListN.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/util/ImmutableCollections.class changed
+Binary file runtime-calibration/preservation/verifier/work/models/java/util/List.class changed
+Binary file runtime-calibration/preservation/verifier/work/probe/EquivalenceHarness.class changed
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/work/probe/bmc.log
+@@ -0,0 +1,2 @@
++jvmcontract's own checker on EquivalenceHarness.check
++Violation: 2 paths, 0 merged at joins, 3 solver calls (0.00 s), 63 gates evaluated in path models (0.00 s), 0 of 0 divisions and 0 of 0 multiplications built in full, 130 variables, 323 clauses, 0.00 s
+Binary file runtime-calibration/regex-probe/prepare/after/adapter-after.jar changed
+Binary file runtime-calibration/regex-probe/prepare/after/after.jar changed
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/regex-probe/prepare/after/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/adapter-after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.105s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.105s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/original fixture/RegexGate.class
++
++exit 0 after 0.112s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.699s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/adapter-after.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.872s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe/prepare/after/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/after/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.672s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/prepared.json
+@@ -0,0 +1,155 @@
++{
++  "example": "999",
++  "task": "regex-probe",
++  "revision": "after",
++  "commit": "fixture:gate/after",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "after",
++    "fixture": "gate/after",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/after",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/after/fixture/Gate.java",
++          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "-parameters"
++      ]
++    },
++    "target": {
++      "class": "fixture.RegexGate",
++      "method": "allowed",
++      "descriptor": "(Ljava/lang/String;)Z",
++      "loadedFrom": "after.jar",
++      "classSha256": "190accc8145f3785e5e0eb6a4a2b83235f709eaa2777466840be0bbe79d980c7",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": false
++    }
++  },
++  "artifacts": [
++    {
++      "path": "after.jar",
++      "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/after by the fixture recipe"
++    },
++    {
++      "path": "adapter-after.jar",
++      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-after.jar",
++    "after.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/probe-after.stdout
+@@ -0,0 +1,38 @@
++{
++  "roots": [
++    "fixture.RegexGate#allowed(java.lang.String)"
++  ],
++  "methods": 2,
++  "jdk": "25.0.5",
++  "gaps": [
++    {
++      "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
++      "kind": "jdk-reference-method",
++      "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
++      "sites": [
++        "fixture.RegexGate.allowed:14"
++      ],
++      "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
++    },
++    {
++      "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
++      "kind": "jdk-primitive-method",
++      "call": "java.util.regex.Matcher.matches()",
++      "sites": [
++        "fixture.RegexGate.allowed:14"
++      ],
++      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
++    },
++    {
++      "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++      "kind": "jdk-static-method",
++      "call": "java.util.regex.Pattern.compile(java.lang.String)",
++      "sites": [
++        "fixture.RegexGate.<clinit>:8"
++      ],
++      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
++    }
++  ],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "unverifiable",
++          "level": "error",
++          "message": {
++            "text": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/verifier.json
+@@ -0,0 +1,173 @@
++{
++  "task": "regex-probe",
++  "record": {
++    "kind": "verifier",
++    "revision": "after",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.RegexGate#allowed(java.lang.String)",
++      "--classes",
++      "prepare/after/after.jar",
++      "--assert",
++      "!result || field != null",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.003,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.RegexGate#allowed(Ljava/lang/String;)Z",
++        "revisions": {
++          "after": {
++            "commit": "fixture:gate/after",
++            "loadedFrom": "after.jar",
++            "classSha256": "190accc8145f3785e5e0eb6a4a2b83235f709eaa2777466840be0bbe79d980c7",
++            "origin": "built from gate/after by the fixture recipe",
++            "parameters": {
++              "names": [
++                "field"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "after": [
++          {
++            "path": "after.jar",
++            "sha256": "8b57e8fd594ead462cdd3952a445ad3dd9ba244ab3be4fcfb212ec97e211fb43",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "after": "fixture:gate/after"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "after": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.RegexGate#allowed(java.lang.String)",
++            "--classes",
++            "prepare/after/after.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-after.stdout",
++          "stderr": "verifier/probe-after.stderr",
++          "gaps": [
++            {
++              "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
++              "kind": "jdk-reference-method",
++              "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
++              "sites": [
++                "fixture.RegexGate.allowed:14"
++              ]
++            },
++            {
++              "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
++              "kind": "jdk-primitive-method",
++              "call": "java.util.regex.Matcher.matches()",
++              "sites": [
++                "fixture.RegexGate.allowed:14"
++              ]
++            },
++            {
++              "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++              "kind": "jdk-static-method",
++              "call": "java.util.regex.Pattern.compile(java.lang.String)",
++              "sites": [
++                "fixture.RegexGate.<clinit>:8"
++              ]
++            }
++          ]
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "unverifiable",
++        "target": "fixture.RegexGate#allowed(java.lang.String)",
++        "domain": null,
++        "assume": null,
++        "assert": "!result || field != null",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++            "uri": null,
++            "line": 14
++          }
++        ],
++        "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++        "work": "verifier/work"
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/regex-probe"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/verifier.stdout
+@@ -0,0 +1,25 @@
++[
++  {
++    "verdict": "unverifiable",
++    "target": "fixture.RegexGate#allowed(java.lang.String)",
++    "domain": null,
++    "assume": null,
++    "assert": "!result || field != null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++        "uri": null,
++        "line": 14
++      }
++    ],
++    "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++    "work": "verifier/work"
++  }
++]
+Binary file runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar changed
+Binary file runtime-calibration/vulnerable-security/prepare/before/before.jar changed
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/vulnerable-security/prepare/before/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.103s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.105s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/original fixture/RegexGate.class
++
++exit 0 after 0.103s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.707s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.801s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security/prepare/before/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/before/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.796s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/prepared.json
+@@ -0,0 +1,155 @@
++{
++  "example": "999",
++  "task": "vulnerable-security",
++  "revision": "before",
++  "commit": "fixture:gate/before",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "before",
++    "fixture": "gate/before",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/before",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/before/fixture/Gate.java",
++          "sha256": "92bb0bd6780f029ca862c4b6df5fd378cf911f28fd15bb951e0564097ccd6ed6"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "-parameters"
++      ]
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "before.jar",
++      "classSha256": "97fafe85c6aa177da2ccbbeac378bc49c82d2c792fbb401fe6872c5ee7990456",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "before.jar",
++      "sha256": "f6d24f4fc258677b1235689e4eed4902956d38f3c610b911b7c6ae1b54103c25",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/before by the fixture recipe"
++    },
++    {
++      "path": "adapter-before.jar",
++      "sha256": "789afeae471bc9ca614a8c62eb1e0ff405758628f0da25dfc0c885ecb6ab6a9d",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "2ccca2ada473f9e9be98797eff3df015dbf23b0b1d99d4fb3e767b81fad03433",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-before.jar",
++    "before.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/probe-before.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "property-violated",
++          "level": "error",
++          "message": {
++            "text": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/verifier.json
+@@ -0,0 +1,303 @@
++{
++  "task": "vulnerable-security",
++  "record": {
++    "kind": "verifier",
++    "revision": "before",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.Gate#allowed(int)",
++      "--classes",
++      "prepare/before/before.jar",
++      "--assert",
++      "!result || (code != 65 && code != 97)",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "before": {
++            "commit": "fixture:gate/before",
++            "loadedFrom": "before.jar",
++            "classSha256": "97fafe85c6aa177da2ccbbeac378bc49c82d2c792fbb401fe6872c5ee7990456",
++            "origin": "built from gate/before by the fixture recipe",
++            "parameters": {
++              "names": [
++                "code"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "before": [
++          {
++            "path": "before.jar",
++            "sha256": "f6d24f4fc258677b1235689e4eed4902956d38f3c610b911b7c6ae1b54103c25",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "before": "fixture:gate/before"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "before": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/before/before.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-before.stdout",
++          "stderr": "verifier/probe-before.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "violation",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": "code: int",
++        "assume": null,
++        "assert": "!result || (code != 65 && code != 97)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": {
++          "input": "allowed(code=97)",
++          "outcome": "true",
++          "values": [
++            "97"
++          ],
++          "shrink_runs": 8,
++          "inputs": [
++            {
++              "name": "code",
++              "type": "int",
++              "value": 97
++            }
++          ],
++          "call": {
++            "class": "fixture.Gate",
++            "class_file": "fixture/Gate.class",
++            "classes": "after",
++            "method": "allowed",
++            "descriptor": "(I)Z",
++            "static": true,
++            "arguments": [
++              {
++                "name": "code",
++                "type": "int",
++                "value": 97,
++                "from": "code"
++              }
++            ]
++          }
++        },
++        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
++        "problem": null,
++        "statement": "verifier/work/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "property-violated",
++            "message": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true",
++            "uri": null,
++            "line": 13
++          }
++        ],
++        "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++        "work": "verifier/work",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.000809106,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": "[-100000:100000]",
++          "native": {
++            "paths": 3,
++            "merges": 0,
++            "solver_calls": 5,
++            "solving_seconds": 2.6209e-05,
++            "gates_evaluated": 89,
++            "evaluating_seconds": 5.671e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 282,
++            "clauses": 834,
++            "seconds": 0.000372118,
++            "loading_seconds": 8.1013e-05,
++            "decoding_seconds": 1.3155e-05,
++            "encoding_seconds": 0.000102823,
++            "witness_seconds": 6.301e-06
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 600.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 600.0,
++              "seconds": 0.0,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.0,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 282,
++                "clauses": 834
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.01,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.0,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.009
++          }
++        },
++        "replay": {
++          "by": "interpreter",
++          "reproduced": true
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "code",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "code: int"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++            "classes": 17,
++            "jdk": "25.0.5"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/verifier.stdout
+@@ -0,0 +1,180 @@
++[
++  {
++    "verdict": "violation",
++    "target": "fixture.Gate#allowed(int)",
++    "domain": "code: int",
++    "assume": null,
++    "assert": "!result || (code != 65 && code != 97)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "allowed(code=97)",
++      "outcome": "true",
++      "values": [
++        "97"
++      ],
++      "shrink_runs": 8,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 97
++        }
++      ],
++      "call": {
++        "class": "fixture.Gate",
++        "class_file": "fixture/Gate.class",
++        "classes": "after",
++        "method": "allowed",
++        "descriptor": "(I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 97,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
++    "problem": null,
++    "statement": "verifier/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true",
++        "uri": null,
++        "line": 13
++      }
++    ],
++    "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verifier/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.000809106,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.000026209,
++        "gates_evaluated": 89,
++        "evaluating_seconds": 5.671e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 282,
++        "clauses": 834,
++        "seconds": 0.000372118,
++        "loading_seconds": 0.000081013,
++        "decoding_seconds": 0.000013155,
++        "encoding_seconds": 0.000102823,
++        "witness_seconds": 6.301e-6
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.0,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 282,
++            "clauses": 834
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.01,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.0,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "replay": {
++      "by": "interpreter",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/work/bmc.log
+@@ -0,0 +1,2 @@
++jvmcontract's own checker on PropertyHarness.check
++Violation: 3 paths, 0 merged at joins, 5 solver calls (0.00 s), 89 gates evaluated in path models (0.00 s), 0 of 0 divisions and 0 of 0 multiplications built in full, 282 variables, 834 clauses, 0.00 s
+Binary file runtime-calibration/vulnerable-security/verifier/work/harness/PropertyHarness.class changed
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/work/harness/PropertyHarness.java
+@@ -0,0 +1,9 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(int code) {
++        boolean result = false;
++        int e = 0;
++        try { result = fixture.Gate.allowed(code); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result || (code != 65 && code != 97)); // no exception, and the property
++    }
++}
+Binary file runtime-calibration/vulnerable-security/verifier/work/jdk/java/lang/Byte.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/jdk/java/lang/Integer.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/jdk/java/lang/Long.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/jdk/java/lang/Math.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/jdk/java/lang/Short.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/jdk/java/lang/StrictMath.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/lang/Byte$ByteCache.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/lang/Character.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/lang/Enum.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/lang/Integer$IntegerCache.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/lang/Long$LongCache.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/lang/Short$ShortCache.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/nio/charset/Charset.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/nio/charset/IllegalCharsetNameException.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/nio/charset/StandardCharsets$Standard.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/nio/charset/StandardCharsets.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/nio/charset/UnsupportedCharsetException.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/util/ImmutableCollections$AbstractImmutableList.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/util/ImmutableCollections$List12.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/util/ImmutableCollections$ListItr.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/util/ImmutableCollections$ListN.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/util/ImmutableCollections.class changed
+Binary file runtime-calibration/vulnerable-security/verifier/work/models/java/util/List.class changed

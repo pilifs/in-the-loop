@@ -1,0 +1,24 @@
+jvmcontract: /home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract
+variant: the fixture recipe plus javac -parameters: not Phase 0's bytes, the recipe asked of the coordinator under the runtime brief's Progress (VF-024)
+vulnerable-security: expected refuted, verifier exited exit 1, verdict violation, scope constructed-fixture: as expected
+  ✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:
+    allowed(code=97)
+      outcome: true
+    (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)
+  
+  The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+fixed-security: expected established, verifier exited exit 0, verdict verified, scope constructed-fixture: as expected
+  ✓ fixture.Gate#allowed(int) satisfies `!result || (code != 65 && code != 97)` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)
+mutant-security: expected refuted, verifier exited exit 1, verdict violation, scope constructed-fixture: as expected
+  ✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:
+    allowed(code=65)
+      outcome: true
+    (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)
+  
+  The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+preservation: expected established, verifier exited exit 0, verdict verified, scope constructed-fixture: as expected
+  ✓ fixture.Gate#allowed(int) behaves as before on every input where !(code == 97) (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)
+    not vacuous: allowed(code=20) reaches the calls
+regex-probe: expected unresolved, verifier exited exit 1, verdict unverifiable, scope constructed-fixture: as expected
+  ✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter field has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)
+ok (runtime-calibration/calibration.json)

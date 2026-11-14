@@ -18,15 +18,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
-### VF-024: example-targets runtime R3: `run_verifier` on the fixture's five proof tasks gets no expected verdict from any of them
-
-- **Status**: open
-- **Raised**: 2026-11-14 on `vm-1`, job `20261114-162937-example-targets-runtime-r3-run-verifier` (at `b397033c198f`, failed in 45 s; build and the integration-contract step passed: 16 tests, 8 skipped on the workflow stream's Phase 0 stubs).
-- **Found**: step 2, the calibration, reports `NOT ok`. (1) `vulnerable-security`, `fixed-security` and `mutant-security` (expected refuted, established, refuted) all exit 1 with verdict `unverifiable`: `fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name "code"; the names are arg0, result`. The property names the parameter `code`, but the compiled fixture has no parameter names (`arg0`): either compile with `-parameters`/debug info, or write the property over `arg0`. (2) `preservation` (expected established): `jvmcontract equivalence --before prepare/before/before.jar --after prepare/after/after.jar ...` exits 2 with `jvmcontract: Not a directory (os error 20)`, so the command is probably given a jar where it wants a directory of classes (or the reverse). Its `--unchanged-unless code == 97` has the same parameter-name problem. (3) `regex-probe` (expected unresolved): `unverifiable`, as `java.lang.String` parameters are not supported by the symbolic verifier ("a value adapter is built for it, but this check doesn't take one yet"); that may be the expected `unresolved` and only the harness's expectation of the verdict word is off.
-- **Needs**: the runtime loop (`llm-dlc/loops/example-targets-runtime.md`, R3), which owns the fixture's task arguments and `run_verifier`: fix the parameter names and the `equivalence` inputs, and decide how `regex-probe`'s `unverifiable` maps to `unresolved`. Not a pipeline problem; nothing was changed in the job.
-- **Tracked in**: [`llm-dlc/loops/example-targets-runtime.md`](../llm-dlc/loops/example-targets-runtime.md) (R3), not yet recorded in its Progress (the loop is running; edit of its brief left to it).
-- **Closes when**: the job, resubmitted at a fixing commit, passes (calibration `ok`).
-
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 
 - **Status**: closed by job `20261108-141443-vf-023-rerun-the-conformance-corpus-unde` (at `13f3e9a0dac8`, passed 2026-11-08 on `vm-1`, 23m18s, peak 1.8 GiB: the `auto --confirm` conformance corpus step, after a JBMC refutation through a stub that doesn't reproduce was made no verdict under `--confirm`). Its one output, `lib/target/conformance-confirm.log`, was not applied (the file changed since the commit); it is a build log, so nothing is lost.
@@ -266,6 +257,17 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+
+### VF-024: example-targets runtime R3: `run_verifier` on the fixture's five proof tasks gets no expected verdict from any of them
+
+- **Status**: closed (job `20261114-164239-example-targets-runtime-r3-after-vf-024`, 2026-11-14)
+- **Raised**: 2026-11-14 on `vm-1`, job `20261114-162937-example-targets-runtime-r3-run-verifier` (at `b397033c198f`, failed in 45 s; build and the integration-contract step passed: 16 tests, 8 skipped on the workflow stream's Phase 0 stubs).
+- **Found**: step 2, the calibration, reports `NOT ok`. (1) `vulnerable-security`, `fixed-security` and `mutant-security` (expected refuted, established, refuted) all exit 1 with verdict `unverifiable`: `fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name "code"; the names are arg0, result`. The property names the parameter `code`, but the compiled fixture has no parameter names (`arg0`): either compile with `-parameters`/debug info, or write the property over `arg0`. (2) `preservation` (expected established): `jvmcontract equivalence --before prepare/before/before.jar --after prepare/after/after.jar ...` exits 2 with `jvmcontract: Not a directory (os error 20)`, so the command is probably given a jar where it wants a directory of classes (or the reverse). Its `--unchanged-unless code == 97` has the same parameter-name problem. (3) `regex-probe` (expected unresolved): `unverifiable`, as `java.lang.String` parameters are not supported by the symbolic verifier ("a value adapter is built for it, but this check doesn't take one yet"); that may be the expected `unresolved` and only the harness's expectation of the verdict word is off.
+- **Needs**: the runtime loop (`llm-dlc/loops/example-targets-runtime.md`, R3), which owns the fixture's task arguments and `run_verifier`: fix the parameter names and the `equivalence` inputs, and decide how `regex-probe`'s `unverifiable` maps to `unresolved`. Not a pipeline problem; nothing was changed in the job.
+- **Tracked in**: [`llm-dlc/loops/example-targets-runtime.md`](../llm-dlc/loops/example-targets-runtime.md) (R3), not yet recorded in its Progress (the loop is running; edit of its brief left to it).
+- **Closed by**: `20261114-164239-example-targets-runtime-r3-after-vf-024` on `vm-1`, passed in 44 s: all five calibration tasks give their expected verdict (`regex-probe` `unverifiable` is accepted as the expected `unresolved`), integration contract 16 tests OK (8 skipped).
+- **Closes when**: the job, resubmitted at a fixing commit, passes (calibration `ok`).
 
 ### VF-001: JBMC verdicts the JVM contradicts, passed through by `--engine auto`
 

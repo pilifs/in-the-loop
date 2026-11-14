@@ -1,0 +1,166 @@
+{
+  "verdict": "verified",
+  "target": "fixture.Gate#allowed(int)",
+  "domain": "code: int",
+  "counterexample": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "verifier/work/harness/EquivalenceHarness.java",
+  "findings": [],
+  "output": "✓ fixture.Gate#allowed(int) behaves as before on every input where !(code == 97) (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: allowed(code=20) reaches the calls\n",
+  "work": "verifier/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.000897101,
+    "properties": 1,
+    "unwind": 16,
+    "max_array_length": 8,
+    "stage": null,
+    "native": {
+      "paths": 3,
+      "merges": 0,
+      "solver_calls": 2,
+      "solving_seconds": 0.000011912,
+      "gates_evaluated": 89,
+      "evaluating_seconds": 4.769e-6,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 91,
+      "clauses": 175,
+      "seconds": 0.000217377,
+      "loading_seconds": 0.000019978,
+      "decoding_seconds": 0.000014427,
+      "encoding_seconds": 0.000032081,
+      "witness_seconds": 0.0
+    },
+    "gap_mode": "strict",
+    "deadline_seconds": 600.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 600.0,
+        "seconds": 0.0,
+        "ended": "verified",
+        "ending": "verified",
+        "phases": {
+          "loading": 0.0,
+          "lowering": 0.0,
+          "symbolic": 0.0,
+          "encoding": 0.0,
+          "solving": 0.0,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 91,
+          "clauses": 175
+        }
+      },
+      {
+        "checker": "native",
+        "purpose": "probe",
+        "stage": null,
+        "budget_seconds": 599.999,
+        "seconds": 0.0,
+        "ended": "violation",
+        "ending": "counterexample",
+        "phases": {
+          "loading": 0.0,
+          "lowering": 0.0,
+          "symbolic": 0.0,
+          "encoding": 0.0,
+          "solving": 0.0,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 130,
+          "clauses": 323
+        }
+      }
+    ],
+    "phases": {
+      "seconds": 0.009,
+      "setup": 0.0,
+      "harness": 0.0,
+      "gaps": 0.0,
+      "contracts": 0.0,
+      "runs": 0.0,
+      "replay": 0.0,
+      "jvm": 0.0,
+      "other": 0.009
+    }
+  },
+  "stated": {
+    "kind": "regression",
+    "domain": {
+      "parameters": [
+        {
+          "name": "code",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        }
+      ],
+      "shared_arrays": false,
+      "text": "code: int"
+    },
+    "assumptions": [
+      {
+        "kind": "intended-inputs",
+        "text": "!(code == 97): the input is not among those the change is meant for",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result, equal in both versions",
+      "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+    },
+    "bounds": {
+      "unwind": 16,
+      "max_array_length": null,
+      "complete": true
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+      "classes": 17,
+      "jdk": "25.0.5"
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null,
+    "vacuity": {
+      "status": "non-vacuous",
+      "basis": "probe",
+      "text": "Some input in the domain reaches the calls: the tool's own checker found allowed(code=20).",
+      "witness": "allowed(code=20)"
+    }
+  }
+}

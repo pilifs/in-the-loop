@@ -1,0 +1,303 @@
+{
+  "task": "vulnerable-security",
+  "record": {
+    "kind": "verifier",
+    "revision": "before",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+      "prove",
+      "fixture.Gate#allowed(int)",
+      "--classes",
+      "prepare/before/before.jar",
+      "--assert",
+      "!result || (code != 65 && code != 97)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.016,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+      "command": "prove",
+      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jdkFeature": "25",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "fixture.Gate#allowed(I)Z",
+        "revisions": {
+          "before": {
+            "commit": "fixture:gate/before",
+            "loadedFrom": "before.jar",
+            "classSha256": "97fafe85c6aa177da2ccbbeac378bc49c82d2c792fbb401fe6872c5ee7990456",
+            "origin": "built from gate/before by the fixture recipe",
+            "parameters": {
+              "names": [
+                "code"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "before": [
+          {
+            "path": "before.jar",
+            "sha256": "f6d24f4fc258677b1235689e4eed4902956d38f3c610b911b7c6ae1b54103c25",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "before": "fixture:gate/before"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "before": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "fixture.Gate#allowed(int)",
+            "--classes",
+            "prepare/before/before.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-before.stdout",
+          "stderr": "verifier/probe-before.stderr",
+          "gaps": []
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "violation",
+        "target": "fixture.Gate#allowed(int)",
+        "domain": "code: int",
+        "assume": null,
+        "assert": "!result || (code != 65 && code != 97)",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": {
+          "input": "allowed(code=97)",
+          "outcome": "true",
+          "values": [
+            "97"
+          ],
+          "shrink_runs": 8,
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 97
+            }
+          ],
+          "call": {
+            "class": "fixture.Gate",
+            "class_file": "fixture/Gate.class",
+            "classes": "after",
+            "method": "allowed",
+            "descriptor": "(I)Z",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 97,
+                "from": "code"
+              }
+            ]
+          }
+        },
+        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "property-violated",
+            "message": "Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "✗ Property of fixture.Gate#allowed(int) violated: `!result || (code != 65 && code != 97)`:\n  allowed(code=97)\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.000809106,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": "[-100000:100000]",
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 5,
+            "solving_seconds": 2.6209e-05,
+            "gates_evaluated": 89,
+            "evaluating_seconds": 5.671e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 282,
+            "clauses": 834,
+            "seconds": 0.000372118,
+            "loading_seconds": 8.1013e-05,
+            "decoding_seconds": 1.3155e-05,
+            "encoding_seconds": 0.000102823,
+            "witness_seconds": 6.301e-06
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 600.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 600.0,
+              "seconds": 0.0,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.0,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 282,
+                "clauses": 834
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.01,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.0,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.009
+          }
+        },
+        "replay": {
+          "by": "interpreter",
+          "reproduced": true
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against !result || (code != 65 && code != 97)",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+            "classes": 17,
+            "jdk": "25.0.5"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-164239-example-targets-runtime-r3-after-vf-024/runtime-calibration/vulnerable-security"
+  }
+}
