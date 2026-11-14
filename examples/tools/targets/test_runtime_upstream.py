@@ -504,7 +504,8 @@ class MutantRoutesTest(UpstreamCase):
                          "the recompiled class is build_fixtures.py's own mutant class: same --release, same flags")
         self.assertEqual(runtime.runtime_jar.read_class(work / "mutant/gate-1.1.jar", "fixture/RegexGate"),
                          runtime.runtime_jar.read_class(jars / "after.jar", "fixture/RegexGate"), "the rest is the base's")
-        self.assertEqual((prepared.toolchain["mutant"]["release"], prepared.toolchain["mutant"]["flags"]), ("21", []))
+        self.assertEqual((prepared.toolchain["mutant"]["release"], prepared.toolchain["mutant"]["flags"]),
+                         ("21", ["-parameters"]), "the base's classes carry MethodParameters, so the recompile keeps them")
         self.assertEqual([(c["class"], c["identical"]) for c in prepared.toolchain["mutant"]["unpatchedRecompile"]["classes"]],
                          [("fixture/Gate", True)], "the same javac and flags give the base's own bytes back, unpatched")
         self.assertEqual(prepared.source["checkout"]["commit"], self.commits["after"])

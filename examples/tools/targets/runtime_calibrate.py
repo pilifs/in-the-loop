@@ -16,9 +16,9 @@ and java.util.regex is named in regex-probe's record (its refusal, or its capabi
 1 otherwise. ATTEMPT/calibration.json says what happened.
 
 --fixture-javac-flag adds a javac flag to the fixture recipe both preparation and build_fixtures.py would use, and
-says so in every preparation's recipe and in calibration.json. Phase 0's recipe records no parameter names, so the
-verifier calls `code` arg0 and the claims, which say `code`, aren't well-formed for those bytes (VF-024); a run with
-`-parameters` is the calibration of the recipe the coordinator is asked for under Progress, not of Phase 0's bytes.
+says so in every preparation's recipe and in calibration.json. The recipe's own JAVAC_FLAGS have been `-parameters`
+since the coordinator's Phase 5 (VF-024): without it the verifier calls `code` arg0, and the claims, which say `code`,
+aren't well-formed for those bytes. A run with a further flag calibrates a recipe other than the fixture's.
 
 Reading the verdict here is this script's check of R3's plumbing against the fixture's authored expectations, as
 contract A5 reads it: no claim is decided here, and ingestion is what judges records in the route. Until the
@@ -131,15 +131,14 @@ def with_javac_flags(flags):
     """Add `flags` to the fixture recipe runtime.prepare() builds with (for the rest of this process); what the
     calibration is then of, in words."""
     if not flags:
-        return "Phase 0's fixture recipe, as build_fixtures.py defines it"
+        return "the fixture recipe, as build_fixtures.py defines it"
     recipe = runtime._fixture_recipe
 
     def flagged():
         r = recipe()
         return {**r, "flags": [*r.get("flags", []), *flags]}
     runtime._fixture_recipe = flagged
-    return (f"the fixture recipe plus javac {' '.join(flags)}: not Phase 0's bytes, the recipe asked of the coordinator "
-            "under the runtime brief's Progress (VF-024)")
+    return f"the fixture recipe plus javac {' '.join(flags)}: not the bytes build_fixtures.py builds"
 
 
 def main(argv=None):

@@ -5,10 +5,12 @@ deterministically: the same JDK gives the same bytes. Offline; nothing is fetche
   python3 examples/tools/targets/fixtures/build_fixtures.py OUT    prints the manifest (JSON) and writes OUT/manifest.json
 
 Each revision (before: vulnerable, after: fixed, mutant: a constructed mutation of after) is one JAR of its Gate and
-the unchanged RegexGate, compiled with --release 21 so it runs on JDK 21 and 25. The adapter is compiled separately
-against each revision's JAR (adapter-before.jar, adapter-after.jar, adapter-mutant.jar), never into it, and the driver
-once, against the adapter. Every JAR is made with a fixed timestamp and its entries in sorted order. The manifest
-records each JAR's sha256, the JDK (`javac -version`, `java -version`), and the mutant's patch hash against after.
+the unchanged RegexGate, compiled with --release 21 so it runs on JDK 21 and 25, and with -parameters, so the classes
+record the parameter names (`code`, `field`) the sidecar's and the claims' predicates use. The adapter is compiled
+separately against each revision's JAR (adapter-before.jar, adapter-after.jar, adapter-mutant.jar), never into it,
+and the driver once, against the adapter. Every JAR is made with a fixed timestamp and its entries in sorted order. The manifest
+records each JAR's sha256, the javac flags, the JDK (`javac -version`, `java -version`), and the mutant's patch hash
+against after.
 """
 
 import difflib
@@ -25,6 +27,7 @@ GATE = HERE / "gate"
 RELEASE = "21"
 DATE = "2026-01-01T00:00:00Z"
 REVISIONS = ("before", "after", "mutant")
+JAVAC_FLAGS = ("-parameters",)  # MethodParameters, so a claim's `code` is the class's own name, not arg0 (VF-024)
 
 
 def sha256(path):
@@ -40,7 +43,7 @@ def tool(name):
 
 def javac(sources, out, classpath=None):
     out.mkdir(parents=True, exist_ok=True)
-    cmd = [tool("javac"), "--release", RELEASE, "-encoding", "UTF-8", "-implicit:none", "-d", str(out)]
+    cmd = [tool("javac"), "--release", RELEASE, "-encoding", "UTF-8", "-implicit:none", *JAVAC_FLAGS, "-d", str(out)]
     if classpath:
         cmd += ["-cp", classpath]
     subprocess.run(cmd + [str(s) for s in sorted(sources)], check=True, capture_output=True, text=True)
@@ -81,7 +84,7 @@ def build(out):
     mutant = (GATE / "mutant/fixture/Gate.java").read_text().splitlines(keepends=True)
     patch = "".join(difflib.unified_diff(after, mutant, "after/fixture/Gate.java", "mutant/fixture/Gate.java"))
     manifest = {
-        "release": RELEASE, "date": DATE, "javac": version("javac"), "java": version("java"),
+        "release": RELEASE, "date": DATE, "flags": list(JAVAC_FLAGS), "javac": version("javac"), "java": version("java"),
         "jars": {name: {"path": path.name, "sha256": sha256(path)} for name, path in sorted(jars.items())},
         "mutant": {"base": "after", "patchSha256": hashlib.sha256(patch.encode()).hexdigest()},
     }

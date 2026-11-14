@@ -655,6 +655,31 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `build_fixtures.py`, `examples/index.json`, the six sidecars' mutants, `result.schema.json`).
   - **Next**: Phase 5 step 1's requests, in the order above, each a cycle with its reproducer: first the fixture
     recipe, which makes contract A5 pass, then the hosts.
+- 2026-11-14, **Phase 5 step 1, request 1 done: the fixture recipe records parameter names**, and contract A5
+  passes.
+  - **Reproducer**: on the merge, `test_targets_contract.py`'s A5 failed: `fixed-security` came back `unresolved`,
+    not `established`, because the claims say `code` and the classes recorded only `arg0`.
+  - **The fix**: `build_fixtures.py` has `JAVAC_FLAGS = ("-parameters",)` and records the flags in its manifest.
+    `runtime.py`'s fixture route already read them; its toolchain record's `build.flags` now lists them too, where it
+    used to omit them. `make_records.py` remade `records/`: every fixture JAR's sha256 changed, and nothing else did.
+    The controls' outputs and oracle verdicts are the same on JDK 21 and 25, and the gap scan names the same three
+    regex calls.
+  - **Tests**: three runtime tests had pinned the old bytes, and now expect the new ones:
+    - the verifier's scope says `code` from `MethodParameters`;
+    - the flags test now builds its no-names variant with the flags taken away, and checks that variant's `arg0`
+      scope, which had lost its only test;
+    - the published-route mutant recompiles with `-parameters`, since it copies the base classes' `MethodParameters`.
+      It still gives `build_fixtures.py`'s own mutant bytes.
+  - **Documentation**: `runtime_calibrate.py`'s docstring is updated. The fixtures README now has the flag, the
+    remade records and a `claims/` row, which covers request 10's README item.
+  - **Checked**: `example-targets-integration.sh` exits 0:
+    - the contract's 16 tests all pass and none stops at a stub, so the fixture's A0–A7 rows pass;
+    - the targets suite (181), `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan` all pass.
+  - **A caveat**: the contract's A5 proofs ran on `lib/target/release/jvmcontract` (sha256 `7462d0c9…`), built on
+    2026-11-08 before `yrlkzqvw`, as the fixtures README says. Tier A's A5 proper is example 105's calibration
+    (Phase 5 step 2), and it runs as a job, which builds its own binary from `lib/`.
+  - **Next**: request 2, the download hosts in `runtime_maven.py`, with a test that other hosts are still refused;
+    then P3 (307)'s pinned upstream build, as a job.
 - Status: working
 
 ## Loop settings

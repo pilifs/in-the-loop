@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 95, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 19:46 UTC |
-| Prompts | 2,214 |
-| Model calls | 21,228 |
-| Tool calls | 22,203 (383 failed) |
-| Compactions | 340 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 20:00 UTC |
+| Prompts | 2,219 |
+| Model calls | 21,258 |
+| Tool calls | 22,233 (383 failed) |
+| Compactions | 341 |
 | Subagents | 16 |
-| Tokens written | 21,907,430 |
-| Tokens read | 3,306,938,983 (97.9% from cache) |
-| Commits with a trace | 647 |
-| Log snapshots | 797 (1692.2 MB gzipped, 732 uploaded) |
+| Tokens written | 21,922,771 |
+| Tokens read | 3,309,613,594 (97.9% from cache) |
+| Commits with a trace | 648 |
+| Log snapshots | 798 (1692.9 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -121,7 +121,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | ended | 1 min | `claude-opus-5-5` | 1 | 13 | 13 | 0 | 0 | 61,068 | 3 |
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
-| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 1 h 21 min | `claude-opus-5-5` | 15 | 101 | 99 | 6 | 1 | 161,517 | 8 |
+| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 1 h 35 min | `claude-opus-5-5` | 20 | 131 | 129 | 6 | 2 | 164,466 | 9 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -225,15 +225,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 5,386 | 26 | 35,225 | 662,041 | 94.9% | 129 |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 55,972 | 220 | 250,459 | 8,339,225 | 97.1% | 153 |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 71,313 | 280 | 345,630 | 10,918,605 | 96.9% | 158 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 19,474 | 87.7% | 95 |
-| `Read` | 1,036 | 4.7% | 45 |
-| `Edit` | 807 | 3.6% | 45 |
+| `Bash` | 19,502 | 87.7% | 95 |
+| `Read` | 1,037 | 4.7% | 45 |
+| `Edit` | 808 | 3.6% | 45 |
 | `Write` | 512 | 2.3% | 41 |
 | `ToolSearch` | 125 | 0.6% | 32 |
 | `Monitor` | 98 | 0.4% | 36 |
@@ -901,6 +901,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 645 | change `kxqozyus` | Record session traces | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)) |
 | 646 | change `svrtnrlo` | Record session traces | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)) |
 | 647 | change `zvlkvmyx` | example-targets reconcile steps 5-6: the four streams' Progress folded into the brief, their workspaces forgotten | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/4ee2c3259b8f9bff8a61d56689a143c35dc81eaf6186a088c97c80c7b81e95ca.jsonl.gz)) |
+| 648 | change `nrtqqxqx` | example-targets Phase 5 step 1: the fixture recipe compiles with -parameters, so contract A5 passes | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886.jsonl.gz)) |
 
 ## Logs
 
@@ -1002,7 +1003,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 1 | 0 | 0.1 MB | `d7c8b8e9c4a0`, not uploaded |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 8 | 0 | 1.7 MB | `4ee2c3259b8f`, not uploaded |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 9 | 0 | 2.4 MB | `9b908c95f7ad`, not uploaded |
 
 ## Session notes
 

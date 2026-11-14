@@ -1077,8 +1077,8 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(scope["assumptions"], ["stated for the test"])
         self.assertIn("not on the verifier's classpath", scope["adapter"])
         names = scope["revisions"]["after"]["parameters"]
-        self.assertEqual(names["names"], ["arg0"], "Phase 0's recipe records no parameter names")
-        self.assertIn("records no parameter names", names["recordedIn"])
+        self.assertEqual(names, {"names": ["code"], "recordedIn": "MethodParameters"},
+                         "the fixture recipe compiles with -parameters, so the claim's name is the class's own")
         self.assertEqual(ids["probe"]["after"]["gaps"][0]["call"], GAPS_OUT["gaps"][0]["call"])
         self.assertEqual(ids["probe"]["after"]["argv"][-1], "--json")
         stored = json.loads((self.attempt / "verifier" / runtime.VERIFIER).read_text())
@@ -1187,12 +1187,18 @@ class VerifierTest(FixtureCopy):
         self.assertFalse((self.attempt / "outside.class").exists())
 
     def test_the_recipes_javac_flags_reach_the_build_and_the_scope_records_the_names_the_class_has(self):
-        """A recipe that records parameter names (javac -parameters, asked of Phase 0's recipe for VF-024) builds
-        other bytes, a different identity, and the verifier's scope shows the names a claim may use."""
-        plain = runtime.prepare(verifier_plan(self.folder), "after", self.work / "plain")
+        """The recipe's javac flags (build_fixtures.py's JAVAC_FLAGS, -parameters since VF-024) reach the build: without
+        them the bytes differ, a different identity, and the verifier's scope shows the names a claim may use."""
         recipe = runtime._fixture_recipe()
-        with mock.patch.object(runtime, "_fixture_recipe", return_value={**recipe, "flags": ["-parameters"]}):
-            prepared, record = self.verify(verifier_plan(self.folder))
+        self.assertEqual(recipe["flags"], ["-parameters"])
+        with mock.patch.object(runtime, "_fixture_recipe", return_value={**recipe, "flags": []}):
+            plain = runtime.prepare(verifier_plan(self.folder), "after", self.work / "plain/prepare/after")
+        unnamed = runtime.run_verifier(verifier_plan(self.folder), {"after": plain}, self.work / "plain/verifier")
+        self.assertIsInstance(unnamed, interfaces.ExecutionRecord, unnamed)
+        names = unnamed.identities["scope"]["revisions"]["after"]["parameters"]
+        self.assertEqual(names["names"], ["arg0"], "without -parameters the class records no names")
+        self.assertIn("records no parameter names", names["recordedIn"])
+        prepared, record = self.verify(verifier_plan(self.folder))
         self.assertIn("-parameters", (self.attempt / "prepare/after/logs/javac-original.log").read_text().splitlines()[0])
         self.assertEqual(prepared["after"].source["recipe"]["flags"], ["-parameters"])
         self.assertNotEqual(prepared["after"].source["target"]["classSha256"], plain.source["target"]["classSha256"])

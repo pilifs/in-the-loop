@@ -63,8 +63,7 @@ COMPILE_TIMEOUT = 300
 
 def _fixture_recipe():
     """build_fixtures.py's recipe constants (the fixture route builds with it): its --release, fixed JAR date, and
-    any further javac flags (`JAVAC_FLAGS`, which Phase 0's recipe doesn't define yet: see Progress on parameter
-    names)."""
+    any further javac flags (`JAVAC_FLAGS`: `-parameters`, so the classes record the names a claim uses)."""
     spec = importlib.util.spec_from_file_location("targets_build_fixtures", HERE / "fixtures/build_fixtures.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -549,7 +548,8 @@ def _builder(source, workdir):
     recipe = source["recipe"]
     toolchain = {"jdk": runtime_jdk.identity(home),
                  "build": {"tool": "javac", "release": recipe["release"], "date": recipe["date"],
-                           "flags": ["--release", recipe["release"], "-encoding", "UTF-8", "-implicit:none"],
+                           "flags": ["--release", recipe["release"], "-encoding", "UTF-8", "-implicit:none",
+                                     *recipe.get("flags", ())],
                            "jar": f"jar --date={recipe['date']} --no-manifest, entries sorted"}}
     return _Build(workdir, home, recipe), toolchain
 
