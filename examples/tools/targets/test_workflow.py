@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Tests of workflow.py, owned by the workflow stream with it: task planning (W1) on a copy of Phase 0's fixture and on
-sidecars changed from it. ingest() and handoff() are still Phase 0's stubs, which fail closed with the named
-Unsupported result; their tests are rewritten as each stub is replaced.
+"""Tests of workflow.py, owned by the workflow stream with it: task planning and the readiness milestones (W1), on a
+copy of Phase 0's fixture and on sidecars changed from it. ingest() and handoff() are still Phase 0's stubs, which fail
+closed with the named Unsupported result; their tests are rewritten as each stub is replaced.
 
   python3 examples/tools/targets/test_workflow.py
 """
@@ -391,6 +391,152 @@ class MutantTest(Fixture):
         target["preparation"]["build"] = self.BUILD
         target["identity"]["role"] = "control"
         self.refused("mutant-security", target, stage="prepare", says="(the base of a mutant)")
+
+
+class ReadinessTest(Fixture):
+    """W1's readiness: independent milestones per task, from the sidecar, its files and the folder's receipts, and
+    the summaries derived from them. Receipts here are written by hand in the shape ingestion leaves (a format-2
+    result.json and plan.json beside it); W2's tests read readiness over receipts it publishes."""
+
+    def record(self, task_id, attempt="1", execution="completed", expectation="yes", status=None, filed=None):
+        plan = workflow.plan_task(self.folder, self.example, self.target, task_id)
+        where = self.folder / "receipts" / (filed or task_id) / attempt
+        where.mkdir(parents=True)
+        document = {"format": 2, "claim": {"id": "0" * 16, "target": {
+            "task": task_id, "dependencies": [{"revision": r, "position": 0, "role": "original", "sha256": "0" * 64}
+                                              for r in plan.revisions]}},
+            "attempt": {"id": attempt, "execution": execution},
+            "conclusion": {"status": status, "expectation": expectation}}
+        (where / "result.json").write_text(json.dumps(document))
+        (where / "plan.json").write_text(json.dumps(workflow.plan_record(plan)))
+        return where
+
+    def readiness(self, target=None):
+        with offline():
+            return workflow.readiness(self.folder, self.example, target or self.target)
+
+    def reached(self, value, task_id):
+        return {k: v["reached"] for k, v in value["tasks"][task_id]["milestones"].items()}
+
+    def test_without_receipts_every_task_is_partial_and_says_why(self):
+        before = tree(self.folder)
+        value = self.readiness()
+        self.assertEqual(tree(self.folder), before, "readiness wrote into the example's folder")
+        self.assertEqual(value["summary"], "partial")
+        self.assertEqual({r["summary"] for r in value["tasks"].values()}, {"partial"})
+        fixed = self.reached(value, "fixed-security")
+        self.assertEqual(fixed, {"provenanceLocked": True, "artifactsPrepared": False, "oracleValidated": False,
+                                 "claimFrozen": True, "capabilityProbed": False, "attemptRecorded": False})
+        self.assertEqual(tuple(fixed), workflow.MILESTONES)
+        # The recorded gap scan is an observed probe; a replay has no claim to freeze and no verifier to probe.
+        self.assertTrue(self.reached(value, "regex-probe")["capabilityProbed"])
+        replay = self.reached(value, "replay")
+        self.assertEqual((replay["claimFrozen"], replay["capabilityProbed"]), (None, None))
+        self.assertIn("no current validated replay", value["tasks"]["fixed-security"]["milestones"]["oracleValidated"]["evidence"])
+
+    def test_replays_and_attempts_raise_the_milestones_and_a_capability_gap_blocks(self):
+        self.record("replay")
+        self.record("mutant-replay")
+        value = self.readiness()
+        self.assertEqual(value["tasks"]["replay"]["summary"], "scaffolded")
+        self.assertEqual(value["tasks"]["fixed-security"]["summary"], "scaffolded", "not probed yet")
+        self.assertEqual(value["tasks"]["regex-probe"]["summary"], "blocked")
+        self.assertEqual(value["summary"], "blocked")
+        self.record("fixed-security", status="established")
+        value = self.readiness()
+        fixed = value["tasks"]["fixed-security"]
+        self.assertEqual(fixed["summary"], "executable")
+        self.assertEqual(fixed["receipts"], ["receipts/fixed-security/1/result.json"])
+        self.assertTrue(all(self.reached(value, "fixed-security").values()))
+        # A refuted expectation is no milestone: readiness never reads the conclusion as a verdict.
+        self.record("vulnerable-security", status="refuted", expectation="no")
+        self.assertEqual(self.readiness()["tasks"]["vulnerable-security"]["summary"], "executable")
+
+    def test_a_replay_that_didnt_complete_or_match_validates_nothing(self):
+        self.record("replay", execution="timed-out", expectation="not-evaluable")
+        self.record("replay", attempt="2", expectation="no")
+        value = self.readiness()
+        self.assertFalse(self.reached(value, "fixed-security")["oracleValidated"])
+        self.assertTrue(self.reached(value, "fixed-security")["artifactsPrepared"])
+        self.assertEqual(value["tasks"]["replay"]["summary"], "partial")
+        self.assertEqual(len(value["tasks"]["replay"]["receipts"]), 2, "both attempts kept and listed")
+
+    def test_a_changed_claim_adapter_or_patch_leaves_old_receipts_stale(self):
+        self.record("replay")
+        self.record("mutant-replay")
+        self.record("fixed-security")
+        self.assertEqual(self.readiness()["tasks"]["fixed-security"]["summary"], "executable")
+        claim = self.folder / "claims/gate-security.json"
+        claim.write_text(claim.read_text() + "\n")
+        fixed = self.readiness()["tasks"]["fixed-security"]
+        self.assertEqual(fixed["summary"], "scaffolded")
+        self.assertIn("stale or unreadable: receipts/fixed-security/1/result.json",
+                      fixed["milestones"]["attemptRecorded"]["evidence"])
+        adapter = self.folder / self.target["preparation"]["adapters"][0]
+        adapter.write_text(adapter.read_text() + "\n")
+        value = self.readiness()
+        self.assertFalse(self.reached(value, "fixed-security")["artifactsPrepared"])
+        self.assertFalse(self.reached(value, "replay")["attemptRecorded"])
+
+    def test_a_changed_mutant_patch_unlocks_its_provenance(self):
+        target = copy.deepcopy(self.target)
+        (self.folder / "controls").mkdir()
+        (self.folder / "controls/mutant.patch").write_text("--- a\n+++ b\n")
+        target["history"]["revisions"]["mutant"] = {"mutant": {
+            "base": "after", "patch": "controls/mutant.patch", "sha256": "0" * 64, "description": "drop the check"}}
+        value = self.readiness(target)
+        mutant = value["tasks"]["mutant-security"]["milestones"]["provenanceLocked"]
+        self.assertFalse(mutant["reached"])
+        self.assertIn("a changed mutant is a different control", mutant["evidence"])
+        self.assertTrue(self.reached(value, "fixed-security")["provenanceLocked"])
+
+    def test_an_unreadable_or_misfiled_receipt_never_counts(self):
+        self.record("replay", filed="mutant-replay")
+        broken = self.folder / "receipts/replay/2"
+        broken.mkdir(parents=True)
+        (broken / "result.json").write_text("{")
+        old = self.folder / "receipts/replay/3"
+        old.mkdir(parents=True)
+        (old / "result.json").write_text(json.dumps({"verdict": "verified"}))
+        bare = self.record("replay", attempt="4")
+        (bare / "plan.json").unlink()
+        value = self.readiness()
+        self.assertFalse(self.reached(value, "replay")["attemptRecorded"])
+        self.assertFalse(self.reached(value, "replay")["artifactsPrepared"])
+        problems = {u["path"]: u["problem"] for u in value["unreadable"]}
+        self.assertEqual(len(problems), 4)
+        self.assertIn("filed under 'mutant-replay'", problems["receipts/mutant-replay/1/result.json"])
+        self.assertIn("not a format-2 receipt", problems["receipts/replay/3/result.json"])
+        self.assertIn("no plan.json", problems["receipts/replay/4/result.json"])
+
+    def test_predicted_build_and_provenance_blockers_never_block_a_proof(self):
+        self.record("replay")
+        self.record("mutant-replay")
+        target = copy.deepcopy(self.target)
+        target["handoff"]["blockers"][0]["observed"] = False
+        regex = workflow.readiness(self.folder, self.example, target)["tasks"]["regex-probe"]
+        self.assertEqual(regex["summary"], "scaffolded", "a predicted gap is a hypothesis until a probe reaches it")
+        self.assertIn("predicted only", regex["milestones"]["capabilityProbed"]["evidence"])
+        target["handoff"]["blockers"][0].update(observed=True, kind="build-or-dependency")
+        self.assertEqual(workflow.readiness(self.folder, self.example, target)["tasks"]["regex-probe"]["summary"],
+                         "partial", "a build blocker leaves the scaffold partial")
+        target["handoff"]["blockers"][0].update(kind="java-semantics", packet="records/missing.json")
+        regex = workflow.readiness(self.folder, self.example, target)["tasks"]["regex-probe"]
+        self.assertEqual(regex["summary"], "scaffolded", "an observed gap whose packet is missing is not evidence")
+        self.assertFalse(regex["blockers"][0]["packetPresent"])
+
+    def test_researched_revisions_and_a_catalogued_case(self):
+        target = copy.deepcopy(self.target)
+        target["identity"]["sourceConfidence"] = "researched"
+        value = self.readiness(target)
+        self.assertEqual(value["summary"], "partial")
+        self.assertIn("not checked against upstream",
+                      value["tasks"]["fixed-security"]["milestones"]["provenanceLocked"]["evidence"])
+        del target["preparation"]
+        value = self.readiness(target)
+        self.assertEqual(value["summary"], "catalogued")
+        self.assertEqual({r["summary"] for r in value["tasks"].values()}, {"catalogued"})
+        self.assertIn("catalogued", value["tasks"]["fixed-security"]["milestones"]["claimFrozen"]["evidence"])
 
 
 class StubsFailClosedTest(unittest.TestCase):

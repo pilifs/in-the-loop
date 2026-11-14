@@ -169,8 +169,33 @@ timebox and the safety rules. Planning and discovery never touch the network.
   shared repository while their trace manifests are only in their own trees: `muqvuqyqpwyz` (runtime R1),
   `pomrmppunkzt` (negative N0) and `rzvwqpqtuumn` (positive's source locks). Commit `zvnrtxsunllx` stands with those 3
   errors and none of its own; they clear at the merge.
-- Next: W1's readiness milestones (provenance locked, artifacts prepared, oracle replay validated, claim frozen,
-  capability probed, attempt recorded) and the summaries derived from them, then W2 ingestion.
+- 2026-11-14, **W1 readiness milestones**: `workflow.readiness(folder, example, target)` and `task_readiness()` derive,
+  offline and read-only, each task's six milestones (`provenanceLocked`, `artifactsPrepared`, `oracleValidated`,
+  `claimFrozen`, `capabilityProbed`, `attemptRecorded`), each reached, not reached or not applicable with its evidence,
+  from the sidecar, its files and the folder's receipts; and a summary per task and per target: catalogued (no
+  preparation), partial (a scaffold milestone missing, or an observed provenance, build, oracle or replay blocker),
+  scaffolded (a reproducible scaffold, proof support not yet probed), executable (probed by a completed current
+  attempt, no observed capability blocker) and blocked (an observed java-semantics, input-construction, verifier-bug or
+  resources blocker on a sound scaffold). None reads a conclusion as a verdict. Provenance needs `sourceConfidence`
+  checked-upstream or reproduced and a plan that isn't refused at `prepare` (a changed mutant patch unlocks it; open
+  `history.unresolved` questions are listed); a revision is prepared when some receipt binds it from the same artifact
+  source and adapter sources; the oracle is validated when a replay task covering the revision has a current attempt
+  that completed with expectation `yes`; a predicted blocker is no probe, nor is an observed one whose packet file is
+  missing. A receipt counts only beside a `plan.json` (`workflow.plan_record()`: the plan, `attempt_inputs()` and
+  their key), so a changed claim file, control, adapter, artifact source or bound makes it stale (listed, never
+  counted); a receipt that isn't JSON, isn't format 2, lacks `plan.json` or is filed under another task is listed as
+  unreadable. W2 writes `plan.json` and sets a replay's expectation to `yes` only when every side replayed and the
+  oracle matched. On the fixture today every task is partial: no receipt exists yet (the recorded controls are Phase
+  0's records, not receipts). Tests: `test_workflow.py` 37 (8 new); the integration script passes (contract 4 pass, 12
+  at stubs; targets suite 77, `test_build.py` 190, `test_pipeline.py` 29).
+- **For the merge** (coordination, for W4): `test_route.py`'s `IndexAndFindTest` (the coordinator's) asserts the
+  index projection's `readiness` is None and that `find.py --readiness blocked` matches nothing, Phase 0's stub
+  behaviour. When W4 projects `readiness()` into `project()`, its stub sidecar (no preparation) derives `catalogued`,
+  and that assertion needs the coordinator's update at the merge; W4 records the exact line then.
+- **Open for W2**: `result.schema.json`'s `claim.target.revisions` takes 40-hex commit SHAs only, and A6 expects the
+  fixture's `before` and `after` there, which have no commit. W2 decides whether an honest content identity fits
+  (the fixture sources' git tree id is 40-hex, but isn't a commit), or records an interface request.
+- Next: W2 ingestion (`ingest`, with `plan.json` beside each receipt), then the readiness tests over its receipts.
 - Status: working
 
 ## Loop settings

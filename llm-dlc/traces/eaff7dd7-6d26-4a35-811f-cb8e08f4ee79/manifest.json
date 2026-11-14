@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.206Z",
-  "ended": "2026-11-14T15:42:16.988Z",
-  "duration_seconds": 930,
+  "ended": "2026-11-14T15:53:38.185Z",
+  "duration_seconds": 1611,
   "stats": {
-    "turns": 10,
-    "api_calls": 63,
-    "tool_calls": 63,
+    "turns": 15,
+    "api_calls": 94,
+    "tool_calls": 92,
     "tool_errors": 1,
-    "compactions": 2,
+    "compactions": 3,
     "peak_context_tokens": 168840,
     "usage": {
-      "input_tokens": 126,
-      "output_tokens": 62694,
-      "cache_read_input_tokens": 6402070,
-      "cache_creation_input_tokens": 280954
+      "input_tokens": 188,
+      "output_tokens": 100685,
+      "cache_read_input_tokens": 9295772,
+      "cache_creation_input_tokens": 413023
     }
   },
   "tools": {
-    "Bash": 56,
-    "Read": 5,
+    "Bash": 84,
+    "Read": 6,
     "Write": 2
   },
   "files_touched": [
@@ -69,24 +69,38 @@
     {
       "index": 2,
       "started": "2026-11-14T15:36:22.958Z",
-      "ended": "2026-11-14T15:42:16.988Z",
+      "ended": "2026-11-14T15:42:33.950Z",
+      "turns": 5,
+      "api_calls": 31,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 25066,
+        "cache_read_input_tokens": 2854479,
+        "cache_creation_input_tokens": 110152
+      },
+      "peak_context_tokens": 121408
+    },
+    {
+      "index": 3,
+      "started": "2026-11-14T15:43:33.114Z",
+      "ended": "2026-11-14T15:53:38.185Z",
       "turns": 4,
       "api_calls": 29,
       "usage": {
         "input_tokens": 58,
-        "output_tokens": 24032,
-        "cache_read_input_tokens": 2616503,
-        "cache_creation_input_tokens": 107029
+        "output_tokens": 36957,
+        "cache_read_input_tokens": 2655726,
+        "cache_creation_input_tokens": 128946
       },
-      "peak_context_tokens": 118285
+      "peak_context_tokens": 142132
     }
   ],
   "log": {
-    "sha256": "9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18",
-    "bytes": 2473466,
-    "lines": 749,
-    "gzip_bytes": 497960,
-    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18.jsonl.gz"
+    "sha256": "8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51",
+    "bytes": 3644664,
+    "lines": 1134,
+    "gzip_bytes": 733986,
+    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -113,6 +127,14 @@
       "summary": "example-targets workflow: record the check errors that are other streams' commits",
       "body": "sync.py check now reports 'session ... has no manifest' for the runtime, negative and positive streams' commits (muqvuqyqpwyz, pomrmppunkzt, rzvwqpqtuumn): it sees them in the shared jj repository, while their trace manifests are only in their own workspaces' trees. The W1 mutant commit zvnrtxsunllx has no error of its own. Recorded under the stream brief's Progress for review, as the cleanup and foundations streams did; the errors clear at the merge. Nothing else changed.",
       "log_sha256": "9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18"
+    },
+    {
+      "change_id": "onssronowxlktmrvtmzxuxumounnxosp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets W1: readiness milestones per task, and the summaries derived from them",
+      "body": "workflow.readiness() and task_readiness() derive, offline and read-only, each task's six readiness milestones (provenance locked, artifacts prepared, oracle replay validated, claim frozen, capability probed, attempt recorded), each reached, not reached or not applicable with its evidence, from the sidecar, its files and the receipts in the example's folder, and a summary per task and per target: catalogued, partial, scaffolded, executable or blocked. None reads a conclusion as a verdict. A receipt counts only beside a plan.json (workflow.plan_record(): the plan, its attempt inputs and their key), so a changed claim file, control, adapter, artifact source or bound leaves earlier receipts stale, listed and never counted; an unreadable, non-format-2 or misfiled receipt is listed as unreadable. A predicted blocker is no probe; an observed build, provenance, oracle or replay blocker leaves the scaffold partial; an observed capability gap on a sound scaffold blocks the task. On the fixture every task is partial today, as no receipt exists yet.\n\nVerified: test_workflow.py 37 tests (8 new) pass; llm-dlc/tools/example-targets-integration.sh exits 0 (contract 4 pass and 12 at stubs or without a built jvmcontract; targets suite 77, test_build.py 190, test_pipeline.py 29). Progress records two coordination points: test_route.py (the coordinator's) asserts the index projection's readiness is None, which W4 will change, and result.schema.json's claim.target.revisions takes commit SHAs only while A6 expects the fixture's revisions there, open for W2.",
+      "log_sha256": "8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51"
     }
   ],
   "logs": {
@@ -120,6 +142,12 @@
       "bytes": 2346043,
       "lines": 705,
       "gzip_bytes": 477280,
+      "url": null
+    },
+    "8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51": {
+      "bytes": 3644664,
+      "lines": 1134,
+      "gzip_bytes": 733986,
       "url": null
     },
     "9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18": {
