@@ -52,11 +52,13 @@ COMPILE_TIMEOUT = 300
 
 
 def _fixture_recipe():
-    """build_fixtures.py's recipe constants (the fixture route builds with it): its --release and fixed JAR date."""
+    """build_fixtures.py's recipe constants (the fixture route builds with it): its --release, fixed JAR date, and
+    any further javac flags (`JAVAC_FLAGS`, which Phase 0's recipe doesn't define yet: see Progress on parameter
+    names)."""
     spec = importlib.util.spec_from_file_location("targets_build_fixtures", HERE / "fixtures/build_fixtures.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return {"release": module.RELEASE, "date": module.DATE}
+    return {"release": module.RELEASE, "date": module.DATE, "flags": list(getattr(module, "JAVAC_FLAGS", ()))}
 
 
 def sha256(path):
@@ -344,7 +346,7 @@ class _Build:
         classes = self.workdir / "classes" / step
         classes.mkdir(parents=True)
         argv = [str(self.home / "bin/javac"), "--release", self.recipe["release"], "-encoding", "UTF-8",
-                "-implicit:none", "-d", str(classes)]
+                "-implicit:none", *self.recipe.get("flags", ()), "-d", str(classes)]
         if classpath:
             argv += ["-cp", ":".join(str(self.workdir / c) for c in classpath)]
         self.run(f"javac-{step}", argv + [str(s) for s in sorted(sources)])
@@ -784,11 +786,55 @@ def _scope(plan, sides):
     return {"label": label, "meaning": SCOPES[label], "method": plan.target,
             "revisions": {r: {"commit": p.commit, "loadedFrom": p.source.get("target", {}).get("loadedFrom"),
                               "classSha256": p.source.get("target", {}).get("classSha256"),
-                              "origin": next((a.origin for a in p.artifacts if a.role == "original"), None)}
-                          for r, (_, p, _) in sides.items()},
+                              "origin": next((a.origin for a in p.artifacts if a.role == "original"), None),
+                              "parameters": _parameters(plan, where, p)}
+                          for r, (where, p, _) in sides.items()},
             "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the "
                        "adapter serves the concrete controls",
             "models": models + stubs, "assumptions": list(plan.claim.get("assumptions") or [])}
+
+
+def _parameters(plan, where, prepared):
+    """The target's parameter names as its loaded class records them, which are the names a claim's expressions can
+    use: from MethodParameters or the LocalVariableTable, else the verifier's arg0, arg1, ..."""
+    cls, name, desc = runtime_jar.parse_target(plan.target)
+    data = runtime_jar.read_class(where / prepared.source["target"]["loadedFrom"], runtime_jar.internal(cls))
+    found = runtime_jar.parameter_names(data, name, desc) if data and desc else None
+    if found is None:
+        return None
+    names, recorded = found
+    return {"names": names, "recordedIn": recorded or "nowhere: the class records no parameter names, so the verifier "
+                                                       "calls them arg0, arg1, ... and a claim naming them otherwise "
+                                                       "is not well-formed for these bytes"}
+
+
+CLASSES = "classes"  # under the verifier's work directory: each side's original JAR, extracted for equivalence
+
+
+def _class_dirs(sides, workdir, attempt):
+    """Each side's original JAR extracted into workdir/classes/<revision> (jvmcontract equivalence takes directories
+    of classes), every entry's bytes as the checked JAR holds them; the record of what was extracted, by revision."""
+    import zipfile
+    out = {}
+    for r, (where, p, arts) in sides.items():
+        jar = next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
+        into = workdir / CLASSES / r
+        into.mkdir(parents=True)
+        count = 0
+        with zipfile.ZipFile(where / jar.path) as z:
+            for info in z.infolist():
+                name = info.filename
+                if info.is_dir():
+                    continue
+                if name.startswith("/") or ".." in Path(name).parts:
+                    raise Refused("verifier", f"revision {r}'s {jar.path} has an entry outside its root: {name!r}")
+                target = into / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(z.read(info))
+                count += 1
+        out[r] = {"dir": into.relative_to(attempt).as_posix(), "from": f"prepare/{r}/{jar.path}", "sha256": jar.sha256,
+                  "entries": count}
+    return out
 
 
 def _verifier_argv(plan, exe, sides, work):
@@ -822,7 +868,7 @@ def _verifier_argv(plan, exe, sides, work):
                                       "equivalence takes one classpath for both",
                           needs="one dependency closure both revisions use, by the same bytes",
                           next="state the pair's shared dependencies, or check each revision as a property task")
-        argv = [exe, "equivalence", "--before", rel(before, original[before]), "--after", rel(after, original[after]),
+        argv = [exe, "equivalence", "--before", f"{work}/{CLASSES}/{before}", "--after", f"{work}/{CLASSES}/{after}",
                 "--target", target]
         argv += [x for a in deps[after] for x in ("--classpath", rel(after, a))]
         if claim.get("allowedChange"):
@@ -890,7 +936,8 @@ def run_verifier(plan, prepared, workdir):
 
     A prove task runs `jvmcontract prove` on its revision's original artifact (`--classes`), its dependencies on the
     classpath in order, with the claim's assume, assert, throws, nullable and may-alias; an equivalence task runs
-    `jvmcontract equivalence` between the pair's original artifacts, `--unchanged-unless` the task's allowed change.
+    `jvmcontract equivalence` between the pair's original artifacts (each JAR extracted into a directory of classes
+    under workdir/classes, as that command takes them, and recorded), `--unchanged-unless` the task's allowed change.
     Both get the plan's `--engine` and `--gaps` (never a default), the claim's bounds, its construction plan and gap
     contracts (each rechecked against the claim's sha256), `--json`, and a work and report directory here. The
     adapter and driver are never on its classpath: they serve the controls, and the verifier calls the selected
@@ -949,6 +996,8 @@ def run_verifier(plan, prepared, workdir):
                               if a.role in ("original", "dependency", "stub")] for r, (_, _, arts) in sides.items()},
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
+        if plan.kind == "equivalence":
+            identities["classes"] = _class_dirs(sides, workdir, attempt)
         identities["probe"] = _probe(exe, sides, java_target(plan.target), env, workdir, attempt)
     except Refused as e:
         if e.stage in CLAIM_STAGES:

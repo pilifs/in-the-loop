@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T16:35:53.318Z",
-  "duration_seconds": 4146,
+  "ended": "2026-11-14T16:46:21.344Z",
+  "duration_seconds": 4774,
   "stats": {
-    "turns": 30,
-    "api_calls": 227,
-    "tool_calls": 236,
+    "turns": 31,
+    "api_calls": 266,
+    "tool_calls": 274,
     "tool_errors": 3,
     "compactions": 6,
     "peak_context_tokens": 232967,
     "usage": {
-      "input_tokens": 456,
-      "output_tokens": 231118,
-      "cache_read_input_tokens": 27042185,
-      "cache_creation_input_tokens": 868624
+      "input_tokens": 538,
+      "output_tokens": 266051,
+      "cache_read_input_tokens": 32342333,
+      "cache_creation_input_tokens": 942719
     }
   },
   "tools": {
-    "Bash": 198,
+    "Bash": 234,
     "Read": 13,
     "Edit": 12,
     "Write": 11,
-    "Monitor": 1,
-    "ToolSearch": 1
+    "Monitor": 2,
+    "ToolSearch": 2
   },
   "files_touched": [
     "examples/tools/targets/runtime.py",
@@ -138,24 +138,24 @@
     {
       "index": 6,
       "started": "2026-11-14T16:31:20.452Z",
-      "ended": "2026-11-14T16:35:53.318Z",
-      "turns": 4,
-      "api_calls": 23,
+      "ended": "2026-11-14T16:46:21.344Z",
+      "turns": 5,
+      "api_calls": 62,
       "usage": {
-        "input_tokens": 46,
-        "output_tokens": 14750,
-        "cache_read_input_tokens": 1541092,
-        "cache_creation_input_tokens": 82435
+        "input_tokens": 128,
+        "output_tokens": 49683,
+        "cache_read_input_tokens": 6841240,
+        "cache_creation_input_tokens": 156530
       },
-      "peak_context_tokens": 95621
+      "peak_context_tokens": 169716
     }
   ],
   "log": {
-    "sha256": "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee",
-    "bytes": 8069568,
-    "lines": 2635,
-    "gzip_bytes": 1595214,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee.jsonl.gz"
+    "sha256": "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0",
+    "bytes": 8844628,
+    "lines": 2999,
+    "gzip_bytes": 1697164,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -206,6 +206,14 @@
       "summary": "example-targets runtime: accept workflow W1's published JAR list in the published-artifact lock",
       "body": "A published revision's TaskPlan entry may now carry its JARs the way workflow's W1 artifact_sources gives them on its branch: a published list in classpath order, the original first and then its dependencies, with a lone item's coordinates/url/sha256 copied up. The earlier shape (the original's keys on the entry, dependencies beside them) still locks, to an identical lock. The lock refuses both lists at once, an empty or malformed list, and a copied-up key that disagrees with the list's first item, rather than silently preferring one. runtime_slice.py now builds W1's shape.\n\nVerified: test_runtime.py 52 tests pass (one new, covering both shapes, a lone item and the four refusals); the R5 slice's end-to-end test ran offline from the acquisition cache with the new shape. Progress also notes that the 16:28 integration report's conflicts are only in generated llm-dlc files, and that 105, 305 and 307 need the upstream-build route, which is next.",
       "log_sha256": "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee"
+    },
+    {
+      "change_id": "okmwswxnonkrkrzsmpqzxvltqnsmoxyn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: VF-024, equivalence on class directories, recorded parameter names, the fixture recipe's flags (verification pending)",
+      "body": "Job 20261114-162937-example-targets-runtime-r3-run-verifier (VF-024) got no expected verdict from the fixture's five proof tasks. The causes, and the changes: (1) Phase 0's build_fixtures.py compiles without -parameters or -g, so jvmcontract names Gate.allowed's parameter arg0, while Phase 0's sidecar and workflow's claim files say code (and RegexGate's say field). That is an inconsistency in Phase 0 that runtime can't fix alone, because the fixture route must reproduce build_fixtures.py byte for byte (contract A2). Runtime now takes an optional JAVAC_FLAGS from build_fixtures.py for every javac of the route. Progress asks the coordinator for JAVAC_FLAGS = ('-parameters',), and notes that until then contract A5's fixture rows will fail the same way at the merge. The verifier's scope now records the target's parameter names as the loaded class has them, and where they come from (new runtime_jar.parameter_names, reading MethodParameters, then the LocalVariableTable, as jvmcontract does). (2) jvmcontract equivalence takes directories of classes, not JARs: run_verifier extracts each side's original JAR into verifier/classes/<revision>, records the extraction, and refuses an entry outside the JAR's root. (3) regex-probe's strict proof stops at its String parameter before it reaches java.util.regex. The capability probe names the regex calls, and runtime_calibrate.py now reports the refusal's and the probe's naming apart.\n\nRerun queued as job 20261114-164239-example-targets-runtime-r3-after-vf-024. Its calibration runs with --fixture-javac-flag=-parameters, recorded as that variant (the asked-for recipe, not Phase 0's bytes); its contract step runs on Phase 0's bytes. Verified inline: test_runtime.py 55 tests pass (3 new); a calibration dry run without jvmcontract gives the toolchain Unsupported with the variant recorded; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 94, test_build 190, test_pipeline 29). The brief's rest isn't wrong, but Phase 0's fixture recipe and its parameter names disagree, as recorded under Progress.",
+      "log_sha256": "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0"
     }
   ],
   "logs": {
@@ -213,6 +221,12 @@
       "bytes": 2347292,
       "lines": 718,
       "gzip_bytes": 480577,
+      "url": null
+    },
+    "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0": {
+      "bytes": 8844628,
+      "lines": 2999,
+      "gzip_bytes": 1697164,
       "url": null
     },
     "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e": {

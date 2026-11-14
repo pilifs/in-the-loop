@@ -147,6 +147,73 @@ def methods(data):
     return found
 
 
+def _parameter_types(desc):
+    """The parameter descriptors of a method descriptor, in order."""
+    out, i, inner = [], 0, desc[1:desc.index(")")]
+    while i < len(inner):
+        start = i
+        while inner[i] == "[":
+            i += 1
+        i = inner.index(";", i) + 1 if inner[i] == "L" else i + 1
+        out.append(inner[start:i])
+    return out
+
+
+def parameter_names(data, method, descriptor):
+    """(names, where) of the declared method's parameters as the class records them: from `MethodParameters` (javac
+    -parameters), else the `LocalVariableTable` (javac -g), as jvmcontract reads them; ([arg0, ...], None) when the
+    class records none, which is what the verifier then calls them. None when the class doesn't declare the method."""
+    pool, offset = _pool(data)
+    offset += 6
+    offset += 2 + 2 * struct.unpack_from(">H", data, offset)[0]
+    for kind in ("field", "method"):
+        count = struct.unpack_from(">H", data, offset)[0]
+        offset += 2
+        for _ in range(count):
+            access, name, desc, attributes = struct.unpack_from(">HHHH", data, offset)
+            offset += 8
+            mine = kind == "method" and (_utf8(pool, name), _utf8(pool, desc)) == (method, descriptor)
+            found = {}
+            for _ in range(attributes):
+                attr, length = struct.unpack_from(">HI", data, offset)
+                body = data[offset + 6: offset + 6 + length]
+                offset += 6 + length
+                if mine:
+                    found[_utf8(pool, attr)] = body
+            if mine:
+                return _names(pool, access, descriptor, found)
+    return None
+
+
+def _names(pool, access, descriptor, attributes):
+    types = _parameter_types(descriptor)
+    fallback = [f"arg{i}" for i in range(len(types))]
+    body = attributes.get("MethodParameters")
+    if body is not None:
+        names = [struct.unpack_from(">H", body, 1 + 4 * i)[0] for i in range(body[0])]
+        if len(names) == len(types) and all(names):
+            return [_utf8(pool, n) for n in names], "MethodParameters"
+    code = attributes.get("Code")
+    if code is None:
+        return fallback, None
+    at = 8 + struct.unpack_from(">I", code, 4)[0]
+    at += 2 + 8 * struct.unpack_from(">H", code, at)[0]
+    table = {}
+    for _ in range(struct.unpack_from(">H", code, at)[0]):
+        attr, length = struct.unpack_from(">HI", code, at + 2)
+        if _utf8(pool, attr) == "LocalVariableTable":
+            for k in range(struct.unpack_from(">H", code, at + 8)[0]):
+                start, _, name, _, slot = struct.unpack_from(">HHHHH", code, at + 10 + 10 * k)
+                if start == 0:
+                    table[slot] = _utf8(pool, name)
+        at += 6 + length
+    slot, names = (0 if access & 0x0008 else 1), []
+    for t in types:
+        names.append(table.get(slot))
+        slot += 2 if t in ("J", "D") else 1
+    return (names, "LocalVariableTable") if all(names) else (fallback, None)
+
+
 def references(data):
     """{(owner, name, descriptor)} of every Methodref and InterfaceMethodref in the class's constant pool."""
     pool, _ = _pool(data)

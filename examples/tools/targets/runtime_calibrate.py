@@ -3,13 +3,19 @@
 Phase 0's fixture (targets/fixtures/target.json) prepared by runtime.prepare() and checked by runtime.run_verifier()
 with the real jvmcontract, native and strict, its raw records handed to workflow.ingest() as route.py hands them.
 
-    python3 examples/tools/targets/runtime_calibrate.py ATTEMPT [--task ID ...]
+    python3 examples/tools/targets/runtime_calibrate.py ATTEMPT [--task ID ...] [--fixture-javac-flag=FLAG ...]
 
 It runs proofs, so it runs as a pipeline job (one that requires jvmcontract, which gets $JVMCONTRACT), never inline.
 ATTEMPT is a new directory, with one attempt per task laid out as route.py lays one out (prepare/<revision>,
 verifier). Exit 0 when every task's verifier record exited with a readable --json outcome whose verdict is the one the
 fixture's task expects (verified for established, violation for refuted, unverifiable or a refusal for unresolved),
-and regex-probe's output names java.util.regex; 1 otherwise. ATTEMPT/calibration.json says what happened.
+and java.util.regex is named in regex-probe's record (its refusal, or its capability probe: each is reported apart);
+1 otherwise. ATTEMPT/calibration.json says what happened.
+
+--fixture-javac-flag adds a javac flag to the fixture recipe both preparation and build_fixtures.py would use, and
+says so in every preparation's recipe and in calibration.json. Phase 0's recipe records no parameter names, so the
+verifier calls `code` arg0 and the claims, which say `code`, aren't well-formed for those bytes (VF-024); a run with
+`-parameters` is the calibration of the recipe the coordinator is asked for under Progress, not of Phase 0's bytes.
 
 Reading the verdict here is this script's check of R3's plumbing against the fixture's authored expectations, as
 contract A5 reads it: no claim is decided here, and ingestion is what judges records in the route. Until the
@@ -97,13 +103,19 @@ def attempt(task, where, folder=FOLDER):
     output = "".join(o.get("output", "") for o in record.observations or ())
     stderr = (where / record.stderr).read_text(errors="replace")
     found = verdict(record)
+    scope = record.identities.get("scope", {})
     entry.update({"status": record.status, "exitCode": record.exitCode, "seconds": record.seconds,
-                  "argv": list(record.argv), "verdict": found, "scope": record.identities.get("scope", {}).get("label"),
+                  "argv": list(record.argv), "verdict": found, "scope": scope.get("label"),
+                  "parameters": {r: x.get("parameters") for r, x in scope.get("revisions", {}).items()},
                   "probe": {r: x.get("gaps") for r, x in record.identities.get("probe", {}).items()},
                   "output": output, "stderrTail": stderr[-2000:]})
     entry["ok"] = record.status == "exited" and record.observations is not None and found in VERDICTS[p.expected]
     if task == "regex-probe":
-        entry["namesRegex"] = "java.util.regex" in output + stderr
+        # The refusal and the capability probe are told apart: a strict proof may stop before it reaches the regex
+        # call (at a String parameter, say), while the probe's static scan names the calls the proof would need.
+        entry["refusalNamesRegex"] = "java.util.regex" in output + stderr
+        entry["probeNamesRegex"] = "java.util.regex" in json.dumps(entry["probe"])
+        entry["namesRegex"] = entry["refusalNamesRegex"] or entry["probeNamesRegex"]
         entry["ok"] = entry["ok"] and entry["namesRegex"]
     if task in TRIGGERS:  # informational: whether the witness's text names the input the oracle fails on
         entry["witnessNamesTrigger"] = TRIGGERS[task] in output
@@ -112,13 +124,32 @@ def attempt(task, where, folder=FOLDER):
     return entry
 
 
+def with_javac_flags(flags):
+    """Add `flags` to the fixture recipe runtime.prepare() builds with (for the rest of this process); what the
+    calibration is then of, in words."""
+    if not flags:
+        return "Phase 0's fixture recipe, as build_fixtures.py defines it"
+    recipe = runtime._fixture_recipe
+
+    def flagged():
+        r = recipe()
+        return {**r, "flags": [*r.get("flags", []), *flags]}
+    runtime._fixture_recipe = flagged
+    return (f"the fixture recipe plus javac {' '.join(flags)}: not Phase 0's bytes, the recipe asked of the coordinator "
+            "under the runtime brief's Progress (VF-024)")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("attempt", type=Path)
     parser.add_argument("--task", action="append", choices=sorted(CLAIMS))
+    parser.add_argument("--fixture-javac-flag", action="append", default=[], dest="flags")
     args = parser.parse_args(argv)
     args.attempt.mkdir(parents=True, exist_ok=False)
     print(f"jvmcontract: {runtime.jvmcontract()}")
+    variant = with_javac_flags(args.flags)
+    if args.flags:
+        print(f"variant: {variant}")
     entries = []
     for task in args.task or list(CLAIMS):
         entry = attempt(task, args.attempt / task)
@@ -131,7 +162,7 @@ def main(argv=None):
     ok = all(e["ok"] for e in entries)
     (args.attempt / "calibration.json").write_text(json.dumps(
         {"calibration": "runtime R3: run_verifier on the fixture's proof tasks", "ok": ok,
-         "jvmcontract": runtime.jvmcontract(), "tasks": entries,
+         "jvmcontract": runtime.jvmcontract(), "variant": variant, "tasks": entries,
          "reading": "the verdicts are read here to check R3's plumbing against the fixture's authored expectations; "
                     "ingestion judges records in the route"}, indent=2, ensure_ascii=False) + "\n")
     print("ok" if ok else "NOT ok", f"({args.attempt / 'calibration.json'})")

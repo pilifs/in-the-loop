@@ -349,8 +349,42 @@ Small unit and JVM conformance checks run inline.
 - Read-only over the case streams' sidecars: 105, 305 and 307 use `upstream-build` (Maven, the Maven wrapper and the
   Gradle wrapper, on JDK 11, 8 and 8). No sidecar declares a mutant yet. So the upstream-build route comes before
   mutant preparation.
+- 2026-11-14, **the calibration job failed: VF-024** (`20261114-162937-example-targets-runtime-r3-run-verifier`, at
+  `b397033c`, 45 s, collected as `orwvprts`). Its contract step passed (8 pass, 8 skip). No task got its expected
+  verdict, for three reasons, each now handled:
+  1. **Parameter names, a Phase 0 inconsistency.** `build_fixtures.py` compiles without `-parameters` or `-g`, so the
+     fixture's classes record no parameter names, and jvmcontract calls `Gate.allowed`'s parameter `arg0`. Phase 0's
+     own sidecar (`allowedChange: "code == 97"`) and workflow's claim files say `code`, and RegexGate's say `field`.
+     So the three security tasks, and preservation's `--unchanged-unless`, aren't well-formed for Phase 0's bytes.
+     Contract A5's fixture rows will fail the same way at the merge. Runtime can't fix it alone: the fixture route
+     must reproduce `build_fixtures.py` byte for byte, which contract A2 checks. Changes:
+     - `_fixture_recipe()` now also takes an optional `JAVAC_FLAGS` from `build_fixtures.py`, and every javac of the
+       route gets those flags;
+     - the verifier's scope records, per revision, the target's parameter names and where they come from
+       (`MethodParameters`, the `LocalVariableTable`, or nowhere). These are the names a claim can use. New
+       `runtime_jar.parameter_names`, read as jvmcontract reads them.
+  2. **Equivalence wants class directories** (`Not a directory`). `run_verifier` now extracts each side's original
+     JAR into `verifier/classes/<revision>`, records the extraction (`identities.classes`), and passes those. A test
+     checks the extracted classes match the JAR byte for byte, and refuses an entry outside the JAR's root.
+  3. **regex-probe refuses before it reaches the regex.** The strict proof stops at the `String` parameter ("a value
+     adapter is built for it, but this check doesn't take one yet"). The capability probe (`jvmcontract gaps`, in
+     `identities.probe`) names `Pattern.compile`, `Pattern.matcher` and `Matcher.matches`. The verdict,
+     `unverifiable`, is the expected unresolved. The calibration now reports `refusalNamesRegex` and
+     `probeNamesRegex` apart, and needs one of them.
+  - **Request for the merge (the coordinator, `build_fixtures.py`):** add `JAVAC_FLAGS = ("-parameters",)` and pass
+    it to its javac. Runtime follows automatically, and the fixture JARs' hashes change in both places alike.
+    Otherwise, workflow's claim files and Phase 0's sidecar would have to use `arg0`.
+  - For review: the fixture's capability refusal is named by the probe, not by the proof's own refusal. A strict
+    proof through `java.util.regex` would need a String-parameter check first.
+  - Rerun as job `20261114-164239-example-targets-runtime-r3-after-vf-024`. Its calibration runs with
+    `--fixture-javac-flag=-parameters`, recorded as that variant in `calibration.json` and in every preparation's
+    recipe. It is the calibration of the asked-for recipe, not of Phase 0's bytes. Its contract step runs on Phase 0's
+    bytes. `test_runtime.py`: 55 tests (3 new: the reader across no flags, `-g` and `-parameters`; the escaping
+    entry; and recipe flags reaching javac, giving other bytes and recorded names). The integration script exits 0:
+    contract 8 pass and 8 skip, targets suite 94 (run before the escaping-entry test was added), `test_build` 190,
+    `test_pipeline` 29.
 - Next:
-  1. The calibration job's result (`20261114-162937-example-targets-runtime-r3-run-verifier`, running).
+  1. The rerun's result (`20261114-164239-example-targets-runtime-r3-after-vf-024`).
   2. The upstream-build route, with 105's pinned revisions as its job.
   3. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
 - Status: working

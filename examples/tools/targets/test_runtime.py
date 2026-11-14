@@ -768,6 +768,30 @@ class SliceTest(unittest.TestCase):
                          list(interfaces.ExecutionRecord.__dataclass_fields__))
 
 
+class ParameterNamesTest(unittest.TestCase):
+    """runtime_jar.parameter_names reads what jvmcontract reads: MethodParameters, else the LocalVariableTable (with
+    long and double taking two slots, and an instance method's receiver in slot 0), else arg0, arg1, ..."""
+
+    SOURCE = ("package p; public class A { public static boolean f(int code, long w, String s, int[][] a) "
+              "{ return code > 0; } public boolean g(double d, int x) { return x > 0; } }")
+
+    def test_each_way_a_class_records_names_or_none(self):
+        home = runtime_jdk.homes().get("25") or next(iter(runtime_jdk.homes().values()), None)
+        if home is None:
+            self.skipTest("no JDK")
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "A.java").write_text(self.SOURCE)
+            for flag, f, g in (([], (["arg0", "arg1", "arg2", "arg3"], None), (["arg0", "arg1"], None)),
+                               (["-g"], (["code", "w", "s", "a"], "LocalVariableTable"), (["d", "x"], "LocalVariableTable")),
+                               (["-parameters"], (["code", "w", "s", "a"], "MethodParameters"), (["d", "x"], "MethodParameters"))):
+                out = Path(d) / f"out{len(flag)}{flag[:1]}"
+                subprocess.run([str(Path(home) / "bin/javac"), *flag, "-d", str(out), str(Path(d) / "A.java")], check=True)
+                data = (out / "p/A.class").read_bytes()
+                self.assertEqual(runtime_jar.parameter_names(data, "f", "(IJLjava/lang/String;[[I)Z"), f, flag)
+                self.assertEqual(runtime_jar.parameter_names(data, "g", "(DI)Z"), g, flag)
+                self.assertIsNone(runtime_jar.parameter_names(data, "h", "()V"), "a method the class doesn't declare")
+
+
 FAKE_JVMCONTRACT = """#!{python}
 # A stand-in for jvmcontract in these tests: it records its argv, cwd and environment, then answers as mode.json says
 # for its subcommand. It proves nothing; the real verifier runs as a pipeline job (runtime_calibrate.py).
@@ -879,6 +903,9 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(scope["revisions"]["after"]["classSha256"], after.source["target"]["classSha256"])
         self.assertEqual(scope["assumptions"], ["stated for the test"])
         self.assertIn("not on the verifier's classpath", scope["adapter"])
+        names = scope["revisions"]["after"]["parameters"]
+        self.assertEqual(names["names"], ["arg0"], "Phase 0's recipe records no parameter names")
+        self.assertIn("records no parameter names", names["recordedIn"])
         self.assertEqual(ids["probe"]["after"]["gaps"][0]["call"], GAPS_OUT["gaps"][0]["call"])
         self.assertEqual(ids["probe"]["after"]["argv"][-1], "--json")
         stored = json.loads((self.attempt / "verifier" / runtime.VERIFIER).read_text())
@@ -892,10 +919,19 @@ class VerifierTest(FixtureCopy):
         self.assertEqual((record.revision, record.status, record.exitCode), (None, "exited", 0))
         self.assertEqual(record.observations, (EQUIVALENCE_OUT,), "equivalence's one outcome")
         argv = list(record.argv)
-        self.assertEqual(argv[1:8], ["equivalence", "--before", "prepare/before/before.jar", "--after",
-                                     "prepare/after/after.jar", "--target", "fixture.Gate#allowed(int)"])
+        self.assertEqual(argv[1:8], ["equivalence", "--before", "verifier/classes/before", "--after",
+                                     "verifier/classes/after", "--target", "fixture.Gate#allowed(int)"],
+                         "equivalence takes directories of classes, not JARs (VF-024)")
         self.assertEqual(argv[argv.index("--unchanged-unless") + 1], "code == 97")
         self.assertNotIn("--assert", argv)
+        for r in ("before", "after"):
+            extracted = record.identities["classes"][r]
+            jar = self.attempt / "prepare" / r / f"{r}.jar"
+            self.assertEqual((extracted["dir"], extracted["from"], extracted["sha256"]),
+                             (f"verifier/classes/{r}", f"prepare/{r}/{r}.jar", runtime.sha256(jar)))
+            self.assertEqual(runtime_jar.classes(jar), {
+                f.relative_to(self.attempt / extracted["dir"]).as_posix()[:-6]: runtime.sha256(f)
+                for f in (self.attempt / extracted["dir"]).rglob("*.class")}, "the directory is the JAR's classes, byte for byte")
         self.assertEqual(set(record.identities["probe"]), {"before", "after"})
         self.assertEqual(set(record.identities["commits"]), {"before", "after"})
 
@@ -960,6 +996,36 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(busy.stage, "workdir")
         self.assertTrue((self.dir / "theirs/file").is_file())
 
+    def test_an_original_jar_entry_outside_its_root_is_never_extracted(self):
+        import zipfile
+        where = self.dir / "escape"
+        where.mkdir()
+        with zipfile.ZipFile(where / "x.jar", "w") as z:
+            z.writestr("fixture/Gate.class", b"\xca\xfe\xba\xbe")
+            z.writestr("../outside.class", b"\xca\xfe\xba\xbe")
+        prepared = mock.Mock(source={"target": {"loadedFrom": "x.jar"}})
+        jar = interfaces.Artifact("x.jar", runtime.sha256(where / "x.jar"), "original")
+        workdir = self.attempt / "verifier"
+        workdir.mkdir(parents=True)
+        with self.assertRaises(runtime.Refused) as caught:
+            runtime._class_dirs({"after": (where, prepared, (jar,))}, workdir, self.attempt)
+        self.assertIn("outside its root", caught.exception.diagnostic)
+        self.assertFalse((workdir / "classes/outside.class").exists())
+        self.assertFalse((self.attempt / "outside.class").exists())
+
+    def test_the_recipes_javac_flags_reach_the_build_and_the_scope_records_the_names_the_class_has(self):
+        """A recipe that records parameter names (javac -parameters, asked of Phase 0's recipe for VF-024) builds
+        other bytes, a different identity, and the verifier's scope shows the names a claim may use."""
+        plain = runtime.prepare(verifier_plan(self.folder), "after", self.work / "plain")
+        recipe = runtime._fixture_recipe()
+        with mock.patch.object(runtime, "_fixture_recipe", return_value={**recipe, "flags": ["-parameters"]}):
+            prepared, record = self.verify(verifier_plan(self.folder))
+        self.assertIn("-parameters", (self.attempt / "prepare/after/logs/javac-original.log").read_text().splitlines()[0])
+        self.assertEqual(prepared["after"].source["recipe"]["flags"], ["-parameters"])
+        self.assertNotEqual(prepared["after"].source["target"]["classSha256"], plain.source["target"]["classSha256"])
+        self.assertEqual(record.identities["scope"]["revisions"]["after"]["parameters"],
+                         {"names": ["code"], "recordedIn": "MethodParameters"})
+
     def test_a_mutant_entry_is_never_prepared_as_its_base(self):
         plan = dataclasses.replace(verifier_plan(self.folder), artifacts=({
             **verifier_plan(self.folder).artifacts[0], "mutant": {"base": {"revision": "after"}, "patch": {}}},))
@@ -973,12 +1039,19 @@ class VerifierTest(FixtureCopy):
                  ("fixed-security", [{"verdict": "violation", "output": "✗ code = 97\n"}], 1, False),
                  ("vulnerable-security", [{"verdict": "violation", "output": "✗ code = 97\n"}], 1, True),
                  ("regex-probe", [{"verdict": "unverifiable", "output": "⚠ refused: a String parameter\n"}], 1, False),
-                 ("regex-probe", [{"verdict": "unverifiable", "output": "⚠ java.util.regex.Pattern.matcher\n"}], 1, True))
+                 ("regex-probe", [{"verdict": "unverifiable", "output": "⚠ java.util.regex.Pattern.matcher\n"}], 1, True),
+                 ("regex-probe", [{"verdict": "verified", "output": "✓\n"}], 0, False))
+        no_regex = {"stdout": json.dumps({**GAPS_OUT, "gaps": []})}
         for n, (task, outcome, code, ok) in enumerate(cases):
-            self.answer(prove={"stdout": json.dumps(outcome), "exit": code})
+            self.answer(prove={"stdout": json.dumps(outcome), "exit": code}, gaps=no_regex)
             entry = runtime_calibrate.attempt(task, self.work / f"calibrate-{n}", self.folder)
             self.assertEqual(entry["ok"], ok, (task, outcome, entry.get("unsupported"), entry.get("preparation")))
-        self.assertTrue(entry["namesRegex"])
+            if n == 4:
+                self.assertEqual((entry["refusalNamesRegex"], entry["probeNamesRegex"]), (True, False))
+        # VF-024's case: the strict proof stops at the String parameter; the capability probe names the regex calls
+        self.answer(prove={"stdout": json.dumps(cases[3][1]), "exit": 1})
+        entry = runtime_calibrate.attempt("regex-probe", self.work / "calibrate-probe", self.folder)
+        self.assertEqual((entry["ok"], entry["refusalNamesRegex"], entry["probeNamesRegex"]), (True, False, True))
         self.assertEqual(runtime_calibrate.plan("preservation", self.folder).claim["allowedChange"], "code == 97")
 
     def test_descriptors_become_jvmcontracts_target_spelling(self):
