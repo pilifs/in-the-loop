@@ -1,0 +1,9 @@
+prepare before: artifacts-ready
+prepare after: artifacts-ready
+control before jdk21: exited exit 0, 45 observations, oracle problems [[[-2, 31], 'threw java.lang.ArithmeticException, the statement says returned -2147483648']]
+control before jdk25: exited exit 0, 45 observations, oracle problems [[[-2, 31], 'threw java.lang.ArithmeticException, the statement says returned -2147483648']]
+control after jdk21: exited exit 0, 45 observations, oracle problems []
+control after jdk25: exited exit 0, 45 observations, oracle problems []
+expected disagreements: {'before': ['[-2, 31]'], 'after': []}
+JDKs agree: {'before': True, 'after': True}; ingestion got 4 records: unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it
+ok (runtime-upstream/attempt/slice.json)

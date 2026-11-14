@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:11:22.420Z",
-  "ended": "2026-11-14T17:09:27.250Z",
-  "duration_seconds": 7085,
+  "ended": "2026-11-14T17:10:14.647Z",
+  "duration_seconds": 7132,
   "stats": {
     "turns": 10,
-    "api_calls": 110,
-    "tool_calls": 106,
+    "api_calls": 113,
+    "tool_calls": 108,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 232378,
+    "peak_context_tokens": 236351,
     "usage": {
-      "input_tokens": 236,
-      "output_tokens": 88618,
-      "cache_read_input_tokens": 16012154,
-      "cache_creation_input_tokens": 195858
+      "input_tokens": 242,
+      "output_tokens": 91555,
+      "cache_read_input_tokens": 16713969,
+      "cache_creation_input_tokens": 199831
     }
   },
   "tools": {
-    "Bash": 98,
+    "Bash": 100,
     "Edit": 4,
     "Write": 3,
     "AskUserQuestion": 1
@@ -45,24 +45,24 @@
     {
       "index": 0,
       "started": "2026-11-14T15:11:22.420Z",
-      "ended": "2026-11-14T17:09:27.250Z",
+      "ended": "2026-11-14T17:10:14.647Z",
       "turns": 10,
-      "api_calls": 110,
+      "api_calls": 113,
       "usage": {
-        "input_tokens": 236,
-        "output_tokens": 88618,
-        "cache_read_input_tokens": 16012154,
-        "cache_creation_input_tokens": 195858
+        "input_tokens": 242,
+        "output_tokens": 91555,
+        "cache_read_input_tokens": 16713969,
+        "cache_creation_input_tokens": 199831
       },
-      "peak_context_tokens": 232378
+      "peak_context_tokens": 236351
     }
   ],
   "log": {
-    "sha256": "2af5eb5489d00ef60f80e2c564b9ff3dad95af78964c921868610e3ea3b7c97a",
-    "bytes": 2219405,
-    "lines": 836,
-    "gzip_bytes": 374448,
-    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/2af5eb5489d00ef60f80e2c564b9ff3dad95af78964c921868610e3ea3b7c97a.jsonl.gz"
+    "sha256": "bee5bfe520a7c4844426f64db013daeeabb8112628ad94a98b4de8c7dfbe7330",
+    "bytes": 2286071,
+    "lines": 858,
+    "gzip_bytes": 385618,
+    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/bee5bfe520a7c4844426f64db013daeeabb8112628ad94a98b4de8c7dfbe7330.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -129,6 +129,14 @@
       "summary": "Merged streams: regenerate the generated trace files, and check only the history of @",
       "body": "Two false flags stopped work whenever feature-loop streams ran in parallel. First, every sync.py commit rewrites llm-dlc/index.json, traces/README.md, traces/metrics.json and README.md's session table, so once two streams had committed, run-streams.sh's integration check found the merge in conflict and never ran its script again (foundations, cleanup, application-core and example-targets all hit this; in foundations it hid a real serde bug until the merge), and every merge loop resolved the four files by hand. The new sync.py regenerate rewrites them from the per-session manifests and metrics, which sit in a directory per session and merge cleanly; it leaves and lists any other conflict, including one in README.md outside its index table, refuses if a session file itself conflicts, and exits 1 while anything is left. run-streams.sh's integration check now runs the merged tree's regenerate before deciding, and names what it regenerated in its report (installed by rename, so the running example-targets run keeps its old copy). The merge steps in engine-priorities.md (the worked example) and example-targets.md, and llm-dlc/README.md, now say to run it. Second, check_trailers read every commit in the repository with an LLM-Trace line, including other workspaces' lines, against this tree's manifests, so each stream's commits were reported as 'session ... has no manifest' everywhere else (26 errors today). It now reads ::@ only: a stream's commits are checked by its own commit in its workspace, and here once merged. Verified: new llm-dlc/tools/test_workspaces.py (7 tests, real jj repos with two workspaces: off-line commits not flagged, a bad trailer in this history still flagged, both lines checked after the merge, the four files settled, a README prose conflict and a session-file conflict reported; the off-line test fails with the old revset); test_review, test_runs, test_performance (103) and test_metrics pass. On real data, a scratch workspace merging the default line with the four example-targets streams' @- had all four files 5-sided in conflict; regenerate settled them (91 sessions), check then reported 0 errors once the streams' logs were copied in, as the reconcile does; and the integration script ran on the merge for the first time since the streams began committing (contract 14 pass, 2 skipped for want of a built jvmcontract; test_build, test_pipeline and build.py --plan pass), finding 3 runtime x workflow test errors described in the session. check in the default workspace now reports 0 errors (was 26).",
       "log_sha256": "2af5eb5489d00ef60f80e2c564b9ff3dad95af78964c921868610e3ea3b7c97a"
+    },
+    {
+      "change_id": "mpqzpuvoqkxnuspnxrunoqtvzpzslvvw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example-targets runtime R2 upstream-build route passes",
+      "body": "Job 20261114-170353-example-targets-runtime-r2-the-upstream passed on vm-1 (2 steps, 58.7 s, peak 858 MiB against an estimate of 15 min and 3 GiB): example 105's two pinned commons-numbers commits were built by Maven and replayed on JDK 21 and 25; before shows the expected [-2, 31] disagreement, after none, and the JDKs agree. Its 85 declared outputs under runtime-upstream/ (7 MB; checkouts removed by step 2) were applied. Two maven/resolution.json files are 1.07 MB, just over jj's 1 MiB snapshot limit, so they were snapshotted once with snapshot.max-new-file-size raised for that command only; the repo setting is unchanged. No findings opened or closed.",
+      "log_sha256": "bee5bfe520a7c4844426f64db013daeeabb8112628ad94a98b4de8c7dfbe7330"
     }
   ],
   "logs": {
@@ -172,6 +180,12 @@
       "bytes": 1348392,
       "lines": 417,
       "gzip_bytes": 261000,
+      "url": null
+    },
+    "bee5bfe520a7c4844426f64db013daeeabb8112628ad94a98b4de8c7dfbe7330": {
+      "bytes": 2286071,
+      "lines": 858,
+      "gzip_bytes": 385618,
       "url": null
     },
     "d401a43af68ceb9600b2f536d107981b60518f423becfa548cfcb8c494d25e76": {
