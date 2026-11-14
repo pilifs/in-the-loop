@@ -32,18 +32,6 @@ A published revision's TaskPlan entry may now carry its JARs the way workflow's 
 
 Verified: test_runtime.py 52 tests pass (one new, covering both shapes, a lone item and the four refusals); the R5 slice's end-to-end test ran offline from the acquisition cache with the new shape. Progress also notes that the 16:28 integration report's conflicts are only in generated llm-dlc files, and that 105, 305 and 307 need the upstream-build route, which is next.
 
-### example-targets W4: the index projection for find.py, claim statuses from current receipts and historical labels apart
-
-change `nqztmpwynrtr` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
-
-workflow.project() (examples/tools/targets/workflow_discovery.py, new) gives the index's target row that find.py's --family, --role, --readiness, --claim-status and --gap read, offline and read-only: each task's derived readiness and authored expectation, each proof task's conclusion in its latest current receipt (None without one; replays decide no claim), stale and unreadable receipts listed apart, observed gaps with their recorded gap ids kept apart from unevidenced and predicted ones, and the example's authored verdictLabel as historical context from which no claim status is derived (the 105-109 rule). The target's readiness summary is derived but held at None in the index behind workflow_discovery.READINESS_IN_INDEX, because the coordinator's test_route.py:132 asserts Phase 0's None; the merge flips the flag and changes that line to "catalogued" (recorded as an interface request under Progress).
-
-Also fixed W2's attempt ids: whole seconds plus a random suffix sorted two attempts in one second at random. The suffix, whose 8-hex pattern stored-result.schema.json fixes, now carries the microseconds in its first five digits, so path order is attempt order. No target receipt existed yet.
-
-Verified: test_workflow.py 57 tests (5 new, through build.py's render_index() and find.py on a temporary examples/), mutation-checked; the integration script passes (contract 9 pass, 7 skip; targets suite 97, test_build.py 190, test_pipeline.py 29). Read-only over the negative and positive streams' 20 sidecars, every projection ran: 13 catalogued, 7 partial, no claim status, only predicted gaps. W1-W4 and the stream's acceptance table are met, and the status is done.
-
-Out of date in the brief: its Starting evidence still says project() states only what the sidecar says; that was Phase 0's and is replaced here.
-
 ### example-targets negative N3: the CVE-2025-22228 BCrypt packet (287), source-locked, with the public matches claim, preservation, a byte-array guard lemma, oracle, independent stored hashes, driver and mutant
 
 change `mpmuuzlyovxn` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
@@ -67,6 +55,18 @@ Example 300 (CVE-2025-22234) stays research only and linked to 287. It now keeps
 Developer note, not evidence: 287's driver and oracle were run by hand on the 6.3.9 JAR with spring-jcl 6.1.19 (fetched from Maven Central, sha1 checked, sha256 noted in the lock), on Temurin 21 and 25. Every outcome equals 6.3.7's: overlong candidates sharing a stored password's first 72 bytes authenticate again. So 287's claim fails on 6.3.9 by design, and 287's README and notes now say so. pyca bcrypt 5.0.0 confirms that the repair test's legacy 73-character hash is the hash of the first 72 bytes. Three blockers are predicted for 300: the missing timing oracle or cost model, the provider path's carriers, and 287's Java semantics.
 
 Handoffs and acceptance: no blocker was attempted in this stream (no verifier or capability probe ran; Phase 5 runs them), so no gap packet exists, and all 50 blockers in 285-300 are labelled predicted. All 16 sidecars validate. 285-287 have source locks, frozen claims valid against the workflow stream's schema, the three task relations, probes, oracles whose self-tests pass, mutation patches and drivers, and the workflow planner (W4) plans all 16 tasks. 286 and 287 now mark their release pair selected, as 285 did. llm-dlc/tools/example-targets-integration.sh passes on this workspace. The brief's Status is now done; A3 belongs to Phase 5 after the merge. The latest integration report (16:28) stopped on conflicts in generated shared files (llm-dlc/README.md, index.json, traces/), none of them this stream's.
+
+### example-targets W4: the index projection for find.py, claim statuses from current receipts and historical labels apart
+
+change `nqztmpwynrtr` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
+
+workflow.project() (examples/tools/targets/workflow_discovery.py, new) gives the index's target row that find.py's --family, --role, --readiness, --claim-status and --gap read, offline and read-only: each task's derived readiness and authored expectation, each proof task's conclusion in its latest current receipt (None without one; replays decide no claim), stale and unreadable receipts listed apart, observed gaps with their recorded gap ids kept apart from unevidenced and predicted ones, and the example's authored verdictLabel as historical context from which no claim status is derived (the 105-109 rule). The target's readiness summary is derived but held at None in the index behind workflow_discovery.READINESS_IN_INDEX, because the coordinator's test_route.py:132 asserts Phase 0's None; the merge flips the flag and changes that line to "catalogued" (recorded as an interface request under Progress).
+
+Also fixed W2's attempt ids: whole seconds plus a random suffix sorted two attempts in one second at random. The suffix, whose 8-hex pattern stored-result.schema.json fixes, now carries the microseconds in its first five digits, so path order is attempt order. No target receipt existed yet.
+
+Verified: test_workflow.py 57 tests (5 new, through build.py's render_index() and find.py on a temporary examples/), mutation-checked; the integration script passes (contract 9 pass, 7 skip; targets suite 97, test_build.py 190, test_pipeline.py 29). Read-only over the negative and positive streams' 20 sidecars, every projection ran: 13 catalogued, 7 partial, no claim status, only predicted gaps. W1-W4 and the stream's acceptance table are met, and the status is done.
+
+Out of date in the brief: its Starting evidence still says project() states only what the sidecar says; that was Phase 0's and is replaced here.
 
 ## Conversation
 

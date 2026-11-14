@@ -44,12 +44,6 @@ Before backing out, example-targets-integration.sh ran on the merged tree: every
 
 ### Record session traces
 
-change `svrtnrloymnp` · [log `e84ebe4193ea`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)
-
-The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.
-
-### Record session traces
-
 change `kxqozyuslzvr` · [log `e84ebe4193ea`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)
 
 The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).
@@ -60,9 +54,45 @@ change `xvvuxmqsstpt` · [log `e84ebe4193ea`](https://terminalvalue.net/raw-trac
 
 The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.
 
+### Record session traces
+
+change `svrtnrloymnp` · [log `e84ebe4193ea`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)
+
+The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.
+
 ### example-targets reconcile step 4: streams merged, allow-list conflict resolved
 
 change `ptyqvxxlyvsk` · [log `e84ebe4193ea`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)
+
+### Allow list: Filip Stankovic approved 043a3764, 1061814e, 12d09d6e, 155db487, 262bb771, 2f3c997d, 36f507b2, 385129c1, 3e9d926e, 541a7555, 54c32c6b, 5609d615, 587e045b, 7400292c, 748b6704, 7789bb63, 7ff05194, 815d7484, 981d7f81, dd2fcadc, e798f19e, f054d7e5, fcbc71d7
+
+change `lpkzkttsonks` · [log `e84ebe4193ea`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83.jsonl.gz)
+
+Filip Stankovic approved 23 value(s) at their terminal with sync.py allow; the command committed the decision itself.
+
+043a3764  long-token  Ex4…nO (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+1061814e  long-token  8NJ…eS (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+12d09d6e  long-token  fVH…dq (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+155db487  long-token  FGW…IG (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+262bb771  long-token  Ex4…dW (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+2f3c997d  long-token  G6a…r6 (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+36f507b2  long-token  Ex4…FG (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+385129c1  long-token  WAp…gC (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+3e9d926e  long-token  6Xm…nq (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+541a7555  long-token  Ex4…se (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+54c32c6b  long-token  hSL…vG (50 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+5609d615  long-token  cfc…18 (40 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+587e045b  long-token  Ex4…0a (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+7400292c  long-token  sYD…ti (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+748b6704  long-token  Lgf…fS (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+7789bb63  long-token  Ex4…jG (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+7ff05194  long-token  mFD…LK (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+815d7484  long-token  Ro0…cm (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+981d7f81  long-token  Ex4…ci (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing
+dd2fcadc  long-token  iX5…xq (44 chars): Public test vector: the stored bcrypt hash of the digits 1-71 from Spring Security's BCryptPasswordEncoderTests at commit c1aa99fd (matchesWhenPasswordOverMaxLengthThenAllowToMatch), quoted from the upstream diff and checked with pyca bcrypt; not a credential.
+e798f19e  long-token  H8V…jK (43 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+f054d7e5  long-token  rCV…tC (52 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+fcbc71d7  long-token  Nlg…a2 (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
 
 ## Conversation
 
