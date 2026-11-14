@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "llm-dlc/decisions/schema.json",
+  "title": "One line of a decision record, llm-dlc/decisions/NAME.jsonl",
+  "description": "A parallel run's decisions (llm-dlc/loops/stream-conductor.md, Design 4). Each line is one change of state, appended and never edited. A decision line is the conductor's full snapshot of one decision; a review line (accepted or overturned) and an answer line (an option chosen for an open question) are the user's, written by llm-dlc/tools/decisions.py. A decision's current state is its latest decision line, with the user's lines after it laid over it. llm-dlc/tools/decisions.py checks what this schema can't: the order of seq, ids that exist, and that the conductor decides only what the test of Design 3 lets it.",
+  "oneOf": [
+    {"$ref": "#/$defs/decision_line"},
+    {"$ref": "#/$defs/review_line"},
+    {"$ref": "#/$defs/answer_line"}
+  ],
+  "$defs": {
+    "id": {
+      "description": "NAME-D007: the brief's name and a number, never reused within the record",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*-D[0-9]{3,}$"
+    },
+    "time": {
+      "description": "UTC, to the second: 2026-11-14T21:05:00Z",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "text": {"type": "string", "minLength": 1},
+    "names": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "decision_line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "run", "seq", "at", "state", "asked", "context", "options", "decision", "review",
+                   "applied", "blocks", "supersedes"],
+      "properties": {
+        "kind": {"const": "decision"},
+        "id": {"$ref": "#/$defs/id"},
+        "run": {"description": "when the run that asked it started", "$ref": "#/$defs/time"},
+        "seq": {"description": "the line's number in the file, from 1", "type": "integer", "minimum": 1},
+        "at": {"description": "when this line was written", "$ref": "#/$defs/time"},
+        "state": {
+          "description": "open: queued for the user; decided; superseded: replaced by the decision whose supersedes names it",
+          "enum": ["open", "decided", "superseded"]
+        },
+        "asked": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["by", "at", "question"],
+          "properties": {
+            "by": {"description": "a stream's name, conductor, or integration (the integration line)", "$ref": "#/$defs/text"},
+            "at": {"$ref": "#/$defs/time"},
+            "question": {"description": "the question, in one sentence", "$ref": "#/$defs/text"}
+          }
+        },
+        "context": {
+          "description": "what the decision is about",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commits": {"description": "jj change ids", "$ref": "#/$defs/names"},
+            "files": {"description": "repo paths", "$ref": "#/$defs/names"},
+            "findings": {"type": "array", "items": {"type": "string", "pattern": "^VF-[0-9]{3,}$"}},
+            "jobs": {"description": "verification job ids", "$ref": "#/$defs/names"},
+            "inbox": {"description": "inbox items it answers", "$ref": "#/$defs/names"}
+          }
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "summary", "consequences"],
+            "properties": {
+              "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+              "summary": {"$ref": "#/$defs/text"},
+              "consequences": {"$ref": "#/$defs/text"}
+            }
+          }
+        },
+        "decision": {
+          "description": "null while open",
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["option", "by", "at", "rationale", "confidence", "recovery"],
+              "properties": {
+                "option": {"description": "an option's id, or other (the user's answer note says what)", "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+                "by": {"enum": ["conductor", "user"]},
+                "at": {"$ref": "#/$defs/time"},
+                "rationale": {"description": "why this option, and why the others are worse", "$ref": "#/$defs/text"},
+                "confidence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["level", "basis"],
+                  "properties": {
+                    "level": {"enum": ["high", "medium", "low"]},
+                    "basis": {"description": "what the choice follows from: the brief, an interface or test, an earlier decision", "$ref": "#/$defs/text"}
+                  }
+                },
+                "recovery": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["class", "undo", "dependents"],
+                  "properties": {
+                    "class": {"enum": ["cheap", "costly", "irreversible"]},
+                    "undo": {"description": "the steps that take it back", "$ref": "#/$defs/text"},
+                    "dependents": {
+                      "description": "what has been built on it since: past the threshold, it is flagged again",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["commits", "jobs"],
+                      "properties": {
+                        "commits": {"$ref": "#/$defs/names"},
+                        "jobs": {"$ref": "#/$defs/names"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "review": {
+          "description": "null while open. The conductor writes unreviewed or flagged; accepted and overturned come from the user's review lines and are carried forward",
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["state"],
+              "properties": {
+                "state": {"enum": ["unreviewed", "flagged", "accepted", "overturned"]},
+                "why": {"description": "why it is flagged", "enum": ["costly", "medium-confidence", "dependents-grown"]},
+                "note": {"$ref": "#/$defs/text"}
+              }
+            }
+          ]
+        },
+        "applied": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inbox", "commits"],
+          "properties": {
+            "inbox": {
+              "description": "the inbox items it sent",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["stream", "item"],
+                "properties": {"stream": {"$ref": "#/$defs/text"}, "item": {"$ref": "#/$defs/text"}}
+              }
+            },
+            "commits": {"description": "the commits that carried it out", "$ref": "#/$defs/names"}
+          }
+        },
+        "blocks": {"description": "the streams waiting on it; empty once decided", "$ref": "#/$defs/names"},
+        "supersedes": {"description": "the decision this one replaces", "oneOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]}
+      }
+    },
+    "review_line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "seq", "at", "by", "state"],
+      "properties": {
+        "kind": {"const": "review"},
+        "id": {"$ref": "#/$defs/id"},
+        "seq": {"type": "integer", "minimum": 1},
+        "at": {"$ref": "#/$defs/time"},
+        "by": {"const": "user"},
+        "state": {"enum": ["accepted", "overturned"]},
+        "note": {"description": "required when overturned: what the user would rather have", "$ref": "#/$defs/text"}
+      }
+    },
+    "answer_line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "seq", "at", "by", "option"],
+      "properties": {
+        "kind": {"const": "answer"},
+        "id": {"$ref": "#/$defs/id"},
+        "seq": {"type": "integer", "minimum": 1},
+        "at": {"$ref": "#/$defs/time"},
+        "by": {"const": "user"},
+        "option": {"description": "an option's id, or other with a note", "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "note": {"$ref": "#/$defs/text"}
+      }
+    }
+  }
+}

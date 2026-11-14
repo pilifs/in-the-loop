@@ -1,0 +1,101 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "4a47a539-a6f1-4f2d-b4c9-828596296714",
+  "status": "open",
+  "title": "Recent sessions summary",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>As",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-14T21:13:36.309Z",
+  "ended": "2026-11-14T21:24:02.205Z",
+  "duration_seconds": 626,
+  "stats": {
+    "turns": 6,
+    "api_calls": 55,
+    "tool_calls": 52,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 201409,
+    "usage": {
+      "input_tokens": 110,
+      "output_tokens": 74592,
+      "cache_read_input_tokens": 6559095,
+      "cache_creation_input_tokens": 237287
+    }
+  },
+  "tools": {
+    "Bash": 43,
+    "Edit": 3,
+    "Read": 3,
+    "Write": 3
+  },
+  "files_touched": [
+    "llm-dlc/decisions/schema.json",
+    "llm-dlc/loops/stream-conductor.md",
+    "llm-dlc/tools/decisions.py",
+    "llm-dlc/tools/test_decisions.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T21:13:36.309Z",
+      "ended": "2026-11-14T21:13:36.310Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-14T18:23:46.437Z",
+      "ended": "2026-11-14T21:24:02.205Z",
+      "turns": 6,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 110,
+        "output_tokens": 74592,
+        "cache_read_input_tokens": 6559095,
+        "cache_creation_input_tokens": 237287
+      },
+      "peak_context_tokens": 201409
+    }
+  ],
+  "log": {
+    "sha256": "d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69",
+    "bytes": 1586919,
+    "lines": 434,
+    "gzip_bytes": 321482,
+    "path": "llm-dlc/traces/4a47a539-a6f1-4f2d-b4c9-828596296714/logs/d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ltmykkvxtywqmuyrlstvwzukpkolxwyl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor step 1: the decision record, llm-dlc/decisions/NAME.jsonl, with decisions.py and its view",
+      "body": "A parallel run's conductor will decide what it safely can and queue the rest for the user, who reviews afterwards rather than approving first (stream-conductor.md, Design 3 and 4). This adds the data that rests on: llm-dlc/decisions/schema.json, one JSON line per change of state, and llm-dlc/tools/decisions.py (standard library only, as sync.py) to write and read it. The conductor writes with record (a new decision, or a patch over one's current state; a decision taken without a review gets the one Design 3's table gives, flagged when costly or of medium confidence) and depend (adds what was built on a decision; at three commits or any job one still unreviewed is flagged again). The user writes review accept/overturn and answer lines, by id or range (D003-D007). list, show and counts give the projections the merge loop and a status bar will read. Every write is checked against the whole record first and refused, with nothing written, if it would leave a problem.\n\nsync.py renders the view (llm-dlc/decisions/NAME.md: flagged first, then open questions, then unreviewed, then overturned, then settled) with its other generated files and in regenerate; a record left in conflict by a merge keeps its view and both are listed. check validates each record: the schema (by a small validator, so check still needs nothing beyond the standard library), seq order, ids that exist, a decision the conductor may not take alone, a flag it left off, a review it wrote for the user, a decision changed instead of superseded, a view out of date, and anything the redactor would still change.",
+      "log_sha256": "d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69"
+    }
+  ],
+  "logs": {
+    "d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69": {
+      "bytes": 1586919,
+      "lines": 434,
+      "gzip_bytes": 321482,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

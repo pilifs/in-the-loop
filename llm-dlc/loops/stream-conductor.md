@@ -305,6 +305,22 @@ The next parallel run uses the conductor:
 - 2026-11-14, the user chose to run steps 1–3 now in the workspace `stream-conductor`, beside example-targets' Phase 5
   (see [This run](#this-run-steps-13-beside-example-targets)); steps 4–6 wait for its merge. Next: step 1, the decision
   record.
+- 2026-11-14, step 1 done: the decision record.
+  - `llm-dlc/decisions/schema.json` and `llm-dlc/tools/decisions.py`, a tool of its own as proposed (`list`, `show`,
+    `counts`, `review`, `answer`, `render`, `check`, and the conductor's `record` and `depend`).
+  - The views are rendered by `sync.py` with its other generated files and by `regenerate`. `check` validates the
+    records against the schema, plus the rules it can't state, Design 3's action table among them. Leak scanning
+    covers the records too.
+  - Tests: `test_decisions.py` (15, including an overturn after dependents grew, and agreement with `jsonschema`) and
+    two more in `test_workspaces.py`. All 210 tool tests pass.
+  - The two open items, taken as proposed:
+    - the re-flag threshold is three commits or any job (`DEPENDENTS_THRESHOLD`);
+    - `decisions.py` is its own tool.
+  - Beyond Design 4's field table:
+    - every line has a `kind` (`decision`, or the user's `review` and `answer` lines) and an `at`, so a review never
+      rewrites the conductor's snapshot;
+    - the views add an "overturned, waiting for the conductor" group between unreviewed and the rest.
+  - Next: step 2, inboxes.
 - Status: working
 
 ## Loop settings

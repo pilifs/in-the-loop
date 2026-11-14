@@ -15,6 +15,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import decisions
 import metrics
 import sync
 
@@ -52,7 +53,7 @@ class Workspaces(unittest.TestCase):
         values = {"REPO": root, "CHANGES": llm, "TRACES": llm / "traces", "INDEX": llm / "index.json",
                   "CHANGES_README": llm / "README.md", "TRACES_README": llm / "traces" / "README.md",
                   "METRICS_ROLLUP": llm / "traces" / "metrics.json", "SESSION_NOTES": llm / "session-notes",
-                  "PRICING": PRICING}
+                  "DECISIONS": llm / "decisions", "PRICING": PRICING}
         with contextlib.ExitStack() as stack:
             for name, value in values.items():
                 stack.enter_context(mock.patch.object(sync, name, value))
@@ -188,6 +189,41 @@ class Workspaces(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("llm-dlc/traces/session-shared/manifest.json", err)
             self.assertEqual(sync.INDEX.read_text(), before)
+
+    def record_decision(self, question: str):
+        """A made-up decision in the record made-up, written as the conductor writes it."""
+        data = {"asked": {"by": "runtime", "question": question}, "state": "decided",
+                "options": [{"id": "a", "summary": "This way", "consequences": "None."}],
+                "decision": {"option": "a", "by": "conductor", "rationale": "The only option.",
+                             "confidence": {"level": "high", "basis": "the brief"},
+                             "recovery": {"class": "cheap", "undo": "Revert it."}}}
+        with mock.patch("sys.stdout", io.StringIO()):
+            self.assertEqual(decisions.main(["record", "made-up"], root=sync.DECISIONS,
+                                            stdin=io.StringIO(json.dumps(data))), 0)
+
+    def test_a_decision_record_in_conflict_is_listed_and_the_trace_files_still_settled(self):
+        b = self.two_lines()
+        for root, question in ((self.a, "A's question?"), (b, "B's question?")):
+            with self.at(root):
+                self.record_decision(question)
+                setattr(self, "line_a" if root == self.a else "line_b", self.commit("decision"))
+        with self.at(self.a):
+            self.run_jj("new", self.line_a, self.line_b)
+            code, out, err = self.regenerate()
+            self.assertEqual(code, 1)
+            self.assertIn("regenerated: llm-dlc/index.json", out)
+            self.assertEqual(sorted(sync.conflicted_paths()),
+                             ["llm-dlc/decisions/made-up.jsonl", "llm-dlc/decisions/made-up.md"])
+            self.assertIn("llm-dlc/decisions/made-up.jsonl", err)
+
+    def test_the_decision_views_are_written_with_the_other_generated_files(self):
+        with self.at(self.a):
+            self.record_decision("A question?")
+            view = sync.DECISIONS / "made-up.md"
+            view.unlink()
+            sync.write_index()
+            self.assertIn("### made-up-D001: A question?", view.read_text())
+            self.assertEqual(decisions.problems(sync.DECISIONS), [])
 
     def test_without_a_conflict_it_rewrites_stale_files(self):
         with self.at(self.a):

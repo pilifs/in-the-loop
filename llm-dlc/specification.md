@@ -23,6 +23,8 @@ llm-dlc/traces/<session-id>/summary.md                    checked in
 llm-dlc/traces/<session-id>/metrics.json                  checked in
 llm-dlc/traces/<session-id>/runs/<record>.md              checked in; a loop run's record, redacted
 llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded to blob storage
+llm-dlc/decisions/<name>.jsonl                            checked in; a parallel run's decisions, appended by decisions.py
+llm-dlc/decisions/<name>.md                               checked in; the review view of that record, generated
 ```
 
 - **Index:** the global manifest, a light list of every session with its title, time span, current log and the commits it made.
@@ -35,6 +37,7 @@ llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded t
   It holds stats, the commits with their full messages, and every referenced log.
 - **Summary:** the human-readable view of the session, rendered from `llm-dlc/summary-template.md`: each commit with the message the agent wrote, then each prompt with the final reply.
   It is in the same tree as the manifest, so the summary in a commit describes exactly the log that the commit points at.
+- **Decision record:** what a parallel run's conductor decided without the user, and the questions it queued for them (`llm-dlc/loops/stream-conductor.md`, Design 3 and 4). One JSON line per change of state, validated against `llm-dlc/decisions/schema.json`; `llm-dlc/tools/decisions.py` writes it, and nobody edits it by hand. The review view beside it is rendered on every sync and by `regenerate`, and `check` fails if a record breaks the schema or the rules the schema can't state (seq order, ids that exist, a decision the conductor may not take alone, a review it wrote for the user), if its view does not match it, or if the redactor would still change something in it.
 - **Log:** the full redacted transcript (prompts, responses, thinking, tool calls and results, and raw API request records), stored gzipped.
   Subagent transcripts are separate logs in the same folder, listed under `subagents`.
 
@@ -153,7 +156,7 @@ python3 llm-dlc/tools/sync.py init      # once per clone: jj file-size limit and
 jj trace-commit -m "Summary line" -m "Body"   # finish @; its message and its manifest point at the same log
 jj trace-push --bookmark main          # record outstanding traces, upload, check, push; leaves @ empty
 python3 llm-dlc/tools/sync.py check     # verify hashes, trailers (in the history of @) and redaction
-python3 llm-dlc/tools/sync.py regenerate  # after a merge: rewrite the generated trace files, settling their conflicts
+python3 llm-dlc/tools/sync.py regenerate  # after a merge: rewrite the generated trace files and decision views, settling their conflicts
 python3 llm-dlc/tools/sync.py check --full  # the same, trusting no cached result (LLM_TRACES_FULL=1 for sync and push too)
 python3 llm-dlc/tools/sync.py scan      # preview a publish: what was redacted, what to look at (writes nothing)
 python3 llm-dlc/tools/sync.py sync --all  # backfill every session of this repo (plain `sync`: only those that changed)

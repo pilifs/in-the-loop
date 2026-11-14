@@ -925,7 +925,7 @@ class Fingerprints(unittest.TestCase):
     of sync.py, which is safe only while redactor.py runs nothing from sync.py or metrics.py."""
 
     TOOLS = Path(__file__).resolve().parent
-    SOURCES = ("sync.py", "redactor.py", "redaction_rules.py", "measure.py", "metrics.py")
+    SOURCES = ("sync.py", "redactor.py", "redaction_rules.py", "measure.py", "metrics.py", "decisions.py")
 
     def imports(self, name: str) -> set[str]:
         tree = ast.parse((self.TOOLS / name).read_text())

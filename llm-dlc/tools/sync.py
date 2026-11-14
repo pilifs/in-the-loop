@@ -11,6 +11,8 @@ Layout (llm-dlc/specification.md has the full spec, llm-dlc/README.md the proced
   llm-dlc/traces/<session-id>/runs/<record>.md       checked in: a feature-loop.sh run of the session, redacted
   llm-dlc/traces/metrics.json                        checked in: those tables added up over all sessions
   llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
+  llm-dlc/decisions/<name>.md                        checked in: a parallel run's decisions, rendered from its
+                                                     record <name>.jsonl (decisions.py, which writes the record)
 
 Public URL of a log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
 
@@ -36,9 +38,10 @@ Commands:
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
                                 each -m is one paragraph, as in git; then runs `check` on the result,
                                 counting its notes, and fails if it finds an error
-  sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json and
-                                README.md's index table from the session files, which settles their conflicts;
-                                lists any other conflict and exits 1 if one is left
+  sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json,
+                                README.md's index table and the decision views from the session files and
+                                decision records, which settles their conflicts; lists any other conflict and
+                                exits 1 if one is left
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
@@ -110,6 +113,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
+import decisions  # llm-dlc/tools/decisions.py
 import metrics  # llm-dlc/tools/metrics.py
 import redaction_rules  # llm-dlc/tools/redaction_rules.py
 import redactor  # llm-dlc/tools/redactor.py: what decides a cached result
@@ -131,6 +135,7 @@ TRACES_README = TRACES / "README.md"
 TRACES_README_TEMPLATE = CHANGES / "traces-readme-template.md"
 METRICS_ROLLUP = TRACES / "metrics.json"
 PRICING = CHANGES / "pricing.json"
+DECISIONS = CHANGES / "decisions"  # parallel runs' decision records and their views (decisions.py)
 INDEX_SCHEMA = "llm-trace-index/v1"
 LANGFUSE_ENV = CHANGES / "infra" / "langfuse" / ".env"
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
@@ -1189,6 +1194,7 @@ def write_index() -> None:
             write_if_changed(CHANGES_README, readme[:start + len(INDEX_BEGIN)] + "\n" + "\n".join(table) + "\n" + readme[end:])
     write_if_changed(TRACES_README, render_traces_readme(manifests))
     write_if_changed(METRICS_ROLLUP, render_rollup(manifests))
+    decisions.render_all(DECISIONS)
 
 
 def _table(header: list[str], rows: list[list]) -> str:
@@ -3400,9 +3406,11 @@ def cmd_regenerate(args: list[str]) -> int:
     conflict. Two lines that each committed a session conflict in all four, and a clean textual
     merge of them can still be wrong; every input (a session's manifest and metrics.json) is in a
     directory of its own, so it merges cleanly and regenerating is always the right resolution.
+    The decision views (llm-dlc/decisions/*.md) are rewritten from their records the same way.
     A conflict anywhere else is left for a person or an agent and listed, and so is one in
     README.md outside its index table: nothing is regenerated then if a session file conflicts,
-    since its outputs would be read from conflict markers. Exits 0 when no conflict is left."""
+    since its outputs would be read from conflict markers. A decision record in conflict keeps its
+    view as it is, and both are listed. Exits 0 when no conflict is left."""
     if args:
         print("usage: sync.py regenerate", file=sys.stderr)
         return 2
@@ -3476,7 +3484,7 @@ def tree_files(wanted: list[tuple[str, str]]) -> dict[tuple[str, str], bytes | N
 
 
 def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str]:
-    """Errors in the files generated over all sessions, and in the review lists."""
+    """Errors in the files generated over all sessions, in the review lists, and in the decision records."""
     errors = []
     if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
         errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
@@ -3484,9 +3492,10 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
         errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
     if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup(manifests):
         errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
-    for listed in (REVIEWED, ALLOWLIST):
+    for listed in (REVIEWED, ALLOWLIST, *sorted(DECISIONS.glob("*.jsonl"))):
         if listed.exists() and (leaks := redact.leaks(listed.read_text())):
             errors.append(f"unredacted {leaks} in {listed.relative_to(REPO)}")
+    errors += decisions.problems(DECISIONS, str(DECISIONS.relative_to(REPO)))
     return errors
 
 
