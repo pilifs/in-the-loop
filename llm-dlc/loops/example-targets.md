@@ -531,7 +531,33 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   them, with a test that any other host is still refused; then prepare P3 (307) by its pinned upstream build, as a job.
   P1 (305) stays blocked on its SNAPSHOT pins. The positive stream finished `done` before the decision, so this falls to
   this loop.
-- Status: working
+- 2026-11-14, **the reconcile, steps 1–3 done; step 4, the merge, needs the user** (nothing merged or committed here).
+  - **Step 1**: all four streams finished `done`: runtime at `qrsyzzwu`, negative `zuoknpln`, positive `uzxpwmku`,
+    workflow `nqztmpwy`. No stream scope or integration scope was active, and no job was pending.
+  - **Steps 2–3**: each stream's last turns are recorded on its branch (`Record session traces`: runtime `xvvuxmqs`,
+    negative `mqnnxzkt`, positive `kxqozyus`, workflow `svrtnrlo`), and their 35 logs not yet here were copied in.
+    Negative's commit also carries the 8 allow-list proposals its last turn left uncommitted. Each of those commits
+    reported 34–42 "session … has no manifest" errors, from the workspaces' old `sync.py`, before `xyootzvm`; they end
+    with the merge.
+  - **Step 4 needs the user.** `jj new @- example-targets-{runtime,negative,positive,workflow}@-` followed by
+    `sync.py regenerate` leaves one conflict, `llm-dlc/allowlist.json`. Positive (`vwsxyvlr`) added 15 proposals and
+    negative 8, all to the same base of 23. Their union has 46 entries, and no id differs between the sides. Writing
+    the file is refused to this loop, and so is taking one side with `jj restore`, which was denied as undermining
+    oversight. The merge was therefore backed out, uncommitted. **The user's options**: resolve that one file in the
+    merge (the union, or positive's side, after which this loop re-proposes negative's 8 with `sync.py allow propose`,
+    giving the same reasons), then let this loop commit the merge; or allow this loop to resolve such a conflict.
+  - **The merged tree, checked before backing out**: `example-targets-integration.sh` passes everything but contract
+    A5: the targets suite (181), `test_build.py` (190), `test_pipeline.py` (29), every sidecar's plan, and contract rows
+    A0–A4, A6 and A7. The trial merge's 3 runtime×workflow errors are gone. A5 fails because all four fixture proof
+    tasks come back `unresolved`: the claims say `code`, but the fixture's classes record no parameter names (`arg0`).
+    This is VF-024's first point, reached now that the route runs end to end. Runtime asked for the fix as an
+    interface request: compile Phase 0's fixture recipe with `-parameters` (`runtime_calibrate.py`'s
+    `--fixture-javac-flag`). It is Phase 5 step 1's first item after the merge, with A5 as its reproducer.
+  - **Next**: commit the merge (step 4); fold the streams' Progress, deferrals and interface requests here (step 5);
+    forget the five workspaces (step 6); then Phase 5, starting with the fixture recipe and A5, and runtime's
+    `runtime_maven.py` hosts for P3.
+- Status: blocked: the merge's one conflict, `llm-dlc/allowlist.json` (positive's 15 and negative's 8 allow-list
+  proposals added to the same base), can't be resolved by this loop; the user resolves it, or allows the loop to
 
 ## Loop settings
 
