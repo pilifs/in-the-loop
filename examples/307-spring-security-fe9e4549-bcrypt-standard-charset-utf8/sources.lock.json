@@ -1,0 +1,56 @@
+{
+  "$comment": "The source lock of this packet: what was checked against upstream, how, and when. Revisions are named as in target.json. 'files' gives the git blob id (git hash-object) of each source file the selected method depends on, at each revision, so a later reader can check a checkout, a release or a sources JAR against it. 'correspondence' records which published artifacts carry the same sources. Checked by hand by the positive stream; a note, not evidence of a build or a replay.",
+  "checkedOn": "2026-11-14",
+  "how": "git init --bare; git fetch --depth=2 --filter=blob:none https://github.com/spring-projects/spring-security SHA; parents read from the fetched commit object; tags fetched as refs/tags/T and resolved with git rev-parse T^{commit}",
+  "repository": "https://github.com/spring-projects/spring-security",
+  "revisions": {
+    "before": {
+      "commit": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+      "version": "5.2.0.BUILD-SNAPSHOT",
+      "files": {
+        "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java": "f6c677057ba8229488dd4d4a781970cb9dbfc8db"
+      }
+    },
+    "after": {
+      "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+      "parent": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+      "version": "5.2.0.BUILD-SNAPSHOT",
+      "files": {
+        "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java": "7ccaa91b9e4b523012677e44624f25ffc5eca8b8"
+      }
+    }
+  },
+  "dependencies": {
+    "$comment": "BCrypt needs only the JDK (java.nio.charset, java.security.MessageDigest, java.security.SecureRandom, java.util.Arrays). The crypto module's optional dependencies, spring-jcl 5.2.0.RC1 (gradle/dependency-management.gradle) and bcpkix-jdk15on, are not used by BCrypt.",
+    "build": "Gradle 5.5.1 wrapper (services.gradle.org); buildscript: io.spring.gradle:spring-build-conventions:0.0.23.RELEASE and spring-boot-gradle-plugin 2.2.0.M3 from repo.spring.io/plugins-snapshot and plugins.gradle.org; ext.springVersion 5.2.0.RC1, springDataVersion Moore-RC2, reactorVersion Dysprosium-M3; no SNAPSHOT dependency pinned."
+  },
+  "correspondence": [
+    {
+      "release": "5.2.0.M4",
+      "tag": "5.2.0.M4",
+      "commit": "be23fd626ea5753a2a415501580c26c455ae6cfc",
+      "files": {
+        "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java": "f6c677057ba8229488dd4d4a781970cb9dbfc8db"
+      },
+      "finding": "BCrypt.java identical to before's; a milestone, published only to repo.spring.io."
+    },
+    {
+      "release": "5.2.0.RELEASE",
+      "tag": "5.2.0.RELEASE",
+      "commit": "b7d97ca077ef92a2eb750b56f7b2415e1e02ea01",
+      "files": {
+        "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java": "59ea9bb059055ad8aa78ac83b370efbe873a4254"
+      },
+      "finding": "Differs from after's by the removed unused import java.io.UnsupportedEncodingException and `private final void encipher` becoming `private void encipher` (an access flag on a callee of hashpw(byte[],String)); hashpw(String,String) itself is the same source."
+    },
+    {
+      "release": "5.1.6.RELEASE",
+      "tag": "5.1.6.RELEASE",
+      "commit": "f3cdd44350156ffd84b73612f4aab90492054699",
+      "files": {
+        "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java": "bca8af3b866fa5c78ebb39b2505a2aea60443389"
+      },
+      "finding": "Not before's code: BCrypt was rewritten on master before 5.2.0 (hundreds of lines differ)."
+    }
+  ]
+}

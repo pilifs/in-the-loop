@@ -141,8 +141,40 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
-  included.
+- Forked after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0 included.
+- 2026-11-14, **the three positive packets source-locked**: 305 (P1, Boot), 306 (P2, Framework) and 307 (P3, Security),
+  each with `example.json`, `target.json` (identity, history, preparation route, tasks, handoff), `sources.lock.json`
+  and a README. All six SHAs and parents were checked against github.com by a shallow fetch by SHA (single parents, no
+  merges), with the selected files' blob ids and the nearest releases' recorded. No build, replay or proof ran; the
+  claim files, oracles, drivers, probes and mutants are still to write. What the check found, against this brief's
+  "commit pairs with no published JARs, so they take runtime's pinned upstream build route":
+  - **P2 needs no build.** `PatternMatchUtils.java` at `27bfcbbc` and `db9a10bf` is byte-identical to the file at
+    `v5.3.6` and `v5.3.7` and in Maven Central's spring-core 5.3.6 and 5.3.7 sources JARs. 306 takes the
+    published-artifact route on its `release` pair, JAR sha256s pinned (fetched by hand from Central, sha1s matching
+    Central's; a note, not evidence).
+  - **P1's exact-commit build is predicted irreproducible**: both commits' `spring-boot-dependencies` pin 14 pre-release
+    versions, SNAPSHOTs among them (Spring Data Moore-BUILD-SNAPSHOT, Security, AMQP, Batch, Integration, Kafka), and
+    Framework 5.2.0.RC2 from repo.spring.io/milestone. 2.2.0.RELEASE carries after's `WebMvcTags.java` unchanged;
+    nothing on Central carries before's (2.1.8.RELEASE's `outcome()` is different code: 99 and 600 classify
+    differently).
+  - **P3's build needs hosts outside decision 1**: services.gradle.org (Gradle 5.5.1), repo.spring.io/plugins-snapshot,
+    plugins.gradle.org and a Spring 5.2.0.RC1 milestone; no SNAPSHOT is pinned. Before's `BCrypt.java` is 5.2.0.M4's
+    (milestone only); 5.2.0.RELEASE differs from after's by an unused import and a `final` on private `encipher`.
+  - Both are recorded as predicted `build-or-dependency` blockers in their handoffs. **For the user, through the main
+    brief's for-review list**: P1 and P3 can only be prepared through (a) an extension of decision 1 to repo.spring.io,
+    services.gradle.org and plugins.gradle.org, hash-pinned (enough for P3, not for P1's SNAPSHOTs), or (b) a narrower,
+    separately labelled scope: the selected classes compiled from each commit's sources outside the upstream build,
+    against pinned Central releases of their direct dependencies. A4 can rest on P2 meanwhile.
+- **Interface requests, for the merge**:
+  1. *A constructed mutant as a revision*: the schema has no way to say "base commit plus this patch". Proposed: an
+     optional `patch` (a file) on a revision, with its sha256, applied by runtime's preparation before building (or, on
+     the published route, the patched class compiled and put into a copy of the base JAR, never shadowing it). Until
+     then each mutant is a `controls` entry of kind `mutation` naming its base revision and patch hash.
+  2. *The router*: `build.py --index-only` at the merge, so `find.py` (which reads `examples/index.json`) lists 305–307.
+  3. *Companions*: link 305–307 to the negative packets' numbers once the negative stream assigns them.
+- Next: P2's claim file (the declared UTF-16 bounds), independent oracle, replay driver and probes, and its
+  dropped-prefix mutant. P2 first, since only it can be prepared under decision 1 today. Then P1 and P3 the same way,
+  then P5 (105).
 - Status: working
 
 ## Loop settings

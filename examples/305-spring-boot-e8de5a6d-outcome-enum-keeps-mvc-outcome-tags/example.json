@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "305",
+  "title": "spring-boot@e8de5a6d: the Outcome enum keeps WebMvcTags.outcome's tags (positive scaffold)",
+  "summary": "Boot's 2019 change that moves HTTP outcome classification into an `Outcome` enum and rewrites `WebMvcTags.outcome(HttpServletResponse)` to `Outcome.forStatus(status).asTag()`. The positive of the metric-label family: both revisions should give the same tag key and value for a null response and every int status, and each revision's tag takes one of six values. A scaffold: source-locked, tasks named, not yet built or run.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "open-source-libraries",
+    "off-by-one",
+    "special-values"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Spring Boot Actuator",
+    "file": "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+    "symbol": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "also": [
+      "B11"
+    ],
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3"
+  },
+  "change": {
+    "kind": "refactor"
+  },
+  "verdictLabel": "scaffold: no verdict recorded",
+  "notes": [
+    "A positive scaffold of llm-dlc/loops/example-targets.md (positive stream): an expected outcome for named claims on one upstream change, never a statement that the release is secure. Readiness and proof outcomes come from receipts, not from this file.",
+    "Source lock checked upstream on 2026-11-14 (sources.lock.json): e8de5a6d's only parent is 9b8decf9.",
+    "The exact-commit build is predicted irreproducible: both commits pin SNAPSHOT and milestone dependencies (Spring Data Moore-BUILD-SNAPSHOT, Spring Framework 5.2.0.RC2 and 12 more). No Central artifact has before's WebMvcTags; 2.2.0.RELEASE has after's, and 2.1.8.RELEASE's outcome() is different code (99 and 600 classify differently).",
+    "The old path calls Spring Framework's HttpStatus.Series.resolve(int), which divides by 100, truncating towards zero: so -99..99 give no series (UNKNOWN), as Outcome.forStatus does. That agreement is the preservation task's hypothesis, not a result.",
+    "WebMvcTags' static initializer compiles two regular expressions (TRAILING_SLASH_PATTERN, MULTIPLE_SLASH_PATTERN), and the response is a servlet interface: both are where a native proof is predicted to stop, until a probe reaches them."
+  ],
+  "target": "target.json"
+}

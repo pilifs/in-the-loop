@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "306",
+  "title": "spring-framework@db9a10bf: simpleMatch's prefix check as startsWith (positive scaffold)",
+  "summary": "Framework's 2021 change of one expression in `PatternMatchUtils.simpleMatch(String,String)`, from `pattern.substring(0, i).equals(str.substring(0, i))` to `pattern.startsWith(str.substring(0, i))`. The positive of the binder decision-string family: both revisions should return the same boolean and exceptions over a bounded UTF-16 domain. Maven Central's spring-core 5.3.6 and 5.3.7 carry exactly the parent's and child's source. A scaffold: source-locked, tasks named, not yet run.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "text-encoding",
+    "request-binding",
+    "dropped-case"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Spring Framework (spring-core)",
+    "file": "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java",
+    "symbol": "org.springframework.util.PatternMatchUtils#simpleMatch"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75"
+  },
+  "change": {
+    "kind": "refactor"
+  },
+  "verdictLabel": "scaffold: no verdict recorded",
+  "notes": [
+    "A positive scaffold of llm-dlc/loops/example-targets.md (positive stream): an expected outcome for named claims on one upstream change, never a statement that the release is secure. Readiness and proof outcomes come from receipts, not from this file.",
+    "Source lock checked upstream on 2026-11-14 (sources.lock.json): db9a10bf's only parent is 27bfcbbc. PatternMatchUtils.java at 27bfcbbc and v5.3.6, and in spring-core-5.3.6-sources.jar, is one blob (04301284); at db9a10bf and v5.3.7, and in spring-core-5.3.7-sources.jar, another (67871015). So the release pair 5.3.6 -> 5.3.7 runs the commits' original method bytecode from Maven Central, with no upstream build.",
+    "simpleMatch(String,String) calls only String methods and itself, and the class has no static initializer.",
+    "The native checker of application-core takes a String parameter as bounded UTF-16 with content and never null, and refuses null: the claim's null pattern and string are part of the declared domain, so a refusal there is reported, not dropped."
+  ],
+  "target": "target.json"
+}

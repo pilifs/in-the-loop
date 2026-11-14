@@ -1,0 +1,79 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "pattern-match-prefix-positive",
+    "family": "spring-data-binding",
+    "role": "positive",
+    "matching": "The independent positive of the binder decision-string family (CVE-2022-22968's case-sensitive disallowed fields): PatternMatchUtils.simpleMatch is the helper DataBinder's allowed and disallowed field checks call. Matched in bounded UTF-16 string decisions and recursive wildcard matching. Decision preservation is not a new case or locale guarantee, and a predicate preserved is not binder mutation protection.",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "revisions": {
+      "before": {
+        "commit": "27bfcbbc823897169942ddc9a9ff9538486426c5",
+        "checked": "2026-11-14: fetched by SHA from github.com (git fetch --depth=2 --filter=blob:none); the only parent of after."
+      },
+      "after": {
+        "commit": "db9a10bf3524923e8cd5be3f2b847002b8289f75",
+        "parent": "27bfcbbc823897169942ddc9a9ff9538486426c5",
+        "checked": "2026-11-14: fetched by SHA from github.com; one parent, 27bfcbbc (not a merge); 2021-04-21 14:56:38 +0300, 'Use String.startsWith() instead of substring() in PatternMatchUtils'; one file changed, one expression and the copyright year."
+      },
+      "release-before": {
+        "commit": "83c6d100950221189d5d6001d3b2e806213f3a98",
+        "tag": "v5.3.6",
+        "release": "5.3.6",
+        "checked": "2026-11-14: the tag v5.3.6 fetched from github.com and resolved to this commit. Its PatternMatchUtils.java is blob 04301284, the same as before's, and so is the file in Maven Central's spring-core-5.3.6-sources.jar (sources.lock.json)."
+      },
+      "release-after": {
+        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+        "tag": "v5.3.7",
+        "release": "5.3.7",
+        "checked": "2026-11-14: the tag v5.3.7 fetched from github.com and resolved to this commit. Its PatternMatchUtils.java is blob 67871015, the same as after's, and so is the file in Maven Central's spring-core-5.3.7-sources.jar (sources.lock.json)."
+      }
+    },
+    "pairs": [
+      { "name": "positive", "kind": "positive", "before": "before", "after": "after" },
+      { "name": "release", "kind": "release", "before": "release-before", "after": "release-after", "selected": true }
+    ],
+    "links": [
+      "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
+      "https://github.com/spring-projects/spring-framework/issues/26822"
+    ]
+  },
+  "preparation": {
+    "route": "published-artifact",
+    "artifacts": [
+      { "revision": "release-before", "coordinates": "org.springframework:spring-core:5.3.6",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.6/spring-core-5.3.6.jar",
+        "sha256": "7d789153c82b2225f640261b2644fb60decafc6d5c01b9386f3e4e978231f46c" },
+      { "revision": "release-before", "coordinates": "org.springframework:spring-jcl:5.3.6",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.6/spring-jcl-5.3.6.jar",
+        "sha256": "9d56d08d322314793842355b79f860adad3688c6035ef9eded63fd9a0d29c489" },
+      { "revision": "release-after", "coordinates": "org.springframework:spring-core:5.3.7",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+        "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8" },
+      { "revision": "release-after", "coordinates": "org.springframework:spring-jcl:5.3.7",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+        "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa" }
+    ],
+    "jdks": ["21", "25"]
+  },
+  "tasks": [
+    {
+      "id": "replay", "kind": "replay", "relation": "preservation", "pair": "release",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "notes": ["Concrete controls only: each release's original spring-core JAR (with its spring-jcl) in its own JVM, on JDK 21 and 25, over the probes (null,\"x\"), (\"*\",\"\"), (\"abc*\",\"ab\"), (\"abc*\",\"abcdef\"), (\"abc*\",\"xbcdef\"), (\"a*c\",\"abbbc\"), (\"a*c\",\"abbbd\"), (\"a**c\",\"abc\") and (\"é*\",\"éx\"), plus empty, no-star, leading, internal, trailing and repeated stars. Observed: the boolean, or the exception's class. The release pair is executed because its two JARs carry exactly the commits' PatternMatchUtils.java; the other spring-core classes differ between the releases and are not called by simpleMatch(String,String)."]
+    },
+    {
+      "id": "preservation", "kind": "equivalence", "relation": "preservation", "pair": "release",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "expected": "established", "engine": "native", "gaps": "strict", "requires": ["replay"],
+      "notes": ["Decision preservation: over a declared bounded UTF-16 domain of nullable pattern and string, both revisions return the same boolean and throw the same exceptions. No allowed-change region. The bounds are part of the claim, frozen in its claim file before any attempt; a proof by induction over unbounded strings is a separate, stronger scope. Application-core's native checker refuses a null String parameter, so a null case the domain declares and the checker can't take is reported as a refusal, never dropped from the domain."]
+    }
+  ],
+  "handoff": {
+    "next": "Write the claim file with the declared UTF-16 bounds, the independent oracle, the replay driver and probes, and the dropped-prefix mutation control (llm-dlc/loops/example-targets-positive.md, P2)."
+  }
+}
