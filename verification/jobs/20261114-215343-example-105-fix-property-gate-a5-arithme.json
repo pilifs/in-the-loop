@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-215343-example-105-fix-property-gate-a5-arithme",
+  "title": "example 105 fix-property (gate A5): ArithmeticUtils.pow(int,int) at commons-numbers 8cfc04e8, native strict, expected established",
+  "description": "The job runs python3 examples/tools/build.py 105 --task fix-property, the target route of llm-dlc/loops/example-targets.md, for gate A5 of its acceptance contract (Supported verifier calibration: an actual established or refuted structured result through the integrated path under a fixed claim; unresolved doesn't pass). Example 105 is apache/commons-numbers pull request 223 (NUMBERS-218): commit 8cfc04e8 changed ArithmeticUtils.pow(int,int)'s overflow check from e >= 31 to e > 31, so pow(-2, 31) returns Integer.MIN_VALUE instead of throwing; its parent is e7c172d2. Workflow plans the task from target.json; runtime prepares the revision by the upstream-build route (the exact commit fetched from github.com, its recorded parent checked, the sidecar's mvn --projects commons-numbers-core ... package run by the installed Maven 3.10.0 on JDK 11, by full path, with Maven Central as the one repository, a fresh local repository and --strict-checksums; runtime's job 20261114-174017 built both commits this way in 59 s); its controls run the packet's PowDriver over 75 probes in a separate JVM on JDK 21 and 25, read by controls/oracle.py (the Javadoc's contract); then jvmcontract prove (built by the runner from lib/ at this commit) runs --engine native --gaps strict on the original class with claims/pow-minus-two.json: assume k == -2 && 0 <= e <= 31, assert result == (-2)^e in int arithmetic, result and exception observed, unwind 16. Workflow ingests every record into one format-2 receipt under receipts/fix-property/, and build.py exits 0 only when the receipt's matchesExpected is true. This is the first proof task of a real upstream packet on the merged infrastructure; a failure in a stream's code is a finding to fix with a reproducer, within the brief's timebox of two substantive failures. This job: the fixed commit 8cfc04e8, expected established (non-vacuous: all 32 inputs satisfy the assume and are replay probes, and the companion job refutes the same claim on the parent).",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "examples": [
+      "105"
+    ]
+  },
+  "expected": "example 105 task fix-property gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-14T21:53:43+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "maven",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "runtime's R2 job built both commits and replayed them in 59 s at 858 MiB peak; one Maven build of one module, two short JVM runs, one native strict proof of a 32-input int method; plus jvmcontract's cargo build if lib/'s tree isn't cached; network to github.com and Maven Central"
+  },
+  "steps": [
+    {
+      "name": "example 105 task fix-property (prove)",
+      "run": "python3 examples/tools/build.py 105 --task fix-property",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property"
+  ]
+}

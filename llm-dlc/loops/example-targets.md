@@ -1011,7 +1011,37 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     the other proof tasks, and how its pinned upstream Maven build on JDK 11 is prepared. Once the five jobs above are
     collected, read their receipts. Then queue the other replays: 285–287 `mutant-replay`, 105's `replay`, and 307's
     `replay` and `mutant-replay` (307 only if its route is not blocked; 305 is blocked on its SNAPSHOT pins).
-- Status: working
+- 2026-11-14, **Phase 5 step 2: the calibration's two proof jobs queued (gate A5)**, after a fix without which both
+  would have ended in an error before running.
+  - **Fix: the runner refused every upstream-build task as "missing on this machine: maven".** build.py's plan for
+    105's tasks requires `maven` (`workflow.BUILD_TOOLS`). `pipeline.missing_tools` looked that name up on PATH, where
+    no executable is called `maven`. Runtime builds with the highest Maven under `$TARGETS_MAVEN_CANDIDATES`
+    (sdkman's candidates) by full path, and runtime's own R2 job only got past this because it listed no `maven`.
+    `missing_tools` now asks `installed_maven()` the same question runtime does: is there an install other than
+    `current` or a link? The job schema's `requires` description and `--requires`' help name it.
+    - Reproducer: `test_pipeline.py`'s `MissingToolsTest`, which failed on `ykxtqwmt` (`['maven']` where `[]` was
+      expected). It also checks that an empty candidates directory, or `current` alone, still counts as missing.
+  - **The plan**, checked offline: `build.py --plan 105 --task fix-property` and `fix-property-before` are executable.
+    Each runs one revision (`after` or `before`) by the upstream-build route, Maven 3.10.0 on JDK 11, with native,
+    strict, unwind 16 and `claims/pow-minus-two.json` (key `8a4071f6a417d239` for both tasks). Their `replay`
+    prerequisite only orders the handoff: the route runs each task's own controls before the verifier. The parameter
+    names `k` and `e` come from the LocalVariableTable that Maven's default `-g` writes, which jvmcontract reads when
+    there is no MethodParameters. Runtime's job `20261114-174017` already built both commits by this recipe in 59 s.
+  - **Queued** at this commit, each a `build.py 105 --task T` job requiring the runner's own jvmcontract, with 2 CPUs,
+    3 GiB and 15 minutes:
+    - `20261114-215343-example-105-fix-property-gate-a5-arithme`: `fix-property` on 8cfc04e8, expected established;
+    - `20261114-215345-example-105-fix-property-before-gate-a5`: `fix-property-before` on e7c172d2, expected refuted
+      with the witness (-2, 31), which the replay reproduces on JDK 21 and 25.
+
+    A5 passes on these only if each prints "as expected" and its receipt shows the conclusion and witness. An
+    `unresolved` result is recorded as such, and is not a pass.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (206), `test_build.py`
+    (190), `test_pipeline.py` (32, one new) and `build.py --plan`.
+  - **Next**: nothing in Phase 5 is left that doesn't wait on these seven jobs. Each later step reads their receipts:
+    the remaining replays (285–287 `mutant-replay`, 105 `replay`), step 1's proof tasks and probes, the joint
+    acceptance, the gap inventory and the for-review list. Once they are collected, read each receipt, fix a failure
+    with a reproducer (two substantive failures per item), then queue the rest.
+- Status: waiting on jobs ID 20261114-214754-example-targets-phase-5-gate-a3-example 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 20261114-214818-example-287-replay-gate-a3-cve-2025-2222 20261114-214818-example-306-replay-gate-a4-framework-db9 20261114-214818-example-306-mutant-replay-gate-a4-the-ne 20261114-215343-example-105-fix-property-gate-a5-arithme 20261114-215345-example-105-fix-property-before-gate-a5
 
 ## Loop settings
 

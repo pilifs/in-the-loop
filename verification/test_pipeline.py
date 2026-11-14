@@ -562,6 +562,28 @@ class SignalsTest(unittest.TestCase):
                                   "is failed, not artifacts-ready"]])
 
 
+class MissingToolsTest(unittest.TestCase):
+    def test_maven_is_the_install_runtime_builds_with_not_an_executable_named_maven(self):
+        # build.py --plan 105 --task fix-property requires "maven" (workflow.BUILD_TOOLS), and runtime_upstream.py runs
+        # the highest Maven under $TARGETS_MAVEN_CANDIDATES (sdkman's candidates) by full path. No executable is named
+        # maven, so a lookup on PATH would end every upstream-build task's job as "missing on this machine: maven".
+        with tempfile.TemporaryDirectory() as d:
+            installed, empty = Path(d) / "maven", Path(d) / "none"
+            (installed / "3.10.0/bin").mkdir(parents=True)
+            (installed / "3.10.0/bin/mvn").write_text("#!/bin/sh\n")
+            (installed / "current").symlink_to(installed / "3.10.0")
+            empty.mkdir()
+            env = {"PATH": d}
+            with mock.patch.dict(os.environ, {**env, "TARGETS_MAVEN_CANDIDATES": str(installed)}, clear=True):
+                self.assertEqual(pipeline.missing_tools(["maven"]), [])
+            with mock.patch.dict(os.environ, {**env, "TARGETS_MAVEN_CANDIDATES": str(empty)}, clear=True):
+                self.assertEqual(pipeline.missing_tools(["maven"]), ["maven"])
+            # `current` alone, as runtime ignores it, is no install.
+            (empty / "current").symlink_to(installed / "3.10.0")
+            with mock.patch.dict(os.environ, {**env, "TARGETS_MAVEN_CANDIDATES": str(empty)}, clear=True):
+                self.assertEqual(pipeline.missing_tools(["maven"]), ["maven"])
+
+
 @unittest.skipUnless(SYSTEMD, "systemd-run --user --scope is not available here")
 class SystemdTest(unittest.TestCase):
     def setUp(self):

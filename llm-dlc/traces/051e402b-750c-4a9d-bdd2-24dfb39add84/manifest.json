@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T21:49:06.335Z",
-  "duration_seconds": 12226,
+  "ended": "2026-11-14T21:58:22.203Z",
+  "duration_seconds": 12782,
   "stats": {
-    "turns": 75,
-    "api_calls": 499,
-    "tool_calls": 505,
+    "turns": 80,
+    "api_calls": 536,
+    "tool_calls": 543,
     "tool_errors": 11,
-    "compactions": 13,
+    "compactions": 14,
     "peak_context_tokens": 182954,
     "usage": {
-      "input_tokens": 1018,
-      "output_tokens": 307558,
-      "cache_read_input_tokens": 48541695,
-      "cache_creation_input_tokens": 1611175
+      "input_tokens": 1092,
+      "output_tokens": 326213,
+      "cache_read_input_tokens": 52278311,
+      "cache_creation_input_tokens": 1725299
     }
   },
   "tools": {
-    "Bash": 435,
-    "Read": 33,
-    "Edit": 31,
+    "Bash": 468,
+    "Read": 35,
+    "Edit": 34,
     "Agent": 4,
     "Write": 2
   },
@@ -234,24 +234,38 @@
     {
       "index": 13,
       "started": "2026-11-14T21:33:02.396Z",
-      "ended": "2026-11-14T21:49:06.335Z",
-      "turns": 4,
-      "api_calls": 61,
+      "ended": "2026-11-14T21:49:51.402Z",
+      "turns": 5,
+      "api_calls": 63,
       "usage": {
-        "input_tokens": 122,
-        "output_tokens": 40452,
-        "cache_read_input_tokens": 7470467,
-        "cache_creation_input_tokens": 162632
+        "input_tokens": 126,
+        "output_tokens": 41901,
+        "cache_read_input_tokens": 7824858,
+        "cache_creation_input_tokens": 167565
       },
-      "peak_context_tokens": 175818
+      "peak_context_tokens": 180751
+    },
+    {
+      "index": 14,
+      "started": "2026-11-14T21:50:37.372Z",
+      "ended": "2026-11-14T21:58:22.203Z",
+      "turns": 4,
+      "api_calls": 35,
+      "usage": {
+        "input_tokens": 70,
+        "output_tokens": 17206,
+        "cache_read_input_tokens": 3382225,
+        "cache_creation_input_tokens": 109191
+      },
+      "peak_context_tokens": 122377
     }
   ],
   "log": {
-    "sha256": "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db",
-    "bytes": 16592560,
-    "lines": 5313,
-    "gzip_bytes": 3484708,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db.jsonl.gz"
+    "sha256": "ce16854c0712f10e1521f775de9954323deba1830d267c3708168af260d79bbf",
+    "bytes": 17789285,
+    "lines": 5711,
+    "gzip_bytes": 3753251,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/ce16854c0712f10e1521f775de9954323deba1830d267c3708168af260d79bbf.jsonl.gz"
   },
   "subagents": [
     {
@@ -523,6 +537,14 @@
       "summary": "example-targets Phase 5 step 1: the replay jobs of gates A3 and A4 queued, after fixing build.py's exit and ingestion's release-pair expectation (verification pending)",
       "body": "build.py NNN --task T compared the receipt's status with the task's expected, but a replay decides no claim (status always None, no expected), so every replay job would have exited 1, a reproduced one included. It now exits 0 exactly when the receipt's matchesExpected is true, as its docstring already said; this also stops a vacuous established proof from passing. test_route.py has the reproducer. The pipeline's expected text for a replay job now says what it must show, and scan_signals picks up a target task's 'as expected' and 'NOT AS EXPECTED' lines (new test_pipeline.py test); verification/README.md and examples/README.md say so.\n\nworkflow_ingest read every release pair as a fix (before violates, after holds), though the schema defines it only as a release comparison. Example 306's replay runs its release pair 5.3.6 -> 5.3.7 around a behaviour-preserving change, where both releases hold, so gate A4's replay would have been recorded as not expected. A release pair's sides now follow the case's role: negative = violates/holds, positive = holds/holds, any other role no expectation. test_packets.py's ReplayExpectationTest checks all 13 replay tasks of the seven packets against their READMEs. 306's example.json has a note. Out of date elsewhere: the finished workflow stream's brief (example-targets-workflow.md:219) still states the old rule, left as its record.\n\nQueued, each python3 examples/tools/build.py NNN --task T on the published-artifact route, JDK 21 and 25, expecting 'as expected' and exit 0: 20261114-214754-example-targets-phase-5-gate-a3-example (285 replay, Boot 2.7.17/2.7.18), 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 (286 replay, Framework 5.3.18/5.3.19), 20261114-214818-example-287-replay-gate-a3-cve-2025-2222 (287 replay, Security 6.3.7/6.3.8), 20261114-214818-example-306-replay-gate-a4-framework-db9 (306 replay, spring-core 5.3.6/5.3.7, both hold) and 20261114-214818-example-306-mutant-replay-gate-a4-the-ne (306 mutant-replay: 5.3.7 holds, drop-prefix mutant violates).",
       "log_sha256": "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db"
+    },
+    {
+      "change_id": "xkmosovtkkktqkwqnstusmusrmmwlxwq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 2: the 105 calibration's two proof jobs queued for gate A5, after the runner learned where Maven is (verification pending)",
+      "body": "The runner refused every upstream-build task's job before running it: build.py's plan for example 105 requires 'maven' (workflow.BUILD_TOOLS), and verification/pipeline.py's missing_tools looked that name up on PATH, where no executable is called maven. So both A5 jobs would have ended as 'missing on this machine: maven'. Runtime builds with the highest Maven under $TARGETS_MAVEN_CANDIDATES (sdkman's candidates) by full path, and missing_tools now asks installed_maven() the same question. The job schema's requires description and --requires' help name maven. Reproducer: test_pipeline.py's MissingToolsTest, which failed on the parent and passes now; it also checks that an empty candidates directory, or only a 'current' link, counts as missing.\n\nQueued: 20261114-215343-example-105-fix-property-gate-a5-arithme (fix-property on commons-numbers 8cfc04e8, native strict, claims/pow-minus-two.json, expected established) and 20261114-215345-example-105-fix-property-before-gate-a5 (the same claim on the parent e7c172d2, expected refuted with the witness k = -2, e = 31). Each prepares its revision by the upstream-build route (Maven 3.10.0 on JDK 11, Central only), replays the 75 probes on JDK 21 and 25, runs the runner's own jvmcontract and ingests one format-2 receipt. build.py exits 0 only when the receipt matches its expectation, and an unresolved result doesn't pass A5. Both plans were checked offline with build.py --plan.",
+      "log_sha256": "ce16854c0712f10e1521f775de9954323deba1830d267c3708168af260d79bbf"
     }
   ],
   "logs": {
@@ -614,6 +636,12 @@
       "bytes": 15005228,
       "lines": 4705,
       "gzip_bytes": 3200159,
+      "url": null
+    },
+    "ce16854c0712f10e1521f775de9954323deba1830d267c3708168af260d79bbf": {
+      "bytes": 17789285,
+      "lines": 5711,
+      "gzip_bytes": 3753251,
       "url": null
     },
     "cf84d0086e69d1643e95c10d04fc0644e4db466b54aebab6fa31bf1d813d4edc": {

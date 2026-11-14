@@ -479,8 +479,18 @@ def environment(host):
     return _ENVIRONMENT
 
 
+def installed_maven():
+    """Whether examples/tools/targets/runtime_upstream.py has a Maven to build with: it runs the highest install under
+    $TARGETS_MAVEN_CANDIDATES (default sdkman's candidates) by full path, never `current` or a link, and no `mvn` on
+    PATH. A target task's plan requires it as "maven" (workflow.BUILD_TOOLS), which no executable is named."""
+    root = Path(os.environ.get("TARGETS_MAVEN_CANDIDATES", Path.home() / ".sdkman/candidates/maven"))
+    return root.is_dir() and any(e.name != "current" and not e.is_symlink() and (e / "bin/mvn").is_file()
+                                 for e in root.iterdir())
+
+
 def missing_tools(requires):
     checks = {
+        "maven": installed_maven,
         "java": lambda: shutil.which("java") or os.environ.get("JAVA_HOME"),
         "javac": lambda: shutil.which("javac") or os.environ.get("JAVA_HOME"),
         "jbmc": lambda: shutil.which("jbmc"),
@@ -1862,7 +1872,7 @@ def main(argv=None):
     p.add_argument("--cwd", help="the steps' directory, relative to the repo root")
     p.add_argument("--expect-exit", type=int, help="the exit code that counts as a pass (default 0)")
     p.add_argument("--output", action="append", help="a file or directory the job writes that should come back; repeatable")
-    p.add_argument("--requires", action="append", help="java javac jbmc tlc cargo jvmcontract gradle, or any command; repeatable")
+    p.add_argument("--requires", action="append", help="java javac jbmc tlc cargo jvmcontract gradle maven, or any command; repeatable")
     p.add_argument("--priority", type=int, help="higher runs first (default 0)")
     p.add_argument("--revision", help="run at this commit instead of the one that commits the job file")
     p.add_argument("--session", help="the submitting session's id")
