@@ -191,8 +191,47 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
       approximates (`substring`, `endsWith`, `indexOf`). The strict attempt is therefore predicted to be refused, and
       so are its null cases.
   - **Still open:** the mutant has no task or claim key of its own until interface request 1 is settled.
-- Next: P1's packet (305): the outcome-range claim, its oracle, driver and probes, and the 200-boundary mutant. Then P3
-  (307) the same way, then P5 (105). Their build routes still wait on the user (the 2026-11-14 entry above).
+- 2026-11-14, **P1's packet written** (305):
+  - **The claims**, in W1's format:
+    - `claims/outcome-preservation.json` covers a null response, or a carrier whose `getStatus()` returns any `int`.
+      It observes the tag's key and value by value, never identity, and the exception. Its `unwind` of 16 leaves the
+      domain unbounded.
+    - `claims/finite-outcome.json` is shared by both finite-outcome tasks: key `outcome`, one of the six values, nothing
+      thrown.
+  - **The probes.** 27 in `replay/probes.json`: the brief's 15, negative statuses, and codes past 599.
+  - **The oracle.** `controls/oracle.py` reads the status class from the decimal spelling of the status (RFC 9110
+    §15).
+  - **The driver.** It passes a `Proxy` carrier of `HttpServletResponse`; any method other than `getStatus()` throws.
+  - **The mutant.** `controls/status-200.patch`, sha256 `12099f89…`, on after's `Outcome.java`: 200 becomes
+    INFORMATIONAL.
+  - **Also:** the controls in `target.json`, two more predicted blockers, and the requirements and the comparison with
+    the negative in the README.
+  - **Source checks:**
+    - Framework's `HttpStatus.java` is byte-identical at 5.2.0.RC2 (the commits' pin) and 5.2.0.RELEASE.
+    - `Series.resolve` divides by 100, so the old path agrees with `Outcome`'s ranges on every `int`. That is still a
+      hypothesis.
+  - **Hand checks** (notes, not evidence):
+    - Before's `WebMvcTags.java` was compiled from source into a copy of Central's 2.2.0.RELEASE actuator JAR. It agrees
+      with after (compiled from source, and published) and with the oracle on all 27 probes, on JDK 21 and 25.
+    - The mutant differs at 200 only.
+    - A `jvmcontract gaps` scan found `Pattern.compile` in `WebMvcTags.<clinit>` and `Objects.requireNonNull` in
+      micrometer's `ImmutableTag.<init>`, on both sides, neither in the changed code. Every strict attempt is therefore
+      predicted to be refused, beside the predicted refusal of the library interface as input.
+    - W1's planner, run from a temp copy of `wqsyopql`, plans all four tasks.
+  - **For review:**
+    - The mutant satisfies the finite-outcome property by design; it fails preservation and the oracle.
+    - A range property (the value as a function of the status) can't be stated: the response parameter hides the
+      status from `assert`.
+- **For the coordinator**: after each of this run's commits, `sync.py check` reported ERRORs "session … has no
+  manifest" on other streams' changes, never this one's:
+  - the changes, eight by this commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
+    `onssronow` and `mkwpnuru`;
+  - the sessions: 3bb5a1f4 (runtime), eaff7dd7 (workflow) and 70d4b729 (negative).
+
+  It looks like a cross-workspace effect of the check. Nothing was changed for it here.
+- Next: P3's packet (307): the salt from an upstream test, the domain decisions (malformed surrogates, null, an invalid
+  salt), the probes (71, 72 and 73 bytes, against a stored hash), the oracle, the driver and the US-ASCII mutant. Then P5
+  (105). P1's and P3's build routes still wait on the user (the first 2026-11-14 entry above).
 - Status: working
 
 ## Loop settings

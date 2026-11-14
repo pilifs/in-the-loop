@@ -83,7 +83,8 @@
       ],
       "notes": [
         "For a null response or a response whose getStatus() returns any int, both revisions give the same tag key and value and the same specified exceptions. No allowed-change region: the change is meant to preserve every input. The old path's HttpStatus.Series.resolve divides by 100 (truncating towards zero), so it agrees with Outcome.forStatus's ranges on every int, negative ones included: that is the hypothesis this task tests, not a result."
-      ]
+      ],
+      "claim": "claims/outcome-preservation.json"
     },
     {
       "id": "finite-outcome-before",
@@ -96,7 +97,8 @@
       "gaps": "strict",
       "notes": [
         "The family's bounded-label property, as an absolute property of one revision: every result has key 'outcome' and a value among INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR and UNKNOWN. Established would say this one tag dimension is finite on this entry, not that the server or the release is secure."
-      ]
+      ],
+      "claim": "claims/finite-outcome.json"
     },
     {
       "id": "finite-outcome-after",
@@ -109,7 +111,8 @@
       "gaps": "strict",
       "notes": [
         "The same property and domain as finite-outcome-before, on after's artifact: one property, two claim identities."
-      ]
+      ],
+      "claim": "claims/finite-outcome.json"
     }
   ],
   "handoff": {
@@ -118,8 +121,43 @@
         "kind": "build-or-dependency",
         "observed": false,
         "summary": "Predicted from the build files, not from a build: at both commits Boot is 2.2.0.BUILD-SNAPSHOT, and spring-boot-dependencies pins 14 pre-release versions, among them SNAPSHOTs (Spring Data Moore-BUILD-SNAPSHOT, Spring Security, AMQP, Batch, Integration and Kafka BUILD-SNAPSHOTs) and milestones from https://repo.spring.io/milestone (Spring Framework 5.2.0.RC2, Reactor Dysprosium-RC1). The actuator module compiles against many of them as optional dependencies. A SNAPSHOT is a mutable reference whose 2019 contents are gone, so the exact-commit Maven build cannot be reproduced even if decision 1 were extended to repo.spring.io. What remains possible is a narrower, separately labelled scope: WebMvcTags and Outcome from each commit's sources compiled outside the upstream build against pinned Central releases of their direct dependencies (sources.lock.json)."
+      },
+      {
+        "kind": "java-semantics",
+        "observed": false,
+        "summary": "Predicted from a static scan, not from an attempt, for all three native tasks (preservation, finite-outcome-before, finite-outcome-after): jvmcontract gaps on WebMvcTags.outcome reaches java.util.regex.Pattern.compile in WebMvcTags.<clinit> and java.util.Objects.requireNonNull in micrometer's ImmutableTag.<init>, on both sides, each with no approximation, so refused by name under gaps strict. Neither is in the changed code. Run by hand with a binary one lib/src commit old, on JARs that are not the commits' builds (records/outcome-gaps.json, a note). Class initialization is never removed to get past it.",
+        "packet": "records/outcome-gaps.json"
+      },
+      {
+        "kind": "input-construction",
+        "observed": false,
+        "summary": "Predicted from lib/README.md: the parameter is javax.servlet's HttpServletResponse, a library interface, and the checker dispatches invokeinterface only to application methods and passes an interface-typed dependency null (refused if reached). The claims' domain is a null response or one whose getStatus() returns any int (claims/outcome-preservation.json); an attempt that can only take the null response is that refusal, and the claim stays unresolved, never re-read as the null-only domain. The finite-outcome property also reads the result through micrometer's Tag interface (getKey, getValue). The replay's carrier covers the int domain concretely."
       }
     ],
-    "next": "Write the claim files, the independent oracle, the replay driver and probes, and the status-200 mutation control (llm-dlc/loops/example-targets-positive.md, P1)."
-  }
+    "next": "The build route first: the user's decision on the predicted build-or-dependency blocker (Progress of llm-dlc/loops/example-targets-positive.md). Then runtime's preparation of both revisions, the replay task (the driver on each revision's actuator classes in its own JVM, on JDK 21 and 25, read by controls/oracle.py), and the mutant: status-200.patch applied to after's Outcome.java and its class compiled into a copy of after's artifact, replayed against the same oracle (it must fail at 200 and only there). The native attempts are queued only after the replay, and their predicted refusals recorded as observed or withdrawn."
+  },
+  "controls": [
+    {
+      "id": "outcome-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    },
+    {
+      "id": "outcome-driver",
+      "kind": "driver",
+      "path": "replay/driver/inloop/p305/OutcomeDriver.java"
+    },
+    {
+      "id": "outcome-probes",
+      "kind": "probe",
+      "path": "replay/probes.json"
+    },
+    {
+      "id": "status-200-mutant",
+      "kind": "mutation",
+      "path": "controls/status-200.patch",
+      "revision": "after",
+      "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+    }
+  ]
 }

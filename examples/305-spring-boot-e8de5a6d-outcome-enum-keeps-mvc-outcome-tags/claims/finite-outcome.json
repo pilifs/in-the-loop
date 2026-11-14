@@ -1,0 +1,30 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "mvc-outcome-tag-finite",
+  "kind": "property",
+  "statement": "WebMvcTags.outcome(HttpServletResponse response) keeps its tag dimension finite: for a null response, and for a response whose getStatus() returns any int, the result is a Tag whose key is \"outcome\" and whose value is one of INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR and UNKNOWN, and nothing is thrown. Shared by the tasks finite-outcome-before and finite-outcome-after: one property and domain, two artifact-bound claim identities. Established says this one tag dimension of this one entry has at most six values; it says nothing about the server, the release, or the other tags.",
+  "assert": "result != null && result.getKey().equals(\"outcome\") && (result.getValue().equals(\"INFORMATIONAL\") || result.getValue().equals(\"SUCCESS\") || result.getValue().equals(\"REDIRECTION\") || result.getValue().equals(\"CLIENT_ERROR\") || result.getValue().equals(\"SERVER_ERROR\") || result.getValue().equals(\"UNKNOWN\"))",
+  "nullable": ["response"],
+  "observations": ["result", "exception"],
+  "bounds": { "unwind": 16 },
+  "assumptions": [
+    {
+      "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called; the claim ranges over that int.",
+      "basis": "The same domain as claims/outcome-preservation.json, read from the source at both commits: each revision calls getStatus() once and no other method of the response."
+    },
+    {
+      "text": "Class initialization runs as on the JVM, never removed (WebMvcTags's static initializer with its two Pattern.compile calls; before's WebMvcTags$1 and HttpStatus.Series; after's Outcome).",
+      "basis": "The brief's safety rules. An initializer the checker can't run is a refusal, not an assumption."
+    },
+    {
+      "text": "unwind 16 leaves the domain unbounded: before's only loop is five iterations over HttpStatus.Series.values(); after has none.",
+      "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2."
+    }
+  ],
+  "notes": [
+    "No throws clause: an exception is observed, so a revision that throws fails the property rather than escaping it.",
+    "The assert names the six values literally; it is the seed's statement (finite-outcome-domain), not the patch's enum, so a seventh value on either side refutes it.",
+    "The 200-boundary mutant (controls/status-200.patch) still gives one of the six values, so it satisfies this property by design: this property bounds the label set and can't see a misclassification. The mutant's failing contract is the preservation claim and the oracle's range statement. A stronger range property, value as a function of status, would need the status in the assert, which the response parameter hides; it is not claimed here."
+  ]
+}
