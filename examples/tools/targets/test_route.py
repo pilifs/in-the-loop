@@ -116,6 +116,28 @@ class BuildHooksTest(StubExamples):
             self.assertEqual(code, 2, argv)
             self.assertIn(fragment, err, argv)
 
+    def test_a_task_run_exits_0_only_when_its_receipt_matches_what_the_task_expects(self):
+        # Ingestion decides the expectation (workflow_ingest.py), and build.py's exit code follows the receipt's
+        # matchesExpected. A replay states no expected status and its receipt's status is always None, so comparing
+        # statuses failed every replay, a reproduced one included; and a proof's status alone misses a vacuous one.
+        replay = {"id": "replay", "kind": "replay", "relation": "security", "pair": "fix", "target": "fixture.Gate#allowed"}
+        (self.folder / "target.json").write_text(json.dumps({**TARGET, "tasks": TARGET["tasks"] + [replay]}))
+        for task, status, matches, code_wanted, said in [
+                ("replay", None, True, 0, "as expected"),
+                ("replay", None, False, 1, "NOT AS EXPECTED (the outcomes its pair's kind expects)"),
+                ("fixed-security", "established", True, 0, "as expected"),
+                ("fixed-security", "established", False, 1, "NOT AS EXPECTED (established)")]:
+            receipt = interfaces.Receipt(path=f"receipts/{task}/a1/result.json", claim="c", attempt="a1", status=status,
+                                         execution="completed")
+            read = []
+            with mock.patch.object(build.target_route, "run", return_value=receipt), \
+                    mock.patch.object(build.result_format, "load",
+                                      side_effect=lambda p: read.append(p) or {"matchesExpected": matches}):
+                code, out, _ = self.build("285", "--task", task)
+            self.assertEqual(code, code_wanted, (task, matches))
+            self.assertIn(said, out, (task, matches))
+            self.assertEqual(read, [self.folder / receipt.path])
+
     def test_an_invalid_sidecar_stops_the_example_being_read(self):
         (self.folder / "target.json").write_text(json.dumps({**TARGET, "extra": 1}))
         with self.assertRaises(SystemExit) as stop:

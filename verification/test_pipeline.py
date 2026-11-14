@@ -468,7 +468,8 @@ class PipelineTest(unittest.TestCase):
         proc = submit("--task", "no-such-task")
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("has no task 'no-such-task'", proc.stderr)
-        # Phase 0's planning stub answers Unsupported, so nothing can be queued until the workflow stream replaces it.
+        # Workflow's planner can't resolve this minimal sidecar's task (Unsupported at task-plan), and a plan that isn't
+        # executable queues nothing.
         proc = submit("--task", "fixed-security")
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("unsupported: task-plan (example-targets-workflow)", proc.stderr)
@@ -537,6 +538,28 @@ class PipelineTest(unittest.TestCase):
                                   "--capability", "B9", "--example", "150", check=False)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("no app builds it", proc.stderr)
+
+
+class SignalsTest(unittest.TestCase):
+    def test_a_target_tasks_line_from_build_py_is_a_signal(self):
+        # build.py NNN --task T prints one line per attempt (examples/tools/build.py's run_task); a job's signals
+        # carry it, as they do a constructed example's verdict line.
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "step.log"
+            log.write_text(
+                "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task replay (target route)\n"
+                "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task replay: none (completed; as expected), "
+                "receipt receipts/replay/a1/result.json\n"
+                "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: unresolved (completed; "
+                "NOT AS EXPECTED (established)), receipt receipts/fixed-security/a1/result.json\n"
+                "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: not-executed (task replay: unsupported: "
+                "prepare (example-targets-runtime): revision fixed-release is failed, not artifacts-ready)\n")
+            signals, counts, _ = pipeline.scan_signals(log)
+        self.assertEqual(counts, {"example:task-as-expected": 1, "example:task-unexpected": 1, "example:not-executed": 1})
+        self.assertEqual([s["groups"] for s in signals],
+                         [["306", "replay", "none"], ["285", "fixed-security", "unresolved", "established"],
+                          ["287", "task replay: unsupported: prepare (example-targets-runtime): revision fixed-release "
+                                  "is failed, not artifacts-ready"]])
 
 
 @unittest.skipUnless(SYSTEMD, "systemd-run --user --scope is not available here")

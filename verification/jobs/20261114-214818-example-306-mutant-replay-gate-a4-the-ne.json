@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-214818-example-306-mutant-replay-gate-a4-the-ne",
+  "title": "example 306 mutant-replay (gate A4): the nearby constructed mutation drop-prefix fails the same oracle where 5.3.7 holds",
+  "description": "The job runs python3 examples/tools/build.py 306 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision by the published-artifact route (every JAR acquired from Maven Central by the sha256 its sidecar pins, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/mutant-replay/, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. This is Phase 5 step 1's first run of a real packet through the merged infrastructure; a failure in a stream's code is a finding to fix with a reproducer. Example 306's mutation pair: release-after (spring-core 5.3.7, b1280ffe) against the constructed mutant, 5.3.7 with controls/drop-prefix.patch applied (the prefix condition dropped). Runtime prepares the mutant on the published-artifact route: it fetches the base commit from github.com by full SHA at depth 1, applies the patch (checked first), recompiles PatternMatchUtils against the published JARs with the base class's --release and debugging flags, and puts it in place of the base JAR's class in a copy of the JAR. The mutant is a sensitivity control, never a revision of Spring. A4 needs the base to hold and the mutant to fail the same oracle.",
+  "kind": "example",
+  "capabilities": [
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "306"
+    ],
+    "paths": [
+      "examples/tools/targets/runtime.py"
+    ]
+  },
+  "expected": "build.py prints '306-...: task mutant-replay: none (completed; as expected)' and exits 0: release-after holds and the mutant violates the oracle (at least at (\"abc*\",\"xbcdef\")), on JDK 21 and 25 alike; a receipt under examples/306-*/receipts/mutant-replay/",
+  "submitted": {
+    "at": "2026-11-14T21:48:18+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "one depth-1 fetch of a spring-framework commit from github.com (the bulk, a few hundred MB), small javac runs, four short JVM runs; R2's comparable job took 7 s and 200 MiB with a warm cache"
+  },
+  "steps": [
+    {
+      "name": "example 306 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 306 --task mutant-replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay"
+  ]
+}

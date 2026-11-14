@@ -99,6 +99,8 @@ SIGNALS = [
     ("jvmcontract", "unverifiable", r"^⚠ (.*)"),
     ("example", "as-expected", r"^(\d{3})-\S+: (verified|violation|unverifiable) \(as expected\)"),
     ("example", "unexpected", r"^(\d{3})-\S+: (\w+) \((EXPECTED[^)]*)\)"),
+    ("example", "task-as-expected", r"^(\d{3})-\S+: task (\S+): (\w+) \([\w-]+; as expected\)"),
+    ("example", "task-unexpected", r"^(\d{3})-\S+: task (\S+): (\w+) \([\w-]+; NOT AS EXPECTED \((.*)\)\), receipt "),
     ("example", "differ", r"^Verdicts differ from expectations: (.*)"),
     ("example", "not-executed", r"^(\d{3})-\S+: not-executed \((.*)\)$"),
     ("cargo", "tests", r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed"),
@@ -1599,12 +1601,18 @@ def example_task_job_parts(example_id, folder, task):
     rel = folder.relative_to(ROOT).as_posix()
     requires = list(dict.fromkeys(plan["tools"]["required"] + plan["tools"]["optional"]))
     expected = plan.get("expected")
+    if expected:
+        outcome = f"gives its expected conclusion, {expected}"
+    elif plan["kind"] == "replay":  # a replay decides no claim; its receipt's expectation is its pair's kind's
+        outcome = ("replays every revision on every JDK it names, each with the outcome its pair's kind expects "
+                   f"({', '.join(plan['revisions'])})")
+    else:
+        outcome = "gives a conclusion, though it states no expected one (so build.py exits 1)"
     return {"step": {"name": f"example {example_id} task {task} ({plan['kind']})",
                      "run": f"python3 examples/tools/build.py {example_id} --task {task}", "cwd": "."},
             "output": f"{rel}/{plan['outputs'].get('receipts', 'receipts/' + task)}", "requires": requires,
             "capability": f"target:{plan['kind']}",
-            "expected": f"example {example_id} task {task} gives its expected conclusion, {expected or 'none stated'}: "
-                        "build.py prints 'as expected' and exits 0"}
+            "expected": f"example {example_id} task {task} {outcome}: build.py prints 'as expected' and exits 0"}
 
 
 def example_job_parts(example_id, task=None):

@@ -969,6 +969,48 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: the packets through the merged path. First submit the preparation and replay jobs of the six packets
     and 105 with `pipeline.py submit --example NNN --task T`. Start with the replay tasks that gates A3 (285–287) and
     A4 (306, with `mutant-replay`) need. Each job names its revision, task, expected outcome and resources.
+- 2026-11-14, **Phase 5 step 1: the replay jobs of gates A3 and A4 queued**, after two fixes that every replay job would
+  have failed on.
+  - **Fix 1: `build.py NNN --task T` exited 1 after every replay.** It compared the receipt's status with the task's
+    `expected`, but a replay decides no claim: its status is always None and its task states no `expected`. So even a
+    replay that reproduced would have failed its job. The docstring already said "exits 0 only when ingestion found
+    it as the task expected", so the code now does that and reads the receipt's `matchesExpected`. This also closes a
+    gap for proof tasks: a vacuous `established` no longer exits 0.
+    - Reproducer: `test_route.py`'s `test_a_task_run_exits_0_only_when_its_receipt_matches_what_the_task_expects`. On
+      the old code, a matching replay exited 1.
+    - The pipeline: a replay job's `expected` text now says what a replay must show, not "none stated". Two new
+      `scan_signals` patterns pick up a target task's "as expected" and "NOT AS EXPECTED" lines (new
+      `test_pipeline.py` test). Both READMEs say this.
+  - **Fix 2: ingestion read every `release` pair as a fix.** `workflow_ingest.SIDES` had `release` give "before
+    violates, after holds". The schema defines a `release` pair only as "a release comparison". 306's `replay` runs
+    its release pair 5.3.6 → 5.3.7, around a behaviour-preserving change. Its README and hand replay say both releases
+    hold, so its A4 replay would have been recorded as not expected. A release pair's sides now follow the case's
+    role: a negative case's vulnerable release violates and its fixed one holds; for a positive case both hold; for
+    any other role (the fixture's control, runtime's calibration slices) the pair gives no expectation.
+    - Reproducer: `test_packets.py`'s `ReplayExpectationTest`. It checks the expected sides of all 13 replay tasks of
+      the seven packets against their READMEs. On the old code, 306's `replay` and the role rule failed.
+    - 306's `example.json` has a note, and its sidecar is unchanged. The workflow stream's brief still describes the
+      old rule (`example-targets-workflow.md:219`, a finished stream's record, left as it is).
+  - **Queued** at this commit, each a `build.py NNN --task T` job with 2 CPUs:
+    - `20261114-214754-example-targets-phase-5-gate-a3-example`: 285 `replay`, Boot 2.7.17 → 2.7.18, 14 pinned JARs.
+    - `20261114-214818-example-286-replay-gate-a3-cve-2022-2296`: 286 `replay`, Framework 5.3.18 → 5.3.19.
+    - `20261114-214818-example-287-replay-gate-a3-cve-2025-2222`: 287 `replay`, Security 6.3.7 → 6.3.8.
+    - `20261114-214818-example-306-replay-gate-a4-framework-db9`: 306 `replay`, spring-core 5.3.6 → 5.3.7, both
+      expected to hold.
+    - `20261114-214818-example-306-mutant-replay-gate-a4-the-ne`: 306 `mutant-replay`, 5.3.7 against `drop-prefix`.
+      The mutant is built from the base commit fetched at depth 1. 5.3.7 must hold and the mutant violate.
+
+    Each expects "as expected" and exit 0, with every revision on JDK 21 and 25 and a receipt under
+    `receipts/<task>/`. 2–3 GiB each, 10–15 minutes estimated (R2's comparable job took 7 s).
+  - **Not run inline**: a trial of 306's replay outside the pipeline was refused by the session's permissions, which
+    fits this brief's "prepared by runtime's code (jobs)". So these jobs are the first real packets on the merged
+    path.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (206, two new),
+    `test_build.py` (190), `test_pipeline.py` (31, one new) and `build.py --plan`.
+  - **Next**: Phase 5 step 2, the 105 calibration (A5), as a job. Check `build.py --plan 105 --task fix-property` and
+    the other proof tasks, and how its pinned upstream Maven build on JDK 11 is prepared. Once the five jobs above are
+    collected, read their receipts. Then queue the other replays: 285–287 `mutant-replay`, 105's `replay`, and 307's
+    `replay` and `mutant-replay` (307 only if its route is not blocked; 305 is blocked on its SNAPSHOT pins).
 - Status: working
 
 ## Loop settings

@@ -25,7 +25,8 @@ what the task expects (expectation), what it is about (scope) and whether its co
     every JDK its artifact entry names, exited 0 with structured observations, on the prepared bytes, and the case's
     oracle read every one. Its expectation is `yes` only then, and only when each revision's outcome is the one its
     pair's kind says (an exact fix's before violates the oracle and its after holds, a mutation's base holds and its
-    mutant violates, and so on) on every JDK alike.
+    mutant violates, and so on; a release pair is a negative case's fix or a positive case's preserving change, by
+    the case's role) on every JDK alike.
   - A proof task's conclusion is the verifier's, read from its `--json` outcome (ExecutionRecord.observations: the
     list `prove --json` prints, or the one outcome of `equivalence --json`), with build.py's rules: an exit code the
     outcome contradicts, a missing or unreadable outcome, or a violation without a witness is invalid output, never a
@@ -51,8 +52,12 @@ SUMMARY = "summary.txt"  # a replay's console output: one line per record
 VERIFIER_OUTPUT = "verifier-output.txt"  # the verifier's console output, from its outcome
 ORACLE_TIMEOUT = 60
 # What each kind of pair says the controls of its two revisions show: `violates` the oracle, or `holds`.
-SIDES = {"exact-fix": ("violates", "holds"), "release": ("violates", "holds"), "introduction": ("holds", "violates"),
+SIDES = {"exact-fix": ("violates", "holds"), "introduction": ("holds", "violates"),
          "mutation": ("holds", "violates"), "positive": ("holds", "holds")}
+# A `release` pair is only a release comparison (target.schema.json): it brackets a negative case's fix, or a positive
+# case's preserving change, so its sides follow the case's role. Another role's (a control's, a calibration's) say
+# nothing.
+RELEASE_SIDES = {"negative": ("violates", "holds"), "positive": ("holds", "holds")}
 PRIORITY = ("killed", "timed-out", "tool-error", "invalid-output")
 # Reads each record's observation lines with the oracle's problems(lines), or its check(lines) when it has no problems
 # (runtime.py's docstring: the oracle convention), in a separate interpreter (-I: the oracle sees only the standard
@@ -307,14 +312,19 @@ def read_with_oracle(plan, oracle, records):
 
 
 def expected_sides(target, task, revisions):
-    """What each revision's controls should show, `violates` or `holds`, from the kind of the pair the task names,
-    or for one revision from every pair it appears in (None when they disagree or none does)."""
+    """What each revision's controls should show, `violates` or `holds`, from the kind of the pair the task names (a
+    release pair's by the case's role), or for one revision from every pair it appears in (None when they disagree or
+    none does)."""
     pairs = (target.get("history") or {}).get("pairs") or []
+    role = (target.get("identity") or {}).get("role")
+
+    def kind_sides(pair):
+        return RELEASE_SIDES.get(role) if pair.get("kind") == "release" else SIDES.get(pair.get("kind"))
+
     if task.get("pair"):
-        pair = next((p for p in pairs if p.get("name") == task["pair"]), {})
-        sides = SIDES.get(pair.get("kind"))
+        sides = kind_sides(next((p for p in pairs if p.get("name") == task["pair"]), {}))
         return dict(zip(revisions, sides)) if sides else {}
-    said = {SIDES[p["kind"]][i] for p in pairs if p.get("kind") in SIDES
+    said = {kind_sides(p)[i] for p in pairs if kind_sides(p)
             for i, side in enumerate(("before", "after")) if p.get(side) == revisions[0]}
     return {revisions[0]: said.pop()} if len(said) == 1 else {}
 

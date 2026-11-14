@@ -520,8 +520,10 @@ from [`example-targets.md`](../llm-dlc/loops/example-targets.md)) is the excepti
 `build.py --plan NNN` lists its tasks' plans, `build.py --plan NNN --task T` prints one, and `build.py NNN --task T`
 makes one attempt through [`tools/targets/`](tools/targets/__init__.py): plan, prepare each revision, run the
 controls and the verifier, and ingest one receipt per task and attempt. An attempt that stops at an interface not yet
-implemented prints `not-executed (task T: unsupported: INTERFACE (OWNER): why)` and exits 1. Without `--task` it is
-not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
+implemented prints `not-executed (task T: unsupported: INTERFACE (OWNER): why)` and exits 1. One that gives a
+receipt exits 0 only when the receipt's `matchesExpected` is true: ingestion compares a proof's conclusion with
+the task's `expected`, and a replay, which decides no claim, compares each revision's controls with what its pair's
+kind expects. Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
 it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
 `--role`, `--readiness`, `--claim-status` and `--gap` filter on.
 

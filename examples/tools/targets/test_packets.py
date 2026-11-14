@@ -168,6 +168,47 @@ class CompanionTest(unittest.TestCase):
 
 
 
+class ReplayExpectationTest(unittest.TestCase):
+    """What ingestion expects each revision's controls to show in every replay task of the seven packets, as each
+    packet's README states it. A pair's kind gives it, but a `release` pair is only a release comparison: it brackets a
+    negative case's fix (the vulnerable release violates the oracle, the fixed one holds) or a positive case's
+    preserving change (both hold), so its sides follow the case's role. 306's `replay` runs its release pair, and its
+    README and hand replay say both 5.3.6 and 5.3.7 hold."""
+
+    def sides(self, number, task):
+        folder, example, target = packet(number)
+        p = workflow.plan_task(folder, example, target, task)
+        self.assertIsInstance(p, interfaces.TaskPlan, p)
+        t = next(t for t in target["tasks"] if t["id"] == task)
+        return workflow_ingest.expected_sides(target, t, list(p.revisions))
+
+    def test_each_replay_expects_what_its_packet_states(self):
+        wanted = {
+            ("285", "replay"): {"vulnerable-release": "violates", "fixed-release": "holds"},
+            ("286", "replay"): {"vulnerable-release": "violates", "fixed-release": "holds"},
+            ("287", "replay"): {"vulnerable-release": "violates", "fixed-release": "holds"},
+            ("305", "replay"): {"before": "holds", "after": "holds"},
+            ("306", "replay"): {"release-before": "holds", "release-after": "holds"},
+            ("307", "replay"): {"before": "holds", "after": "holds"},
+            ("105", "replay"): {"before": "violates", "after": "holds"},
+            **{(n, "mutant-replay"): {base: "holds", "mutant": "violates"} for n, (base, _, _, _) in PACKETS.items()},
+        }
+        for (number, task), sides in wanted.items():
+            with self.subTest(number=number, task=task):
+                self.assertEqual(self.sides(number, task), sides)
+
+    def test_a_release_pair_of_another_role_says_nothing(self):
+        # The fixture's role is control and runtime's slices' calibration: no direction follows from the role, so a
+        # release pair there gives no expectation ("no pair says what these controls should show"), never a guess.
+        target = {"identity": {"role": "calibration"},
+                  "history": {"pairs": [{"name": "release", "kind": "release", "before": "a", "after": "b"}]}}
+        self.assertEqual(workflow_ingest.expected_sides(target, {"pair": "release"}, ["a", "b"]), {})
+        for role, sides in (("negative", {"a": "violates", "b": "holds"}), ("positive", {"a": "holds", "b": "holds"})):
+            target["identity"]["role"] = role
+            self.assertEqual(workflow_ingest.expected_sides(target, {"pair": "release"}, ["a", "b"]), sides)
+
+
+
 def oracle_module(folder):
     spec = importlib.util.spec_from_file_location(f"oracle_{folder.name[:3]}", folder / "controls/oracle.py")
     module = importlib.util.module_from_spec(spec)

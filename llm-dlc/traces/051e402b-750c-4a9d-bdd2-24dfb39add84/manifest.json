@@ -12,36 +12,39 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T21:31:44.845Z",
-  "duration_seconds": 11184,
+  "ended": "2026-11-14T21:49:06.335Z",
+  "duration_seconds": 12226,
   "stats": {
-    "turns": 70,
-    "api_calls": 436,
-    "tool_calls": 440,
-    "tool_errors": 8,
-    "compactions": 12,
+    "turns": 75,
+    "api_calls": 499,
+    "tool_calls": 505,
+    "tool_errors": 11,
+    "compactions": 13,
     "peak_context_tokens": 182954,
     "usage": {
-      "input_tokens": 892,
-      "output_tokens": 266221,
-      "cache_read_input_tokens": 40853640,
-      "cache_creation_input_tokens": 1444765
+      "input_tokens": 1018,
+      "output_tokens": 307558,
+      "cache_read_input_tokens": 48541695,
+      "cache_creation_input_tokens": 1611175
     }
   },
   "tools": {
-    "Bash": 378,
-    "Read": 31,
-    "Edit": 25,
+    "Bash": 435,
+    "Read": 33,
+    "Edit": 31,
     "Agent": 4,
     "Write": 2
   },
   "files_touched": [
     "CLAUDE.md",
+    "examples/tools/build.py",
     "examples/tools/targets/runtime_simplematch/README.md",
     "examples/tools/targets/test_packets.py",
+    "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_runtime.py",
     "examples/tools/targets/test_workflow.py",
     "llm-dlc/loops/example-targets.md",
+    "verification/pipeline.py",
     "verification/test_pipeline.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/allowlist-merge-conflicts.md"
   ],
@@ -217,24 +220,38 @@
     {
       "index": 12,
       "started": "2026-11-14T21:24:42.749Z",
-      "ended": "2026-11-14T21:31:44.845Z",
-      "turns": 4,
-      "api_calls": 24,
+      "ended": "2026-11-14T21:32:25.238Z",
+      "turns": 5,
+      "api_calls": 26,
       "usage": {
-        "input_tokens": 48,
-        "output_tokens": 13972,
-        "cache_read_input_tokens": 1997964,
-        "cache_creation_input_tokens": 94505
+        "input_tokens": 52,
+        "output_tokens": 14857,
+        "cache_read_input_tokens": 2215552,
+        "cache_creation_input_tokens": 98283
       },
-      "peak_context_tokens": 107691
+      "peak_context_tokens": 111469
+    },
+    {
+      "index": 13,
+      "started": "2026-11-14T21:33:02.396Z",
+      "ended": "2026-11-14T21:49:06.335Z",
+      "turns": 4,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 40452,
+        "cache_read_input_tokens": 7470467,
+        "cache_creation_input_tokens": 162632
+      },
+      "peak_context_tokens": 175818
     }
   ],
   "log": {
-    "sha256": "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832",
-    "bytes": 15005228,
-    "lines": 4705,
-    "gzip_bytes": 3200159,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832.jsonl.gz"
+    "sha256": "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db",
+    "bytes": 16592560,
+    "lines": 5313,
+    "gzip_bytes": 3484708,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db.jsonl.gz"
   },
   "subagents": [
     {
@@ -498,6 +515,14 @@
       "summary": "example-targets Phase 5 step 1: VF-025 closed; the spring-core JARs were committed by sync.py's 100 MiB snapshot, so no ignore rule",
       "body": "Request 11, the last of the interface requests that waited for the merge, asked to gitignore runtime-mutant/**/spring-core-5.3.19.jar, the three 1.4 MiB JARs of the runtime stream's job 20261114-180443 that VF-025 said jj's 1 MiB snapshot limit had left out of the commit. They are in fact in the history: the collect commit msotkvrv lists all three, and jj st shows no refused file. The reason is that sync.py runs every jj command with snapshot.max-new-file-size=100MiB, so a sync.py commit takes a file a plain jj command refuses. That also explains VF-020's two diffs that 'got past the limit'. An ignore rule does nothing to tracked files, so none was added. The brief's request 11 (and its Next line) was out of date on this point.\n\nVF-025 moves to findings.md's closed entries, with a correction under its original text. The runtime slice's README, runtime_simplematch/README.md, now says the JARs are in the history. It also gives the cleanup rule for later jobs that keep a preparation directory as their output: delete prepare/*/lib/. A packet task's job via pipeline.py submit --example --task prepares in scratch space and keeps only its receipts. msotkvrv is not pushed, so whether the roughly 3 MB of JARs go into the published history is a question for the user, on the for-review list. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 203, test_build.py 190, test_pipeline.py 30, build.py --plan).",
       "log_sha256": "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832"
+    },
+    {
+      "change_id": "ykxtqwmtypxyszlmywnsrzvuuvqsmwxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: the replay jobs of gates A3 and A4 queued, after fixing build.py's exit and ingestion's release-pair expectation (verification pending)",
+      "body": "build.py NNN --task T compared the receipt's status with the task's expected, but a replay decides no claim (status always None, no expected), so every replay job would have exited 1, a reproduced one included. It now exits 0 exactly when the receipt's matchesExpected is true, as its docstring already said; this also stops a vacuous established proof from passing. test_route.py has the reproducer. The pipeline's expected text for a replay job now says what it must show, and scan_signals picks up a target task's 'as expected' and 'NOT AS EXPECTED' lines (new test_pipeline.py test); verification/README.md and examples/README.md say so.\n\nworkflow_ingest read every release pair as a fix (before violates, after holds), though the schema defines it only as a release comparison. Example 306's replay runs its release pair 5.3.6 -> 5.3.7 around a behaviour-preserving change, where both releases hold, so gate A4's replay would have been recorded as not expected. A release pair's sides now follow the case's role: negative = violates/holds, positive = holds/holds, any other role no expectation. test_packets.py's ReplayExpectationTest checks all 13 replay tasks of the seven packets against their READMEs. 306's example.json has a note. Out of date elsewhere: the finished workflow stream's brief (example-targets-workflow.md:219) still states the old rule, left as its record.\n\nQueued, each python3 examples/tools/build.py NNN --task T on the published-artifact route, JDK 21 and 25, expecting 'as expected' and exit 0: 20261114-214754-example-targets-phase-5-gate-a3-example (285 replay, Boot 2.7.17/2.7.18), 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 (286 replay, Framework 5.3.18/5.3.19), 20261114-214818-example-287-replay-gate-a3-cve-2025-2222 (287 replay, Security 6.3.7/6.3.8), 20261114-214818-example-306-replay-gate-a4-framework-db9 (306 replay, spring-core 5.3.6/5.3.7, both hold) and 20261114-214818-example-306-mutant-replay-gate-a4-the-ne (306 mutant-replay: 5.3.7 holds, drop-prefix mutant violates).",
+      "log_sha256": "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db"
     }
   ],
   "logs": {
@@ -541,6 +566,12 @@
       "bytes": 2828744,
       "lines": 964,
       "gzip_bytes": 545832,
+      "url": null
+    },
+    "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db": {
+      "bytes": 16592560,
+      "lines": 5313,
+      "gzip_bytes": 3484708,
       "url": null
     },
     "7efb17b82cda691603414f20c85c1b231b17535a4a409888829b7e56ca2461fd": {

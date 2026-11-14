@@ -358,10 +358,15 @@ def run_task(folder, task, plan_only=False):
         print(f"{folder.name}: not-executed (task {task}: {receipt.describe()})")
         print(f"Not executed: {folder.name}")
         return 1
+    # Ingestion decides whether the attempt is what the task expects (targets/workflow_ingest.py): a proof task's
+    # conclusion against its expected status, and not vacuous; a replay, which decides no claim (its status is always
+    # None) and states no expected status, by each revision's controls against what its pair's kind says. The
+    # receipt's matchesExpected records that decision, so the exit code follows it rather than comparing statuses.
     expected = next(t for t in target["tasks"] if t["id"] == task).get("expected")
-    matches = expected is not None and receipt.status == expected
+    matches = result_format.load(folder / receipt.path).get("matchesExpected") is True
+    wanted = expected or "the outcomes its pair's kind expects"
     print(f"{folder.name}: task {task}: {receipt.status or 'none'} ({receipt.execution}; "
-          f"{'as expected' if matches else 'EXPECTED ' + (expected or 'nothing').upper()}), receipt {receipt.path}")
+          f"{'as expected' if matches else f'NOT AS EXPECTED ({wanted})'}), receipt {receipt.path}")
     return 0 if matches else 1
 
 

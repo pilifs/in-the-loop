@@ -169,7 +169,7 @@ more than half, outputs not applied. A pass with nothing in `attention` is clean
 
 Each step also carries `signals`: the verdict lines lifted out of its log with their line numbers (JBMC's
 `VERIFICATION SUCCESSFUL`, `FAILED` and `ERROR`; TLC's "No error has been found", violated invariants and
-properties, deadlocks and state counts; jvmcontract's ✓, ✗ and ⚠ lines; build.py's "as expected", "EXPECTED" and `not-executed`;
+properties, deadlocks and state counts; jvmcontract's ✓, ✗ and ⚠ lines; build.py's "as expected", "EXPECTED" and `not-executed`, and a target task's "as expected" and "NOT AS EXPECTED";
 `cargo test` totals; out-of-memory lines), counted in `signalCounts`. Only `VERIFICATION SUCCESSFUL` from JBMC is a
 proof, as everywhere in this repo: an exit of 0 with `jbmc:no-verdict` is not one.
 
