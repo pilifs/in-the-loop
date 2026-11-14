@@ -164,6 +164,11 @@ timebox and the safety rules. Planning and discovery never touch the network.
   patch hash. The other streams' 19 current sidecars still pass the stricter checks. Tests: `test_sidecar.py` 18 (3
   new), `test_workflow.py` 29 (5 new); the integration script passes (contract 4 pass, 12 at stubs; targets suite 69,
   `test_build.py` 190, `test_pipeline.py` 29).
+- **Check errors that aren't this branch's** (for review, as earlier parallel loops recorded them): since the other
+  streams committed, `sync.py check` here reports "session … has no manifest" for their commits, which it sees in the
+  shared repository while their trace manifests are only in their own trees: `muqvuqyqpwyz` (runtime R1),
+  `pomrmppunkzt` (negative N0) and `rzvwqpqtuumn` (positive's source locks). Commit `zvnrtxsunllx` stands with those 3
+  errors and none of its own; they clear at the merge.
 - Next: W1's readiness milestones (provenance locked, artifacts prepared, oracle replay validated, claim frozen,
   capability probed, attempt recorded) and the summaries derived from them, then W2 ingestion.
 - Status: working

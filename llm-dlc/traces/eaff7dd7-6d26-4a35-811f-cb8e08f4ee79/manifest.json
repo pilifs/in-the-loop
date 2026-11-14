@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.206Z",
-  "ended": "2026-11-14T15:41:41.942Z",
-  "duration_seconds": 895,
+  "ended": "2026-11-14T15:42:16.988Z",
+  "duration_seconds": 930,
   "stats": {
     "turns": 10,
-    "api_calls": 59,
-    "tool_calls": 59,
+    "api_calls": 63,
+    "tool_calls": 63,
     "tool_errors": 1,
     "compactions": 2,
     "peak_context_tokens": 168840,
     "usage": {
-      "input_tokens": 118,
-      "output_tokens": 60190,
-      "cache_read_input_tokens": 5940698,
-      "cache_creation_input_tokens": 276362
+      "input_tokens": 126,
+      "output_tokens": 62694,
+      "cache_read_input_tokens": 6402070,
+      "cache_creation_input_tokens": 280954
     }
   },
   "tools": {
-    "Bash": 52,
+    "Bash": 56,
     "Read": 5,
     "Write": 2
   },
@@ -69,24 +69,24 @@
     {
       "index": 2,
       "started": "2026-11-14T15:36:22.958Z",
-      "ended": "2026-11-14T15:41:41.942Z",
+      "ended": "2026-11-14T15:42:16.988Z",
       "turns": 4,
-      "api_calls": 25,
+      "api_calls": 29,
       "usage": {
-        "input_tokens": 50,
-        "output_tokens": 21528,
-        "cache_read_input_tokens": 2155131,
-        "cache_creation_input_tokens": 102437
+        "input_tokens": 58,
+        "output_tokens": 24032,
+        "cache_read_input_tokens": 2616503,
+        "cache_creation_input_tokens": 107029
       },
-      "peak_context_tokens": 113693
+      "peak_context_tokens": 118285
     }
   ],
   "log": {
-    "sha256": "29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d",
-    "bytes": 2346043,
-    "lines": 705,
-    "gzip_bytes": 477280,
-    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d.jsonl.gz"
+    "sha256": "9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18",
+    "bytes": 2473466,
+    "lines": 749,
+    "gzip_bytes": 497960,
+    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -105,6 +105,14 @@
       "summary": "example-targets W1: constructed mutant revisions, one patch from a base and kept constructed",
       "body": "The sidecar schema (example-target/v1, additive) gains a third kind of revision, a constructed mutant: its base revision, a patch file in the example's folder, the patch's sha256 and the mutation in words, for any role, so a positive or negative packet can declare its mutation control with its own provenance. sidecar.py keeps it constructed: one patch from a commit or fixture revision, no upstream parent, tag or release, never named by a published artifact, and compared only as the after of a mutation pair against its own base; a mutation pair's after is never an upstream commit.\n\nworkflow.plan_task() resolves a mutant on its base's route. Its artifact entry carries no commit or fixture of its own, only a mutant key with the base (and its published artifacts on that route), the patch by path and sha256 and the description, so a preparation that does not know the key fails rather than building the base unpatched. The patch hash is checked against the lock at planning, and a changed or missing patch is refused at the prepare stage. git, and javac on the published-artifact route, become required tools. A mutant task shares the source-level claim key with the fixed task of the same claim file; W2's artifact binding separates them.\n\nVerified: test_sidecar.py 18 (3 new) and test_workflow.py 29 (5 new) pass; the other streams' 19 current sidecars still pass the stricter checks; llm-dlc/tools/example-targets-integration.sh exits 0 (contract 4 pass, 12 at stubs; targets suite 69, test_build.py 190, test_pipeline.py 29). The runtime request (how to prepare a mutant entry) is recorded under the brief's Progress.",
       "log_sha256": "29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d"
+    },
+    {
+      "change_id": "nrpqnlolqstupnuvqpklrruproxqvxsw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets workflow: record the check errors that are other streams' commits",
+      "body": "sync.py check now reports 'session ... has no manifest' for the runtime, negative and positive streams' commits (muqvuqyqpwyz, pomrmppunkzt, rzvwqpqtuumn): it sees them in the shared jj repository, while their trace manifests are only in their own workspaces' trees. The W1 mutant commit zvnrtxsunllx has no error of its own. Recorded under the stream brief's Progress for review, as the cleanup and foundations streams did; the errors clear at the merge. Nothing else changed.",
+      "log_sha256": "9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18"
     }
   ],
   "logs": {
@@ -112,6 +120,12 @@
       "bytes": 2346043,
       "lines": 705,
       "gzip_bytes": 477280,
+      "url": null
+    },
+    "9c83ec9f13336a7790ceeee122cbfbb95caa36cdf206a3a194f51577e7cdda18": {
+      "bytes": 2473466,
+      "lines": 749,
+      "gzip_bytes": 497960,
       "url": null
     },
     "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3": {
