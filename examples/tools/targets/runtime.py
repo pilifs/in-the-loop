@@ -5,7 +5,7 @@ github.com and Maven Central only, every file's sha256 recorded and rechecked.
     lock(plan, revision)                   source-locked: immutable paths, revisions and recipe, hashed; offline, pure
     prepare(plan, revision, workdir)       artifacts-ready: built or fetched, every byte hashed and the classpath
                                            checked; or failed, with its stage, diagnostic and what exists
-    run_controls(plan, prepared, workdir)  Phase 0's stub (R4)
+    run_controls(plan, prepared, workdir)  each revision's driver in its own JVM, per JDK: raw ExecutionRecords
     run_verifier(plan, prepared, workdir)  Phase 0's stub (R3)
 
 The two milestones stay apart (R1): a source lock fetches and builds nothing and supplies no proof identity; only an
@@ -31,7 +31,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from targets import runtime_jar, runtime_jdk
+from targets import interfaces, runtime_jar, runtime_jdk
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
@@ -125,6 +125,12 @@ def _component(folder, files, what):
     return {"roots": [r.relative_to(folder).as_posix() for r in roots], "files": _hashed(folder, sources)}
 
 
+def _main_class(folder, relative):
+    """The class a driver's source file declares, by its path under its source root: fixture.driver.GateDriver."""
+    path = _inside(folder, relative, "driver")
+    return ".".join(path.relative_to(_source_root(folder, path)).with_suffix("").parts)
+
+
 def _lock_fixture(plan, revision, entry, folder):
     top = _inside(folder, entry.get("fixture"), f"revision {revision}'s fixture")
     if not top.is_dir():
@@ -141,7 +147,8 @@ def _lock_fixture(plan, revision, entry, folder):
                                      | ({shared.relative_to(folder).as_posix()} if shared.is_dir() else set())),
                      "files": _hashed(folder, original)},
         "adapter": _component(folder, entry.get("adapters") or [], "adapter") if entry.get("adapters") else None,
-        "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"])
+        "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
+                       main=_main_class(folder, controls["driver"]["path"]))
         if "driver" in controls else None,
         "oracle": {"control": controls["oracle"]["id"], **_hashed(folder, [_inside(folder, controls["oracle"]["path"], "oracle")])[0]}
         if "oracle" in controls else None,
@@ -182,16 +189,16 @@ def _failed(plan, revision, commit, source, refused, artifacts, logs, toolchain=
 
 # -- artifacts ready
 
-def _workdir(workdir):
-    """A fresh work directory: made if missing, emptied if it holds an earlier preparation's record, refused if it
+def _workdir(workdir, marker=RECORD):
+    """A fresh work directory: made if missing, emptied if it holds an earlier run's record (`marker`), refused if it
     holds anything else (it isn't ours to delete)."""
     workdir = Path(workdir)
     if workdir.exists():
         if not workdir.is_dir():
             raise Refused("workdir", f"{workdir} is not a directory")
         entries = list(workdir.iterdir())
-        if entries and not (workdir / RECORD).is_file():
-            raise Refused("workdir", f"{workdir} holds files and no {RECORD}: not an earlier preparation's, left alone")
+        if entries and not (workdir / marker).is_file():
+            raise Refused("workdir", f"{workdir} holds files and no {marker}: not an earlier run's, left alone")
         shutil.rmtree(workdir)
     workdir.mkdir(parents=True)
     return workdir.resolve()
@@ -327,11 +334,172 @@ def prepare(plan, revision, workdir):
     return prepared
 
 
+# -- concrete controls, each revision in its own JVM (R4)
+
+CONTROLS = "controls.json"  # the record a controls work directory holds
+CONTROL_TIMEOUT = 120  # seconds one control's JVM may run before it is killed as timed out
+# What each control's JVM is given and nothing else: no inherited JAVA_TOOL_OPTIONS, CLASSPATH or locale, so two runs
+# of one revision differ only in what their identities say. Locale, charset and time zone matter to a driver's
+# output (String.format, toLowerCase, dates), so they are fixed and recorded.
+CONTROL_ENV = {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC"}
+CONTROL_FLAGS = ("-Xmx512m", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8",
+                 "-Duser.language=en", "-Duser.country=US", "-Duser.timezone=UTC")
+
+
+def _preparation_dir(prepared, workdir):
+    """Where `prepared`'s files are: route.py's layout, <attempt>/prepare/<revision> beside <attempt>/controls (the
+    PreparedTarget doesn't carry its directory; an interface request under the brief's Progress). The directory
+    counts only if its prepared.json is this PreparedTarget."""
+    where = Path(workdir).resolve().parent / "prepare" / prepared.revision
+    try:
+        recorded = json.loads((where / RECORD).read_text())
+    except (OSError, json.JSONDecodeError) as e:
+        raise Refused("controls", f"no readable {RECORD} for revision {prepared.revision} at {where}: {e}") from None
+    if recorded != json.loads(json.dumps(prepared.as_dict())):
+        raise Refused("controls", f"{where / RECORD} is not the preparation given for revision {prepared.revision}")
+    return where
+
+
+def _oracle_probes(where, prepared):
+    """The inputs every control is run on: the case's oracle's PROBES, from the prepared copy, its hash rechecked."""
+    oracle = next((a for a in prepared.artifacts if a.role == "oracle"), None)
+    if oracle is None:
+        raise Refused("controls", f"revision {prepared.revision}'s preparation has no oracle, so no inputs to run on")
+    spec = importlib.util.spec_from_file_location(f"targets_oracle_{oracle.sha256[:16]}", where / oracle.path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    probes = getattr(module, "PROBES", None)
+    if not probes:
+        raise Refused("controls", f"the oracle {oracle.path} names no PROBES")
+    return [p if isinstance(p, str) else json.dumps(p) for p in probes], oracle
+
+
+def _checked(where, prepared):
+    """The classpath's artifacts, each rechecked against the preparation's sha256 (stale or changed bytes refuse)."""
+    if prepared.stage != "artifacts-ready":
+        raise Refused("controls", f"revision {prepared.revision} is {prepared.stage}, not artifacts-ready"
+                                  + (f" ({prepared.failedStage}: {prepared.diagnostic})" if prepared.failedStage else ""))
+    by_path = {a.path: a for a in prepared.artifacts}
+    for entry in prepared.classpath:
+        a = by_path.get(entry)
+        if a is None:
+            raise Refused("controls", f"classpath entry {entry} is no artifact of the preparation")
+        found = sha256(where / entry) if (where / entry).is_file() else "missing"
+        if found != a.sha256:
+            raise Refused("controls", f"{entry} is {found}, not the prepared {a.sha256}: stale or changed bytes")
+    return [by_path[e] for e in prepared.classpath]
+
+
+def _observations(stdout, inputs):
+    """The driver's structured output, one JSON object per input in order, or None (with why) when it can't be
+    read: a line that isn't a JSON object, or inputs missing, extra or out of order. Raw: nothing is judged here."""
+    lines = [line for line in stdout.splitlines() if line.strip()]
+    try:
+        observed = [json.loads(line) for line in lines]
+    except json.JSONDecodeError as e:
+        return None, f"a line of the driver's output is not JSON: {e}"
+    if not all(isinstance(o, dict) for o in observed):
+        return None, "a line of the driver's output is not a JSON object"
+    seen = [o.get("input") for o in observed]
+    if [x if isinstance(x, str) else json.dumps(x) for x in seen] != inputs:
+        return None, f"the driver observed inputs {seen}, not the {len(inputs)} it was given: an incomplete replay"
+    return tuple(observed), None
+
+
+def _run_one(argv, cwd, out, err, timeout):
+    """(status, exitCode, seconds) of one process, its streams written to `out` and `err`."""
+    started = time.monotonic()
+    with open(out, "w") as o, open(err, "w") as e:
+        try:
+            proc = subprocess.run(argv, cwd=cwd, env=dict(CONTROL_ENV), stdin=subprocess.DEVNULL, stdout=o, stderr=e,
+                                  timeout=timeout)
+        except subprocess.TimeoutExpired:
+            return "timed-out", None, round(time.monotonic() - started, 3)
+        except OSError as x:
+            e.write(f"runtime: not started: {x}\n")
+            return "not-started", None, round(time.monotonic() - started, 3)
+    return ("exited" if proc.returncode >= 0 else "killed"), proc.returncode, round(time.monotonic() - started, 3)
+
+
+def _control(plan, revision, prepared, feature, workdir, attempt):
+    """One revision's driver on one JDK, in its own JVM: an ExecutionRecord, and its log entry."""
+    name = f"control-{revision}-jdk{feature}"
+    out, err = workdir / f"{name}.stdout", workdir / f"{name}.stderr"
+    rel = lambda p: p.relative_to(attempt).as_posix()
+    identities, argv, log = {"feature": str(feature)}, (), {}
+    try:
+        if prepared is None:
+            raise Refused("controls", f"revision {revision} was not prepared: a one-sided replay")
+        where = _preparation_dir(prepared, workdir)
+        artifacts = _checked(where, prepared)
+        driver = (prepared.source.get("driver") or {})
+        if not driver.get("main"):
+            raise Refused("controls", f"revision {revision}'s preparation has no driver to run")
+        inputs, oracle = _oracle_probes(where, prepared)
+        home = runtime_jdk.home(feature)
+        if home is None:
+            raise Refused("controls", f"no JDK {feature} under {runtime_jdk.CANDIDATES}")
+        jdk = runtime_jdk.identity(home)
+        needed = max((runtime_jar.feature_needed(where / a.path) or 0) for a in artifacts)
+        identities = {"jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"],
+                      "jdkRelease": jdk["release"], "commit": prepared.commit,
+                      "classpath": [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in artifacts],
+                      "driver": {"control": driver.get("control"), "main": driver["main"]},
+                      "inputs": {"from": "PROBES", "oracle": oracle.path, "oracleSha256": oracle.sha256},
+                      "environment": dict(CONTROL_ENV), "flags": list(CONTROL_FLAGS),
+                      "replay": "model" if any(a.role == "stub" for a in artifacts) else "original-jvm"}
+        argv = (str(Path(home) / "bin/java"), *CONTROL_FLAGS, "-cp", ":".join(prepared.classpath), driver["main"], *inputs)
+        if needed > int(jdk["feature"]):
+            raise Refused("controls", f"the prepared classes need Java {needed}; JDK {jdk['feature']} can't load them")
+    except Refused as e:
+        out.write_text("")
+        err.write_text(f"runtime: not started: {e.diagnostic}\n")
+        log = {"problem": e.diagnostic}
+        return interfaces.ExecutionRecord(
+            kind="jvm-control", revision=revision, argv=argv, status="not-started", exitCode=None, seconds=0.0,
+            stdout=rel(out), stderr=rel(err), identities=identities, observations=None,
+            control=(prepared.source.get("driver") or {}).get("control") if prepared else None), log
+    status, code, seconds = _run_one(argv, where, out, err, CONTROL_TIMEOUT)
+    observations, problem = (None, f"the JVM {status}" + (f" (signal {-code})" if status == "killed" else "")) \
+        if status != "exited" else _observations(out.read_text(errors="replace"), inputs)
+    log = {"cwd": str(where), "problem": problem} if problem else {"cwd": str(where)}
+    return interfaces.ExecutionRecord(
+        kind="jvm-control", revision=revision, argv=argv, status=status, exitCode=code, seconds=seconds,
+        stdout=rel(out), stderr=rel(err), identities=identities, observations=observations,
+        control=driver.get("control")), log
+
+
+def _jdks(plan, revision, prepared):
+    entry = next((a for a in plan.artifacts if a.get("revision") == revision), {})
+    if entry.get("jdks"):
+        return [str(j) for j in entry["jdks"]]
+    built = ((prepared.toolchain if prepared else {}) or {}).get("jdk", {}).get("feature")
+    return [str(built)] if built else []
+
+
 def run_controls(plan, prepared, workdir):
-    """The task's concrete controls, each revision in its own JVM on its own classpath (`prepared`, by revision
-    name): a tuple of raw ExecutionRecords, or Unsupported."""
-    return Unsupported("run-controls", RUNTIME, "separate-JVM replay is Phase 0's stub until the runtime stream's R4 replaces it",
-                       stage="controls")
+    """The task's concrete controls: each revision's driver in its own JVM, on its own prepared classpath, on each JDK
+    its artifact entry names (else the one it was built with), run on the oracle's PROBES. A tuple of raw
+    ExecutionRecords, one per revision and JDK, in the plan's order: a revision that wasn't prepared or is not
+    artifacts-ready, bytes that changed since preparation, a missing JDK or one too old for the classes gives a
+    not-started record, never a skipped one; a kill, a timeout, or output that can't be read gives a record with no
+    observations. Nothing here applies the oracle or decides a claim. Unsupported only when the work directory is not
+    ours. The records are also written to workdir/controls.json, with why each that has no observations has none."""
+    try:
+        workdir = _workdir(workdir, CONTROLS)
+    except Refused as e:
+        return Unsupported("run-controls", RUNTIME, "the controls' work directory can't be used", stage=e.stage,
+                           diagnostic=e.diagnostic)
+    attempt = workdir.parent
+    records, logs = [], []
+    for revision in plan.revisions:
+        p = prepared.get(revision)
+        for feature in _jdks(plan, revision, p) or ["none"]:
+            record, log = _control(plan, revision, p, feature, workdir, attempt)
+            records.append(record)
+            logs.append({**record.as_dict(), "log": log})
+    (workdir / CONTROLS).write_text(json.dumps({"task": plan.task, "records": logs}, indent=2, ensure_ascii=False) + "\n")
+    return tuple(records)
 
 
 def run_verifier(plan, prepared, workdir):

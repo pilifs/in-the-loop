@@ -156,9 +156,31 @@ Small unit and JVM conformance checks run inline.
   `published-artifact` and `upstream-build` return Unsupported (not a Phase 0 stub) until R2. New modules
   `runtime_jdk.py` (installed JDKs by full path, identity from `release` and `java -version`) and `runtime_jar.py` (a
   small class-file reader). Contract A2: 3 pass. `test_runtime.py` rewritten: 19 tests.
-- Next: R4, `run_controls` on the fixture (contract A3/A4); then R2's published-artifact route with Maven Central
-  acquisition and a hash-checked cache; R3's `run_verifier` (needs a built `jvmcontract` in this workspace, compiled
-  inline); the upstream-build route as a job; R5's slice on `PatternMatchUtils.simpleMatch`.
+- 2026-11-14, **R4 on the fixture route**: `runtime.run_controls()` runs each revision's driver in its own JVM, on its
+  own prepared classpath, on each JDK its artifact entry names (`jdks`, else the one it was built with), by full path,
+  on the oracle's `PROBES`. The JVM gets a fixed environment (`C.UTF-8`, UTC, en-US, UTF-8 streams, `-Xmx512m`) and
+  inherits nothing, `JAVA_TOOL_OPTIONS` and `CLASSPATH` included. Each record names the JDK (`java -version`, home,
+  `release`), the commit, every classpath entry with its sha256 and role, the driver, where its inputs came from (the
+  oracle and its hash), the environment and flags, and `replay: original-jvm` (`model` once a `stub` artifact is on
+  the classpath). Before a JVM starts, the classpath's bytes are rechecked against the preparation. These give a
+  `not-started` record, never a skipped one: a revision with no preparation (one-sided), one that isn't
+  artifacts-ready, bytes changed since preparation, a `prepared.json` that isn't the PreparedTarget given, a missing
+  JDK, and a JDK older than the classes (from their class-file version). A kill, a timeout (`CONTROL_TIMEOUT`, 120 s),
+  a line that isn't a JSON object, and inputs missing or out of order give no observations; exit 1 with complete
+  output stays raw, its exit code kept. Nothing here applies the oracle. `controls/controls.json` says why each record
+  without observations has none. The lock now names the driver's main class. Contract A3/A4: 2 pass (contract: 8 pass,
+  8 skip, 6 at workflow's stubs and A5's 2 for want of `jvmcontract`). `test_runtime.py`: 28 tests. The integration
+  script exits 0.
+- **Interface request** (for the merge; `interfaces.py` is the coordinator's): `PreparedTarget` doesn't carry its work
+  directory, so `run_controls` finds the preparation by `route.py`'s layout (`<attempt>/prepare/<revision>` beside
+  `<attempt>/controls`) and runs it only if its `prepared.json` is the PreparedTarget given. An additive
+  `workdir: Optional[str] = None` would remove the convention. It isn't in `source`, because that would put a
+  temporary path into what claims are bound to.
+- For review (workflow's W2): a killed record's `exitCode` is the negative signal, as `build.py`'s stages record it
+  (`-9`). The constructed `bad-runs.json` record has `None`. Either way `status` is `killed`.
+- Next: R2's published-artifact route, with Maven Central acquisition and a hash-checked cache. Then R3's
+  `run_verifier` (needs `jvmcontract` built in this workspace, compiled inline), the upstream-build route as a job,
+  and R5's slice on `PatternMatchUtils.simpleMatch`.
 - Status: working
 
 ## Loop settings

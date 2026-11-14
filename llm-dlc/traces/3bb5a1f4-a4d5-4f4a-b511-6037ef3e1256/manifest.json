@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T15:37:45.307Z",
-  "duration_seconds": 658,
+  "ended": "2026-11-14T15:48:26.701Z",
+  "duration_seconds": 1299,
   "stats": {
-    "turns": 5,
-    "api_calls": 27,
-    "tool_calls": 30,
+    "turns": 10,
+    "api_calls": 58,
+    "tool_calls": 62,
     "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 138721,
+    "compactions": 2,
+    "peak_context_tokens": 142187,
     "usage": {
-      "input_tokens": 54,
-      "output_tokens": 35855,
-      "cache_read_input_tokens": 2457262,
-      "cache_creation_input_tokens": 143806
+      "input_tokens": 116,
+      "output_tokens": 65037,
+      "cache_read_input_tokens": 5740171,
+      "cache_creation_input_tokens": 276077
     }
   },
   "tools": {
-    "Bash": 23,
+    "Bash": 50,
+    "Edit": 6,
     "Write": 4,
-    "Edit": 2,
-    "Read": 1
+    "Read": 2
   },
   "files_touched": [
     "examples/tools/targets/runtime.py",
@@ -58,24 +58,38 @@
     {
       "index": 1,
       "started": "2026-11-14T15:26:42.743Z",
-      "ended": "2026-11-14T15:37:45.307Z",
-      "turns": 5,
-      "api_calls": 27,
+      "ended": "2026-11-14T15:38:10.284Z",
+      "turns": 6,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 54,
-        "output_tokens": 35855,
-        "cache_read_input_tokens": 2457262,
-        "cache_creation_input_tokens": 143806
+        "input_tokens": 60,
+        "output_tokens": 37348,
+        "cache_read_input_tokens": 2875855,
+        "cache_creation_input_tokens": 147076
       },
-      "peak_context_tokens": 138721
+      "peak_context_tokens": 141991
+    },
+    {
+      "index": 2,
+      "started": "2026-11-14T15:39:10.620Z",
+      "ended": "2026-11-14T15:48:26.701Z",
+      "turns": 4,
+      "api_calls": 28,
+      "usage": {
+        "input_tokens": 56,
+        "output_tokens": 27689,
+        "cache_read_input_tokens": 2864316,
+        "cache_creation_input_tokens": 129001
+      },
+      "peak_context_tokens": 142187
     }
   ],
   "log": {
-    "sha256": "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263",
-    "bytes": 1111220,
-    "lines": 322,
-    "gzip_bytes": 225032,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263.jsonl.gz"
+    "sha256": "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a",
+    "bytes": 2347292,
+    "lines": 718,
+    "gzip_bytes": 480577,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -86,9 +100,23 @@
       "summary": "example-targets runtime R1: source locks and the fixture route's preparation",
       "body": "The runtime stream's first piece (llm-dlc/loops/example-targets-runtime.md, R1). runtime.lock(plan, revision) is new and offline: it returns a PreparedTarget at source-locked, with every selected source, adapter, driver and oracle path inside the example's folder (symlinks included) and hashed, and nothing fetched or built. runtime.prepare() now implements the fixture route: it compiles with build_fixtures.py's recipe (--release 21, a fixed JAR date, sorted entries) using the JDK build_fixtures.py would use, resolved to its real home, so the original JAR is byte for byte build_fixtures.py's. It records the original, adapter, driver and oracle by sha256, the ordered classpath, the JDK identity (release file and java -version), the loaded target's origin, and writes prepared.json to the work directory. It returns failed, with its stage, diagnostic and whatever artifacts exist, for a class held by more than one classpath entry (shadowing), a target method the original doesn't declare, an adapter that never references the target method, a compile failure, sources changed between lock and build, and a work directory that isn't an earlier preparation's (left alone). The published-artifact and upstream-build routes return Unsupported until R2. New modules runtime_jdk.py (installed JDKs by full path) and runtime_jar.py (a small class-file reader).",
       "log_sha256": "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263"
+    },
+    {
+      "change_id": "tvvqulnktmutqzzopulspmqnzsuumrrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R4: each fixture revision's controls in its own JVM, per JDK",
+      "body": "runtime.run_controls() replaces Phase 0's stub. Each revision's driver runs in its own JVM on its prepared classpath, on each JDK the artifact entry names (21 and 25 for the fixture), selected by full path, with the oracle's PROBES as inputs. The JVM gets a fixed environment (C.UTF-8, UTC, en-US, UTF-8 streams) and inherits nothing from the caller, JAVA_TOOL_OPTIONS and CLASSPATH included. Each raw ExecutionRecord names the JDK (java -version, home, release file), the commit, each classpath entry's sha256 and role, the driver, the inputs' source and hash, and whether this is original-JVM or model replay. Before any JVM starts, the classpath bytes are rechecked against the preparation. A revision that is unprepared, failed or stale, a missing JDK, or a JDK too old for the class files gives a not-started record, never a skipped one. A kill, a timeout, malformed output, or inputs missing or out of order give no observations; exit 1 with complete output stays raw. Nothing here applies the oracle.\n\nVerified inline: contract A3/A4 pass (contract: 8 pass, 8 skip: 6 at workflow's stubs, A5's 2 for want of a built jvmcontract). test_runtime.py has 28 tests, among them the kill (signal 9), timeout, malformed, incomplete and exit-1 drivers, a one-sided pair, stale bytes and the inherited-options check. llm-dlc/tools/example-targets-integration.sh exits 0 (targets suite 68, test_build 190, test_pipeline 29).\n\nBrief note: PreparedTarget carries no work directory. run_controls therefore finds a preparation by route.py's layout and checks its prepared.json. An additive field is recorded as an interface request under Progress.",
+      "log_sha256": "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a"
     }
   ],
   "logs": {
+    "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a": {
+      "bytes": 2347292,
+      "lines": 718,
+      "gzip_bytes": 480577,
+      "url": null
+    },
     "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263": {
       "bytes": 1111220,
       "lines": 322,

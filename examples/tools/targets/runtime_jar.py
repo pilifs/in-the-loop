@@ -7,6 +7,7 @@ class-file reader, offline; nothing here runs Java. Runtime stream's.
     resolve(classpath, root)          {class: [jar, ...]} in classpath order: the first loads, the rest are shadowed
     duplicates(classpath, root)       the classes held by more than one entry, with each holder
     parse_target(target)              ("fixture.Gate", "allowed", "(I)Z" or None) from <class>#<method>(<descriptor>)
+    feature_needed(jar)               the oldest Java feature release that loads every class in it (major - 44)
     methods(class_bytes)              {(name, descriptor)} a class declares
     references(class_bytes)           {(owner, name, descriptor)} the method references in its constant pool
 """
@@ -69,6 +70,19 @@ def parse_target(target):
 
 def internal(dotted):
     return dotted.replace(".", "/")
+
+
+def feature_needed(jar):
+    """The lowest Java feature release that can load every class file in `jar` (class file major version - 44), or
+    None for a JAR with no classes. A JDK older than that refuses the bytes before any of them runs."""
+    majors = []
+    with zipfile.ZipFile(jar) as z:
+        for info in z.infolist():
+            if info.filename.endswith(".class") and not info.filename.startswith("META-INF/versions/"):
+                head = z.read(info)[:8]
+                if head[:4] == b"\xca\xfe\xba\xbe":
+                    majors.append(struct.unpack(">H", head[6:8])[0])
+    return max(majors) - 44 if majors else None
 
 
 # Constant pool tags and the number of bytes after the tag of each fixed-size one.
