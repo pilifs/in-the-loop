@@ -12,30 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.206Z",
-  "ended": "2026-11-14T15:53:38.185Z",
-  "duration_seconds": 1611,
+  "ended": "2026-11-14T16:10:50.883Z",
+  "duration_seconds": 2644,
   "stats": {
-    "turns": 15,
-    "api_calls": 94,
-    "tool_calls": 92,
-    "tool_errors": 1,
-    "compactions": 3,
-    "peak_context_tokens": 168840,
+    "turns": 20,
+    "api_calls": 152,
+    "tool_calls": 151,
+    "tool_errors": 2,
+    "compactions": 4,
+    "peak_context_tokens": 221917,
     "usage": {
-      "input_tokens": 188,
-      "output_tokens": 100685,
-      "cache_read_input_tokens": 9295772,
-      "cache_creation_input_tokens": 413023
+      "input_tokens": 304,
+      "output_tokens": 169790,
+      "cache_read_input_tokens": 17524522,
+      "cache_creation_input_tokens": 625467
     }
   },
   "tools": {
-    "Bash": 84,
-    "Read": 6,
-    "Write": 2
+    "Bash": 138,
+    "Read": 8,
+    "Write": 3,
+    "Edit": 2
   },
   "files_touched": [
     "examples/schema/target-claim.schema.json",
-    "examples/tools/targets/test_workflow.py"
+    "examples/tools/targets/test_workflow.py",
+    "examples/tools/targets/workflow.py",
+    "examples/tools/targets/workflow_ingest.py"
   ],
   "context_windows": [
     {
@@ -83,24 +86,38 @@
     {
       "index": 3,
       "started": "2026-11-14T15:43:33.114Z",
-      "ended": "2026-11-14T15:53:38.185Z",
-      "turns": 4,
-      "api_calls": 29,
+      "ended": "2026-11-14T15:54:08.426Z",
+      "turns": 5,
+      "api_calls": 32,
       "usage": {
-        "input_tokens": 58,
-        "output_tokens": 36957,
-        "cache_read_input_tokens": 2655726,
-        "cache_creation_input_tokens": 128946
+        "input_tokens": 64,
+        "output_tokens": 38513,
+        "cache_read_input_tokens": 3085331,
+        "cache_creation_input_tokens": 132659
       },
-      "peak_context_tokens": 142132
+      "peak_context_tokens": 145845
+    },
+    {
+      "index": 4,
+      "started": "2026-11-14T15:55:19.315Z",
+      "ended": "2026-11-14T16:10:50.883Z",
+      "turns": 4,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 110,
+        "output_tokens": 67549,
+        "cache_read_input_tokens": 7799145,
+        "cache_creation_input_tokens": 208731
+      },
+      "peak_context_tokens": 221917
     }
   ],
   "log": {
-    "sha256": "8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51",
-    "bytes": 3644664,
-    "lines": 1134,
-    "gzip_bytes": 733986,
-    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51.jsonl.gz"
+    "sha256": "f0a2cb506b9dc262ec07c5d7fe803a699a143ecdc0340b1dad4e174ee93ede2f",
+    "bytes": 5485882,
+    "lines": 1754,
+    "gzip_bytes": 1086335,
+    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/f0a2cb506b9dc262ec07c5d7fe803a699a143ecdc0340b1dad4e174ee93ede2f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -135,6 +152,14 @@
       "summary": "example-targets W1: readiness milestones per task, and the summaries derived from them",
       "body": "workflow.readiness() and task_readiness() derive, offline and read-only, each task's six readiness milestones (provenance locked, artifacts prepared, oracle replay validated, claim frozen, capability probed, attempt recorded), each reached, not reached or not applicable with its evidence, from the sidecar, its files and the receipts in the example's folder, and a summary per task and per target: catalogued, partial, scaffolded, executable or blocked. None reads a conclusion as a verdict. A receipt counts only beside a plan.json (workflow.plan_record(): the plan, its attempt inputs and their key), so a changed claim file, control, adapter, artifact source or bound leaves earlier receipts stale, listed and never counted; an unreadable, non-format-2 or misfiled receipt is listed as unreadable. A predicted blocker is no probe; an observed build, provenance, oracle or replay blocker leaves the scaffold partial; an observed capability gap on a sound scaffold blocks the task. On the fixture every task is partial today, as no receipt exists yet.\n\nVerified: test_workflow.py 37 tests (8 new) pass; llm-dlc/tools/example-targets-integration.sh exits 0 (contract 4 pass and 12 at stubs or without a built jvmcontract; targets suite 77, test_build.py 190, test_pipeline.py 29). Progress records two coordination points: test_route.py (the coordinator's) asserts the index projection's readiness is None, which W4 will change, and result.schema.json's claim.target.revisions takes commit SHAs only while A6 expects the fixture's revisions there, open for W2.",
       "log_sha256": "8b35b4f5fef23d5f467f2b12334f4a9de57a87b9e2c5f79057c12fa03f67ea51"
+    },
+    {
+      "change_id": "monsvovyynrmmyyxqzyulyvsklnknswy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets W2: attempt ingestion, one format-2 receipt per task and attempt bound to the prepared artifacts",
+      "body": "workflow.ingest() (examples/tools/targets/workflow_ingest.py, new) replaces Phase 0's stub. It binds one attempt's raw execution records to runtime's PreparedTargets and publishes receipts/<task>/<attempt>/result.json with plan.json beside it and the evidence under records/ (the records with what the oracle read, and the console output), listed by sha256 in the bundle. Earlier attempts are kept, and nothing is published before build.py's check_result() passes. The claim is build.py's format-1 claim with claim.target: the sidecar's sha256, each revision's identity, every classpath entry per revision in order with role and sha256, the JDKs, and the claim, control, adapter, patch and oracle files. Its id stays the same across attempts and engines, and differs between the vulnerable and fixed tasks of one property and after any changed input. A fixture revision, which has no commit, is identified by the git tree id of its sources (git rev-parse reproduces it; tested), and a mutant by its base's.\n\nA replay decides no claim. It completes only when every revision ran on every JDK named, on the prepared bytes, with output the case's oracle read; its expectation is yes only when each revision shows what its pair's kind says on every JDK. A kill, a timeout, malformed or incomplete output, other bytes, or a missing side or JDK give a receipt with no result and reproduced false. A proof is read from the verifier's --json outcome with build.py's rules: exit 1 alone is invalid output, a violation needs its witness, a refusal is unresolved. Unbindable records (an unprepared or failed preparation, another commit, an oracle changed since planning) are refused with nothing published. Also fixes W1's attempts(), which read attempt.execution as a string where a receipt stores an object.\n\nVerified: test_workflow.py 46 tests (9 new), with mutations of the expectation, the reproduced flag and the witness rule caught. Contract A6 passes 3 of 3 (contract: 7 pass, 9 skip). The integration script exits 0 (targets suite 86, test_build 190, test_pipeline 29). route.run on the fixture's replay and mutant-replay, with runtime's committed R4 (tvvqulnktmut) laid over a scratch copy, publishes completed receipts with expectation yes.\n\nOut of date in the brief set, recorded as interface requests under Progress: result.schema.json still requires existingTests (with a boolean passed) and before/after excerpts, which a target task has none of. Receipts fill them with an explicit 'none: ...' entry and the target.json lines naming the revisions until the coordinator allows null for a target claim. claim.target.revisions' description says 'full commit SHA', which a fixture revision can't have.",
+      "log_sha256": "f0a2cb506b9dc262ec07c5d7fe803a699a143ecdc0340b1dad4e174ee93ede2f"
     }
   ],
   "logs": {
@@ -154,6 +179,12 @@
       "bytes": 2473466,
       "lines": 749,
       "gzip_bytes": 497960,
+      "url": null
+    },
+    "f0a2cb506b9dc262ec07c5d7fe803a699a143ecdc0340b1dad4e174ee93ede2f": {
+      "bytes": 5485882,
+      "lines": 1754,
+      "gzip_bytes": 1086335,
       "url": null
     },
     "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3": {

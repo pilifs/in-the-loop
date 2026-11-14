@@ -192,10 +192,62 @@ timebox and the safety rules. Planning and discovery never touch the network.
   index projection's `readiness` is None and that `find.py --readiness blocked` matches nothing, Phase 0's stub
   behaviour. When W4 projects `readiness()` into `project()`, its stub sidecar (no preparation) derives `catalogued`,
   and that assertion needs the coordinator's update at the merge; W4 records the exact line then.
-- **Open for W2**: `result.schema.json`'s `claim.target.revisions` takes 40-hex commit SHAs only, and A6 expects the
-  fixture's `before` and `after` there, which have no commit. W2 decides whether an honest content identity fits
-  (the fixture sources' git tree id is 40-hex, but isn't a commit), or records an interface request.
-- Next: W2 ingestion (`ingest`, with `plan.json` beside each receipt), then the readiness tests over its receipts.
+- **Open for W2**, settled below: `claim.target.revisions` takes 40 hex digits, and a fixture revision has no commit.
+- 2026-11-14, **W2 attempt ingestion**: `workflow.ingest()` (in `targets/workflow_ingest.py`, new and mine) binds one
+  attempt's raw records to the prepared artifacts and publishes one format-2 receipt at
+  `receipts/<task>/<attempt>/result.json`, with `plan.json` beside it and the evidence under `records/`
+  (`execution.json`, the records with what the oracle read in each; `summary.txt` or `verifier-output.txt`, the
+  `output`), listed by sha256 in the bundle. Earlier attempts are never touched; nothing is published before
+  `build.py`'s `check_result()` passes (both schemas, the format-2 round trip, the bundle), and it is staged under a
+  dot-directory that readiness skips, then renamed. The claim is `build.py`'s format-1 claim with `target`: the plan's
+  source-level claim as the statement, the bounds' `maxArrayLength` (and a comparison's allowed change) as scope,
+  `inputs.dependencies` `pinned in target.dependencies` with patch null, and `target` with the sidecar's sha256, each
+  revision's identity, every classpath entry per revision in order with role and sha256, the JDKs (`java -version`
+  lines of the records that started and of the preparations), and the claim, control, adapter, patch and oracle files
+  by sha256. Its id is `canonical_digest(...)[:16]`: the same task and inputs keep it across attempts, another engine
+  keeps it (another attempt), the vulnerable and fixed tasks of one claim file get two, and another adapter, oracle,
+  control or artifact makes a new one. **Revision identity**: a commit revision's full SHA; a fixture revision's is the
+  git tree id of its source directory (`git rev-parse HEAD:examples/tools/targets/fixtures/gate/before` gives the same,
+  tested), 40 hex digits but not a commit; a constructed mutant's is its base's, its patch among the files. Refused,
+  with nothing published: a revision not prepared, a preparation not `artifacts-ready` (stage `prepare`: a preparation
+  failure stays one), another example's or another commit's preparation, a classpath naming unprepared files or no
+  original, a replay with a verifier record, a proof with no or two verifier records, and an oracle changed since
+  planning. **A replay** decides no claim (status always None). It completes only when every revision ran on every JDK
+  its artifact entry names, exited 0 with observations, on the prepared bytes (each record's `identities.classpath`
+  checked), and the case's oracle (`check(lines)`, run in a separate `python3 -I` with a 60 s limit) read each one.
+  Then its expectation is `yes` when each revision shows, alike on every JDK, what its pair's kind says (exact fix or
+  release: before violates, after holds; mutation or introduction: before holds, after violates; positive: both hold),
+  else `no`; `replay.reproduced` is true only for `yes`, `replay.by` is `model` when a record says so. A kill, a
+  timeout, a JVM that didn't start, exit 1, missing, malformed or incomplete output, other bytes, and one side or one
+  JDK missing give a receipt with that execution status, the reasons, expectation `not-evaluable` and
+  `reproduced: false`. **A proof** is read from its one verifier record with `build.py`'s rules (`execution_status`,
+  `conclude_outcome`, `property_record`, `property_headline`, `equivalence_counterexamples`): exit 1 with no readable
+  outcome is `invalid-output`, a violation needs its witness, an exit code the outcome contradicts is invalid output,
+  a refusal is `unresolved`, a vacuous proof never matches; the expectation compares with the task's `expected`, and an
+  unexpected verdict is kept. Contract A6: 3 pass (contract 7 pass, 9 skip: workflow's W3 stubs, runtime's stubs and
+  A5 for want of `jvmcontract`). Also fixed W1's `attempts()`, which read `attempt.execution` as a string where a
+  receipt stores `{status, exitCode, reason}` (its hand-written test receipts had the wrong shape). Checked against
+  runtime's committed R4 (`tvvqulnktmut`, its `runtime*.py` laid over a scratch copy of this tree): `route.run` on the
+  fixture's `replay` and `mutant-replay` publishes completed receipts with expectation `yes`, and `fixed-security`
+  stops at runtime's R3 stub. Tests: `test_workflow.py` 46 (9 new, 2 rewritten); the integration script passes
+  (contract 7 pass, 9 skip; targets suite 86, `test_build.py` 190, `test_pipeline.py` 29).
+- **Interface requests from W2** (for the merge; the result schemas are the coordinator's):
+  - `result.schema.json` requires `existingTests` (with a boolean `passed`) and `before`/`after` excerpts, which a
+    target task doesn't have. A receipt writes `existingTests` as task "none: a target task's attempt runs no module
+    tests; its concrete controls are its records (records/execution.json)", `passed: false`, no failures, and the
+    excerpts as the `target.json` lines naming the revisions. Request: allow null for both when `claim.target` is
+    present. Until then nothing may read a target receipt's `existingTests.passed` as a test failure.
+  - `claim.target.revisions`' description says "full commit SHA"; for a fixture revision the value is its sources' git
+    tree id (above). Request: say so in the description (the pattern already fits).
+- **For the merge** (runtime): ingestion reads a verifier record's `observations` as jvmcontract's `--json` outcome
+  (`prove`: the list, one per property; `equivalence`/`compare`: one outcome), `identities.jdk` as the `java -version`
+  line and `identities.jvmcontract` as the tool's identity, and checks each record's `identities.classpath` against
+  the preparation. Raw stdout and stderr aren't bundled: ingestion isn't given the attempt's directory (the same gap as
+  runtime's `PreparedTarget.workdir` request); `attempt.stages` keeps their paths relative to it.
+- **For review**: the sidecar states no per-revision expected concrete outcome, so a replay's expectation comes from
+  its pair's kind (`workflow_ingest.SIDES`); a one-revision replay takes it from the pairs it appears in, and none or
+  conflicting ones leave its expectation `no`, with the label saying so.
+- Next: W3, the handoff packet and the gap inventory (A1's handoff row and A7), then W4.
 - Status: working
 
 ## Loop settings

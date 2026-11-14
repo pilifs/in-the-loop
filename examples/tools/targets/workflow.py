@@ -1,9 +1,9 @@
 """Task planning, attempt ingestion and the index projection: the workflow stream's side of the interfaces
 (interfaces.py) of llm-dlc/loops/example-targets.md. plan_task() resolves a task from the sidecar and its claim file
 alone (W1), and readiness() derives each task's readiness milestones and summaries from the sidecar, its files and
-the folder's receipts (W1). ingest() and handoff() fail closed with the named Unsupported result until the workflow
-stream replaces them (W2, W3); project() reports only what target.json states until W4 projects readiness() into the
-index. Signatures are frozen.
+the folder's receipts (W1). ingest() publishes one attempt's format-2 receipt (W2, workflow_ingest.py). handoff()
+fails closed with the named Unsupported result until the workflow stream replaces it (W3); project() reports only what
+target.json states until W4 projects readiness() into the index. Signatures are frozen.
 
 A task's claim is frozen twice. Planning freezes the source-level claim: the task's statement, domain, observations,
 assumptions, allowed change, models and bounds (the tool's defaults resolved), and `key`, their canonical digest,
@@ -348,13 +348,16 @@ def inputs_key(plan):
 def attempts(folder):
     """Every attempt recorded in the example's folder, receipts/<task>/<attempt>/result.json with its plan.json, in
     path order. Read-only. Each is a dict: task, attempt, path, inputsKey, artifacts (the revisions' sources it ran
-    on), prepared (the revisions its claim binds to prepared artifacts), execution, status, expectation, and
+    on), prepared (the revisions its claim binds to prepared artifacts), execution (how it ended: its `status`), status
+    (the conclusion's), expectation, and
     `problem`, why it can't count (not JSON, not format 2, no plan.json, filed under another task), or None. The
     receipt's schemas are checked when ingestion publishes it (W2); this reads what it needs and trusts no more."""
     import result_format
     root = Path(folder) / RECEIPTS
     out = []
     for path in sorted(root.glob("*/*/result.json")) if root.is_dir() else ():
+        if path.parent.name.startswith("."):
+            continue  # an attempt still being published (workflow_ingest.publish() renames it into place)
         entry = {"task": path.parent.parent.name, "attempt": path.parent.name,
                  "path": path.relative_to(folder).as_posix(), "inputsKey": None, "artifacts": [], "adapters": [],
                  "prepared": [],
@@ -377,7 +380,8 @@ def attempts(folder):
         entry.update(inputsKey=record.get("key"), artifacts=(record.get("inputs") or {}).get("artifacts", []),
                      adapters=(record.get("inputs") or {}).get("adapters", []),
                      prepared=sorted({d["revision"] for d in target.get("dependencies", [])}),
-                     execution=(document.get("attempt") or {}).get("execution"), status=conclusion.get("status"),
+                     execution=((document.get("attempt") or {}).get("execution") or {}).get("status"),
+                     status=conclusion.get("status"),
                      expectation=conclusion.get("expectation"))
         if target.get("task") != entry["task"]:
             entry["problem"] = f"its claim names task {target.get('task')!r}, and it is filed under {entry['task']!r}"
@@ -555,9 +559,9 @@ def readiness(folder, example, target):
 def ingest(plan, prepared, records, out):
     """Validates the raw records of one attempt at `plan`, binds them to the prepared artifacts (`prepared`, by
     revision name) and publishes one format-2 receipt under `out`, earlier attempts kept: a Receipt, or
-    Unsupported."""
-    return Unsupported("ingest", WORKFLOW, "attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it",
-                       stage="ingest")
+    Unsupported. workflow_ingest.py (W2) says how the claim is bound and what each attempt's receipt holds."""
+    from targets import workflow_ingest
+    return workflow_ingest.publish(plan, prepared, records, out)
 
 
 def handoff(folder, example, target, task):

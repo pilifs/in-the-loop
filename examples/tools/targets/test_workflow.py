@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Tests of workflow.py, owned by the workflow stream with it: task planning and the readiness milestones (W1), on a
-copy of Phase 0's fixture and on sidecars changed from it. ingest() and handoff() are still Phase 0's stubs, which fail
-closed with the named Unsupported result; their tests are rewritten as each stub is replaced.
+copy of Phase 0's fixture and on sidecars changed from it, and attempt ingestion (W2) on the fixture's JARs, its
+recorded controls and constructed verifier outcomes. handoff() is still Phase 0's stub, which fails closed with the
+named Unsupported result; its test is rewritten when it is replaced.
 
   python3 examples/tools/targets/test_workflow.py
 """
@@ -405,7 +406,7 @@ class ReadinessTest(Fixture):
         document = {"format": 2, "claim": {"id": "0" * 16, "target": {
             "task": task_id, "dependencies": [{"revision": r, "position": 0, "role": "original", "sha256": "0" * 64}
                                               for r in plan.revisions]}},
-            "attempt": {"id": attempt, "execution": execution},
+            "attempt": {"id": attempt, "execution": {"status": execution, "exitCode": 0, "reason": None}},
             "conclusion": {"status": status, "expectation": expectation}}
         (where / "result.json").write_text(json.dumps(document))
         (where / "plan.json").write_text(json.dumps(workflow.plan_record(plan)))
@@ -539,14 +540,262 @@ class ReadinessTest(Fixture):
         self.assertIn("catalogued", value["tasks"]["fixed-security"]["milestones"]["claimFrozen"]["evidence"])
 
 
+_MANIFEST = []
+
+
+def fixture_manifest():
+    """build_fixtures.py's manifest of the fixture JARs (javac, a few seconds), built once per run."""
+    if not _MANIFEST:
+        sys.path.insert(0, str(FIXTURES))
+        import atexit
+        import build_fixtures
+        directory = tempfile.mkdtemp(prefix="workflow-ingest-")
+        atexit.register(shutil.rmtree, directory, True)
+        _MANIFEST.append(build_fixtures.build(directory))
+    return _MANIFEST[0]
+
+
+def outcome(verdict, counterexample=None, output="jvmcontract prove: ...\n", **fields):
+    """One property's outcome as `jvmcontract prove --json` prints it, reduced to what ingestion reads."""
+    return {"verdict": verdict, "output": output, "assert": "!result || (code != 65 && code != 97)", "assume": None,
+            "counterexample": counterexample, "domain": "code: int", "proof": fields.pop("proof", None),
+            "problem": fields.pop("problem", None), "vacuous": fields.pop("vacuous", None), **fields}
+
+
+class IngestTest(Fixture):
+    """W2's ingestion: one format-2 receipt per task and attempt from the fixture's prepared JARs and its recorded
+    controls (records/controls.json) or a constructed verifier outcome, checked by build.py's check_result()."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.manifest = fixture_manifest()
+
+    def setUp(self):
+        super().setUp()
+        self.controls = json.loads((self.folder / "records/controls.json").read_text())["records"]
+
+    def prepared(self, revision, task="replay", **changes):
+        jars = self.manifest["jars"]
+        fields = dict(example="999", task=task, revision=revision, commit=f"fixture:gate/{revision}", stage="artifacts-ready",
+                      source={"fixture": f"gate/{revision}"},
+                      artifacts=(interfaces.Artifact(f"{revision}.jar", jars[revision]["sha256"], "original"),
+                                 interfaces.Artifact(f"adapter-{revision}.jar", jars[f"adapter-{revision}"]["sha256"], "adapter"),
+                                 interfaces.Artifact("driver.jar", jars["driver"]["sha256"], "driver")),
+                      classpath=("driver.jar", f"adapter-{revision}.jar", f"{revision}.jar"),
+                      toolchain={"jdk": {"feature": "25", "version": self.manifest["java"]}})
+        fields.update(changes)
+        return interfaces.PreparedTarget(**fields)
+
+    def recorded(self, revisions, change=None):
+        """The recorded controls of these revisions as ExecutionRecords; `change(record dict)` edits each first."""
+        names = {f.name for f in __import__("dataclasses").fields(interfaces.ExecutionRecord)}
+        out = []
+        for r in copy.deepcopy(self.controls):
+            if r["revision"] in revisions:
+                if change:
+                    change(r)
+                out.append(interfaces.ExecutionRecord(**{k: (tuple(v) if k in ("argv", "observations") and v is not None else v)
+                                                         for k, v in r.items() if k in names}))
+        return tuple(out)
+
+    def verifier(self, outcomes, exit_code=1, status="exited", revision="before"):
+        return interfaces.ExecutionRecord(
+            kind="verifier", revision=revision, argv=("jvmcontract", "prove", "fixture.Gate#allowed", "--engine", "native",
+                                                      "--gaps", "strict", "--json"),
+            status=status, exitCode=exit_code, seconds=1.5, stdout="verifier/out", stderr="verifier/err",
+            identities={"jvmcontract": "0" * 64, "jdk": self.manifest["java"]},
+            observations=None if outcomes is None else tuple(outcomes))
+
+    def ingest(self, task_id, records, prepared=None, plan=None):
+        plan = plan or self.planned(task_id)
+        prepared = prepared if prepared is not None else {r: self.prepared(r, task_id) for r in plan.revisions}
+        return workflow.ingest(plan, prepared, records, self.folder / plan.outputs["receipts"])
+
+    def receipt(self, value):
+        import jsonschema
+        import result_format
+        self.assertIsInstance(value, interfaces.Receipt, getattr(value, "reason", value))
+        document = json.loads((self.folder / value.path).read_text())
+        schemas = HERE.parents[1] / "schema"
+        jsonschema.validate(document, json.loads((schemas / "stored-result.schema.json").read_text()))
+        jsonschema.validate(result_format.view(document), json.loads((schemas / "result.schema.json").read_text()))
+        return document
+
+    def refused(self, value, stage, says):
+        self.assertTrue(interfaces.unsupported(value), f"published {value}")
+        self.assertEqual((value.interface, value.owner, value.stage), ("ingest", interfaces.WORKFLOW, stage), value.reason)
+        self.assertNotIn("Phase 0's stub", value.reason)
+        self.assertIn(says, value.reason)
+
+    def test_a_replay_is_bound_to_its_artifacts_and_reproduced(self):
+        receipt = self.ingest("replay", self.recorded(("before", "after")))
+        document = self.receipt(receipt)
+        self.assertEqual((receipt.status, receipt.execution), (None, "completed"), "a replay decides no claim")
+        self.assertEqual(receipt.path, f"receipts/replay/{receipt.attempt}/result.json")
+        conclusion, evidence = document["conclusion"], document["evidence"]
+        self.assertEqual((conclusion["status"], conclusion["expectation"]), (None, "yes"))
+        self.assertEqual(evidence["replay"], {"by": "jvm", "reproduced": True})
+        self.assertEqual([c["input"] for c in evidence["counterexamples"]], ["97", "97"], "before violates on JDK 21 and 25")
+        target = document["claim"]["target"]
+        from targets import workflow_ingest
+        self.assertEqual(target["revisions"], {r: workflow_ingest.git_tree_id(self.folder / f"gate/{r}") for r in ("before", "after")})
+        self.assertEqual([(d["revision"], d["position"], d["role"]) for d in target["dependencies"]],
+                         [(r, i, role) for r in ("before", "after") for i, role in enumerate(("driver", "adapter", "original"))])
+        self.assertEqual(len(target["jdks"]), 2)
+        self.assertIn("gate/oracle.py", target["files"])
+        self.assertIn("gate/adapter/fixture/adapter/GateAdapter.java", target["files"])
+        self.assertEqual(document["claim"]["inputs"]["dependencies"], "pinned in target.dependencies")
+        where = self.folder / receipt.path
+        self.assertEqual(json.loads((where.parent / "plan.json").read_text())["key"], workflow.inputs_key(self.planned("replay")))
+        self.assertEqual(sorted(a["path"] for a in document["bundle"]["artifacts"]), ["records/execution.json", "records/summary.txt"])
+
+    def test_the_fixture_revisions_identity_is_its_git_tree(self):
+        from targets import workflow_ingest
+        repo = HERE.parents[2]
+        try:
+            git = subprocess.run(["git", "rev-parse", "HEAD:examples/tools/targets/fixtures/gate/before"], cwd=repo,
+                                 capture_output=True, text=True, timeout=30)
+        except OSError:
+            self.skipTest("no git")
+        if git.returncode != 0 or subprocess.run(["git", "diff", "--quiet", "HEAD", "--", "fixtures/gate/before"],
+                                                 cwd=HERE, timeout=30).returncode != 0:
+            self.skipTest("the fixture isn't committed unchanged at HEAD")
+        self.assertEqual(workflow_ingest.git_tree_id(FIXTURES / "gate/before"), git.stdout.strip())
+
+    def test_attempts_are_kept_and_the_claim_follows_the_inputs(self):
+        first = self.ingest("replay", self.recorded(("before", "after")))
+        second = self.ingest("replay", self.recorded(("before", "after")))
+        self.assertEqual(first.claim, second.claim, "another attempt at the same claim")
+        self.assertNotEqual(first.path, second.path)
+        self.receipt(first)
+        self.assertNotEqual(self.ingest("mutant-replay", self.recorded(("after", "mutant"))).claim, first.claim)
+        adapter = self.folder / "gate/adapter/fixture/adapter/GateAdapter.java"
+        adapter.write_text(adapter.read_text() + "\n")
+        self.assertNotEqual(self.ingest("replay", self.recorded(("before", "after"))).claim, first.claim, "a changed adapter")
+        changed = self.prepared("after", artifacts=(interfaces.Artifact("after.jar", "1" * 64, "original"),
+                                                    *self.prepared("after").artifacts[1:]))
+        other = self.ingest("replay", self.recorded(("before", "after")), {"before": self.prepared("before"), "after": changed})
+        self.assertNotEqual(other.claim, first.claim, "other bytes are another claim")
+        self.assertEqual(other.execution, "invalid-output", "the controls ran on bytes other than the prepared ones")
+
+    def test_a_kill_a_timeout_malformed_output_or_one_side_is_no_result(self):
+        def edit(field, value, revision="after"):
+            return lambda r: r.update({field: value} if r["revision"] == revision else {})
+        cases = {"killed": (self.recorded(("before", "after"), edit("status", "killed")), "killed"),
+                 "timed out": (self.recorded(("before", "after"), edit("status", "timed-out")), "timed-out"),
+                 "malformed": (self.recorded(("before", "after"), edit("observations", None)), "invalid-output"),
+                 "exit 1": (self.recorded(("before", "after"), edit("exitCode", 1)), "tool-error"),
+                 "incomplete": (self.recorded(("before", "after"), lambda r: r.update(observations=r["observations"][:-1])),
+                                "invalid-output"),
+                 "one side": (self.recorded(("before",)), "invalid-output"),
+                 "one JDK": (self.recorded(("before", "after"), lambda r: r.update(
+                     identities={**r["identities"], "jdk": 'openjdk version "25.0.5" 2026-10-20 LTS'})), "invalid-output")}
+        for name, (records, execution) in cases.items():
+            with self.subTest(name):
+                receipt = self.ingest("replay", records)
+                document = self.receipt(receipt)
+                self.assertEqual((receipt.execution, receipt.status), (execution, None))
+                self.assertEqual(document["conclusion"]["expectation"], "not-evaluable")
+                self.assertFalse(document["evidence"]["replay"]["reproduced"], "an incomplete replay is never reproduced")
+                self.assertTrue(document["attempt"]["execution"]["reason"])
+
+    def test_a_replay_that_shows_the_wrong_outcome_completes_and_does_not_match(self):
+        def flip(r):
+            if r["revision"] == "after":
+                for o in r["observations"]:
+                    if o["input"] == 97:
+                        o["value"] = True
+        receipt = self.ingest("replay", self.recorded(("before", "after"), flip))
+        document = self.receipt(receipt)
+        self.assertEqual((receipt.execution, document["conclusion"]["expectation"]), ("completed", "no"))
+        self.assertFalse(document["evidence"]["replay"]["reproduced"])
+
+    def test_what_cant_be_bound_is_refused_and_nothing_is_published(self):
+        plan = self.planned("replay")
+        records = self.recorded(("before", "after"))
+        self.refused(self.ingest("replay", records, {"before": self.prepared("before")}), "bind", "after was not prepared")
+        failed = self.prepared("after", stage="failed", failedStage="build", diagnostic="javac: error")
+        self.refused(self.ingest("replay", records, {"before": self.prepared("before"), "after": failed}), "prepare",
+                     "a preparation failure")
+        self.refused(self.ingest("replay", records, {"before": self.prepared("before"),
+                                                     "after": self.prepared("after", commit="fixture:gate/mutant")}),
+                     "bind", "fixture:gate/mutant")
+        self.refused(self.ingest("replay", records + (self.verifier(None),)), "records", "runs no verifier")
+        oracle = self.folder / "gate/oracle.py"
+        oracle.write_text(oracle.read_text() + "\n")
+        self.refused(self.ingest("replay", records, plan=plan), "oracle", "changed since the task was planned")
+        self.refused(self.ingest("vulnerable-security", records), "records", "0 verifier records")
+        self.assertFalse((self.folder / "receipts").exists() and any((self.folder / "receipts").rglob("result.json")))
+
+    def test_an_exit_code_alone_is_no_violation_and_a_witness_is_needed(self):
+        witness = {"input": "code=97", "outcome": "returned true"}
+        cases = {"exit 1, no outcome": (None, 1, "invalid-output", None),
+                 "exit 1, unreadable": ([{"verdict": "violation"}], 1, "invalid-output", None),
+                 "a violation with no witness": ([outcome("violation")], 1, "invalid-output", None),
+                 "exit 0 for a violation": ([outcome("violation", witness)], 0, "invalid-output", None),
+                 "a violation with its witness": ([outcome("violation", witness)], 1, "completed", "refuted")}
+        for name, (outcomes, code, execution, status) in cases.items():
+            with self.subTest(name):
+                receipt = self.ingest("vulnerable-security", (self.verifier(outcomes, code),))
+                document = self.receipt(receipt)
+                self.assertEqual((receipt.execution, receipt.status), (execution, status))
+                self.assertEqual(document["conclusion"]["expectation"], "yes" if status else "not-evaluable")
+        killed = self.ingest("vulnerable-security", (self.verifier(None, None, "killed"),))
+        self.assertEqual((killed.execution, killed.status), ("killed", None))
+        timed_out = self.ingest("vulnerable-security", (self.verifier(None, None, "timed-out"),))
+        self.assertEqual((timed_out.execution, timed_out.status), ("timed-out", None))
+
+    def test_one_property_on_two_revisions_gets_two_claims_and_its_own_verdicts(self):
+        fixed = self.ingest("fixed-security", (self.verifier([outcome("verified", proof="the own checker, with unwinding assertions")], 0, revision="after"),))
+        vulnerable = self.ingest("vulnerable-security", (self.verifier([outcome("verified")], 0),))
+        self.assertNotEqual(fixed.claim, vulnerable.claim, "one property, two artifact-bound identities")
+        import dataclasses
+        strategy = dataclasses.replace(self.planned("fixed-security"), engine="auto")
+        again = self.ingest("fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),), plan=strategy)
+        self.assertEqual(again.claim, fixed.claim, "another engine is another attempt at the same claim")
+        self.assertEqual((fixed.status, self.receipt(fixed)["conclusion"]["expectation"]), ("established", "yes"))
+        document = self.receipt(vulnerable)
+        self.assertEqual((vulnerable.status, document["conclusion"]["expectation"]), ("established", "no"),
+                         "an unexpected verdict is kept, never rewritten")
+        self.assertEqual(self.receipt(fixed)["attempt"]["exploration"]["complete"], True)
+        refusal = self.ingest("regex-probe", (self.verifier([outcome("unverifiable", problem="java.util.regex.Pattern#compile is outside the checker")], 1, revision="after"),))
+        self.assertEqual((refusal.execution, refusal.status), ("completed", "unresolved"))
+        self.assertEqual(self.receipt(refusal)["conclusion"]["expectation"], "yes", "a refusal is unresolved, as expected")
+        vacuous = self.ingest("fixed-security", (self.verifier([outcome("verified", vacuous="no input reaches the call")], 0, revision="after"),))
+        self.assertEqual(self.receipt(vacuous)["conclusion"]["expectation"], "no", "a vacuous proof isn't the expected one")
+
+    def test_readiness_reads_the_receipts_ingestion_publishes(self):
+        def readiness():
+            with offline():
+                return workflow.readiness(self.folder, self.example, self.target)
+        self.ingest("replay", self.recorded(("before", "after")))
+        self.ingest("mutant-replay", self.recorded(("after", "mutant")))
+        value = readiness()
+        fixed = value["tasks"]["fixed-security"]["milestones"]
+        self.assertTrue(fixed["artifactsPrepared"]["reached"] and fixed["oracleValidated"]["reached"], fixed)
+        self.assertEqual(value["tasks"]["fixed-security"]["summary"], "scaffolded")
+        self.assertEqual(value["tasks"]["regex-probe"]["summary"], "blocked")
+        self.ingest("fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),))
+        value = readiness()
+        self.assertEqual(value["tasks"]["fixed-security"]["summary"], "executable")
+        self.assertEqual(value["unreadable"], [])
+        adapter = self.folder / "gate/adapter/fixture/adapter/GateAdapter.java"
+        adapter.write_text(adapter.read_text() + "\n")
+        value = readiness()
+        self.assertFalse(value["tasks"]["fixed-security"]["milestones"]["oracleValidated"]["reached"], "stale after a change")
+        self.assertEqual(value["tasks"]["fixed-security"]["summary"], "partial")
+
+
 class StubsFailClosedTest(unittest.TestCase):
     def check(self, value, interface, owner):
         self.assertTrue(interfaces.unsupported(value))
         self.assertEqual((value.interface, value.owner), (interface, owner))
         self.assertIn(owner, value.describe())
 
-    def test_ingestion(self):
-        self.check(workflow.ingest(plan(), {}, (), Path(".")), "ingest", interfaces.WORKFLOW)
+    def test_ingestion_without_a_sidecar_is_refused(self):
+        value = workflow.ingest(plan(), {}, (), Path("."))
+        self.check(value, "ingest", interfaces.WORKFLOW)
+        self.assertNotIn("Phase 0's stub", value.reason)
 
     def test_handoff(self):
         self.check(workflow.handoff(Path("."), {}, {}, "t"), "handoff", interfaces.WORKFLOW)
