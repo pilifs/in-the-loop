@@ -1012,7 +1012,7 @@ class DiscoveryTest(Fixture):
         (folder / "target.json").write_text(json.dumps(target))
         return folder
 
-    def find(self, *folders, readiness=False):
+    def find(self, *folders, readiness=True):
         """The index rendered by build.py over these folders, and a function running find.py on it."""
         import contextlib as context
         import io
@@ -1048,7 +1048,8 @@ class DiscoveryTest(Fixture):
         self.assertEqual((row["family"], row["role"], row["case"], row["tasks"]),
                          ("phase0-fixture", "control", "phase0-fixture-gate", tasks))
         self.assertEqual(row["taskReadiness"], {t: "partial" for t in tasks}, "nothing is prepared yet")
-        self.assertEqual((row["readiness"], row["unsupported"]), (None, workflow_discovery_hold()))
+        self.assertEqual(row["readiness"], workflow.readiness(self.folder, self.example, self.target)["summary"])
+        self.assertNotIn("unsupported", row)
         self.assertEqual(row["expected"], {t["id"]: t.get("expected") for t in self.target["tasks"]})
         proofs = [t["id"] for t in self.target["tasks"] if t["kind"] != "replay"]
         self.assertEqual(row["claims"], {t: None for t in proofs}, "an expectation is not a claim status")
@@ -1059,10 +1060,9 @@ class DiscoveryTest(Fixture):
         self.assertEqual(row["historical"]["verdictLabel"], self.example["verdictLabel"])
         self.assertEqual(row["handoff"], "python3 examples/tools/targets/workflow_handoff.py handoff 999 TASK")
         from targets import workflow_discovery
-        with mock.patch.object(workflow_discovery, "READINESS_IN_INDEX", True):
+        with mock.patch.object(workflow_discovery, "READINESS_IN_INDEX", False):
             row = self.project()
-        self.assertEqual(row["readiness"], workflow.readiness(self.folder, self.example, self.target)["summary"])
-        self.assertNotIn("unsupported", row)
+        self.assertEqual((row["readiness"], row["unsupported"]), (None, workflow_discovery_hold()))
 
     def test_claim_statuses_come_from_the_latest_current_receipt_and_stale_ones_are_apart(self):
         witness = {"input": "code=97", "outcome": "returned true"}
@@ -1131,8 +1131,8 @@ class DiscoveryTest(Fixture):
         self.assertEqual(find("--gap", "java-semantics"), ["999"], "observed with its packet; a missing one doesn't count")
         self.assertEqual(find("--gap", "input-construction"), [], "a prediction is no observed gap")
         self.assertEqual(find("--readiness", "blocked"), [])
-        index, find = self.find(*folders)
-        self.assertEqual(find("--readiness", "catalogued"), [], "held until the coordinator's test expects it")
+        index, find = self.find(*folders, readiness=False)
+        self.assertEqual(find("--readiness", "catalogued"), [], "held while READINESS_IN_INDEX is off")
         self.assertEqual(index["998"]["target"]["taskReadiness"]["fixed-security"], "catalogued")
 
     def test_a_blocked_target_is_found_by_its_readiness_and_its_gap(self):

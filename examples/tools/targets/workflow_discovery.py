@@ -5,7 +5,7 @@ the handoff are: no process, no network, nothing written.
 
   family, role, case, tasks  what the sidecar states
   readiness                  the target's derived summary (workflow.readiness()): catalogued, partial, scaffolded,
-                             executable or blocked; None while READINESS_IN_INDEX is off (below)
+                             executable or blocked (READINESS_IN_INDEX, below)
   taskReadiness              each task's summary, never a proof verdict
   expected                   each task's authored expected outcome: what the case states, never what was established
   claims                     each proof task's conclusion in its latest current receipt (established, refuted,
@@ -29,12 +29,10 @@ from pathlib import Path
 
 from targets import workflow
 
-# The target's readiness summary goes into the index's `readiness` once test_route.py's IndexAndFindTest (the
-# coordinator's, Phase 0) expects it: its line 132 asserts the stub sidecar's `readiness` is None, Phase 0's "not
-# derived yet". The summary is derived either way (`taskReadiness`, and readiness() itself); turning this on at the
-# merge, with that assertion changed to "catalogued", is all that remains. An interface request under the stream's
-# Progress.
-READINESS_IN_INDEX = False
+# The target's readiness summary goes into the index's `readiness`. Phase 0's test_route.py expected None ("not
+# derived yet") until the merge; Phase 5 step 1's request 5 turned this on, with that test expecting "catalogued". Off,
+# the row says why in `unsupported` (HOLD).
+READINESS_IN_INDEX = True
 HOLD = ("readiness: derived (taskReadiness), and projected once the coordinator's test_route.py expects it at the "
         "merge (workflow_discovery.READINESS_IN_INDEX)")
 HISTORICAL = ("the example's authored label, a historical report's or the case's own: context only; no receipt or "

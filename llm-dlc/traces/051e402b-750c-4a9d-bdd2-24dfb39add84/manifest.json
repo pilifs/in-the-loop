@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T20:28:22.754Z",
-  "duration_seconds": 7382,
+  "ended": "2026-11-14T20:34:22.956Z",
+  "duration_seconds": 7742,
   "stats": {
-    "turns": 35,
-    "api_calls": 230,
-    "tool_calls": 229,
-    "tool_errors": 6,
-    "compactions": 5,
+    "turns": 40,
+    "api_calls": 249,
+    "tool_calls": 248,
+    "tool_errors": 7,
+    "compactions": 6,
     "peak_context_tokens": 164466,
     "usage": {
-      "input_tokens": 480,
-      "output_tokens": 137751,
-      "cache_read_input_tokens": 20329365,
-      "cache_creation_input_tokens": 683517
+      "input_tokens": 518,
+      "output_tokens": 145840,
+      "cache_read_input_tokens": 21721210,
+      "cache_creation_input_tokens": 758995
     }
   },
   "tools": {
-    "Bash": 199,
-    "Read": 13,
-    "Edit": 11,
+    "Bash": 214,
+    "Read": 15,
+    "Edit": 13,
     "Agent": 4,
     "Write": 2
   },
@@ -116,24 +116,38 @@
     {
       "index": 5,
       "started": "2026-11-14T20:23:02.693Z",
-      "ended": "2026-11-14T20:28:22.754Z",
-      "turns": 4,
-      "api_calls": 16,
+      "ended": "2026-11-14T20:28:38.834Z",
+      "turns": 5,
+      "api_calls": 18,
       "usage": {
-        "input_tokens": 32,
-        "output_tokens": 7195,
-        "cache_read_input_tokens": 1133815,
-        "cache_creation_input_tokens": 87575
+        "input_tokens": 36,
+        "output_tokens": 7959,
+        "cache_read_input_tokens": 1337448,
+        "cache_creation_input_tokens": 91121
       },
-      "peak_context_tokens": 100761
+      "peak_context_tokens": 104307
+    },
+    {
+      "index": 6,
+      "started": "2026-11-14T20:29:10.348Z",
+      "ended": "2026-11-14T20:34:22.956Z",
+      "turns": 4,
+      "api_calls": 17,
+      "usage": {
+        "input_tokens": 34,
+        "output_tokens": 7325,
+        "cache_read_input_tokens": 1188212,
+        "cache_creation_input_tokens": 71932
+      },
+      "peak_context_tokens": 85118
     }
   ],
   "log": {
-    "sha256": "ef6b8e92dfcb6e3761f832779bc45db878d357ad34d49f5e17e521bfcae76e9a",
-    "bytes": 7249330,
-    "lines": 2390,
-    "gzip_bytes": 1482452,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/ef6b8e92dfcb6e3761f832779bc45db878d357ad34d49f5e17e521bfcae76e9a.jsonl.gz"
+    "sha256": "969a95ecc5fd7ffc550da15ab43408e5e2b24cb016e5c2b40d524554e472a267",
+    "bytes": 8137076,
+    "lines": 2631,
+    "gzip_bytes": 1700463,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/969a95ecc5fd7ffc550da15ab43408e5e2b24cb016e5c2b40d524554e472a267.jsonl.gz"
   },
   "subagents": [
     {
@@ -341,6 +355,14 @@
       "summary": "example-targets Phase 5 step 1: the router regenerated, so index.json and examples/README.md list 285-300 and 305-307",
       "body": "Request 4 of the merge's interface requests (llm-dlc/loops/example-targets.md, Progress). The streams couldn't write the coordinator's generated files, so examples/index.json and examples/README.md had none of the 19 new folders, and find.py couldn't reach the catalog or the positive packets. A new test, examples/tools/targets/test_packets.py's RouterTest, failed for those 19 folders. It checks that the committed router lists every numbered folder and gives each sidecar example a target projection. python3 examples/tools/build.py --index-only regenerated both files. The 19 folders gained rows, tag links and index entries. Example 105's entry gained its migration notes and its target projection (role calibration), and its historical verdictLabel is unchanged. No other entry changed.\n\nVerified: llm-dlc/tools/example-targets-integration.sh exits 0 (contract 16, targets suite 188, test_build.py 190, test_pipeline.py 29, build.py --plan). find.py --family spring-data-binding finds 286, 288, 299 and 306, and --role positive finds 305-307. --readiness still matches nothing until request 5 sets READINESS_IN_INDEX. Two tag issues are noted for request 6. The external-target tag misses 105 and 305-307. Example 306's request-binding tag describes handler parameters, so data-binding fits better.",
       "log_sha256": "ef6b8e92dfcb6e3761f832779bc45db878d357ad34d49f5e17e521bfcae76e9a"
+    },
+    {
+      "change_id": "ymrtzmlsytuyxvryqulwpynwxwmwqwvp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: the index carries each target's readiness, so find.py --readiness reaches 288-300 (catalogued) and the packets (partial)",
+      "body": "Request 5 of the brief's merge-time interface requests. workflow_discovery.READINESS_IN_INDEX is now True. Phase 0's test_route.py IndexAndFindTest expects the stub sidecar's readiness to be 'catalogued', and that find.py --readiness catalogued finds it. test_workflow.py's two tests that assumed the flag was off now treat projected readiness as the default and keep the hold as the flag-off case. build.py --index-only regenerated examples/index.json; only each target's readiness changed, and the 'unsupported' hold line went.",
+      "log_sha256": "969a95ecc5fd7ffc550da15ab43408e5e2b24cb016e5c2b40d524554e472a267"
     }
   ],
   "logs": {
@@ -378,6 +400,12 @@
       "bytes": 1015508,
       "lines": 344,
       "gzip_bytes": 202131,
+      "url": null
+    },
+    "969a95ecc5fd7ffc550da15ab43408e5e2b24cb016e5c2b40d524554e472a267": {
+      "bytes": 8137076,
+      "lines": 2631,
+      "gzip_bytes": 1700463,
       "url": null
     },
     "9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886": {

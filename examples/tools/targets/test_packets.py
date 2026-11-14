@@ -112,6 +112,17 @@ class RouterTest(unittest.TestCase):
         for number in PACKETS:
             self.assertIn(index[number]["target"]["role"], ("negative", "positive"))
 
+    def test_every_target_projection_carries_its_readiness(self):
+        """Request 5: the index projects each sidecar example's derived readiness, so find.py --readiness reaches
+        them; it was None for all until workflow_discovery.READINESS_IN_INDEX was turned on."""
+        index = json.loads((EXAMPLES / "index.json").read_text())["examples"]
+        targets = {e["id"]: e["target"] for e in index if e["target"] is not None}
+        self.assertTrue(set(PACKETS) <= set(targets))
+        for number, t in targets.items():
+            with self.subTest(number):
+                self.assertIn(t["readiness"], ("catalogued", "partial", "scaffolded", "executable", "blocked"))
+                self.assertNotIn("unsupported", t)
+
 
 if __name__ == "__main__":
     unittest.main()

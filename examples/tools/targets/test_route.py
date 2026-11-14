@@ -129,13 +129,14 @@ class IndexAndFindTest(StubExamples):
         index = {e["id"]: e for e in json.loads((self.root / "index.json").read_text())["examples"]}
         self.assertIsNone(index["105"]["target"])
         t = index["285"]["target"]
-        self.assertEqual((t["family"], t["role"], t["readiness"], t["gaps"]), ("fixture", "negative", None, ["java-semantics"]))
+        self.assertEqual((t["family"], t["role"], t["readiness"], t["gaps"]), ("fixture", "negative", "catalogued", ["java-semantics"]))
         self.assertEqual(index["285"]["verdictLabel"], "not run")  # the authored label, never a receipt's
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             self.assertEqual(find.main(["--role", "negative"]), 0)
             self.assertEqual(find.main(["--gap", "java-semantics", "--family", "fixture"]), 0)
-            self.assertEqual(find.main(["--readiness", "blocked"]), 1)  # not derived yet: matches nothing
+            self.assertEqual(find.main(["--readiness", "catalogued"]), 0)
+            self.assertEqual(find.main(["--readiness", "blocked"]), 1)
             self.assertEqual(find.main(["--gap", "replay"]), 1)
             self.assertEqual(find.main(["--claim-status", "established"]), 1)
         self.assertIn("285", out.getvalue())

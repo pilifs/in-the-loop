@@ -769,6 +769,25 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
   - **Next**: request 5, `READINESS_IN_INDEX = True` in `workflow_discovery.py`, with `test_route.py:132` expecting
     `"catalogued"`, then the index regenerated again.
+- 2026-11-14, **Phase 5 step 1, request 5 done: the index carries each target's readiness.**
+  - **Reproducer**: a new test, `test_packets.py`'s `test_every_target_projection_carries_its_readiness`, failed for
+    all 20 sidecar examples (105, 285–300, 305–307): each projection's `readiness` was null, with the `unsupported`
+    hold.
+  - **The change**: `workflow_discovery.READINESS_IN_INDEX = True`, its comment and docstring updated.
+    - `test_route.py`'s `IndexAndFindTest` now expects the stub sidecar's readiness to be `"catalogued"`. It also
+      checks that `find.py --readiness catalogued` finds it, and that `blocked` still matches nothing.
+    - `test_workflow.py`'s two tests that assumed the flag was off now take the projection as the default. They keep
+      the hold as the flag-off case: `readiness` null, `unsupported` set, and `find --readiness` matching nothing.
+    - `build.py --index-only` regenerated `examples/index.json`. Only each target's `readiness` changed, and the
+      `unsupported` line went.
+  - **What the index now says**: the 13 catalog entries (288–300) are `catalogued`. The six deep packets and 105 are
+    `partial`, as is each of their tasks, since nothing is prepared yet. `find.py --readiness catalogued --limit 50`
+    finds the 13; the default `--limit 10` shows the first ten. Nothing is `scaffolded`, `executable` or `blocked`
+    until Phase 5's packet jobs.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (189, one new),
+    `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
+  - **Next**: request 6, the companions: link 305–307 to 285–287, add the `external-target` tag to 105 and 305–307,
+    and decide between `data-binding` and `request-binding` for 306.
 - Status: working
 
 ## Loop settings

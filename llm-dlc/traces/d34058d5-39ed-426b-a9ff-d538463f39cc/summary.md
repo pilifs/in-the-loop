@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (ended) |
+| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (open) |
 | When | 2026-11-14 15:11 UTC to 2026-11-14 18:23 UTC (192 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.321 |
@@ -83,28 +83,6 @@ A design for after example-targets is done: a fifth loop beside the streams that
 change `kszkkvmxosmz` · [log `36c490253cc7`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/36c490253cc731c90209918fdaa8d151460e4886d0a8ba9a23f1c233d9005233.jsonl.gz)
 
 The user settled the five open decisions directionally. The conductor decides when confident and when a decision is cheap to recover from or redo, and the user reviews afterwards rather than approving first. Design 3 now gives the test (confidence with a named basis; recovery cost cheap, costly or irreversible; a table of what to do with each pair; a never-delegated list; re-flagging as a decision's dependents grow, since recovery cost rises over time; an overturn flow that applies the recorded undo) and its tradeoffs. Notifications are deferred in favour of the data, so Design 4 defines one committed, append-only decision record per run (llm-dlc/decisions/NAME.jsonl, a schema checked by check) with generated projections: a review view, status-bar counts, inbox items and the merge loop's for-review list; the user reviews and answers by id through a small decisions.py. Early merge of a finished stream is a contextual judgement with stated criteria, never distracting the running streams; inboxes carry only what a stream has to act on; no rebase onto the integration line for now. The plan now starts with the decision record. Still a draft, to implement after example-targets is done; no code changed.
-
-### Record verification results: example-targets runtime R2 upstream-build route rerun passes
-
-change `tlmknmszwupw` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
-
-Job 20261114-174017-example-targets-runtime-r2-the-upstream passed on vm-1 (2 steps, 57.5 s, peak 783 MiB against an estimate of 10 min and 3 GiB): the upstream-build route rerun on example 105's two commons-numbers commits with the runtime classpath scope filter applied. 22 outputs under runtime-upstream/ were applied; 45 were not, because they changed since the job's commit. Two maven/resolution.json files are 1.07 MB, just over jj's 1 MiB snapshot limit, so they were snapshotted with snapshot.max-new-file-size raised for that command only. No findings opened or closed. The report also lists older failed jobs already recorded in findings.md.
-
-### Record verification results: example-targets runtime R2 constructed-mutant route passes
-
-change `msotkvrvkvkt` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
-
-Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e2663be, vm-1) passed in 6.2 s: the published-artifact route prepared spring-core 5.3.19's simpleMatch mutant, and both revisions ran on JDK 21 and 25 with the expected oracle problems. 54 outputs applied under runtime-mutant/; three 1.4 MiB spring-core JARs are over jj's snapshot limit and left out of the commit (VF-025, open).
-
-### example-targets reconcile: streams' traces recorded and logs copied; the merge blocked on an allow-list conflict only the user may resolve
-
-change `nuzqkkvuqqyy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
-
-Reconcile steps 1-3 of llm-dlc/loops/example-targets.md. All four streams finished done (runtime qrsyzzwu, negative zuoknpln, positive uzxpwmku, workflow nqztmpwy), and no stream or integration scope was active, nor any job pending. Each stream's last turns are recorded on its own branch (Record session traces: xvvuxmqs, mqnnxzkt, kxqozyus, svrtnrlo; negative's also carries the 8 allow-list proposals its last turn left uncommitted), and the 35 gitignored logs not yet in the default workspace were copied in. Those commits ran the workspaces' old sync.py, so their checks reported only the cross-workspace 'session ... has no manifest' errors that xyootzvm ends at the merge.
-
-Step 4, the merge (jj new of the default line and the four branches, then sync.py regenerate), leaves exactly one conflict: llm-dlc/allowlist.json, where positive added 15 proposals and negative 8 to the same base of 23. Their union is 46 entries with no id differing between the sides, but this loop may not write that file, and taking one side with jj restore was refused as undermining oversight. So the merge was backed out uncommitted, and the brief's status is blocked on the user: resolve that one file in the merge, or allow the loop to.
-
-Before backing out, example-targets-integration.sh ran on the merged tree: everything passes (targets suite 181, test_build.py 190, test_pipeline.py 29, every sidecar's plan, contract rows A0-A4, A6, A7) except contract A5. There all four fixture proof tasks are unresolved, because the claims name the parameter 'code' while the fixture's classes record no parameter names (arg0): VF-024's first point, reached now that the whole route runs. It waits for runtime's interface request to compile Phase 0's fixture recipe with -parameters, Phase 5 step 1's first item. The brief's reconcile step 4 doesn't anticipate a conflict in a file only a person may write; otherwise the brief is current.
 
 ### example-targets positive: the three positive packets source-locked (305, 306, 307)
 
@@ -253,34 +231,6 @@ The integration report of 2026-11-14 17:13 (runtime and workflow merged in scrat
 
 Verified: test_runtime.py 56 tests; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 111, test_build 190, test_pipeline 29, build.py --plan). On a scratch tree, workflow's 8c051f19 with runtime's files laid over it, the targets suite gives 167 OK (1 skipped) and the slice published a real receipt. Progress also records both jobs' results: 20261114-164239 (VF-024's rerun, all five verdicts as expected) and 20261114-170353 (the upstream-build route on 105's two commons-numbers commits, before disagrees at pow(-2, 31) alone, after nowhere, on JDK 21 and 25). That result shows test-scope JARs in the recorded dependency classpath, the next piece.
 
-### example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)
-
-change `nptowlpnxuzn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
-
-The first upstream-build job (20261114-170353, passed) recorded test-scope JARs, JUnit 5.14.4, opentest4j, apiguardian and commons-rng 1.7, as commons-numbers-core's runtime dependencies. runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, but the plugin's descriptor (META-INF/maven/plugin.xml, from the JAR fetched from Maven Central and checked against its .sha1) reads that filter from ${includeScope}. Only the output file is ${mdep.outputFile}. The unknown property was ignored, and the listing was the test classpath. It now passes -DincludeScope=runtime, records the scope, and never passes the plugin's own options through from the recipe. The replay's result stood, since no class was shadowed, but the record misnamed the classpath.
-
-Verified: the test's stand-in Maven now filters by scope as the plugin does, and its default dependencies include a test-scope JAR with the compile JAR's bytes. With the old property name, the ready preparation fails as shadowing; with the fix, test_runtime_upstream.py's 15 tests and the targets suite (111) pass. The real build is rerun as job 20261114-174017-example-targets-runtime-r2-the-upstream, expected to give each commit a classpath of the original, the adapter and the driver alone.
-
-### example-targets runtime R2: constructed mutants prepared on all three routes, their base patched with git apply, then built (verification pending)
-
-change `wkkwovlzqrns` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
-
-A W1 mutant entry (a base revision, a patch by path and sha256, the mutation in words) was Unsupported in lock. Now it locks offline: the patch is rehashed against its recorded sha256, the files it modifies are read from it (modifications of existing text files only, hunk lines counted), and the base is locked by its own route. Its identity is mutant:&lt;base>+&lt;patch sha256>, with the scope constructed-mutation. Preparation applies the patch with git apply (checked first, each file's bytes recorded before and after, no enclosing repository consulted) and is never the base unpatched. The fixture route patches a copy of the base fixture, then runs the recipe. The upstream-build route patches the base commit's checkout and builds it, and the build must leave the checkout as patched. The published-artifact route checks out the base commit, compiles the patched Java files against the base's published JARs with the base classes' --release and debugging flags, and puts the classes in place of the base JAR's own in a copy of it. It refuses a signed JAR, release-specific copies of a patched class, a stale nested class and differing debug attributes, and it records an unpatched recompile to show the compiler's share of the difference.
-
-Verified inline. Phase 0's own after-to-mutant patch (the sha256 build_fixtures.py records), applied by the fixture route, gives build_fixtures.py's mutant.jar byte for byte. On the published route the recompiled Gate.class is that JAR's own class. The mutation pair replays as the fixture's recorded controls on all three routes (the mutant fails at 65 on JDK 21 and 25). There are 11 lock refusals and the other blockers are tested. test_runtime.py has 63 tests and test_runtime_upstream.py 22. The integration script exits 0: contract 8 pass and 8 skip, targets suite 125, test_build 190, test_pipeline 29.
-
-Job 20261114-180443-example-targets-runtime-r2-a-constructed runs the published route on real bytes. runtime_simplematch/mutation.json declares a mutant of spring-core 5.3.19 in W1's sidecar shape (beside target.json, since Phase 0's schema has no mutant). Its patch turns simpleMatch's suffix-branch endsWith into contains. The job expects the mutant to disagree with the Javadoc oracle at (*bc, bcx), (a*c*e, abced) and (*a*b, acba), and 5.3.19 nowhere. The earlier rerun 20261114-174017 passed: each commons-numbers classpath is exactly the original, the adapter and the driver, scope runtime. The brief's Progress records both, and its status is now waiting on that job.
-
-### example-targets runtime: the constructed-mutant job passed, R1-R5 and the acceptance done; VF-025's JARs needn't be in the history
-
-change `qrsyzzwuqwrx` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
-
-Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e26, collected as msotkvrv) passed. It ran the published-artifact route on real bytes: spring-core 5.3.19's PatternMatchUtils was recompiled from the v5.3.19 commit with suffix-anywhere.patch applied, using javac 25 with --release 8 -g -parameters read off the published class, into a copy of the JAR. On JDK 21 and 25, 5.3.19 agrees with the Javadoc oracle on all 45 probes, and the mutant disagrees at exactly the three predicted inputs. The unpatched recompile isn't byte-identical to the published class, and the record says so.
-
-VF-025 (the job's three 1.4 MiB spring-core JARs exceed jj's snapshot limit): the runtime loop's decision is that they needn't be in the history. Two are re-acquired by sha256, and the mutant is rebuilt by runtime_slice.py --case simplematch-mutant, with its hashes in prepared.json. runtime_simplematch/README.md now records the job's result and this. Closing the finding needs the files ignored on main (.gitignore is shared), so it is left for the user or the coordinator.
-
-The brief's Progress records the result and the acceptance evidence row by row, and its status is now done. What remains is for the merge, listed under Progress. Verified: test_runtime and test_runtime_upstream, 85 tests, pass.
-
 ### example-targets negative N0: the Spring CVE catalog, 285-300, with every revision checked upstream
 
 change `pomrmppunkzt` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
@@ -409,6 +359,56 @@ Verified: test_workflow.py 57 tests (5 new, through build.py's render_index() an
 
 Out of date in the brief: its Starting evidence still says project() states only what the sidecar says; that was Phase 0's and is replaced here.
 
+### example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)
+
+change `nptowlpnxuzn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+The first upstream-build job (20261114-170353, passed) recorded test-scope JARs, JUnit 5.14.4, opentest4j, apiguardian and commons-rng 1.7, as commons-numbers-core's runtime dependencies. runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, but the plugin's descriptor (META-INF/maven/plugin.xml, from the JAR fetched from Maven Central and checked against its .sha1) reads that filter from ${includeScope}. Only the output file is ${mdep.outputFile}. The unknown property was ignored, and the listing was the test classpath. It now passes -DincludeScope=runtime, records the scope, and never passes the plugin's own options through from the recipe. The replay's result stood, since no class was shadowed, but the record misnamed the classpath.
+
+Verified: the test's stand-in Maven now filters by scope as the plugin does, and its default dependencies include a test-scope JAR with the compile JAR's bytes. With the old property name, the ready preparation fails as shadowing; with the fix, test_runtime_upstream.py's 15 tests and the targets suite (111) pass. The real build is rerun as job 20261114-174017-example-targets-runtime-r2-the-upstream, expected to give each commit a classpath of the original, the adapter and the driver alone.
+
+### example-targets runtime R2: constructed mutants prepared on all three routes, their base patched with git apply, then built (verification pending)
+
+change `wkkwovlzqrns` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+A W1 mutant entry (a base revision, a patch by path and sha256, the mutation in words) was Unsupported in lock. Now it locks offline: the patch is rehashed against its recorded sha256, the files it modifies are read from it (modifications of existing text files only, hunk lines counted), and the base is locked by its own route. Its identity is mutant:&lt;base>+&lt;patch sha256>, with the scope constructed-mutation. Preparation applies the patch with git apply (checked first, each file's bytes recorded before and after, no enclosing repository consulted) and is never the base unpatched. The fixture route patches a copy of the base fixture, then runs the recipe. The upstream-build route patches the base commit's checkout and builds it, and the build must leave the checkout as patched. The published-artifact route checks out the base commit, compiles the patched Java files against the base's published JARs with the base classes' --release and debugging flags, and puts the classes in place of the base JAR's own in a copy of it. It refuses a signed JAR, release-specific copies of a patched class, a stale nested class and differing debug attributes, and it records an unpatched recompile to show the compiler's share of the difference.
+
+Verified inline. Phase 0's own after-to-mutant patch (the sha256 build_fixtures.py records), applied by the fixture route, gives build_fixtures.py's mutant.jar byte for byte. On the published route the recompiled Gate.class is that JAR's own class. The mutation pair replays as the fixture's recorded controls on all three routes (the mutant fails at 65 on JDK 21 and 25). There are 11 lock refusals and the other blockers are tested. test_runtime.py has 63 tests and test_runtime_upstream.py 22. The integration script exits 0: contract 8 pass and 8 skip, targets suite 125, test_build 190, test_pipeline 29.
+
+Job 20261114-180443-example-targets-runtime-r2-a-constructed runs the published route on real bytes. runtime_simplematch/mutation.json declares a mutant of spring-core 5.3.19 in W1's sidecar shape (beside target.json, since Phase 0's schema has no mutant). Its patch turns simpleMatch's suffix-branch endsWith into contains. The job expects the mutant to disagree with the Javadoc oracle at (*bc, bcx), (a*c*e, abced) and (*a*b, acba), and 5.3.19 nowhere. The earlier rerun 20261114-174017 passed: each commons-numbers classpath is exactly the original, the adapter and the driver, scope runtime. The brief's Progress records both, and its status is now waiting on that job.
+
+### example-targets runtime: the constructed-mutant job passed, R1-R5 and the acceptance done; VF-025's JARs needn't be in the history
+
+change `qrsyzzwuqwrx` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e26, collected as msotkvrv) passed. It ran the published-artifact route on real bytes: spring-core 5.3.19's PatternMatchUtils was recompiled from the v5.3.19 commit with suffix-anywhere.patch applied, using javac 25 with --release 8 -g -parameters read off the published class, into a copy of the JAR. On JDK 21 and 25, 5.3.19 agrees with the Javadoc oracle on all 45 probes, and the mutant disagrees at exactly the three predicted inputs. The unpatched recompile isn't byte-identical to the published class, and the record says so.
+
+VF-025 (the job's three 1.4 MiB spring-core JARs exceed jj's snapshot limit): the runtime loop's decision is that they needn't be in the history. Two are re-acquired by sha256, and the mutant is rebuilt by runtime_slice.py --case simplematch-mutant, with its hashes in prepared.json. runtime_simplematch/README.md now records the job's result and this. Closing the finding needs the files ignored on main (.gitignore is shared), so it is left for the user or the coordinator.
+
+The brief's Progress records the result and the acceptance evidence row by row, and its status is now done. What remains is for the merge, listed under Progress. Verified: test_runtime and test_runtime_upstream, 85 tests, pass.
+
+### Record verification results: example-targets runtime R2 upstream-build route rerun passes
+
+change `tlmknmszwupw` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+Job 20261114-174017-example-targets-runtime-r2-the-upstream passed on vm-1 (2 steps, 57.5 s, peak 783 MiB against an estimate of 10 min and 3 GiB): the upstream-build route rerun on example 105's two commons-numbers commits with the runtime classpath scope filter applied. 22 outputs under runtime-upstream/ were applied; 45 were not, because they changed since the job's commit. Two maven/resolution.json files are 1.07 MB, just over jj's 1 MiB snapshot limit, so they were snapshotted with snapshot.max-new-file-size raised for that command only. No findings opened or closed. The report also lists older failed jobs already recorded in findings.md.
+
+### Record verification results: example-targets runtime R2 constructed-mutant route passes
+
+change `msotkvrvkvkt` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e2663be, vm-1) passed in 6.2 s: the published-artifact route prepared spring-core 5.3.19's simpleMatch mutant, and both revisions ran on JDK 21 and 25 with the expected oracle problems. 54 outputs applied under runtime-mutant/; three 1.4 MiB spring-core JARs are over jj's snapshot limit and left out of the commit (VF-025, open).
+
+### example-targets reconcile: streams' traces recorded and logs copied; the merge blocked on an allow-list conflict only the user may resolve
+
+change `nuzqkkvuqqyy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+Reconcile steps 1-3 of llm-dlc/loops/example-targets.md. All four streams finished done (runtime qrsyzzwu, negative zuoknpln, positive uzxpwmku, workflow nqztmpwy), and no stream or integration scope was active, nor any job pending. Each stream's last turns are recorded on its own branch (Record session traces: xvvuxmqs, mqnnxzkt, kxqozyus, svrtnrlo; negative's also carries the 8 allow-list proposals its last turn left uncommitted), and the 35 gitignored logs not yet in the default workspace were copied in. Those commits ran the workspaces' old sync.py, so their checks reported only the cross-workspace 'session ... has no manifest' errors that xyootzvm ends at the merge.
+
+Step 4, the merge (jj new of the default line and the four branches, then sync.py regenerate), leaves exactly one conflict: llm-dlc/allowlist.json, where positive added 15 proposals and negative 8 to the same base of 23. Their union is 46 entries with no id differing between the sides, but this loop may not write that file, and taking one side with jj restore was refused as undermining oversight. So the merge was backed out uncommitted, and the brief's status is blocked on the user: resolve that one file in the merge, or allow the loop to.
+
+Before backing out, example-targets-integration.sh ran on the merged tree: everything passes (targets suite 181, test_build.py 190, test_pipeline.py 29, every sidecar's plan, contract rows A0-A4, A6, A7) except contract A5. There all four fixture proof tasks are unresolved, because the claims name the parameter 'code' while the fixture's classes record no parameter names (arg0): VF-024's first point, reached now that the whole route runs. It waits for runtime's interface request to compile Phase 0's fixture recipe with -parameters, Phase 5 step 1's first item. The brief's reconcile step 4 doesn't anticipate a conflict in a file only a person may write; otherwise the brief is current.
+
 ### example-targets reconcile step 4: streams merged, allow-list conflict resolved
 
 change `ptyqvxxlyvsk` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
@@ -442,6 +442,12 @@ dd2fcadc  long-token  iX5…xq (44 chars): Public test vector: the stored bcrypt
 e798f19e  long-token  H8V…jK (43 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
 f054d7e5  long-token  rCV…tC (52 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
 fcbc71d7  long-token  Nlg…a2 (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.
+
+### example-targets Phase 5 step 1: the index carries each target's readiness, so find.py --readiness reaches 288-300 (catalogued) and the packets (partial)
+
+change `ymrtzmlsytuy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+
+Request 5 of the brief's merge-time interface requests. workflow_discovery.READINESS_IN_INDEX is now True. Phase 0's test_route.py IndexAndFindTest expects the stub sidecar's readiness to be 'catalogued', and that find.py --readiness catalogued finds it. test_workflow.py's two tests that assumed the flag was off now treat projected readiness as the default and keep the hold as the flag-off case. build.py --index-only regenerated examples/index.json; only each target's readiness changed, and the 'unsupported' hold line went.
 
 ## Conversation
 
