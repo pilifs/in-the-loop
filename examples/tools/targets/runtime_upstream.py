@@ -46,6 +46,11 @@ OWN_OPTIONS = re.compile(r"^(-s|--settings|-gs|--global-settings|-Dmaven\.repo\.
 BUILD_TIMEOUT = 1800  # seconds the recorded build may run
 GIT_TIMEOUT = 600
 DEPENDENCY_PLUGIN = "org.apache.maven.plugins:maven-dependency-plugin:3.9.0"  # by full version: no plugin lookup
+# build-classpath's scope filter and output file. Their user properties, as the plugin's descriptor (META-INF/maven/
+# plugin.xml, sha256 39b04539...bba3) names them, are `includeScope` and `mdep.outputFile`: an unknown property is
+# ignored, and with no filter the listing is the test classpath (the first upstream job's record, 2026-11-14).
+SCOPE = "runtime"
+PLUGIN_OWN = ("-Dmdep.", "-DincludeScope", "-DexcludeScope", "-DincludeTypes", "-DexcludeTypes")  # not passed through
 MAVEN_CANDIDATES = Path(os.environ.get("TARGETS_MAVEN_CANDIDATES", Path.home() / ".sdkman/candidates/maven"))
 BASE_ENV = {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC"}
 AUXILIARY = re.compile(r"-(sources|javadoc|tests|test-sources|test-javadoc)\.jar$")
@@ -408,10 +413,10 @@ def build(recipe, workdir, target_class, logs, record, network=True, cache=None)
     if not pom.is_file():
         raise Blocked("build", f"{holders[0]} isn't under a Maven module (no {pom.relative_to(dest)})")
     listing = workdir / "maven/classpath.txt"
-    passed = [a for a in recipe["argv"][1:] if a.startswith(("-D", "-P")) and not a.startswith("-Dmdep.")]
+    passed = [a for a in recipe["argv"][1:] if a.startswith(("-D", "-P")) and not a.startswith(PLUGIN_OWN)]
     steps.must("dependencies", isolation + ["--batch-mode", "--no-transfer-progress", "-f", pom, *passed,
                                             f"{DEPENDENCY_PLUGIN}:build-classpath", f"-Dmdep.outputFile={listing}",
-                                            "-Dmdep.includeScope=runtime"],
+                                            f"-DincludeScope={SCOPE}"],
                dest, env, BUILD_TIMEOUT, "build", "the module's runtime dependencies, resolved from Maven Central",
                "read logs/dependencies.log")
     entries = [e for e in (listing.read_text().strip().split(os.pathsep) if listing.is_file() else []) if e]
@@ -434,7 +439,8 @@ def build(recipe, workdir, target_class, logs, record, network=True, cache=None)
                           "installed in the build's local repository by the recipe" if installed else
                           "resolved by Maven from Maven Central (the build's one repository), checksums strict"))
     record["outputs"]["dependencies"] = {"order": "Maven's runtime classpath order (dependency:build-classpath)",
-                                         "command": f"{DEPENDENCY_PLUGIN}:build-classpath -Dmdep.includeScope=runtime",
+                                         "command": f"{DEPENDENCY_PLUGIN}:build-classpath -DincludeScope={SCOPE}",
+                                         "scope": f"{SCOPE}: the compile and runtime scopes, no test or provided",
                                          "passed": passed}
     toolchain["resolution"] = _resolution(repository, workdir)
     shutil.rmtree(repository)  # every file it held is hashed in the resolution record; what is used is copied

@@ -488,8 +488,23 @@ Small unit and JVM conformance checks run inline.
   tests OK, 1 skipped. The slice published a real receipt there (`receipts/replay/…/result.json`, execution
   `completed`). The slice test now accepts either Phase 0's stub answer or a receipt under the copy. On this branch,
   the integration script exits 0: contract 8 pass and 8 skip, targets suite 111, `test_build` 190, `test_pipeline` 29.
+- 2026-11-14, **the dependency classpath's scope filter, fixed.** The cause is confirmed from maven-dependency-plugin
+  3.9.0's own descriptor (`META-INF/maven/plugin.xml`, from the JAR `runtime_maven.py pin` fetched and checked against
+  Central's `.sha1`). `build-classpath` reads its filter from `${includeScope}` and only its output file from
+  `${mdep.outputFile}`. An unknown property is ignored, and with no filter the listing is the test classpath.
+  - `runtime_upstream.py` now passes `-DincludeScope=runtime` and records the scope beside the command.
+  - The plugin's own options (`-Dmdep.*`, `-DincludeScope`, `-DexcludeScope`, `-DincludeTypes`, `-DexcludeTypes`)
+    are never passed through from the recipe.
+  - The test's stand-in Maven now filters by scope as the plugin does, `includeScope` only. Its default dependencies
+    include a test-scope JAR with the same bytes as the compile one. With the old property name, the ready
+    preparation's test fails: the JAR comes back and shadows.
+
+  `test_runtime_upstream.py`: 15 tests, and the targets suite 111, pass.
+- Rerun as job `20261114-174017-example-targets-runtime-r2-the-upstream`. Expected: as before, with each classpath
+  exactly the original, the adapter and the driver, since commons-numbers-core has no compile or runtime dependency.
+  Result pending.
 - Next:
-  1. The dependency classpath's scope filter (above), with a rerun of the upstream job.
+  1. The rerun's result.
   2. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
 - Status: working
 

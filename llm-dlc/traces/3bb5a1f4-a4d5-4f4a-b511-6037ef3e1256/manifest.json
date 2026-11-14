@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T17:38:09.059Z",
-  "duration_seconds": 7882,
+  "ended": "2026-11-14T17:42:30.357Z",
+  "duration_seconds": 8143,
   "stats": {
     "turns": 42,
-    "api_calls": 350,
-    "tool_calls": 359,
-    "tool_errors": 3,
+    "api_calls": 367,
+    "tool_calls": 377,
+    "tool_errors": 4,
     "compactions": 8,
     "peak_context_tokens": 245594,
     "usage": {
-      "input_tokens": 712,
-      "output_tokens": 376312,
-      "cache_read_input_tokens": 44665688,
-      "cache_creation_input_tokens": 1266716
+      "input_tokens": 746,
+      "output_tokens": 386965,
+      "cache_read_input_tokens": 46548853,
+      "cache_creation_input_tokens": 1288489
     }
   },
   "tools": {
-    "Bash": 302,
+    "Bash": 318,
     "Read": 18,
+    "Edit": 17,
     "Write": 17,
-    "Edit": 15,
     "Monitor": 3,
     "ToolSearch": 3,
     "ScheduleWakeup": 1
@@ -173,24 +173,24 @@
     {
       "index": 8,
       "started": "2026-11-14T17:27:26.401Z",
-      "ended": "2026-11-14T17:38:09.059Z",
+      "ended": "2026-11-14T17:42:30.357Z",
       "turns": 4,
-      "api_calls": 24,
+      "api_calls": 41,
       "usage": {
-        "input_tokens": 48,
-        "output_tokens": 16358,
-        "cache_read_input_tokens": 1826175,
-        "cache_creation_input_tokens": 87866
+        "input_tokens": 82,
+        "output_tokens": 27011,
+        "cache_read_input_tokens": 3709340,
+        "cache_creation_input_tokens": 109639
       },
-      "peak_context_tokens": 101052
+      "peak_context_tokens": 122825
     }
   ],
   "log": {
-    "sha256": "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5",
-    "bytes": 11782452,
-    "lines": 3941,
-    "gzip_bytes": 2313708,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5.jsonl.gz"
+    "sha256": "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2",
+    "bytes": 12121277,
+    "lines": 4087,
+    "gzip_bytes": 2359290,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -265,6 +265,14 @@
       "summary": "example-targets runtime: receipts under the case folder's copy, as route.run puts them; W1's shipped claims tolerated",
       "body": "The integration report of 2026-11-14 17:13 (runtime and workflow merged in scratch) found three failures in runtime's tests. Workflow's W2 publish records a receipt relative to the plan's folder, as route.run assumes (it ingests into <folder>/receipts/<task>), while runtime_slice.py and runtime_calibrate.py ingested beside the folder. Each now copies its case folder into the attempt (ATTEMPT/case, ATTEMPT/fixture) and ingests under the copy, so no run writes into the repository's case folder; the lock hashes every selected file, so the copy locks the same. A verifier test no longer fails on the fixtures/claims/ folder W1 ships. A new test holds both callers to W2's rule with a stand-in ingest that refuses an out outside the plan's folder. No interface request is needed.\n\nVerified: test_runtime.py 56 tests; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 111, test_build 190, test_pipeline 29, build.py --plan). On a scratch tree, workflow's 8c051f19 with runtime's files laid over it, the targets suite gives 167 OK (1 skipped) and the slice published a real receipt. Progress also records both jobs' results: 20261114-164239 (VF-024's rerun, all five verdicts as expected) and 20261114-170353 (the upstream-build route on 105's two commons-numbers commits, before disagrees at pow(-2, 31) alone, after nowhere, on JDK 21 and 25). That result shows test-scope JARs in the recorded dependency classpath, the next piece.",
       "log_sha256": "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5"
+    },
+    {
+      "change_id": "nptowlpnxuznnuovzylrwmwnzutsmzyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)",
+      "body": "The first upstream-build job (20261114-170353, passed) recorded test-scope JARs, JUnit 5.14.4, opentest4j, apiguardian and commons-rng 1.7, as commons-numbers-core's runtime dependencies. runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, but the plugin's descriptor (META-INF/maven/plugin.xml, from the JAR fetched from Maven Central and checked against its .sha1) reads that filter from ${includeScope}. Only the output file is ${mdep.outputFile}. The unknown property was ignored, and the listing was the test classpath. It now passes -DincludeScope=runtime, records the scope, and never passes the plugin's own options through from the recipe. The replay's result stood, since no class was shadowed, but the record misnamed the classpath.\n\nVerified: the test's stand-in Maven now filters by scope as the plugin does, and its default dependencies include a test-scope JAR with the compile JAR's bytes. With the old property name, the ready preparation fails as shadowing; with the fix, test_runtime_upstream.py's 15 tests and the targets suite (111) pass. The real build is rerun as job 20261114-174017-example-targets-runtime-r2-the-upstream, expected to give each commit a classpath of the original, the adapter and the driver alone.",
+      "log_sha256": "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2"
     }
   ],
   "logs": {
@@ -308,6 +316,12 @@
       "bytes": 7179631,
       "lines": 2318,
       "gzip_bytes": 1409615,
+      "url": null
+    },
+    "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2": {
+      "bytes": 12121277,
+      "lines": 4087,
+      "gzip_bytes": 2359290,
       "url": null
     },
     "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee": {

@@ -46,7 +46,13 @@ repo = Path(next(a for a in args if a.startswith("-Dmaven.repo.local=")).split("
 if any(a.endswith(":build-classpath") for a in args):
     out = Path(next(a for a in args if a.startswith("-Dmdep.outputFile=")).split("=", 1)[1])
     paths = []
-    for rel, source in knobs.get("dependencies", []):
+    # the plugin's own filter: `includeScope` (an unknown property, such as mdep.includeScope, is ignored, and the
+    # listing is then the test classpath); runtime means the compile and runtime scopes
+    scope = next((a.split("=", 1)[1] for a in args if a.startswith("-DincludeScope=")), "test")
+    allowed = {{"runtime": {{"compile", "runtime"}}, "compile": {{"compile", "provided", "system"}}}}.get(scope)
+    for rel, source, *dep_scope in knobs.get("dependencies", []):
+        if allowed is not None and (dep_scope or ["compile"])[0] not in allowed:
+            continue
         (repo / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, repo / rel)
         paths.append(str(repo / rel))
@@ -145,7 +151,10 @@ class UpstreamTest(base.FixtureCopy):
         return path
 
     def set_knobs(self, **knobs):
-        knobs.setdefault("dependencies", [["fixture/example/gate-util/2.0/gate-util-2.0.jar", str(self.dep)]])
+        # a compile dependency, and a test-scope one the runtime classpath must leave out (here the same bytes, so
+        # leaving it in would also be a shadowing blocker)
+        knobs.setdefault("dependencies", [["fixture/example/gate-util/2.0/gate-util-2.0.jar", str(self.dep)],
+                                          ["org/junit/junit-api/5.0/junit-api-5.0.jar", str(self.dep), "test"]])
         self.knobs.write_text(json.dumps(knobs))
 
     def made_calls(self):
@@ -242,6 +251,10 @@ class UpstreamTest(base.FixtureCopy):
         listing = calls[2]["argv"]
         self.assertIn(f"{runtime_upstream.DEPENDENCY_PLUGIN}:build-classpath", listing)
         self.assertIn("-Pquick", listing)
+        self.assertEqual([a for a in listing if "Scope" in a], ["-DincludeScope=runtime"])
+        self.assertEqual(prepared.source["built"]["dependencies"]["command"],
+                         f"{runtime_upstream.DEPENDENCY_PLUGIN}:build-classpath -DincludeScope=runtime")
+        self.assertTrue(prepared.source["built"]["dependencies"]["scope"].startswith("runtime: "))
         self.assertIn(str(work / "checkout/gate/pom.xml"), listing)
         # the checkout is as fetched, and the logs say what ran
         self.assertEqual(git(work / "checkout", "status", "--porcelain", "--untracked-files=no"), "")
