@@ -455,7 +455,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Draft the example-targets loop: four streams that scaffold Spring CVEs and independent upstream changes as reproducible work packets
 
-change `tspropkoxuty` · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
+[`2649446c5151`](https://github.com/pilifs/in-the-loop/commit/2649446c5151435220aec16135d152fcd4906e66) · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
 
 Adds llm-dlc/loops/example-targets.md, its four stream briefs (runtime, negative, positive, workflow), example-targets-acceptance.md and example-targets-sources.md, adapted from an outside plan the user shared (a review of the repository at main 57f04e55 on GitHub, ~/code/briefs/example-targets-all-documents.txt), with its seed metadata unchanged as example-targets-inputs/seeds.json. The loop scaffolds, it doesn't run the proof campaign: three CVEs (2023-34055, 2022-22968, 2025-22228) and three independent historical positives become packets with pinned history, fixed tasks, independent oracles, mutation controls and replay routes, the 15-CVE registry and CVE-2025-22234 are catalogued, example 105 migrates as the calibration, and the observed capability gaps are ranked as the work list towards a v1.
 
@@ -467,7 +467,7 @@ Not launched and not launchable yet: the names are registered in feature-loop.sh
 
 ### example-targets: the JDKs installed now, out of Phase 0, with JDK 25 as the default and main target
 
-change `myyoxkpzvzlu` · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
+[`968a97305630`](https://github.com/pilifs/in-the-loop/commit/968a973056308b69200448ecffbb8637ef826ebc) · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
 
 At the user's request the planning session installed the JDKs of decision 3 itself instead of leaving them to Phase 0: Temurin 17.0.21+9, 11.0.33+10 and 8u512-b09 with sdkman, beside the 21.0.13+9 and 25.0.5+8 already there. sdkman made each the default as it installed, even with its prompt declined, so the default was set back to 25.0.5.0+8-tem at once. About two minutes passed; the pipeline had no job pending or running, and the application-core merge loop only read and edited files meanwhile, so nothing ran on the wrong JDK.
 
@@ -475,7 +475,7 @@ The briefs now say: JDK 25 is the default and, as the most relevant for Java dev
 
 ### example-targets: JDK 21 a main target beside 25
 
-change `ovzrqrxxnunv` · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
+[`97fb1448bb70`](https://github.com/pilifs/in-the-loop/commit/97fb1448bb70773d0d269446d2e01f537f3a0669) · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
 
 At the user's request, JDKs 21 and 25, the two current LTS releases, are both main targets; 25 stays sdkman's default. Everything this wave writes is compiled with --release 21 so it runs on both, and a revision's concrete controls run on 21 and on 25 wherever its pinned artifacts do, as two JVM identities recorded separately, a disagreement between them being a finding. Older JDKs (8, 11, 17) are used only where a revision's build or runtime needs them. Updates the main brief's JDK rule and decision 3, and the runtime and positive briefs.
 
@@ -483,7 +483,7 @@ Verified that JDK 25's javac --release 21 output runs on both installed JDKs (a 
 
 ### example-targets: decisions 5-12 settled by the user, as proposed
 
-change `ooorlwpzuxwk` · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
+[`bd2da6c1cb68`](https://github.com/pilifs/in-the-loop/commit/bd2da6c1cb688894d33c3a79ce4956cdd3b1b49c) · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
 
 The user walked through the eight proposed decisions on 2026-11-08 and settled each as proposed: verification with the pipeline; one writer for shared files (the planning session, in Phase 0); Phase 0 in this planning session e9be5afb after application-core finishes; 4 GB per stream scope with about 24 GB for the runner; claude-opus-5-5 at high effort for all five loops; example numbers 280-329 as allocated, mutation controls inside their packets; the v1 gap inventory as an explicit Phase 5 output; and the adaptations to the outside plan (the three corrected claims, the private link replaced, this repository's launch metadata).
 
@@ -491,13 +491,13 @@ The main brief's header, Decisions section, prerequisite 6 and Progress record i
 
 ### example-targets Phase 0 step 1: the strict target.json sidecar schema, its loader, and the one reference from example.json
 
-change `ptroqoqmxvsm` · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
+[`0f09707472d3`](https://github.com/pilifs/in-the-loop/commit/0f09707472d3346ba8657f454498f85eda3ac151) · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
 
 examples/schema/target.schema.json (example-target/v1) is the work manifest a real-world example may carry: identity (case, family, role), history (full commit SHAs, separately named pairs, introduction status), preparation (published artifact or upstream build, Maven Central and github.com URLs only, fixed versions, JDK 8/11/17/21/25), tasks (prove/compare/equivalence/replay, revision or pair by kind, explicit engine and bounds, authored expectation, prerequisites), controls and handoff blockers by gap kind. Every object is closed. examples/tools/targets/sidecar.py validates it and adds the checks a schema can't make: paths resolve inside the folder (symlinks included), every named revision, pair and task exists, ids are unique, prerequisites have no cycle, and no mutable artifact version. example.schema.json gains an optional target (always target.json), forbidden for constructed examples; build.py's load_example() checks the sidecar whenever an example is read. Verified: 14 new tests (examples/tools/targets/test_sidecar.py) cover an unknown field at each level, mutable revisions and versions, a foreign download URL, path escapes, a cycle and undefined names; test_build.py's 190 tests pass; --index-only leaves README and index.json unchanged.
 
 ### example-targets Phase 0 step 2: the three shared interfaces, frozen, with stubs that fail closed
 
-change `quzmrkzxrlto` · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
+[`4cef09c8a858`](https://github.com/pilifs/in-the-loop/commit/4cef09c8a8581c345f501d6461f42a560db175b7) · [log `7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)
 
 examples/tools/targets/interfaces.py freezes TaskPlan (a pure resolution of a named task: revisions, declared claim, prerequisites, artifacts, tools, explicit engine and gaps, authored expectation, outputs), PreparedTarget (source-locked, artifacts-ready or failed with its stage, diagnostic and whatever artifacts exist; never a claim decision), the raw ExecutionRecord between runtime and workflow (how a process ended, never a verdict; observations None when unreadable), Receipt (one format-2 receipt per task and attempt) and the named Unsupported result. workflow.py (plan_task, ingest, project) and runtime.py (prepare, run_controls, run_verifier) are the owning streams' files: Phase 0's versions return Unsupported naming the interface and the stream, and project() states only what target.json says, with readiness and claim statuses left None for W4. test_interfaces.py freezes the signatures and field order (a field added later needs a default); test_workflow.py and test_runtime.py, owned by their streams, test the stubs and are rewritten as each is replaced. Verified: 21 tests pass under unittest discovery and each file alone.
 

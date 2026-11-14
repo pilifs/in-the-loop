@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 83, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-09 02:43 UTC |
-| Prompts | 2,023 |
-| Model calls | 19,664 |
-| Tool calls | 20,630 (349 failed) |
-| Compactions | 306 |
+| Sessions | 84, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 15:13 UTC |
+| Prompts | 2,026 |
+| Model calls | 19,677 |
+| Tool calls | 20,641 (349 failed) |
+| Compactions | 307 |
 | Subagents | 12 |
-| Tokens written | 20,316,075 |
-| Tokens read | 3,107,891,219 (97.9% from cache) |
-| Commits with a trace | 595 |
-| Log snapshots | 727 (1638.2 MB gzipped, 718 uploaded) |
+| Tokens written | 20,323,253 |
+| Tokens read | 3,110,032,533 (97.9% from cache) |
+| Commits with a trace | 596 |
+| Log snapshots | 729 (1639.5 MB gzipped, 729 uploaded) |
 
 ## Sessions
 
@@ -104,12 +104,13 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 7 | 8 | 0 | 0 | 44,014 | 2 |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 43,064 | 2 |
 | 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | ended | 12 h 2 min | `claude-opus-5-5` | 144 | 1,403 | 1,406 | 8 | 24 | 292,860 | 59 |
-| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 15 h 17 min | `claude-opus-5-5` | 16 | 234 | 236 | 6 | 1 | 339,175 | 46 |
+| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | ended | 16 h 13 min | `claude-opus-5-5` | 17 | 239 | 240 | 6 | 2 | 340,809 | 47 |
 | 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 36,274 | 2 |
 | 2026-11-08 14:15 UTC | [637cae8e-d166-477d-b0d2-51161e0c6d62](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | ended | 30 min | `claude-sonnet-5-5` | 1 | 10 | 11 | 1 | 0 | 43,173 | 3 |
 | 2026-11-08 18:04 UTC | [5797b2b5-cc8e-4306-969d-6366320e1840](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 7 | 7 | 1 | 0 | 37,107 | 2 |
 | 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 8 | 7 | 1 | 0 | 36,075 | 2 |
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | ended | 13 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 37,319 | 7 |
+| 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | open | 1 min | `claude-opus-5-5` | 2 | 8 | 7 | 0 | 0 | 62,690 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -196,18 +197,19 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2,917 | 14 | 30,895 | 214,765 | 87.4% | 84 |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 3,151 | 20 | 29,945 | 311,967 | 91.2% | 109 |
 | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 898,028 | 2,878 | 3,989,664 | 195,662,020 | 98.0% | 222 |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 285,062 | 492 | 1,059,820 | 43,895,719 | 97.6% | 158 |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 289,151 | 502 | 1,064,692 | 45,583,187 | 97.7% | 161 |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1,755 | 16 | 24,890 | 230,901 | 90.3% | 146 |
 | [`637cae8e`](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 2,538 | 20 | 31,789 | 334,565 | 91.3% | 144 |
 | [`5797b2b5`](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 1,453 | 14 | 25,723 | 202,144 | 88.7% | 157 |
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1,587 | 16 | 24,690 | 229,016 | 90.3% | 160 |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 2,191 | 20 | 25,935 | 291,628 | 91.8% | 145 |
+| [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 3,089 | 18 | 33,930 | 415,016 | 92.4% | 145 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 18,099 | 87.7% | 83 |
+| `Bash` | 18,110 | 87.7% | 84 |
 | `Read` | 972 | 4.7% | 40 |
 | `Edit` | 746 | 3.6% | 39 |
 | `Write` | 453 | 2.2% | 35 |
@@ -814,17 +816,18 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 582 | [`4b0b0f2e`](https://github.com/pilifs/in-the-loop/commit/4b0b0f2e43ed39419995e16c39da0a29f4d2873e) | application-core Phase 5 done: the allocation-bounds job passed, so O2, V2 and J1 pass and every row of the for-review list passes | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/d04e38f6a2bca016dc02652d3b6b69e5599549d9cd7cf193f17ea5f08ba313f0.jsonl.gz)) |
 | 583 | [`9c810e73`](https://github.com/pilifs/in-the-loop/commit/9c810e7304a4757803065945bdcd54f973b6ef86) | application-core brief: the three passages Phase 5 found out of date, rewritten now that the loop is done | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/eed5a24c586aefba47849231be24b0e246a6453be516f65ba0ccc07886745c08.jsonl.gz)) |
 | 584 | [`a7abc155`](https://github.com/pilifs/in-the-loop/commit/a7abc155c447d48da9332946794b352c000c08bc) | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7396713205d67b7b00b4ec7ded274941ffc8a1acb28c664d1bf05cb9303ed9f8.jsonl.gz)) |
-| 585 | change `tspropko` | Draft the example-targets loop: four streams that scaffold Spring CVEs and independent upstream changes as reproducible work packets | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
-| 586 | change `myyoxkpz` | example-targets: the JDKs installed now, out of Phase 0, with JDK 25 as the default and main target | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
-| 587 | change `ovzrqrxx` | example-targets: JDK 21 a main target beside 25 | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
-| 588 | change `ooorlwpz` | example-targets: decisions 5-12 settled by the user, as proposed | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
-| 589 | change `ptroqoqm` | example-targets Phase 0 step 1: the strict target.json sidecar schema, its loader, and the one reference from example.json | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02.jsonl.gz)) |
-| 590 | change `quzmrkzx` | example-targets Phase 0 step 2: the three shared interfaces, frozen, with stubs that fail closed | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828.jsonl.gz)) |
-| 591 | change `xuzwwrwx` | example-targets: the archived CVE registry committed, hash checked (prerequisite 3) | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
-| 592 | change `lrxtyuux` | example-targets Phase 0 step 3: the hooks (build.py --task, pipeline submit --task, index and find.py projections, result-schema extension points) | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8.jsonl.gz)) |
-| 593 | change `ynzpqxsv` | example-targets Phase 0 step 4: the fixtures every stream's unit checks run on | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad.jsonl.gz)) |
-| 594 | change `pqulqqlx` | example-targets Phase 0 step 5: the integration contract, examples/tools/test_targets_contract.py | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3.jsonl.gz)) |
-| 595 | change `wylwwyst` | example-targets Phase 0 step 6: numbers and names, the integration script, and the briefs brought up to date | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b.jsonl.gz)) |
+| 585 | [`2649446c`](https://github.com/pilifs/in-the-loop/commit/2649446c5151435220aec16135d152fcd4906e66) | Draft the example-targets loop: four streams that scaffold Spring CVEs and independent upstream changes as reproducible work packets | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
+| 586 | [`968a9730`](https://github.com/pilifs/in-the-loop/commit/968a973056308b69200448ecffbb8637ef826ebc) | example-targets: the JDKs installed now, out of Phase 0, with JDK 25 as the default and main target | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
+| 587 | [`97fb1448`](https://github.com/pilifs/in-the-loop/commit/97fb1448bb70773d0d269446d2e01f537f3a0669) | example-targets: JDK 21 a main target beside 25 | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
+| 588 | [`bd2da6c1`](https://github.com/pilifs/in-the-loop/commit/bd2da6c1cb688894d33c3a79ce4956cdd3b1b49c) | example-targets: decisions 5-12 settled by the user, as proposed | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
+| 589 | [`0f097074`](https://github.com/pilifs/in-the-loop/commit/0f09707472d3346ba8657f454498f85eda3ac151) | example-targets Phase 0 step 1: the strict target.json sidecar schema, its loader, and the one reference from example.json | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02.jsonl.gz)) |
+| 590 | [`4cef09c8`](https://github.com/pilifs/in-the-loop/commit/4cef09c8a8581c345f501d6461f42a560db175b7) | example-targets Phase 0 step 2: the three shared interfaces, frozen, with stubs that fail closed | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828.jsonl.gz)) |
+| 591 | [`6cd8b64c`](https://github.com/pilifs/in-the-loop/commit/6cd8b64c0bd696474dee460f17ff4768fab50c3f) | example-targets: the archived CVE registry committed, hash checked (prerequisite 3) | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db.jsonl.gz)) |
+| 592 | [`1d92e5f2`](https://github.com/pilifs/in-the-loop/commit/1d92e5f2e929246c30b8ee0cec20a25abd017d3b) | example-targets Phase 0 step 3: the hooks (build.py --task, pipeline submit --task, index and find.py projections, result-schema extension points) | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8.jsonl.gz)) |
+| 593 | [`1c00d934`](https://github.com/pilifs/in-the-loop/commit/1c00d934d35b7c57a444c32e6963d516c08a5307) | example-targets Phase 0 step 4: the fixtures every stream's unit checks run on | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad.jsonl.gz)) |
+| 594 | [`0267b0ab`](https://github.com/pilifs/in-the-loop/commit/0267b0ab86e0a3199174197c35cb24eb585b70a4) | example-targets Phase 0 step 5: the integration contract, examples/tools/test_targets_contract.py | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3.jsonl.gz)) |
+| 595 | [`854dacc8`](https://github.com/pilifs/in-the-loop/commit/854dacc8ad35d92f79e72891842c8990ed2e1787) | example-targets Phase 0 step 6: numbers and names, the integration script, and the briefs brought up to date | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b.jsonl.gz)) |
+| 596 | change `xsusnqss` | Record session traces | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8ae6d8420f559532d1b63e5af345400565d5176212f4cc8f154b66daab044561.jsonl.gz)), [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53.jsonl.gz)) |
 
 ## Logs
 
@@ -908,13 +911,14 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 2 | 2 | 0.2 MB | [`f30ef695d4d7`](https://terminalvalue.net/raw-traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/f30ef695d4d7f8721f5c602866decff865327edca4846ca83394f2f7799f4627.jsonl.gz) |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2 | 2 | 0.2 MB | [`9171325d7b0a`](https://terminalvalue.net/raw-traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/9171325d7b0a6f53f7ebbfdaa170545d3cae82c78449b9769baa86c5177447ee.jsonl.gz) |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 2 | 2 | 0.2 MB | [`001bb75a2eb3`](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/001bb75a2eb37abca06a53c8f630feefe59cea0ec7d733419420d23dba7dac20.jsonl.gz) |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 36 | 35 | 176.6 MB | `7fa887ec7a80`, not uploaded |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 20 | 12 | 11.2 MB | `94b7843474db`, not uploaded |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 36 | 36 | 176.6 MB | [`7fa887ec7a80`](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc.jsonl.gz) |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 21 | 21 | 12.3 MB | [`8ae6d8420f55`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8ae6d8420f559532d1b63e5af345400565d5176212f4cc8f154b66daab044561.jsonl.gz) |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 2 | 2 | 0.2 MB | [`677ec8afc6b4`](https://terminalvalue.net/raw-traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/677ec8afc6b46349c630a7c5f84f3fbf5a50424ed27b46ac8fe98516a73b3796.jsonl.gz) |
 | [`637cae8e`](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 3 | 3 | 0.2 MB | [`a63a17ed656f`](https://terminalvalue.net/raw-traces/637cae8e-d166-477d-b0d2-51161e0c6d62/a63a17ed656faae8a19a9824ae3ad6b6fcf32f190801c4e99f7ac586b310ee00.jsonl.gz) |
 | [`5797b2b5`](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 2 | 2 | 0.2 MB | [`0d3ef933f260`](https://terminalvalue.net/raw-traces/5797b2b5-cc8e-4306-969d-6366320e1840/0d3ef933f260aae9ceff66599661cdb24b4829ccd39943e5de5a152fc56684a7.jsonl.gz) |
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 2 | 2 | 0.2 MB | [`f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz) |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 4 | 4 | 0.3 MB | [`891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz) |
+| [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 1 | 1 | 0.1 MB | [`1e9e697e88e2`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53.jsonl.gz) |
 
 ## Session notes
 
