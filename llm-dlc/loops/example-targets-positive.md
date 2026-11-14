@@ -172,9 +172,27 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
      then each mutant is a `controls` entry of kind `mutation` naming its base revision and patch hash.
   2. *The router*: `build.py --index-only` at the merge, so `find.py` (which reads `examples/index.json`) lists 305–307.
   3. *Companions*: link 305–307 to the negative packets' numbers once the negative stream assigns them.
-- Next: P2's claim file (the declared UTF-16 bounds), independent oracle, replay driver and probes, and its
-  dropped-prefix mutant. P2 first, since only it can be prepared under decision 1 today. Then P1 and P3 the same way,
-  then P5 (105).
+- 2026-11-14, **P2's packet written** (306):
+  - **The claim.** `claims/simple-match-preservation.json`, in workflow W1's `example-target-claim/v1` format (taken
+    from `wqsyopql`, not yet merged). Each argument is null or has at most 6 UTF-16 code units of any value
+    (`maxArrayLength` 6, `unwind` 16).
+  - **The probes.** 40 of them in `replay/probes.json`.
+  - **The oracle.** `controls/oracle.py` decides a glob by dynamic programming over code units. It never calls either
+    revision.
+  - **The driver.** `replay/driver/inloop/p306/SimpleMatchDriver.java` takes its arguments as hex code units.
+  - **The mutant.** `controls/drop-prefix.patch`, sha256 `f80139f3…`, on release-after.
+  - **The controls** in `target.json`, with two predicted blockers.
+  - **Hand checks** (notes, not evidence):
+    - Both releases agree with the oracle and with each other on all 40 probes, on JDK 21 and 25. The mutant fails 6,
+      among them `("abc*","xbcdef")`.
+    - The probes reach the changed expression with both a true and a false result; the oracle checks this.
+    - W1's planner, run from a temp copy of `wqsyopql`, plans both tasks.
+    - A `jvmcontract gaps` scan (`records/simple-match-gaps.json`) found seven JDK `String` methods that the checker
+      approximates (`substring`, `endsWith`, `indexOf`). The strict attempt is therefore predicted to be refused, and
+      so are its null cases.
+  - **Still open:** the mutant has no task or claim key of its own until interface request 1 is settled.
+- Next: P1's packet (305): the outcome-range claim, its oracle, driver and probes, and the 200-boundary mutant. Then P3
+  (307) the same way, then P5 (105). Their build routes still wait on the user (the 2026-11-14 entry above).
 - Status: working
 
 ## Loop settings

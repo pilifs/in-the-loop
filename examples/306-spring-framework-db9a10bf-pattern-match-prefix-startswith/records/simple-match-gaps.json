@@ -1,0 +1,188 @@
+{
+  "provenance": "A note, not evidence (llm-dlc/loops/example-targets-positive.md, Ownership): a static scan that proves nothing, run by hand on 2026-11-14 with the jvmcontract binary of the default workspace (sha256 7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea, built 2026-11-08 19:40, one lib/src commit before yrlkzqvw), on the spring-core JARs this sidecar pins. Runtime's preparation and a current build record it again as evidence.",
+  "argv": [
+    "jvmcontract",
+    "gaps",
+    "--json",
+    "--target",
+    "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)",
+    "--classes",
+    "spring-core-<release>.jar",
+    "--classpath",
+    "spring-jcl-<release>.jar"
+  ],
+  "reading": "Under gaps strict both revisions reach seven JDK String methods the checker approximates rather than implements (substring twice, endsWith, indexOf four ways), so the preservation attempt is predicted to be refused by name, not established, until those methods have models. 5.3.7's startsWith is reproduced exactly; 5.3.6's second equals is. Recursion is not listed: whether it is supported is for the attempt to show.",
+  "scans": {
+    "release-before": {
+      "jar": "spring-core-5.3.6.jar",
+      "report": {
+        "roots": [
+          "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)"
+        ],
+        "methods": 1,
+        "jdk": "25.0.5",
+        "gaps": [
+          {
+            "id": "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;@jdk-25.0.5",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.substring(int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:54",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:58",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:62",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:72"
+            ],
+            "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+          },
+          {
+            "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.substring(int, int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:56",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:71"
+            ],
+            "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.endsWith(Ljava/lang/String;)Z@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.endsWith(java.lang.String)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:54"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(I)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:43"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(II)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(int, int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:52"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(java.lang.String)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:60"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;I)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(java.lang.String, int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:65"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          }
+        ],
+        "exact": {
+          "java.lang.String.equals(Ljava/lang/Object;)Z (on its content)": 2,
+          "java.lang.String.isEmpty()Z (on its content)": 1,
+          "java.lang.String.length()I (on its content)": 3
+        },
+        "refused": {}
+      }
+    },
+    "release-after": {
+      "jar": "spring-core-5.3.7.jar",
+      "report": {
+        "roots": [
+          "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)"
+        ],
+        "methods": 1,
+        "jdk": "25.0.5",
+        "gaps": [
+          {
+            "id": "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;@jdk-25.0.5",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.substring(int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:54",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:58",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:62",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:72"
+            ],
+            "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+          },
+          {
+            "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.substring(int, int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:56",
+              "org.springframework.util.PatternMatchUtils.simpleMatch:71"
+            ],
+            "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.endsWith(Ljava/lang/String;)Z@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.endsWith(java.lang.String)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:54"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(I)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:43"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(II)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(int, int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:52"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(java.lang.String)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:60"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;I)I@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.indexOf(java.lang.String, int)",
+            "sites": [
+              "org.springframework.util.PatternMatchUtils.simpleMatch:65"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+          }
+        ],
+        "exact": {
+          "java.lang.String.equals(Ljava/lang/Object;)Z (on its content)": 1,
+          "java.lang.String.isEmpty()Z (on its content)": 1,
+          "java.lang.String.length()I (on its content)": 3,
+          "java.lang.String.startsWith(Ljava/lang/String;)Z (on its content)": 1
+        },
+        "refused": {}
+      }
+    }
+  }
+}

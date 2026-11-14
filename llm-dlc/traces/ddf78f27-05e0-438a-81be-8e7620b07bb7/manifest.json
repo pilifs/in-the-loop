@@ -12,30 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.109Z",
-  "ended": "2026-11-14T15:38:51.985Z",
-  "duration_seconds": 725,
+  "ended": "2026-11-14T15:48:23.077Z",
+  "duration_seconds": 1296,
   "stats": {
-    "turns": 5,
-    "api_calls": 44,
-    "tool_calls": 45,
-    "tool_errors": 1,
-    "compactions": 1,
-    "peak_context_tokens": 167406,
+    "turns": 10,
+    "api_calls": 85,
+    "tool_calls": 86,
+    "tool_errors": 3,
+    "compactions": 2,
+    "peak_context_tokens": 175089,
     "usage": {
-      "input_tokens": 88,
-      "output_tokens": 56939,
-      "cache_read_input_tokens": 4731367,
-      "cache_creation_input_tokens": 172488
+      "input_tokens": 170,
+      "output_tokens": 88923,
+      "cache_read_input_tokens": 8693286,
+      "cache_creation_input_tokens": 287886
     }
   },
   "tools": {
-    "Bash": 39,
-    "Write": 3,
-    "Read": 2,
-    "Edit": 1
+    "Bash": 76,
+    "Write": 5,
+    "Read": 3,
+    "Edit": 2
   },
   "files_touched": [
     "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+    "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/controls/oracle.py",
+    "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/replay/driver/inloop/p306/SimpleMatchDriver.java",
     "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/target.json",
     "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
     "llm-dlc/loops/example-targets-positive.md"
@@ -58,24 +60,38 @@
     {
       "index": 1,
       "started": "2026-11-14T15:26:42.743Z",
-      "ended": "2026-11-14T15:38:51.985Z",
-      "turns": 5,
-      "api_calls": 44,
+      "ended": "2026-11-14T15:39:27.937Z",
+      "turns": 6,
+      "api_calls": 48,
       "usage": {
-        "input_tokens": 88,
-        "output_tokens": 56939,
-        "cache_read_input_tokens": 4731367,
-        "cache_creation_input_tokens": 172488
+        "input_tokens": 96,
+        "output_tokens": 59705,
+        "cache_read_input_tokens": 5414707,
+        "cache_creation_input_tokens": 180171
       },
-      "peak_context_tokens": 167406
+      "peak_context_tokens": 175089
+    },
+    {
+      "index": 2,
+      "started": "2026-11-14T15:40:36.767Z",
+      "ended": "2026-11-14T15:48:23.077Z",
+      "turns": 4,
+      "api_calls": 37,
+      "usage": {
+        "input_tokens": 74,
+        "output_tokens": 29218,
+        "cache_read_input_tokens": 3278579,
+        "cache_creation_input_tokens": 107715
+      },
+      "peak_context_tokens": 120901
     }
   ],
   "log": {
-    "sha256": "d9f969f3102e54e31a8f648f4bf6495bc278b81327630271c3cdffccf8957893",
-    "bytes": 1367899,
-    "lines": 476,
-    "gzip_bytes": 264435,
-    "path": "llm-dlc/traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/logs/d9f969f3102e54e31a8f648f4bf6495bc278b81327630271c3cdffccf8957893.jsonl.gz"
+    "sha256": "325c9cd07083f49ffd0b3e96e71f3f2bdf1f1f92dff98f32180c3a45c53bd064",
+    "bytes": 2489150,
+    "lines": 889,
+    "gzip_bytes": 472765,
+    "path": "llm-dlc/traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/logs/325c9cd07083f49ffd0b3e96e71f3f2bdf1f1f92dff98f32180c3a45c53bd064.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -86,9 +102,23 @@
       "summary": "example-targets positive: the three positive packets source-locked (305, 306, 307)",
       "body": "New real-world examples 305 (Spring Boot e8de5a6d, the Outcome enum behind WebMvcTags.outcome), 306 (Spring Framework db9a10bf, PatternMatchUtils.simpleMatch's prefix check as startsWith) and 307 (Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8), the positive stream's P1-P3 of llm-dlc/loops/example-targets.md. Each has example.json, a target.json sidecar (identity, history, preparation route, named tasks with native strict engines and expected outcomes, handoff), a sources.lock.json and a README. No build, replay or proof ran; claim files, oracles, drivers, probes and mutants come next.\n\nEvery commit and parent was checked against github.com by a shallow fetch by SHA (all single-parent), and the selected source files' git blob ids were recorded beside the nearest releases'. That check contradicts the stream brief's statement that these pairs have no published JARs and take the upstream build route: 306's PatternMatchUtils.java is byte-identical at 27bfcbbc/v5.3.6 and db9a10bf/v5.3.7 and in Maven Central's spring-core 5.3.6 and 5.3.7 sources JARs, so 306 uses the published-artifact route with pinned sha256s (fetched by hand, sha1s matching Central's). 305's exact-commit Maven build is predicted irreproducible, because both commits pin SNAPSHOT and milestone dependencies; 307's Gradle build needs services.gradle.org and repo.spring.io, outside decision 1. Both are recorded as predicted build blockers, with the user's options under the brief's Progress, together with three interface requests for the merge (mutant revisions, the router index, companion links).",
       "log_sha256": "d9f969f3102e54e31a8f648f4bf6495bc278b81327630271c3cdffccf8957893"
+    },
+    {
+      "change_id": "xlxqqpyrozosomnvxkkpurouvknyvtyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets positive P2: 306's claim, oracle, driver, probes and dropped-prefix mutant",
+      "body": "Example 306 (Spring Framework db9a10bf, simpleMatch's prefix check rewritten as startsWith) now has a frozen claim and its concrete controls. claims/simple-match-preservation.json uses the claim format of workflow's W1 (example-target-claim/v1, not yet merged). Its domain: decision preservation over a pattern and a string, each null or at most 6 UTF-16 code units of any value (maxArrayLength 6, unwind 16), with the boolean and the exception observed. replay/probes.json has 40 probes: the brief's nine, the star shapes, a prefix mismatch, non-ASCII, a surrogate pair, half a pair and isolated surrogates. controls/oracle.py decides each glob independently, by dynamic programming over code units, and checks each revision's driver lines against that and against each other. replay/driver prints one JSON line per probe. controls/drop-prefix.patch is the mutant: release-after with the prefix condition dropped. target.json lists all four as controls and records two predicted blockers: seven JDK String methods the native checker approximates, and null String parameters.",
+      "log_sha256": "325c9cd07083f49ffd0b3e96e71f3f2bdf1f1f92dff98f32180c3a45c53bd064"
     }
   ],
   "logs": {
+    "325c9cd07083f49ffd0b3e96e71f3f2bdf1f1f92dff98f32180c3a45c53bd064": {
+      "bytes": 2489150,
+      "lines": 889,
+      "gzip_bytes": 472765,
+      "url": null
+    },
     "d9f969f3102e54e31a8f648f4bf6495bc278b81327630271c3cdffccf8957893": {
       "bytes": 1367899,
       "lines": 476,
