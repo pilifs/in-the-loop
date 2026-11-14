@@ -222,6 +222,40 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
     - The mutant satisfies the finite-outcome property by design; it fails preservation and the oracle.
     - A range property (the value as a function of the status) can't be stated: the response parameter hides the
       status from `assert`.
+- 2026-11-14, **P3's packet written** (307):
+  - **The claim.** `claims/hashpw-preservation.json`, in W1's format:
+    - the password is null or at most 80 UTF-16 code units of any values;
+    - the salt is one of seven fixed strings, all from upstream's `BCryptTests`, stated as an `assume` expression;
+    - it observes the returned String or the exception's class (never its message: since JDK 14 an NPE's message names
+      the method the patch changes);
+    - `unwind` 513 completes every loop on this domain.
+  - **The domain decisions.** All three cases are in the domain:
+    - a null password: NullPointerException, even with a null salt;
+    - malformed surrogates: encoded as `?`, as `String.getBytes` specifies for both overloads;
+    - four invalid salts from upstream's tests: IllegalArgumentException.
+  - **The probes.** 45 in `replay/probes.json`:
+    - the salt is the `abc` test vector's cost-6 salt, and its stored hash, so a match against a pre-existing hash is
+      observed; plus the `$2$05$` salt;
+    - passwords at 71, 72 and 73 UTF-8 bytes in 1-, 2-, 3- and 4-byte characters, one straddling byte 72;
+    - three upstream known answers.
+  - **The oracle.** `controls/oracle.py`, with no cipher:
+    - it encodes UTF-8 itself;
+    - it predicts that probes with the same salt and the same first 72 bytes of the cyclic key (NUL terminator
+      included) share a result, and, as an assumption, that others don't.
+  - **The mutant.** `controls/us-ascii.patch`, sha256 `a2b4e97f…`, on after.
+  - **Also:** the controls in `target.json`, two more predicted blockers, and the README's requirements.
+  - **Hand checks** (notes, not evidence):
+    - Sides compiled from each commit's `BCrypt.java` alone, plus Central's 5.2.0.RELEASE class. All agree with the
+      oracle and with each other on all 45 probes, byte-identically on JDK 21 and 25.
+    - The mutant breaks the oracle's key rules 9 times and differs on 17 probes, all non-ASCII, `é` among them.
+    - Before and after differ in bytecode only in `hashpw(String,String)`, apart from constant-pool indices.
+    - W1's planner plans both tasks.
+  - **For review:** the `jvmcontract gaps` scan (`records/hashpw-gaps.json`) refuses the changed conversion itself on
+    both sides (`getBytes(String)`, `getBytes(Charset)`, `StandardCharsets.UTF_8`). In the callee it adds
+    `Arrays.copyOf`, plus `Integer.parseInt` and `StringBuilder.charAt` with no approximation. So the strict attempt is
+    predicted to stop at the family's shared demand, the UTF-16 to UTF-8 conversion. It is also predicted to refuse the
+    null password and salt as inputs. The optional conversion lemma was not written: it needs a checked summary of the
+    unchanged callee, bound to its bytecode, which the packet records the basis for.
 - **For the coordinator**: after each of this run's commits, `sync.py check` reported ERRORs "session … has no
   manifest" on other streams' changes, never this one's:
   - the changes, eight by this commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
@@ -229,9 +263,13 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
   - the sessions: 3bb5a1f4 (runtime), eaff7dd7 (workflow) and 70d4b729 (negative).
 
   It looks like a cross-workspace effect of the check. Nothing was changed for it here.
-- Next: P3's packet (307): the salt from an upstream test, the domain decisions (malformed surrogates, null, an invalid
-  salt), the probes (71, 72 and 73 bytes, against a stored hash), the oracle, the driver and the US-ASCII mutant. Then P5
-  (105). P1's and P3's build routes still wait on the user (the first 2026-11-14 entry above).
+- Next: P5, migrating 105 (Commons Numbers `pow`, commons-numbers#223):
+  - resolve its revisions and artifacts afresh;
+  - write its sidecar and packet, its README unchanged;
+  - select a small non-vacuous primitive obligation for A5;
+  - inventory 105–109.
+
+  P1's and P3's build routes still wait on the user (the first 2026-11-14 entry above).
 - Status: working
 
 ## Loop settings

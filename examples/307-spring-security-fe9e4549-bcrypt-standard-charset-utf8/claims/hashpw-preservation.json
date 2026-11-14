@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "bcrypt-hashpw-string-preserved",
+  "kind": "preservation",
+  "statement": "Preservation of BCrypt.hashpw(String password, String salt) between Spring Security fb39d9c2 (password.getBytes(\"UTF-8\") inside a try that turns UnsupportedEncodingException into AssertionError) and fe9e4549 (password.getBytes(StandardCharsets.UTF_8)): for every password that is null or a String of at most 80 UTF-16 code units, each any of the 65,536 values (an isolated or reversed surrogate and a NUL included), and every salt among the seven fixed strings of the assume expression (three valid ones and four invalid ones, null among them, all from upstream's BCryptTests), both revisions return the same String (compared by equals) or throw the same exception class, on one and the same JDK. No allowed-change region: the patch is meant to change no observation. Expected per input, as replay/probes.json and controls/oracle.py state them: NullPointerException for a null password, whatever the salt; IllegalArgumentException for an invalid salt; for a valid salt, a result decided by the salt and the first 72 bytes of the cyclic key (the password's UTF-8 bytes, an isolated surrogate encoded as '?', with a NUL appended for revision a), except ArrayIndexOutOfBoundsException for the empty password under the salt with no minor revision. Nothing about timing, about BCryptPasswordEncoder, about a length policy or about bcrypt's cryptographic strength is claimed.",
+  "assume": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
+  "nullable": ["password", "salt"],
+  "observations": ["result", "exception"],
+  "bounds": { "maxArrayLength": 80, "unwind": 513 },
+  "assumptions": [
+    {
+      "text": "maxArrayLength bounds each String parameter's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md); the password's byte array and the cipher's own arrays (P, S, the salt and key bytes) are the method's, sized by its code, not by this bound.",
+      "basis": "80 code units reach every probe shape: 73 UTF-8 bytes take 73 ASCII units, 37 units of 2-byte characters, 25 of 3-byte ones (the fewest), or 37 with surrogate pairs; the longest salt is 60 units. Bytes past the 72nd matter to the observation only through the claim's statement that they don't (the cyclic key), which the probes at 71, 72 and 73 bytes test."
+    },
+    {
+      "text": "unwind 513 completes every loop on this domain: the key schedule's S-box loops run 512 times (1024 words, two per step), Blowfish's round loop 8, the cost loop at most 64 (cost 6; cost 3 throws before it), the base64 loops at most 23, and the JDK's encoding at most 80 code units.",
+      "basis": "Read from BCrypt.java at both revisions (the callee hashpw(byte[],String) and everything it calls are the same source, and the same bytecode up to constant-pool indices). An unwinding the check can't complete leaves the attempt unresolved, never established."
+    },
+    {
+      "text": "Both revisions run on the same JDK, whose String.getBytes(String) and String.getBytes(Charset) for UTF-8 encode alike, malformed input and all: both are specified to 'always replace malformed-input and unmappable-character sequences with this charset's default replacement byte array', which for UTF-8 is '?'.",
+      "basis": "The java.lang.String specification of both methods. The claim compares the two revisions on one JDK; a JDK whose two methods differed would be a finding about that JDK, recorded under its identity, not an assumption made true. The replay runs each side on 21 and 25."
+    },
+    {
+      "text": "Charset lookup by the name \"UTF-8\" always succeeds, so before's AssertionError is unreachable.",
+      "basis": "java.nio.charset.Charset: every implementation of the Java platform is required to support UTF-8 (StandardCharsets.UTF_8 exists on that guarantee). An attempt that reaches the AssertionError has modelled a JDK without UTF-8, which is outside the claim."
+    },
+    {
+      "text": "The exception is observed by class only, never by message.",
+      "basis": "Since JDK 14 a NullPointerException's helpful message names the method called on null: getBytes(String) at before, getBytes(Charset) at after. That is the patch's own difference, not behaviour a caller relies on; the class is what the method's callers can observe through its contract."
+    }
+  ],
+  "notes": [
+    "The domain decisions the brief asks for. A null password is in the domain: both revisions dereference it first, NullPointerException (also with a null salt: the conversion precedes the salt check). Malformed surrogates are in the domain: isolated high and low surrogates, a reversed pair, and one inside ASCII, expected to hash as '?' would (replay/probes.json pairs each with its '?' twin). Invalid salts are in the domain, but only the four of upstream's tests (null, empty, cost 03, too short), with IllegalArgumentException: the salt reaches only the unchanged callee, so a wider salt domain adds work without touching the change; widening it later is a new claim.",
+    "The salt is fixed, never random: the 'abc' row of upstream's test_vectors, cost 6, as the salt and as its stored hash (the acceptance contract's valid pre-existing stored hash: hashing with it and comparing the result with it is checkpw's match, so an encoding that changed would show as a lost or gained match, not only as a difference between revisions), and hashpwWorksWithOldRevision's '$2$05$' salt. Known answers from those tests anchor the oracle.",
+    "The replay's independent oracle (controls/oracle.py) computes no cipher. It encodes UTF-8 itself and predicts which probes must share a result (the same salt and 72 key bytes) and, as a stated assumption, which must not; with the known answers and the result's format, that is what makes the encoding observable. The constructed mutant (controls/us-ascii.patch on after) must fail this claim on the pair (before, mutant): 'é' then hashes as '?', and 'a'*70 + 'é' and its 73-byte extension stop sharing a result.",
+    "A proof of this claim may reuse a checked summary of the unchanged callee hashpw(byte[],String), bound to its actual bytecode at both revisions: then the obligation is that the two conversions give the same bytes on the domain (a local lemma). Without that reuse the full claim stays unresolved; no cipher is substituted, and a lemma over the conversion alone is a separate, narrower claim with this one as its parent."
+  ]
+}

@@ -1,0 +1,382 @@
+{
+ "provenance": "A note, not evidence (llm-dlc/loops/example-targets-positive.md, Ownership): a static scan that proves nothing, run by hand on 2026-11-14 with the jvmcontract binary of the default workspace (sha256 7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea, built 2026-11-08 19:40, one lib/src commit before yrlkzqvw), whose scan takes the default java (25.0.5). No JAR is a commit's build output, which the predicted build-or-dependency blocker rules out: each side's BCrypt.java (before blob f6c67705, after blob 7ccaa91b, the mutant after's with controls/us-ascii.patch applied) was compiled alone by javac 1.8.0_512 -source 8 -target 8 (BCrypt needs only the JDK) and put in a JAR of its own. Runtime's preparation and a current build record it again as evidence.",
+ "argv": [
+  "jvmcontract",
+  "gaps",
+  "--json",
+  "--target",
+  "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String,java.lang.String)",
+  "--classes",
+  "<side>.jar"
+ ],
+ "classesSha256": {
+  "before.jar": "2dd39ba557c7274070d605d77569c038b588061a289fae6e5163815cebda7749",
+  "after.jar": "c078d233f2416116c7715605f7c2f83c74514635f182e7e17c6df0fbf9eab30e",
+  "mutant.jar": "c3c8688d52d04ac1a57d48f0343d48a525adb9bcd7510ceb823c005b1bbe9cc4",
+  "spring-security-crypto-5.2.0.RELEASE.jar": "3d0017d935538cca02c2f9a36eb23954cf0a1bdc50c187221baf78100ccda104"
+ },
+ "reading": "All three sides reach 15 methods. The scan refuses the changed operation itself, by name, under gaps strict: before's String.getBytes(String) and after's String.getBytes(Charset) are 'an array result of a JDK instance method', and after's read of StandardCharsets.UTF_8 is 'a static field of the JDK that is not a compile-time constant' (the mutant's StandardCharsets.US_ASCII the same). The unchanged callee hashpw(byte[],String) adds the refused Arrays.copyOf(byte[],int) (the NUL terminator), and two gaps with no approximation, StringBuilder.charAt in decode_base64 and Integer.parseInt of the cost; the other six gaps (StringBuilder and String.substring) have approximations, which strict mode doesn't accept as proof either. Before alone has one more gap, AssertionError.<init>, the unreachable wrapper the patch removes. So the preservation attempt is predicted to be refused at the conversion on both sides, before the cipher: the password-bytes family's shared demand (the UTF-16 to UTF-8 conversion, CVE-2025-22228's too) is exactly where the checker stops. Central's spring-security-crypto-5.2.0.RELEASE.jar gives after's gaps and refusals, at lines one lower (the removed import). The scan lists no BCrypt static initializer gap: <clinit> fills P_orig, S_orig and the base64 tables from constants.",
+ "scans": {
+  "before": {
+   "roots": [
+    "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String,java.lang.String)"
+   ],
+   "methods": 15,
+   "jdk": "25.0.5",
+   "gaps": [
+    {
+     "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-25.0.5",
+     "kind": "jdk-constructor",
+     "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:739"
+     ],
+     "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+    },
+    {
+     "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+     "kind": "jdk-constructor",
+     "call": "java.lang.StringBuilder.<init>()",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:444",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:758"
+     ],
+     "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.String.substring(int, int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:789",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:791"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(C)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(char)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:459",
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:467",
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:473",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:400",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:403",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:408",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:411",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:416",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:417",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:802"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:806"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(java.lang.String)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:800",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:803",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:805",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:807"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.toString()",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:810"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-primitive-method:java.lang.StringBuilder.charAt(I)C@jdk-25.0.5",
+     "kind": "jdk-primitive-method",
+     "call": "java.lang.StringBuilder.charAt(int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:479"
+     ],
+     "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    },
+    {
+     "id": "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I@jdk-25.0.5",
+     "kind": "jdk-static-method",
+     "call": "java.lang.Integer.parseInt(java.lang.String)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:789"
+     ],
+     "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    }
+   ],
+   "exact": {
+    "array.clone()": 3,
+    "java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V": 10,
+    "java.lang.Object.<init>()V": 1,
+    "java.lang.String.charAt(I)C (on its content)": 10,
+    "java.lang.String.length()I (on its content)": 2
+   },
+   "refused": {
+    "a floating-point or array result of a JDK instance method": {
+     "first": "java.lang.String.getBytes(java.lang.String)",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:737",
+     "sites": 1
+    },
+    "floating point or an array result of a static JDK method": {
+     "first": "java.util.Arrays.copyOf(byte[], int)",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:795",
+     "sites": 1
+    }
+   }
+  },
+  "after": {
+   "roots": [
+    "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String,java.lang.String)"
+   ],
+   "methods": 15,
+   "jdk": "25.0.5",
+   "gaps": [
+    {
+     "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+     "kind": "jdk-constructor",
+     "call": "java.lang.StringBuilder.<init>()",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:444",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:754"
+     ],
+     "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.String.substring(int, int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:785",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:787"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(C)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(char)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:459",
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:467",
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:473",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:400",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:403",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:408",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:411",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:416",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:417",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:798"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:802"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(java.lang.String)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:796",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:799",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:801",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:803"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.toString()",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:806"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-primitive-method:java.lang.StringBuilder.charAt(I)C@jdk-25.0.5",
+     "kind": "jdk-primitive-method",
+     "call": "java.lang.StringBuilder.charAt(int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:479"
+     ],
+     "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    },
+    {
+     "id": "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I@jdk-25.0.5",
+     "kind": "jdk-static-method",
+     "call": "java.lang.Integer.parseInt(java.lang.String)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:785"
+     ],
+     "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    }
+   ],
+   "exact": {
+    "array.clone()": 3,
+    "java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V": 10,
+    "java.lang.Object.<init>()V": 1,
+    "java.lang.String.charAt(I)C (on its content)": 10,
+    "java.lang.String.length()I (on its content)": 2
+   },
+   "refused": {
+    "a floating-point or array result of a JDK instance method": {
+     "first": "java.lang.String.getBytes(java.nio.charset.Charset)",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:736",
+     "sites": 1
+    },
+    "floating point or an array result of a static JDK method": {
+     "first": "java.util.Arrays.copyOf(byte[], int)",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:791",
+     "sites": 1
+    },
+    "reads a static field of the JDK that is not a compile-time constant": {
+     "first": "java.nio.charset.StandardCharsets.UTF_8",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:736",
+     "sites": 1
+    }
+   }
+  },
+  "mutant": {
+   "roots": [
+    "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String,java.lang.String)"
+   ],
+   "methods": 15,
+   "jdk": "25.0.5",
+   "gaps": [
+    {
+     "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+     "kind": "jdk-constructor",
+     "call": "java.lang.StringBuilder.<init>()",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:444",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:754"
+     ],
+     "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.String.substring(int, int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:785",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:787"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(C)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(char)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:459",
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:467",
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:473",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:400",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:403",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:408",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:411",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:416",
+      "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:417",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:798"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:802"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.append(java.lang.String)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:796",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:799",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:801",
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:803"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+     "kind": "jdk-reference-method",
+     "call": "java.lang.StringBuilder.toString()",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:806"
+     ],
+     "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+    },
+    {
+     "id": "jdk-primitive-method:java.lang.StringBuilder.charAt(I)C@jdk-25.0.5",
+     "kind": "jdk-primitive-method",
+     "call": "java.lang.StringBuilder.charAt(int)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:479"
+     ],
+     "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    },
+    {
+     "id": "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I@jdk-25.0.5",
+     "kind": "jdk-static-method",
+     "call": "java.lang.Integer.parseInt(java.lang.String)",
+     "sites": [
+      "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:785"
+     ],
+     "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+    }
+   ],
+   "exact": {
+    "array.clone()": 3,
+    "java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V": 10,
+    "java.lang.Object.<init>()V": 1,
+    "java.lang.String.charAt(I)C (on its content)": 10,
+    "java.lang.String.length()I (on its content)": 2
+   },
+   "refused": {
+    "a floating-point or array result of a JDK instance method": {
+     "first": "java.lang.String.getBytes(java.nio.charset.Charset)",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:736",
+     "sites": 1
+    },
+    "floating point or an array result of a static JDK method": {
+     "first": "java.util.Arrays.copyOf(byte[], int)",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:791",
+     "sites": 1
+    },
+    "reads a static field of the JDK that is not a compile-time constant": {
+     "first": "java.nio.charset.StandardCharsets.US_ASCII",
+     "at": "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:736",
+     "sites": 1
+    }
+   }
+  }
+ }
+}
