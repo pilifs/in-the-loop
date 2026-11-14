@@ -329,11 +329,61 @@ timebox, the downloads policy and the safety rules. Queue anything heavy, and re
     stored long password. That is N4's ground (6.3.9's legacy matching).
   - *Strictness.* The frozen claim asks for the rejection itself. The seed's "may reject" reading would also accept
     `false`, but `--throws` states only "exactly when". The oracle reports the two kinds apart.
-- Next: N4, the follow-up (300, CVE-2025-22234), research-only and linked to N3. Record the repair pair `eb013944` →
-  `c1aa99fd` (6.3.8 → 6.3.9) and its policy (long new encodings refused, legacy matching allowed) as a separate,
-  unfrozen contract. State that no output or call-log equality establishes timing. Give each attempted blocker its gap
-  packet, with predicted ones labelled. Then the handoffs, and check the three packets against the acceptance.
-- Status: working
+- 2026-11-14, **N4 done: the follow-up (300) and the handoffs.** 300 stays research only (role `catalog`, no tasks,
+  linked to 287). It keeps three properties apart:
+  - 287's blanket rejection;
+  - the 6.3.9 functional policy, a **proposed contract, not frozen**: `encode` refuses more than 72 UTF-8 bytes, and
+    for a valid stored hash `matches` never refuses by length and depends only on the first 72 bytes;
+  - the timing mitigation. **Output or call-log equality establishes no timing noninterference**, and a cost model is
+    outside this wave. The policy is in `target.json`'s `unresolved` and the README, not in `claims/`, because a claim
+    file there counts as frozen.
+
+  New `sources.lock.json`:
+  - the blobs of `BCrypt.java` at the repair pair `eb013944` → `c1aa99fd` and at 6.3.8 → 6.3.9 (`17292840` →
+    `4f19f52d`), and the repair test's;
+  - c1aa99fd is the only commit in 6.3.8..6.3.9 touching crypto's main sources or the provider's package;
+  - `DaoAuthenticationProvider`, its parent, `DelegatingPasswordEncoder` and `PasswordEncoderFactories` are unchanged
+    from 6.3.7 to 6.3.9;
+  - only `BCrypt.hashpw(byte[], String, boolean)` differs between the 6.3.8 and 6.3.9 JARs;
+  - spring-jcl 6.1.19 (6.3.9's managed version, fetched by hand from Central with sha1 checked; sha256 noted).
+
+  **Developer note, not evidence.** 287's driver and oracle were run by hand on 6.3.9, Temurin 21 and 25. Every line
+  equals 6.3.7's: the 9 prefix triggers authenticate again, and 287's compare from 6.3.8 reports only the 12 overlong
+  changes. So 287's claim fails on 6.3.9 by design, and 287's README and notes now say so. pyca bcrypt confirms the
+  repair test's legacy 73-character hash is the hash of the first 72 bytes.
+
+  Three blockers are predicted for 300:
+  - timing oracle-ambiguity (the missing cost model);
+  - the provider path's carriers (input-construction);
+  - 287's java-semantics plus the delegating encoder.
+
+  **No blocker was attempted in this stream.** No verifier, carrier or capability probe ran, and Phase 5 runs them. So
+  there is no gap packet file. All 50 blockers in 285–300 are `observed: false` and begin "Predicted". The two-failure
+  timebox never triggered.
+
+  **Acceptance check, on this branch:**
+  - all 16 sidecars are valid;
+  - 285–287 each have a source lock checked upstream, frozen claims (valid against W1's schema), the three task
+    relations, probes, an independent oracle whose `self-test` passes, a mutation patch, and a driver;
+  - workflow's planner (now W4) plans all 16 tasks;
+  - 286 and 287 now mark their release pair `selected`, as 285 did, since their claims are frozen on it;
+  - the integration script passes on this workspace.
+
+  A3 is Phase 5's, after the merge.
+
+  **For review**:
+  - *6.3.9 re-opens 287's matching behaviour*: only encoding stays fixed.
+  - *A possible functional distinguisher, read from source and not run.* On 6.3.8, an overlong password makes the
+    user-not-found path's dummy match throw `IllegalArgumentException` without hashing. A known user with a non-bcrypt
+    stored encoding is hashed and ends in `BadCredentialsException`. If it holds, it is visible without timing.
+  - *Upgrades after a legacy match.* On 6.3.9, `createSuccessAuthentication`'s upgrade `encode` throws for a legacy
+    overlong password. Read from source.
+- **Coordination**: the integration report of 2026-11-14 16:28 merged this stream at N2 and stopped on conflicts in
+  `llm-dlc/README.md`, `llm-dlc/index.json`, `llm-dlc/traces/README.md` and `llm-dlc/traces/metrics.json`. `sync.py`
+  regenerates those in every stream; none is this stream's.
+- **For the user**: `llm-dlc/allowlist.json` holds 7 allow-list proposals from this stream's commit checks. They are
+  uncommitted, because their commit was declined. They are left in the working copy and kept out of the stream's commits.
+- Status: done
 
 ## Loop settings
 
