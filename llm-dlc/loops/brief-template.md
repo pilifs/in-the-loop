@@ -125,3 +125,7 @@ is left. Keep the last line of Progress a status (`working`, `done`, `blocked: .
 
 A brief run as parallel streams also has stream briefs; [`foundations-heap.md`](foundations-heap.md) is a worked
 example: the main brief is the instruction, the stream brief names its phases, ownership and Progress.
+
+Every cycle's instruction also points a stream at its inbox from the conductor (`llm-dlc/tools/inbox.py`): only
+what the stream has to act on, each item acknowledged by its id in Progress, and below the brief and the user's
+decisions in precedence. A stream brief needn't repeat that.

@@ -327,6 +327,35 @@ The next parallel run uses the conductor:
     its manifest lists the log.
   - Fix: such a trailer is now a note when another workspace's working copy holds a manifest that lists the log.
   - Two tests in `test_workspaces.py`; 212 tool tests pass.
+- 2026-11-14, step 2 done: inboxes, `llm-dlc/tools/inbox.py`.
+  - The convention: `llm-dlc/loop-summaries/NAME-STREAM-inbox.md` in the default workspace, rendered from
+    `NAME-STREAM-inbox.jsonl` beside it. Both are gitignored, and `send` and `collect` find the default workspace from
+    any workspace.
+  - Item ids are `NAME-STREAM-I001`. Open items are shown in full; acknowledged ones get a line each.
+  - The sentence: `feature-loop.sh` adds `inbox.py instruction NAME` to every brief's cycle instruction. It names the
+    inbox path, says to acknowledge each item by its id in the Progress update, and states the precedence (brief,
+    then the user's decisions, then the conductor; a contradiction is reported, not obeyed). The inbox's own header
+    repeats it.
+  - The only-what-to-act-on rule as `send` enforces it:
+    - an item is one of six kinds, each from Design 2's list: `failure`, `interface`, `answer`, `unblocked`,
+      `overturned`, and `queued`;
+    - `queued` is my addition, from Design 3's "queued at once and the stream goes on";
+    - every item says what to `do` and names a decision or commit as its source;
+    - a decision it names must be in the state the kind needs;
+    - anything else is refused and nothing is written.
+  - An item sent for a decision is added to that decision's `applied.inbox`.
+  - `collect` takes acknowledgements from each stream's committed Progress (`WORKSPACE@-`), keeping the commit and the
+    Progress line, so a reported contradiction shows.
+  - Tests: `test_inbox.py` (8), including the two-stream fixture run. That run is a real jj repo with a default
+    workspace and two stream workspaces:
+    - the conductor sends an interface rule to both streams, and the upkeep item is refused;
+    - each stream finds its inbox through the sentence's path from its own workspace;
+    - one stream acknowledges in a commit, while an uncommitted edit doesn't count;
+    - after the user overturns the decision, both streams get the undo;
+    - one stream reports the stale item as contradicting its brief.
+
+    All 220 tool tests pass.
+  - Next: step 3, the rolling integration line.
 - Status: working
 
 ## Loop settings

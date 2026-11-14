@@ -12,33 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T21:13:36.309Z",
-  "ended": "2026-11-14T21:26:41.646Z",
-  "duration_seconds": 785,
+  "ended": "2026-11-14T21:35:09.739Z",
+  "duration_seconds": 1293,
   "stats": {
-    "turns": 6,
-    "api_calls": 63,
-    "tool_calls": 60,
+    "turns": 11,
+    "api_calls": 88,
+    "tool_calls": 88,
     "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 214126,
+    "compactions": 2,
+    "peak_context_tokens": 217136,
     "usage": {
-      "input_tokens": 126,
-      "output_tokens": 84394,
-      "cache_read_input_tokens": 8223492,
-      "cache_creation_input_tokens": 250004
+      "input_tokens": 176,
+      "output_tokens": 122663,
+      "cache_read_input_tokens": 10655088,
+      "cache_creation_input_tokens": 365978
     }
   },
   "tools": {
-    "Bash": 50,
-    "Edit": 4,
-    "Read": 3,
-    "Write": 3
+    "Bash": 72,
+    "Edit": 7,
+    "Write": 5,
+    "Read": 4
   },
   "files_touched": [
     "llm-dlc/decisions/schema.json",
     "llm-dlc/loops/stream-conductor.md",
     "llm-dlc/tools/decisions.py",
-    "llm-dlc/tools/test_decisions.py"
+    "llm-dlc/tools/feature-loop.sh",
+    "llm-dlc/tools/inbox.py",
+    "llm-dlc/tools/test_decisions.py",
+    "llm-dlc/tools/test_inbox.py"
   ],
   "context_windows": [
     {
@@ -58,24 +61,38 @@
     {
       "index": 1,
       "started": "2026-11-14T18:23:46.437Z",
-      "ended": "2026-11-14T21:26:41.646Z",
-      "turns": 6,
-      "api_calls": 63,
+      "ended": "2026-11-14T21:27:05.131Z",
+      "turns": 7,
+      "api_calls": 65,
       "usage": {
-        "input_tokens": 126,
-        "output_tokens": 84394,
-        "cache_read_input_tokens": 8223492,
-        "cache_creation_input_tokens": 250004
+        "input_tokens": 130,
+        "output_tokens": 85530,
+        "cache_read_input_tokens": 8652661,
+        "cache_creation_input_tokens": 253014
       },
-      "peak_context_tokens": 214126
+      "peak_context_tokens": 217136
+    },
+    {
+      "index": 2,
+      "started": "2026-11-14T21:28:13.961Z",
+      "ended": "2026-11-14T21:35:09.739Z",
+      "turns": 4,
+      "api_calls": 23,
+      "usage": {
+        "input_tokens": 46,
+        "output_tokens": 37133,
+        "cache_read_input_tokens": 2002427,
+        "cache_creation_input_tokens": 112964
+      },
+      "peak_context_tokens": 124220
     }
   ],
   "log": {
-    "sha256": "e76a41014145c27970f9faff5a85b4e5b8f6d42d587627957bc570781ada9e19",
-    "bytes": 1787674,
-    "lines": 515,
-    "gzip_bytes": 349040,
-    "path": "llm-dlc/traces/4a47a539-a6f1-4f2d-b4c9-828596296714/logs/e76a41014145c27970f9faff5a85b4e5b8f6d42d587627957bc570781ada9e19.jsonl.gz"
+    "sha256": "4fe1c5d13c96d51b0450cdc86a4017d73bd4a85c119dc32195ddb4506931714a",
+    "bytes": 2837177,
+    "lines": 859,
+    "gzip_bytes": 548384,
+    "path": "llm-dlc/traces/4a47a539-a6f1-4f2d-b4c9-828596296714/logs/4fe1c5d13c96d51b0450cdc86a4017d73bd4a85c119dc32195ddb4506931714a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -94,9 +111,23 @@
       "summary": "sync.py check: a shared change stamped in another workspace is a note while that workspace's manifest lists its log",
       "body": "Step 1's commit in the stream-conductor workspace reported 8 errors on example-targets commits this branch shares with the default line: they point at a log of session d34058d5 that the manifest here does not list. That session is still at work in the default workspace, and its syncs stamp the changes made while it ran, which rewrote those shared commits under this branch (jj rebased it); only the default line's copy of the manifest lists the new log, and a merge brings it here. check_trailers already left commits only another line holds to that line; this closes the remaining case. A trailer whose log the local manifest does not list is now a note when some other workspace's working-copy commit holds a manifest of that session listing the log (read with git cat-file from the commits jj recorded, snapshotting nothing), and an error otherwise, as before.",
       "log_sha256": "e76a41014145c27970f9faff5a85b4e5b8f6d42d587627957bc570781ada9e19"
+    },
+    {
+      "change_id": "zkyqxvtxvrmvsmmllwmrowrloyurmnnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor step 2: inboxes, llm-dlc/tools/inbox.py, and the sentence feature-loop.sh adds to every brief's instruction",
+      "body": "Each stream of a parallel run gets an inbox from the conductor, llm-dlc/loop-summaries/NAME-STREAM-inbox.md in the default workspace (gitignored), rendered from a JSONL of the items sent and the acknowledgements found. feature-loop.sh adds one sentence to every brief's cycle instruction (inbox.py instruction): read the inbox, acknowledge each item by its id in the Progress update, and the precedence: the brief, then the user's decisions, then the conductor's messages, so a contradiction is reported, not obeyed.\n\ninbox.py send holds the conductor to Design 2's only-what-to-act-on rule. An item is one of six kinds (failure, interface, answer, queued, unblocked, overturned), says what the stream is to do, and names a decision or commit it comes from. A named decision must be in the state its kind needs, and is given the item in its applied.inbox through decisions.py. Upkeep and anything else is refused with nothing written. inbox.py collect reads each stream's committed Progress (WORKSPACE@-) for the ids and records the commit and the line, so a reported contradiction shows.\n\nVerified with test_inbox.py (8 tests), including a two-stream fixture run in a temporary jj repo with a default workspace and two stream workspaces: sends from either workspace land in the default one, each stream finds its inbox through the sentence's path, only a committed acknowledgement counts, and an overturn reaches both streams with the undo. All 220 tool tests pass. The brief's queued kind is an addition from Design 3 (a stream told its question is queued goes on with other items), recorded in Progress.",
+      "log_sha256": "4fe1c5d13c96d51b0450cdc86a4017d73bd4a85c119dc32195ddb4506931714a"
     }
   ],
   "logs": {
+    "4fe1c5d13c96d51b0450cdc86a4017d73bd4a85c119dc32195ddb4506931714a": {
+      "bytes": 2837177,
+      "lines": 859,
+      "gzip_bytes": 548384,
+      "url": null
+    },
     "d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69": {
       "bytes": 1586919,
       "lines": 434,
