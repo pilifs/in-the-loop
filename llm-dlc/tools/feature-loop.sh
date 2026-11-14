@@ -238,9 +238,12 @@ contain() {
     exit 1
   fi
 
+  # Half the default CPU weight: when the CPUs are contended, an interactive
+  # terminal (weight 100) keeps its share ahead of the loops. Verification
+  # jobs are capped by CPUQuota instead, within the runner's budget.
   log "starting in $SCOPE.scope with a $MEMORY_MAX cap"
   exec systemd-run --user --scope --quiet --collect --unit="$SCOPE" \
-    -p MemoryMax="$MEMORY_MAX" -p MemorySwapMax=0 -p OOMPolicy=continue \
+    -p MemoryMax="$MEMORY_MAX" -p MemorySwapMax=0 -p OOMPolicy=continue -p CPUWeight=50 \
     "$BASH" llm-dlc/tools/feature-loop.sh "$@"
 }
 contain "$@"

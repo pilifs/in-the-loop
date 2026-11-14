@@ -66,7 +66,7 @@
 # last check, at most once every RUN_STREAMS_INTEGRATION_EVERY seconds, it makes
 # there a merge of every stream's @- and runs SCRIPT (a path in the repo, run
 # from that workspace's root) in the systemd scope
-# feature-loop-NAME-integration.scope with a 6 GB cap, so the
+# feature-loop-NAME-integration.scope with a 6 GB cap and a loop's CPU weight, so the
 # verification runner leaves it room as it does a loop. What it found, with the
 # commits it merged, goes to llm-dlc/loop-summaries/NAME-integration.md here
 # (NAME being the brief's), which each stream reads every cycle. A merge with
@@ -416,7 +416,7 @@ integrate_once() {
   fi
   log "[integration] running $INTEGRATION on $heads"
   (cd "$INTEGRATION_DIR" && systemd-run --user --scope --quiet --collect --unit="$INTEGRATION_SCOPE" \
-    -p MemoryMax=6G -p MemorySwapMax=0 -p OOMPolicy=continue \
+    -p MemoryMax=6G -p MemorySwapMax=0 -p OOMPolicy=continue -p CPUWeight=50 \
     timeout 3600 "$INTEGRATION_DIR/$INTEGRATION" </dev/null) >"$tmp.out" 2>&1
   code=$?
   printf -- '- Result: %s (exit %s)\n\n## Output, last 200 lines\n\n```\n' \

@@ -20,9 +20,14 @@ commands by hand to see: the runner is how they run, under limits.
 
 2. **Run.** `python3 verification/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
    until the queue is empty and a job can take an hour. Give it the budget the machine has now: check
-   `free -h` and which feature loops are running (`systemctl --user list-units 'feature-loop-*'`), each in a scope
-   of its own: 3.5 GB unless its brief sets `- memory:`. Leave the runner the machine's memory less the loops' caps. On
-   this 9 GB machine with one loop, the defaults fit; without any, `--memory 7G --workers 3`. Use `--watch` only
+   `free -h`, which feature loops are running (`systemctl --user list-units 'feature-loop-*'`), each in a scope
+   of its own with its cap (3.5 GB unless its brief or `FEATURE_LOOP_MEMORY_MAX` sets another), and whether
+   `run-streams.sh` is running (`pgrep -fa run-streams.sh`). A machine with `verification/pipeline.local.toml` gives,
+   in its header, a table of the runner's `--memory`, `--cpus` and `--workers` for each of those situations: pass the
+   row that matches. Its `[runner]` values are the row for the most loops at once, so a plain `run` is always safe;
+   never go above a row for fewer loops than are running, since memory left to a loop is what keeps it from being
+   killed and nothing swaps. Without a local file (the 9 GB laptop), leave the runner the machine's memory less the
+   loops' caps: with one loop the defaults fit; without any, `--memory 7G --workers 3`. Use `--watch` only
    when the user asks for the pipeline to keep going; it does not stop by itself. While it runs, don't start proofs
    of your own, and don't start a second runner: it refuses while the first holds the lock. To wait for it, wait for
    the background task's completion notification, or poll `python3 verification/pipeline.py status` until it shows
