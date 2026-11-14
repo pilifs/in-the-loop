@@ -1174,6 +1174,55 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     mutations through `bind`. 5.3.19 shows no problem on either JDK. So **A3 passes on all three negative packets**,
     285, 286 and 287. VF-026's entry still sits under `findings.md`'s Open heading, with a closed status, as the
     collect left it.
+- 2026-11-14, **307's Gradle route not built: the decided build can't resolve its buildscript, so the route needs
+  the user again.** These are lookups (HEAD requests and pinned fetches through `runtime_maven.fetch`, all in 307's
+  `sources.lock.json` under `buildRoute`), not a build.
+  - **What is in reach and pinned**:
+    - the 5.5.1 distribution, sha256 `222a03fc…`. That is Gradle's published checksum from gradle.org's checksum
+      page. The wrapper properties record none, services.gradle.org sends the `.sha256` to downloads.gradle.org, and
+      the github.com release has no `.sha256`;
+    - the four Spring plugins on the mirror, each with its sha1 agreeing: spring-build-conventions `65b65633…`, as
+      the user's lookup found, and docbook-reference-plugin, propdeps-plugin and spring-io-plugin.
+  - **What isn't** (the buildscript's transitive closure, which Gradle resolves before compiling anything):
+    - plugins.gradle.org serves every plugin it hosts by a 303 redirect to `plugins-artifacts.gradle.org`, which
+      `runtime_maven.py` doesn't follow. Six of the buildscript's plugins are such: gretty 2.2.0,
+      build-info-extractor-gradle 4.7.5, gradle-versions-plugin 0.17.0, asciidoctor-gradle-plugin 1.5.8.1,
+      gradle-ssh-plugin 2.9.0 and nohttp-gradle 0.0.2.RELEASE. Of these, nohttp-gradle is also on Central, and three
+      others on the spring-plugin mirror;
+    - at least two second-level dependencies were published only to JCenter, which now redirects to Central, where
+      they 404: `org.gretty:gretty-core:2.2.0` and `org.jfrog.buildinfo:build-info-extractor:2.11.3`. They also 404
+      on repo.spring.io/milestone and the spring-plugin mirror, and answer 401 on repo.spring.io's plugins-release
+      and libs-release. Only maven.aliyun.com's `jcenter`, `public` and `gradle-plugin` repositories serve them. The
+      closure wasn't enumerated further.
+  - **Why no route was built**: the decided route can't run its buildscript, and 307 is its only user. Building it
+    anyway would be a speculative piece that a choice of the slice would discard.
+  - **A fact for the decision**: before's `BCrypt.java` compiled alone, by hand (a note), with javac 1.8.0_512 and
+    `-g -source 1.8 -target 1.8 -encoding UTF-8`, gives a `BCrypt.class` byte-identical to the published one.
+    - The published class is the one in Spring Security 5.2.0.M4's JAR on repo.spring.io/milestone: JAR sha256
+      `8871c1fe…` (its sha1 agrees with the repository's), class sha256 `0b137406…`, built with Oracle 1.8.0_201.
+    - Without `-g`, or with `-parameters` added, the bytes differ.
+    - So an extracted-source slice reproduces Spring's own build of before's class exactly. That holds for this
+      class, and by the same recipe for after's, which has no published counterpart.
+  - **The user's options**, in 307's handoff:
+    - (a) the upstream build, if plugins-artifacts.gradle.org may be followed as plugins.gradle.org's redirect host
+      and maven.aliyun.com's JCenter mirror may serve the JCenter-only modules, each file hashed. The Gradle route
+      is then built (distribution by sha256, an init script with content filters holding the mirror to its modules,
+      every resolved file hashed) and queued, with before's class compared with M4's;
+    - (b) the slice, each commit's `BCrypt.java` compiled with javac 8 `-g`, before's class checked byte for byte
+      against M4's. It reuses the slice route 305 gets next. This loop recommends (b): it is the user's stated
+      order (an anonymous verifiable copy, then a slice), and its before side already equals the published bytes.
+  - **Changed**: 307's target.json blocker and next, README, an `example.json` note and `sources.lock.json`
+    (`buildRoute`, and 5.2.0.M4's published JAR and class hashes with the slice compile); `runtime_upstream.py`'s
+    docstring; the index regenerated.
+  - **Out of date in the brief**: decision 1's second extension says the mirror gives P3 its build, and the Progress
+    entry of the user's decisions says the build needs the four plugins from the mirror. Both predate these lookups.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (210),
+    `test_build.py` (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **For the user**: 307's route, (a) or (b). P3 stays partial at "source locked" until then.
+  - **Next**: 305's slice route and the M6 replay, needing only this loop: compile each commit's `WebMvcTags` and
+    `Outcome` against spring-web 5.2.0.RC2, micrometer-core 1.2.0 and javax.servlet-api 4.0.1, as a separately
+    labelled scope, and replay Boot 2.2.0.M6's published classes beside the after slice. Build it so 307 can reuse
+    it if the user chooses (b). Then the remaining replays (285–287 `mutant-replay`, 105 `replay`).
 - Status: working
 
 ## Loop settings

@@ -32,7 +32,17 @@
       "files": {
         "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java": "f6c677057ba8229488dd4d4a781970cb9dbfc8db"
       },
-      "finding": "BCrypt.java identical to before's; a milestone, published only to repo.spring.io."
+      "finding": "BCrypt.java identical to before's; a milestone, published only to repo.spring.io.",
+      "published": {
+        "url": "https://repo.spring.io/milestone/org/springframework/security/spring-security-crypto/5.2.0.M4/spring-security-crypto-5.2.0.M4.jar",
+        "sha256": "8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774",
+        "size": 74536,
+        "checked": "2026-11-14: fetched anonymously; its sha1 b2a69c5388d1eb87418cc209124c3328c14ff0e1 agrees with the repository's .sha1. MANIFEST.MF: Created-By 1.8.0_201 (Oracle Corporation), entries dated 2019-08-05.",
+        "entries": {
+          "org/springframework/security/crypto/bcrypt/BCrypt.class": "0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb"
+        }
+      },
+      "sliceCompile": "A hand compile on 2026-11-14, a note: before's BCrypt.java (blob f6c67705) alone, by javac 1.8.0_512 (Temurin) with -g -source 1.8 -target 1.8 -encoding UTF-8, gives a BCrypt.class byte-identical to the published one above (24,386 bytes). Without -g, with -g:source,lines, or with -parameters added, it differs. So the extracted-source slice reproduces Spring's own build of before's class exactly."
     },
     {
       "release": "5.2.0.RELEASE",
@@ -52,5 +62,54 @@
       },
       "finding": "Not before's code: BCrypt was rewritten on master before 5.2.0 (hundreds of lines differ)."
     }
-  ]
+  ],
+  "buildRoute": {
+    "$comment": "What the upstream Gradle build would fetch, looked up on 2026-11-14 by HEAD requests and pinned fetches, for when a Gradle route is built (target.json's build-or-dependency blocker). A note, not a build.",
+    "distribution": {
+      "url": "https://services.gradle.org/distributions/gradle-5.5.1-bin.zip",
+      "redirectsTo": "https://github.com/gradle/gradle-distributions/releases/download/v5.5.1/gradle-5.5.1-bin.zip",
+      "sha256": "222a03fcf2fcaf3691767ce9549f78ebd4a77e73f9e23a396899fb70b420cd00",
+      "checked": "Gradle's published checksum, from https://gradle.org/release-checksums/ (read 2026-11-14); the wrapper properties record none, services.gradle.org redirects the .sha256 to downloads.gradle.org, and the github.com release has no .sha256. The zip itself wasn't fetched."
+    },
+    "mirrorPlugins": [
+      {
+        "coordinates": "io.spring.gradle:spring-build-conventions:0.0.23.RELEASE",
+        "url": "https://maven.aliyun.com/repository/spring-plugin/io/spring/gradle/spring-build-conventions/0.0.23.RELEASE/spring-build-conventions-0.0.23.RELEASE.jar",
+        "sha256": "65b65633191873ed903a7a74d32420cd6dcbe377783acd2a090fb69609746c74",
+        "size": 416730
+      },
+      {
+        "coordinates": "io.spring.gradle:docbook-reference-plugin:0.3.1",
+        "url": "https://maven.aliyun.com/repository/spring-plugin/io/spring/gradle/docbook-reference-plugin/0.3.1/docbook-reference-plugin-0.3.1.jar",
+        "sha256": "a2eb9a01a528c8f1847dc3ceabd5e6147cb7032d4f59bb257613b005ba5e2688",
+        "size": 319827
+      },
+      {
+        "coordinates": "io.spring.gradle:propdeps-plugin:0.0.10.RELEASE",
+        "url": "https://maven.aliyun.com/repository/spring-plugin/io/spring/gradle/propdeps-plugin/0.0.10.RELEASE/propdeps-plugin-0.0.10.RELEASE.jar",
+        "sha256": "baf0fa1294f2fc9d70ecf45bb43c06cedf6c9e52b5cc7b5505b0274f20f2709b",
+        "size": 25622
+      },
+      {
+        "coordinates": "io.spring.gradle:spring-io-plugin:0.0.8.RELEASE",
+        "url": "https://maven.aliyun.com/repository/spring-plugin/io/spring/gradle/spring-io-plugin/0.0.8.RELEASE/spring-io-plugin-0.0.8.RELEASE.jar",
+        "sha256": "4c6a9e8e8933cc155d725a014396a0fee5e9e7a0a122412415ca63ff52b92cdb",
+        "size": 24892
+      }
+    ],
+    "mirrorPluginsChecked": "Each fetched from the mirror through runtime_maven.fetch on 2026-11-14, its sha1 agreeing with the mirror's .sha1 (no independent hash exists: repo.spring.io's checksums answer 401). spring-build-conventions' POM (sha256 5019d5d3e8f83fbe2b6dda8dcc950c59c4a5d14c48422b114f27a1b33aa3a590) lists 16 dependencies.",
+    "unreachable": [
+      {
+        "module": "org.gretty:gretty-core:2.2.0",
+        "via": "gradle.plugin.org.gretty:gretty:2.2.0, a dependency of spring-build-conventions",
+        "answers": "404 on Maven Central (plugins.gradle.org and jcenter.bintray.com both redirect there), repo.spring.io/milestone and the spring-plugin mirror; 401 on repo.spring.io's plugins-release and libs-release; 200 on maven.aliyun.com's jcenter, public and gradle-plugin repositories"
+      },
+      {
+        "module": "org.jfrog.buildinfo:build-info-extractor:2.11.3",
+        "via": "org.jfrog.buildinfo:build-info-extractor-gradle:4.7.5, a dependency of spring-build-conventions",
+        "answers": "the same as gretty-core's"
+      }
+    ],
+    "portalContentHost": "plugins.gradle.org/m2 answers every artifact it hosts with a 303 to plugins-artifacts.gradle.org/<group>/<module>/<version>/<sha256>/<file> (gretty 2.2.0, build-info-extractor-gradle 4.7.5, gradle-versions-plugin 0.17.0, asciidoctor-gradle-plugin 1.5.8.1, gradle-ssh-plugin 2.9.0, nohttp-gradle 0.0.2.RELEASE), and anything else with a 303 to Maven Central. runtime_maven.py doesn't follow plugins-artifacts.gradle.org."
+  }
 }

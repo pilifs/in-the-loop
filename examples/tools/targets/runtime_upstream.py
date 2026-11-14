@@ -22,8 +22,10 @@ or else checked against Central's .sha1 and recorded, then run directly: the wra
 A Gradle build is a preparation blocker. Its hosts are allowed since decision 1's extension (services.gradle.org,
 plugins.gradle.org, repo.spring.io), but there is no Gradle route yet: the wrapper's distribution by sha256, the
 build's repositories held to runtime_maven.HOSTS, and every file it resolves hashed. The one packet that would use it,
-example 307, resolves its build plugins only from maven.aliyun.com's mirror of Spring's plugin repository, allowed
-by decision 1's second extension (2026-11-14); the route is Phase 5's next piece of work (its target.json).
+example 307, gets its four Spring plugins from maven.aliyun.com's mirror of Spring's plugin repository (decision 1's
+second extension, 2026-11-14). The rest of its buildscript is still out of reach: plugins.gradle.org serves the
+plugins it hosts by redirect to plugins-artifacts.gradle.org, which isn't followed, and some second-level dependencies
+were JCenter-only (its target.json). So the route waits on the user's choice for 307 and isn't built.
 An installed Gradle is not the revision's own build tool. No build-enabling patch is applied: one would be separate
 recorded bytes with a scope review.
 
