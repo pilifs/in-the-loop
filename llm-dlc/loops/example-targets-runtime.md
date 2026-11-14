@@ -276,8 +276,71 @@ Small unit and JVM conformance checks run inline.
   - **JDK and classpath.** The bytecode targets an old release. The controls can run on 21 and 25. The method is
     `int`-only and has no dependencies, so the classpath is the one JAR. A fixture-shaped `int` driver fits, with
     `pow(-2, 31)` as the trigger and `k` in {-1, 0, 1} as legitimate inputs.
-- Next: R3's `run_verifier` (needs `jvmcontract` built in this workspace, compiled inline), then the upstream-build
-  route as a job.
+- 2026-11-14, **R3's `run_verifier`** replaces Phase 0's stub. It runs `jvmcontract` on the prepared original
+  artifacts only, never the adapter or driver, and returns one raw `verifier` ExecutionRecord.
+  - A prove task runs `prove` on its revision's original JAR, with the dependencies on the classpath in order and
+    the claim's assume, assert, throws, nullable and may-alias. An equivalence task runs `equivalence` between the
+    pair's originals, `--unchanged-unless` the task's allowed change. Its revision is None.
+  - Both get the plan's `--engine` and `--gaps` (a missing one is refused, never the CLI default), the claim's bounds,
+    its construction plan and gap contracts (each rechecked against the claim's sha256), and `--json`. The paths are
+    relative to the attempt directory, the verifier's cwd. The claim keys are the ones workflow's W1 `plan_task`
+    gives.
+  - The environment is fixed and recorded as the controls' is. The JDK is 25 when every revision runs on it, given
+    by full path in `JAVA_HOME` and `PATH`. Only the runner's `JVMCONTRACT_*` memory settings pass through.
+  - Recorded in `identities`:
+    - the jvmcontract digest, the JDK, the engine, gaps and bounds;
+    - each revision's commit and its verifier classpath, with sha256s;
+    - the **scope**: a label (`original-bytecode`, `original-bytecode-under-models`, `constructed-mutation` or
+      `constructed-fixture`), the loaded class with its sha256 and origin, the models and assumptions, and the note
+      that the adapter isn't on the verifier's classpath;
+    - the **capability probe**: `jvmcontract gaps` on each revision, a static scan that proves nothing, with its
+      argv and the gaps it lists.
+  - Raw, as the controls are. These give a `not-started` record: a one-sided pair, a revision that isn't
+    artifacts-ready, bytes changed since preparation, a missing JDK. A kill, a timeout (600 s, jvmcontract's own, plus
+    120 s grace) or output that isn't the `--json` outcome gives no observations.
+  - These are Unsupported, not stubs, because the task can't be attempted as stated: a replay or compare task, a
+    missing engine or gap mode, claim models (no route passes them yet), a bound with no option, a claim file changed
+    since it was frozen, an equivalence pair whose dependency closures differ (one classpath for both), no built
+    jvmcontract (with the build command), and a work directory that isn't ours.
+  - `verifier/verifier.json` keeps the record.
+  - `test_runtime.py`: 51 tests. The stub test is gone, and 8 verifier tests run against a stand-in jvmcontract that
+    records its argv, cwd and environment, because no proof runs inline. One of them shows the job's reading isn't
+    vacuous: a "verified" for a refuted task, and a refusal that doesn't name `java.util.regex`, are both not as
+    expected.
+- **Found and fixed while dry-running the job: the fixture's `regex-probe` failed preparation at `adapter`.** The
+  fixture's one adapter calls `Gate.allowed`, not the probe's `RegexGate.allowed`. After the merge, contract A5's
+  regex-probe row would have failed on runtime's check. Now:
+  - a replay task's adapter must still call the target (its controls are the task's evidence);
+  - a proof task records which original methods its adapter calls (`adapterCalls`, `adapterCallsTarget`) instead,
+    since its verifier never goes through the adapter;
+  - `run_controls` doesn't run controls whose adapter doesn't call the task's target. They give `not-started`,
+    because they aren't the task's evidence;
+  - shadowing is refused for every task, as before.
+- A `mutant` entry in the plan (workflow's W1 constructed mutants, `zvnrtxsunllx`) is now Unsupported in `lock`. It
+  isn't a Phase 0 stub, and it never prepares the base unpatched.
+- **The calibration job**: `runtime_calibrate.py` runs the fixture's five proof tasks through `prepare` and
+  `run_verifier` with the real jvmcontract, native and strict, and hands each record to `workflow.ingest`. Until W2,
+  that answers Phase 0's Unsupported. Each task's claim is a stand-in: the properties workflow's
+  `fixtures/claims/*.json` state on its branch, in its `plan_task`'s claim keys. Expected:
+  - `vulnerable-security` and `mutant-security`: a violation;
+  - `fixed-security` and `preservation`: verified;
+  - `regex-probe`: unverifiable, naming `java.util.regex`.
+
+  Dry runs inline, with no jvmcontract and with a stand-in, exercised the plumbing. Queued as job
+  `20261114-162937-example-targets-runtime-r3-run-verifier`, which also runs the contract with `JVMCONTRACT` set, so
+  A5 gets past its skip and stops at workflow's task-plan stub. Its result is pending. The integration script exits
+  0: contract 8 pass and 8 skip, targets suite 91, `test_build` 190, `test_pipeline` 29.
+- **For the merge** (workflow's W1, seen read-only on its branch). A published revision's entry carries its JARs as
+  `published` (a list, with `coordinates`/`url`/`sha256` copied up only when there is one). `lock` reads the first
+  item plus `dependencies`, as asked under the interface request above. Runtime should accept `published` as well,
+  in order: the original, then the dependencies. That is the next small piece.
+- Interface request, for review: the verifier can't yet go *through* an adapter (an instance method whose receiver
+  only the adapter can construct, for example). The claim schema has no key that names an adapter entry point.
+  Until it has, such a task needs a construction plan (`--plan`) or stays a capability gap.
+- Next:
+  1. The calibration job's result (`20261114-162937-example-targets-runtime-r3-run-verifier`).
+  2. Accept W1's `published` shape, and prepare a constructed `mutant` (its base patched, then built).
+  3. The upstream-build route as a job.
 - Status: working
 
 ## Loop settings

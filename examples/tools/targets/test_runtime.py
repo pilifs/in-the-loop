@@ -4,7 +4,8 @@ with them: the source lock and the fixture route's preparation (R1), the publish
 acquisition and cache (R2, against a local stand-in for Maven Central: nothing here uses the network) and the
 separate-JVM controls (R4), on a copy of Phase 0's fixtures; and R5's slice (runtime_slice.py on runtime_simplematch/,
 the published spring-core JARs, run from a private copy of their acquisition cache entries, skipped when the cache
-doesn't hold them). run_verifier() is still Phase 0's stub, and fails closed.
+doesn't hold them); and run_verifier (R3), against a stand-in jvmcontract that records how it was called:
+the real verifier runs proofs, so runtime_calibrate.py runs it as a pipeline job.
 
   python3 examples/tools/targets/test_runtime.py
 """
@@ -26,7 +27,6 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "fixtures"))
 import build_fixtures  # noqa: E402
 from targets import interfaces, runtime, runtime_jar, runtime_jdk, runtime_maven  # noqa: E402
-from test_interfaces import plan  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
 STUB = "Phase 0's stub"
@@ -163,12 +163,31 @@ class PrepareTest(FixtureCopy):
                          "a partial preparation returns the artifacts that exist")
         self.assertEqual(json.loads((self.work / "after" / runtime.RECORD).read_text())["failedStage"], "classpath")
 
-    def test_an_adapter_that_does_not_call_the_target_is_refused(self):
+    def test_an_adapter_that_does_not_call_the_target_is_refused_for_a_replay_and_its_controls_never_run(self):
         source = self.folder / "gate/adapter/fixture/adapter/GateAdapter.java"
         source.write_text(source.read_text().replace("return Gate.allowed(code);", "return code != 65 && code != 97;")
                           .replace("import fixture.Gate;\n", ""))
-        prepared = self.prepare()
+        replay = dataclasses.replace(fixture_plan(self.folder), kind="replay", engine=None, gaps=None)
+        prepared = runtime.prepare(replay, "after", self.work / "after")
         self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "adapter"), prepared.diagnostic)
+        # A proof task's verifier never goes through the adapter: there it is recorded, and its controls don't run.
+        attempt = self.work / "attempt"
+        prove = fixture_plan(self.folder)
+        prepared = runtime.prepare(prove, "after", attempt / "prepare/after")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        self.assertEqual((prepared.source["target"]["adapterCallsTarget"], prepared.source["target"]["adapterCalls"]),
+                         (False, []))
+        [record, *_] = runtime.run_controls(prove, {"after": prepared}, attempt / "controls")
+        self.assertEqual((record.status, record.observations), ("not-started", None))
+        self.assertIn("not this task's evidence", (attempt / record.stderr).read_text())
+
+    def test_a_proof_tasks_adapter_records_the_original_methods_it_calls(self):
+        prepared = self.prepare()
+        self.assertEqual(prepared.source["target"]["adapterCalls"], ["fixture.Gate#allowed(I)Z"])
+        self.assertTrue(prepared.source["target"]["adapterCallsTarget"])
+        probe = self.prepare(target="fixture.RegexGate#allowed(Ljava/lang/String;)Z", workdir=self.work / "probe")
+        self.assertEqual(probe.stage, "artifacts-ready", "the fixture's regex probe is prepared for its verifier")
+        self.assertFalse(probe.source["target"]["adapterCallsTarget"])
 
     def test_a_target_the_original_does_not_declare_is_refused(self):
         for target in ("fixture.Gate#allowed(J)Z", "fixture.Gate#denied(I)Z", "fixture.Missing#allowed(I)Z"):
@@ -718,12 +737,224 @@ class SliceTest(unittest.TestCase):
                          list(interfaces.ExecutionRecord.__dataclass_fields__))
 
 
-class StubsFailClosedTest(unittest.TestCase):
-    def test_the_verifier_is_still_phase0s_stub(self):
-        value = runtime.run_verifier(plan(), {}, Path("."))
-        self.assertTrue(interfaces.unsupported(value))
-        self.assertEqual((value.interface, value.owner), ("run-verifier", interfaces.RUNTIME))
-        self.assertIn(STUB, value.reason)
+FAKE_JVMCONTRACT = """#!{python}
+# A stand-in for jvmcontract in these tests: it records its argv, cwd and environment, then answers as mode.json says
+# for its subcommand. It proves nothing; the real verifier runs as a pipeline job (runtime_calibrate.py).
+import json, os, sys, time
+from pathlib import Path
+here = Path(__file__).resolve().parent
+with open(here / "calls.jsonl", "a") as f:
+    f.write(json.dumps({{"argv": sys.argv[1:], "cwd": os.getcwd(), "env": dict(os.environ)}}) + "\\n")
+answer = json.loads((here / "mode.json").read_text()).get(sys.argv[1], {{}})
+sys.stdout.write(answer.get("stdout", ""))
+sys.stderr.write(answer.get("stderr", ""))
+sys.stdout.flush()
+if answer.get("sleep"):
+    time.sleep(answer["sleep"])
+if answer.get("kill"):
+    os.kill(os.getpid(), 9)
+sys.exit(answer.get("exit", 0))
+"""
+PROVE_OUT = [{"verdict": "violation", "output": "✗ Violation: allowed(97) is true\n", "counterexample": {"code": 97}}]
+EQUIVALENCE_OUT = {"verdict": "verified", "output": "✓ Verified\n"}
+GAPS_OUT = {"roots": ["fixture.Gate#allowed(int)"], "gaps": [
+    {"id": "jdk-method:x", "kind": "jdk-method", "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
+     "sites": ["fixture.Gate.allowed:3"], "approximation": "dropped from the record"}]}
+SECURITY_CLAIM = {"assert": "!result || (code != 65 && code != 97)", "throws": [], "nullable": [], "mayAlias": [],
+                  "bounds": {"unwind": 16, "maxArrayLength": 8}, "models": [], "plan": None, "contracts": None,
+                  "assumptions": ["stated for the test"]}
+
+
+def verifier_plan(folder, kind="prove", revisions=("after",), engine="native", gaps="strict", **claim):
+    artifacts = tuple({"revision": r, "route": "fixture", "repository": "https://github.com/pilifs/in-the-loop",
+                       "fixture": f"gate/{r}", "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"],
+                       "jdks": ["21", "25"]} for r in revisions)
+    task = "fixed-security" if kind == "prove" else "preservation"
+    return interfaces.TaskPlan(
+        example="999", task=task, kind=kind, relation="security", target="fixture.Gate#allowed(I)Z",
+        revisions=tuple(revisions), claim={"task": task, **SECURITY_CLAIM, **claim}, prerequisites=(),
+        artifacts=artifacts, tools={"required": ["java", "javac", "jvmcontract"], "optional": []}, engine=engine,
+        gaps=gaps, expected="established", outputs={"receipts": f"receipts/{task}"}, folder=str(folder))
+
+
+class VerifierTest(FixtureCopy):
+    """R3: run_verifier on route.py's attempt layout, with a stand-in jvmcontract (no proof runs inline)."""
+
+    def setUp(self):
+        super().setUp()
+        if "25" not in runtime_jdk.homes():
+            self.skipTest(f"JDK 25 is not under {runtime_jdk.CANDIDATES}")
+        self.attempt = self.work / "attempt"
+        self.tool = self.dir / "tool"
+        self.tool.mkdir()
+        exe = self.tool / "jvmcontract"
+        exe.write_text(FAKE_JVMCONTRACT.format(python=sys.executable))
+        exe.chmod(0o755)
+        self.answer(prove={"stdout": json.dumps(PROVE_OUT), "exit": 1})
+        patch = mock.patch.dict(os.environ, {"JVMCONTRACT": str(exe), "JAVA_TOOL_OPTIONS": "-Dinherited=yes",
+                                             "JVMCONTRACT_JAVA_OPTS": "-Xmx300m"})
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def answer(self, **commands):
+        commands.setdefault("gaps", {"stdout": json.dumps(GAPS_OUT)})
+        commands.setdefault("equivalence", {"stdout": json.dumps(EQUIVALENCE_OUT)})
+        (self.tool / "mode.json").write_text(json.dumps(commands))
+
+    def calls(self):
+        f = self.tool / "calls.jsonl"
+        return [json.loads(line) for line in f.read_text().splitlines()] if f.is_file() else []
+
+    def verify(self, plan, prepared=None, prepare=None):
+        if prepared is None:
+            prepared = {r: runtime.prepare(plan, r, self.attempt / "prepare" / r) for r in (prepare or plan.revisions)}
+            for r, p in prepared.items():
+                self.assertEqual(p.stage, "artifacts-ready", p.diagnostic)
+        return prepared, runtime.run_verifier(plan, prepared, self.attempt / "verifier")
+
+    def test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds(self):
+        prepared, record = self.verify(verifier_plan(self.folder))
+        self.assertIsInstance(record, interfaces.ExecutionRecord)
+        self.assertEqual((record.kind, record.revision, record.status, record.exitCode), ("verifier", "after", "exited", 1))
+        self.assertEqual(record.observations, tuple(PROVE_OUT), "the --json outcome is the observation, kept raw")
+        argv = list(record.argv)
+        self.assertEqual(argv[1:5], ["prove", "fixture.Gate#allowed(int)", "--classes", "prepare/after/after.jar"])
+        self.assertEqual(argv[argv.index("--assert") + 1], "!result || (code != 65 && code != 97)")
+        for flag, value in (("--engine", "native"), ("--gaps", "strict"), ("--unwind", "16"), ("--max-array-length", "8"),
+                            ("--timeout", str(runtime.VERIFIER_TIMEOUT)), ("--work", "verifier/work")):
+            self.assertEqual(argv[argv.index(flag) + 1], value, flag)
+        self.assertEqual(argv[-1], "--json")
+        self.assertFalse([a for a in argv if "adapter" in a or "driver" in a], "the adapter or driver reached the verifier")
+        self.assertNotIn("--classpath", argv, "the fixture has no dependencies")
+        [probe, prove] = self.calls()
+        self.assertEqual(probe["argv"][:2], ["gaps", "--target"])
+        self.assertEqual(prove["argv"], argv[1:])
+        self.assertEqual(Path(prove["cwd"]), self.attempt.resolve(), "paths are relative to the attempt directory")
+        jdk = runtime_jdk.identity(runtime_jdk.home("25"))
+        self.assertEqual(set(prove["env"]) - {"LC_CTYPE"},  # LC_CTYPE: Python's own locale coercion, if any
+                         {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAVA_OPTS"})
+        self.assertNotIn("JAVA_TOOL_OPTIONS", prove["env"], "the verifier inherited the caller's JVM options")
+        self.assertEqual(prove["env"]["JAVA_HOME"], jdk["home"])
+        self.assertEqual(prove["env"]["JVMCONTRACT_JAVA_OPTS"], "-Xmx300m", "the runner's memory setting passes through")
+        ids = record.identities
+        self.assertEqual(ids["jvmcontract"], runtime.sha256(self.tool / "jvmcontract"))
+        self.assertEqual((ids["jdkFeature"], ids["engine"], ids["gaps"]), ("25", "native", "strict"))
+        after = prepared["after"]
+        self.assertEqual(ids["classpath"]["after"], [{"path": "after.jar", "role": "original",
+                                                      "sha256": next(a.sha256 for a in after.artifacts if a.path == "after.jar")}])
+        scope = ids["scope"]
+        self.assertEqual(scope["label"], "constructed-fixture")
+        self.assertEqual(scope["revisions"]["after"]["loadedFrom"], "after.jar")
+        self.assertEqual(scope["revisions"]["after"]["classSha256"], after.source["target"]["classSha256"])
+        self.assertEqual(scope["assumptions"], ["stated for the test"])
+        self.assertIn("not on the verifier's classpath", scope["adapter"])
+        self.assertEqual(ids["probe"]["after"]["gaps"][0]["call"], GAPS_OUT["gaps"][0]["call"])
+        self.assertEqual(ids["probe"]["after"]["argv"][-1], "--json")
+        stored = json.loads((self.attempt / "verifier" / runtime.VERIFIER).read_text())
+        self.assertEqual(stored["record"], json.loads(json.dumps(record.as_dict())))
+        self.assertEqual((self.attempt / record.stdout).read_text(), json.dumps(PROVE_OUT))
+
+    def test_a_preservation_task_runs_equivalence_between_the_pairs_originals(self):
+        plan = verifier_plan(self.folder, kind="equivalence", revisions=("before", "after"), allowedChange="code == 97",
+                             **{"assert": None})
+        _, record = self.verify(plan)
+        self.assertEqual((record.revision, record.status, record.exitCode), (None, "exited", 0))
+        self.assertEqual(record.observations, (EQUIVALENCE_OUT,), "equivalence's one outcome")
+        argv = list(record.argv)
+        self.assertEqual(argv[1:8], ["equivalence", "--before", "prepare/before/before.jar", "--after",
+                                     "prepare/after/after.jar", "--target", "fixture.Gate#allowed(int)"])
+        self.assertEqual(argv[argv.index("--unchanged-unless") + 1], "code == 97")
+        self.assertNotIn("--assert", argv)
+        self.assertEqual(set(record.identities["probe"]), {"before", "after"})
+        self.assertEqual(set(record.identities["commits"]), {"before", "after"})
+
+    def test_a_one_sided_stale_or_failed_preparation_is_a_not_started_record_and_runs_nothing(self):
+        pair = verifier_plan(self.folder, kind="equivalence", revisions=("before", "after"))
+        _, one_sided = self.verify(pair, prepare=("after",))
+        self.assertEqual((one_sided.status, one_sided.exitCode, one_sided.observations), ("not-started", None, None))
+        self.assertIn("one-sided", (self.attempt / one_sided.stderr).read_text())
+        prepared, _ = self.verify(verifier_plan(self.folder))
+        (self.attempt / "prepare/after/after.jar").write_bytes(b"changed")
+        stale = runtime.run_verifier(verifier_plan(self.folder), prepared, self.attempt / "verifier")
+        self.assertEqual(stale.status, "not-started")
+        self.assertIn("stale or changed bytes", (self.attempt / stale.stderr).read_text())
+        failed = dataclasses.replace(prepared["after"], stage="failed", failedStage="build", diagnostic="no")
+        record = runtime.run_verifier(verifier_plan(self.folder), {"after": failed}, self.attempt / "verifier")
+        self.assertEqual(record.status, "not-started")
+        self.assertEqual([c["argv"][0] for c in self.calls()], ["gaps", "prove"], "only the first, sound run started")
+
+    def test_a_kill_a_timeout_and_output_that_is_not_the_outcome_give_no_observations(self):
+        plan = verifier_plan(self.folder)
+        prepared, _ = self.verify(plan)
+        cases = {"killed": {"kill": True, "stdout": json.dumps(PROVE_OUT)},
+                 "exited": {"stdout": "✗ Violation (no --json)\n", "exit": 1},
+                 "timed-out": {"sleep": 30, "stdout": json.dumps(PROVE_OUT)}}
+        for status, answer in cases.items():
+            self.answer(prove=answer)
+            with mock.patch.object(runtime, "VERIFIER_TIMEOUT", 0), mock.patch.object(runtime, "VERIFIER_GRACE", 2):
+                record = runtime.run_verifier(plan, prepared, self.attempt / "verifier")
+            self.assertEqual((record.status, record.observations), (status, None), status)
+            self.assertNotEqual(record.exitCode, 0, status)
+        self.answer(prove={"stdout": json.dumps(PROVE_OUT[0]), "exit": 1})  # prove prints a list, not one outcome
+        self.assertIsNone(runtime.run_verifier(plan, prepared, self.attempt / "verifier").observations)
+
+    def test_what_cant_be_attempted_as_stated_is_unsupported_not_a_stub(self):
+        prepared, _ = self.verify(verifier_plan(self.folder))
+        claim_file = self.folder / "claims/plan.json"
+        claim_file.parent.mkdir()
+        claim_file.write_text("{}")
+        frozen = {"path": "claims/plan.json", "sha256": runtime.sha256(claim_file)}
+        cases = {
+            "replay": dataclasses.replace(verifier_plan(self.folder), kind="replay"),
+            "default engine": verifier_plan(self.folder, engine=None),
+            "unknown gap mode": verifier_plan(self.folder, gaps="lenient"),
+            "models": verifier_plan(self.folder, models=[{"path": "m.json", "sha256": "0" * 64}]),
+            "bound with no option": verifier_plan(self.folder, bounds={"unwind": 4, "depth": 3}),
+            "changed plan file": verifier_plan(self.folder, plan={**frozen, "sha256": "1" * 64}),
+        }
+        for name, plan in cases.items():
+            value = runtime.run_verifier(plan, prepared, self.attempt / "verifier")
+            self.assertIsInstance(value, interfaces.Unsupported, name)
+            self.assertEqual((value.interface, value.owner), ("run-verifier", interfaces.RUNTIME), name)
+            self.assertNotIn(STUB, value.reason, name)
+        good = runtime.run_verifier(verifier_plan(self.folder, plan=frozen), prepared, self.attempt / "verifier")
+        self.assertEqual(good.argv[list(good.argv).index("--plan") + 1], str(claim_file.resolve()))
+        with mock.patch.object(runtime, "jvmcontract", return_value=None):
+            missing = runtime.run_verifier(verifier_plan(self.folder), prepared, self.attempt / "verifier")
+        self.assertEqual(missing.stage, "toolchain")
+        self.assertIn("cargo build --release", missing.diagnostic)
+        (self.dir / "theirs").mkdir()
+        (self.dir / "theirs/file").write_text("x")
+        busy = runtime.run_verifier(verifier_plan(self.folder), prepared, self.dir / "theirs")
+        self.assertEqual(busy.stage, "workdir")
+        self.assertTrue((self.dir / "theirs/file").is_file())
+
+    def test_a_mutant_entry_is_never_prepared_as_its_base(self):
+        plan = dataclasses.replace(verifier_plan(self.folder), artifacts=({
+            **verifier_plan(self.folder).artifacts[0], "mutant": {"base": {"revision": "after"}, "patch": {}}},))
+        value = runtime.prepare(plan, "after", self.work / "mutant")
+        self.assertIsInstance(value, interfaces.Unsupported)
+        self.assertIn("constructed mutant", value.reason)
+
+    def test_the_calibration_job_reads_each_verdict_against_the_fixtures_expectation(self):
+        import runtime_calibrate
+        cases = (("fixed-security", [{"verdict": "verified", "output": "✓\n"}], 0, True),
+                 ("fixed-security", [{"verdict": "violation", "output": "✗ code = 97\n"}], 1, False),
+                 ("vulnerable-security", [{"verdict": "violation", "output": "✗ code = 97\n"}], 1, True),
+                 ("regex-probe", [{"verdict": "unverifiable", "output": "⚠ refused: a String parameter\n"}], 1, False),
+                 ("regex-probe", [{"verdict": "unverifiable", "output": "⚠ java.util.regex.Pattern.matcher\n"}], 1, True))
+        for n, (task, outcome, code, ok) in enumerate(cases):
+            self.answer(prove={"stdout": json.dumps(outcome), "exit": code})
+            entry = runtime_calibrate.attempt(task, self.work / f"calibrate-{n}", self.folder)
+            self.assertEqual(entry["ok"], ok, (task, outcome, entry.get("unsupported"), entry.get("preparation")))
+        self.assertTrue(entry["namesRegex"])
+        self.assertEqual(runtime_calibrate.plan("preservation", self.folder).claim["allowedChange"], "code == 97")
+
+    def test_descriptors_become_jvmcontracts_target_spelling(self):
+        for target, expected in (("fixture.Gate#allowed(I)Z", "fixture.Gate#allowed(int)"),
+                                 ("a.B#m([[ILjava/lang/String;J[La/B$C;)V", "a.B#m(int[][], java.lang.String, long, a.B$C[])"),
+                                 ("a.B#m()I", "a.B#m()"), ("a.B#m", "a.B#m")):
+            self.assertEqual(runtime.java_target(target), expected)
 
 
 if __name__ == "__main__":

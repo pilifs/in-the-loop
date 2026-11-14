@@ -6,7 +6,8 @@ github.com and Maven Central only, every file's sha256 recorded and rechecked.
     prepare(plan, revision, workdir)       artifacts-ready: built or fetched, every byte hashed and the classpath
                                            checked; or failed, with its stage, diagnostic and what exists
     run_controls(plan, prepared, workdir)  each revision's driver in its own JVM, per JDK: raw ExecutionRecords
-    run_verifier(plan, prepared, workdir)  Phase 0's stub (R3)
+    run_verifier(plan, prepared, workdir)  jvmcontract on the prepared original artifacts, with the plan's engine,
+                                           gaps and bounds: one raw ExecutionRecord (R3)
 
 The two milestones stay apart (R1): a source lock fetches and builds nothing and supplies no proof identity; only an
 artifacts-ready preparation does. A preparation never decides a claim, and a partial one is returned as failed with
@@ -24,7 +25,13 @@ ordered classpath, the JDK (by full path, `release` file and `java -version`) an
 recorded in the PreparedTarget and in `prepared.json` in the work directory.
 
 A failed preparation's `source` also carries a `blocker` for the handoff: the stage, the command that failed (or the
-one that runs the preparation), the diagnostic, the semantics it needs and the next action.
+one that runs the preparation), the diagnostic, the semantics it needs and the next action. An artifact entry naming
+a constructed `mutant` (workflow's W1) is Unsupported until its preparation is implemented: never its base unpatched.
+
+The verifier (R3) runs jvmcontract on the prepared original artifacts only, never the adapter or driver, and records
+what its result is about: a scope label (original bytecode, original bytecode under models, a constructed mutation, a
+constructed fixture), the loaded class and its origin, the models and assumptions, and a capability probe (the static
+gap scan). Proofs run as pipeline jobs (runtime_calibrate.py on the fixture), never inline.
 """
 
 import hashlib
@@ -249,6 +256,9 @@ def lock(plan, revision):
                                diagnostic=f"revision {revision}: route {route}")
         if route not in LOCKS:
             raise Refused("lock", f"revision {revision} has no known route ({route!r})")
+        if "mutant" in entry:  # never the base prepared unpatched
+            return Unsupported("prepare", RUNTIME, "a constructed mutant's preparation (its base patched, then built) "
+                               "is not implemented yet", stage="lock", diagnostic=f"revision {revision}: {entry['mutant']}")
         folder = Path(plan.folder).resolve()
         commit, source = LOCKS[route](plan, revision, entry, folder)
     except Refused as e:
@@ -326,8 +336,10 @@ class _Build:
 
 
 def _check_classpath(plan, workdir, classpath, original, adapter):
-    """The loaded target's origin, after refusing shadowed classes, a missing target method and an adapter that
-    doesn't call it."""
+    """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
+    methods the adapter calls. A replay task's adapter must call the target (its controls are the task's evidence); a
+    proof task's verifier never goes through the adapter, so there it is recorded (`adapterCallsTarget`), and
+    run_controls doesn't run controls whose adapter doesn't call the task's target."""
     shadowed = runtime_jar.duplicates(classpath, workdir)
     if shadowed:
         listed = "; ".join(f"{name.replace('/', '.')} in {', '.join(holders)}" for name, holders in shadowed[:10])
@@ -341,15 +353,20 @@ def _check_classpath(plan, workdir, classpath, original, adapter):
     declared = runtime_jar.methods(data)
     if not any(n == method and (descriptor is None or d == descriptor) for n, d in declared):
         raise Refused("target", f"{cls} in {original} declares no method {method}{descriptor or ''}")
+    found = {"class": cls, "method": method, "descriptor": descriptor, "loadedFrom": original,
+             "classSha256": hashlib.sha256(data).hexdigest()}
     if adapter:
-        calls = [(c, n, d) for c in runtime_jar.classes(workdir / adapter)
-                 for (o, n, d) in runtime_jar.references(runtime_jar.read_class(workdir / adapter, c))
-                 if o == name and n == method and (descriptor is None or d == descriptor)]
-        if not calls:
+        originals = set(runtime_jar.classes(workdir / original))
+        refs = {(o, n, d) for c in runtime_jar.classes(workdir / adapter)
+                for (o, n, d) in runtime_jar.references(runtime_jar.read_class(workdir / adapter, c))
+                if o in originals}
+        calls_target = any(o == name and n == method and (descriptor is None or d == descriptor) for o, n, d in refs)
+        if not calls_target and plan.kind == "replay":
             raise Refused("adapter", f"the adapter {adapter} never references {plan.target}: it does not call the "
                                      f"selected original method")
-    return {"class": cls, "method": method, "descriptor": descriptor, "loadedFrom": original,
-            "classSha256": hashlib.sha256(data).hexdigest()}
+        found.update(adapterCalls=sorted(f"{o.replace('/', '.')}#{n}{d}" for o, n, d in refs),
+                     adapterCallsTarget=calls_target)
+    return found
 
 
 def _builder(source, workdir):
@@ -548,12 +565,13 @@ def _observations(stdout, inputs):
     return tuple(observed), None
 
 
-def _run_one(argv, cwd, out, err, timeout):
-    """(status, exitCode, seconds) of one process, its streams written to `out` and `err`."""
+def _run_one(argv, cwd, out, err, timeout, env=None):
+    """(status, exitCode, seconds) of one process, its streams written to `out` and `err`, in the fixed environment
+    `env` (the controls' by default) and nothing inherited."""
     started = time.monotonic()
     with open(out, "w") as o, open(err, "w") as e:
         try:
-            proc = subprocess.run(argv, cwd=cwd, env=dict(CONTROL_ENV), stdin=subprocess.DEVNULL, stdout=o, stderr=e,
+            proc = subprocess.run(argv, cwd=cwd, env=dict(env or CONTROL_ENV), stdin=subprocess.DEVNULL, stdout=o, stderr=e,
                                   timeout=timeout)
         except subprocess.TimeoutExpired:
             return "timed-out", None, round(time.monotonic() - started, 3)
@@ -577,6 +595,9 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
         driver = (prepared.source.get("driver") or {})
         if not driver.get("main"):
             raise Refused("controls", f"revision {revision}'s preparation has no driver to run")
+        if (prepared.source.get("target") or {}).get("adapterCallsTarget") is False:
+            raise Refused("controls", f"revision {revision}'s adapter doesn't call the task's target {plan.target}: "
+                                      "its controls are not this task's evidence")
         inputs, oracle = _oracle_probes(where, prepared)
         home = runtime_jdk.home(feature)
         if home is None:
@@ -644,8 +665,286 @@ def run_controls(plan, prepared, workdir):
     return tuple(records)
 
 
+# -- the verifier on prepared artifacts (R3)
+
+VERIFIER = "verifier.json"  # the record a verifier work directory holds
+VERIFIER_TIMEOUT = 600  # seconds, jvmcontract's own --timeout (its default): a timeout change is another attempt
+VERIFIER_GRACE = 120  # seconds more before the process is killed as timed out, past its own deadline
+VERIFIER_KINDS = {"prove": "prove", "equivalence": "equivalence"}  # task kind: jvmcontract command
+ENGINES, GAP_MODES = ("native", "jbmc", "auto"), ("strict", "assume", "advised")
+# The verifier's environment is fixed and recorded as the controls' is, with its JDK on PATH and in JAVA_HOME (its
+# replay of a witness and the JDK it reads models for); only the runner's own memory settings pass through.
+VERIFIER_PASS = ("JVMCONTRACT_JBMC_MEMORY_MB", "JVMCONTRACT_JAVA_OPTS")
+DESCRIPTOR_TYPES = {"Z": "boolean", "B": "byte", "C": "char", "S": "short", "I": "int", "J": "long", "F": "float",
+                    "D": "double"}
+# What a verifier run's result is about (the brief's R3 and scope labels), from what its preparation holds.
+SCOPES = {
+    "original-bytecode": "the selected method's original bytecode, as published or built from the pinned source, "
+                         "called directly; the adapter and driver are not on the verifier's classpath",
+    "original-bytecode-under-models": "the original bytecode, with stated models of what it calls (a model boundary)",
+    "constructed-mutation": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
+    "constructed-fixture": "a fixture revision: constructed control code built locally, never an upstream result",
+}
+# Refusals that are the claim's or the task's, not the attempt's: Unsupported, before any process (a not-started
+# record is an attempt that couldn't start; these can't be attempted as stated).
+CLAIM_STAGES = ("claim", "classpath")
+
+
+def jvmcontract():
+    """The jvmcontract executable: $JVMCONTRACT (a pipeline job's own build), else lib/target/release/jvmcontract."""
+    import os
+    found = os.environ.get("JVMCONTRACT") or str(HERE.parents[2] / "lib/target/release/jvmcontract")
+    return found if Path(found).is_file() and os.access(found, os.X_OK) else None
+
+
+def java_target(target):
+    """`pkg.Class#method(int, java.lang.String)`, jvmcontract's spelling of the plan's `pkg.Class#method(I...)Z`."""
+    cls, method, descriptor = runtime_jar.parse_target(target)
+    if descriptor is None:
+        return f"{cls}#{method}"
+    inside, params, i = descriptor[1:descriptor.index(")")], [], 0
+    while i < len(inside):
+        dims = 0
+        while inside[i] == "[":
+            dims, i = dims + 1, i + 1
+        if inside[i] == "L":
+            end = inside.index(";", i)
+            name, i = inside[i + 1:end].replace("/", "."), end + 1
+        elif inside[i] in DESCRIPTOR_TYPES:
+            name, i = DESCRIPTOR_TYPES[inside[i]], i + 1
+        else:
+            raise ValueError(f"not a method descriptor: {descriptor!r}")
+        params.append(name + "[]" * dims)
+    return f"{cls}#{method}({', '.join(params)})"
+
+
+def _claim_file(plan, part):
+    """A claim's referenced file ({path, sha256}), rechecked: a changed file is a different claim."""
+    ref = plan.claim.get(part)
+    if not ref:
+        return None
+    folder = Path(plan.folder).resolve()
+    path = _inside(folder, ref.get("path"), f"the claim's {part}")
+    if sha256(path) != ref.get("sha256"):
+        raise Refused("claim", f"the claim's {part} {ref.get('path')} is {sha256(path)}, not the frozen "
+                               f"{ref.get('sha256')}: a changed file is a different claim")
+    return path
+
+
+def _verifier_jdk(plan, prepared):
+    """The JDK the verifier runs with: 25 where every revision's artifacts run on it, else the newest they all name."""
+    named = [set(_jdks(plan, r, prepared.get(r))) for r in plan.revisions]
+    common = set.intersection(*named) if named and all(named) else set()
+    feature = "25" if "25" in common else (max(common, key=int) if common else None)
+    if feature is None:
+        raise Refused("verifier", "the revisions name no JDK in common to run the verifier with")
+    home = runtime_jdk.home(feature)
+    if home is None:
+        raise Refused("verifier", f"no JDK {feature} under {runtime_jdk.CANDIDATES}")
+    return runtime_jdk.identity(home)
+
+
+def _scope(plan, sides):
+    """The verifier run's scope label and its boundary, from each revision's preparation."""
+    entries = {a.get("revision"): a for a in plan.artifacts}
+    models = [m.get("path") for m in plan.claim.get("models") or []]
+    stubs = [f"{r}:{a.path}" for r, (_, p, _) in sides.items() for a in p.artifacts if a.role == "stub"]
+    if any("mutant" in entries.get(r, {}) for r in sides):
+        label = "constructed-mutation"
+    elif any(entries.get(r, {}).get("route") == "fixture" for r in sides):
+        label = "constructed-fixture"
+    elif models or stubs:
+        label = "original-bytecode-under-models"
+    else:
+        label = "original-bytecode"
+    return {"label": label, "meaning": SCOPES[label], "method": plan.target,
+            "revisions": {r: {"commit": p.commit, "loadedFrom": p.source.get("target", {}).get("loadedFrom"),
+                              "classSha256": p.source.get("target", {}).get("classSha256"),
+                              "origin": next((a.origin for a in p.artifacts if a.role == "original"), None)}
+                          for r, (_, p, _) in sides.items()},
+            "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the "
+                       "adapter serves the concrete controls",
+            "models": models + stubs, "assumptions": list(plan.claim.get("assumptions") or [])}
+
+
+def _verifier_argv(plan, exe, sides, work):
+    """jvmcontract's argv for the task, with paths relative to the attempt directory (the verifier's cwd)."""
+    claim, bounds = plan.claim, dict(plan.claim.get("bounds") or {})
+    command = VERIFIER_KINDS[plan.kind]
+    unknown = sorted(set(bounds) - {"unwind", "maxArrayLength"})
+    if unknown:
+        raise Refused("claim", f"the claim's bounds {', '.join(unknown)} have no jvmcontract option here")
+    if claim.get("models"):
+        raise Refused("claim", "the claim states models, and no route passes models to the verifier yet",
+                      needs="a way to give jvmcontract the claim's environment models",
+                      next="run the task without models, as a narrower linked claim, or add the models route")
+    deps = {r: [a for a in arts if a.role == "dependency"] for r, (_, _, arts) in sides.items()}
+    original = {r: next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
+                for r, (_, p, arts) in sides.items()}
+    rel = lambda r, a: f"prepare/{r}/{a.path}"
+    target = java_target(plan.target)
+    if command == "prove":
+        [r] = sides
+        argv = [exe, "prove", target, "--classes", rel(r, original[r])]
+        argv += [x for a in deps[r] for x in ("--classpath", rel(r, a))]
+        for key, flag in (("assume", "--assume"), ("assert", "--assert")):
+            if claim.get(key):
+                argv += [flag, claim[key]]
+        argv += [x for t in claim.get("throws") or [] for x in ("--throws", t)]
+    else:
+        before, after = plan.revisions
+        if [a.sha256 for a in deps[before]] != [a.sha256 for a in deps[after]]:
+            raise Refused("classpath", "before and after have different dependency closures, and jvmcontract's "
+                                      "equivalence takes one classpath for both",
+                          needs="one dependency closure both revisions use, by the same bytes",
+                          next="state the pair's shared dependencies, or check each revision as a property task")
+        argv = [exe, "equivalence", "--before", rel(before, original[before]), "--after", rel(after, original[after]),
+                "--target", target]
+        argv += [x for a in deps[after] for x in ("--classpath", rel(after, a))]
+        if claim.get("allowedChange"):
+            argv += ["--unchanged-unless", claim["allowedChange"]]
+    argv += [x for n in claim.get("nullable") or [] for x in ("--nullable", n)]
+    argv += [x for pair in claim.get("mayAlias") or [] for x in ("--may-alias", pair)]
+    for part, flag in (("plan", "--plan"), ("contracts", "--contracts")):
+        path = _claim_file(plan, part)
+        if path is not None:
+            argv += [flag, str(path)]
+    argv += ["--engine", plan.engine, "--gaps", plan.gaps]
+    if "unwind" in bounds:
+        argv += ["--unwind", str(bounds["unwind"])]
+    if "maxArrayLength" in bounds:
+        argv += ["--max-array-length", str(bounds["maxArrayLength"])]
+    return argv + ["--timeout", str(VERIFIER_TIMEOUT), "--work", f"{work}/work", "--report", f"{work}/report", "--json"]
+
+
+def _verifier_env(jdk):
+    import os
+    env = {**CONTROL_ENV, "JAVA_HOME": jdk["home"], "PATH": f"{jdk['home']}/bin:/usr/local/bin:/usr/bin:/bin"}
+    env.update({k: os.environ[k] for k in VERIFIER_PASS if k in os.environ})
+    return env
+
+
+def _outcomes(stdout, command):
+    """The verifier's --json outcome as observations: the list `prove` prints, or `equivalence`'s one outcome; None
+    (with why) when the output is not one. Raw: nothing is judged here."""
+    try:
+        value = json.loads(stdout)
+    except json.JSONDecodeError as e:
+        return None, f"the verifier's standard output is not JSON: {e}"
+    outcomes = value if command == "prove" else [value]
+    if not isinstance(outcomes, list) or not outcomes or not all(
+            isinstance(o, dict) and isinstance(o.get("output"), str) for o in outcomes):
+        return None, f"the verifier's standard output is not {command}'s --json outcome"
+    return tuple(outcomes), None
+
+
+def _probe(exe, sides, target, env, workdir, attempt):
+    """The capability probe beside the proof: jvmcontract's static gap scan of the target in each revision (it proves
+    nothing; a strict proof that reaches a gap is refused by name). Its argv, exit and the gaps it lists."""
+    probes = {}
+    for r, (_, p, arts) in sides.items():
+        original = next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
+        argv = [exe, "gaps", "--target", target, "--classes", f"prepare/{r}/{original.path}"]
+        argv += [x for a in arts if a.role == "dependency" for x in ("--classpath", f"prepare/{r}/{a.path}")]
+        argv.append("--json")
+        out, err = workdir / f"probe-{r}.stdout", workdir / f"probe-{r}.stderr"
+        status, code, seconds = _run_one(argv, attempt, out, err, CONTROL_TIMEOUT, env)
+        try:
+            gaps = [{k: g.get(k) for k in ("id", "kind", "call", "sites")}
+                    for g in json.loads(out.read_text()).get("gaps", [])] if status == "exited" and code == 0 else None
+        except (json.JSONDecodeError, AttributeError):
+            gaps = None
+        probes[r] = {"argv": argv, "status": status, "exitCode": code, "seconds": seconds,
+                     "stdout": out.relative_to(attempt).as_posix(), "stderr": err.relative_to(attempt).as_posix(),
+                     "gaps": gaps}
+    return probes
+
+
 def run_verifier(plan, prepared, workdir):
-    """The verifier on the prepared artifacts, with the plan's engine, gaps and bounds: one raw ExecutionRecord, or
-    Unsupported."""
-    return Unsupported("run-verifier", RUNTIME, "the verifier on prepared artifacts is Phase 0's stub until the runtime stream's R3 replaces it",
-                       stage="verifier")
+    """The verifier on the prepared artifacts, with the plan's engine, gaps and bounds: one raw ExecutionRecord
+    (kind `verifier`; revision None for a pair), or Unsupported.
+
+    A prove task runs `jvmcontract prove` on its revision's original artifact (`--classes`), its dependencies on the
+    classpath in order, with the claim's assume, assert, throws, nullable and may-alias; an equivalence task runs
+    `jvmcontract equivalence` between the pair's original artifacts, `--unchanged-unless` the task's allowed change.
+    Both get the plan's `--engine` and `--gaps` (never a default), the claim's bounds, its construction plan and gap
+    contracts (each rechecked against the claim's sha256), `--json`, and a work and report directory here. The
+    adapter and driver are never on its classpath: they serve the controls, and the verifier calls the selected
+    original method itself. Its scope label and boundary (`identities.scope`), the capability probe (`jvmcontract
+    gaps` on each revision: static, it proves nothing), the jvmcontract digest, the JDK and the environment are
+    recorded.
+
+    As for the controls, a revision with no preparation (one-sided), one not artifacts-ready, bytes changed since
+    preparation, or no JDK gives a not-started record; a kill or a timeout gives no observations; output that isn't
+    the --json outcome gives none either. The exit code is raw: ingestion decides what the outcome means. Unsupported
+    when the task kind, engine or gap mode isn't one this runs, the claim needs what no route gives (models,
+    bounds with no option) or names a file that changed since it was frozen, an equivalence pair's dependency closures
+    differ (jvmcontract takes one classpath for both), jvmcontract isn't built, or the work directory isn't ours. The
+    record is also written to workdir/verifier.json."""
+    stop = lambda why, stage="verifier", **kw: Unsupported("run-verifier", RUNTIME, why, stage=stage, **kw)
+    if plan.kind not in VERIFIER_KINDS:
+        return stop(f"a {plan.kind} task runs no verifier here (it runs {', '.join(VERIFIER_KINDS)})", "plan")
+    if plan.engine not in ENGINES or plan.gaps not in GAP_MODES:
+        return stop(f"the plan's engine {plan.engine!r} and gap mode {plan.gaps!r} must each be explicit and one of "
+                    f"{ENGINES} and {GAP_MODES}: a proof never rests on the CLI's defaults", "plan")
+    if len(plan.revisions) != (1 if plan.kind == "prove" else 2):
+        return stop(f"a {plan.kind} task over {len(plan.revisions)} revisions", "plan")
+    exe = jvmcontract()
+    if exe is None:
+        return stop("no built jvmcontract ($JVMCONTRACT or lib/target/release/jvmcontract)", "toolchain",
+                    diagnostic="cd lib && cargo build --release, or run the task as a pipeline job that requires "
+                               "jvmcontract (it gets one built from lib/)")
+    try:
+        workdir = _workdir(workdir, VERIFIER)
+    except Refused as e:
+        return stop("the verifier's work directory can't be used", e.stage, diagnostic=e.diagnostic)
+    attempt = workdir.parent
+    rel = lambda p: p.relative_to(attempt).as_posix()
+    out, err = workdir / "verifier.stdout", workdir / "verifier.stderr"
+    revision = plan.revisions[0] if plan.kind == "prove" else None
+    identities, argv, log = {"jvmcontract": sha256(exe), "command": VERIFIER_KINDS[plan.kind]}, (), {}
+    try:
+        sides = {}
+        for r in plan.revisions:
+            p = prepared.get(r)
+            if p is None:
+                raise Refused("verifier", f"revision {r} was not prepared: a one-sided {plan.kind}")
+            where = _preparation_dir(p, workdir)
+            arts = _checked(where, p)
+            if not (p.source.get("target") or {}).get("loadedFrom"):
+                raise Refused("verifier", f"revision {r}'s preparation records no loaded target")
+            sides[r] = (where, p, arts)
+        jdk = _verifier_jdk(plan, prepared)
+        argv = tuple(_verifier_argv(plan, exe, sides, rel(workdir)))
+        env = _verifier_env(jdk)
+        identities.update({
+            "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
+            "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
+            "timeout": VERIFIER_TIMEOUT, "scope": _scope(plan, sides),
+            "classpath": {r: [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in arts
+                              if a.role in ("original", "dependency", "stub")] for r, (_, _, arts) in sides.items()},
+            "commits": {r: p.commit for r, (_, p, _) in sides.items()},
+            "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
+        identities["probe"] = _probe(exe, sides, java_target(plan.target), env, workdir, attempt)
+    except Refused as e:
+        if e.stage in CLAIM_STAGES:
+            shutil.rmtree(workdir, ignore_errors=True)
+            return stop(f"the task can't be attempted as stated: {e.diagnostic}", e.stage, diagnostic=e.next or e.needs)
+        out.write_text("")
+        err.write_text(f"runtime: not started: {e.diagnostic}\n")
+        record = interfaces.ExecutionRecord(kind="verifier", revision=revision, argv=argv, status="not-started",
+                                            exitCode=None, seconds=0.0, stdout=rel(out), stderr=rel(err),
+                                            identities=identities, observations=None)
+        (workdir / VERIFIER).write_text(json.dumps({"task": plan.task, "record": record.as_dict(),
+                                                    "log": {"problem": e.diagnostic}}, indent=2) + "\n")
+        return record
+    status, code, seconds = _run_one(argv, attempt, out, err, VERIFIER_TIMEOUT + VERIFIER_GRACE, env)
+    observations, problem = (None, f"the verifier {status}" + (f" (signal {-code})" if status == "killed" else "")) \
+        if status != "exited" else _outcomes(out.read_text(errors="replace"), VERIFIER_KINDS[plan.kind])
+    record = interfaces.ExecutionRecord(kind="verifier", revision=revision, argv=argv, status=status, exitCode=code,
+                                        seconds=seconds, stdout=rel(out), stderr=rel(err), identities=identities,
+                                        observations=observations)
+    log = {"cwd": str(attempt), **({"problem": problem} if problem else {})}
+    (workdir / VERIFIER).write_text(json.dumps({"task": plan.task, "record": record.as_dict(), "log": log}, indent=2,
+                                               ensure_ascii=False) + "\n")
+    return record

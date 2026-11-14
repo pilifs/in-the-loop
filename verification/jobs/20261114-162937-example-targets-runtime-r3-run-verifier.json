@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-162937-example-targets-runtime-r3-run-verifier",
+  "title": "example-targets runtime R3: run_verifier on the fixture's five proof tasks, native strict, with the real jvmcontract",
+  "description": "The runtime stream's R3 (llm-dlc/loops/example-targets-runtime.md) replaced Phase 0's run_verifier stub in examples/tools/targets/runtime.py: jvmcontract prove or equivalence on a task's prepared original JARs, never the adapter or driver, with the plan's engine and gap mode, the claim's bounds and statement, a static gap scan as the capability probe, and the scope label recorded, as one raw verifier ExecutionRecord. Its unit tests use a stand-in jvmcontract, so this job is the first run with the real one. Step 1 runs examples/tools/targets/runtime_calibrate.py: each proof task of Phase 0's fixture (examples/tools/targets/fixtures/target.json) is prepared by runtime.prepare and checked by runtime.run_verifier with --engine native --gaps strict, its claim being the property workflow's fixture claim files state (assert '!result || (code != 65 && code != 97)' on fixture.Gate#allowed(int); RegexGate's '!result || field != null'), and the record handed to workflow.ingest (still Phase 0's stub on this branch). Step 2 runs the integration contract with JVMCONTRACT set, so A5 gets past its jvmcontract skip and stops at workflow's task-plan stub. No upstream code is fetched or built: the fixture is local.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "jvmcontract:gaps",
+    "bmc:native",
+    "targets:run-verifier"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/runtime.py",
+      "examples/tools/targets/runtime_calibrate.py",
+      "examples/tools/targets/fixtures/target.json",
+      "llm-dlc/loops/example-targets-runtime.md"
+    ]
+  },
+  "expected": "both steps exit 0. Step 1 prints 'as expected' for all five tasks and ends 'ok': vulnerable-security a violation (its witness at code 97), fixed-security verified, mutant-security a violation (at 65), preservation (equivalence of before and after outside code == 97) verified, and regex-probe unverifiable with output naming java.util.regex; each scope constructed-fixture. Step 2: the contract passes, A5's two rows skipped at 'unsupported: task-plan (example-targets-workflow)', not for want of jvmcontract",
+  "submitted": {
+    "at": "2026-11-14T16:29:37+00:00",
+    "session": "3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "five native strict proofs of a one-line int method, plus five static gap scans and ten small javac/jar builds (about 2 s each inline); the jvmcontract build is the runner's"
+  },
+  "steps": [
+    {
+      "name": "the fixture's proof tasks through run_verifier",
+      "run": "python3 examples/tools/targets/runtime_calibrate.py runtime-calibration",
+      "cwd": "."
+    },
+    {
+      "name": "the integration contract with jvmcontract present",
+      "run": "python3 examples/tools/test_targets_contract.py -v",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "runtime-calibration"
+  ]
+}
