@@ -1,0 +1,99 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "70d4b729-3b1f-41d1-a89c-03fd78a71818",
+  "status": "open",
+  "title": "Application-core feature streams exiting early",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-14T15:26:47.126Z",
+  "ended": "2026-11-14T15:35:05.358Z",
+  "duration_seconds": 498,
+  "stats": {
+    "turns": 5,
+    "api_calls": 36,
+    "tool_calls": 37,
+    "tool_errors": 1,
+    "compactions": 1,
+    "peak_context_tokens": 158988,
+    "usage": {
+      "input_tokens": 72,
+      "output_tokens": 36205,
+      "cache_read_input_tokens": 3572886,
+      "cache_creation_input_tokens": 164070
+    }
+  },
+  "tools": {
+    "Bash": 33,
+    "Read": 2,
+    "Edit": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/example-targets-negative.md",
+    "~/.cache/in-the-loop/example-targets-negative/import_catalog.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T15:26:47.126Z",
+      "ended": "2026-11-14T15:26:47.129Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-14T15:26:42.743Z",
+      "ended": "2026-11-14T15:35:05.358Z",
+      "turns": 5,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 72,
+        "output_tokens": 36205,
+        "cache_read_input_tokens": 3572886,
+        "cache_creation_input_tokens": 164070
+      },
+      "peak_context_tokens": 158988
+    }
+  ],
+  "log": {
+    "sha256": "1961ef9d15df1a5c36ee37b8883ad2edafefa0486b6e55e1d9dd08ea9bd2cd8d",
+    "bytes": 1325146,
+    "lines": 407,
+    "gzip_bytes": 268306,
+    "path": "llm-dlc/traces/70d4b729-3b1f-41d1-a89c-03fd78a71818/logs/1961ef9d15df1a5c36ee37b8883ad2edafefa0486b6e55e1d9dd08ea9bd2cd8d.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "pomrmppunkztplnompnxpoykrnmmkvlq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets negative N0: the Spring CVE catalog, 285-300, with every revision checked upstream",
+      "body": "Imports the archived research registry's 15 Spring CVEs and the seed file's CVE-2025-22234 as real-world examples 285-300, each with example.json, a target.json sidecar (example-target/v1) and a hand-written README. CVE-2023-34055 (285), CVE-2022-22968 (286) and CVE-2025-22228 (287) are promoted in place with role negative and no tasks yet (N1-N3 add them); the other 13 are catalog entries with no preparation, tasks or verdict, whose missing prerequisites are the registry's model blockers, recorded as predicted handoff blockers. 300 is research only, linked to 287, with its vendor-attributed introduction and no timing oracle.\n\nEvery revision was checked against upstream on github.com, so each sidecar says checked-upstream: the release tags resolved with git ls-remote; the 17 fix commits and their recorded parents fetched as commit objects (no trees); and each fix shown to be an ancestor of its fixed release and not of its vulnerable one with git merge-base, on a treeless fetch. Everything matched the registry. Release pairs and exact-fix pairs are kept separate, and no execution pair is selected yet. examples/tags.json gains 11 tags, added at the end of each facet and listed under its $negative key.",
+      "log_sha256": "1961ef9d15df1a5c36ee37b8883ad2edafefa0486b6e55e1d9dd08ea9bd2cd8d"
+    }
+  ],
+  "logs": {
+    "1961ef9d15df1a5c36ee37b8883ad2edafefa0486b6e55e1d9dd08ea9bd2cd8d": {
+      "bytes": 1325146,
+      "lines": 407,
+      "gzip_bytes": 268306,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

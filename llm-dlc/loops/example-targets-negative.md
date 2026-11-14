@@ -134,8 +134,30 @@ timebox, the downloads policy and the safety rules. Queue anything heavy, and re
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
-  included.
+- Forked after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0 included, on
+  2026-11-14. No integration report existed yet at the first cycle.
+- 2026-11-14, **N0 done: the catalog**, 285–300, one folder per CVE in the registry's rank order (285 CVE-2023-34055,
+  286 CVE-2022-22968, 287 CVE-2025-22228, then 288–299 the other twelve, 300 CVE-2025-22234 from the seed file); 301–304
+  stay free. Each has `example.json` (real-world, `security`, verdict label "not run"), a `target.json` and a
+  hand-written `README.md`. The three promoted entries have role `negative` and no tasks yet; the rest role `catalog`,
+  with the registry's model blockers as predicted (`observed: false`) handoff blockers and its next action. Every
+  revision was **checked against upstream** (`sourceConfidence: checked-upstream`): the release tags (32 references) resolved with
+  `git ls-remote` on github.com, all 17 fix commits and their recorded parents read from github.com (commits only, no
+  trees), and each fix an ancestor of its fixed release and not of its vulnerable one (`git merge-base` on a treeless
+  fetch since 120 days before the fix). All matched the registry, including its three recorded fixed-tag commits and the
+  seed's 6.3.9 commit. Release and exact-fix pairs are separate; no execution pair is selected. Introductions: unknown,
+  except 288 (candidate: 286's fix), 290 (candidate `039e0328`, not checked) and 300 (vendor-attributed: 287's fix).
+  New tags at the end of each facet of `examples/tags.json`, listed in its `$negative` key: domain `metrics`,
+  `data-binding`, `password-hashing`, `uri-parsing`, `resource-serving`, `expression-evaluation`; defect
+  `denial-of-service`, `case-normalization`, `path-traversal`, `parser-differential`; technique `external-target`.
+  The integration script passes on this workspace (contract 3 pass and 13 stubs, targets 41, `test_build` 190,
+  `test_pipeline` 29, every sidecar valid). The import script was a one-off outside the repository; the folders are the
+  record.
+- **Interface request (coordinator, at the merge)**: regenerate the router (`build.py --index-only`) so 285–300 appear
+  in `examples/README.md` and `index.json`, and so `find.py --tag external-target` or `--role catalog` finds them. This
+  stream doesn't write those generated files.
+- Next: N1, the method-label packet (285): read the fix and parent sources of `WebMvcTags`, select the exact-fix pair,
+  and write the tasks, source lock, oracle, probes, mutation control and replay driver.
 - Status: working
 
 ## Loop settings
