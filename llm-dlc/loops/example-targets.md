@@ -462,6 +462,14 @@ Settled by the user on 2026-11-08:
 1. **Downloads**: allowed in jobs and in loops, from github.com and Maven Central only, through hash-pinned acquisition
    (sha256 recorded and rechecked; mutable references refused). Planning and discovery stay offline. This settles
    `build-orchestration.md`'s open question for this wave.
+   **Extended by the user on 2026-11-14**, answering the positive stream's question on P1's and P3's build route (its
+   option (a)): **repo.spring.io, services.gradle.org and plugins.gradle.org** are allowed too, under the same
+   hash-pinned acquisition (a SNAPSHOT is a mutable reference and stays refused). This gives P3 (307) its pinned upstream
+   build (Gradle 5.5.1, repo.spring.io/plugins-snapshot's plugins, plugins.gradle.org, the 5.2.0.RC1 milestone). It
+   doesn't make P1's (305) exact-commit build reproducible, since both its commits pin SNAPSHOT versions: P1 stays
+   without an upstream build route, recorded as that blocker, never counted as a success; its published-artifact
+   evidence (2.2.0.RELEASE carries after's class) stands as it is. The runtime stream's `runtime_maven.py` allows only
+   Central and github.com (`HOSTS`, `REDIRECT_HOSTS`): widening it is a merge-time item (Progress).
 2. **Four streams, and the case packets run in Phase 5**: the streams build against Phase 0's frozen interfaces and
    fixtures, and this brief's own loop runs the original-JVM replays and the calibration after the merge (gates A3–A5).
 3. **Older JDKs installed**, so each revision is built with its own build tool and a JDK it supports: Temurin 8, 11 and
@@ -515,6 +523,11 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
 - 2026-11-14, **pushed** (prerequisite 7, `xsusnqss`). The VM was resized to 30 vCPUs and 105 GiB, so each loop's cap
   is now 12G (the four streams' `- memory:`, this brief's, and the launch command), up from 4G, which OOM-killed
   processes 8 times during application-core; the integration check's scope is 6G (`run-streams.sh`).
+- 2026-11-14, **decision 1 extended by the user** (see [Decisions](#decisions)): repo.spring.io, services.gradle.org and
+  plugins.gradle.org are allowed, hash-pinned. At the merge: widen `runtime_maven.py`'s `HOSTS` and `REDIRECT_HOSTS` to
+  them, with a test that any other host is still refused; then prepare P3 (307) by its pinned upstream build, as a job.
+  P1 (305) stays blocked on its SNAPSHOT pins. The positive stream finished `done` before the decision, so this falls to
+  this loop.
 - Status: working
 
 ## Loop settings
