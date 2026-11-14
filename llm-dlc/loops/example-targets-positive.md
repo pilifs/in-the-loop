@@ -258,8 +258,8 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
     unchanged callee, bound to its bytecode, which the packet records the basis for.
 - **For the coordinator**: after each of this run's commits, `sync.py check` reported ERRORs "session … has no
   manifest" on other streams' changes, never this one's:
-  - the changes, eleven by P3's commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
-    `onssronow`, `mkwpnuru`, `zuzrkvtu`, `monsvovy` and `uoztsmtq`;
+  - the changes, thirteen by P5's commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
+    `onssronow`, `mkwpnuru`, `zuzrkvtu`, `monsvovy`, `uoztsmtq`, `qyzrtrwr` (workflow) and `kwzmplxt` (negative);
   - the sessions: 3bb5a1f4 (runtime), eaff7dd7 (workflow) and 70d4b729 (negative).
 
   It looks like a cross-workspace effect of the check. Nothing was changed for it here.

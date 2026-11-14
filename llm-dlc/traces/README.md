@@ -12,14 +12,14 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Sessions | 85, plus 1 empty |
 | Period | 2026-10-24 14:07 UTC to 2026-11-14 16:26 UTC |
 | Prompts | 2,053 |
-| Model calls | 19,957 |
-| Tool calls | 20,925 (358 failed) |
+| Model calls | 19,959 |
+| Tool calls | 20,928 (358 failed) |
 | Compactions | 312 |
 | Subagents | 12 |
-| Tokens written | 20,612,810 |
-| Tokens read | 3,145,472,011 (97.9% from cache) |
-| Commits with a trace | 605 |
-| Log snapshots | 738 (1645.2 MB gzipped, 732 uploaded) |
+| Tokens written | 20,614,475 |
+| Tokens read | 3,145,902,060 (97.9% from cache) |
+| Commits with a trace | 606 |
+| Log snapshots | 739 (1646.7 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -111,7 +111,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 8 | 7 | 1 | 0 | 36,075 | 2 |
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | ended | 13 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 37,319 | 7 |
 | 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | open | 12 min | `claude-opus-5-5` | 4 | 42 | 40 | 0 | 0 | 128,012 | 4 |
-| 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | open | 59 min | `claude-opus-5-5` | 25 | 246 | 251 | 9 | 5 | 223,433 | 6 |
+| 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | open | 59 min | `claude-opus-5-5` | 25 | 248 | 254 | 9 | 5 | 223,433 | 7 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -205,15 +205,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1,587 | 16 | 24,690 | 229,016 | 90.3% | 160 |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 2,191 | 20 | 25,935 | 291,628 | 91.8% | 145 |
 | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 35,559 | 90 | 97,062 | 3,724,229 | 97.5% | 107 |
-| [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | 257,087 | 492 | 839,679 | 31,226,890 | 97.4% | 125 |
+| [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | 258,752 | 496 | 843,129 | 31,653,485 | 97.4% | 126 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 18,350 | 87.7% | 85 |
+| `Bash` | 18,352 | 87.7% | 85 |
 | `Read` | 985 | 4.7% | 41 |
-| `Edit` | 756 | 3.6% | 41 |
+| `Edit` | 757 | 3.6% | 41 |
 | `Write` | 473 | 2.3% | 37 |
 | `ToolSearch` | 122 | 0.6% | 31 |
 | `Monitor` | 93 | 0.4% | 33 |
@@ -839,6 +839,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 603 | change `umpplsnu` | example-targets positive P3: 307's claim, oracle, driver, probes and US-ASCII mutant | [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) ([log](https://terminalvalue.net/raw-traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/be8cbc04ea49f12b7bbec0cd5ad74d2598e9b853c195e28ff59dbfb63ad2b718.jsonl.gz)) |
 | 604 | change `vwsxyvlr` | example-targets positive: propose upstream BCrypt test vectors for the allow list | [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) ([log](https://terminalvalue.net/raw-traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc.jsonl.gz)) |
 | 605 | change `xopqylpx` | example-targets positive P5: 105 migrated, with its A5 obligation, oracle, driver, probes and the 105-109 inventory | [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) ([log](https://terminalvalue.net/raw-traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/03e415382efc0fa6c84119893f79906dc0f760b561eb56e6b029dd429571dd95.jsonl.gz)) |
+| 606 | change `uzxpwmku` | example-targets positive: record the two new cross-workspace manifest errors for the coordinator | [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) ([log](https://terminalvalue.net/raw-traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/283788c7735c99a4068b1d83daed00abda859f3d4e78f0582737b7b692256c7d.jsonl.gz)) |
 
 ## Logs
 
@@ -930,7 +931,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 2 | 2 | 0.2 MB | [`f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz) |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 4 | 4 | 0.3 MB | [`891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz) |
 | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 4 | 4 | 0.7 MB | [`289209a3a4c5`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz) |
-| [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | 6 | 0 | 5.2 MB | `03e415382efc`, not uploaded |
+| [`ddf78f27`](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | 7 | 0 | 6.7 MB | `283788c7735c`, not uploaded |
 
 ## Session notes
 
