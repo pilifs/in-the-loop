@@ -658,6 +658,41 @@ class MavenTest(unittest.TestCase):
             runtime_maven.check_item({"coordinates": "org.springframework:spring-jcl:5.2.0.BUILD-SNAPSHOT",
                                       "url": "https://repo.spring.io/snapshot/x.jar", "sha256": "a" * 64}, "dependency")
 
+    def test_the_aliyun_mirror_is_allowed_for_springs_plugin_repository_only(self):
+        # Decision 1's second extension (the user, 2026-11-14): maven.aliyun.com's mirror of Spring's plugin
+        # repository, for P3's (307) four Spring Gradle plugins; the sha256 is still what the bytes are.
+        plugin = ("https://maven.aliyun.com/repository/spring-plugin/io/spring/gradle/spring-build-conventions/"
+                  "0.0.23.RELEASE/spring-build-conventions-0.0.23.RELEASE.jar")
+        self.assertTrue(runtime_maven.allowed(plugin))
+        self.assertTrue(runtime_maven.allowed(plugin, runtime_maven.REDIRECT_HOSTS))
+        self.assertIn("maven.aliyun.com", runtime_maven.HOST_NAMES)
+        lock = runtime_maven.check_item({"coordinates": "io.spring.gradle:spring-build-conventions:0.0.23.RELEASE",
+                                         "url": plugin, "sha256": "65b65633191873ed903a7a74d32420cd6dcbe377783acd2a"
+                                         "090fb69609746c74"}, "dependency")
+        self.assertEqual(lock["url"], plugin, "a recorded URL on the mirror is fetched from there")
+        refused = ("http://maven.aliyun.com/repository/spring-plugin/x.jar",
+                   "https://maven.aliyun.com/repository/public/x.jar",
+                   "https://maven.aliyun.com/repository/central/x.jar",
+                   "https://maven.aliyun.com/repository/spring-plugin/../public/x.jar",
+                   "https://maven.aliyun.com/repository/spring-plugin/a/./x.jar",
+                   "https://maven.aliyun.com/repository/spring-plugin/%2e%2e/public/x.jar",
+                   "https://maven.aliyun.com/repository/spring-pluginx/x.jar",
+                   "https://maven.aliyun.com/repository/spring-plugin",
+                   "https://maven.aliyun.com.example.org/repository/spring-plugin/x.jar",
+                   "https://aliyun.com/repository/spring-plugin/x.jar",
+                   "https://mirrors.aliyun.com/repository/spring-plugin/x.jar",
+                   "https://user@maven.aliyun.com/repository/spring-plugin/x.jar",
+                   "https://maven.aliyun.com:8443/repository/spring-plugin/x.jar")
+        for url in refused:
+            self.assertFalse(runtime_maven.allowed(url), url)
+            self.assertFalse(runtime_maven.allowed(url, runtime_maven.REDIRECT_HOSTS), url)
+            with self.assertRaises(runtime_maven.Blocked, msg=url):
+                runtime_maven.check_item({"coordinates": "g.x:a:1.0", "url": url, "sha256": "a" * 64}, "dependency")
+        with self.assertRaises(runtime_maven.Blocked, msg="the mirror carries no snapshots, and one stays refused"):
+            runtime_maven.check_item({"coordinates": "io.spring.gradle:x:1.0.BUILD-SNAPSHOT",
+                                      "url": "https://maven.aliyun.com/repository/spring-plugin/x.jar",
+                                      "sha256": "a" * 64}, "dependency")
+
     def test_pin_checks_centrals_sha1_and_caches_the_bytes(self):
         root = Path(tempfile.mkdtemp(prefix="test-runtime-"))
         self.addCleanup(shutil.rmtree, root, True)

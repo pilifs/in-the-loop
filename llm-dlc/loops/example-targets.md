@@ -1148,6 +1148,32 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     Gradle route with the 5.2.0.M4 output check, as a job; then 305's slice and the M6 replay. After them, the
     remaining replays (285–287 `mutant-replay`, 105 `replay`) and step 1's proof tasks and probes, then the joint
     acceptance. 286's resubmitted replay runs meanwhile.
+- 2026-11-14, **the `maven.aliyun.com` host allowed, for Spring's plugin repository only** (decision 1's second
+  extension).
+  - **Reproducer**: a new test, `test_runtime.py`'s `test_the_aliyun_mirror_is_allowed_for_springs_plugin_repository_only`,
+    failed on `nrxvrqpx`: `allowed()` refused the mirror's `spring-build-conventions 0.0.23.RELEASE` URL.
+  - **The change** (`runtime_maven.py`): `HOSTS` gains `maven.aliyun.com`, and a new `PATH_PREFIXES` holds it to
+    `/repository/spring-plugin/`, since the user allowed the mirror for P3's Spring plugins, not the mirror as a whole.
+    A path that leaves the prefix by a `.` or `..` segment or a percent-encoding is refused, because a server would
+    resolve it after the check. `HOST_NAMES`, and the docstrings of `runtime.py` and `runtime_upstream.py`, name it.
+    Every caller goes through `allowed()`, the redirect check included.
+  - **What the test refuses**: the mirror's other repositories (`public`, `central`), `spring-pluginx`, the bare
+    prefix, dot segments and `%2e%2e`, http, a user name or port, and the look-alikes `maven.aliyun.com.example.org`,
+    `aliyun.com` and `mirrors.aliyun.com`. A SNAPSHOT stays refused there too. The earlier host test still passes.
+  - **Not yet changed**: 307's target.json blocker, handoff and README still say the plugin needs credentials. The
+    Gradle route's cycle rewrites them along with the route.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (210, one new),
+    `test_build.py` (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Next**: 307's Gradle route. Fetch the 5.5.1 wrapper distribution by sha256, then use an init script that sends
+    the buildscript's repositories to the mirror and the allowed hosts. Hash every file the build resolves, and compare
+    `before`'s `BCrypt.class` with Spring Security 5.2.0.M4's published one. Queue it as a job. Then 305's slice and
+    the M6 replay.
+  - **286's resubmitted replay passed** (`20261114-223812-…`, collected in `kxzlrsou`, which marks VF-026 closed). Its
+    receipt `receipts/replay/20261114T224026Z-eca417ca` shows 5.3.18 violating the oracle at 12 triggers on JDK 21 and
+    25: 8 helper-predicate ones (`Age`, `AGE`, `Touchy`, `someMap[key3]`, …) and 4 actual protected-property
+    mutations through `bind`. 5.3.19 shows no problem on either JDK. So **A3 passes on all three negative packets**,
+    285, 286 and 287. VF-026's entry still sits under `findings.md`'s Open heading, with a closed status, as the
+    collect left it.
 - Status: working
 
 ## Loop settings
