@@ -9,7 +9,10 @@ class-file reader, offline; nothing here runs Java. Runtime stream's.
     parse_target(target)              ("fixture.Gate", "allowed", "(I)Z" or None) from <class>#<method>(<descriptor>)
     feature_needed(jar)               the oldest Java feature release that loads every class in it (major - 44)
     methods(class_bytes)              {(name, descriptor)} a class declares
+    super_class(class_bytes)          its superclass's internal name (None for java/lang/Object)
     references(class_bytes)           {(owner, name, descriptor)} the method references in its constant pool
+    resolve_method(owner, n, d, look) the class whose declaration a method reference resolves to, up the superclass
+                                      chain as the JVM resolves it, among the classes `look` has bytes for
     debug_attributes(class_bytes)     the debugging attributes it records: which javac flags made it
 """
 
@@ -126,6 +129,13 @@ def _class_name(pool, index):
 def this_class(data):
     pool, offset = _pool(data)
     return _class_name(pool, struct.unpack_from(">H", data, offset + 2)[0])
+
+
+def super_class(data):
+    """The internal name of the class's superclass, or None for java/lang/Object (super_class 0)."""
+    pool, offset = _pool(data)
+    index = struct.unpack_from(">H", data, offset + 4)[0]
+    return _class_name(pool, index) if index else None
 
 
 def methods(data):
@@ -262,3 +272,21 @@ def references(data):
             name, desc = pool[nat][1]
             out.add((_class_name(pool, owner), _utf8(pool, name), _utf8(pool, desc)))
     return out
+
+
+def resolve_method(owner, name, descriptor, look):
+    """The class whose declaration of name+descriptor a Methodref owned by `owner` resolves to: the owner if it
+    declares it, else the nearest superclass that does (JVMS 5.4.3.3's class step). `look(internal name)` gives a
+    class's bytes or None. So javac's `isAllowed(field)` in a subclass of DataBinder, a reference owned by the
+    subclass, resolves to DataBinder. None when the chain reaches a class `look` has no bytes for (a JDK class) before
+    a declaration: never a guess. Superinterfaces' default methods aren't followed."""
+    seen = set()
+    while owner and owner not in seen:
+        seen.add(owner)
+        data = look(owner)
+        if data is None:
+            return None
+        if (name, descriptor) in methods(data):
+            return owner
+        owner = super_class(data)
+    return None

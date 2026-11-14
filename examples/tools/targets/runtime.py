@@ -23,7 +23,10 @@ route.
 
 On the classpath a preparation refuses: a class held by more than one entry (an adapter or driver shadowing the
 target, or two dependencies with one class), a target method missing from the original artifact, and an adapter that
-never references the target method (R3's "calls the selected upstream method"). The loaded target's origin, the
+never references the target method (R3's "calls the selected upstream method"). A reference owned by an adapter
+class counts as a call of the declaration it resolves to up the superclass chain, as the JVM resolves it: a subclass
+that calls an inherited protected method unqualified (example 286's ExposedDataBinder and DataBinder#isAllowed, VF-026)
+calls the original's method. The loaded target's origin, the
 ordered classpath, the JDK (by full path, `release` file and `java -version`) and every artifact's sha256 are
 recorded in the PreparedTarget and in `prepared.json` in the work directory, which the PreparedTarget names
 (`workdir`): run_controls and run_verifier find the preparation there, never by route.py's layout.
@@ -554,9 +557,22 @@ def _check_classpath(plan, workdir, classpath, original, adapter):
              "classSha256": hashlib.sha256(data).hexdigest()}
     if adapter:
         originals = set(runtime_jar.classes(workdir / original))
-        refs = {(o, n, d) for c in runtime_jar.classes(workdir / adapter)
-                for (o, n, d) in runtime_jar.references(runtime_jar.read_class(workdir / adapter, c))
-                if o in originals}
+        adapters = set(runtime_jar.classes(workdir / adapter))
+        holders = runtime_jar.resolve(classpath, workdir)
+
+        def look(cls):  # the bytes the JVM would load for cls: its first holder on this classpath
+            entry = (holders.get(cls) or [None])[0]
+            return runtime_jar.read_class(workdir / entry, cls) if entry and (workdir / entry).is_file() else None
+
+        # A reference owned by an adapter class (javac's unqualified isAllowed(field) in a subclass of DataBinder, as
+        # example 286's ExposedDataBinder has) is a call of the declaration it resolves to up the superclass chain.
+        refs = set()
+        for c in adapters:
+            for o, n, d in runtime_jar.references(runtime_jar.read_class(workdir / adapter, c)):
+                if o in adapters:
+                    o = runtime_jar.resolve_method(o, n, d, look) or o
+                if o in originals:
+                    refs.add((o, n, d))
         calls_target = any(o == name and n == method and (descriptor is None or d == descriptor) for o, n, d in refs)
         if not calls_target and plan.kind == "replay":
             raise Refused("adapter", f"the adapter {adapter} never references {plan.target}: it does not call the "

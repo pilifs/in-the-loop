@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T22:29:50.326Z",
-  "duration_seconds": 14670,
+  "ended": "2026-11-14T22:39:13.161Z",
+  "duration_seconds": 15233,
   "stats": {
     "turns": 88,
-    "api_calls": 600,
-    "tool_calls": 605,
+    "api_calls": 635,
+    "tool_calls": 644,
     "tool_errors": 11,
     "compactions": 15,
-    "peak_context_tokens": 218268,
+    "peak_context_tokens": 283733,
     "usage": {
-      "input_tokens": 1224,
-      "output_tokens": 373114,
-      "cache_read_input_tokens": 59158130,
-      "cache_creation_input_tokens": 1931480
+      "input_tokens": 1294,
+      "output_tokens": 398810,
+      "cache_read_input_tokens": 68253495,
+      "cache_creation_input_tokens": 1996945
     }
   },
   "tools": {
-    "Bash": 519,
+    "Bash": 554,
     "Read": 41,
-    "Edit": 36,
+    "Edit": 40,
     "Agent": 4,
     "AskUserQuestion": 2,
     "Write": 2,
@@ -40,6 +40,7 @@
   "files_touched": [
     "CLAUDE.md",
     "examples/tools/build.py",
+    "examples/tools/targets/runtime.py",
     "examples/tools/targets/runtime_simplematch/README.md",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/test_route.py",
@@ -264,24 +265,24 @@
     {
       "index": 15,
       "started": "2026-11-14T21:59:23.385Z",
-      "ended": "2026-11-14T22:29:50.326Z",
+      "ended": "2026-11-14T22:39:13.161Z",
       "turns": 7,
-      "api_calls": 62,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 46098,
-        "cache_read_input_tokens": 6634016,
-        "cache_creation_input_tokens": 203572
+        "input_tokens": 198,
+        "output_tokens": 71794,
+        "cache_read_input_tokens": 15729381,
+        "cache_creation_input_tokens": 269037
       },
-      "peak_context_tokens": 218268
+      "peak_context_tokens": 283733
     }
   ],
   "log": {
-    "sha256": "581b5270378ae12362ef006ecca65c53b6cf265652fe3a1413d87cc658f3c004",
-    "bytes": 19730971,
-    "lines": 6339,
-    "gzip_bytes": 4151195,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/581b5270378ae12362ef006ecca65c53b6cf265652fe3a1413d87cc658f3c004.jsonl.gz"
+    "sha256": "fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8",
+    "bytes": 20338180,
+    "lines": 6665,
+    "gzip_bytes": 4220017,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8.jsonl.gz"
   },
   "subagents": [
     {
@@ -593,6 +594,14 @@
       "summary": "Record verification results for 7 example-targets jobs (6 passed, 1 failed: 286 replay)",
       "body": "Run on vm-1 with the whole 92G/28-CPU budget (no feature loop, no streams). Passed as expected: 285 and 287 replay (gate A3), 306 replay and mutant-replay (gate A4), and 105's fix-property and fix-property-before (gate A5); their receipts and outputs were applied. 286's replay was not executed: revision vulnerable-release (Framework 5.3.18) failed to prepare. Recorded as VF-026 for the example-targets loop; nothing in the job was changed.",
       "log_sha256": "581b5270378ae12362ef006ecca65c53b6cf265652fe3a1413d87cc658f3c004"
+    },
+    {
+      "change_id": "nrxvrqpxlxwrspptrykuqmlmzyuyvppz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5: gates A3, A4 and A5 pass on the seven jobs' receipts; 286's adapter check fixed and its replay resubmitted (verification pending)",
+      "body": "The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as expected. A3 passes on 285 (Boot 2.7.17 violates the frozen method-label set at five triggers, 2.7.18 holds with its legitimate labels kept) and 287 (Security 6.3.7 violates at 12 overlong triggers, 6.3.8 holds), each on the original pinned JARs on JDK 21 and 25. A4 passes on 306 (spring-core 5.3.6 and 5.3.7 both hold; the drop-prefix mutant violates). A5 passes on 105: fix-property on commons-numbers 8cfc04e8 is established and not vacuous, and fix-property-before on e7c172d2 is refuted with the witness pow(-2, 31), replayed in the interpreter, both native and strict through the upstream-build route. For review: the proof receipts don't record what their JVM controls observed, since ingestion bundles no raw streams.\n\n286's replay (VF-026) never ran: the job's kept preparation record says the adapter check refused it, 'never references DataBinder#isAllowed'. Its ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a Methodref owned by the subclass, and runtime's _check_classpath counted only references owned by an original class, so every revision would have failed alike. runtime_jar.resolve_method now resolves a reference owned by an adapter class up the superclass chain as the JVM does, stopping where the classpath's bytes end; an override that doesn't call super still doesn't count. Reproducer: test_runtime.py's InheritedCallTest, which gave 286's diagnostic on the old code. Rerun offline on the job's kept 5.3.18 JARs, the check finds the call. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 209, test_build.py 190, test_pipeline.py 32, build.py --plan). VF-026 has the cause, and 286's example.json a note.",
+      "log_sha256": "fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8"
     }
   ],
   "logs": {
@@ -738,6 +747,12 @@
       "bytes": 7249330,
       "lines": 2390,
       "gzip_bytes": 1482452,
+      "url": null
+    },
+    "fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8": {
+      "bytes": 20338180,
+      "lines": 6665,
+      "gzip_bytes": 4220017,
       "url": null
     },
     "fda79ced1b3cbdeb54a971385b9dd964e2db55a609362943dc4999ac96af305b": {

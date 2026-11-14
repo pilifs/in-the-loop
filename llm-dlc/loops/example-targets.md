@@ -1099,6 +1099,55 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     - `20261114-215345-example-105-fix-property-before-gate-a5`
 
     Once they are collected, read each receipt as the previous entry's Next says.
+- 2026-11-14, **the seven jobs read: gates A3, A4 and A5 pass on their receipts. 286's replay failed on a runtime
+  defect, now fixed and resubmitted** (VF-026). The verification loop collected the jobs in `kkppnnuy`.
+  - **A3 (original negative replay) passes, on 285 and 287**. Each was a published-artifact replay at `863e1015`,
+    every revision on JDK 21.0.13 and 25.0.5, each run exiting 0 with structured observations, read by the packet's
+    independent oracle:
+    - **285** (Boot 2.7.17 → 2.7.18, 16 observations a run): 2.7.17 violates the frozen label set at `connect`,
+      `empty-token`, `long-token`, `lowercase-get` and `xscf`. 2.7.18 shows no problem, so its security response holds
+      on the same triggers and the legitimate probes keep their labels. The oracle reports a legitimate control's
+      failure as a problem too.
+    - **287** (Security 6.3.7 → 6.3.8, 34 observations a run): 6.3.7 violates at 12 overlong triggers (ASCII,
+      multibyte, split-character, supplementary, 73 and 80 bytes). 6.3.8 shows no problem.
+  - **A4 (independent positive replay) passes, on 306**: `replay` (spring-core 5.3.6 → 5.3.7, 40 observations a
+    run): both releases hold. `mutant-replay`: 5.3.7 holds, and the constructed `drop-prefix` mutant violates the same
+    oracle at its prefix probes (`abc*` against `xbcdef` among them).
+  - **A5 (supported verifier calibration) passes, on 105**, through the upstream-build route (Maven on JDK 11), the
+    runner's own jvmcontract, native and strict:
+    - `fix-property` on 8cfc04e8 is `established`, not vacuous ("`pow(k=-2, e=0)` reaches the calls"): 1 property
+      over `k: int × e: int`, unwind 16 with unwinding assertions, 3.0 s.
+    - `fix-property-before` on e7c172d2 is `refuted` with the witness `pow(-2, 31)`, which throws
+      `ArithmeticException("integer overflow")`, replayed in the interpreter.
+    - Each receipt's JVM controls on JDK 21 and 25 exited 0. **For review**: what those controls observed isn't in
+      the receipt: ingestion bundles no raw streams, the same item as request 7's. So the JVM side of the witness is
+      the job's, not the receipt's.
+  - **286's replay** (`20261114-214818-…`) never ran a driver: "revision vulnerable-release is failed, not
+    artifacts-ready". The job's kept work directory has the reason in the preparation's `prepared.json`: stage
+    `adapter`, "never references `DataBinder#isAllowed`".
+    - 286's `ExposedDataBinder extends DataBinder` calls the protected `isAllowed(field)` unqualified. javac writes
+      that as a Methodref owned by the subclass (`javap`: `invokevirtual isAllowed:(Ljava/lang/String;)Z`). Runtime's
+      `_check_classpath` counted only references owned by an original class. So the cause is not 5.3.18's JARs:
+      5.3.19 and the mutant would have failed the same way.
+    - **Reproducer**: `test_runtime.py`'s `InheritedCallTest` (3 tests). On the old code, a subclass's unqualified
+      call gave 286's diagnostic.
+    - **Fix**: `runtime_jar.super_class` and `resolve_method` resolve a reference owned by an adapter class up the
+      superclass chain, as the JVM does (JVMS 5.4.3.3's class step). The search stops at a class whose bytes aren't
+      on the classpath, never guessing. `_check_classpath` resolves through the classpath's first holders. An
+      override that doesn't call `super` still doesn't count. The adapter is unchanged. `runtime.py`'s docstring says
+      this.
+    - **Checked on the real bytes**: the check, rerun offline on the job's kept 5.3.18 JARs, now finds
+      `DataBinder#isAllowed` among the adapter's six original calls.
+    - **Side effect**: a proof task whose adapter reaches its target through a subclass now records
+      `adapterCallsTarget: true`, so its controls run. That is 286's `isAllowed` and `bind` tasks.
+    - **Resubmitted**: `20261114-223812-example-286-replay-gate-a3-cve-2022-2296`, expecting "as expected". VF-026 has
+      the cause and the job, and stays open until the job passes. 286's `example.json` has a note.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (209, three new),
+    `test_build.py` (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Next**: the user's decisions: the `maven.aliyun.com` host in `runtime_maven.py`, with a reproducer; then 307's
+    Gradle route with the 5.2.0.M4 output check, as a job; then 305's slice and the M6 replay. After them, the
+    remaining replays (285–287 `mutant-replay`, 105 `replay`) and step 1's proof tasks and probes, then the joint
+    acceptance. 286's resubmitted replay runs meanwhile.
 - Status: working
 
 ## Loop settings

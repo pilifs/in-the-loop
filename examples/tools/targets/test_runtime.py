@@ -1015,6 +1015,79 @@ class ParameterNamesTest(unittest.TestCase):
                 self.assertIsNone(runtime_jar.parameter_names(data, "h", "()V"), "a method the class doesn't declare")
 
 
+class InheritedCallTest(unittest.TestCase):
+    """An adapter that reaches the target through a subclass, as example 286's ExposedDataBinder reaches DataBinder's
+    protected isAllowed: javac writes the unqualified call `isAllowed(field)` as a Methodref owned by the subclass, and
+    the JVM resolves it up the superclass chain (JVMS 5.4.3.3) to the original's declaration. VF-026: job
+    20261114-214818-example-286-replay-gate-a3-cve-2022-2296 failed to prepare because the check took the owner
+    literally ("the adapter ... never references org.springframework.validation.DataBinder#isAllowed")."""
+
+    BASE = "package p; public class Base { protected boolean ok(String s) { return s.isEmpty(); } }"
+    ADAPTERS = {
+        "Sub": "package a; public class Sub extends p.Base { public boolean decide(String s) { return ok(s); } }",
+        # Through a second subclass, as a delegating subclass of a subclass would.
+        "Deeper": "package a; public class Deeper extends Sub { public boolean twice(String s) { return ok(s); } }",
+        # An override that never calls super: its own ok(...) is called, not the original's.
+        "Own": "package a; public class Own extends p.Base { @Override protected boolean ok(String s) { return true; }"
+               " public boolean decide(String s) { return ok(s); } }",
+    }
+
+    def jars(self, d, names):
+        home = runtime_jdk.homes().get("25") or next(iter(runtime_jdk.homes().values()), None)
+        if home is None:
+            self.skipTest("no JDK")
+        import zipfile
+        src = Path(d) / "src"
+        (src / "p").mkdir(parents=True)
+        (src / "a").mkdir()
+        (src / "p/Base.java").write_text(self.BASE)
+        for name, text in self.ADAPTERS.items():
+            (src / f"a/{name}.java").write_text(text)
+        out = Path(d) / "out"
+        subprocess.run([str(Path(home) / "bin/javac"), "-d", str(out), *map(str, sorted(src.rglob("*.java")))],
+                       check=True)
+        for jar, classes in (("original.jar", ["p/Base"]), ("adapter.jar", [f"a/{n}" for n in names])):
+            with zipfile.ZipFile(Path(d) / jar, "w") as z:
+                for c in classes:
+                    z.write(out / f"{c}.class", f"{c}.class")
+        return Path(d)
+
+    def check(self, names, kind="replay"):
+        with tempfile.TemporaryDirectory() as d:
+            work = self.jars(d, names)
+            plan = type("Plan", (), {"target": "p.Base#ok(Ljava/lang/String;)Z", "kind": kind})()
+            return runtime._check_classpath(plan, work, ["adapter.jar", "original.jar"], "original.jar", "adapter.jar")
+
+    def test_a_call_through_a_subclass_resolves_to_the_originals_declaration(self):
+        found = self.check(["Sub"])
+        self.assertTrue(found["adapterCallsTarget"])
+        self.assertEqual(found["adapterCalls"], ["p.Base#<init>()V", "p.Base#ok(Ljava/lang/String;)Z"],
+                         "the implicit super() is a call into the original too")
+        self.assertTrue(self.check(["Sub", "Deeper"])["adapterCallsTarget"], "through two subclasses")
+
+    def test_an_override_that_never_calls_super_does_not_call_the_target(self):
+        with self.assertRaises(runtime.Refused) as refused:
+            self.check(["Own"])
+        self.assertEqual(refused.exception.stage, "adapter")
+        found = self.check(["Own"], kind="prove")
+        self.assertEqual((found["adapterCallsTarget"], found["adapterCalls"]), (False, ["p.Base#<init>()V"]))
+
+    def test_the_resolution_follows_declarations_and_stops_where_the_bytes_end(self):
+        with tempfile.TemporaryDirectory() as d:
+            work = self.jars(d, ["Sub", "Deeper", "Own"])
+            known = {}
+            for jar in ("original.jar", "adapter.jar"):
+                for c in runtime_jar.classes(work / jar):
+                    known[c] = runtime_jar.read_class(work / jar, c)
+            self.assertEqual(runtime_jar.super_class(known["a/Deeper"]), "a/Sub")
+            self.assertEqual(runtime_jar.super_class(known["p/Base"]), "java/lang/Object")
+            resolve = lambda o, n="ok": runtime_jar.resolve_method(o, n, "(Ljava/lang/String;)Z", known.get)  # noqa: E731
+            self.assertEqual((resolve("a/Deeper"), resolve("a/Sub"), resolve("a/Own"), resolve("p/Base")),
+                             ("p/Base", "p/Base", "a/Own", "p/Base"))
+            self.assertIsNone(resolve("a/Sub", "missing"), "no declaration in the bytes given: unresolved, not a guess")
+            self.assertIsNone(resolve("java/lang/String"), "a class whose bytes aren't given")
+
+
 FAKE_JVMCONTRACT = """#!{python}
 # A stand-in for jvmcontract in these tests: it records its argv, cwd and environment, then answers as mode.json says
 # for its subcommand. It proves nothing; the real verifier runs as a pipeline job (runtime_calibrate.py).
