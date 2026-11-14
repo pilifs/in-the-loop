@@ -3359,7 +3359,11 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     are known, and the manifest committed with it names the same log. Commits only another workspace's
     line holds are left to that workspace's own check (each `commit` runs one), and to this one once
     they are merged: until then their manifests are not in this tree, so every one would be reported
-    missing (a feature loop's streams, each in its own workspace, made 26 such false errors at once)."""
+    missing (a feature loop's streams, each in its own workspace, made 26 such false errors at once).
+    A commit both lines hold can still be stamped by the other: a session at work there stamps the
+    changes made while it ran, rewriting them under this line, and only that line's copy of its
+    manifest lists the new log. Such a trailer is a note when another workspace's working copy holds
+    a manifest that lists the log, since the merge brings it here; otherwise it is an error."""
     errors, notes = [], []
     if not has_jj():
         return errors, notes
@@ -3368,6 +3372,9 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     with perf.phase("read trees"):
         files = tree_files([(c["commit_id"], path) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
                             if sha and sid in manifests and sha in manifests[sid].get("logs", {}) for path in paths(sid)])
+    unlisted = {(sid, sha) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
+                if sha and sid in manifests and sha not in manifests[sid].get("logs", {})}
+    elsewhere = listed_elsewhere(unlisted, paths) if unlisted else {}
     for c in traced:
         for sid, sha in TRAILER_RE.findall(c["description"]):
             where = f"change {c['change_id'][:12]}"
@@ -3375,6 +3382,10 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                 notes.append(f"{where}: legacy trailer without sha256 for {sid}")
             elif sid not in manifests:
                 errors.append(f"{where}: session {sid} has no manifest")
+            elif (sid, sha) in elsewhere:
+                notes.append(f"{where}: points at log {sha[:12]} of {sid}, which this tree's manifest predates: "
+                             f"workspace {elsewhere[sid, sha]}'s copy of it lists the log, and a merge brings that "
+                             "here")
             elif sha not in manifests[sid].get("logs", {}):
                 errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
             else:
@@ -3385,6 +3396,31 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                     notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
                                  f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
     return errors, notes
+
+
+def listed_elsewhere(wanted: set[tuple[str, str]], paths) -> dict[tuple[str, str], str]:
+    """Of the (session, log) pairs in `wanted`, those whose session's manifest in another workspace's
+    working-copy commit lists the log, with that workspace's name. Read from the commits jj recorded,
+    without snapshotting any working copy."""
+    r = jj("log", "--ignore-working-copy", "--no-graph", "-r", "working_copies() ~ @",
+           "-T", 'commit_id ++ "\t" ++ working_copies ++ "\n"')
+    if r.returncode:
+        return {}
+    others = [(commit, names.split()[0].removesuffix("@")) for line in r.stdout.splitlines()
+              if len((parts := line.split("\t"))) == 2 and (commit := parts[0]) and (names := parts[1]).strip()]
+    sessions = {sid for sid, _ in wanted}
+    files = tree_files([(commit, path) for commit, _ in others for sid in sessions for path in paths(sid)])
+    found = {}
+    for commit, name in others:
+        for sid, sha in wanted:
+            for path in paths(sid):
+                data = files.get((commit, path))
+                try:
+                    if data is not None and sha in json.loads(data).get("logs", {}):
+                        found.setdefault((sid, sha), name)
+                except ValueError:
+                    pass
+    return found
 
 
 CONFLICT_MARKER_RE = re.compile(r"^(?:<{7,}|>{7,})", re.M)  # a hunk's first and last line, in every marker style

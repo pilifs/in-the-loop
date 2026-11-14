@@ -137,6 +137,34 @@ class Workspaces(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("session session-b has no manifest", errors[0])
 
+    def restamped_under_b(self, listed_in_a: bool) -> tuple[list, list]:
+        """A's change, shared by b's line, stamped again in a with a newer log of session-a (as a session
+        still at work there does), with a's manifest listing that log or not: what b's check makes of it."""
+        with self.at(self.a):
+            self.add_session("session-a", "a" * 64, "Made-up A")
+            self.line_a = self.traced("A's change", "session-a", "a" * 64)
+        b = self.base_dir / "b"
+        with self.at(self.a):
+            self.run_jj("workspace", "add", "--name", "b", "-r", self.line_a, str(b))
+            if listed_in_a:
+                m = sync.load_manifest("session-a")
+                m["logs"]["e" * 64] = {"bytes": 1, "lines": 1, "gzip_bytes": 1, "url": None}
+                sync.manifest_path("session-a").write_text(json.dumps(m, indent=2) + "\n")
+            self.run_jj("describe", "-r", self.line_a, "-m", f"A's change\n\n{sync.TRAILER}: session-a sha256:{'e' * 64}\n")
+        with self.at(b):
+            self.run_jj("workspace", "update-stale")
+            return sync.check_trailers(sync.all_manifests())
+
+    def test_a_shared_change_stamped_in_another_workspace_is_a_note_while_its_manifest_there_lists_the_log(self):
+        errors, notes = self.restamped_under_b(listed_in_a=True)
+        self.assertEqual(errors, [])
+        self.assertEqual(len([n for n in notes if "workspace default's copy of it lists the log" in n]), 1, notes)
+
+    def test_a_shared_change_stamped_with_a_log_no_manifest_lists_is_still_an_error(self):
+        errors, _ = self.restamped_under_b(listed_in_a=False)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("points at log eeeeeeeeeeee that the manifest does not list", errors[0])
+
     # regenerate: the generated files after a merge
 
     def test_the_four_generated_files_conflict_and_regenerating_settles_them(self):

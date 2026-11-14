@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 96, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 21:24 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 21:26 UTC |
 | Prompts | 2,251 |
-| Model calls | 21,452 |
-| Tool calls | 22,425 (384 failed) |
+| Model calls | 21,460 |
+| Tool calls | 22,433 (384 failed) |
 | Compactions | 347 |
 | Subagents | 16 |
-| Tokens written | 22,083,573 |
-| Tokens read | 3,329,093,291 (97.9% from cache) |
-| Commits with a trace | 654 |
-| Log snapshots | 806 (1700.8 MB gzipped, 732 uploaded) |
+| Tokens written | 22,093,375 |
+| Tokens read | 3,330,770,421 (97.9% from cache) |
+| Commits with a trace | 655 |
+| Log snapshots | 807 (1701.2 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -122,7 +122,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
 | 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 2 h 15 min | `claude-opus-5-5` | 45 | 264 | 264 | 7 | 7 | 164,466 | 14 |
-| 2026-11-14 21:13 UTC | [Recent sessions summary](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | open | 10 min | `claude-opus-5-5` | 6 | 55 | 52 | 0 | 1 | 201,409 | 1 |
+| 2026-11-14 21:13 UTC | [Recent sessions summary](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | open | 13 min | `claude-opus-5-5` | 6 | 63 | 60 | 0 | 1 | 214,126 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -227,15 +227,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 154,956 | 548 | 827,424 | 22,695,499 | 96.5% | 152 |
-| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 74,592 | 110 | 237,287 | 6,559,095 | 96.5% | 91 |
+| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 84,394 | 126 | 250,004 | 8,223,492 | 97.0% | 100 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 19,663 | 87.7% | 96 |
+| `Bash` | 19,670 | 87.7% | 96 |
 | `Read` | 1,052 | 4.7% | 46 |
-| `Edit` | 820 | 3.7% | 46 |
+| `Edit` | 821 | 3.7% | 46 |
 | `Write` | 516 | 2.3% | 42 |
 | `ToolSearch` | 125 | 0.6% | 32 |
 | `Monitor` | 98 | 0.4% | 36 |
@@ -910,6 +910,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 652 | change `lllrnmuo` | example-targets Phase 5 step 1: the six packets' mutation controls become W1 mutant revisions, with tasks of their own | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea.jsonl.gz)) |
 | 653 | change `vrzlzssr` | example-targets Phase 5 step 1: the router regenerated, so index.json and examples/README.md list 285-300 and 305-307 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/28e515b16a47dd63153643b1163d868bdbf2a2f5e8b40607b36e31884832bc2b.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/ef6b8e92dfcb6e3761f832779bc45db878d357ad34d49f5e17e521bfcae76e9a.jsonl.gz)) |
 | 654 | change `ltmykkvx` | stream-conductor step 1: the decision record, llm-dlc/decisions/NAME.jsonl, with decisions.py and its view | [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) ([log](https://terminalvalue.net/raw-traces/4a47a539-a6f1-4f2d-b4c9-828596296714/d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69.jsonl.gz)) |
+| 655 | change `rsmpqlsw` | sync.py check: a shared change stamped in another workspace is a note while that workspace's manifest lists its log | [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) ([log](https://terminalvalue.net/raw-traces/4a47a539-a6f1-4f2d-b4c9-828596296714/e76a41014145c27970f9faff5a85b4e5b8f6d42d587627957bc570781ada9e19.jsonl.gz)) |
 
 ## Logs
 
@@ -1012,7 +1013,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 14 | 0 | 9.7 MB | `d6b1e0f6099f`, not uploaded |
-| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 1 | 0 | 0.3 MB | `d4a7bf8b9a2e`, not uploaded |
+| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 2 | 0 | 0.7 MB | `e76a41014145`, not uploaded |
 
 ## Session notes
 

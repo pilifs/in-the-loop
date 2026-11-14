@@ -321,6 +321,12 @@ The next parallel run uses the conductor:
       rewrites the conductor's snapshot;
     - the views add an "overturned, waiting for the conductor" group between unreviewed and the rest.
   - Next: step 2, inboxes.
+- 2026-11-14, a fix found by step 1's own commit: `check` reported 8 false errors on example-targets commits under
+  this branch.
+  - Cause: session `d34058d5`, still at work in the default workspace, had stamped them, and only that line's copy of
+    its manifest lists the log.
+  - Fix: such a trailer is now a note when another workspace's working copy holds a manifest that lists the log.
+  - Two tests in `test_workspaces.py`; 212 tool tests pass.
 - Status: working
 
 ## Loop settings
