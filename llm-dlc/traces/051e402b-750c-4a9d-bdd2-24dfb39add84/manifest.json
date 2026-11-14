@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T22:39:13.161Z",
-  "duration_seconds": 15233,
+  "ended": "2026-11-14T22:40:34.190Z",
+  "duration_seconds": 15314,
   "stats": {
-    "turns": 88,
-    "api_calls": 635,
-    "tool_calls": 644,
+    "turns": 93,
+    "api_calls": 638,
+    "tool_calls": 646,
     "tool_errors": 11,
-    "compactions": 15,
-    "peak_context_tokens": 283733,
+    "compactions": 16,
+    "peak_context_tokens": 289171,
     "usage": {
-      "input_tokens": 1294,
-      "output_tokens": 398810,
-      "cache_read_input_tokens": 68253495,
-      "cache_creation_input_tokens": 1996945
+      "input_tokens": 1300,
+      "output_tokens": 400112,
+      "cache_read_input_tokens": 68837776,
+      "cache_creation_input_tokens": 2020012
     }
   },
   "tools": {
-    "Bash": 554,
-    "Read": 41,
+    "Bash": 555,
+    "Read": 42,
     "Edit": 40,
     "Agent": 4,
     "AskUserQuestion": 2,
@@ -265,24 +265,38 @@
     {
       "index": 15,
       "started": "2026-11-14T21:59:23.385Z",
-      "ended": "2026-11-14T22:39:13.161Z",
-      "turns": 7,
-      "api_calls": 97,
+      "ended": "2026-11-14T22:39:35.150Z",
+      "turns": 8,
+      "api_calls": 99,
       "usage": {
-        "input_tokens": 198,
-        "output_tokens": 71794,
-        "cache_read_input_tokens": 15729381,
-        "cache_creation_input_tokens": 269037
+        "input_tokens": 202,
+        "output_tokens": 72883,
+        "cache_read_input_tokens": 16300478,
+        "cache_creation_input_tokens": 274475
       },
-      "peak_context_tokens": 283733
+      "peak_context_tokens": 289171
+    },
+    {
+      "index": 16,
+      "started": "2026-11-14T22:40:28.562Z",
+      "ended": "2026-11-14T22:40:34.190Z",
+      "turns": 4,
+      "api_calls": 1,
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 213,
+        "cache_read_input_tokens": 13184,
+        "cache_creation_input_tokens": 17629
+      },
+      "peak_context_tokens": 30815
     }
   ],
   "log": {
-    "sha256": "fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8",
-    "bytes": 20338180,
-    "lines": 6665,
-    "gzip_bytes": 4220017,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8.jsonl.gz"
+    "sha256": "68c0005ec80aa2ccd39644719c64fdad426e9df9830ed6d57f822cdc199f0737",
+    "bytes": 20816792,
+    "lines": 6766,
+    "gzip_bytes": 4359964,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/68c0005ec80aa2ccd39644719c64fdad426e9df9830ed6d57f822cdc199f0737.jsonl.gz"
   },
   "subagents": [
     {
@@ -602,6 +616,14 @@
       "summary": "example-targets Phase 5: gates A3, A4 and A5 pass on the seven jobs' receipts; 286's adapter check fixed and its replay resubmitted (verification pending)",
       "body": "The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as expected. A3 passes on 285 (Boot 2.7.17 violates the frozen method-label set at five triggers, 2.7.18 holds with its legitimate labels kept) and 287 (Security 6.3.7 violates at 12 overlong triggers, 6.3.8 holds), each on the original pinned JARs on JDK 21 and 25. A4 passes on 306 (spring-core 5.3.6 and 5.3.7 both hold; the drop-prefix mutant violates). A5 passes on 105: fix-property on commons-numbers 8cfc04e8 is established and not vacuous, and fix-property-before on e7c172d2 is refuted with the witness pow(-2, 31), replayed in the interpreter, both native and strict through the upstream-build route. For review: the proof receipts don't record what their JVM controls observed, since ingestion bundles no raw streams.\n\n286's replay (VF-026) never ran: the job's kept preparation record says the adapter check refused it, 'never references DataBinder#isAllowed'. Its ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a Methodref owned by the subclass, and runtime's _check_classpath counted only references owned by an original class, so every revision would have failed alike. runtime_jar.resolve_method now resolves a reference owned by an adapter class up the superclass chain as the JVM does, stopping where the classpath's bytes end; an override that doesn't call super still doesn't count. Reproducer: test_runtime.py's InheritedCallTest, which gave 286's diagnostic on the old code. Rerun offline on the job's kept 5.3.18 JARs, the check finds the call. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 209, test_build.py 190, test_pipeline.py 32, build.py --plan). VF-026 has the cause, and 286's example.json a note.",
       "log_sha256": "fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8"
+    },
+    {
+      "change_id": "kxzlrsouuzkkpmvzomrxzknqsmtynuts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result for example 286's replay (passed): VF-026 closed",
+      "body": "Job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 ran on vm-1 after the adapter check fix: 1 step passed in 4.0 s, task-as-expected, receipt under examples/286-*/receipts/replay. Collect applied its 4 outputs; findings.md VF-026 marked closed by this job.",
+      "log_sha256": "68c0005ec80aa2ccd39644719c64fdad426e9df9830ed6d57f822cdc199f0737"
     }
   ],
   "logs": {
@@ -657,6 +679,12 @@
       "bytes": 16592560,
       "lines": 5313,
       "gzip_bytes": 3484708,
+      "url": null
+    },
+    "68c0005ec80aa2ccd39644719c64fdad426e9df9830ed6d57f822cdc199f0737": {
+      "bytes": 20816792,
+      "lines": 6766,
+      "gzip_bytes": 4359964,
       "url": null
     },
     "7efb17b82cda691603414f20c85c1b231b17535a4a409888829b7e56ca2461fd": {

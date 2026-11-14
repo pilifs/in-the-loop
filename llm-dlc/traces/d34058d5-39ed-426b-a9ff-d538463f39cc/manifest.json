@@ -586,6 +586,14 @@
       "summary": "example-targets Phase 5: gates A3, A4 and A5 pass on the seven jobs' receipts; 286's adapter check fixed and its replay resubmitted (verification pending)",
       "body": "The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as expected. A3 passes on 285 (Boot 2.7.17 violates the frozen method-label set at five triggers, 2.7.18 holds with its legitimate labels kept) and 287 (Security 6.3.7 violates at 12 overlong triggers, 6.3.8 holds), each on the original pinned JARs on JDK 21 and 25. A4 passes on 306 (spring-core 5.3.6 and 5.3.7 both hold; the drop-prefix mutant violates). A5 passes on 105: fix-property on commons-numbers 8cfc04e8 is established and not vacuous, and fix-property-before on e7c172d2 is refuted with the witness pow(-2, 31), replayed in the interpreter, both native and strict through the upstream-build route. For review: the proof receipts don't record what their JVM controls observed, since ingestion bundles no raw streams.\n\n286's replay (VF-026) never ran: the job's kept preparation record says the adapter check refused it, 'never references DataBinder#isAllowed'. Its ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a Methodref owned by the subclass, and runtime's _check_classpath counted only references owned by an original class, so every revision would have failed alike. runtime_jar.resolve_method now resolves a reference owned by an adapter class up the superclass chain as the JVM does, stopping where the classpath's bytes end; an override that doesn't call super still doesn't count. Reproducer: test_runtime.py's InheritedCallTest, which gave 286's diagnostic on the old code. Rerun offline on the job's kept 5.3.18 JARs, the check finds the call. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 209, test_build.py 190, test_pipeline.py 32, build.py --plan). VF-026 has the cause, and 286's example.json a note.",
       "log_sha256": "f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2"
+    },
+    {
+      "change_id": "kxzlrsouuzkkpmvzomrxzknqsmtynuts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result for example 286's replay (passed): VF-026 closed",
+      "body": "Job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 ran on vm-1 after the adapter check fix: 1 step passed in 4.0 s, task-as-expected, receipt under examples/286-*/receipts/replay. Collect applied its 4 outputs; findings.md VF-026 marked closed by this job.",
+      "log_sha256": "f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2"
     }
   ],
   "logs": {

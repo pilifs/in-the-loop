@@ -188,6 +188,12 @@ The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as
 
 286's replay (VF-026) never ran: the job's kept preparation record says the adapter check refused it, 'never references DataBinder#isAllowed'. Its ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a Methodref owned by the subclass, and runtime's _check_classpath counted only references owned by an original class, so every revision would have failed alike. runtime_jar.resolve_method now resolves a reference owned by an adapter class up the superclass chain as the JVM does, stopping where the classpath's bytes end; an override that doesn't call super still doesn't count. Reproducer: test_runtime.py's InheritedCallTest, which gave 286's diagnostic on the old code. Rerun offline on the job's kept 5.3.18 JARs, the check finds the call. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 209, test_build.py 190, test_pipeline.py 32, build.py --plan). VF-026 has the cause, and 286's example.json a note.
 
+### Record verification result for example 286's replay (passed): VF-026 closed
+
+change `kxzlrsouuzkk` · [log `eb9ec59e4450`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488.jsonl.gz)
+
+Job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 ran on vm-1 after the adapter check fix: 1 step passed in 4.0 s, task-as-expected, receipt under examples/286-*/receipts/replay. Collect applied its 4 outputs; findings.md VF-026 marked closed by this job.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/eb9ec59e4450fd57013069ed166f1371a3087218d60be37487845bd537d3b488.jsonl.gz) has every step in between: reasoning, tool calls and their results.
