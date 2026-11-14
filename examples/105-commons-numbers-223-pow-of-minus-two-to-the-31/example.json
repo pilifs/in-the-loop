@@ -39,7 +39,12 @@
   "verdictLabel": "✗ the intended change found; ✓ confined to it; ✓ Javadoc proved",
   "notes": [
     "Next: `pow(long, int)`, which the same pull request changed and the recorded run did not reach.",
-    "The confined-change proof did not finish in the default 300 s and took 1083 s with `--timeout 1500`: budget proofs over two full `int` ranges in tens of minutes."
+    "The confined-change proof did not finish in the default 300 s and took 1083 s with `--timeout 1500`: budget proofs over two full `int` ranges in tens of minutes.",
+    "Migrated to the external-target route on 2026-11-14 by the positive stream of llm-dlc/loops/example-targets.md (its P5): target.json, sources.lock.json, claims/, replay/, controls/ and records/ were added; README.md, the summary and the verdict label are the historical report of 2026-11-01 and stay as written. A receipt of the new route goes beside them, never in their place.",
+    "Revisions resolved afresh from github.com: before e7c172d2 (the only parent of the squash merge), after 8cfc04e8 (the merge), and the pull request's head 79aa4643, whose ArithmeticUtils.java is after's blob. Maven Central's commons-numbers-core 1.3 carries before's file (blob 153b3202, in its sources JAR too) and the same bytecode as that file compiled alone; no release carries after's, so the route is the upstream Maven build of each commit (runtime's preparation, not yet run).",
+    "The selected A5 obligation is claims/pow-minus-two.json: for k == -2 and 0 <= e <= 31, pow(int,int) returns (-2)^e. Native strict, expected established on after and refuted on before at (-2, 31), the witness the replay reproduces. It reaches no gap: jvmcontract gaps lists only the StringBuilder calls of the e < 0 message (records/pow-gaps.json), which its assume excludes. The report's confined-change row is predicted refused under strict for exactly those gaps.",
+    "Hand replay on 2026-11-14 (a note, not evidence): ArithmeticUtils.java of each commit compiled alone with JDK 11's javac --release 8, plus Central's 1.3 JAR, each with the driver (driver.jar sha256 315ecf00…) in its own JVM on JDK 21 and 25, over the 75 probes. controls/oracle.py: after meets the Javadoc's contract on all 75; before and 1.3 give byte-identical output and deviate at (-2, 31) alone (ArithmeticException); the property holds on all 32 points at after and fails at e = 31 alone at before. Checked with the wrong revision's output and a truncated file, the oracle fails, as it should."
   ],
-  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md.",
+  "target": "target.json"
 }

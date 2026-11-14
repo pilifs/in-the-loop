@@ -12,29 +12,37 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.109Z",
-  "ended": "2026-11-14T16:13:11.164Z",
-  "duration_seconds": 2784,
+  "ended": "2026-11-14T16:26:06.189Z",
+  "duration_seconds": 3559,
   "stats": {
-    "turns": 20,
-    "api_calls": 186,
-    "tool_calls": 188,
-    "tool_errors": 7,
-    "compactions": 4,
-    "peak_context_tokens": 219329,
+    "turns": 25,
+    "api_calls": 246,
+    "tool_calls": 251,
+    "tool_errors": 9,
+    "compactions": 5,
+    "peak_context_tokens": 223433,
     "usage": {
-      "input_tokens": 372,
-      "output_tokens": 198110,
-      "cache_read_input_tokens": 22346228,
-      "cache_creation_input_tokens": 636579
+      "input_tokens": 492,
+      "output_tokens": 257087,
+      "cache_read_input_tokens": 31226890,
+      "cache_creation_input_tokens": 839679
     }
   },
   "tools": {
-    "Bash": 164,
-    "Write": 10,
-    "Read": 8,
-    "Edit": 6
+    "Bash": 211,
+    "Write": 18,
+    "Read": 13,
+    "Edit": 9
   },
   "files_touched": [
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/claims/pow-minus-two.json",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/claims/pow-preservation.json",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/controls/oracle.py",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/records/legacy-inventory.json",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/replay/driver/inloop/p105/PowDriver.java",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/replay/probes.json",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/sources.lock.json",
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/target.json",
     "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/replay/driver/inloop/p305/OutcomeDriver.java",
     "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
     "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/controls/oracle.py",
@@ -107,24 +115,38 @@
     {
       "index": 4,
       "started": "2026-11-14T16:00:17.814Z",
-      "ended": "2026-11-14T16:13:11.164Z",
-      "turns": 4,
-      "api_calls": 56,
+      "ended": "2026-11-14T16:13:37.903Z",
+      "turns": 5,
+      "api_calls": 59,
       "usage": {
-        "input_tokens": 112,
-        "output_tokens": 63912,
-        "cache_read_input_tokens": 8867070,
-        "cache_creation_input_tokens": 206143
+        "input_tokens": 118,
+        "output_tokens": 65485,
+        "cache_read_input_tokens": 9528609,
+        "cache_creation_input_tokens": 210247
       },
-      "peak_context_tokens": 219329
+      "peak_context_tokens": 223433
+    },
+    {
+      "index": 5,
+      "started": "2026-11-14T16:14:45.320Z",
+      "ended": "2026-11-14T16:26:06.189Z",
+      "turns": 4,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 114,
+        "output_tokens": 57404,
+        "cache_read_input_tokens": 8219123,
+        "cache_creation_input_tokens": 198996
+      },
+      "peak_context_tokens": 212182
     }
   ],
   "log": {
-    "sha256": "bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc",
-    "bytes": 5754949,
-    "lines": 1911,
-    "gzip_bytes": 1109985,
-    "path": "llm-dlc/traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/logs/bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc.jsonl.gz"
+    "sha256": "03e415382efc0fa6c84119893f79906dc0f760b561eb56e6b029dd429571dd95",
+    "bytes": 7622562,
+    "lines": 2514,
+    "gzip_bytes": 1476423,
+    "path": "llm-dlc/traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/logs/03e415382efc0fa6c84119893f79906dc0f760b561eb56e6b029dd429571dd95.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -167,9 +189,23 @@
       "summary": "example-targets positive: propose upstream BCrypt test vectors for the allow list",
       "body": "P3's commit warned about 15 long-token findings in this session's log. Each was checked with review show (masked): every one is an expected hash from the public test_vectors table of Spring Security's BCryptTests.java (blob dc242a49), printed while choosing example 307's fixed salt. That is published upstream test data, not a credential. Each is proposed with sync.py allow propose and stays a warning until the user approves it. Progress records this for the user, and brings the coordinator's list of cross-workspace 'no manifest' errors to eleven changes, all other streams'.",
       "log_sha256": "bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc"
+    },
+    {
+      "change_id": "xopqylpxvzsymtlxoqoxvvtoplsuylvm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets positive P5: 105 migrated, with its A5 obligation, oracle, driver, probes and the 105-109 inventory",
+      "body": "Example 105 (apache/commons-numbers#223, ArithmeticUtils.pow) gets a target.json sidecar and its packet; its handwritten README, summary and verdict label stay as the historical report. Revisions were resolved afresh from github.com: before e7c172d2 (the squash merge's only parent), after 8cfc04e8 (the merge), and the pull request head 79aa4643, whose ArithmeticUtils.java is after's. Maven Central's commons-numbers-core 1.3 carries before's file and the same bytecode as that file compiled alone; no release carries after's, so the route is the upstream Maven build of each commit (JDK 11, Central only by its POMs), not yet run.\n\nThe selected obligation for gate A5 is claims/pow-minus-two.json: for k == -2 and 0 <= e <= 31, pow(int,int) returns (-2)^e. It is expected established on after and refuted on before at (-2, 31), under --engine native --gaps strict. A jvmcontract gaps scan (records/pow-gaps.json, a hand-run note) finds only the StringBuilder calls of the e < 0 message, which the assume excludes. The report's equivalence rows are kept as diagnostic tasks. regression is expected refuted. confined-change is expected established, but is predicted refused under strict at those gaps, and is recorded as a predicted blocker.\n\nVerified: controls/oracle.py, written from the Javadoc alone, checks a hand replay of 75 probes through replay/driver. Each commit's file was compiled alone, plus the published 1.3 JAR, each run in its own JVM on JDK 21 and 25 (a note, not evidence). After meets the contract on every probe; before and 1.3 give identical output and deviate at (-2, 31) alone; the oracle fails, as it should, on the wrong revision's output and on a truncated file. The claims validate against W1's claim schema, the sidecar against sidecar.load, and W1's planner plans all five tasks. The targets suite (41), test_build (190), the contract (3 pass, 13 at stubs) and build.py --plan pass. records/legacy-inventory.json inventories 105-109 without touching 106-109. The stream's Progress now says its acceptance is met, Status: done.",
+      "log_sha256": "03e415382efc0fa6c84119893f79906dc0f760b561eb56e6b029dd429571dd95"
     }
   ],
   "logs": {
+    "03e415382efc0fa6c84119893f79906dc0f760b561eb56e6b029dd429571dd95": {
+      "bytes": 7622562,
+      "lines": 2514,
+      "gzip_bytes": 1476423,
+      "url": null
+    },
     "325c9cd07083f49ffd0b3e96e71f3f2bdf1f1f92dff98f32180c3a45c53bd064": {
       "bytes": 2489150,
       "lines": 889,

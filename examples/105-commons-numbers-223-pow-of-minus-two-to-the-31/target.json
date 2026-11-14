@@ -1,0 +1,104 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-numbers-pow-calibration",
+    "family": "commons-numbers-pow",
+    "role": "calibration",
+    "matching": "The supported primitive calibration of the external-target route (gate A5): a real upstream change to a published library whose selected obligation is over two ints, so the tool's own checker can give an actual established or refuted result under --engine native --gaps strict. It matches no CVE and no positive family; it checks the route itself. The handwritten README.md is the historical report of 2026-11-01 (JBMC, javac alone) and stays as written: its verdicts are historical labels, never this sidecar's receipts.",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-numbers",
+    "revisions": {
+      "before": {
+        "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "checked": "2026-11-14: fetched from github.com (master, blobless); the only parent of after. Its ArithmeticUtils.java is blob 153b3202, the same as the pull request's base 9b629bdf and the 1.3 release's (release-before)."
+      },
+      "after": {
+        "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+        "parent": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "checked": "2026-11-14: fetched from github.com; one parent, e7c172d2 (the squash merge of pull request #223, not a merge commit); committed 2026-10-18, 'NUMBERS-218: Fix representable minimum-value powers'; three files: ArithmeticUtils.java (two comparisons, e >= 31 to e > 31 and e >= 63 to e > 63), ArithmeticUtilsTest.java (testPowMinValue) and src/changes/changes.xml."
+      },
+      "pr-head": {
+        "commit": "79aa4643d325d9c71f0c291479268a700a4bcfda",
+        "parent": "9b629bdfd72fc8c499795e32bf12909bf34a1f18",
+        "checked": "2026-11-14: refs/pull/223/head fetched from github.com and resolved to this commit, whose one parent 9b629bdf is e7c172d2's parent. Its ArithmeticUtils.java is blob b5d4ad70, the same as after's. The historical report compiled this commit's file against e7c172d2's; recorded for that lineage, not executed."
+      },
+      "release-before": {
+        "commit": "ae8abefb51c2c4d1a05882d61cefc8015e493a8f",
+        "tag": "rel/commons-numbers-1.3",
+        "release": "1.3",
+        "checked": "2026-11-14: the tag fetched from github.com and resolved to this commit (not an ancestor of before: the release was made on its own line). Its ArithmeticUtils.java is blob 153b3202, before's, and so is the file in Maven Central's commons-numbers-core-1.3-sources.jar; the class in commons-numbers-core-1.3.jar disassembles to the same bytecode as before's file compiled alone with JDK 11 (sources.lock.json). No release carries after's file: 1.3 (2026-04) is the latest on Central."
+      }
+    },
+    "pairs": [
+      { "name": "fix", "kind": "exact-fix", "before": "before", "after": "after", "selected": true }
+    ],
+    "links": [
+      "https://github.com/apache/commons-numbers/pull/223",
+      "https://issues.apache.org/jira/browse/NUMBERS-218",
+      "https://github.com/apache/commons-numbers/commit/8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+    ],
+    "introduction": { "status": "unknown" },
+    "unresolved": [
+      "Whether the selected Maven build of each commit runs from Maven Central alone (decision 1) is predicted, not observed: the project's POMs declare no repository; commons-parent 105 and its parent org.apache:apache:39 (both on Central) declare the Apache snapshots repository only in the opt-in profile use-apache-snapshots; the core module's one dependency outside the reactor is commons-rng at test scope; the enforcer asks for Maven 3.9 or later and Java 8 or later (Maven 3.10.0 and JDK 11 are installed). Not built yet: runtime's preparation."
+    ]
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "build": {
+      "tool": "maven",
+      "argv": ["mvn", "--batch-mode", "--no-transfer-progress", "--projects", "commons-numbers-core", "-Dmaven.test.skip=true", "-Drat.skip=true", "-Dcheckstyle.skip=true", "-Dpmd.skip=true", "-Dcpd.skip=true", "-Dspotbugs.skip=true", "-Djapicmp.skip=true", "-Danimal.sniffer.skip=true", "-Djacoco.skip=true", "-Dmaven.javadoc.skip=true", "-Dmaven.source.skip=true", "package"],
+      "jdk": "11"
+    },
+    "jdks": ["21", "25"]
+  },
+  "tasks": [
+    {
+      "id": "replay", "kind": "replay", "relation": "calibration", "pair": "fix",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "notes": ["Concrete controls only: each revision's commons-numbers-core JAR from the Maven build, with the driver (replay/driver, compiled --release 21), in its own JVM on JDK 21 and 25, over the 75 probes of replay/probes.json, read by controls/oracle.py. Observed: the returned int, or the exception's class. Expected: after meets the Javadoc's contract on every probe; before deviates at (-2, 31) alone, where it throws ArithmeticException; the two differ there alone. Every point of the selected property's domain is a probe, so the refuted attempt's witness is replayed here."]
+    },
+    {
+      "id": "fix-property", "claim": "claims/pow-minus-two.json", "kind": "prove", "relation": "calibration", "revision": "after",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "expected": "established", "engine": "native", "gaps": "strict", "requires": ["replay"],
+      "notes": ["The selected A5 obligation: for k == -2 and 0 <= e <= 31, pow returns (-2)^e. Two ints, 32 inputs, at most five loop iterations, no gap on any admitted path (records/pow-gaps.json). Non-vacuous: every input satisfies the assume and is a replay probe, and fix-property-before refutes the same statement."]
+    },
+    {
+      "id": "fix-property-before", "claim": "claims/pow-minus-two.json", "kind": "prove", "relation": "calibration", "revision": "before",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "expected": "refuted", "engine": "native", "gaps": "strict", "requires": ["replay"],
+      "notes": ["The same property and domain on the parent: expected refuted with the witness k = -2, e = 31, where before throws ArithmeticException. The witness is checked against the replay's line for that probe, on JDK 21 and 25 (independent replay); a refutation whose witness the JVM doesn't reproduce is not a result."]
+    },
+    {
+      "id": "regression", "claim": "claims/pow-preservation.json", "kind": "equivalence", "relation": "preservation", "pair": "fix",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "expected": "refuted", "engine": "native", "gaps": "strict", "requires": ["replay"],
+      "notes": ["The historical report's first row on the new route: plain equivalence over every (k, e), expected refuted at (-2, 31), the intended change. Strict is predicted to end the e < 0 paths at the StringBuilder gaps on both sides, which doesn't stop a violation elsewhere from being a verdict. Not the A5 obligation: a larger check (two full int ranges) whose cost under the own checker is not known."]
+    },
+    {
+      "id": "confined-change", "claim": "claims/pow-preservation.json", "kind": "equivalence", "relation": "preservation", "pair": "fix",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "allowedChange": "k == -2 && e == 31", "expected": "established", "engine": "native", "gaps": "strict", "requires": ["replay"],
+      "notes": ["The historical report's second row on the new route: equivalence on every input but the pull request's stated intent, justified by NUMBERS-218 and the release note before any attempt. Expected established (the report proved it with JBMC in 1083 s). Predicted unresolved under strict: the e < 0 paths meet the StringBuilder gaps on both sides and no path is a violation (handoff.blockers). Never narrowed to e >= 0 to get a result."]
+    }
+  ],
+  "controls": [
+    { "id": "javadoc-oracle", "kind": "oracle", "path": "controls/oracle.py" },
+    { "id": "pow-driver", "kind": "driver", "path": "replay/driver/inloop/p105/PowDriver.java" },
+    { "id": "pow-probes", "kind": "probe", "path": "replay/probes.json" },
+    { "id": "pow-witness", "kind": "trigger", "path": "replay/probes.json", "task": "fix-property-before" }
+  ],
+  "handoff": {
+    "blockers": [
+      {
+        "kind": "java-semantics", "observed": false, "task": "confined-change",
+        "summary": "Predicted from a static scan, not from an attempt: jvmcontract gaps on pow(int,int) at both revisions (and in the published 1.3 JAR) lists four gaps, all at line 282, the e < 0 branch's message: StringBuilder.<init>(), append(String) twice, append(int) and toString(). The own checker approximates them, and under --gaps strict the paths reaching them end with no verdict; with no violation on another path, the confined-change attempt has none. The selected property never reaches them (its assume excludes e < 0). Scanned by hand with a binary one lib/src commit old (records/pow-gaps.json, a note).",
+        "packet": "records/pow-gaps.json"
+      }
+    ],
+    "next": "Runtime's upstream-build preparation of before and after (the Maven argv above, JDK 11, Central only), then the replay task (the driver on each JAR, on JDK 21 and 25, read by controls/oracle.py: python3 -I controls/oracle.py check before BEFORE.out after AFTER.out), then fix-property and fix-property-before through python3 verification/pipeline.py submit --example 105 --task fix-property (and --task fix-property-before): gate A5. regression and confined-change after them, as diagnostics."
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "$comment": "A note, not evidence: jvmcontract gaps run by hand by the positive stream on 2026-11-14, before runtime's preparation exists. It lists, statically and with no solver, every JDK call ArithmeticUtils.pow(int,int) can reach that the tool's own checker approximates (gaps), reproduces exactly (exact) or refuses (refused). Under --gaps strict the checker ends a path where it meets a gap, and meets one only on a path whose condition the solver finds feasible (lib/src/bmc/mod.rs, branch and meet), so a claim whose assume excludes e < 0 never reaches the four gaps below.",
+  "tool": {
+    "binary": "lib/target/release/jvmcontract of the default workspace, one lib/src commit older than this branch's lib/src",
+    "sha256": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+    "jdk": "25.0.5 (the JDK it read the class library from)"
+  },
+  "argv": [
+    "jvmcontract",
+    "gaps",
+    "--json",
+    "--target",
+    "org.apache.commons.numbers.core.ArithmeticUtils#pow(int,int)",
+    "--classes",
+    "SIDE.jar"
+  ],
+  "classes": {
+    "before": {
+      "how": "ArithmeticUtils.java at e7c172d2 (blob 153b3202) compiled alone with JDK 11.0.33's javac --release 8, as the 1.3 release was built (Build-Jdk-Spec 11, target 1.8)",
+      "ArithmeticUtils.class": "550e4dca300a82c4fc75a42c12b49a319e01b93689be1f574515c97677c14bef"
+    },
+    "after": {
+      "how": "ArithmeticUtils.java at 8cfc04e8 (blob b5d4ad70) compiled the same way",
+      "ArithmeticUtils.class": "5f0c0d8d694c2ddb52d89174efdba3c010b8147ca1bd14be8d95a5d6c150bc43"
+    },
+    "published": {
+      "how": "Maven Central's commons-numbers-core-1.3.jar, whose ArithmeticUtils.java is before's blob",
+      "jar": "b0044350c733ed8604be101170edbae434950e3d2d21864ad228948a9daaaec8",
+      "ArithmeticUtils.class": "a3d2ff2c371ff3d4b7d10cdfe7be41409128e54fc34b86a44d4883006061e341"
+    }
+  },
+  "reading": [
+    "The three scans are the same: one method, four gaps, three exact calls, nothing refused.",
+    "Every gap is at line 282, the message of the IllegalArgumentException for e < 0: the compiler's StringBuilder concatenation of two constant Strings and e (StringBuilder.<init>(), append(String) twice, append(int), toString()). They are approximated, not refused: under --gaps strict a path reaching them ends there with no verdict.",
+    "Exact: Math.multiplyExact(int,int) at its two sites (the square-and-multiply loop), and the constructors of ArithmeticException and IllegalArgumentException with a message. ArithmeticUtils has no static initializer (its two String fields are compile-time constants).",
+    "So the selected property (claims/pow-minus-two.json, assume k == -2 && e >= 0 && e <= 31) reaches no gap on any path its assume admits; the confined-change claim (claims/pow-preservation.json, every (k, e)) reaches the four gaps on e < 0, on both sides, and so is predicted to be refused under strict; the plain regression check is predicted to be refuted anyway, since a violation on another path is still a verdict."
+  ],
+  "scans": {
+    "before": {
+      "roots": [
+        "org.apache.commons.numbers.core.ArithmeticUtils#pow(int,int)"
+      ],
+      "methods": 1,
+      "jdk": "25.0.5",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+          "kind": "jdk-constructor",
+          "call": "java.lang.StringBuilder.<init>()",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(int)",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(java.lang.String)",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.toString()",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        }
+      ],
+      "exact": {
+        "java.lang.ArithmeticException.<init>(Ljava/lang/String;)V": 1,
+        "java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V": 1,
+        "java.lang.Math.multiplyExact": 2
+      },
+      "refused": {}
+    },
+    "after": {
+      "roots": [
+        "org.apache.commons.numbers.core.ArithmeticUtils#pow(int,int)"
+      ],
+      "methods": 1,
+      "jdk": "25.0.5",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+          "kind": "jdk-constructor",
+          "call": "java.lang.StringBuilder.<init>()",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(int)",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(java.lang.String)",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.toString()",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        }
+      ],
+      "exact": {
+        "java.lang.ArithmeticException.<init>(Ljava/lang/String;)V": 1,
+        "java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V": 1,
+        "java.lang.Math.multiplyExact": 2
+      },
+      "refused": {}
+    },
+    "published": {
+      "roots": [
+        "org.apache.commons.numbers.core.ArithmeticUtils#pow(int,int)"
+      ],
+      "methods": 1,
+      "jdk": "25.0.5",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+          "kind": "jdk-constructor",
+          "call": "java.lang.StringBuilder.<init>()",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(int)",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(java.lang.String)",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.toString()",
+          "sites": [
+            "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
+        }
+      ],
+      "exact": {
+        "java.lang.ArithmeticException.<init>(Ljava/lang/String;)V": 1,
+        "java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V": 1,
+        "java.lang.Math.multiplyExact": 2
+      },
+      "refused": {}
+    }
+  }
+}

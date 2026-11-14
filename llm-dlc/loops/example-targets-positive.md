@@ -266,14 +266,57 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
 - **For the user**: P3's commit warned about 15 long tokens in this session's log. They are the expected hashes of
   upstream's public `BCryptTests` test vectors, printed while choosing 307's salt. All 15 are proposed for the allow list
   (`sync.py allow approve` when you choose); nothing waits on it.
-- Next: P5, migrating 105 (Commons Numbers `pow`, commons-numbers#223):
-  - resolve its revisions and artifacts afresh;
-  - write its sidecar and packet, its README unchanged;
-  - select a small non-vacuous primitive obligation for A5;
-  - inventory 105–109.
+- 2026-11-14, **P5: 105 migrated** (Commons Numbers `pow`, commons-numbers#223). README.md, the summary and the verdict
+  label are unchanged; `example.json` gained `target` and four notes.
+  - **Revisions, resolved afresh** from github.com (`sources.lock.json`):
+    - before is `e7c172d2`, the squash merge's only parent; after is `8cfc04e8`, the merge.
+    - The pull request's head `79aa4643` carries after's `ArithmeticUtils.java`, so the historical report compiled the
+      same two files.
+    - Central's commons-numbers-core 1.3 carries before's file (blob `153b3202`, also in its sources JAR). Its class
+      disassembles like before's file compiled alone with JDK 11 `--release 8`, once constant-pool indices are masked.
+    - No release carries after's file, so the route is the upstream Maven build of each commit (JDK 11, argv in
+      `target.json`). It is unbuilt; runtime prepares it.
+    - The build is predicted to need Central only: the project's POMs declare no repository, and commons-parent 105 and
+      apache 39 declare the snapshots repository only in an opt-in profile.
+  - **The selected A5 obligation.** `claims/pow-minus-two.json`: for `k == -2 && 0 <= e <= 31`, `pow(int,int)` returns
+    `(-2)^e`. It is two ints, 32 inputs and at most five loop iterations.
+    - Expected established on after (`fix-property`), and refuted on before at `(-2, 31)` (`fix-property-before`),
+      both native strict.
+    - The replay probes every point of the domain, so it reproduces the refuted attempt's witness.
+    - A `jvmcontract gaps` scan (`records/pow-gaps.json`, a note) finds four gaps, all `StringBuilder` calls in the
+      `e < 0` message. The assume excludes that path, and the checker meets a gap only on a feasible path
+      (`lib/src/bmc/mod.rs`). `Math.multiplyExact` is reproduced exactly, and there is no static initializer.
+  - **The report's rows as diagnostics.** `claims/pow-preservation.json` backs two tasks:
+    - `regression` is expected refuted: a violation is still a verdict past a gap.
+    - `confined-change` is expected established. It is predicted refused under strict at those four gaps, a
+      `java-semantics` blocker with `observed: false`, and is never narrowed to `e >= 0`.
+  - **The controls.**
+    - `controls/oracle.py` is written from the Javadoc's contract alone, with exact integer powers.
+    - The expected deviation (before at `(-2, 31)`) comes from NUMBERS-218's release note, not from the code.
+    - 75 probes; the driver is `replay/driver/inloop/p105/PowDriver.java`.
+  - **Hand replay** (a note, not evidence):
+    - Each commit's file was compiled alone, plus Central's 1.3 JAR, each run in its own JVM on JDK 21 and 25.
+    - After meets the contract on all 75 probes. Before and 1.3 give byte-identical output and deviate at `(-2, 31)`
+      alone.
+    - The oracle fails, as it should, on the wrong revision's output and on a truncated file.
+    - W1's planner, run from a temp copy of `wqsyopql`, plans all five tasks.
+  - **The inventory** (`records/legacy-inventory.json`) was read from 105–109's folders, none of them edited:
+    - 106 stays the unused fallback, since 105 has no blocker;
+    - 107's mixed evidence, 108's unresolved run and 109's deferred work stay historical, none counted as a success.
+  - **For the merge**: interface request 2 (the router) now covers 105's sidecar too. Phase 5 runs `replay`, then
+    `fix-property` and `fix-property-before`, for gate A5.
+- **This stream's acceptance is met**:
+  - the three positive packets, each with a source lock checked against upstream, task and claim definitions, an
+    independent oracle, concrete probes, a mutation control, and a replay driver;
+  - P1 and P3 visibly partial, each with a precise, predicted build blocker;
+  - 105's migration packet with its selected obligation.
 
-  P1's and P3's build routes still wait on the user (the first 2026-11-14 entry above).
-- Status: working
+  P4 (optional) was not done. **For the user, through the main brief's for-review list**:
+  - P1's and P3's build route (the first 2026-11-14 entry above), which A4 doesn't need, since it can rest on P2;
+  - the 15 allow-list proposals.
+
+  Phase 5 runs A4 and A5.
+- Status: done
 
 ## Loop settings
 

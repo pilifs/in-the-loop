@@ -1,0 +1,46 @@
+{
+  "$comment": "The inventory of the five handwritten real-world reports, 105-109, that the brief's P5 asks for with 105's migration (llm-dlc/loops/example-targets-positive.md). Read from each folder's example.json and README.md on 2026-11-14; nothing in 106-109 was edited, rerun or re-derived. 'historical' quotes each example's own verdictLabel: an authored label of a run made before this wave, never a receipt, and never counted as a result of the new route. 'sources' is what each README names, not checked against upstream here (105's are, in sources.lock.json). 'thisWave' says what the migration does with it.",
+  "checkedOn": "2026-11-14",
+  "examples": [
+    {
+      "id": "105",
+      "change": "apache/commons-numbers#223 (NUMBERS-218): ArithmeticUtils.pow(int,int) and pow(long,int) return Integer.MIN_VALUE and Long.MIN_VALUE for (-2)^31 and (-2)^63 instead of throwing",
+      "historical": "✗ the intended change found; ✓ confined to it; ✓ Javadoc proved",
+      "recorded": "JBMC 6.11.0 through /verify-bytecode, 2026-11-01, ArithmeticUtils.java compiled alone; rerun the same day with the same verdicts. pow(long,int) not covered.",
+      "sources": "merge 8cfc04e8 onto e7c172d2, pull request head 79aa4643: resolved afresh and checked (sources.lock.json)",
+      "thisWave": "Migrated: the calibration of gate A5. Selected obligation claims/pow-minus-two.json (two ints, 32 inputs, no gap on an admitted path), expected established on after and refuted on before with a witness the replay reproduces. No blocker was found that would call for 106."
+    },
+    {
+      "id": "106",
+      "change": "apache/commons-lang#1750: ArrayUtils.reverse(array, start, end) with Integer.MIN_VALUE as the end index, in each of nine overloads",
+      "historical": "✗ the bug's input found; ✓ change confined; ✓ new version never throws",
+      "recorded": "JBMC through /verify-bytecode, arrays of at most 4 elements, --unwind 6; src/main/java compiled with javac alone (391 classes); double[] and float[] overloads not covered.",
+      "sources": "merge base 9f57c08e, head 4a0fde24 (README.md), not checked here",
+      "thisWave": "Not migrated: the documented fallback only, which needs a concrete blocker on 105, and none was found. Its obligations rest on bounded int[] parameters, which the own checker takes; a migration would resolve its revisions afresh as 105's were."
+    },
+    {
+      "id": "107",
+      "change": "apache/commons-lang#1585: ArrayUtils.subarray end-index arithmetic overflow, in each of nine overloads",
+      "historical": "✗ the overflow found; ✓ change confined; ⚠ length property unverifiable",
+      "recorded": "JBMC through /verify-bytecode; javac alone (382 classes). The result.length property is unverifiable: JBMC's counterexample did not reproduce in the interpreter.",
+      "sources": "merge base e7cdeac0, head ccf0b46b (README.md), not checked here",
+      "thisWave": "Stays historical, with mixed evidence: the ⚠ row is not a success, and the ✓ rows are not carried to the new route."
+    },
+    {
+      "id": "108",
+      "change": "FasterXML/jackson-core#1203: NumberOutput.divBy1000(int) as a multiply and shift",
+      "historical": "⚠ unverifiable: solver budget; one precondition witness",
+      "recorded": "JBMC through /verify-bytecode; every proof ran out of time or memory; the one violation (divBy1000(-1)) is outside the method's non-negative precondition.",
+      "sources": "merge base f46b4d5b, head f3e01de9 (README.md), not checked here",
+      "thisWave": "Stays historical and unresolved: nothing was proved, and nothing here counts it as a positive or a green control (the brief's P4 says so too)."
+    },
+    {
+      "id": "109",
+      "change": "apache/commons-codec 43a9aa66: Hex decoding restricted to ASCII digits (Character.digit replaced)",
+      "historical": "✓ new version proved; ⚠ old version needs a model of Character.digit",
+      "recorded": "JBMC with charset and cache models by hand; the new version's two properties verified; the regression proof unverifiable without a Character.digit model; the equivalence harness's checked-exception limit and VF-015's revisit noted in its example.json.",
+      "sources": "commit 43a9aa66 and its parent (README.md), not checked here",
+      "thisWave": "Stays historical, with its replay and class-initialization traps and the user-deferred work (VF-015's remainder) not reopened; its ✓ is not a result of the new route, and it is not a green control."
+    }
+  ]
+}
