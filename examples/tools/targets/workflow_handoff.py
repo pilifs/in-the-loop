@@ -224,7 +224,10 @@ def recorded_scan(packet_path, document):
     out = {}
     identities = dict(record.get("identities") or {})
     tool = identities.pop("jvmcontract", None)
+    # commit and libTree: what the binary was built from, which run_verifier names for a pipeline job's own build only.
     out["verifier"] = {"jvmcontract": tool, "commit": identities.pop("commit", None)}
+    if "libTree" in identities:
+        out["verifier"]["libTree"] = identities.pop("libTree")
     if record.get("argv"):
         out["command"] = list(record["argv"])
     if identities:

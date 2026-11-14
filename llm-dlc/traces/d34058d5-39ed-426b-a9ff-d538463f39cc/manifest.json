@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:11:22.420Z",
-  "ended": "2026-11-14T21:13:28.620Z",
-  "duration_seconds": 21726,
+  "ended": "2026-11-14T21:14:01.405Z",
+  "duration_seconds": 21759,
   "stats": {
     "turns": 16,
-    "api_calls": 149,
-    "tool_calls": 144,
+    "api_calls": 151,
+    "tool_calls": 145,
     "tool_errors": 0,
     "compactions": 1,
     "peak_context_tokens": 267671,
     "usage": {
-      "input_tokens": 322,
-      "output_tokens": 138323,
-      "cache_read_input_tokens": 21701782,
-      "cache_creation_input_tokens": 301044
+      "input_tokens": 326,
+      "output_tokens": 139101,
+      "cache_read_input_tokens": 21906931,
+      "cache_creation_input_tokens": 302493
     }
   },
   "tools": {
-    "Bash": 130,
+    "Bash": 131,
     "Edit": 6,
     "Write": 5,
     "Read": 2,
@@ -62,24 +62,24 @@
     {
       "index": 1,
       "started": "2026-11-14T18:23:46.437Z",
-      "ended": "2026-11-14T21:13:28.620Z",
+      "ended": "2026-11-14T21:14:01.405Z",
       "turns": 4,
-      "api_calls": 24,
+      "api_calls": 26,
       "usage": {
-        "input_tokens": 52,
-        "output_tokens": 19439,
-        "cache_read_input_tokens": 2006501,
-        "cache_creation_input_tokens": 72367
+        "input_tokens": 56,
+        "output_tokens": 20217,
+        "cache_read_input_tokens": 2211650,
+        "cache_creation_input_tokens": 73816
       },
-      "peak_context_tokens": 102439
+      "peak_context_tokens": 103886
     }
   ],
   "log": {
-    "sha256": "ec41901b2caad786b75e70bd8f759df7fb4b78ecede8a21ff65c9dee031834fa",
-    "bytes": 3468733,
-    "lines": 1195,
-    "gzip_bytes": 619922,
-    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/ec41901b2caad786b75e70bd8f759df7fb4b78ecede8a21ff65c9dee031834fa.jsonl.gz"
+    "sha256": "f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2",
+    "bytes": 3485195,
+    "lines": 1203,
+    "gzip_bytes": 621962,
+    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -570,6 +570,14 @@
       "summary": "example-targets Phase 5 step 1: one oracle convention, so the runner can drive the seven packets' controls and ingestion reads them right",
       "body": "Request 9 of llm-dlc/loops/example-targets.md's Phase 5 step 1. The merged runner (runtime.run_controls) took a driver's inputs from the oracle's PROBES list and expected one echoed 'input' line per argument; ingestion read each revision with check(lines) as (input, problem) pairs. None of the seven packets (105, 285-287, 305-307) followed that: they define argv() and check() with other signatures, their drivers print an identity line or take two arguments per probe, the preparation copied oracle.py without the probes file it reads, and 285-287's check() returns a dict that ingestion read as character pairs, so a fixed release would have counted as violating. 105's PROBES was a Path, which would have raised a TypeError instead of a refusal.\n\nThe convention, in runtime.py's docstring: an oracle's driver_args() gives the driver's whole argument vector (else PROBES, the fixture's form, unchanged), every JSON line is kept and the oracle matches lines to probes itself; ingestion calls problems(lines) (else check), and a result that is not a list of (input, problem) pairs, or a SystemExit, is an error, never a verdict; the preparation locks and copies the sidecar's probe and trigger files beside the oracle, refusing a path out of the work directory. Each of the seven oracles gains driver_args() (equal to its argv command) and problems(lines) over its unchanged logic; 105's reads the Javadoc's contract without its declared deviations, so before violates at (-2)^31 and after holds, as its exact-fix pair expects. Each packet's example.json has a note; the index is regenerated.",
       "log_sha256": "ec41901b2caad786b75e70bd8f759df7fb4b78ecede8a21ff65c9dee031834fa"
+    },
+    {
+      "change_id": "qpynptrqvmqqmsysmlmkquxknrzxwvnw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: a verifier record names the lib/ commit and tree its jvmcontract was built from; no adapter entry-point key",
+      "body": "Request 10 of the merge's interface requests. A pipeline job that requires jvmcontract now gets JVMCONTRACT_LIB_TREE, the git tree id of the lib/ its binary was built from, and drops one inherited from the runner. runtime.run_verifier records identities.commit (the job's VERIFY_SOURCE_COMMIT) and identities.libTree, only when $JVMCONTRACT is the binary that ran and both are 40 hex digits; a developer build names neither, never a guess. The handoff's gap packet keeps libTree with its verifier, and still lists verifier.commit as missing when it is null (the fixture's developer-built gap record does). verification/README.md documents the variable.\n\nThe adapter entry-point claim key is left a gap, as the request allowed: all 41 tasks of the seven packets name their original method, the claim schema's plan already builds receivers, and verifying through an adapter would put its code inside the proof and need a lib/ capability this wave doesn't edit. run_verifier's docstring says so; it enters the v1 gap inventory when a packet's verifier job observes it. The optional handoff-beside---plan and find.py task readiness were not done.",
+      "log_sha256": "f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2"
     }
   ],
   "logs": {
@@ -655,6 +663,12 @@
       "bytes": 3468733,
       "lines": 1195,
       "gzip_bytes": 619922,
+      "url": null
+    },
+    "f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2": {
+      "bytes": 3485195,
+      "lines": 1203,
+      "gzip_bytes": 621962,
       "url": null
     },
     "fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396": {

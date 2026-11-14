@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T21:13:33.015Z",
-  "duration_seconds": 10093,
+  "ended": "2026-11-14T21:23:46.146Z",
+  "duration_seconds": 10706,
   "stats": {
-    "turns": 60,
-    "api_calls": 369,
-    "tool_calls": 369,
+    "turns": 65,
+    "api_calls": 410,
+    "tool_calls": 413,
     "tool_errors": 8,
-    "compactions": 10,
-    "peak_context_tokens": 179917,
+    "compactions": 11,
+    "peak_context_tokens": 182954,
     "usage": {
-      "input_tokens": 758,
-      "output_tokens": 229282,
-      "cache_read_input_tokens": 33606539,
-      "cache_creation_input_tokens": 1208561
+      "input_tokens": 840,
+      "output_tokens": 251290,
+      "cache_read_input_tokens": 38556451,
+      "cache_creation_input_tokens": 1347442
     }
   },
   "tools": {
-    "Bash": 320,
-    "Read": 24,
-    "Edit": 19,
+    "Bash": 356,
+    "Read": 28,
+    "Edit": 23,
     "Agent": 4,
     "Write": 2
   },
@@ -41,6 +41,7 @@
     "examples/tools/targets/test_runtime.py",
     "examples/tools/targets/test_workflow.py",
     "llm-dlc/loops/example-targets.md",
+    "verification/test_pipeline.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/allowlist-merge-conflicts.md"
   ],
   "context_windows": [
@@ -187,24 +188,38 @@
     {
       "index": 10,
       "started": "2026-11-14T21:01:18.349Z",
-      "ended": "2026-11-14T21:13:33.015Z",
-      "turns": 4,
-      "api_calls": 47,
+      "ended": "2026-11-14T21:13:53.013Z",
+      "turns": 5,
+      "api_calls": 49,
       "usage": {
-        "input_tokens": 94,
-        "output_tokens": 44327,
-        "cache_read_input_tokens": 5631528,
-        "cache_creation_input_tokens": 166731
+        "input_tokens": 98,
+        "output_tokens": 45397,
+        "cache_read_input_tokens": 5992612,
+        "cache_creation_input_tokens": 169768
       },
-      "peak_context_tokens": 179917
+      "peak_context_tokens": 182954
+    },
+    {
+      "index": 11,
+      "started": "2026-11-14T21:14:35.234Z",
+      "ended": "2026-11-14T21:23:46.146Z",
+      "turns": 4,
+      "api_calls": 39,
+      "usage": {
+        "input_tokens": 78,
+        "output_tokens": 20938,
+        "cache_read_input_tokens": 4588828,
+        "cache_creation_input_tokens": 135844
+      },
+      "peak_context_tokens": 149030
     }
   ],
   "log": {
-    "sha256": "7efb17b82cda691603414f20c85c1b231b17535a4a409888829b7e56ca2461fd",
-    "bytes": 12652718,
-    "lines": 3981,
-    "gzip_bytes": 2679954,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/7efb17b82cda691603414f20c85c1b231b17535a4a409888829b7e56ca2461fd.jsonl.gz"
+    "sha256": "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a",
+    "bytes": 14008625,
+    "lines": 4401,
+    "gzip_bytes": 2964775,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a.jsonl.gz"
   },
   "subagents": [
     {
@@ -452,6 +467,14 @@
       "summary": "example-targets Phase 5 step 1: one oracle convention, so the runner can drive the seven packets' controls and ingestion reads them right",
       "body": "Request 9 of llm-dlc/loops/example-targets.md's Phase 5 step 1. The merged runner (runtime.run_controls) took a driver's inputs from the oracle's PROBES list and expected one echoed 'input' line per argument; ingestion read each revision with check(lines) as (input, problem) pairs. None of the seven packets (105, 285-287, 305-307) followed that: they define argv() and check() with other signatures, their drivers print an identity line or take two arguments per probe, the preparation copied oracle.py without the probes file it reads, and 285-287's check() returns a dict that ingestion read as character pairs, so a fixed release would have counted as violating. 105's PROBES was a Path, which would have raised a TypeError instead of a refusal.\n\nThe convention, in runtime.py's docstring: an oracle's driver_args() gives the driver's whole argument vector (else PROBES, the fixture's form, unchanged), every JSON line is kept and the oracle matches lines to probes itself; ingestion calls problems(lines) (else check), and a result that is not a list of (input, problem) pairs, or a SystemExit, is an error, never a verdict; the preparation locks and copies the sidecar's probe and trigger files beside the oracle, refusing a path out of the work directory. Each of the seven oracles gains driver_args() (equal to its argv command) and problems(lines) over its unchanged logic; 105's reads the Javadoc's contract without its declared deviations, so before violates at (-2)^31 and after holds, as its exact-fix pair expects. Each packet's example.json has a note; the index is regenerated.",
       "log_sha256": "7efb17b82cda691603414f20c85c1b231b17535a4a409888829b7e56ca2461fd"
+    },
+    {
+      "change_id": "qpynptrqvmqqmsysmlmkquxknrzxwvnw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: a verifier record names the lib/ commit and tree its jvmcontract was built from; no adapter entry-point key",
+      "body": "Request 10 of the merge's interface requests. A pipeline job that requires jvmcontract now gets JVMCONTRACT_LIB_TREE, the git tree id of the lib/ its binary was built from, and drops one inherited from the runner. runtime.run_verifier records identities.commit (the job's VERIFY_SOURCE_COMMIT) and identities.libTree, only when $JVMCONTRACT is the binary that ran and both are 40 hex digits; a developer build names neither, never a guess. The handoff's gap packet keeps libTree with its verifier, and still lists verifier.commit as missing when it is null (the fixture's developer-built gap record does). verification/README.md documents the variable.\n\nThe adapter entry-point claim key is left a gap, as the request allowed: all 41 tasks of the seven packets name their original method, the claim schema's plan already builds receivers, and verifying through an adapter would put its code inside the proof and need a lib/ capability this wave doesn't edit. run_verifier's docstring says so; it enters the v1 gap inventory when a packet's verifier job observes it. The optional handoff-beside---plan and find.py task readiness were not done.",
+      "log_sha256": "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a"
     }
   ],
   "logs": {
@@ -483,6 +506,12 @@
       "bytes": 256222,
       "lines": 43,
       "gzip_bytes": 71301,
+      "url": null
+    },
+    "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a": {
+      "bytes": 14008625,
+      "lines": 4401,
+      "gzip_bytes": 2964775,
       "url": null
     },
     "4ee2c3259b8f9bff8a61d56689a143c35dc81eaf6186a088c97c80c7b81e95ca": {

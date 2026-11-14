@@ -912,6 +912,40 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: request 10's remaining items: a verifier record's `identities.commit`, and a claim-schema key for an
     adapter entry point (or a recorded reason to leave it a gap). The handoff beside `--plan` and `find.py`'s task
     readiness are optional. The fixtures README's `claims/` row was done with request 1.
+- 2026-11-14, **Phase 5 step 1, request 10 done: a verifier record names the `lib/` its binary was built from; no
+  adapter entry-point key, for a recorded reason.**
+  - **Reproducer**: three new tests failed on `kmqzoypl`:
+    - `test_runtime.py`'s `test_a_pipeline_jobs_own_build_names_the_lib_commit_it_was_built_from`: the record had no
+      `identities.commit`;
+    - `test_workflow.py`'s `test_a_verifier_record_that_names_its_lib_commit_completes_the_packets_verifier`: the gap
+      packet's `verifier` had no `libTree`;
+    - `test_pipeline.py`'s `test_a_jobs_own_jvmcontract_is_named_by_the_lib_tree_it_was_built_from`: a job's
+      environment had no `JVMCONTRACT_LIB_TREE`.
+  - **The change**:
+    - `pipeline.py`'s `step_env` sets `JVMCONTRACT_LIB_TREE` to the git tree id of the `lib/` the job's jvmcontract was
+      built from (or reused from a build of the same tree). It drops one inherited from the runner's environment, so
+      a job without its own build has none. `verification/README.md` says so.
+    - `runtime.run_verifier` records `identities.commit` and `identities.libTree` (`_verifier_build`): the job's
+      `VERIFY_SOURCE_COMMIT` and that tree. They are recorded only when `$JVMCONTRACT` is the binary that ran and both
+      values are 40 hex digits. Any other binary, such as `lib/target/release`'s or a `$JVMCONTRACT` set by hand, names
+      neither, since nothing records what it was built from. The sha256 stays the binary's identity either way.
+    - `workflow_handoff.recorded_scan` puts `libTree` with the packet's `verifier`, not its `artifacts`. A packet keeps
+      listing `verifier.commit` as missing when the commit is null: the fixture's gap record (a developer build)
+      still does, as its test expects.
+  - **The adapter entry point is left a gap**, as the request allowed. No packet needs the key: all 41 tasks
+    of the seven packets (28 with a claim) name their original method. The claim schema already has `plan`, which
+    jvmcontract uses to build a receiver. A key that sends the verifier through an adapter would put the adapter's code inside the proof,
+    which changes the scope. It would also need a `lib/` capability this wave doesn't edit. So a receiver or argument
+    only an adapter can build (286's `DataBinder`, 287's encoder, 285's `HttpServletRequest`) needs a construction
+    `plan` or stays a capability gap, observed once a packet's verifier job reaches it. `run_verifier`'s docstring
+    says this. It goes into the v1 gap inventory (step 4) when it is observed.
+  - **Not done** (optional in the request): the handoff beside `--plan` in `build.py` or `find.py`, and `find.py`
+    matching a task's readiness. `workflow.handoff` and the index's per-task readiness already give both.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (203, two new),
+    `test_build.py` (190), `test_pipeline.py` (30, one new) and `build.py --plan`.
+  - **Next**: request 11, VF-025: ignore `runtime-mutant/**/spring-core-5.3.19.jar` in `.gitignore`, note it in that
+    example's notes, and have later runtime jobs delete `prepare/*/lib/` in cleanup. Then the packets' preparation
+    jobs.
 - Status: working
 
 ## Loop settings

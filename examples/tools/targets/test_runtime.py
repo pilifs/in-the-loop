@@ -1090,6 +1090,43 @@ class VerifierTest(FixtureCopy):
                 self.assertEqual(p.stage, "artifacts-ready", p.diagnostic)
         return prepared, runtime.run_verifier(plan, prepared, self.attempt / "verifier")
 
+    def test_a_pipeline_jobs_own_build_names_the_lib_commit_it_was_built_from(self):
+        """identities.commit and libTree: what the binary was built from, only when the pipeline built it (its job sets
+        $JVMCONTRACT, $JVMCONTRACT_LIB_TREE and $VERIFY_SOURCE_COMMIT); any other binary names neither, never a guess."""
+        plan = verifier_plan(self.folder)
+        tree, commit = "a" * 40, "b" * 40
+        job = {"JVMCONTRACT_LIB_TREE": tree, "VERIFY_SOURCE_COMMIT": commit}
+        with mock.patch.dict(os.environ, job):
+            _, record = self.verify(plan)
+        self.assertEqual((record.identities["commit"], record.identities["libTree"]), (commit, tree))
+        self.assertEqual(record.identities["jvmcontract"], runtime.sha256(self.tool / "jvmcontract"),
+                         "the digest stays the binary's identity")
+        stored = json.loads((self.attempt / "verifier" / runtime.VERIFIER).read_text())
+        self.assertEqual(stored["record"]["identities"]["commit"], commit)
+        cases = {
+            "no job": {},
+            "a tree with no commit": {"JVMCONTRACT_LIB_TREE": tree},
+            "a commit with no tree": {"VERIFY_SOURCE_COMMIT": commit},
+            "a malformed tree": {**job, "JVMCONTRACT_LIB_TREE": "HEAD:lib"},
+            "a malformed commit": {**job, "VERIFY_SOURCE_COMMIT": "main"},
+        }
+        for case, env in cases.items():
+            with self.subTest(case), mock.patch.dict(os.environ, env):
+                for name in set(job) - set(env):
+                    os.environ.pop(name, None)
+                shutil.rmtree(self.attempt, ignore_errors=True)
+                _, record = self.verify(plan)
+                self.assertEqual((record.identities["commit"], record.identities["libTree"]), (None, None))
+        # A binary other than the job's (here lib/target/release's, as when $JVMCONTRACT is unset) names neither.
+        other = self.tool / "other"
+        other.mkdir()
+        shutil.copy2(self.tool / "jvmcontract", other / "jvmcontract")
+        with mock.patch.dict(os.environ, job), mock.patch.object(runtime, "jvmcontract",
+                                                                 return_value=str(other / "jvmcontract")):
+            shutil.rmtree(self.attempt, ignore_errors=True)
+            _, record = self.verify(plan)
+        self.assertEqual((record.identities["commit"], record.identities["libTree"]), (None, None))
+
     def test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds(self):
         prepared, record = self.verify(verifier_plan(self.folder))
         self.assertIsInstance(record, interfaces.ExecutionRecord)

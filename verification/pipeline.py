@@ -981,9 +981,12 @@ class Runner:
         # should fit: Java's default heap is a quarter of the machine, not of the cap.
         env["JVMCONTRACT_JBMC_MEMORY_MB"] = str(max(256, limit_mb - 512))
         env["JVMCONTRACT_JAVA_OPTS"] = f"-Xmx{max(256, int(limit_mb * 0.6))}m"
+        env.pop("JVMCONTRACT_LIB_TREE", None)  # only ever the job's own build's, never the runner's environment
         if result.get("jvmcontract"):
             exe = Path(result["jvmcontract"]["path"])
             env["JVMCONTRACT"] = str(exe)
+            # The git tree id of the lib/ it was built from (VERIFY_SOURCE_COMMIT's lib/), for a record to name.
+            env["JVMCONTRACT_LIB_TREE"] = result["jvmcontract"]["libTree"]
             env["PATH"] = f"{exe.parent}:{env.get('PATH', '')}"
         # build.py keeps each TLC configuration's result under the fingerprint of its inputs, so a job run again after
         # a timeout or a failure picks up the configurations already done; a result is reused only on identical inputs.

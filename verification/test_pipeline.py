@@ -16,6 +16,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -511,6 +512,24 @@ class PipelineTest(unittest.TestCase):
         runner.runner = {"build_memory": 6 * 1024 ** 3}
         runner.jvmcontract_cached = lambda source: False
         self.assertEqual(runner.reservation(job, {"memoryLimit": 1024 ** 3}, "HEAD"), 6 * 1024 ** 3)
+
+    def test_a_jobs_own_jvmcontract_is_named_by_the_lib_tree_it_was_built_from(self):
+        """A job that requires jvmcontract gets $JVMCONTRACT and $JVMCONTRACT_LIB_TREE (the git tree id of the lib/ it
+        was built from, which $VERIFY_SOURCE_COMMIT's lib/ is), so a record can name the binary's source; a job
+        without one gets neither."""
+        runner = pipeline.Runner.__new__(pipeline.Runner)
+        runner.state = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, runner.state, True)
+        exe = runner.state / "tools" / "jvmcontract" / ("a" * 40) / "jvmcontract"
+        result = {"limits": {"memoryLimitBytes": 4 * 1024 ** 3, "cpus": 2}, "sourceCommit": "b" * 40,
+                  "jvmcontract": {"libTree": "a" * 40, "path": str(exe), "built": True}}
+        env = runner.step_env({"id": "job"}, result, runner.state / "work")
+        self.assertEqual((env["JVMCONTRACT"], env["JVMCONTRACT_LIB_TREE"], env["VERIFY_SOURCE_COMMIT"]),
+                         (str(exe), "a" * 40, "b" * 40))
+        del result["jvmcontract"]
+        with mock.patch.dict(os.environ, {"JVMCONTRACT_LIB_TREE": "c" * 40}):
+            env = runner.step_env({"id": "job"}, result, runner.state / "work")
+        self.assertNotIn("JVMCONTRACT_LIB_TREE", env, "an inherited tree would name a binary the job didn't build")
 
     def test_an_example_build_py_cannot_run_is_refused_with_the_reason(self):
         self.add_example("150", "B9", "src/main/java/a/B.java")

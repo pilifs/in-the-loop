@@ -892,6 +892,23 @@ class HandoffTest(Fixture):
             (self.folder / "records/regex-gate-gaps.json").read_text())["record"]["identities"]["jvmcontract"])
         self.assertEqual(packet["missing"], ["verifier.commit"], "the record names the binary, not its commit")
 
+    def test_a_verifier_record_that_names_its_lib_commit_completes_the_packets_verifier(self):
+        """run_verifier's identities.commit and libTree (a pipeline job's own build) go to the packet's verifier, not
+        its artifacts, and verifier.commit stops being missing; a null commit stays missing."""
+        from targets import workflow_handoff
+        folder = Path(self.dir.name) / "scan"
+        folder.mkdir()
+        identities = {"jvmcontract": "c" * 64, "commit": "b" * 40, "libTree": "a" * 40, "jdk": "25.0.5"}
+        document = {"record": {"kind": "verifier", "argv": ["jvmcontract", "gaps"], "identities": identities}}
+        scan = workflow_handoff.recorded_scan(folder / "record.json", document)
+        self.assertEqual(scan["verifier"], {"jvmcontract": "c" * 64, "commit": "b" * 40, "libTree": "a" * 40})
+        self.assertEqual(scan["artifacts"], {"jdk": "25.0.5"})
+        unbuilt = copy.deepcopy(document)
+        unbuilt["record"]["identities"].update(commit=None, libTree=None)
+        scan = workflow_handoff.recorded_scan(folder / "record.json", unbuilt)
+        self.assertEqual(scan["verifier"], {"jvmcontract": "c" * 64, "commit": None, "libTree": None})
+        self.assertNotIn("libTree", scan.get("artifacts", {}))
+
     def test_an_isolated_copy_of_the_referenced_inputs_resumes_the_task(self):
         for task_id in ("regex-probe", "preservation"):
             value = self.handoff(task_id)

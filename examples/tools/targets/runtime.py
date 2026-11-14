@@ -1165,6 +1165,22 @@ def jvmcontract():
     return found if Path(found).is_file() and os.access(found, os.X_OK) else None
 
 
+HEX40 = re.compile(r"[0-9a-f]{40}")
+
+
+def _verifier_build(exe):
+    """What the jvmcontract binary was built from (`identities.commit` and `libTree`), as far as anything records it.
+    A pipeline job that requires jvmcontract builds it from lib/ at the job's commit (or reuses the build of the same
+    lib/ tree) and sets $JVMCONTRACT to it, $JVMCONTRACT_LIB_TREE to that tree's git id and $VERIFY_SOURCE_COMMIT to the
+    commit, whose lib/ is that tree: then both are named. Any other binary (lib/target/release's, or $JVMCONTRACT set by
+    hand) names neither, since nothing records what it was built from; its sha256 is its identity either way."""
+    named, tree, commit = (os.environ.get(k) for k in ("JVMCONTRACT", "JVMCONTRACT_LIB_TREE", "VERIFY_SOURCE_COMMIT"))
+    if named and tree and commit and HEX40.fullmatch(tree) and HEX40.fullmatch(commit) \
+            and Path(named).resolve() == Path(exe).resolve():
+        return {"commit": commit, "libTree": tree}
+    return {"commit": None, "libTree": None}
+
+
 def java_target(target):
     """`pkg.Class#method(int, java.lang.String)`, jvmcontract's spelling of the plan's `pkg.Class#method(I...)Z`."""
     cls, method, descriptor = runtime_jar.parse_target(target)
@@ -1386,8 +1402,10 @@ def run_verifier(plan, prepared, workdir):
     contracts (each rechecked against the claim's sha256), `--json`, and a work and report directory here. The
     adapter and driver are never on its classpath: they serve the controls, and the verifier calls the selected
     original method itself. Its scope label and boundary (`identities.scope`), the capability probe (`jvmcontract
-    gaps` on each revision: static, it proves nothing), the jvmcontract digest, the JDK and the environment are
-    recorded.
+    gaps` on each revision: static, it proves nothing), the jvmcontract digest and, for a pipeline job's own build, the
+    lib/ commit and tree it was built from (`_verifier_build`), the JDK and the environment are recorded. No claim key
+    names an adapter entry point: a receiver or argument only an adapter can build needs the claim's construction
+    `plan`, or stays a capability gap, since verifying through the adapter would put its code inside the proof.
 
     As for the controls, a revision with no preparation (one-sided), one not artifacts-ready, bytes changed since
     preparation, or no JDK gives a not-started record; a kill or a timeout gives no observations; output that isn't
@@ -1417,7 +1435,8 @@ def run_verifier(plan, prepared, workdir):
     rel = lambda p: p.relative_to(attempt).as_posix()
     out, err = workdir / "verifier.stdout", workdir / "verifier.stderr"
     revision = plan.revisions[0] if plan.kind == "prove" else None
-    identities, argv, log = {"jvmcontract": sha256(exe), "command": VERIFIER_KINDS[plan.kind]}, (), {}
+    identities, argv, log = {"jvmcontract": sha256(exe), **_verifier_build(exe),
+                             "command": VERIFIER_KINDS[plan.kind]}, (), {}
     try:
         sides = {}
         for r in plan.revisions:
