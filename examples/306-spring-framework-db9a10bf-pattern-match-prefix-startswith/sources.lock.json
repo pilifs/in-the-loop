@@ -1,0 +1,83 @@
+{
+  "$comment": "The source lock of this packet: what was checked against upstream, how, and when. Revisions are named as in target.json. 'files' gives the git blob id (git hash-object) of each source file the selected method depends on, at each revision, so a later reader can check a checkout, a release or a sources JAR against it. 'correspondence' records which published artifacts carry the same sources. Checked by hand by the positive stream; a note, not evidence of a build or a replay.",
+  "checkedOn": "2026-11-14",
+  "how": "git init --bare; git fetch --depth=2 --filter=blob:none https://github.com/spring-projects/spring-framework SHA; parents read from the fetched commit object; tags fetched as refs/tags/T and resolved with git rev-parse T^{commit}; Maven Central JARs fetched with curl and their sha1 compared with Central's .sha1 files",
+  "repository": "https://github.com/spring-projects/spring-framework",
+  "revisions": {
+    "before": {
+      "commit": "27bfcbbc823897169942ddc9a9ff9538486426c5",
+      "version": "5.3.7-SNAPSHOT",
+      "files": {
+        "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java": "0430128489c3e8fba992805081cf96500dba06c4"
+      }
+    },
+    "after": {
+      "commit": "db9a10bf3524923e8cd5be3f2b847002b8289f75",
+      "parent": "27bfcbbc823897169942ddc9a9ff9538486426c5",
+      "version": "5.3.7-SNAPSHOT",
+      "files": {
+        "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java": "67871015cae2a00d343e8260d250dc8509e67764"
+      }
+    },
+    "release-before": {
+      "commit": "83c6d100950221189d5d6001d3b2e806213f3a98",
+      "tag": "v5.3.6",
+      "files": {
+        "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java": "0430128489c3e8fba992805081cf96500dba06c4"
+      }
+    },
+    "release-after": {
+      "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+      "tag": "v5.3.7",
+      "files": {
+        "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java": "67871015cae2a00d343e8260d250dc8509e67764"
+      }
+    }
+  },
+  "dependencies": {
+    "$comment": "simpleMatch(String,String) calls only java.lang.String methods and itself; PatternMatchUtils has no static initializer. org.springframework.lang.Nullable is an annotation and is not loaded by a call."
+  },
+  "correspondence": [
+    {
+      "release": "5.3.6",
+      "revision": "release-before",
+      "sameSourceAs": "before",
+      "artifacts": {
+        "org.springframework:spring-core:5.3.6": {
+          "sha256": "7d789153c82b2225f640261b2644fb60decafc6d5c01b9386f3e4e978231f46c",
+          "sha1": "8f91f60f628075701fde72bb5a43a33feeb27e93",
+          "size": 1457758,
+          "createdBy": "1.8.0_282 (Oracle Corporation)"
+        },
+        "org.springframework:spring-core:5.3.6:sources": {
+          "sha256": "d8f5fc98194a3bf53db461e1f69745ad647ee141349b35c79a1421b91222c8c1",
+          "PatternMatchUtils.java": "0430128489c3e8fba992805081cf96500dba06c4"
+        },
+        "org.springframework:spring-jcl:5.3.6": {
+          "sha256": "9d56d08d322314793842355b79f860adad3688c6035ef9eded63fd9a0d29c489",
+          "sha1": "53ddfc5cfdf438a1d3346fc2912c3e3049a8cb76"
+        }
+      }
+    },
+    {
+      "release": "5.3.7",
+      "revision": "release-after",
+      "sameSourceAs": "after",
+      "artifacts": {
+        "org.springframework:spring-core:5.3.7": {
+          "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8",
+          "sha1": "4aad1b62bd347a806fe693c9d67b376a3ad8151c",
+          "size": 1457829
+        },
+        "org.springframework:spring-core:5.3.7:sources": {
+          "sha256": "4b74f8723a662a6138dda02f2878fa7567d105a446a41cef7d36b63c8f1e0b51",
+          "PatternMatchUtils.java": "67871015cae2a00d343e8260d250dc8509e67764"
+        },
+        "org.springframework:spring-jcl:5.3.7": {
+          "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
+          "sha1": "ccd8bde38bad689737295fa220e1c70680676d72"
+        }
+      }
+    }
+  ]
+}

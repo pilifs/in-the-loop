@@ -556,8 +556,23 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: commit the merge (step 4); fold the streams' Progress, deferrals and interface requests here (step 5);
     forget the five workspaces (step 6); then Phase 5, starting with the fixture recipe and A5, and runtime's
     `runtime_maven.py` hosts for P3.
-- Status: blocked: the merge's one conflict, `llm-dlc/allowlist.json` (positive's 15 and negative's 8 allow-list
-  proposals added to the same base), can't be resolved by this loop; the user resolves it, or allows the loop to
+- 2026-11-14, **the reconcile, step 4 done: the streams merged** (this commit, a merge of the default line and the four
+  streams' record commits `xvvuxmqs`, `mqnnxzkt`, `kxqozyus`, `svrtnrlo`).
+  - **The user's decision**: they allowed this loop, and future ones, to resolve this kind of conflict, now an
+    exception in `CLAUDE.md`'s allow-list rule. For this merge they chose positive's side.
+  - **The resolution**: `jj restore --from example-targets-positive@- llm-dlc/allowlist.json` gave positive's 38
+    entries (23 approved, 15 proposed). Negative's 8 were then re-proposed with `sync.py allow propose`, giving their
+    original reasons: 7 bcrypt test hashes of example 287's probes, and dd2fcadc, Spring Security's public test
+    vector. The file now has the same 46 ids as the union, with every approved entry unchanged. All 23 proposals
+    still wait for a person's `sync.py allow approve`. `sync.py regenerate` resolved the four generated files.
+  - **Checked on the merge**: `example-targets-integration.sh` gives the same result as on the trial merge. The
+    targets suite (181), `test_build.py` (190), `test_pipeline.py` (29), `build.py --plan` and contract rows A0–A4,
+    A6 and A7 all pass. Only A5 fails, on VF-024's parameter names, so the script exits 1 until Phase 5 step 1.
+  - **Next**: fold the streams' Progress, deferrals and interface requests here (step 5); forget the five workspaces
+    (step 6); then Phase 5, starting with the fixture recipe's `-parameters` and contract A5, and runtime's
+    `runtime_maven.py` hosts for P3.
+- Status: in progress: the streams are merged; next, reconcile steps 5–6, then Phase 5 (the fixture recipe and A5
+  first)
 
 ## Loop settings
 

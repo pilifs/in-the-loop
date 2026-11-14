@@ -1,0 +1,11 @@
+--- a/crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java
++++ b/crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java
+@@ -733,7 +733,7 @@
+ 	public static String hashpw(String password, String salt) {
+ 		byte passwordb[];
+ 
+-		passwordb = password.getBytes(StandardCharsets.UTF_8);
++		passwordb = password.getBytes(StandardCharsets.US_ASCII);
+ 
+ 		return hashpw(passwordb, salt);
+ 	}

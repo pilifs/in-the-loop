@@ -1,0 +1,93 @@
+{
+  "provenance": "A note, not evidence (llm-dlc/loops/example-targets-positive.md, Ownership): a static scan that proves nothing, run by hand on 2026-11-14 with the jvmcontract binary of the default workspace (sha256 7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea, built 2026-11-08 19:40, one lib/src commit before yrlkzqvw), whose scan takes the default java (25.0.5). Neither JAR is a commit's build output, which the predicted build-or-dependency blocker rules out: 'before' is a copy of spring-boot-actuator-2.2.0.RELEASE.jar (sha256 ba12a0fa...) with WebMvcTags.class and WebMvcTags$1.class compiled from before's WebMvcTags.java (blob 89c6d1ba) by javac 1.8.0_512 -source 8 -target 8 against the classpath below (JAR sha256 847da899...); 'after' is spring-boot-actuator-2.2.0.RELEASE.jar itself, whose WebMvcTags.java is after's (blob 78c4c0b9) and whose Outcome.java differs from after's in one Javadoc line. Runtime's preparation and a current build record it again as evidence.",
+  "argv": [
+    "jvmcontract",
+    "gaps",
+    "--json",
+    "--target",
+    "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
+    "--classes",
+    "<side>.jar",
+    "--classpath",
+    "micrometer-core-1.2.0.jar:javax.servlet-api-4.0.1.jar:spring-web-5.2.0.RELEASE.jar:spring-core-5.2.0.RELEASE.jar:spring-jcl-5.2.0.RELEASE.jar:spring-webmvc-5.2.0.RELEASE.jar"
+  ],
+  "classpathSha256": {
+    "micrometer-core-1.2.0.jar": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
+    "javax.servlet-api-4.0.1.jar": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
+    "spring-web-5.2.0.RELEASE.jar": "e0e129fe80c484d0f4d870019f2885d8162fa62e78031560677d9dc4dcffd86f",
+    "spring-core-5.2.0.RELEASE.jar": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
+    "spring-jcl-5.2.0.RELEASE.jar": "8ebb7c28d760a976fcb94fbafdb98c8c71785ba7fbfbf7deb31770326d66cfeb",
+    "spring-webmvc-5.2.0.RELEASE.jar": "2b3d9e9c0e823b5e75de8f4f45b61705a54ff662d9c928ccd59ddb175ec0d7c6",
+    "spring-boot-actuator-2.2.0.RELEASE.jar": "ba12a0fad3123a69168e3ef843f1e802c9dac62867bed1f4665de1b333db0c2c"
+  },
+  "reading": "Both sides reach the same two gaps, each with no approximation, so refused by name under gaps strict (and under assume): java.util.regex.Pattern.compile, twice in WebMvcTags.<clinit> (TRAILING_SLASH_PATTERN and MULTIPLE_SLASH_PATTERN, which outcome() never uses but its class initialization runs), and java.util.Objects.requireNonNull, twice in micrometer 1.2.0's ImmutableTag.<init> (Tag.of's key and value). So every native attempt of this packet (preservation, finite-outcome-before and finite-outcome-after) is predicted to be refused before it reaches the classification, on both revisions; the class initializer is never removed to get past it. Neither gap is in the changed code: the patch neither adds nor removes one. The scan doesn't list the response parameter's getStatus() interface call or the Tag result, which are input construction and observation questions for the attempt, not callee gaps. before's switch map clones HttpStatus.Series.values() (array.clone(), exact); its WebMvcTags$1 initializer and HttpStatus.Series's are among the 15 methods walked, after's Outcome initializer among the 14.",
+  "scans": {
+    "before": {
+      "roots": [
+        "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)"
+      ],
+      "methods": 15,
+      "jdk": "25.0.5",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.util.Objects.requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;@jdk-25.0.5",
+          "kind": "jdk-static-method",
+          "call": "java.util.Objects.requireNonNull(java.lang.Object)",
+          "sites": [
+            "io.micrometer.core.instrument.ImmutableTag.<init>:34",
+            "io.micrometer.core.instrument.ImmutableTag.<init>:35"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+        },
+        {
+          "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
+          "kind": "jdk-static-method",
+          "call": "java.util.regex.Pattern.compile(java.lang.String)",
+          "sites": [
+            "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:71",
+            "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:73"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+        }
+      ],
+      "exact": {
+        "array.clone()": 1,
+        "java.lang.Object.<init>()V": 2
+      },
+      "refused": {}
+    },
+    "after": {
+      "roots": [
+        "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)"
+      ],
+      "methods": 14,
+      "jdk": "25.0.5",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.util.Objects.requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;@jdk-25.0.5",
+          "kind": "jdk-static-method",
+          "call": "java.util.Objects.requireNonNull(java.lang.Object)",
+          "sites": [
+            "io.micrometer.core.instrument.ImmutableTag.<init>:34",
+            "io.micrometer.core.instrument.ImmutableTag.<init>:35"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+        },
+        {
+          "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
+          "kind": "jdk-static-method",
+          "call": "java.util.regex.Pattern.compile(java.lang.String)",
+          "sites": [
+            "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:60",
+            "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:62"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
+        }
+      ],
+      "exact": {
+        "java.lang.Object.<init>()V": 2
+      },
+      "refused": {}
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "307",
+  "title": "spring-security@fe9e4549: BCrypt.hashpw with StandardCharsets.UTF_8 (positive scaffold)",
+  "summary": "Security's 2019 change of `BCrypt.hashpw(String,String)` from `password.getBytes(\"UTF-8\")` with an AssertionError wrapper to `password.getBytes(StandardCharsets.UTF_8)`. The positive of the password-bytes family: on fixed salts from upstream's tests and a frozen password domain (null, malformed surrogates and invalid salts included), both revisions should return the same hash or exception class. A partial scaffold: source-locked, claim frozen, oracle, driver, probes and mutant written; not yet built or run through the pipeline.",
+  "origin": "real-world",
+  "categories": [
+    "functional",
+    "security"
+  ],
+  "tags": [
+    "authentication",
+    "text-encoding",
+    "open-source-libraries",
+    "exceptions"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Spring Security (spring-security-crypto)",
+    "file": "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java",
+    "symbol": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/spring-projects/spring-security",
+    "url": "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1"
+  },
+  "change": {
+    "kind": "cleanup"
+  },
+  "verdictLabel": "scaffold: no verdict recorded",
+  "notes": [
+    "A positive scaffold of llm-dlc/loops/example-targets.md (positive stream): an expected outcome for named claims on one upstream change, never a statement that the release is secure. Readiness and proof outcomes come from receipts, not from this file.",
+    "Source lock checked upstream on 2026-11-14 (sources.lock.json): fe9e4549's only parent is fb39d9c2.",
+    "No Central artifact has either side's exact BCrypt.java: before's is 5.2.0.M4's (repo.spring.io only); 5.2.0.RELEASE drops an unused import and a `final` on private encipher. The upstream build needs services.gradle.org and repo.spring.io, outside decision 1, but pins no SNAPSHOT.",
+    "This pair has no length restriction of its own: CVE-2025-22228's 72-byte guard came in 2025. BCrypt's key schedule uses at most 72 password bytes on both revisions, which the 71, 72 and 73-byte probes observe without importing the later policy.",
+    "The packet (2026-11-14): claims/hashpw-preservation.json (a null password or one of at most 80 UTF-16 code units of any values; seven fixed salts in an assume expression; the returned String or the exception class; maxArrayLength 80, unwind 513, which completes every loop on this domain); replay/probes.json (45 probes; the salts and three known answers from upstream's BCryptTests, blob dc242a49 at both commits); controls/oracle.py (UTF-8 encoded independently, a result decided by the salt and the first 72 bytes of the cyclic key with its NUL terminator, distinct keys assumed to give distinct results; no cipher); replay/driver (arguments as UTF-16 code units in hex); controls/us-ascii.patch (the mutant, on after's BCrypt.java, sha256 a2b4e97f...).",
+    "The domain decisions: a null password is in, NullPointerException even with a null salt (the conversion comes first); malformed surrogates are in, encoded as '?' as String.getBytes specifies for both overloads; four invalid salts from upstream's tests are in, IllegalArgumentException. The exception is observed by class only: since JDK 14 a NullPointerException's message names the method called on null, getBytes(String) at before and getBytes(Charset) at after, so the messages differ by the patch itself. One quirk is in the expectations: under the '$2$05$' salt (no minor revision, so no NUL terminator) an empty password is an empty key, and both revisions throw ArrayIndexOutOfBoundsException.",
+    "A hand replay on 2026-11-14, a note and not evidence, since no side is the commit's build output: each commit's BCrypt.java compiled alone by javac 1.8.0_512 -source 8 -target 8 (before.jar sha256 2dd39ba5..., after.jar c078d233...), Central's spring-security-crypto-5.2.0.RELEASE.jar (3d0017d9..., sha1 checked against Central), and the driver by javac 21.0.13 --release 21 (driver.jar 8e8dac4d...), run on Temurin 21.0.13 and 25.0.5. Before, after and the published class agree with the oracle and with each other on all 45 probes, byte-identically on both JDKs; the three upstream known answers hold. The mutant (mutant.jar c3c8688d..., and in a copy of the published JAR f565d289...) breaks the oracle's key rules nine times and differs from before on 17 probes, all with non-ASCII passwords, the one-character 'é' among them.",
+    "Bytecode, by javap on the hand-built classes: before and after differ only in hashpw(String,String), apart from constant-pool indices (which turn some ldc_w in <clinit> into ldc); the published 5.2.0.RELEASE class differs from after's only in encipher's ACC_FINAL. That is what a checked summary of the unchanged callee hashpw(byte[],String) would be bound to.",
+    "A static jvmcontract gaps scan (records/hashpw-gaps.json, a note, with a binary one lib/src commit old) refuses the changed conversion itself on both sides: String.getBytes(String), String.getBytes(Charset), and the read of StandardCharsets.UTF_8. In the callee it also refuses Arrays.copyOf(byte[],int), and finds Integer.parseInt and StringBuilder.charAt with no approximation. Unlike 305, the strict attempt is predicted to stop at the change, not around it. W1's planner (workflow commit wqsyopql, run from a temporary copy) plans both tasks with this claim file."
+  ],
+  "target": "target.json"
+}

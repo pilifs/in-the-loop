@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Tests of examples/tools/targets/sidecar.py and examples/schema/target.schema.json: a strict, versioned sidecar,
 and the refusals Phase 0 of llm-dlc/loops/example-targets.md requires (an unknown field, a mutable revision, a path
-escape, a dependency cycle), offline and in milliseconds.
+escape, a dependency cycle), and a constructed mutant kept constructed, offline and in milliseconds.
 
   python3 examples/tools/targets/test_sidecar.py
 """
@@ -123,6 +123,64 @@ class SidecarTest(unittest.TestCase):
         self.refused(edited(x=lambda t: t["history"]["revisions"].update(fixed={"commit": B, "fixture": "gate/after"})),
                      "is valid under each of")
         self.refused(edited(x=lambda t: t.update(preparation={"route": "fixture"})), "only a control is built from fixtures")
+
+    def with_mutant(self, **mutant):
+        """MINIMAL with a constructed mutant of `fixed` and its mutation pair, `mutant` overriding its fields."""
+        m = {"base": "fixed", "patch": "controls/mutant.patch", "sha256": "0" * 64,
+             "description": "drop the fix's second condition", **mutant}
+        return edited(r=lambda t: t["history"]["revisions"].update(mutant={"mutant": m}),
+                      p=lambda t: t["history"]["pairs"].append(
+                          {"name": "mutation", "kind": "mutation", "before": "fixed", "after": "mutant"}))
+
+    def test_a_constructed_mutant_is_one_patch_from_an_upstream_revision(self):
+        sidecar.check(self.with_mutant(), self.folder)
+        self.assertIn(("history/revisions/mutant/mutant/patch", "controls/mutant.patch"),
+                      sidecar.files(self.with_mutant()))
+        self.refused(self.with_mutant(base="released"), "its base released is not defined")
+        self.refused(self.with_mutant(base="mutant"), "not its own base")
+        for missing in ("base", "patch", "sha256", "description"):
+            t = self.with_mutant()
+            del t["history"]["revisions"]["mutant"]["mutant"][missing]
+            self.refused(t, f"'{missing}' is a required property")
+        self.refused(self.with_mutant(sha256="abc"), "does not match")
+        self.refused(self.with_mutant(patch="../x.patch"), "does not match")
+        self.refused(self.with_mutant(operator="drop"), "Additional properties")
+        twice = self.with_mutant()
+        twice["history"]["revisions"]["again"] = {"mutant": {**twice["history"]["revisions"]["mutant"]["mutant"],
+                                                             "base": "mutant"}}
+        self.refused(twice, "is a mutant itself")
+
+    def test_a_constructed_mutant_has_no_upstream_identity(self):
+        t = self.with_mutant()
+        t["history"]["revisions"]["mutant"]["commit"] = B
+        self.refused(t, "is valid under each of")
+        for key, value in (("parent", A), ("tag", "v1"), ("release", "1.0")):
+            t = self.with_mutant()
+            t["history"]["revisions"]["mutant"][key] = value
+            self.refused(t, f"a constructed mutant has no upstream {key}")
+        published = self.with_mutant()
+        published["preparation"] = {"route": "published-artifact", "artifacts": [
+            {"revision": "mutant", "coordinates": "a:b:1.0"}]}
+        self.refused(published, "is a constructed mutant, which nothing publishes")
+
+    def test_a_constructed_mutant_is_compared_only_with_its_base_in_a_mutation_pair(self):
+        t = self.with_mutant()
+        t["history"]["pairs"][1].update(before="vulnerable")
+        self.refused(t, "built from fixed, and the pair compares it with vulnerable")
+        t = self.with_mutant()
+        t["history"]["pairs"][1].update(before="mutant", after="fixed")
+        self.refused(t, "before mutant is a mutant")
+        t = self.with_mutant()
+        t["history"]["pairs"].append({"name": "fake-fix", "kind": "exact-fix", "before": "fixed", "after": "mutant"})
+        self.refused(t, "never in a pair of kind exact-fix")
+        t = self.with_mutant()
+        t["history"]["pairs"][1].update(after="vulnerable")
+        self.refused(t, "after vulnerable is an upstream commit")
+        control = edited(r=lambda t: t["history"]["revisions"].update(mutant={"fixture": "gate/mutant"}),
+                         p=lambda t: t["history"]["pairs"].append(
+                             {"name": "mutation", "kind": "mutation", "before": "fixed", "after": "mutant"}),
+                         c=lambda t: t["identity"].update(role="control"))
+        sidecar.check(control, self.folder)
 
     def test_undefined_names_are_refused(self):
         self.refused(edited(x=lambda t: t["tasks"][0].update(revision="introduced")), "revision introduced is not defined")

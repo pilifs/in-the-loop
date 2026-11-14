@@ -1,0 +1,64 @@
+{
+  "$comment": "The source lock of this packet: what was checked against upstream, how, and when. Revisions are named as in target.json. 'files' gives the git blob id (git hash-object) of each source file the selected method depends on, at each revision, so a later reader can check a checkout, a release or a sources JAR against it. 'correspondence' records which published artifacts carry the same sources. Checked by hand by the positive stream; a note, not evidence of a build or a replay.",
+  "checkedOn": "2026-11-14",
+  "how": "git init --bare; git fetch --depth=2 --filter=blob:none https://github.com/spring-projects/spring-boot SHA; parents read from the fetched commit object; tags fetched as refs/tags/T and resolved with git rev-parse T^{commit}",
+  "repository": "https://github.com/spring-projects/spring-boot",
+  "revisions": {
+    "before": {
+      "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+      "version": "2.2.0.BUILD-SNAPSHOT",
+      "files": {
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "89c6d1ba3f6c7fdf92f5372585166d6d0529d32c",
+        "spring-boot-project/spring-boot-dependencies/pom.xml": "703d8f8bf7468ed2c7ab8cfab5b8568b9c769e08"
+      }
+    },
+    "after": {
+      "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+      "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+      "version": "2.2.0.BUILD-SNAPSHOT",
+      "files": {
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "78c4c0b970c1ad1bc09dfdde394162ad57e6e46f",
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java": "dcbc759eba99eb0d20f722ca7a6c0fbbf35b44bf",
+        "spring-boot-project/spring-boot-dependencies/pom.xml": "703d8f8bf7468ed2c7ab8cfab5b8568b9c769e08"
+      }
+    }
+  },
+  "dependencies": {
+    "$comment": "The direct dependencies of the selected method's classes, as spring-boot-dependencies pins them at both commits (unchanged by the patch).",
+    "org.springframework:spring-web": "5.2.0.RC2 (HttpStatus.Series.resolve, before's path; a milestone on repo.spring.io, not on Maven Central)",
+    "io.micrometer:micrometer-core": "1.2.0 (Tag; on Maven Central)",
+    "javax.servlet:javax.servlet-api": "4.0.1 (HttpServletResponse; on Maven Central)",
+    "preReleasePins": "14 pre-release versions in spring-boot-dependencies at each commit, SNAPSHOTs included: neo4j-ogm 3.2.0-RC1, reactor-bom Dysprosium-RC1, rsocket 1.0.0-RC3, spring-amqp 2.2.0.BUILD-SNAPSHOT, spring-batch 4.2.0.BUILD-SNAPSHOT, spring-data-releasetrain Moore-BUILD-SNAPSHOT, spring-framework 5.2.0.RC2, spring-hateoas 1.0.0.RC2, spring-integration 5.2.0.BUILD-SNAPSHOT, spring-kafka 2.3.0.BUILD-SNAPSHOT, spring-plugin 2.0.0.M1, spring-security 5.2.0.BUILD-SNAPSHOT, spring-session-bom Corn-M3, maven-enforcer-plugin 3.0.0-M2"
+  },
+  "correspondence": [
+    {
+      "release": "2.2.0.RELEASE",
+      "tag": "v2.2.0.RELEASE",
+      "commit": "62faab6e60681e90d5ce2ee4280b06de116e7032",
+      "coordinates": "org.springframework.boot:spring-boot-actuator:2.2.0.RELEASE",
+      "files": {
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "78c4c0b970c1ad1bc09dfdde394162ad57e6e46f",
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java": "eea82e097c0cdcaa8c45a171a441c4bf466b9ade"
+      },
+      "finding": "WebMvcTags.java is identical to after's. Outcome.java differs only in line 74's Javadoc ('@code Outcome}' fixed to '{@code Outcome}'). An after-side published artifact, not yet fetched or hashed; its dependencies are 2.2.0.RELEASE's, not the commit's."
+    },
+    {
+      "release": "2.2.0.M6",
+      "tag": "v2.2.0.M6",
+      "commit": "fb75cbbc5c19bb96adbf18c38aa5a1b1d9edd048",
+      "files": {
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "78c4c0b970c1ad1bc09dfdde394162ad57e6e46f"
+      },
+      "finding": "WebMvcTags.java identical to after's; a milestone, published only to repo.spring.io."
+    },
+    {
+      "release": "2.1.8.RELEASE",
+      "tag": "v2.1.8.RELEASE",
+      "commit": "6a956d371c348cedc96cd83d09b8aedf163a890c",
+      "files": {
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "af3ad2003dcb76ed817234635387062b90238f25"
+      },
+      "finding": "Not before's code: the 2.1.x outcome() classifies by status < 200, < 300, < 400, < 500, else SERVER_ERROR, so 99 is INFORMATIONAL and 600 SERVER_ERROR where before says UNKNOWN. A release pair 2.1.8 -> 2.2.0 would be a different change."
+    }
+  ]
+}

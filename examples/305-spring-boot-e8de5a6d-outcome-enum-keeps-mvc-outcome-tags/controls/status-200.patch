@@ -1,0 +1,11 @@
+--- a/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java
++++ b/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java
+@@ -76,7 +76,7 @@
+ 	 * @return the matching Outcome
+ 	 */
+ 	public static Outcome forStatus(int status) {
+-		if (status >= 100 && status < 200) {
++		if (status >= 100 && status <= 200) {
+ 			return INFORMATIONAL;
+ 		}
+ 		else if (status >= 200 && status < 300) {

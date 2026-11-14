@@ -1,0 +1,27 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "pow-int-minus-two-exact",
+  "kind": "property",
+  "statement": "For k == -2 and every e from 0 to 31, ArithmeticUtils.pow(int k, int e) returns (-2)^e: 1, -2, 4, ..., 2^30, and -2^31 (Integer.MIN_VALUE) at e = 31, all representable as an int, so the Javadoc's '@return k^e' applies and its '@throws ArithmeticException if the result would overflow' does not. Shared by the fix commit 8cfc04e8 (expected established) and its parent e7c172d2 (expected refuted at e = 31, where it throws ArithmeticException: the overflow report NUMBERS-218 fixed). The result and the exception are observed: with no throws clause, a revision that throws anywhere in the domain fails the property.",
+  "assume": "k == -2 && e >= 0 && e <= 31",
+  "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+  "observations": ["result", "exception"],
+  "bounds": { "unwind": 16 },
+  "assumptions": [
+    {
+      "text": "The assertion is evaluated in Java int arithmetic, and states (-2)^e exactly on the whole domain: 1 << e is 2^e for e <= 30, and at e = 31 both 1 << 31 and its negation are Integer.MIN_VALUE, which is -2^31 = (-2)^31.",
+      "basis": "JLS 15.19 (a shift uses the low five bits of e, here e itself) and 15.15.4 (negating Integer.MIN_VALUE gives Integer.MIN_VALUE). controls/oracle.py computes (-2)^e with unbounded integers instead, and the replay checks every point of the domain against it."
+    },
+    {
+      "text": "unwind 16 completes the method's only loop on this domain: the square-and-multiply loop runs once per bit of e, at most 5 times for e <= 31.",
+      "basis": "Read from pow(int,int)'s bytecode at both revisions (exp >>= 1 until exp == 0; records/pow-gaps.json lists the classes read). A bound the check can't complete leaves the attempt unresolved, never established."
+    }
+  ],
+  "notes": [
+    "The obligation the brief's P5 selects for gate A5, the supported primitive calibration: two int parameters, 32 inputs, no String, no object, no floating point, and no gap on any path the assume admits (records/pow-gaps.json: the only gaps pow(int,int) reaches are the StringBuilder calls of the e < 0 message, which this assume excludes, and the checker meets a gap only on a feasible path). Math.multiplyExact and the exception constructors are reproduced exactly; ArithmeticUtils has no static initializer.",
+    "Non-vacuity: every one of the 32 inputs satisfies the assume, and the replay runs all of them on both revisions (replay/probes.json's property block). The same statement is expected refuted on e7c172d2 with the witness k = -2, e = 31 (ArithmeticException), which the replay reproduces in the JVM on JDK 21 and 25; a statement no input reached could not be refuted. The refuted attempt is the independently replayed witness A5 accepts; the established one is the non-vacuous proof.",
+    "It is the historical report's 'fix as a property' row (README.md: result == -2147483648 under k == -2 && e == 31, verified on head, refuted on base, both with JBMC), widened from that one point to the 32 exponents of k == -2, so that the loop and Math.multiplyExact are checked at every bit pattern of e and not only at the boundary. The report's own verdicts stay historical; this claim's attempts are new receipts beside them, under --engine native --gaps strict.",
+    "Not claimed: pow(long, int), which the same pull request changed the same way (e > 63) and neither the report nor this packet covers; any k other than -2; the Javadoc's other clauses (claims/pow-preservation.json and the replay cover those concretely)."
+  ]
+}

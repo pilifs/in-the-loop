@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "pow-int-preserved",
+  "kind": "preservation",
+  "statement": "Preservation of ArithmeticUtils.pow(int k, int e) between e7c172d2 and 8cfc04e8: on every (k, e) outside the task's allowedChange, both revisions return the same int or throw the same exception class. Two tasks share it. regression has no allowedChange and is expected refuted, at k = -2, e = 31, the change the pull request intends (the historical report's first row). confined-change has allowedChange 'k == -2 && e == 31', the pull request's stated intent, and is expected established on the other 2^64 - 1 inputs (the report's second row). The exception's message is not observed.",
+  "observations": ["result", "exception"],
+  "bounds": { "unwind": 16 },
+  "assumptions": [
+    {
+      "text": "unwind 16 completes the loop on every input: it runs at most once per bit of e, so at most 5 times: with |k| >= 2, e >= 31 at before and e > 31 at after throw before it, and k in {-1, 0, 1} returns before it.",
+      "basis": "Read from pow(int,int)'s bytecode at both revisions; the comparisons e >= 31 and e > 31 are the only difference (records/pow-gaps.json, and the masked javap diff noted in example.json)."
+    },
+    {
+      "text": "The exception is observed by class only.",
+      "basis": "The IllegalArgumentException's message contains e, and the ArithmeticException's is 'integer overflow' at both revisions from pow's own throw, and from Math.multiplyExact when the loop overflows; callers can observe the class through the Javadoc's @throws clauses, which name classes only."
+    }
+  ],
+  "notes": [
+    "Predicted, not observed (records/pow-gaps.json): the e < 0 path builds its message with StringBuilder, four calls the tool's own checker approximates, so --gaps strict ends that path on both sides with no verdict. For regression that doesn't stop a refutation (a run that met a gap still has a verdict when another path is a violation, lib/README.md), so it stays expected refuted; for confined-change no other path is a violation, so the strict attempt is predicted unresolved: a capability refusal by name, recorded as such, never as established and never by narrowing the domain to e >= 0, which would be a different claim (a linked, narrower one, if a later agent wants it).",
+    "The A5 obligation is the property claims/pow-minus-two.json, not this one: this claim's two tasks are the report's equivalence rows on the new route, kept as diagnostics of what strict supports today."
+  ]
+}

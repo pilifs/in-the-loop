@@ -1,0 +1,29 @@
+{
+  "description": "The concrete probes of 105's replay task, for ArithmeticUtils.pow(int k, int e). Each probe is [k, e]. controls/oracle.py reads this file, prints the driver's argument vector, and checks each revision's driver lines against the method's Javadoc contract (the same text at e7c172d2 and 8cfc04e8; the pull request changed no Javadoc): k^e when it is representable as an int, ArithmeticException when it would overflow, IllegalArgumentException when e < 0, with the special cases 0^0 = 1, 0^e = 0, 1^e = 1 and (-1)^e = +-1. The probes cover k = -2 at every exponent from 0 to 32 (the selected property's whole domain, 0..31, and the first overflow past it), the other results at the int boundary (2^30, 4^15, (-8)^10, 46340^2, (-3)^19, MIN_VALUE^1, MAX_VALUE^1) and their first overflows (2^31, 3^31, 4^16, 46341^2, (-3)^20, MIN_VALUE^2, MAX_VALUE^2, (-2)^MAX_VALUE), the special cases with e at 0, 1, 31, 32 and MAX_VALUE, and negative exponents (-1 and MIN_VALUE, k at 0 and 1 included: the e < 0 check comes first). The upstream test the fix added, testPowMinValue, contributes (-2,31), (2,31), (-2,32) and (3,31).",
+  "contract_deviations": {
+    "description": "The probes where a revision is expected to differ from the Javadoc contract, from the upstream record, not from either revision's code: NUMBERS-218 and pull request #223 (src/changes/changes.xml at 8cfc04e8: 'Return the representable minimum int and long values for (-2)^31 and (-2)^63 instead of reporting overflow'). The before revision reports overflow for (-2)^31, which is representable (Integer.MIN_VALUE); the after revision is expected to meet the contract on every probe. Any other deviation, or this one missing, is a failure of the replay.",
+    "before": [
+      { "k": -2, "e": 31, "outcome": "threw", "exception": "java.lang.ArithmeticException" }
+    ],
+    "after": []
+  },
+  "property": {
+    "description": "The selected obligation's concrete side (claims/pow-minus-two.json): for k == -2 and 0 <= e <= 31, pow returns (-2)^e. The oracle requires every point of that domain among the probes, and checks the property on each revision's lines: it must hold on all 32 at after, and fail at e = 31 alone at before (the witness the refuted attempt is expected to give, replayed here in the JVM).",
+    "k": -2,
+    "eFrom": 0,
+    "eTo": 31
+  },
+  "probes": [
+    [-2, 0], [-2, 1], [-2, 2], [-2, 3], [-2, 4], [-2, 5], [-2, 6], [-2, 7], [-2, 8], [-2, 9], [-2, 10],
+    [-2, 11], [-2, 12], [-2, 13], [-2, 14], [-2, 15], [-2, 16], [-2, 17], [-2, 18], [-2, 19], [-2, 20],
+    [-2, 21], [-2, 22], [-2, 23], [-2, 24], [-2, 25], [-2, 26], [-2, 27], [-2, 28], [-2, 29], [-2, 30],
+    [-2, 31], [-2, 32], [-2, 2147483647],
+    [2, 30], [2, 31], [2, 32], [3, 19], [3, 20], [3, 31], [-3, 19], [-3, 20],
+    [4, 15], [4, 16], [-4, 15], [-8, 10], [-8, 11],
+    [46340, 2], [46341, 2], [-46341, 2],
+    [-2147483648, 0], [-2147483648, 1], [-2147483648, 2], [2147483647, 1], [2147483647, 2],
+    [0, 0], [0, 1], [0, 31], [0, 2147483647], [1, 0], [1, 32], [1, 2147483647],
+    [-1, 0], [-1, 1], [-1, 2], [-1, 31], [-1, 2147483647], [7, 0], [7, 1],
+    [5, -1], [0, -1], [1, -1], [-1, -1], [-2, -1], [-2, -2147483648]
+  ]
+}

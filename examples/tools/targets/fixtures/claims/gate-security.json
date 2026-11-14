@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "gate-denies-both-cases",
+  "kind": "property",
+  "statement": "allowed(code) is false for the denied code in either case, 65 ('A') and 97 ('a'), on every int: the oracle's statement (gate/oracle.py), shared by the vulnerable revision (expected refuted at 97), the fix (expected established) and the mutant (expected refuted at 65).",
+  "assert": "!result || (code != 65 && code != 97)",
+  "observations": ["result", "exception"],
+  "notes": ["No assume: the domain is every int, the security domain whole. An exception is observed, so a throwing revision fails the property rather than escaping it."]
+}

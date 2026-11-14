@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-180443-example-targets-runtime-r2-a-constructed",
+  "title": "example-targets runtime R2: a constructed mutant on the published-artifact route, spring-core 5.3.19's simpleMatch patched and recompiled into a copy of its JAR",
+  "description": "Runtime now prepares workflow W1's constructed mutant entries (a base revision, a patch by path and sha256, the mutation in words) on all three routes instead of refusing them; before, a mutant was Unsupported in lock. This job runs the published-artifact route on real bytes. runtime_simplematch/mutation.json declares a mutant of r5-3-19 (spring-core 5.3.19, published on Maven Central, linked to the v5.3.19 commit cedb5874 of spring-projects/spring-framework): mutant/suffix-anywhere.patch (sha256 f7171285...374f) turns PatternMatchUtils.simpleMatch's str.endsWith(pattern.substring(1)) into str.contains(...), so a '*xxx' pattern matches anywhere. runtime_slice.py --case simplematch-mutant plans the mutation pair (r5-3-19, mutant) as W1 would. The mutant's preparation acquires 5.3.19's spring-core and spring-jcl JARs by sha256, fetches the base commit from github.com by full SHA at depth 1, compiles the unpatched PatternMatchUtils.java once (recorded: how far javac alone moves the bytes), applies the patch with git apply (checked first), recompiles it against the published JARs with the base class's --release (8, from its class-file version) and debugging flags (-g -parameters, from the attributes the published class records), and puts the classes in place of the base JAR's own in a copy of it. The base JAR stays off the classpath. Each revision's driver then runs in its own JVM on JDK 21 and 25 over the slice's 45 Javadoc-oracle probes. Step 2 deletes the checkout so that only the records come back.",
+  "kind": "other",
+  "capabilities": [
+    "targets:mutant",
+    "targets:controls"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/runtime.py",
+      "examples/tools/targets/runtime_upstream.py",
+      "examples/tools/targets/runtime_slice.py",
+      "examples/tools/targets/runtime_simplematch",
+      "llm-dlc/loops/example-targets-runtime.md"
+    ]
+  },
+  "expected": "step 1 exits 0 and prints 'ok': prepare r5-3-19 and mutant artifacts-ready; the mutant's classpath is driver, adapter, mutant/spring-core-5.3.19.jar, spring-jcl, its commit mutant:cedb5874...+f7171285..., its preparation's mutant.applied naming PatternMatchUtils.java with different before and after sha256s, mutant.jar.classes exactly [org/springframework/util/PatternMatchUtils], mutantBuild release 8 and flags [-g, -parameters]; four controls (each revision on JDK 21 and 25) exited 0 with 45 observations each; oracle problems none on r5-3-19 and exactly [*bc, bcx], [a*c*e, abced] and [*a*b, acba] on the mutant (as a model of the patched method predicts); JDKs agree on each revision; ingestion at workflow's Phase 0 stub. Step 2 exits 0",
+  "submitted": {
+    "at": "2026-11-14T18:04:43+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "one depth-1 fetch of a spring-framework commit from github.com (the bulk: a few hundred MB, git with fsckObjects), two small javac runs and four short JVM runs; the published JARs come from Maven Central"
+  },
+  "steps": [
+    {
+      "name": "the mutation pair: 5.3.19 and its constructed mutant, prepared and replayed",
+      "run": "python3 examples/tools/targets/runtime_slice.py runtime-mutant/attempt --case simplematch-mutant",
+      "cwd": "."
+    },
+    {
+      "name": "keep the records, not the checkout",
+      "run": "rm -rf runtime-mutant/attempt/prepare/*/checkout runtime-mutant/attempt/prepare/*/home && du -sh runtime-mutant",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "runtime-mutant"
+  ]
+}

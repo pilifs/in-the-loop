@@ -143,9 +143,482 @@ Small unit and JVM conformance checks run inline.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
-  included.
-- Status: working
+- Forked after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0 included, on
+  2026-11-14.
+- 2026-11-14, **R1 on the fixture route**: `runtime.lock(plan, revision)` (new, offline: the source lock, every
+  selected source, adapter, driver and oracle path inside the folder, links included, and hashed; nothing fetched or
+  built) and `runtime.prepare()` for `route: fixture` (build_fixtures.py's recipe, byte for byte, with the JDK it
+  would use resolved to its real home; the original, adapter, driver and oracle hashed; the ordered classpath; the
+  target's origin; `prepared.json` in the work directory). It refuses, as `failed` with its stage, diagnostic and the
+  artifacts that exist: a class on more than one classpath entry (`classpath`), a target method the original doesn't
+  declare (`target`), an adapter that never references the target method (`adapter`), a compile failure (`build`),
+  sources changed between lock and build, and a work directory that isn't an earlier preparation's (`workdir`).
+  `published-artifact` and `upstream-build` return Unsupported (not a Phase 0 stub) until R2. New modules
+  `runtime_jdk.py` (installed JDKs by full path, identity from `release` and `java -version`) and `runtime_jar.py` (a
+  small class-file reader). Contract A2: 3 pass. `test_runtime.py` rewritten: 19 tests.
+- 2026-11-14, **R4 on the fixture route**: `runtime.run_controls()` runs each revision's driver in its own JVM, on its
+  own prepared classpath, on each JDK its artifact entry names (`jdks`, else the one it was built with), by full path,
+  on the oracle's `PROBES`. The JVM gets a fixed environment (`C.UTF-8`, UTC, en-US, UTF-8 streams, `-Xmx512m`) and
+  inherits nothing, `JAVA_TOOL_OPTIONS` and `CLASSPATH` included. Each record names the JDK (`java -version`, home,
+  `release`), the commit, every classpath entry with its sha256 and role, the driver, where its inputs came from (the
+  oracle and its hash), the environment and flags, and `replay: original-jvm` (`model` once a `stub` artifact is on
+  the classpath). Before a JVM starts, the classpath's bytes are rechecked against the preparation. These give a
+  `not-started` record, never a skipped one: a revision with no preparation (one-sided), one that isn't
+  artifacts-ready, bytes changed since preparation, a `prepared.json` that isn't the PreparedTarget given, a missing
+  JDK, and a JDK older than the classes (from their class-file version). A kill, a timeout (`CONTROL_TIMEOUT`, 120 s),
+  a line that isn't a JSON object, and inputs missing or out of order give no observations; exit 1 with complete
+  output stays raw, its exit code kept. Nothing here applies the oracle. `controls/controls.json` says why each record
+  without observations has none. The lock now names the driver's main class. Contract A3/A4: 2 pass (contract: 8 pass,
+  8 skip, 6 at workflow's stubs and A5's 2 for want of `jvmcontract`). `test_runtime.py`: 28 tests. The integration
+  script exits 0.
+- **Interface request** (for the merge; `interfaces.py` is the coordinator's): `PreparedTarget` doesn't carry its work
+  directory, so `run_controls` finds the preparation by `route.py`'s layout (`<attempt>/prepare/<revision>` beside
+  `<attempt>/controls`) and runs it only if its `prepared.json` is the PreparedTarget given. An additive
+  `workdir: Optional[str] = None` would remove the convention. It isn't in `source`, because that would put a
+  temporary path into what claims are bound to.
+- For review (workflow's W2): a killed record's `exitCode` is the negative signal, as `build.py`'s stages record it
+  (`-9`). The constructed `bad-runs.json` record has `None`. Either way `status` is `killed`.
+- 2026-11-14, **R2's published-artifact route**: `lock()` and `prepare()` take `route: published-artifact`. The lock
+  is offline. It needs the revision's full commit, kept as recorded linkage beside any `tag` and `release` and marked
+  unchecked against the bytes. It also needs the JAR's `coordinates`, `url` and `sha256`, and each declared dependency
+  under `dependencies`, in classpath order. The lock refuses:
+  - a dynamic or mutable version (a range, `+`, LATEST, RELEASE, a SNAPSHOT);
+  - a missing or malformed sha256;
+  - a URL that isn't https on Maven Central or github.com;
+  - a Central URL that names another file;
+  - an artifact listed twice.
+
+  Preparation acquires each JAR through the new `runtime_maven.py`:
+  - it uses a content-addressed cache (`~/.cache/in-the-loop/targets`, or `TARGETS_CACHE`) and rechecks every
+    restore. A corrupt entry is moved aside, reported and fetched again;
+  - on a miss it fetches into a new empty directory, over https, following redirects only to github's content hosts.
+    It checks the bytes against the lock before caching or using them. Different bytes fail at `acquire`, uncached and
+    unbuilt;
+  - it fetches only when the plan's `network` allows. Otherwise it uses the cache alone.
+
+  The cache and fetch log (`logs/acquire.log`) stays out of `source`, so a cache hit gives the same PreparedTarget.
+  Each JAR is an Artifact with its coordinates and origin URL. The classpath is driver, adapter, original, then the
+  dependencies in order. The fixture route's checks apply: shadowing across dependencies, the target method and the
+  adapter's call. Every failed preparation now carries `source.blocker`: stage, command, diagnostic, needed semantics
+  and next action (the acceptance's handoff row). A missing hash's command is the one that records it:
+  `python3 -I examples/tools/targets/runtime_maven.py pin G:A:V`. That command fetches the JAR from Central, checks
+  it against Central's `.sha1`, caches it and prints the sidecar entry. `test_runtime.py`: 39 tests, against a local
+  stand-in for Central. They cover:
+  - a lock that fetches nothing;
+  - classpath order and origins;
+  - a cache hit and a corrupt cache entry;
+  - a hash mismatch;
+  - eight lock blockers;
+  - a shadowing dependency;
+  - `network: false`;
+  - both published revisions' controls on JDK 21 and 25, read by the fixture's oracle.
+
+  The integration script exits 0: contract 8 pass and 8 skip, targets suite 79, `test_build` 190, `test_pipeline` 29.
+  Note, not evidence: `pin org.springframework:spring-core:5.3.19` fetched the real JAR, sha256 `1af06bd4…7992`, and
+  it matched Central's `.sha1`.
+- **Interface request** (workflow's W1, `plan_task`): a published revision's `artifacts` entry should carry:
+  - the history's `commit`, and its `tag`/`release`;
+  - the JAR's `coordinates`/`url`/`sha256`;
+  - its other `preparation.artifacts` items as `dependencies`, in classpath order. The sidecar allows several items
+    per revision, and the TaskPlan has one entry per revision;
+  - `network: true` on the plan.
+- For review: the blocker sits in `source` because PreparedTarget has no field for it. An additive
+  `blocker: Optional[Mapping] = None` would be cleaner. The dependency closure is what the lock declares: no POM is
+  resolved (no Maven emulation). A missing dependency shows up as a NoClassDefFoundError in the controls, which is a
+  replay failure, not a result.
+- 2026-11-14, **R5's slice**: `runtime_slice.py` runs one small published upstream method end to end, with
+  `runtime_simplematch/` as its case folder. That folder isn't an example and isn't in the router; its plan uses 315,
+  from this stream's range. The method is `PatternMatchUtils.simpleMatch(String, String)` from spring-core 5.3.18 and
+  5.3.19. The sidecar:
+  - is a valid `example-target/v1`;
+  - names the release tags by full commit, checked with `git ls-remote` (`707a24c4…`, `cedb5874…`);
+  - pins each release's spring-core JAR and spring-jcl, its one compile dependency per its POM, by URL and sha256.
+    `runtime_maven.py pin` recorded each sha256 and checked it against Central's `.sha1`.
+
+  The adapter only calls the method. The driver reads each input as a JSON pair of strings or nulls. The oracle is
+  written from the Javadoc: 45 probes, covering nulls, every pattern style, adjacent stars, backtracking, case, a line
+  break, regex metacharacters and a non-BMP character.
+
+  The path: the sidecar becomes the TaskPlan asked of W1, then `prepare` (acquisition, the checked cache, the adapter
+  and driver built, the classpath checked), then `run_controls`, then `workflow.ingest`, called as `route.run` calls
+  it. Ingestion is still W2's stub, so it answers Unsupported.
+
+  Run inline, once from an empty cache (all 4 JARs fetched from Central and checked) and once `--offline`:
+  - both releases are artifacts-ready, the target loaded from spring-core's JAR;
+  - each release's driver ran in its own JVM on JDK 21 and 25: 4 records, each exited 0 with 45 observations and no
+    oracle problems;
+  - JDK 21 and 25 agree on each release.
+
+  Tests, `test_runtime.py` 43 (4 new):
+  - the sidecar is valid and both releases lock offline;
+  - offline with an empty cache, preparation is a blocker at `acquire` with its command and next action;
+  - the oracle isn't vacuous: it rejects five plausible wrong implementations, and a missing probe raises;
+  - the end-to-end slice runs from a private copy of the four cache entries. It is skipped, never faked, when the
+    cache lacks them.
+
+  The fixture half of R5 is R1, R2 and R4's (the fixture JARs on both routes). The integration script exits 0:
+  contract 8 pass and 8 skip, targets suite 83 (the slice's end-to-end test ran, offline), `test_build` 190,
+  `test_pipeline` 29.
+- Found (for review, the negative and positive streams): `org/springframework/util/PatternMatchUtils.class` is
+  byte-identical in spring-core 5.3.18 and 5.3.19 (sha256 `8562b278…ff28`). The CVE-2022-22968 fix changed
+  `DataBinder`, not this method, so a binder packet that reaches `simpleMatch` has the same callee on both sides.
+- **Note for the positive stream and Phase 5, what 105's migration needs from runtime.** Taken from 105's `README.md`
+  and `example.json`, not checked against upstream:
+  - **Revisions.** The recorded run compared the PR's head `79aa4643` with `e7c172d2`, the commit the squash merge
+    landed on. Both are short SHAs, so the sidecar needs full ones. Neither is a release, so the published-artifact
+    route can't serve that pair. The published route could serve a release pair of `commons-numbers-core`, such as
+    the release before and after the fix, but only once the positive stream shows that `pow(int, int)` is the change
+    between them. That would be a different pair, not the recorded one.
+  - **Build route.** The PR pair needs the upstream-build route: Maven, through the revision's wrapper if it has one,
+    otherwise a pinned Maven distribution fetched by hash, which the route doesn't do yet. 105's historical run
+    compiled `ArithmeticUtils.java` alone with `javac`, because its sandbox refused the Maven build. Reused, that is
+    an extracted source slice, not original bytecode, and needs that scope label.
+  - **JDK and classpath.** The bytecode targets an old release. The controls can run on 21 and 25. The method is
+    `int`-only and has no dependencies, so the classpath is the one JAR. A fixture-shaped `int` driver fits, with
+    `pow(-2, 31)` as the trigger and `k` in {-1, 0, 1} as legitimate inputs.
+- 2026-11-14, **R3's `run_verifier`** replaces Phase 0's stub. It runs `jvmcontract` on the prepared original
+  artifacts only, never the adapter or driver, and returns one raw `verifier` ExecutionRecord.
+  - A prove task runs `prove` on its revision's original JAR, with the dependencies on the classpath in order and
+    the claim's assume, assert, throws, nullable and may-alias. An equivalence task runs `equivalence` between the
+    pair's originals, `--unchanged-unless` the task's allowed change. Its revision is None.
+  - Both get the plan's `--engine` and `--gaps` (a missing one is refused, never the CLI default), the claim's bounds,
+    its construction plan and gap contracts (each rechecked against the claim's sha256), and `--json`. The paths are
+    relative to the attempt directory, the verifier's cwd. The claim keys are the ones workflow's W1 `plan_task`
+    gives.
+  - The environment is fixed and recorded as the controls' is. The JDK is 25 when every revision runs on it, given
+    by full path in `JAVA_HOME` and `PATH`. Only the runner's `JVMCONTRACT_*` memory settings pass through.
+  - Recorded in `identities`:
+    - the jvmcontract digest, the JDK, the engine, gaps and bounds;
+    - each revision's commit and its verifier classpath, with sha256s;
+    - the **scope**: a label (`original-bytecode`, `original-bytecode-under-models`, `constructed-mutation` or
+      `constructed-fixture`), the loaded class with its sha256 and origin, the models and assumptions, and the note
+      that the adapter isn't on the verifier's classpath;
+    - the **capability probe**: `jvmcontract gaps` on each revision, a static scan that proves nothing, with its
+      argv and the gaps it lists.
+  - Raw, as the controls are. These give a `not-started` record: a one-sided pair, a revision that isn't
+    artifacts-ready, bytes changed since preparation, a missing JDK. A kill, a timeout (600 s, jvmcontract's own, plus
+    120 s grace) or output that isn't the `--json` outcome gives no observations.
+  - These are Unsupported, not stubs, because the task can't be attempted as stated: a replay or compare task, a
+    missing engine or gap mode, claim models (no route passes them yet), a bound with no option, a claim file changed
+    since it was frozen, an equivalence pair whose dependency closures differ (one classpath for both), no built
+    jvmcontract (with the build command), and a work directory that isn't ours.
+  - `verifier/verifier.json` keeps the record.
+  - `test_runtime.py`: 51 tests. The stub test is gone, and 8 verifier tests run against a stand-in jvmcontract that
+    records its argv, cwd and environment, because no proof runs inline. One of them shows the job's reading isn't
+    vacuous: a "verified" for a refuted task, and a refusal that doesn't name `java.util.regex`, are both not as
+    expected.
+- **Found and fixed while dry-running the job: the fixture's `regex-probe` failed preparation at `adapter`.** The
+  fixture's one adapter calls `Gate.allowed`, not the probe's `RegexGate.allowed`. After the merge, contract A5's
+  regex-probe row would have failed on runtime's check. Now:
+  - a replay task's adapter must still call the target (its controls are the task's evidence);
+  - a proof task records which original methods its adapter calls (`adapterCalls`, `adapterCallsTarget`) instead,
+    since its verifier never goes through the adapter;
+  - `run_controls` doesn't run controls whose adapter doesn't call the task's target. They give `not-started`,
+    because they aren't the task's evidence;
+  - shadowing is refused for every task, as before.
+- A `mutant` entry in the plan (workflow's W1 constructed mutants, `zvnrtxsunllx`) is now Unsupported in `lock`. It
+  isn't a Phase 0 stub, and it never prepares the base unpatched.
+- **The calibration job**: `runtime_calibrate.py` runs the fixture's five proof tasks through `prepare` and
+  `run_verifier` with the real jvmcontract, native and strict, and hands each record to `workflow.ingest`. Until W2,
+  that answers Phase 0's Unsupported. Each task's claim is a stand-in: the properties workflow's
+  `fixtures/claims/*.json` state on its branch, in its `plan_task`'s claim keys. Expected:
+  - `vulnerable-security` and `mutant-security`: a violation;
+  - `fixed-security` and `preservation`: verified;
+  - `regex-probe`: unverifiable, naming `java.util.regex`.
+
+  Dry runs inline, with no jvmcontract and with a stand-in, exercised the plumbing. Queued as job
+  `20261114-162937-example-targets-runtime-r3-run-verifier`, which also runs the contract with `JVMCONTRACT` set, so
+  A5 gets past its skip and stops at workflow's task-plan stub. Its result is pending. The integration script exits
+  0: contract 8 pass and 8 skip, targets suite 91, `test_build` 190, `test_pipeline` 29.
+- **For the merge** (workflow's W1, seen read-only on its branch). A published revision's entry carries its JARs as
+  `published` (a list, with `coordinates`/`url`/`sha256` copied up only when there is one). `lock` reads the first
+  item plus `dependencies`, as asked under the interface request above. Runtime should accept `published` as well,
+  in order: the original, then the dependencies. That is the next small piece.
+- Interface request, for review: the verifier can't yet go *through* an adapter (an instance method whose receiver
+  only the adapter can construct, for example). The claim schema has no key that names an adapter entry point.
+  Until it has, such a task needs a construction plan (`--plan`) or stays a capability gap.
+- 2026-11-14, **W1's `published` list accepted**: a published revision's entry may now carry its JARs as workflow's
+  W1 gives them, `published` in classpath order (the original first, then the dependencies), a lone item's keys copied
+  up. The earlier shape (the original's keys on the entry, `dependencies` beside them) still locks, to the same lock.
+  Refused at `lock`: both lists at once, an empty or malformed list, and a copied-up key that isn't the first item's.
+  The slice now builds W1's shape. `test_runtime.py`: 52 tests. The slice's end-to-end run passed offline from the
+  cache.
+- The integration report of 2026-11-14 16:28 shows the streams conflicting only in generated files
+  (`llm-dlc/README.md`, `llm-dlc/index.json`, `llm-dlc/traces/README.md`, `llm-dlc/traces/metrics.json`), none of them
+  runtime's: the script didn't run. Nothing to coordinate from here; `sync.py` regenerates them.
+- Read-only over the case streams' sidecars: 105, 305 and 307 use `upstream-build` (Maven, the Maven wrapper and the
+  Gradle wrapper, on JDK 11, 8 and 8). No sidecar declares a mutant yet. So the upstream-build route comes before
+  mutant preparation.
+- 2026-11-14, **the calibration job failed: VF-024** (`20261114-162937-example-targets-runtime-r3-run-verifier`, at
+  `b397033c`, 45 s, collected as `orwvprts`). Its contract step passed (8 pass, 8 skip). No task got its expected
+  verdict, for three reasons, each now handled:
+  1. **Parameter names, a Phase 0 inconsistency.** `build_fixtures.py` compiles without `-parameters` or `-g`, so the
+     fixture's classes record no parameter names, and jvmcontract calls `Gate.allowed`'s parameter `arg0`. Phase 0's
+     own sidecar (`allowedChange: "code == 97"`) and workflow's claim files say `code`, and RegexGate's say `field`.
+     So the three security tasks, and preservation's `--unchanged-unless`, aren't well-formed for Phase 0's bytes.
+     Contract A5's fixture rows will fail the same way at the merge. Runtime can't fix it alone: the fixture route
+     must reproduce `build_fixtures.py` byte for byte, which contract A2 checks. Changes:
+     - `_fixture_recipe()` now also takes an optional `JAVAC_FLAGS` from `build_fixtures.py`, and every javac of the
+       route gets those flags;
+     - the verifier's scope records, per revision, the target's parameter names and where they come from
+       (`MethodParameters`, the `LocalVariableTable`, or nowhere). These are the names a claim can use. New
+       `runtime_jar.parameter_names`, read as jvmcontract reads them.
+  2. **Equivalence wants class directories** (`Not a directory`). `run_verifier` now extracts each side's original
+     JAR into `verifier/classes/<revision>`, records the extraction (`identities.classes`), and passes those. A test
+     checks the extracted classes match the JAR byte for byte, and refuses an entry outside the JAR's root.
+  3. **regex-probe refuses before it reaches the regex.** The strict proof stops at the `String` parameter ("a value
+     adapter is built for it, but this check doesn't take one yet"). The capability probe (`jvmcontract gaps`, in
+     `identities.probe`) names `Pattern.compile`, `Pattern.matcher` and `Matcher.matches`. The verdict,
+     `unverifiable`, is the expected unresolved. The calibration now reports `refusalNamesRegex` and
+     `probeNamesRegex` apart, and needs one of them.
+  - **Request for the merge (the coordinator, `build_fixtures.py`):** add `JAVAC_FLAGS = ("-parameters",)` and pass
+    it to its javac. Runtime follows automatically, and the fixture JARs' hashes change in both places alike.
+    Otherwise, workflow's claim files and Phase 0's sidecar would have to use `arg0`.
+  - For review: the fixture's capability refusal is named by the probe, not by the proof's own refusal. A strict
+    proof through `java.util.regex` would need a String-parameter check first.
+  - Rerun as job `20261114-164239-example-targets-runtime-r3-after-vf-024`. Its calibration runs with
+    `--fixture-javac-flag=-parameters`, recorded as that variant in `calibration.json` and in every preparation's
+    recipe. It is the calibration of the asked-for recipe, not of Phase 0's bytes. Its contract step runs on Phase 0's
+    bytes. `test_runtime.py`: 55 tests (3 new: the reader across no flags, `-g` and `-parameters`; the escaping
+    entry; and recipe flags reaching javac, giving other bytes and recorded names). The integration script exits 0:
+    contract 8 pass and 8 skip, targets suite 94 (run before the escaping-entry test was added), `test_build` 190,
+    `test_pipeline` 29.
+- 2026-11-14, **R2's upstream-build route**: `lock()` and `prepare()` take `route: upstream-build`, through the new
+  `runtime_upstream.py`. `ROUTES_TO_COME` is now empty.
+
+  The lock is offline. It needs:
+  - an https repository on github.com;
+  - the full commit, and the recorded parent if there is one, also a full commit;
+  - the build: a known tool, an argv that starts with that tool's own command (`mvn`, `./mvnw`), and a JDK by
+    feature.
+
+  It refuses an argv that sets what preparation sets itself: `-s`/`-gs`/`--settings`, `-Dmaven.repo.local` and
+  `-o`.
+
+  Preparation, recorded as it goes, so a refusal keeps what exists:
+  1. **The checkout.** It runs `git init`, then fetches the exact commit by full SHA (https only, no tags, hooks,
+     submodules or user configuration), with depth 2 when a parent is recorded. It records the commit, its tree, its
+     parents and where it came from. A parent the commit doesn't have is a `history` blocker. Its next action is to
+     check the sidecar, never to change the lock to fit.
+  2. **The build.** The recorded argv runs in the checkout with the revision's JDK and Maven, each by full path. Maven
+     gets a fresh local repository, a settings file that makes Maven Central the one repository (a mirror of every
+     other), `--strict-checksums`, HOME in the work directory and `MAVEN_SKIP_RC`, and inherits nothing else. The
+     recorded argv and the argv that ran are both kept.
+  3. **The checks.** The build must leave every tracked file as checked out (`git status`). Otherwise it is a
+     `build` blocker: a build-enabling change is separate recorded bytes.
+  4. **The original.** It is the one produced JAR, not a sources, javadoc or tests JAR, that holds the target class.
+     None or several is a blocker. Every produced JAR is hashed.
+  5. **The dependencies.** The module's runtime classpath comes, in Maven's order, from
+     `maven-dependency-plugin:3.9.0:build-classpath`, named by full version, so no plugin lookup. The recipe's `-D`
+     and `-P` options are passed through. Every file the build resolved is hashed in `maven/resolution.json`. Version
+     lookups (artifact metadata Maven read to choose a version) are named there, and recorded rather than refused,
+     because the bytes chosen are hashed. Then the local repository is deleted.
+  6. **The rest, as on the other routes.** The adapter and driver are compiled against the result, and shadowing,
+     the target method and the adapter's call are checked.
+
+  The other tools:
+  - **A Maven wrapper.** Its distribution comes from Maven Central only (`repo1.maven.org` is read as
+    `repo.maven.apache.org`), by the sha256 its properties record. Without one, it is checked against Central's
+    `.sha1` (the new `runtime_maven.pin_file`) and its sha256 recorded. It goes through the checked cache, is
+    unpacked with no entry escaping its root, and its `bin/mvn` runs in place of `./mvnw`.
+  - **Gradle.** It is a `toolchain` blocker. A wrapper's blocker names its distribution URL and its
+    `distributionSha256Sum` from the checkout. The distribution is on services.gradle.org, outside the downloads
+    policy.
+
+  New `test_runtime_upstream.py`, 15 tests, against a local git repository standing in for github.com and a stand-in
+  `mvn` that records its argv, cwd and environment. They cover:
+  - an offline lock and 11 lock refusals;
+  - every record of a ready preparation;
+  - a wrong parent, a missing commit, and `network: false`;
+  - a failing build, and a build that edits a tracked source;
+  - no original JAR, or two;
+  - a shadowing dependency;
+  - both Gradle tools;
+  - the wrapper, from the stand-in for Central, its sha256 rechecked, and a mismatching recorded sha256;
+  - a zip entry that escapes its root;
+  - both built revisions' controls on JDK 21 and 25, read by the fixture's oracle;
+  - the job's case: its sidecar, the oracle's non-vacuity and the offline blocker.
+
+  `test_runtime.py`'s routes-to-come test is now the check that every route is implemented. The integration script
+  exits 0: contract 8 pass and 8 skip, targets suite 110, `test_build` 190, `test_pipeline` 29, `build.py --plan` ok.
+- **The job, the acceptance's real pinned revision:** `20261114-170353-example-targets-runtime-r2-the-upstream`.
+  - It runs `runtime_slice.py --case numbers` (now with a `--case`) on `runtime_numbers/`. That is a case folder of
+    this stream's, using number 316 in its plan.
+  - Its revisions and recipe are 105's from the positive stream's sidecar: `e7c172d2` and `8cfc04e8`, Maven on JDK 11.
+    The adapter, driver and 45-probe Javadoc oracle are its own. 105's packet stays the positive stream's.
+  - Expected: before disagrees at `pow(-2, 31)` alone, and after nowhere, on JDK 21 and 25.
+  - Read upstream, not built, while writing it. Both commits' POMs need `commons-parent` 105 and `commons-rng-bom` 1.7
+    from Central; both are there. Neither commit has a Maven wrapper. The installed Maven 3.10.0 runs on JDK 11.
+    `pow` throws the two classes its Javadoc names.
+
+  Result pending.
+- For review: no checkout or build cache yet. Each preparation fetches its commit and the build's plugins again. A
+  cache is allowed ("may"), not needed for the acceptance.
+- 2026-11-14, **both jobs passed.**
+  - `20261114-164239-example-targets-runtime-r3-after-vf-024`, at `ba4ec0f1`, collected as `plxytuvu`. The
+    calibration on the recipe with `-parameters` got all five expected verdicts: VF-024 is closed. Its contract step
+    passed on Phase 0's bytes.
+  - `20261114-170353-example-targets-runtime-r2-the-upstream`, at `c46f8f5c`, collected as `mpqzpuvo`: 59 s, peak
+    858 MiB. This is the acceptance's real pinned revision on the upstream-build route.
+    - Both commits are artifacts-ready, each built by Maven 3.10.0 on Temurin 11.0.33 from a fresh checkout.
+    - After's recorded parent `e7c172d2` was checked, and the build changed no tracked file on either commit.
+    - On JDK 21 and 25, before disagrees with the oracle at `pow(-2, 31)` alone (it threw `ArithmeticException`, where
+      the statement says `-2147483648`), and after nowhere. The JDKs agree on each commit.
+    - The built `commons-numbers-core-1.4-SNAPSHOT.jar` differs between the commits (`e3a1b00d…` and `103dfca4…`).
+- **Found in that result, the next piece:** the recorded dependency classpath includes test-scope JARs: JUnit 5.14.4,
+  opentest4j, apiguardian and commons-rng 1.7. The likely cause is that `-Dmdep.includeScope=runtime` isn't the
+  plugin's property name; it should be `includeScope`, so the filter was ignored. No class was shadowed, so the
+  replay stands, but the record calls the classpath the runtime classpath when it isn't.
+- 2026-11-14, **the integration report of 17:13 (runtime with workflow, merged in scratch)**: three failures in
+  runtime's tests, all fixed on this side. No interface request is needed:
+  1. **Receipts outside the example.** Workflow's W2 `publish` records a receipt's path relative to the plan's
+     folder, which is what `route.run` assumes: it ingests into `<folder>/receipts/<task>`. Runtime's two callers
+     wrote beside it instead. Now each copies its case folder first and ingests where `route.run` would, under the
+     copy, so a run never writes into the repository's case folder:
+     - `runtime_slice.py` copies to `ATTEMPT/case`, recorded as `caseFolder`;
+     - `runtime_calibrate.py` copies to `ATTEMPT/fixture`.
+
+     The lock hashes every selected file, so the copy locks the same.
+  2. **W1 ships `fixtures/claims/`.** The verifier test that made that folder now tolerates it and uses a name of its
+     own.
+  3. A new test holds both callers to W2's rule with a stand-in `ingest` that refuses an `out` outside the plan's
+     folder (`test_runtime.py`: 56 tests).
+
+  Checked on a scratch tree: workflow's `8c051f19` with runtime's files laid over it. Its targets suite gives 167
+  tests OK, 1 skipped. The slice published a real receipt there (`receipts/replay/…/result.json`, execution
+  `completed`). The slice test now accepts either Phase 0's stub answer or a receipt under the copy. On this branch,
+  the integration script exits 0: contract 8 pass and 8 skip, targets suite 111, `test_build` 190, `test_pipeline` 29.
+- 2026-11-14, **the dependency classpath's scope filter, fixed.** The cause is confirmed from maven-dependency-plugin
+  3.9.0's own descriptor (`META-INF/maven/plugin.xml`, from the JAR `runtime_maven.py pin` fetched and checked against
+  Central's `.sha1`). `build-classpath` reads its filter from `${includeScope}` and only its output file from
+  `${mdep.outputFile}`. An unknown property is ignored, and with no filter the listing is the test classpath.
+  - `runtime_upstream.py` now passes `-DincludeScope=runtime` and records the scope beside the command.
+  - The plugin's own options (`-Dmdep.*`, `-DincludeScope`, `-DexcludeScope`, `-DincludeTypes`, `-DexcludeTypes`)
+    are never passed through from the recipe.
+  - The test's stand-in Maven now filters by scope as the plugin does, `includeScope` only. Its default dependencies
+    include a test-scope JAR with the same bytes as the compile one. With the old property name, the ready
+    preparation's test fails: the JAR comes back and shadows.
+
+  `test_runtime_upstream.py`: 15 tests, and the targets suite 111, pass.
+- Rerun as job `20261114-174017-example-targets-runtime-r2-the-upstream`. Expected: as before, with each classpath
+  exactly the original, the adapter and the driver, since commons-numbers-core has no compile or runtime dependency.
+  Result pending.
+- 2026-11-14, **the rerun passed**: `20261114-174017-example-targets-runtime-r2-the-upstream`, at `44bfe0ec`,
+  collected as `tlmknmsz`, in 57.5 s with a peak of 783 MiB.
+  - Each commit's classpath is now exactly the original, the adapter and the driver. The listing is empty, as
+    commons-numbers-core has no compile or runtime dependency, and the recorded command ends `-DincludeScope=runtime`.
+  - As before, before disagrees with the oracle at `pow(-2, 31)` alone and after nowhere, on JDK 21 and 25, which
+    agree. The test-scope finding is closed.
+- The integration report of 2026-11-14 17:28 again shows conflicts only in generated files (`llm-dlc/README.md`,
+  `llm-dlc/index.json`, `llm-dlc/traces/README.md`, `llm-dlc/traces/metrics.json`). None of them is runtime's, and
+  the script didn't run.
+- 2026-11-14, **constructed mutants prepared**, replacing the Unsupported in `lock`. The entry is workflow's W1 shape:
+  `mutant: {base: {revision, commit | fixture, published?}, patch: {path, sha256}, description}`, with nothing of the
+  revision's own. A mutant is never prepared as its base unpatched.
+  - **The lock**, offline:
+    - it rehashes the patch and refuses a mismatch ("a changed mutant is a different control");
+    - it reads the files the patch modifies, counting hunk lines, so a removed line that reads `--- x` is never taken
+      for a header;
+    - it refuses a patch that creates, deletes, renames, re-modes or binary-patches a file, a path out of the root, an
+      entry with a commit, fixture or JARs of its own, and a missing description;
+    - it locks the base as its route does.
+
+    The identity is `mutant:<base identity>+<patch sha256>`. The source keeps the base, the patch, the files, the
+    description and the scope `constructed-mutation`.
+  - **The preparation**: `git apply`, checked first with `--check`, through the new `runtime_upstream.apply_patch`.
+    It records each file's sha256 before and after, and refuses a file left unchanged. It sets
+    `GIT_CEILING_DIRECTORIES`, so an enclosing repository (this one, for an attempt directory inside it) is never
+    consulted. A patch that doesn't apply is a `mutant` blocker, whose next action is to rewrite the patch and
+    record its new sha256.
+    - **Fixture route**: the base fixture is copied, rechecked and patched, then built by the recipe.
+    - **Upstream-build route**: the base commit's checkout is patched, then built by the recipe. The build must leave
+      the checkout as patched: a file the build changes again is a `build` blocker.
+    - **Published-artifact route**: the base's JARs are acquired, and the base commit is checked out from github.com
+      (the sidecar's linkage) and patched. The patched Java files are compiled against the published JARs, with the
+      base classes' `--release` (from their class-file version) and debugging flags (`-g` and `-parameters`, from
+      the attributes they record). Their classes replace the base JAR's own in a copy of it (`mutant/<name>.jar`,
+      entry order and dates kept). The base JAR stays an artifact, with role `base`, off the classpath. Refused: a
+      signed base JAR, release-specific copies of a patched class, a patched file whose class the JAR doesn't hold, a
+      base nested class the recompile doesn't give (it would stay stale), and debugging attributes that differ from
+      the base's. The same files are also compiled unpatched, and recorded (`unpatchedRecompile`), to show how far
+      the compiler alone moves the bytes.
+  - The verifier's scope names each mutant's base, patch and description under the label `constructed-mutation`.
+  - **Tests**: `test_runtime.py` 63, `test_runtime_upstream.py` 22. They cover:
+    - Phase 0's own patch from after to mutant (its sha256 is the one `build_fixtures.py` records): applied to
+      `gate/after` by the fixture route, it gives `build_fixtures.py`'s `mutant.jar` byte for byte, and the base stays
+      untouched;
+    - on the published route, the recompiled `Gate.class` is that JAR's own, `RegexGate` is the base's, and the
+      unpatched recompile is identical;
+    - the mutation pair `(after, mutant)` replays as the fixture's recorded controls on all three routes: the mutant
+      fails at 65, and after passes;
+    - eleven refusals at the lock, a patch against the wrong base, a build that rewrites the patched file, offline
+      acquisition, a stale nested class, a non-Java change on the published route, and the verifier's scope.
+
+    The integration script exits 0: contract 8 pass and 8 skip, targets suite 125, `test_build` 190, `test_pipeline`
+    29.
+- **The job**: `20261114-180443-example-targets-runtime-r2-a-constructed`, the published route on real bytes.
+  - `runtime_simplematch/mutation.json` declares a mutant of 5.3.19, in W1's sidecar shape. It stays beside
+    `target.json` because Phase 0's schema has no `mutant`, and `runtime_slice.py` merges it into the plan. Its patch,
+    `mutant/suffix-anywhere.patch`, makes `simpleMatch`'s suffix branch use `contains` in place of `endsWith`.
+  - `runtime_slice.py --case simplematch-mutant` prepares 5.3.19 and the mutant, then replays both.
+  - Expected: the mutant disagrees with the oracle at `("*bc","bcx")`, `("a*c*e","abced")` and `("*a*b","acba")`,
+    5.3.19 nowhere, and JDK 21 and 25 agree.
+  - Notes, not evidence:
+    - the patch was written against `PatternMatchUtils.java` from Maven Central's `spring-core-5.3.19-sources.jar`,
+      checked against Central's `.sha1`, and `git apply --check` accepts it there;
+    - the three disagreements are a Python model's prediction;
+    - an inline recompile of the unpatched file with javac 25 records the published class's attributes and parameter
+      names (`pattern`, `str`, in MethodParameters), but isn't byte-identical to it.
+
+  Result pending.
+- For review:
+  - A mutant's JAR has the role `original`, the slot under test, because the controls and the verifier read that role.
+    Its origin starts `constructed:`, and its record and scope say what it is.
+  - On the published route, the commit's source being the JAR's is the sidecar's linkage, recorded and not checked.
+    The mutant differs from its base by the patch and by the compiler, and `unpatchedRecompile` shows the compiler's
+    share.
+  - **For the merge**: once W1's schema is in, `mutation.json` moves into the slice's `target.json` as it is.
+    Positive's 306 can then declare its `drop-prefix.patch` as a W1 `mutant` of `release-after`, which is A4's
+    "nearby constructed mutation" on this path. Positive's interface request 1 asked for that, and W1 now has the
+    schema for it.
+- 2026-11-14, **the constructed-mutant job passed**: `20261114-180443-example-targets-runtime-r2-a-constructed`, at
+  `b5e28e26`, collected as `msotkvrv`, 6.2 s, peak 197 MiB.
+  - Both revisions are artifacts-ready. The mutant's `PatternMatchUtils` was recompiled from the v5.3.19 commit
+    (`cedb5874`) with the patch applied. The patched file went from `4be3d0c6…` (Central's sources JAR's) to
+    `a2819e26…`. The javac 25 flags were `--release 8 -g -parameters`, taken from the published class.
+  - On JDK 21 and 25, 5.3.19 agrees with the oracle on all 45 probes. The mutant disagrees at exactly the three
+    predicted inputs, `("*bc","bcx")`, `("a*c*e","abced")` and `("*a*b","acba")`, each `true` where the statement
+    says `false`. The JDKs agree on each revision.
+  - The base JAR has role `base` and is off the classpath. The classpath is driver, adapter, the mutant JAR
+    (`7887b8fe…`, class `93f15dfe…`) and spring-jcl.
+  - `unpatchedRecompile` is not identical (`b45705e5…` against the published `8562b278…`), so the mutant differs from
+    its base by the patch and by the compiler, as recorded.
+  - The integration report is still the 17:28 one (generated files only). No open finding is in runtime's files
+    except VF-025.
+- **VF-025, the runtime loop's decision.** The job's three 1.4 MiB spring-core JARs aren't in the history, because
+  they exceed jj's 1 MiB snapshot limit. They needn't be:
+  - the two published ones are acquired again by their recorded sha256;
+  - the mutant JAR is rebuilt by `runtime_slice.py --case simplematch-mutant`, and `prepared.json` records its hash
+    and its classes'.
+
+  `runtime_simplematch/README.md` now says so. Closing VF-025 needs the files ignored in the default workspace.
+  `runtime-mutant/**/spring-core-5.3.19.jar` in `.gitignore` would do it, or a limit decision shared with VF-020.
+  `.gitignore` is shared and the files are on main, so that is for the user or the coordinator, not this branch.
+  A later runtime job should also delete `prepare/*/lib/` in its cleanup step, beside the checkout.
+- **R1–R5 and the acceptance pass**:
+  - Preparation: three routes, each with focused tests. The upstream-build route ran on example 105's real pinned
+    commits (jobs `…170353`, `…174017`). Locks and artifact locks are distinct. Stale bytes, a hash mismatch and
+    shadowing are refused.
+  - Execution: controls per JVM, per JDK, as raw records. Malformed, killed, timed-out and one-sided replays stay
+    failures.
+  - Slice: R5 ran on the fixtures and on spring-core's `simpleMatch`, and the mutant ran too.
+  - Handoff: every failed preparation's `source.blocker`.
+  - Contract: A2 passes, and so do the runtime halves of A3–A5 up to workflow's stubs.
+
+  What is left is for the merge, listed above: `build_fixtures.py -parameters` (VF-024's request), `mutation.json`
+  into `target.json` with 306's `drop-prefix` as a W1 mutant, the optional `blocker` and `workdir` fields, the claim
+  key for an adapter entry point, and VF-025's ignore.
+- Status: done
 
 ## Loop settings
 

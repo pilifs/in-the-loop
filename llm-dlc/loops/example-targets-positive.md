@@ -141,9 +141,182 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
-  included.
-- Status: working
+- Forked after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0 included.
+- 2026-11-14, **the three positive packets source-locked**: 305 (P1, Boot), 306 (P2, Framework) and 307 (P3, Security),
+  each with `example.json`, `target.json` (identity, history, preparation route, tasks, handoff), `sources.lock.json`
+  and a README. All six SHAs and parents were checked against github.com by a shallow fetch by SHA (single parents, no
+  merges), with the selected files' blob ids and the nearest releases' recorded. No build, replay or proof ran; the
+  claim files, oracles, drivers, probes and mutants are still to write. What the check found, against this brief's
+  "commit pairs with no published JARs, so they take runtime's pinned upstream build route":
+  - **P2 needs no build.** `PatternMatchUtils.java` at `27bfcbbc` and `db9a10bf` is byte-identical to the file at
+    `v5.3.6` and `v5.3.7` and in Maven Central's spring-core 5.3.6 and 5.3.7 sources JARs. 306 takes the
+    published-artifact route on its `release` pair, JAR sha256s pinned (fetched by hand from Central, sha1s matching
+    Central's; a note, not evidence).
+  - **P1's exact-commit build is predicted irreproducible**: both commits' `spring-boot-dependencies` pin 14 pre-release
+    versions, SNAPSHOTs among them (Spring Data Moore-BUILD-SNAPSHOT, Security, AMQP, Batch, Integration, Kafka), and
+    Framework 5.2.0.RC2 from repo.spring.io/milestone. 2.2.0.RELEASE carries after's `WebMvcTags.java` unchanged;
+    nothing on Central carries before's (2.1.8.RELEASE's `outcome()` is different code: 99 and 600 classify
+    differently).
+  - **P3's build needs hosts outside decision 1**: services.gradle.org (Gradle 5.5.1), repo.spring.io/plugins-snapshot,
+    plugins.gradle.org and a Spring 5.2.0.RC1 milestone; no SNAPSHOT is pinned. Before's `BCrypt.java` is 5.2.0.M4's
+    (milestone only); 5.2.0.RELEASE differs from after's by an unused import and a `final` on private `encipher`.
+  - Both are recorded as predicted `build-or-dependency` blockers in their handoffs. **For the user, through the main
+    brief's for-review list**: P1 and P3 can only be prepared through (a) an extension of decision 1 to repo.spring.io,
+    services.gradle.org and plugins.gradle.org, hash-pinned (enough for P3, not for P1's SNAPSHOTs), or (b) a narrower,
+    separately labelled scope: the selected classes compiled from each commit's sources outside the upstream build,
+    against pinned Central releases of their direct dependencies. A4 can rest on P2 meanwhile.
+- **Interface requests, for the merge**:
+  1. *A constructed mutant as a revision*: the schema has no way to say "base commit plus this patch". Proposed: an
+     optional `patch` (a file) on a revision, with its sha256, applied by runtime's preparation before building (or, on
+     the published route, the patched class compiled and put into a copy of the base JAR, never shadowing it). Until
+     then each mutant is a `controls` entry of kind `mutation` naming its base revision and patch hash.
+  2. *The router*: `build.py --index-only` at the merge, so `find.py` (which reads `examples/index.json`) lists 305–307.
+  3. *Companions*: link 305–307 to the negative packets' numbers once the negative stream assigns them.
+- 2026-11-14, **P2's packet written** (306):
+  - **The claim.** `claims/simple-match-preservation.json`, in workflow W1's `example-target-claim/v1` format (taken
+    from `wqsyopql`, not yet merged). Each argument is null or has at most 6 UTF-16 code units of any value
+    (`maxArrayLength` 6, `unwind` 16).
+  - **The probes.** 40 of them in `replay/probes.json`.
+  - **The oracle.** `controls/oracle.py` decides a glob by dynamic programming over code units. It never calls either
+    revision.
+  - **The driver.** `replay/driver/inloop/p306/SimpleMatchDriver.java` takes its arguments as hex code units.
+  - **The mutant.** `controls/drop-prefix.patch`, sha256 `f80139f3…`, on release-after.
+  - **The controls** in `target.json`, with two predicted blockers.
+  - **Hand checks** (notes, not evidence):
+    - Both releases agree with the oracle and with each other on all 40 probes, on JDK 21 and 25. The mutant fails 6,
+      among them `("abc*","xbcdef")`.
+    - The probes reach the changed expression with both a true and a false result; the oracle checks this.
+    - W1's planner, run from a temp copy of `wqsyopql`, plans both tasks.
+    - A `jvmcontract gaps` scan (`records/simple-match-gaps.json`) found seven JDK `String` methods that the checker
+      approximates (`substring`, `endsWith`, `indexOf`). The strict attempt is therefore predicted to be refused, and
+      so are its null cases.
+  - **Still open:** the mutant has no task or claim key of its own until interface request 1 is settled.
+- 2026-11-14, **P1's packet written** (305):
+  - **The claims**, in W1's format:
+    - `claims/outcome-preservation.json` covers a null response, or a carrier whose `getStatus()` returns any `int`.
+      It observes the tag's key and value by value, never identity, and the exception. Its `unwind` of 16 leaves the
+      domain unbounded.
+    - `claims/finite-outcome.json` is shared by both finite-outcome tasks: key `outcome`, one of the six values, nothing
+      thrown.
+  - **The probes.** 27 in `replay/probes.json`: the brief's 15, negative statuses, and codes past 599.
+  - **The oracle.** `controls/oracle.py` reads the status class from the decimal spelling of the status (RFC 9110
+    §15).
+  - **The driver.** It passes a `Proxy` carrier of `HttpServletResponse`; any method other than `getStatus()` throws.
+  - **The mutant.** `controls/status-200.patch`, sha256 `12099f89…`, on after's `Outcome.java`: 200 becomes
+    INFORMATIONAL.
+  - **Also:** the controls in `target.json`, two more predicted blockers, and the requirements and the comparison with
+    the negative in the README.
+  - **Source checks:**
+    - Framework's `HttpStatus.java` is byte-identical at 5.2.0.RC2 (the commits' pin) and 5.2.0.RELEASE.
+    - `Series.resolve` divides by 100, so the old path agrees with `Outcome`'s ranges on every `int`. That is still a
+      hypothesis.
+  - **Hand checks** (notes, not evidence):
+    - Before's `WebMvcTags.java` was compiled from source into a copy of Central's 2.2.0.RELEASE actuator JAR. It agrees
+      with after (compiled from source, and published) and with the oracle on all 27 probes, on JDK 21 and 25.
+    - The mutant differs at 200 only.
+    - A `jvmcontract gaps` scan found `Pattern.compile` in `WebMvcTags.<clinit>` and `Objects.requireNonNull` in
+      micrometer's `ImmutableTag.<init>`, on both sides, neither in the changed code. Every strict attempt is therefore
+      predicted to be refused, beside the predicted refusal of the library interface as input.
+    - W1's planner, run from a temp copy of `wqsyopql`, plans all four tasks.
+  - **For review:**
+    - The mutant satisfies the finite-outcome property by design; it fails preservation and the oracle.
+    - A range property (the value as a function of the status) can't be stated: the response parameter hides the
+      status from `assert`.
+- 2026-11-14, **P3's packet written** (307):
+  - **The claim.** `claims/hashpw-preservation.json`, in W1's format:
+    - the password is null or at most 80 UTF-16 code units of any values;
+    - the salt is one of seven fixed strings, all from upstream's `BCryptTests`, stated as an `assume` expression;
+    - it observes the returned String or the exception's class (never its message: since JDK 14 an NPE's message names
+      the method the patch changes);
+    - `unwind` 513 completes every loop on this domain.
+  - **The domain decisions.** All three cases are in the domain:
+    - a null password: NullPointerException, even with a null salt;
+    - malformed surrogates: encoded as `?`, as `String.getBytes` specifies for both overloads;
+    - four invalid salts from upstream's tests: IllegalArgumentException.
+  - **The probes.** 45 in `replay/probes.json`:
+    - the salt is the `abc` test vector's cost-6 salt, and its stored hash, so a match against a pre-existing hash is
+      observed; plus the `$2$05$` salt;
+    - passwords at 71, 72 and 73 UTF-8 bytes in 1-, 2-, 3- and 4-byte characters, one straddling byte 72;
+    - three upstream known answers.
+  - **The oracle.** `controls/oracle.py`, with no cipher:
+    - it encodes UTF-8 itself;
+    - it predicts that probes with the same salt and the same first 72 bytes of the cyclic key (NUL terminator
+      included) share a result, and, as an assumption, that others don't.
+  - **The mutant.** `controls/us-ascii.patch`, sha256 `a2b4e97f…`, on after.
+  - **Also:** the controls in `target.json`, two more predicted blockers, and the README's requirements.
+  - **Hand checks** (notes, not evidence):
+    - Sides compiled from each commit's `BCrypt.java` alone, plus Central's 5.2.0.RELEASE class. All agree with the
+      oracle and with each other on all 45 probes, byte-identically on JDK 21 and 25.
+    - The mutant breaks the oracle's key rules 9 times and differs on 17 probes, all non-ASCII, `é` among them.
+    - Before and after differ in bytecode only in `hashpw(String,String)`, apart from constant-pool indices.
+    - W1's planner plans both tasks.
+  - **For review:** the `jvmcontract gaps` scan (`records/hashpw-gaps.json`) refuses the changed conversion itself on
+    both sides (`getBytes(String)`, `getBytes(Charset)`, `StandardCharsets.UTF_8`). In the callee it adds
+    `Arrays.copyOf`, plus `Integer.parseInt` and `StringBuilder.charAt` with no approximation. So the strict attempt is
+    predicted to stop at the family's shared demand, the UTF-16 to UTF-8 conversion. It is also predicted to refuse the
+    null password and salt as inputs. The optional conversion lemma was not written: it needs a checked summary of the
+    unchanged callee, bound to its bytecode, which the packet records the basis for.
+- **For the coordinator**: after each of this run's commits, `sync.py check` reported ERRORs "session … has no
+  manifest" on other streams' changes, never this one's:
+  - the changes, thirteen by P5's commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
+    `onssronow`, `mkwpnuru`, `zuzrkvtu`, `monsvovy`, `uoztsmtq`, `qyzrtrwr` (workflow) and `kwzmplxt` (negative);
+  - the sessions: 3bb5a1f4 (runtime), eaff7dd7 (workflow) and 70d4b729 (negative).
+
+  It looks like a cross-workspace effect of the check. Nothing was changed for it here.
+- **For the user**: P3's commit warned about 15 long tokens in this session's log. They are the expected hashes of
+  upstream's public `BCryptTests` test vectors, printed while choosing 307's salt. All 15 are proposed for the allow list
+  (`sync.py allow approve` when you choose); nothing waits on it.
+- 2026-11-14, **P5: 105 migrated** (Commons Numbers `pow`, commons-numbers#223). README.md, the summary and the verdict
+  label are unchanged; `example.json` gained `target` and four notes.
+  - **Revisions, resolved afresh** from github.com (`sources.lock.json`):
+    - before is `e7c172d2`, the squash merge's only parent; after is `8cfc04e8`, the merge.
+    - The pull request's head `79aa4643` carries after's `ArithmeticUtils.java`, so the historical report compiled the
+      same two files.
+    - Central's commons-numbers-core 1.3 carries before's file (blob `153b3202`, also in its sources JAR). Its class
+      disassembles like before's file compiled alone with JDK 11 `--release 8`, once constant-pool indices are masked.
+    - No release carries after's file, so the route is the upstream Maven build of each commit (JDK 11, argv in
+      `target.json`). It is unbuilt; runtime prepares it.
+    - The build is predicted to need Central only: the project's POMs declare no repository, and commons-parent 105 and
+      apache 39 declare the snapshots repository only in an opt-in profile.
+  - **The selected A5 obligation.** `claims/pow-minus-two.json`: for `k == -2 && 0 <= e <= 31`, `pow(int,int)` returns
+    `(-2)^e`. It is two ints, 32 inputs and at most five loop iterations.
+    - Expected established on after (`fix-property`), and refuted on before at `(-2, 31)` (`fix-property-before`),
+      both native strict.
+    - The replay probes every point of the domain, so it reproduces the refuted attempt's witness.
+    - A `jvmcontract gaps` scan (`records/pow-gaps.json`, a note) finds four gaps, all `StringBuilder` calls in the
+      `e < 0` message. The assume excludes that path, and the checker meets a gap only on a feasible path
+      (`lib/src/bmc/mod.rs`). `Math.multiplyExact` is reproduced exactly, and there is no static initializer.
+  - **The report's rows as diagnostics.** `claims/pow-preservation.json` backs two tasks:
+    - `regression` is expected refuted: a violation is still a verdict past a gap.
+    - `confined-change` is expected established. It is predicted refused under strict at those four gaps, a
+      `java-semantics` blocker with `observed: false`, and is never narrowed to `e >= 0`.
+  - **The controls.**
+    - `controls/oracle.py` is written from the Javadoc's contract alone, with exact integer powers.
+    - The expected deviation (before at `(-2, 31)`) comes from NUMBERS-218's release note, not from the code.
+    - 75 probes; the driver is `replay/driver/inloop/p105/PowDriver.java`.
+  - **Hand replay** (a note, not evidence):
+    - Each commit's file was compiled alone, plus Central's 1.3 JAR, each run in its own JVM on JDK 21 and 25.
+    - After meets the contract on all 75 probes. Before and 1.3 give byte-identical output and deviate at `(-2, 31)`
+      alone.
+    - The oracle fails, as it should, on the wrong revision's output and on a truncated file.
+    - W1's planner, run from a temp copy of `wqsyopql`, plans all five tasks.
+  - **The inventory** (`records/legacy-inventory.json`) was read from 105–109's folders, none of them edited:
+    - 106 stays the unused fallback, since 105 has no blocker;
+    - 107's mixed evidence, 108's unresolved run and 109's deferred work stay historical, none counted as a success.
+  - **For the merge**: interface request 2 (the router) now covers 105's sidecar too. Phase 5 runs `replay`, then
+    `fix-property` and `fix-property-before`, for gate A5.
+- **This stream's acceptance is met**:
+  - the three positive packets, each with a source lock checked against upstream, task and claim definitions, an
+    independent oracle, concrete probes, a mutation control, and a replay driver;
+  - P1 and P3 visibly partial, each with a precise, predicted build blocker;
+  - 105's migration packet with its selected obligation.
+
+  P4 (optional) was not done. **For the user, through the main brief's for-review list**:
+  - P1's and P3's build route (the first 2026-11-14 entry above), which A4 doesn't need, since it can rest on P2;
+  - the 15 allow-list proposals.
+
+  Phase 5 runs A4 and A5.
+- Status: done
 
 ## Loop settings
 

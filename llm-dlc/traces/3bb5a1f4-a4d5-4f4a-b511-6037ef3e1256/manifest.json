@@ -1,0 +1,426 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256",
+  "status": "open",
+  "title": "Application-core feature streams exiting early",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-14T15:26:47.223Z",
+  "ended": "2026-11-14T18:25:19.449Z",
+  "duration_seconds": 10712,
+  "stats": {
+    "turns": 58,
+    "api_calls": 466,
+    "tool_calls": 479,
+    "tool_errors": 5,
+    "compactions": 11,
+    "peak_context_tokens": 272319,
+    "usage": {
+      "input_tokens": 944,
+      "output_tokens": 494397,
+      "cache_read_input_tokens": 59707732,
+      "cache_creation_input_tokens": 1644754
+    }
+  },
+  "tools": {
+    "Bash": 406,
+    "Edit": 29,
+    "Read": 20,
+    "Write": 17,
+    "Monitor": 3,
+    "ToolSearch": 3,
+    "ScheduleWakeup": 1
+  },
+  "files_touched": [
+    "examples/tools/targets/runtime.py",
+    "examples/tools/targets/runtime_calibrate.py",
+    "examples/tools/targets/runtime_jar.py",
+    "examples/tools/targets/runtime_jdk.py",
+    "examples/tools/targets/runtime_maven.py",
+    "examples/tools/targets/runtime_numbers/README.md",
+    "examples/tools/targets/runtime_numbers/adapter/upstream/adapter/PowAdapter.java",
+    "examples/tools/targets/runtime_numbers/driver/upstream/driver/PowDriver.java",
+    "examples/tools/targets/runtime_numbers/oracle.py",
+    "examples/tools/targets/runtime_simplematch/adapter/slice/adapter/SimpleMatchAdapter.java",
+    "examples/tools/targets/runtime_simplematch/driver/slice/driver/SimpleMatchDriver.java",
+    "examples/tools/targets/runtime_simplematch/oracle.py",
+    "examples/tools/targets/runtime_simplematch/target.json",
+    "examples/tools/targets/runtime_slice.py",
+    "examples/tools/targets/runtime_upstream.py",
+    "examples/tools/targets/test_runtime.py",
+    "examples/tools/targets/test_runtime_upstream.py",
+    "llm-dlc/loops/example-targets-runtime.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T15:26:47.223Z",
+      "ended": "2026-11-14T15:26:47.225Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-14T15:26:42.743Z",
+      "ended": "2026-11-14T15:38:10.284Z",
+      "turns": 6,
+      "api_calls": 30,
+      "usage": {
+        "input_tokens": 60,
+        "output_tokens": 37348,
+        "cache_read_input_tokens": 2875855,
+        "cache_creation_input_tokens": 147076
+      },
+      "peak_context_tokens": 141991
+    },
+    {
+      "index": 2,
+      "started": "2026-11-14T15:39:10.620Z",
+      "ended": "2026-11-14T15:48:55.395Z",
+      "turns": 5,
+      "api_calls": 31,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 29295,
+        "cache_read_input_tokens": 3294438,
+        "cache_creation_input_tokens": 133109
+      },
+      "peak_context_tokens": 146295
+    },
+    {
+      "index": 3,
+      "started": "2026-11-14T15:49:58.813Z",
+      "ended": "2026-11-14T16:00:45.203Z",
+      "turns": 5,
+      "api_calls": 28,
+      "usage": {
+        "input_tokens": 56,
+        "output_tokens": 42719,
+        "cache_read_input_tokens": 3266547,
+        "cache_creation_input_tokens": 154315
+      },
+      "peak_context_tokens": 167501
+    },
+    {
+      "index": 4,
+      "started": "2026-11-14T16:01:51.368Z",
+      "ended": "2026-11-14T16:12:38.528Z",
+      "turns": 5,
+      "api_calls": 41,
+      "usage": {
+        "input_tokens": 82,
+        "output_tokens": 43637,
+        "cache_read_input_tokens": 4095010,
+        "cache_creation_input_tokens": 131908
+      },
+      "peak_context_tokens": 145094
+    },
+    {
+      "index": 5,
+      "started": "2026-11-14T16:13:31.767Z",
+      "ended": "2026-11-14T16:30:22.493Z",
+      "turns": 5,
+      "api_calls": 74,
+      "usage": {
+        "input_tokens": 150,
+        "output_tokens": 63369,
+        "cache_read_input_tokens": 11969243,
+        "cache_creation_input_tokens": 219781
+      },
+      "peak_context_tokens": 232967
+    },
+    {
+      "index": 6,
+      "started": "2026-11-14T16:31:20.452Z",
+      "ended": "2026-11-14T16:46:44.974Z",
+      "turns": 6,
+      "api_calls": 64,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 51133,
+        "cache_read_input_tokens": 7182324,
+        "cache_creation_input_tokens": 160253
+      },
+      "peak_context_tokens": 173439
+    },
+    {
+      "index": 7,
+      "started": "2026-11-14T16:47:48.454Z",
+      "ended": "2026-11-14T17:26:18.861Z",
+      "turns": 6,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 92453,
+        "cache_read_input_tokens": 10156096,
+        "cache_creation_input_tokens": 232408
+      },
+      "peak_context_tokens": 245594
+    },
+    {
+      "index": 8,
+      "started": "2026-11-14T17:27:26.401Z",
+      "ended": "2026-11-14T17:42:49.962Z",
+      "turns": 5,
+      "api_calls": 43,
+      "usage": {
+        "input_tokens": 86,
+        "output_tokens": 28151,
+        "cache_read_input_tokens": 3956090,
+        "cache_creation_input_tokens": 113257
+      },
+      "peak_context_tokens": 126443
+    },
+    {
+      "index": 9,
+      "started": "2026-11-14T17:43:38.547Z",
+      "ended": "2026-11-14T18:07:02.998Z",
+      "turns": 5,
+      "api_calls": 70,
+      "usage": {
+        "input_tokens": 140,
+        "output_tokens": 89004,
+        "cache_read_input_tokens": 11431550,
+        "cache_creation_input_tokens": 259133
+      },
+      "peak_context_tokens": 272319
+    },
+    {
+      "index": 10,
+      "started": "2026-11-14T18:07:58.111Z",
+      "ended": "2026-11-14T18:23:28.319Z",
+      "turns": 6,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 14477,
+        "cache_read_input_tokens": 1331616,
+        "cache_creation_input_tokens": 70574
+      },
+      "peak_context_tokens": 83760
+    },
+    {
+      "index": 11,
+      "started": "2026-11-14T18:24:08.611Z",
+      "ended": "2026-11-14T18:25:19.449Z",
+      "turns": 4,
+      "api_calls": 5,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 2811,
+        "cache_read_input_tokens": 148963,
+        "cache_creation_input_tokens": 22940
+      },
+      "peak_context_tokens": 36126
+    }
+  ],
+  "log": {
+    "sha256": "bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73",
+    "bytes": 15622377,
+    "lines": 5252,
+    "gzip_bytes": 3036695,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "muqvuqyqpwyzsuuytnsvqpznuvlylszk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R1: source locks and the fixture route's preparation",
+      "body": "The runtime stream's first piece (llm-dlc/loops/example-targets-runtime.md, R1). runtime.lock(plan, revision) is new and offline: it returns a PreparedTarget at source-locked, with every selected source, adapter, driver and oracle path inside the example's folder (symlinks included) and hashed, and nothing fetched or built. runtime.prepare() now implements the fixture route: it compiles with build_fixtures.py's recipe (--release 21, a fixed JAR date, sorted entries) using the JDK build_fixtures.py would use, resolved to its real home, so the original JAR is byte for byte build_fixtures.py's. It records the original, adapter, driver and oracle by sha256, the ordered classpath, the JDK identity (release file and java -version), the loaded target's origin, and writes prepared.json to the work directory. It returns failed, with its stage, diagnostic and whatever artifacts exist, for a class held by more than one classpath entry (shadowing), a target method the original doesn't declare, an adapter that never references the target method, a compile failure, sources changed between lock and build, and a work directory that isn't an earlier preparation's (left alone). The published-artifact and upstream-build routes return Unsupported until R2. New modules runtime_jdk.py (installed JDKs by full path) and runtime_jar.py (a small class-file reader).",
+      "log_sha256": "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263"
+    },
+    {
+      "change_id": "tvvqulnktmutqzzopulspmqnzsuumrrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R4: each fixture revision's controls in its own JVM, per JDK",
+      "body": "runtime.run_controls() replaces Phase 0's stub. Each revision's driver runs in its own JVM on its prepared classpath, on each JDK the artifact entry names (21 and 25 for the fixture), selected by full path, with the oracle's PROBES as inputs. The JVM gets a fixed environment (C.UTF-8, UTC, en-US, UTF-8 streams) and inherits nothing from the caller, JAVA_TOOL_OPTIONS and CLASSPATH included. Each raw ExecutionRecord names the JDK (java -version, home, release file), the commit, each classpath entry's sha256 and role, the driver, the inputs' source and hash, and whether this is original-JVM or model replay. Before any JVM starts, the classpath bytes are rechecked against the preparation. A revision that is unprepared, failed or stale, a missing JDK, or a JDK too old for the class files gives a not-started record, never a skipped one. A kill, a timeout, malformed output, or inputs missing or out of order give no observations; exit 1 with complete output stays raw. Nothing here applies the oracle.\n\nVerified inline: contract A3/A4 pass (contract: 8 pass, 8 skip: 6 at workflow's stubs, A5's 2 for want of a built jvmcontract). test_runtime.py has 28 tests, among them the kill (signal 9), timeout, malformed, incomplete and exit-1 drivers, a one-sided pair, stale bytes and the inherited-options check. llm-dlc/tools/example-targets-integration.sh exits 0 (targets suite 68, test_build 190, test_pipeline 29).\n\nBrief note: PreparedTarget carries no work directory. run_controls therefore finds a preparation by route.py's layout and checks its prepared.json. An additive field is recorded as an interface request under Progress.",
+      "log_sha256": "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a"
+    },
+    {
+      "change_id": "uoztsmtquttrvzrlvslxmqnwzpqtqxtv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: the published-artifact route, hash-pinned acquisition and a rechecked cache",
+      "body": "runtime.lock() and prepare() now take route: published-artifact. The lock stays offline. It records the revision's commit as unchecked release linkage, and the JAR and each declared dependency (in classpath order) by fixed coordinates, an allowed URL and a recorded sha256. A dynamic version, a missing hash, a host other than Maven Central or github.com, and a Central URL naming another file are lock blockers. The new runtime_maven.py (stdlib only, so it runs under python3 -I) acquires each JAR from a content-addressed cache that rechecks every restore and moves a corrupt entry aside. On a miss it fetches into a new empty directory and checks the bytes against the lock before caching or using them. A mismatch fails at acquire and is never cached or rebuilt. It fetches only when the plan's network flag allows. The cache log stays out of the PreparedTarget, so a cache hit is reuse, not identity. Every failed preparation now carries source.blocker (stage, command, diagnostic, needed semantics, next action). A missing hash points at 'runtime_maven.py pin G:A:V', which records it after checking Maven Central's .sha1.",
+      "log_sha256": "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2"
+    },
+    {
+      "change_id": "zuzrkvturtxkqttmqnzpqokkykvvtzko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R5: the vertical slice on PatternMatchUtils.simpleMatch from published spring-core",
+      "body": "runtime_slice.py takes one small published upstream method end to end, with runtime_simplematch/ as its case folder (not an example and not in the router; its plan uses 315, from the runtime range). The method is org.springframework.util.PatternMatchUtils#simpleMatch(String,String) from spring-core 5.3.18 and 5.3.19. The sidecar is a valid example-target/v1. It names the release tags by full commit, checked with git ls-remote on github.com. It pins each release's spring-core JAR and spring-jcl (spring-core's one compile dependency, per its POM at that version) by Maven Central URL and sha256. runtime_maven.py pin recorded each sha256 and checked it against Central's .sha1. The adapter only calls the method. The driver reads each input as a JSON pair of strings or nulls and prints the raw outcome. The oracle is written from the Javadoc, not the code: 45 probes over nulls, every pattern style, adjacent stars, backtracking, case, a line break, regex metacharacters and a non-BMP character.\n\nThe path: the sidecar becomes the TaskPlan asked of workflow's W1, then runtime.prepare (hash-checked acquisition and cache, the adapter and driver built, the classpath checked for shadowing and the target method), then run_controls (each release in its own JVM on JDK 21 and 25), then workflow.ingest, called as route.run calls it. Ingestion is still W2's stub, so it answers Unsupported.\n\nVerified inline. The slice was run from an empty cache (the 4 JARs fetched from Central and checked) and again --offline: both releases artifacts-ready, the target loaded from the spring-core JAR, 4 records each exited 0 with 45 observations and no oracle problems, and JDK 21 and 25 agree on each release. test_runtime.py has 43 tests, 4 new: the sidecar validates and both releases lock offline; offline with an empty cache, preparation is an acquire blocker with its command and next action; the oracle rejects five plausible wrong implementations, and a missing probe raises; the end-to-end slice runs from a private copy of the cache entries (skipped, not faked, without them). The integration script exits 0: contract 8 pass and 8 skip, targets suite 83 (the end-to-end slice ran), test_build 190, test_pipeline 29.\n\nProgress also records two things for review. First, PatternMatchUtils.class is byte-identical in the two releases: the CVE-2022-22968 fix changed DataBinder. Second, a note on what 105's migration needs from runtime: the recorded PR pair isn't released, so it needs the upstream-build route (Maven) or a release pair the positive stream would have to justify; the historical single-file javac compile would be an extracted source slice, not original bytecode; the method is int-only with no dependencies, and its controls can run on JDK 21 and 25. Next: R3's run_verifier, then the upstream-build route as a job.",
+      "log_sha256": "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e"
+    },
+    {
+      "change_id": "qktukqzvvsyxztmvqtloyuwnuxnnxrzv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R3: run_verifier, jvmcontract on the prepared original artifacts (verification pending)",
+      "body": "runtime.run_verifier replaces Phase 0's stub. A prove task runs jvmcontract prove on its revision's original JAR, with its dependencies in classpath order and the claim's assume, assert, throws, nullable and may-alias. An equivalence task runs jvmcontract equivalence between the pair's originals, --unchanged-unless the allowed change. Both get the plan's explicit --engine and --gaps, the claim's bounds, its plan and contracts files (rechecked by sha256) and --json. The run uses a fixed environment with JDK 25 by full path. The result is one raw verifier ExecutionRecord. Its identities record the jvmcontract digest, the JDK, each revision's classpath and commit, a scope label with the loaded class and its origin, models and assumptions, and a capability probe (jvmcontract gaps, a static scan). A one-sided pair, stale bytes or a preparation that isn't ready gives a not-started record. A kill, a timeout or output that isn't the --json outcome gives no observations. What can't be attempted as stated is Unsupported: a replay task, a missing engine, claim models, a changed claim file, differing dependency closures, or no jvmcontract.\n\nFound while dry-running: the fixture's regex-probe failed preparation, because its adapter calls Gate, not RegexGate, so after the merge contract A5's regex-probe row would have failed on runtime's adapter check. Only a replay task's adapter must now call the target. A proof task records the original methods its adapter calls, and run_controls doesn't run controls whose adapter doesn't call the task's target. A plan entry naming a constructed mutant (workflow's W1) is now Unsupported in lock, never prepared as its base. For the merge, recorded under Progress: W1 gives published JARs as a 'published' list, which runtime doesn't read yet.",
+      "log_sha256": "bf0f69960c2ca887a2f1c49f02bd7026b36af1d5b56a6d571f09bf8d79debfa4"
+    },
+    {
+      "change_id": "qlvsxysynnkssmqkmszpusxropnvnwkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: accept workflow W1's published JAR list in the published-artifact lock",
+      "body": "A published revision's TaskPlan entry may now carry its JARs the way workflow's W1 artifact_sources gives them on its branch: a published list in classpath order, the original first and then its dependencies, with a lone item's coordinates/url/sha256 copied up. The earlier shape (the original's keys on the entry, dependencies beside them) still locks, to an identical lock. The lock refuses both lists at once, an empty or malformed list, and a copied-up key that disagrees with the list's first item, rather than silently preferring one. runtime_slice.py now builds W1's shape.\n\nVerified: test_runtime.py 52 tests pass (one new, covering both shapes, a lone item and the four refusals); the R5 slice's end-to-end test ran offline from the acquisition cache with the new shape. Progress also notes that the 16:28 integration report's conflicts are only in generated llm-dlc files, and that 105, 305 and 307 need the upstream-build route, which is next.",
+      "log_sha256": "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee"
+    },
+    {
+      "change_id": "okmwswxnonkrkrzsmpqzxvltqnsmoxyn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: VF-024, equivalence on class directories, recorded parameter names, the fixture recipe's flags (verification pending)",
+      "body": "Job 20261114-162937-example-targets-runtime-r3-run-verifier (VF-024) got no expected verdict from the fixture's five proof tasks. The causes, and the changes: (1) Phase 0's build_fixtures.py compiles without -parameters or -g, so jvmcontract names Gate.allowed's parameter arg0, while Phase 0's sidecar and workflow's claim files say code (and RegexGate's say field). That is an inconsistency in Phase 0 that runtime can't fix alone, because the fixture route must reproduce build_fixtures.py byte for byte (contract A2). Runtime now takes an optional JAVAC_FLAGS from build_fixtures.py for every javac of the route. Progress asks the coordinator for JAVAC_FLAGS = ('-parameters',), and notes that until then contract A5's fixture rows will fail the same way at the merge. The verifier's scope now records the target's parameter names as the loaded class has them, and where they come from (new runtime_jar.parameter_names, reading MethodParameters, then the LocalVariableTable, as jvmcontract does). (2) jvmcontract equivalence takes directories of classes, not JARs: run_verifier extracts each side's original JAR into verifier/classes/<revision>, records the extraction, and refuses an entry outside the JAR's root. (3) regex-probe's strict proof stops at its String parameter before it reaches java.util.regex. The capability probe names the regex calls, and runtime_calibrate.py now reports the refusal's and the probe's naming apart.\n\nRerun queued as job 20261114-164239-example-targets-runtime-r3-after-vf-024. Its calibration runs with --fixture-javac-flag=-parameters, recorded as that variant (the asked-for recipe, not Phase 0's bytes); its contract step runs on Phase 0's bytes. Verified inline: test_runtime.py 55 tests pass (3 new); a calibration dry run without jvmcontract gives the toolchain Unsupported with the variant recorded; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 94, test_build 190, test_pipeline 29). The brief's rest isn't wrong, but Phase 0's fixture recipe and its parameter names disagree, as recorded under Progress.",
+      "log_sha256": "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0"
+    },
+    {
+      "change_id": "npvxmlwzpwmkpyukouootnlpyxyusmnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: the upstream-build route, the pinned commit checked out and built by its own Maven (verification pending)",
+      "body": "runtime.py's lock() and prepare() now take route: upstream-build, through the new runtime_upstream.py, so every route of the sidecar schema is implemented. The lock is offline: a github.com repository, the full commit and its recorded parent, and the build recipe (tool, argv starting with that tool's command, JDK by feature), refusing an argv that sets its own settings, local repository or offline mode. Preparation fetches the exact commit by full SHA into an isolated checkout (https only, no tags, hooks, submodules or user configuration), records its tree and parents (a recorded parent the commit doesn't have is a history blocker), runs the recorded argv with the revision's JDK and Maven by full path, with Maven Central as the one repository, a fresh local repository, strict checksums and no inherited environment, refuses a build that changes tracked sources, takes the one produced non-auxiliary JAR holding the target class as the original, resolves the module's runtime classpath with maven-dependency-plugin 3.9.0 (pinned), and hashes every produced JAR and every file the build resolved (maven/resolution.json, version lookups named). A Maven wrapper's distribution is fetched from Maven Central by sha256 (its properties' own, or Central's .sha1 checked through the new runtime_maven.pin_file) and run directly; Gradle is a toolchain blocker naming the distribution it would need, since services.gradle.org is outside the downloads policy (307 needs the user's decision on that).\n\nVerified: the new test_runtime_upstream.py (15 tests, against a local git repository standing in for github.com and a stand-in mvn recording its argv, cwd and environment: lock refusals, every record of a ready build, wrong parent, missing commit, no network, failing and source-editing builds, no or two original JARs, shadowing, both Gradle tools, the wrapper with its sha256 rechecked and a mismatch, an escaping zip entry, controls of both built revisions on JDK 21 and 25, and the job's case) and test_runtime.py (55) pass; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 110, test_build 190, test_pipeline 29, build.py --plan).\n\nThe acceptance's real pinned revision is queued as job 20261114-170353-example-targets-runtime-r2-the-upstream: runtime_slice.py --case numbers builds example 105's two commons-numbers commits (e7c172d2, 8cfc04e8; the positive stream's recipe, Maven on JDK 11) and replays ArithmeticUtils.pow in separate JVMs on JDK 21 and 25 through runtime_numbers/, this stream's own case folder (adapter, driver, Javadoc oracle, number 316). Expected: before disagrees at pow(-2, 31) alone, after nowhere.",
+      "log_sha256": "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb"
+    },
+    {
+      "change_id": "pvwsoqrklqmylxqllrwnkqutokvvwwwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: receipts under the case folder's copy, as route.run puts them; W1's shipped claims tolerated",
+      "body": "The integration report of 2026-11-14 17:13 (runtime and workflow merged in scratch) found three failures in runtime's tests. Workflow's W2 publish records a receipt relative to the plan's folder, as route.run assumes (it ingests into <folder>/receipts/<task>), while runtime_slice.py and runtime_calibrate.py ingested beside the folder. Each now copies its case folder into the attempt (ATTEMPT/case, ATTEMPT/fixture) and ingests under the copy, so no run writes into the repository's case folder; the lock hashes every selected file, so the copy locks the same. A verifier test no longer fails on the fixtures/claims/ folder W1 ships. A new test holds both callers to W2's rule with a stand-in ingest that refuses an out outside the plan's folder. No interface request is needed.\n\nVerified: test_runtime.py 56 tests; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 111, test_build 190, test_pipeline 29, build.py --plan). On a scratch tree, workflow's 8c051f19 with runtime's files laid over it, the targets suite gives 167 OK (1 skipped) and the slice published a real receipt. Progress also records both jobs' results: 20261114-164239 (VF-024's rerun, all five verdicts as expected) and 20261114-170353 (the upstream-build route on 105's two commons-numbers commits, before disagrees at pow(-2, 31) alone, after nowhere, on JDK 21 and 25). That result shows test-scope JARs in the recorded dependency classpath, the next piece.",
+      "log_sha256": "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5"
+    },
+    {
+      "change_id": "nptowlpnxuznnuovzylrwmwnzutsmzyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)",
+      "body": "The first upstream-build job (20261114-170353, passed) recorded test-scope JARs, JUnit 5.14.4, opentest4j, apiguardian and commons-rng 1.7, as commons-numbers-core's runtime dependencies. runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, but the plugin's descriptor (META-INF/maven/plugin.xml, from the JAR fetched from Maven Central and checked against its .sha1) reads that filter from ${includeScope}. Only the output file is ${mdep.outputFile}. The unknown property was ignored, and the listing was the test classpath. It now passes -DincludeScope=runtime, records the scope, and never passes the plugin's own options through from the recipe. The replay's result stood, since no class was shadowed, but the record misnamed the classpath.\n\nVerified: the test's stand-in Maven now filters by scope as the plugin does, and its default dependencies include a test-scope JAR with the compile JAR's bytes. With the old property name, the ready preparation fails as shadowing; with the fix, test_runtime_upstream.py's 15 tests and the targets suite (111) pass. The real build is rerun as job 20261114-174017-example-targets-runtime-r2-the-upstream, expected to give each commit a classpath of the original, the adapter and the driver alone.",
+      "log_sha256": "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2"
+    },
+    {
+      "change_id": "wkkwovlzqrnszuttnmqwquyuyyzwvprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: constructed mutants prepared on all three routes, their base patched with git apply, then built (verification pending)",
+      "body": "A W1 mutant entry (a base revision, a patch by path and sha256, the mutation in words) was Unsupported in lock. Now it locks offline: the patch is rehashed against its recorded sha256, the files it modifies are read from it (modifications of existing text files only, hunk lines counted), and the base is locked by its own route. Its identity is mutant:<base>+<patch sha256>, with the scope constructed-mutation. Preparation applies the patch with git apply (checked first, each file's bytes recorded before and after, no enclosing repository consulted) and is never the base unpatched. The fixture route patches a copy of the base fixture, then runs the recipe. The upstream-build route patches the base commit's checkout and builds it, and the build must leave the checkout as patched. The published-artifact route checks out the base commit, compiles the patched Java files against the base's published JARs with the base classes' --release and debugging flags, and puts the classes in place of the base JAR's own in a copy of it. It refuses a signed JAR, release-specific copies of a patched class, a stale nested class and differing debug attributes, and it records an unpatched recompile to show the compiler's share of the difference.\n\nVerified inline. Phase 0's own after-to-mutant patch (the sha256 build_fixtures.py records), applied by the fixture route, gives build_fixtures.py's mutant.jar byte for byte. On the published route the recompiled Gate.class is that JAR's own class. The mutation pair replays as the fixture's recorded controls on all three routes (the mutant fails at 65 on JDK 21 and 25). There are 11 lock refusals and the other blockers are tested. test_runtime.py has 63 tests and test_runtime_upstream.py 22. The integration script exits 0: contract 8 pass and 8 skip, targets suite 125, test_build 190, test_pipeline 29.\n\nJob 20261114-180443-example-targets-runtime-r2-a-constructed runs the published route on real bytes. runtime_simplematch/mutation.json declares a mutant of spring-core 5.3.19 in W1's sidecar shape (beside target.json, since Phase 0's schema has no mutant). Its patch turns simpleMatch's suffix-branch endsWith into contains. The job expects the mutant to disagree with the Javadoc oracle at (*bc, bcx), (a*c*e, abced) and (*a*b, acba), and 5.3.19 nowhere. The earlier rerun 20261114-174017 passed: each commons-numbers classpath is exactly the original, the adapter and the driver, scope runtime. The brief's Progress records both, and its status is now waiting on that job.",
+      "log_sha256": "505c247f1159e80d46c4626a29e58af0e7637f06647d1eb6c6908931df5b9631"
+    },
+    {
+      "change_id": "qrsyzzwuqwrxlxyrtoonkywyoxztryxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: the constructed-mutant job passed, R1-R5 and the acceptance done; VF-025's JARs needn't be in the history",
+      "body": "Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e26, collected as msotkvrv) passed. It ran the published-artifact route on real bytes: spring-core 5.3.19's PatternMatchUtils was recompiled from the v5.3.19 commit with suffix-anywhere.patch applied, using javac 25 with --release 8 -g -parameters read off the published class, into a copy of the JAR. On JDK 21 and 25, 5.3.19 agrees with the Javadoc oracle on all 45 probes, and the mutant disagrees at exactly the three predicted inputs. The unpatched recompile isn't byte-identical to the published class, and the record says so.\n\nVF-025 (the job's three 1.4 MiB spring-core JARs exceed jj's snapshot limit): the runtime loop's decision is that they needn't be in the history. Two are re-acquired by sha256, and the mutant is rebuilt by runtime_slice.py --case simplematch-mutant, with its hashes in prepared.json. runtime_simplematch/README.md now records the job's result and this. Closing the finding needs the files ignored on main (.gitignore is shared), so it is left for the user or the coordinator.\n\nThe brief's Progress records the result and the acceptance evidence row by row, and its status is now done. What remains is for the merge, listed under Progress. Verified: test_runtime and test_runtime_upstream, 85 tests, pass.",
+      "log_sha256": "1340833777b67076b2c1b6011f2b5ecf4be202314e8c250a050e21e832e4ed38"
+    },
+    {
+      "change_id": "xvvuxmqsstptmlwwowmomuulwksuvkwn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.",
+      "log_sha256": "bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73"
+    }
+  ],
+  "logs": {
+    "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5": {
+      "bytes": 11782452,
+      "lines": 3941,
+      "gzip_bytes": 2313708,
+      "url": null
+    },
+    "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb": {
+      "bytes": 10838124,
+      "lines": 3606,
+      "gzip_bytes": 2116610,
+      "url": null
+    },
+    "1340833777b67076b2c1b6011f2b5ecf4be202314e8c250a050e21e832e4ed38": {
+      "bytes": 15168764,
+      "lines": 5118,
+      "gzip_bytes": 2924725,
+      "url": null
+    },
+    "27cbb50d9c4c784fff2b439d0df28ff64dd1d3725dc75216573fd9300e500b8a": {
+      "bytes": 2347292,
+      "lines": 718,
+      "gzip_bytes": 480577,
+      "url": null
+    },
+    "28e92d0f3fe866f11bf13077641deededcd2b02692bc9649b21c8c9dda0c79f0": {
+      "bytes": 8844628,
+      "lines": 2999,
+      "gzip_bytes": 1697164,
+      "url": null
+    },
+    "505c247f1159e80d46c4626a29e58af0e7637f06647d1eb6c6908931df5b9631": {
+      "bytes": 14392411,
+      "lines": 4848,
+      "gzip_bytes": 2749384,
+      "url": null
+    },
+    "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e": {
+      "bytes": 4948476,
+      "lines": 1538,
+      "gzip_bytes": 991749,
+      "url": null
+    },
+    "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263": {
+      "bytes": 1111220,
+      "lines": 322,
+      "gzip_bytes": 225032,
+      "url": null
+    },
+    "bf0f69960c2ca887a2f1c49f02bd7026b36af1d5b56a6d571f09bf8d79debfa4": {
+      "bytes": 7179631,
+      "lines": 2318,
+      "gzip_bytes": 1409615,
+      "url": null
+    },
+    "bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73": {
+      "bytes": 15622377,
+      "lines": 5252,
+      "gzip_bytes": 3036695,
+      "url": null
+    },
+    "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2": {
+      "bytes": 12121277,
+      "lines": 4087,
+      "gzip_bytes": 2359290,
+      "url": null
+    },
+    "edd7a86e4199ccff40dccdccad25214c495543f8c89a316cd38df633fe72feee": {
+      "bytes": 8069568,
+      "lines": 2635,
+      "gzip_bytes": 1595214,
+      "url": null
+    },
+    "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2": {
+      "bytes": 3785869,
+      "lines": 1080,
+      "gzip_bytes": 785165,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

@@ -1,0 +1,163 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "boot-outcome-enum-positive",
+    "family": "boot-method-metrics",
+    "role": "positive",
+    "matching": "The independent positive of the HTTP metric-label family (CVE-2023-34055's method label): a finite label classification through the real MVC tag factory, observed as tag key and value. Matched in its relevant semantics, not its input type: an int status here, request method strings in the negative. Only WebMvcTags.outcome(HttpServletResponse) is selected; the eight-file patch also changes the RestTemplate, WebClient and WebFlux tag factories and removes a client exception catch, all outside this claim.",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "revisions": {
+      "before": {
+        "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "checked": "2026-11-14: fetched by SHA from github.com (git fetch --depth=2 --filter=blob:none); the only parent of after. Source blob ids in sources.lock.json."
+      },
+      "after": {
+        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "checked": "2026-11-14: fetched by SHA from github.com; one parent, 9b8decf9 (not a merge); author Andy Wilkinson, 2019-09-05 20:54:35 +0100, 'Provide a public API for determining a request's outcome', closes gh-18150."
+      }
+    },
+    "pairs": [
+      {
+        "name": "positive",
+        "kind": "positive",
+        "before": "before",
+        "after": "after",
+        "selected": true
+      }
+    ],
+    "links": [
+      "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+      "https://github.com/spring-projects/spring-boot/issues/18150"
+    ],
+    "unresolved": [
+      "No Maven Central artifact has before's WebMvcTags: its source equals neither 2.1.8.RELEASE's (whose outcome() classifies by status < 200 ... and differs on 99 and 600) nor any 2.2.0 release's. after's WebMvcTags.java is byte-identical in 2.2.0.RELEASE, whose Outcome.java differs only in a Javadoc line (sources.lock.json), so a published after-side artifact exists, but a pair needs both sides."
+    ]
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "build": {
+      "tool": "maven-wrapper",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "spring-boot-project/spring-boot-actuator",
+        "-am",
+        "-DskipTests",
+        "install"
+      ],
+      "jdk": "8"
+    },
+    "jdks": [
+      "21",
+      "25"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "pair": "positive",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "notes": [
+        "Concrete controls only: each revision's original actuator JAR and its own dependency closure in its own JVM, on JDK 21 and 25, over the probes null; 99, 100, 199, 200, 299, 300, 399, 400, 499, 500, 599, 600; Integer.MIN_VALUE and Integer.MAX_VALUE. Observed: tag key and value, normal or exceptional termination and the exception's class. Object identity is excluded on purpose: the patch moves the tags' allocation and caching from WebMvcTags to Outcome."
+      ]
+    },
+    {
+      "id": "preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "positive",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "expected": "established",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "notes": [
+        "For a null response or a response whose getStatus() returns any int, both revisions give the same tag key and value and the same specified exceptions. No allowed-change region: the change is meant to preserve every input. The old path's HttpStatus.Series.resolve divides by 100 (truncating towards zero), so it agrees with Outcome.forStatus's ranges on every int, negative ones included: that is the hypothesis this task tests, not a result."
+      ],
+      "claim": "claims/outcome-preservation.json"
+    },
+    {
+      "id": "finite-outcome-before",
+      "kind": "prove",
+      "relation": "security",
+      "revision": "before",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "expected": "established",
+      "engine": "native",
+      "gaps": "strict",
+      "notes": [
+        "The family's bounded-label property, as an absolute property of one revision: every result has key 'outcome' and a value among INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR and UNKNOWN. Established would say this one tag dimension is finite on this entry, not that the server or the release is secure."
+      ],
+      "claim": "claims/finite-outcome.json"
+    },
+    {
+      "id": "finite-outcome-after",
+      "kind": "prove",
+      "relation": "security",
+      "revision": "after",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "expected": "established",
+      "engine": "native",
+      "gaps": "strict",
+      "notes": [
+        "The same property and domain as finite-outcome-before, on after's artifact: one property, two claim identities."
+      ],
+      "claim": "claims/finite-outcome.json"
+    }
+  ],
+  "handoff": {
+    "blockers": [
+      {
+        "kind": "build-or-dependency",
+        "observed": false,
+        "summary": "Predicted from the build files, not from a build: at both commits Boot is 2.2.0.BUILD-SNAPSHOT, and spring-boot-dependencies pins 14 pre-release versions, among them SNAPSHOTs (Spring Data Moore-BUILD-SNAPSHOT, Spring Security, AMQP, Batch, Integration and Kafka BUILD-SNAPSHOTs) and milestones from https://repo.spring.io/milestone (Spring Framework 5.2.0.RC2, Reactor Dysprosium-RC1). The actuator module compiles against many of them as optional dependencies. A SNAPSHOT is a mutable reference whose 2019 contents are gone, so the exact-commit Maven build cannot be reproduced even if decision 1 were extended to repo.spring.io. What remains possible is a narrower, separately labelled scope: WebMvcTags and Outcome from each commit's sources compiled outside the upstream build against pinned Central releases of their direct dependencies (sources.lock.json)."
+      },
+      {
+        "kind": "java-semantics",
+        "observed": false,
+        "summary": "Predicted from a static scan, not from an attempt, for all three native tasks (preservation, finite-outcome-before, finite-outcome-after): jvmcontract gaps on WebMvcTags.outcome reaches java.util.regex.Pattern.compile in WebMvcTags.<clinit> and java.util.Objects.requireNonNull in micrometer's ImmutableTag.<init>, on both sides, each with no approximation, so refused by name under gaps strict. Neither is in the changed code. Run by hand with a binary one lib/src commit old, on JARs that are not the commits' builds (records/outcome-gaps.json, a note). Class initialization is never removed to get past it.",
+        "packet": "records/outcome-gaps.json"
+      },
+      {
+        "kind": "input-construction",
+        "observed": false,
+        "summary": "Predicted from lib/README.md: the parameter is javax.servlet's HttpServletResponse, a library interface, and the checker dispatches invokeinterface only to application methods and passes an interface-typed dependency null (refused if reached). The claims' domain is a null response or one whose getStatus() returns any int (claims/outcome-preservation.json); an attempt that can only take the null response is that refusal, and the claim stays unresolved, never re-read as the null-only domain. The finite-outcome property also reads the result through micrometer's Tag interface (getKey, getValue). The replay's carrier covers the int domain concretely."
+      }
+    ],
+    "next": "The build route first: the user's decision on the predicted build-or-dependency blocker (Progress of llm-dlc/loops/example-targets-positive.md). Then runtime's preparation of both revisions, the replay task (the driver on each revision's actuator classes in its own JVM, on JDK 21 and 25, read by controls/oracle.py), and the mutant: status-200.patch applied to after's Outcome.java and its class compiled into a copy of after's artifact, replayed against the same oracle (it must fail at 200 and only there). The native attempts are queued only after the replay, and their predicted refusals recorded as observed or withdrawn."
+  },
+  "controls": [
+    {
+      "id": "outcome-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    },
+    {
+      "id": "outcome-driver",
+      "kind": "driver",
+      "path": "replay/driver/inloop/p305/OutcomeDriver.java"
+    },
+    {
+      "id": "outcome-probes",
+      "kind": "probe",
+      "path": "replay/probes.json"
+    },
+    {
+      "id": "status-200-mutant",
+      "kind": "mutation",
+      "path": "controls/status-200.patch",
+      "revision": "after",
+      "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+    }
+  ]
+}

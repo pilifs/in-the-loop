@@ -1,0 +1,29 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "simple-match-decision-preserved",
+  "kind": "preservation",
+  "statement": "Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim.",
+  "nullable": ["pattern", "str"],
+  "observations": ["result", "exception"],
+  "bounds": { "maxArrayLength": 6, "unwind": 16 },
+  "assumptions": [
+    {
+      "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
+      "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
+    },
+    {
+      "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
+      "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
+    },
+    {
+      "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
+      "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
+    }
+  ],
+  "notes": [
+    "The pattern's star is the only wildcard. The replay's independent oracle (controls/oracle.py) is the statement's concrete side: it computes the glob decision from a definition, not from either revision, and checks both revisions' replay against it and against each other.",
+    "Null is in the domain because the method's parameters are @Nullable and its first statement returns false for either null. The tool's own checker takes a String parameter never null (lib/README.md); an attempt that can't take a null pattern or str is reported as that refusal, and the claim stays unresolved, never re-read as the non-null domain.",
+    "The constructed mutant (controls/drop-prefix.patch on release-after) must fail this claim on the pair (release-after, mutant): it gives true for abc* against xbcdef, which both releases reject."
+  ]
+}

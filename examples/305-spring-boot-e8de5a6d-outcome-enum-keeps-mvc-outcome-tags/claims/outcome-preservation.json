@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "mvc-outcome-tag-preserved",
+  "kind": "preservation",
+  "statement": "Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it.",
+  "nullable": ["response"],
+  "observations": ["result", "exception"],
+  "bounds": { "unwind": 16 },
+  "assumptions": [
+    {
+      "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
+      "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
+    },
+    {
+      "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
+      "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
+    },
+    {
+      "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
+      "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
+    },
+    {
+      "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
+      "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
+    }
+  ],
+  "notes": [
+    "The replay's independent oracle (controls/oracle.py) is the statement's concrete side: it classifies a status from the HTTP status-code classes (RFC 9110 section 15: a three-digit code, its first digit 1 to 5 naming the class), not from either revision's code, and checks both revisions' replay against it and against each other.",
+    "Null is in the domain because both revisions test response != null first and give UNKNOWN for it.",
+    "The hypothesis the claim tests: the old path's Series.resolve divides the status by 100, truncating towards zero, so it finds a series exactly for 100..599 (-99..99 give 0, no series; every negative status below -99 gives a negative quotient, no series), the ranges Outcome.forStatus tests. That is a hypothesis, not a result.",
+    "The constructed mutant (controls/status-200.patch on after) must fail this claim on the pair (before, mutant): it gives INFORMATIONAL for 200, where both revisions give SUCCESS."
+  ]
+}

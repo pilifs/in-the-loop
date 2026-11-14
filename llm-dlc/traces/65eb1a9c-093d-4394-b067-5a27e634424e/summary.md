@@ -28,6 +28,10 @@ Step 4, the merge (jj new of the default line and the four branches, then sync.p
 
 Before backing out, example-targets-integration.sh ran on the merged tree: everything passes (targets suite 181, test_build.py 190, test_pipeline.py 29, every sidecar's plan, contract rows A0-A4, A6, A7) except contract A5. There all four fixture proof tasks are unresolved, because the claims name the parameter 'code' while the fixture's classes record no parameter names (arg0): VF-024's first point, reached now that the whole route runs. It waits for runtime's interface request to compile Phase 0's fixture recipe with -parameters, Phase 5 step 1's first item. The brief's reconcile step 4 doesn't anticipate a conflict in a file only a person may write; otherwise the brief is current.
 
+### example-targets reconcile step 4: streams merged, allow-list conflict resolved
+
+change `ptyqvxxlyvsk` · [log `d7c8b8e9c4a0`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/d7c8b8e9c4a0ab1af50ffc0a47328875a3deccb866b9e08b7dd62227b34be53c.jsonl.gz)
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/d7c8b8e9c4a0ab1af50ffc0a47328875a3deccb866b9e08b7dd62227b34be53c.jsonl.gz) has every step in between: reasoning, tool calls and their results.

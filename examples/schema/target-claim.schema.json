@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pilifs/in-the-loop/examples/schema/target-claim.schema.json",
+  "title": "External target claim file (the source-level claim of one or more tasks)",
+  "description": "What a task of a target.json sidecar (target.schema.json) checks, as its `claim` names it: the property or the preserved behaviour, its domain, what is observed, the assumptions with their basis, explicit bounds, and the models, construction plan and gap contracts it rests on, by path. It is frozen before any attempt: a changed statement, domain, observation, assumption, bound or model is a different claim. Tasks that share a claim file share one logical property and domain (a vulnerable and a fixed security task); their artifact-bound claim identities still differ, because their artifacts do. examples/tools/targets/workflow.py reads it when it plans a task, and refuses a task whose claim file is missing, invalid or inconsistent with the task; a sidecar naming a file in another shape is still a valid sidecar, its task unplannable until the file is this. Owned by the workflow stream of llm-dlc/loops/example-targets.md.",
+  "type": "object",
+  "required": ["schema", "property", "kind", "statement", "observations"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema": { "description": "The claim file's version. Another version is refused, never read as this one.", "const": "example-target-claim/v1" },
+    "property": { "description": "The logical property's id: tasks that share it share the predicate and the domain.", "$ref": "#/$defs/name" },
+    "kind": {
+      "description": "property: a statement about one revision's method (`jvmcontract prove`), for a prove task; preservation or compatibility: what two revisions of a pair keep the same outside the task's allowedChange (`jvmcontract equivalence`), for a compare or equivalence task.",
+      "enum": ["property", "preservation", "compatibility"]
+    },
+    "statement": { "description": "The claim in words, as a reader checks it against the oracle and the advisory.", "type": "string", "minLength": 1 },
+    "assume": { "description": "The inputs the claim is about, a Java boolean expression over the parameters (`--assume`). Absent: every input. A security domain is never narrowed to get a result.", "type": "string", "minLength": 1 },
+    "assert": { "description": "For a property: a Java boolean expression over the parameters and `result` (`--assert`).", "type": "string", "minLength": 1 },
+    "throws": { "description": "For a property: the exceptional behaviour, `<exception class> when <condition>` (`--throws`), in order.", "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "nullable": { "description": "Parameters that may be null (`--nullable`).", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/identifier" } },
+    "mayAlias": { "description": "Parameter pairs that may be one object, `a,b` (`--may-alias`).", "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*,[A-Za-z_$][A-Za-z0-9_$]*$" } },
+    "observations": {
+      "description": "What the claim observes: the returned value, the exception thrown, the effects (calls out, writes), the state left. Dropping one is a different claim.",
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "enum": ["result", "exception", "effects", "state"] }
+    },
+    "assumptions": {
+      "description": "Each assumption the claim makes, with its basis. One that changes the semantics is a different claim.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "basis"],
+        "additionalProperties": false,
+        "properties": { "text": { "type": "string", "minLength": 1 }, "basis": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "bounds": { "description": "Explicit bounds, by the tool's option names; those not stated are the tool's defaults, resolved by planning before the claim is frozen.", "$ref": "#/$defs/bounds" },
+    "models": { "description": "Model or environment files the claim rests on, in the example's folder.", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/file" } },
+    "plan": { "description": "A construction plan (`--plan`), in the example's folder.", "$ref": "#/$defs/file" },
+    "contracts": { "description": "Gap contracts for `--gaps advised` (`--contracts`), in the example's folder.", "$ref": "#/$defs/file" },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    { "if": { "properties": { "kind": { "const": "property" } } }, "then": { "required": ["assert"] } },
+    { "if": { "properties": { "kind": { "enum": ["preservation", "compatibility"] } } }, "then": { "not": { "anyOf": [{ "required": ["assert"] }, { "required": ["throws"] }] } } }
+  ],
+  "$defs": {
+    "name": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 80 },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$" },
+    "bounds": { "type": "object", "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" }, "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "file": {
+      "description": "A path relative to the example's folder, as target.schema.json's: workflow.py also checks that it resolves inside the folder.",
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))[A-Za-z0-9_][A-Za-z0-9_./-]*$",
+      "maxLength": 200
+    }
+  }
+}

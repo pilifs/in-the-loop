@@ -37,17 +37,29 @@
         "repository": { "description": "The upstream repository, on github.com (the downloads policy of decision 1).", "type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
         "researchedOn": { "description": "When the research this entry comes from was done (the archived registry's as_of).", "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
         "revisions": {
-          "description": "Each revision the case uses, by name. A commit is a full 40-hex SHA: a branch, a short SHA or a tag alone is a mutable reference and is refused. A tag or release is recorded beside the commit, never instead of it. A control (identity.role) may instead name a `fixture`: a directory of sources in its folder, built locally, never an upstream revision.",
+          "description": "Each revision the case uses, by name. A commit is a full 40-hex SHA: a branch, a short SHA or a tag alone is a mutable reference and is refused. A tag or release is recorded beside the commit, never instead of it. A control (identity.role) may instead name a `fixture`: a directory of sources in its folder, built locally, never an upstream revision. A constructed `mutant` (any role) is another revision with a patch applied: it stays constructed, never an upstream change, a CVE or a historical success.",
           "type": "object",
           "minProperties": 1,
           "propertyNames": { "$ref": "#/$defs/name" },
           "additionalProperties": {
             "type": "object",
-            "oneOf": [{ "required": ["commit"] }, { "required": ["fixture"] }],
+            "oneOf": [{ "required": ["commit"] }, { "required": ["fixture"] }, { "required": ["mutant"] }],
             "additionalProperties": false,
             "properties": {
               "commit": { "$ref": "#/$defs/sha1" },
               "fixture": { "description": "For a control only: the revision's sources, a directory in the folder.", "$ref": "#/$defs/file" },
+              "mutant": {
+                "description": "A constructed mutation control (added by the workflow stream, additive): the revision `base` with the patch `patch` applied, its sha256 checked before anything is prepared from it. Its base is a commit or fixture revision of this sidecar, and it appears only as the `after` of a `mutation` pair whose `before` is that base. It has no upstream identity: no parent, tag or release, and no published artifact.",
+                "type": "object",
+                "required": ["base", "patch", "sha256", "description"],
+                "additionalProperties": false,
+                "properties": {
+                  "base": { "description": "A revision name: what the patch applies to.", "$ref": "#/$defs/name" },
+                  "patch": { "description": "A unified diff in the folder, applied in the base's source root.", "$ref": "#/$defs/file" },
+                  "sha256": { "description": "The patch's sha256.", "$ref": "#/$defs/sha256" },
+                  "description": { "description": "The mutation in words: what it changes, and which branch or observation it is meant to break.", "type": "string", "minLength": 1 }
+                }
+              },
               "parent": { "description": "The parent this case compares against; for a merge commit, the selected one.", "$ref": "#/$defs/sha1" },
               "parentReason": { "description": "Why that parent was selected, for a merge commit.", "type": "string" },
               "tag": { "type": "string" },

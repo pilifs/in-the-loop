@@ -1,0 +1,130 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "bcrypt-standard-charset-positive",
+    "family": "bcrypt-input-limit",
+    "role": "positive",
+    "matching": "The independent positive of the password-bytes family (CVE-2025-22228's 72-byte limit): the shared concern is the password's UTF-8 representation, characters against bytes. This pair adds no length restriction of its own, and encoding preservation is no authentication policy. Only the BCrypt.hashpw(String,String) entry is selected: the three-file patch also changes the cached charset in crypto.codec.Utf8 and a test utility.",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/spring-projects/spring-security",
+    "revisions": {
+      "before": {
+        "commit": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "checked": "2026-11-14: fetched by SHA from github.com (git fetch --depth=2 --filter=blob:none); the only parent of after."
+      },
+      "after": {
+        "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "parent": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "checked": "2026-11-14: fetched by SHA from github.com; one parent, fb39d9c2 (not a merge); author Lars Grefer, 2019-08-09 00:39:09 +0200 (2019-08-08 in UTC), 'StandardCharsets can be used'; three files."
+      }
+    },
+    "pairs": [
+      {
+        "name": "positive",
+        "kind": "positive",
+        "before": "before",
+        "after": "after",
+        "selected": true
+      }
+    ],
+    "links": [
+      "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1"
+    ],
+    "unresolved": [
+      "No Maven Central artifact has exactly either side's BCrypt.java: before's equals 5.2.0.M4's (a milestone, published only to repo.spring.io), and 5.2.0.RELEASE's differs from after's by a removed unused import and a `final` dropped from the private method encipher (sources.lock.json)."
+    ]
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "build": {
+      "tool": "gradle-wrapper",
+      "argv": [
+        "./gradlew",
+        "--no-daemon",
+        ":spring-security-crypto:jar"
+      ],
+      "jdk": "8"
+    },
+    "jdks": [
+      "21",
+      "25"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "pair": "positive",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "notes": [
+        "Concrete controls only: each revision's original BCrypt class in its own JVM, on JDK 21 and 25, over replay/probes.json's 45 probes: three valid salts from upstream's BCryptTests (the 'abc' test vector's cost-6 salt, its stored hash, and the '$2$05$' salt), never a random one, with passwords empty, ASCII, BMP non-ASCII, supplementary, 71, 72 and 73 UTF-8 bytes (in ASCII and in 2-, 3- and 4-byte characters, and with a character straddling byte 72), isolated and reversed surrogates, and null; and four invalid salts from the same tests. Observed: the returned String, or the exception's class. controls/oracle.py checks each side's lines against its statement and the two sides against each other."
+      ]
+    },
+    {
+      "id": "preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "positive",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "expected": "established",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "notes": [
+        "On the frozen password and salt domain and the pinned JDK's charset behaviour, both revisions return the same string and throw the same exceptions. No allowed-change region. A proof may reuse a checked summary of the unchanged callee hashpw(byte[],String), bound to its actual bytecode; without that reuse this task stays unresolved beside a separate local conversion lemma, and no cipher is substituted."
+      ],
+      "claim": "claims/hashpw-preservation.json"
+    }
+  ],
+  "handoff": {
+    "blockers": [
+      {
+        "kind": "build-or-dependency",
+        "observed": false,
+        "summary": "Predicted from the build files, not from a build: the Gradle 5.5.1 wrapper downloads its distribution from services.gradle.org; the buildscript resolves spring-build-conventions and the Boot 2.2.0.M3 Gradle plugin from https://repo.spring.io/plugins-snapshot and plugins.gradle.org; and the crypto module's spring-jcl is Spring 5.2.0.RC1, a milestone on repo.spring.io. Decision 1 allows github.com and Maven Central only. No SNAPSHOT dependency is pinned, so the build may be reproducible if the user extends the policy (hash-pinned); otherwise BCrypt.java, which needs only the JDK, can be compiled from each commit outside the upstream build, a narrower, separately labelled scope."
+      },
+      {
+        "kind": "java-semantics",
+        "observed": false,
+        "summary": "Predicted from a static scan, not from an attempt: jvmcontract gaps on BCrypt.hashpw(String,String) refuses the changed operation itself on both sides, before's String.getBytes(String) and after's String.getBytes(Charset) (an array result of a JDK instance method) and after's read of StandardCharsets.UTF_8 (a JDK static field that is not a compile-time constant); the unchanged callee adds the refused Arrays.copyOf(byte[],int) and Integer.parseInt and StringBuilder.charAt with no approximation. So the strict preservation attempt is predicted to stop at the UTF-16 to UTF-8 conversion, the password-bytes family's shared demand, before the cipher. Run by hand with a binary one lib/src commit old, on classes compiled from each commit's BCrypt.java outside the upstream build (records/hashpw-gaps.json, a note).",
+        "packet": "records/hashpw-gaps.json"
+      },
+      {
+        "kind": "input-construction",
+        "observed": false,
+        "summary": "Predicted from lib/README.md: the checker takes a String parameter of a regression check as bounded UTF-16 with content, never null, but the claim's domain has a null password (NullPointerException) and a null salt (claims/hashpw-preservation.json); an attempt that can't take them is that refusal, and the claim stays unresolved, never re-read as the non-null domain. The salt domain is seven fixed strings, stated as an assume expression with String.equals."
+      }
+    ],
+    "next": "The build route first: the user's decision on the predicted build-or-dependency blocker (Progress of llm-dlc/loops/example-targets-positive.md). Then runtime's preparation of both revisions, the replay task (the driver on each revision's crypto classes in its own JVM, on JDK 21 and 25, read by controls/oracle.py), and the mutant: us-ascii.patch applied to after's BCrypt.java and its class compiled into a copy of after's artifact, replayed against the same oracle (it must fail on non-ASCII passwords and only there). The native attempt is queued only after the replay, and its predicted refusals recorded as observed or withdrawn. A conversion lemma bound to the unchanged callee's bytecode is a separate, narrower claim if it is wanted."
+  },
+  "controls": [
+    {
+      "id": "hashpw-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    },
+    {
+      "id": "hashpw-driver",
+      "kind": "driver",
+      "path": "replay/driver/inloop/p307/HashpwDriver.java"
+    },
+    {
+      "id": "hashpw-probes",
+      "kind": "probe",
+      "path": "replay/probes.json"
+    },
+    {
+      "id": "us-ascii-mutant",
+      "kind": "mutation",
+      "path": "controls/us-ascii.patch",
+      "revision": "after",
+      "sha256": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b"
+    }
+  ]
+}
