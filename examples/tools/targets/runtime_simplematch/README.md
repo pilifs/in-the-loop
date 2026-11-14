@@ -12,10 +12,17 @@ Not an example and not in the router. It is the case R5 of
 - `adapter/`: calls the original method with the two raw inputs, and nothing else.
 - `driver/`: one JSON line per input, the outcome as the JVM gave it.
 - `oracle.py`: the statement written from the method's Javadoc, and the 45 `PROBES`. It never calls spring-core.
+- `mutation.json` and `mutant/suffix-anywhere.patch`: a constructed mutant of 5.3.19, in workflow W1's sidecar shape
+  (a revision's `mutant`, a `mutation` pair and the `mutant-replay` task). The patch turns the suffix branch's
+  `str.endsWith(pattern.substring(1))` into `str.contains(...)`. It sits beside `target.json` until W1's schema, which
+  adds `mutant`, is merged; then it moves in as it is. `runtime_slice.py` merges it into the plan meanwhile. On the
+  published-artifact route the mutant is a copy of 5.3.19's JAR whose `PatternMatchUtils` is recompiled from the
+  v5.3.19 commit's source with the patch applied. It is a sensitivity control, never a revision of Spring.
 
 ```text
 python3 examples/tools/targets/runtime_slice.py ATTEMPT            # acquires what the cache lacks, from Central
 python3 examples/tools/targets/runtime_slice.py ATTEMPT --offline  # the cache only
+python3 examples/tools/targets/runtime_slice.py ATTEMPT --case simplematch-mutant  # a job: checks out the commit
 ```
 
 What it showed on 2026-11-14:

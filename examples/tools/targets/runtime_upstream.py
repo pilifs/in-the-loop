@@ -22,6 +22,10 @@ or else checked against Central's .sha1 and recorded, then run directly: the wra
 A Gradle build is a preparation blocker: a wrapper's distribution comes from services.gradle.org, outside the downloads
 policy, and an installed Gradle is not the revision's own build tool. No build-enabling patch is applied: one would be
 separate recorded bytes with a scope review.
+
+A constructed mutant (workflow's W1) is the one patch applied: its locked patch, by `git apply` on the fresh checkout of
+its base commit (apply_patch), before the build, which must then leave the checkout as patched. runtime.py also uses
+apply_patch on the published-artifact and fixture routes.
 """
 
 import json
@@ -186,6 +190,38 @@ def checkout(steps, recipe, dest, home, found):
     return git, env
 
 
+def apply_patch(steps, root, patch, files, home):
+    """A constructed mutant's `patch` applied by git in `root` (`git apply`, -p1, as a unified diff with a/ and b/
+    prefixes is written), checked with --check first: {command, files: [{path, before, after}]}, each file's sha256
+    before and after. `files` are the ones the lock read from the patch; each must be a file under `root`, and each
+    must change. No repository above `root` is consulted (GIT_CEILING_DIRECTORIES), so a patch can't be applied
+    against another tree, or ignored for a path outside the current directory."""
+    root = Path(root).resolve()
+    git = [_git(), "-c", "core.hooksPath=/dev/null", "-c", "core.autocrlf=false"]
+    env = {"PATH": "/usr/bin:/bin", "HOME": str(home), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+           "GIT_CEILING_DIRECTORIES": str(root.parent), "GIT_TERMINAL_PROMPT": "0", **BASE_ENV}
+    needs = "the mutant's patch applying cleanly to its base's sources"
+    next_ = ("rewrite the patch against the base revision and record its new sha256 in target.json: a changed patch is "
+             "a different mutant, with a new claim")
+    before = {}
+    for f in files:
+        path = root / f
+        if not path.is_file() or not path.resolve().is_relative_to(root):
+            raise Blocked("mutant", f"{f}, which the patch modifies, is not a file of the base's sources", needs=needs,
+                          next=next_)
+        before[f] = runtime_maven.sha256_of(path)
+    for step, extra in (("git-apply-check", ["--check"]), ("git-apply", [])):
+        steps.must(step, git + ["apply", "-p1", "--verbose", *extra, str(patch)], root, env, GIT_TIMEOUT, "mutant",
+                   needs, next_)
+    changed = []
+    for f in files:
+        after = runtime_maven.sha256_of(root / f)
+        if after == before[f]:
+            raise Blocked("mutant", f"git apply left {f} unchanged", needs=needs, next=next_)
+        changed.append({"path": f, "before": before[f], "after": after})
+    return {"command": "git apply -p1 --verbose (after git apply --check)", "files": changed}
+
+
 def _changed(steps, git, env, dest, step):
     out = steps.must(step, git + ["-C", dest, "status", "--porcelain", "--untracked-files=no"], steps.workdir, env,
                      GIT_TIMEOUT, "build", "a checkout git can read", f"read logs/{step}.log")
@@ -319,11 +355,15 @@ def _settings(path, repository):
     return path
 
 
-def build(recipe, workdir, target_class, logs, record, network=True, cache=None):
+def build(recipe, workdir, target_class, logs, record, network=True, cache=None, patch=None):
     """Build `recipe` (check_recipe's) in workdir/checkout: [(path, sha256, role, coordinates, origin)] for the
     original JAR (the one non-auxiliary JAR the build produced that holds `target_class`, internal name) copied to
     built/, then its runtime dependencies, in Maven's order, copied to lib/. `record` is filled as it goes
-    (checkout, toolchain, outputs), so a failure still says what exists; `logs` gets each step's log."""
+    (checkout, toolchain, outputs), so a failure still says what exists; `logs` gets each step's log.
+
+    `patch`, for a constructed mutant, is (the patch file, the files it modifies): applied to the fresh checkout
+    before the build (apply_patch, recorded as the checkout's `patched`). The build must then leave the checkout as
+    patched: the files the patch changed, and nothing else, with the bytes it gave them."""
     workdir = Path(workdir)
     cache = cache or runtime_maven.Cache()
     steps = Steps(workdir, logs)
@@ -343,6 +383,10 @@ def build(recipe, workdir, target_class, logs, record, network=True, cache=None)
         raise _gradle_blocker(recipe, dest)
     if _changed(steps, git, git_env, dest, "git-status-before"):
         raise Blocked("acquire", "the fresh checkout already differs from its commit", next="read logs/git-status-before.log")
+    patched = []
+    if patch is not None:
+        found["patched"] = apply_patch(steps, dest, patch[0], patch[1], home)
+        patched = _changed(steps, git, git_env, dest, "git-status-patched")
 
     jdk = runtime_jdk.home(recipe["jdk"])
     if jdk is None:
@@ -381,7 +425,9 @@ def build(recipe, workdir, target_class, logs, record, network=True, cache=None)
                       next="read logs/build.log: a plugin or dependency Maven Central doesn't serve, a JDK the revision "
                            "doesn't support, or a check the recipe doesn't skip; a build-enabling patch would be "
                            "separate recorded bytes with a scope review")
-    changed = _changed(steps, git, git_env, dest, "git-status-after")
+    changed = [c for c in _changed(steps, git, git_env, dest, "git-status-after") if c not in patched]
+    changed += [f" M {f['path']} (after the patch)" for f in (found.get("patched") or {}).get("files", [])
+                if runtime_maven.sha256_of(dest / f["path"]) != f["after"]]
     found["changedByBuild"] = changed
     if changed:
         raise Blocked("build", f"the build changed tracked files of the checkout: {'; '.join(changed[:10])}",

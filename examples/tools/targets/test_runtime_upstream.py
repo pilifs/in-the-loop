@@ -2,11 +2,14 @@
 """Tests of the upstream-build route (runtime.py with runtime_upstream.py, R2), the runtime stream's: a local git
 repository stands in for github.com (runtime_upstream.REMOTE) and a stand-in `mvn` (runtime_upstream.MAVEN) builds
 the fixture's sources with javac and records how it was called, so nothing here uses the network or a real Maven.
-The real build of a pinned upstream revision is a pipeline job (runtime_slice.py --case numbers).
+The real build of a pinned upstream revision is a pipeline job (runtime_slice.py --case numbers). Also constructed
+mutants on the upstream-build and published-artifact routes (the published one against test_runtime.py's stand-in for
+Maven Central), whose real run is a job too (runtime_slice.py --case simplematch-mutant).
 
   python3 examples/tools/targets/test_runtime_upstream.py
 """
 
+import dataclasses
 import json
 import os
 import shutil
@@ -123,7 +126,9 @@ def upstream_plan(folder, revisions, commits, parents=None, tool="maven", argv=A
         outputs={"receipts": f"receipts/{task}"}, folder=str(folder), network=network)
 
 
-class UpstreamTest(base.FixtureCopy):
+class UpstreamCase(base.FixtureCopy):
+    """The stand-ins for github.com and Maven, and the plan and preparation helpers; the tests are its subclasses'."""
+
     def setUp(self):
         super().setUp()
         if "21" not in runtime_jdk.homes():
@@ -167,6 +172,9 @@ class UpstreamTest(base.FixtureCopy):
     def prepare(self, revision="after", workdir=None, plan=None, **kw):
         return runtime.prepare(plan or self.plan((revision,), **kw), revision, workdir or self.work / revision)
 
+
+
+class UpstreamTest(UpstreamCase):
     def test_an_upstream_lock_fetches_nothing_and_refuses_a_recipe_that_is_not_immutable(self):
         with mock.patch.object(runtime_upstream, "REMOTE", side_effect=AssertionError("a source lock fetched")), \
                 mock.patch.object(subprocess, "run", side_effect=AssertionError("a source lock ran a process")):
@@ -393,6 +401,142 @@ class UpstreamTest(base.FixtureCopy):
             problems.setdefault(r.revision, set()).add(
                 tuple(c for c, _ in base.oracle().check([json.dumps(o) for o in r.observations])))
         self.assertEqual(problems, {"before": {(97,)}, "after": {()}}, "the built revisions replay as the fixture's")
+
+
+def gate_patch(path="gate/src/main/java/fixture/Gate.java"):
+    """The fixture's after-to-mutant change as a patch on the upstream stand-in's module, as git apply -p1 reads it."""
+    import difflib
+    after = (base.FIXTURES / "gate/after/fixture/Gate.java").read_text().splitlines(keepends=True)
+    mutant = (base.FIXTURES / "gate/mutant/fixture/Gate.java").read_text().splitlines(keepends=True)
+    return "".join(difflib.unified_diff(after, mutant, f"a/{path}", f"b/{path}"))
+
+
+class MutantRoutesTest(UpstreamCase):
+    """A constructed mutant (workflow's W1 entry) of the stand-in's `after` commit, on the upstream-build route (the
+    checkout patched, then built by the recipe) and on the published-artifact route (the checkout patched, the patched
+    file compiled against the published JARs and its classes put into a copy of the base JAR)."""
+
+    def setUp(self):
+        super().setUp()
+        (self.folder / "gate/mutant.patch").write_text(gate_patch())
+        self.mutant = {"base": {"revision": "after", "commit": self.commits["after"]},
+                       "patch": {"path": "gate/mutant.patch", "sha256": runtime.sha256(self.folder / "gate/mutant.patch")},
+                       "description": "the fix normalizes one side only: 65 allowed again"}
+
+    def upstream_entry(self):
+        entry = dict(upstream_plan(self.folder, ("after",), self.commits).artifacts[0], revision="mutant",
+                     mutant=self.mutant)
+        del entry["commit"]
+        return entry
+
+    def published(self, jar=None):
+        """The base JAR (build_fixtures.py's after.jar, unless `jar`) and a dependency on the stand-in for Central."""
+        self.central = base.Repository(self, self.dir / "central")
+        dep = self.central.publish("fixture.example:gate-util:2.0", self.dep)
+        after = self.central.publish("fixture.example:gate:1.1", jar or Path(base.manifest()["dir"]) / "after.jar")
+        return [after, dep]
+
+    def published_entry(self, items, revision="mutant"):
+        entry = {"revision": revision, "route": "published-artifact", "repository": "https://github.com/example/gate",
+                 "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"], "jdks": ["21", "25"]}
+        if revision == "mutant":
+            return {**entry, "mutant": {**self.mutant, "base": {**self.mutant["base"], "published": items}}}
+        return {**entry, "commit": self.commits["after"], "published": items}
+
+    def plan_of(self, entries, network=True):
+        return dataclasses.replace(base.mutant_plan(self.folder, entries, revisions=tuple(e["revision"] for e in entries)),
+                                   network=network)
+
+    def replay(self, plan):
+        attempt = self.work / "attempt"
+        prepared = {r: runtime.prepare(plan, r, attempt / "prepare" / r) for r in plan.revisions}
+        for r, p in prepared.items():
+            self.assertEqual(p.stage, "artifacts-ready", f"{r}: {p.diagnostic}")
+        problems = {}
+        for r in runtime.run_controls(plan, prepared, attempt / "controls"):
+            self.assertEqual((r.status, r.exitCode), ("exited", 0))
+            problems.setdefault(r.revision, set()).add(
+                tuple(c for c, _ in base.oracle().check([json.dumps(o) for o in r.observations])))
+        return prepared, problems
+
+    def test_an_upstream_mutant_is_its_base_commit_patched_then_built_by_the_recipe(self):
+        prepared = runtime.prepare(self.plan_of([self.upstream_entry()]), "mutant", self.work / "mutant")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        digest = self.mutant["patch"]["sha256"]
+        self.assertEqual(prepared.commit, f"mutant:{self.commits['after']}+{digest}")
+        checkout = prepared.source["checkout"]
+        self.assertEqual(checkout["commit"], self.commits["after"], "the base commit is what is checked out")
+        self.assertEqual([f["path"] for f in checkout["patched"]["files"]], ["gate/src/main/java/fixture/Gate.java"])
+        self.assertEqual(checkout["changedByBuild"], [], "the build left the checkout as patched")
+        self.assertEqual(prepared.source["mutant"]["applied"], checkout["patched"])
+        original = next(a for a in prepared.artifacts if a.role == "original")
+        self.assertTrue(original.origin.startswith("constructed: built by maven"), original.origin)
+        self.assertIn(f"(sha256 {digest}) was applied", original.origin)
+
+    def test_a_build_that_changes_the_patched_file_again_is_refused(self):
+        self.set_knobs(touch=True)
+        prepared = runtime.prepare(self.plan_of([self.upstream_entry()]), "mutant", self.work / "mutant")
+        self.assertEqual(prepared.failedStage, "build", prepared.diagnostic)
+        self.assertIn("gate/src/main/java/fixture/Gate.java (after the patch)", prepared.diagnostic)
+
+    def test_the_upstream_mutation_pair_replays_as_the_fixtures(self):
+        if not {"21", "25"} <= set(runtime_jdk.homes()):
+            self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
+        after = upstream_plan(self.folder, ("after",), self.commits).artifacts[0]
+        _, problems = self.replay(self.plan_of([after, self.upstream_entry()]))
+        self.assertEqual(problems, {"after": {()}, "mutant": {(65,)}})
+
+    def test_a_published_mutant_replaces_the_patched_classes_in_a_copy_of_the_base_jar(self):
+        items = self.published()
+        prepared = runtime.prepare(self.plan_of([self.published_entry(items)]), "mutant", self.work / "mutant")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        roles = {a.path: a.role for a in prepared.artifacts}
+        self.assertEqual(roles["lib/fixture.example/gate-1.1.jar"], "base")
+        self.assertEqual(roles["mutant/gate-1.1.jar"], "original")
+        self.assertNotIn("lib/fixture.example/gate-1.1.jar", prepared.classpath, "the base JAR is off the classpath")
+        self.assertEqual(prepared.classpath[2:], ("mutant/gate-1.1.jar", "lib/fixture.example/gate-util-2.0.jar"))
+        m = prepared.source["mutant"]
+        self.assertEqual([c["class"] for c in m["jar"]["classes"]], ["fixture/Gate"])
+        work = self.work / "mutant"
+        mutant_gate = runtime.runtime_jar.read_class(work / "mutant/gate-1.1.jar", "fixture/Gate")
+        jars = Path(base.manifest()["dir"])
+        self.assertEqual(mutant_gate, runtime.runtime_jar.read_class(jars / "mutant.jar", "fixture/Gate"),
+                         "the recompiled class is build_fixtures.py's own mutant class: same --release, same flags")
+        self.assertEqual(runtime.runtime_jar.read_class(work / "mutant/gate-1.1.jar", "fixture/RegexGate"),
+                         runtime.runtime_jar.read_class(jars / "after.jar", "fixture/RegexGate"), "the rest is the base's")
+        self.assertEqual((prepared.toolchain["mutant"]["release"], prepared.toolchain["mutant"]["flags"]), ("21", []))
+        self.assertEqual([(c["class"], c["identical"]) for c in prepared.toolchain["mutant"]["unpatchedRecompile"]["classes"]],
+                         [("fixture/Gate", True)], "the same javac and flags give the base's own bytes back, unpatched")
+        self.assertEqual(prepared.source["checkout"]["commit"], self.commits["after"])
+        self.assertEqual(prepared.source["target"]["loadedFrom"], "mutant/gate-1.1.jar")
+
+    def test_the_published_mutation_pair_replays_as_the_fixtures(self):
+        if not {"21", "25"} <= set(runtime_jdk.homes()):
+            self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
+        items = self.published()
+        _, problems = self.replay(self.plan_of([self.published_entry(items, "after"), self.published_entry(items)]))
+        self.assertEqual(problems, {"after": {()}, "mutant": {(65,)}})
+
+    def test_a_published_mutant_is_refused_offline_or_when_the_copy_would_keep_stale_classes(self):
+        items = self.published()
+        offline = runtime.prepare(self.plan_of([self.published_entry(items)], network=False), "mutant", self.work / "a")
+        self.assertEqual(offline.failedStage, "acquire")
+        stale = self.dir / "stale.jar"
+        shutil.copyfile(Path(base.manifest()["dir"]) / "after.jar", stale)
+        with zipfile.ZipFile(stale, "a") as z:
+            z.writestr("fixture/Gate$Old.class", runtime.runtime_jar.read_class(stale, "fixture/Gate"))
+        items = self.published(stale)
+        prepared = runtime.prepare(self.plan_of([self.published_entry(items)]), "mutant", self.work / "b")
+        self.assertEqual(prepared.failedStage, "mutant", prepared.diagnostic)
+        self.assertIn("fixture.Gate$Old", prepared.diagnostic)
+        self.assertIn("stale bytes", prepared.diagnostic)
+
+    def test_on_the_published_route_a_patch_may_only_change_java_sources(self):
+        (self.folder / "gate/mutant.patch").write_text(gate_patch("gate/pom.xml"))
+        self.mutant["patch"]["sha256"] = runtime.sha256(self.folder / "gate/mutant.patch")
+        locked = runtime.lock(self.plan_of([self.published_entry(self.published())]), "mutant")
+        self.assertEqual(locked.failedStage, "lock")
+        self.assertIn("only Java sources are recompiled", locked.diagnostic)
 
 
 class NumbersCaseTest(unittest.TestCase):

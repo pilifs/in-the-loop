@@ -8,8 +8,11 @@ driver and a Javadoc-derived oracle:
 - `numbers` (runtime_numbers/, R2's upstream-build route): `ArithmeticUtils.pow(int, int)` from apache/commons-numbers
   at example 105's two pinned commits, each fetched from github.com and built by its own Maven on JDK 11. A pipeline
   job: an upstream build is never run inline.
+- `simplematch-mutant` (runtime_simplematch/mutation.json, a constructed mutant on the published-artifact route):
+  5.3.19 against a copy of its JAR whose PatternMatchUtils is recompiled from the v5.3.19 commit's source, patched so
+  a "*xxx" pattern matches anywhere. A pipeline job: it checks out spring-framework's commit from github.com.
 
-    python3 examples/tools/targets/runtime_slice.py ATTEMPT [--offline] [--case simplematch|numbers]
+    python3 examples/tools/targets/runtime_slice.py ATTEMPT [--offline] [--case simplematch|numbers|simplematch-mutant]
 
 ATTEMPT is a new directory, laid out as route.py lays out an attempt (prepare/<revision>, controls). The case folder
 is copied to ATTEMPT/case first and planned from there, so its receipts go where route.py puts them, under the
@@ -17,7 +20,8 @@ example's folder (`receipts/<task>`), without writing into the repository's copy
 --offline uses only what the acquisition cache already holds (the plan's `network: false`; an upstream build needs
 the network). Exit 0 when every revision is artifacts-ready, every control exited with complete observations, the
 oracle's disagreements on each revision are exactly the case's expected ones (none for simplematch; for numbers, before
-at pow(-2, 31) alone and after none), and JDK 21 and 25 agree on each revision; 1 otherwise. ATTEMPT/slice.json says
+at pow(-2, 31) alone and after none; for simplematch-mutant, the mutant at the three probes its suffix branch decides
+and 5.3.19 none), and JDK 21 and 25 agree on each revision; 1 otherwise. ATTEMPT/slice.json says
 what happened.
 
 Two stand-ins, both until the workflow stream's work is merged: `plan()` turns the sidecar into the TaskPlan that
@@ -47,7 +51,12 @@ EXAMPLE = "315"  # reserved by the runtime stream (315-319) for this slice; the 
 CASES = {
     "simplematch": {"folder": FOLDER, "example": EXAMPLE, "expected": {}},
     "numbers": {"folder": HERE / "runtime_numbers", "example": "316", "expected": {"before": [[-2, 31]]}},
+    # mutation.json's constructed mutant of 5.3.19 against 5.3.19 itself; the disagreements are the ones a model of
+    # the patched method predicts on the oracle's probes (a note: the job's replay is the evidence)
+    "simplematch-mutant": {"folder": FOLDER, "example": EXAMPLE, "task": "mutant-replay",
+                           "expected": {"mutant": [["*bc", "bcx"], ["a*c*e", "abced"], ["*a*b", "acba"]]}},
 }
+MUTATION = "mutation.json"  # a case's constructed mutants in W1's sidecar shape, beside target.json until W1 is merged
 
 
 def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
@@ -57,6 +66,11 @@ def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
     upstream-build revision's carries its commit, its recorded parent and the recipe's `build`."""
     folder = Path(folder)
     target = json.loads((folder / "target.json").read_text())
+    if (folder / MUTATION).is_file():  # W1's sidecar shape, merged here until W1's schema is
+        extra = json.loads((folder / MUTATION).read_text())
+        target["history"]["revisions"].update(extra.get("revisions", {}))
+        target["history"].setdefault("pairs", []).extend(extra.get("pairs", []))
+        target["tasks"].extend(extra.get("tasks", []))
     t = next(x for x in target["tasks"] if x["id"] == task)
     history, prep = target["history"], target["preparation"]
     if t.get("pair"):
@@ -67,6 +81,20 @@ def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
     artifacts = []
     for name in revisions:
         revision = history["revisions"][name]
+        if "mutant" in revision:  # W1: the base's commit (and published JARs) under `mutant.base`, nothing of its own
+            m = revision["mutant"]
+            base = {"revision": m["base"], "commit": history["revisions"][m["base"]]["commit"]}
+            if prep["route"] == "published-artifact":
+                base["published"] = [{k: a[k] for k in ("coordinates", "url", "sha256") if k in a}
+                                     for a in prep.get("artifacts", []) if a["revision"] == m["base"]]
+            entry = {"revision": name, "route": prep["route"], "repository": history["repository"],
+                     "mutant": {"base": base, "patch": {"path": m["patch"], "sha256": m["sha256"]},
+                                "description": m["description"]}}
+            if prep["route"] == "upstream-build":
+                entry["build"] = prep["build"]
+            entry.update(adapters=list(prep.get("adapters", [])), jdks=list(prep.get("jdks", [])))
+            artifacts.append(entry)
+            continue
         items = [{k: a[k] for k in ("coordinates", "url", "sha256") if k in a}
                  for a in prep.get("artifacts", []) if a["revision"] == name]
         entry = {"revision": name, "route": prep["route"], "repository": history["repository"],
@@ -113,7 +141,7 @@ def run(attempt, network=True, folder=None, case="simplematch"):
     spec = CASES[case]
     source = Path(folder) if folder else spec["folder"]
     folder = case_copy(source, attempt / "case")
-    p = plan(folder, network=network, example=spec["example"])
+    p = plan(folder, task=spec.get("task", "replay"), network=network, example=spec["example"])
     prepared, preparations = {}, []
     for revision in p.revisions:
         r = runtime.prepare(p, revision, attempt / "prepare" / revision)
@@ -127,7 +155,8 @@ def run(attempt, network=True, folder=None, case="simplematch"):
                              "classpath": [{"path": a.path, "role": a.role, "sha256": a.sha256, "origin": a.origin}
                                            for a in r.artifacts if a.path in r.classpath],
                              "target": r.source.get("target"), "checkout": r.source.get("checkout"),
-                             "built": r.source.get("built"),
+                             "built": r.source.get("built"), "mutant": r.source.get("mutant"),
+                             "mutantBuild": r.toolchain.get("mutant"),
                              "upstream": {k: v for k, v in (r.toolchain.get("upstream") or {}).items()
                                           if k in ("jdk", "maven", "wrapper", "argv", "resolution")}})
     records = runtime.run_controls(p, prepared, attempt / "controls")
@@ -166,7 +195,8 @@ def run(attempt, network=True, folder=None, case="simplematch"):
                   for x in records_out)
           and all(agreement.get(r) for r in p.revisions))
     titles = {"simplematch": "runtime R5: PatternMatchUtils.simpleMatch, published spring-core",
-              "numbers": "runtime R2: ArithmeticUtils.pow, commons-numbers built from its pinned commits"}
+              "numbers": "runtime R2: ArithmeticUtils.pow, commons-numbers built from its pinned commits",
+              "simplematch-mutant": "runtime R2: a constructed mutant of published spring-core 5.3.19's simpleMatch"}
     summary = {"slice": titles[case], "case": case, "caseFolder": {"from": str(source), "copy": str(folder)}, "ok": ok, "expectedProblems": expected,
                "network": network, "plan": p.as_dict(), "preparations": preparations, "records": records_out,
                "jdksAgree": agreement, "ingestion": ingestion,

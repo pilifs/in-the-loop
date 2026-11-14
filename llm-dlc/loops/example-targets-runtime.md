@@ -503,10 +503,85 @@ Small unit and JVM conformance checks run inline.
 - Rerun as job `20261114-174017-example-targets-runtime-r2-the-upstream`. Expected: as before, with each classpath
   exactly the original, the adapter and the driver, since commons-numbers-core has no compile or runtime dependency.
   Result pending.
-- Next:
-  1. The rerun's result.
-  2. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
-- Status: working
+- 2026-11-14, **the rerun passed**: `20261114-174017-example-targets-runtime-r2-the-upstream`, at `44bfe0ec`,
+  collected as `tlmknmsz`, in 57.5 s with a peak of 783 MiB.
+  - Each commit's classpath is now exactly the original, the adapter and the driver. The listing is empty, as
+    commons-numbers-core has no compile or runtime dependency, and the recorded command ends `-DincludeScope=runtime`.
+  - As before, before disagrees with the oracle at `pow(-2, 31)` alone and after nowhere, on JDK 21 and 25, which
+    agree. The test-scope finding is closed.
+- The integration report of 2026-11-14 17:28 again shows conflicts only in generated files (`llm-dlc/README.md`,
+  `llm-dlc/index.json`, `llm-dlc/traces/README.md`, `llm-dlc/traces/metrics.json`). None of them is runtime's, and
+  the script didn't run.
+- 2026-11-14, **constructed mutants prepared**, replacing the Unsupported in `lock`. The entry is workflow's W1 shape:
+  `mutant: {base: {revision, commit | fixture, published?}, patch: {path, sha256}, description}`, with nothing of the
+  revision's own. A mutant is never prepared as its base unpatched.
+  - **The lock**, offline:
+    - it rehashes the patch and refuses a mismatch ("a changed mutant is a different control");
+    - it reads the files the patch modifies, counting hunk lines, so a removed line that reads `--- x` is never taken
+      for a header;
+    - it refuses a patch that creates, deletes, renames, re-modes or binary-patches a file, a path out of the root, an
+      entry with a commit, fixture or JARs of its own, and a missing description;
+    - it locks the base as its route does.
+
+    The identity is `mutant:<base identity>+<patch sha256>`. The source keeps the base, the patch, the files, the
+    description and the scope `constructed-mutation`.
+  - **The preparation**: `git apply`, checked first with `--check`, through the new `runtime_upstream.apply_patch`.
+    It records each file's sha256 before and after, and refuses a file left unchanged. It sets
+    `GIT_CEILING_DIRECTORIES`, so an enclosing repository (this one, for an attempt directory inside it) is never
+    consulted. A patch that doesn't apply is a `mutant` blocker, whose next action is to rewrite the patch and
+    record its new sha256.
+    - **Fixture route**: the base fixture is copied, rechecked and patched, then built by the recipe.
+    - **Upstream-build route**: the base commit's checkout is patched, then built by the recipe. The build must leave
+      the checkout as patched: a file the build changes again is a `build` blocker.
+    - **Published-artifact route**: the base's JARs are acquired, and the base commit is checked out from github.com
+      (the sidecar's linkage) and patched. The patched Java files are compiled against the published JARs, with the
+      base classes' `--release` (from their class-file version) and debugging flags (`-g` and `-parameters`, from
+      the attributes they record). Their classes replace the base JAR's own in a copy of it (`mutant/<name>.jar`,
+      entry order and dates kept). The base JAR stays an artifact, with role `base`, off the classpath. Refused: a
+      signed base JAR, release-specific copies of a patched class, a patched file whose class the JAR doesn't hold, a
+      base nested class the recompile doesn't give (it would stay stale), and debugging attributes that differ from
+      the base's. The same files are also compiled unpatched, and recorded (`unpatchedRecompile`), to show how far
+      the compiler alone moves the bytes.
+  - The verifier's scope names each mutant's base, patch and description under the label `constructed-mutation`.
+  - **Tests**: `test_runtime.py` 63, `test_runtime_upstream.py` 22. They cover:
+    - Phase 0's own patch from after to mutant (its sha256 is the one `build_fixtures.py` records): applied to
+      `gate/after` by the fixture route, it gives `build_fixtures.py`'s `mutant.jar` byte for byte, and the base stays
+      untouched;
+    - on the published route, the recompiled `Gate.class` is that JAR's own, `RegexGate` is the base's, and the
+      unpatched recompile is identical;
+    - the mutation pair `(after, mutant)` replays as the fixture's recorded controls on all three routes: the mutant
+      fails at 65, and after passes;
+    - eleven refusals at the lock, a patch against the wrong base, a build that rewrites the patched file, offline
+      acquisition, a stale nested class, a non-Java change on the published route, and the verifier's scope.
+
+    The integration script exits 0: contract 8 pass and 8 skip, targets suite 125, `test_build` 190, `test_pipeline`
+    29.
+- **The job**: `20261114-180443-example-targets-runtime-r2-a-constructed`, the published route on real bytes.
+  - `runtime_simplematch/mutation.json` declares a mutant of 5.3.19, in W1's sidecar shape. It stays beside
+    `target.json` because Phase 0's schema has no `mutant`, and `runtime_slice.py` merges it into the plan. Its patch,
+    `mutant/suffix-anywhere.patch`, makes `simpleMatch`'s suffix branch use `contains` in place of `endsWith`.
+  - `runtime_slice.py --case simplematch-mutant` prepares 5.3.19 and the mutant, then replays both.
+  - Expected: the mutant disagrees with the oracle at `("*bc","bcx")`, `("a*c*e","abced")` and `("*a*b","acba")`,
+    5.3.19 nowhere, and JDK 21 and 25 agree.
+  - Notes, not evidence:
+    - the patch was written against `PatternMatchUtils.java` from Maven Central's `spring-core-5.3.19-sources.jar`,
+      checked against Central's `.sha1`, and `git apply --check` accepts it there;
+    - the three disagreements are a Python model's prediction;
+    - an inline recompile of the unpatched file with javac 25 records the published class's attributes and parameter
+      names (`pattern`, `str`, in MethodParameters), but isn't byte-identical to it.
+
+  Result pending.
+- For review:
+  - A mutant's JAR has the role `original`, the slot under test, because the controls and the verifier read that role.
+    Its origin starts `constructed:`, and its record and scope say what it is.
+  - On the published route, the commit's source being the JAR's is the sidecar's linkage, recorded and not checked.
+    The mutant differs from its base by the patch and by the compiler, and `unpatchedRecompile` shows the compiler's
+    share.
+  - **For the merge**: once W1's schema is in, `mutation.json` moves into the slice's `target.json` as it is.
+    Positive's 306 can then declare its `drop-prefix.patch` as a W1 `mutant` of `release-after`, which is A4's
+    "nearby constructed mutation" on this path. Positive's interface request 1 asked for that, and W1 now has the
+    schema for it.
+- Status: waiting on jobs ID 20261114-180443-example-targets-runtime-r2-a-constructed
 
 ## Loop settings
 

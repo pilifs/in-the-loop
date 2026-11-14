@@ -4,7 +4,8 @@ with them: the source lock and the fixture route's preparation (R1), the publish
 acquisition and cache (R2, against a local stand-in for Maven Central: nothing here uses the network) and the
 separate-JVM controls (R4), on a copy of Phase 0's fixtures; and R5's slice (runtime_slice.py on runtime_simplematch/,
 the published spring-core JARs, run from a private copy of their acquisition cache entries, skipped when the cache
-doesn't hold them); and run_verifier (R3), against a stand-in jvmcontract that records how it was called:
+doesn't hold them); constructed mutants on the fixture route (the published and upstream routes' are
+test_runtime_upstream.py's); and run_verifier (R3), against a stand-in jvmcontract that records how it was called:
 the real verifier runs proofs, so runtime_calibrate.py runs it as a pipeline job.
 
   python3 examples/tools/targets/test_runtime.py
@@ -477,6 +478,132 @@ class PublishedTest(FixtureCopy):
         self.assertEqual(problems, {"before": {(97,)}, "after": {()}}, "the published JARs replay as the fixture's")
 
 
+def fixture_patch():
+    """build_fixtures.py's own patch from after to mutant (its manifest records the sha256), as git apply -p1 reads it
+    in the after fixture's directory."""
+    import difflib
+    after = (FIXTURES / "gate/after/fixture/Gate.java").read_text().splitlines(keepends=True)
+    mutant = (FIXTURES / "gate/mutant/fixture/Gate.java").read_text().splitlines(keepends=True)
+    return "".join(difflib.unified_diff(after, mutant, "after/fixture/Gate.java", "mutant/fixture/Gate.java"))
+
+
+def mutant_entry(folder, text=None, name="gate/mutant.patch", base="after", **extra):
+    """W1's entry for a constructed mutant of the fixture's `base` (`mutant.base` with the base's fixture, its patch
+    by path and sha256), its patch written into the folder."""
+    (Path(folder) / name).write_text(fixture_patch() if text is None else text)
+    return {"revision": "mutant", "route": "fixture", "repository": "https://github.com/pilifs/in-the-loop",
+            "mutant": {"base": {"revision": base, "fixture": f"gate/{base}"},
+                       "patch": {"path": name, "sha256": runtime.sha256(Path(folder) / name)},
+                       "description": "the fix normalizes one side only: 65 allowed again"},
+            "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"], "jdks": ["21", "25"], **extra}
+
+
+def mutant_plan(folder, entries, revisions=("mutant",), task="mutant-replay"):
+    return interfaces.TaskPlan(
+        example="999", task=task, kind="replay", relation="security", target="fixture.Gate#allowed(I)Z",
+        revisions=tuple(revisions), claim={"task": task}, prerequisites=(), artifacts=tuple(entries),
+        tools={"required": ["java", "javac", "git"], "optional": []}, engine=None, gaps=None, expected=None,
+        outputs={"receipts": f"receipts/{task}"}, folder=str(folder))
+
+
+class MutantTest(FixtureCopy):
+    """A constructed mutant (workflow's W1 entry) on the fixture route: its base's sources copied, patched with git
+    apply, and built by the recipe. The upstream-build and published-artifact routes are test_runtime_upstream.py's."""
+
+    def plan(self, **kw):
+        return mutant_plan(self.folder, [mutant_entry(self.folder, **kw)])
+
+    def test_a_mutants_lock_hashes_its_patch_reads_its_files_and_locks_its_base_offline(self):
+        entry = mutant_entry(self.folder)
+        self.assertEqual(entry["mutant"]["patch"]["sha256"], manifest()["mutant"]["patchSha256"],
+                         "the patch is Phase 0's own, as build_fixtures.py records it")
+        locked = runtime.lock(mutant_plan(self.folder, [entry]), "mutant")
+        self.assertEqual(locked.stage, "source-locked", locked.diagnostic)
+        self.assertEqual(locked.commit, f"mutant:fixture:gate/after+{entry['mutant']['patch']['sha256']}")
+        m = locked.source["mutant"]
+        self.assertEqual((m["base"]["revision"], m["base"]["identity"], m["files"]),
+                         ("after", "fixture:gate/after", ["fixture/Gate.java"]))
+        self.assertEqual(locked.source["fixture"], "gate/after")
+        self.assertIn("constructed mutant", locked.source["provenance"])
+        self.assertEqual(m["scope"], runtime.SCOPES["constructed-mutation"])
+        self.assertFalse(self.work.exists(), "a lock builds nothing")
+
+    def test_the_patched_base_builds_the_fixtures_own_mutant_byte_for_byte_and_the_folder_stays_as_it_was(self):
+        before = runtime.sha256(self.folder / "gate/after/fixture/Gate.java")
+        prepared = runtime.prepare(self.plan(), "mutant", self.work / "mutant")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        original = next(a for a in prepared.artifacts if a.role == "original")
+        self.assertEqual(original.sha256, manifest()["jars"]["mutant"]["sha256"],
+                         "after patched is build_fixtures.py's mutant.jar")
+        self.assertTrue(original.origin.startswith("constructed: gate/after with the patch gate/mutant.patch"))
+        applied = prepared.source["mutant"]["applied"]["files"]
+        self.assertEqual(applied, [{"path": "fixture/Gate.java", "before": before,
+                                    "after": runtime.sha256(FIXTURES / "gate/mutant/fixture/Gate.java")}])
+        self.assertEqual(runtime.sha256(self.folder / "gate/after/fixture/Gate.java"), before, "the base is untouched")
+        self.assertIn("logs/git-apply.log", prepared.logs)
+
+    def test_a_changed_patch_or_one_that_does_not_only_modify_files_is_refused_at_the_lock(self):
+        entry = mutant_entry(self.folder)
+        (self.folder / "gate/mutant.patch").write_text(fixture_patch().replace("DENIED + 32", "DENIED + 31"))
+        refused = runtime.prepare(mutant_plan(self.folder, [entry]), "mutant", self.work / "mutant")
+        self.assertEqual(refused.failedStage, "lock")
+        self.assertIn("a changed mutant is a different control", refused.diagnostic)
+        self.assertFalse((self.work / "mutant").exists(), "nothing is prepared under the old lock")
+        cases = {
+            "creates": ("--- /dev/null\n+++ b/fixture/New.java\n@@ -0,0 +1 @@\n+class New {}\n", "creates or deletes"),
+            "escapes": ("--- a/../x/Gate.java\n+++ b/../x/Gate.java\n@@ -1 +1 @@\n-a\n+b\n", "outside the base"),
+            "renames": ("diff --git a/x b/y\nrename from x\nrename to y\n", "never creates, deletes, renames"),
+            "two files": ("--- a/x\n+++ b/y\n@@ -1 +1 @@\n-a\n+b\n", "don't name one file"),
+            "nothing": ("not a diff\n", "modifies no file"),
+        }
+        for case, (text, why) in cases.items():
+            with self.subTest(case):
+                refused = runtime.lock(mutant_plan(self.folder, [mutant_entry(self.folder, text)]), "mutant")
+                self.assertEqual(refused.failedStage, "lock")
+                self.assertIn(why, refused.diagnostic)
+        for case, change, why in (("own commit", {"commit": COMMIT}, "no upstream identity"),
+                                  ("no description", {"description": ""}, "no description"),
+                                  ("no sha256", {"patch": {"path": "gate/mutant.patch"}}, "records no patch sha256")):
+            with self.subTest(case):
+                entry = mutant_entry(self.folder)
+                if "commit" in change:
+                    entry.update(change)
+                else:
+                    entry["mutant"].update(change)
+                refused = runtime.lock(mutant_plan(self.folder, [entry]), "mutant")
+                self.assertEqual(refused.failedStage, "lock")
+                self.assertIn(why, refused.diagnostic)
+
+    def test_a_hunk_line_that_reads_like_a_header_is_not_one(self):
+        # the hunk removes the line "-- a/x" and adds "++ b/y": counted, they are its lines, not a second file's header
+        text = "--- a/f.txt\n+++ b/f.txt\n@@ -1,2 +1,2 @@\n--- a/x\n+++ b/y\n same\n"
+        self.assertEqual(runtime._patch_files(text, "t"), ["f.txt"])
+
+    def test_a_patch_that_does_not_apply_to_its_base_is_a_mutant_blocker(self):
+        prepared = runtime.prepare(self.plan(base="before"), "mutant", self.work / "mutant")
+        self.assertEqual(prepared.failedStage, "mutant", prepared.diagnostic)
+        self.assertIn("git-apply-check failed", prepared.diagnostic)
+        self.assertIn("rewrite the patch against the base revision", prepared.source["blocker"]["next"])
+        self.assertFalse(any(a.role == "original" for a in prepared.artifacts), "the base is never built unpatched")
+
+    def test_the_mutation_pair_runs_in_its_own_jvms_and_the_mutant_fails_the_oracle_the_base_passes(self):
+        if not {"21", "25"} <= set(runtime_jdk.homes()):
+            self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
+        after = pair_plan(self.folder, ("after",)).artifacts[0]
+        plan = mutant_plan(self.folder, [after, mutant_entry(self.folder)], revisions=("after", "mutant"))
+        attempt = self.work / "attempt"
+        prepared = {r: runtime.prepare(plan, r, attempt / "prepare" / r) for r in plan.revisions}
+        self.assertEqual({r: p.stage for r, p in prepared.items()}, {"after": "artifacts-ready", "mutant": "artifacts-ready"})
+        records = runtime.run_controls(plan, prepared, attempt / "controls")
+        problems = {}
+        for r in records:
+            self.assertEqual((r.status, r.exitCode), ("exited", 0))
+            self.assertEqual(r.identities["commit"], prepared[r.revision].commit)
+            problems.setdefault(r.revision, set()).add(
+                tuple(c for c, _ in oracle().check([json.dumps(o) for o in r.observations])))
+        self.assertEqual(problems, {"after": {()}, "mutant": {(65,)}}, "as the fixture's recorded controls")
+
+
 class MavenTest(unittest.TestCase):
     def test_coordinates_and_urls(self):
         self.assertEqual(runtime_maven.central_url("org.springframework:spring-core:5.3.18"),
@@ -718,6 +845,21 @@ class SliceTest(unittest.TestCase):
                               (f"org.springframework:spring-jcl:{version}", "dependency")])
             self.assertEqual(locked.source["linkage"]["tag"], f"v{version}")
             self.assertEqual(locked.source["driver"]["main"], "slice.driver.SimpleMatchDriver")
+
+    def test_the_mutation_file_plans_a_constructed_mutant_of_5_3_19_that_locks_offline_and_never_prepares_offline(self):
+        import runtime_slice
+        p = runtime_slice.plan(task="mutant-replay", network=False)
+        self.assertEqual(p.revisions, ("r5-3-19", "mutant"))
+        locked = runtime.lock(p, "mutant")
+        self.assertEqual(locked.stage, "source-locked", locked.diagnostic)
+        self.assertEqual(locked.source["mutant"]["base"]["identity"], runtime.lock(p, "r5-3-19").commit)
+        self.assertEqual(locked.source["mutant"]["files"],
+                         ["spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"])
+        self.assertEqual([i["coordinates"] for i in locked.source["published"]],
+                         ["org.springframework:spring-core:5.3.19", "org.springframework:spring-jcl:5.3.19"])
+        with tempfile.TemporaryDirectory() as d:
+            prepared = runtime.prepare(p, "mutant", Path(d) / "mutant")
+        self.assertEqual(prepared.failedStage, "acquire", "its sources are checked out from github.com, never offline")
 
     def test_offline_with_nothing_cached_is_a_blocker_at_acquire_with_its_next_action(self):
         mock.patch.object(runtime_maven, "CACHE", self.dir / "empty").start()
@@ -1057,12 +1199,17 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(record.identities["scope"]["revisions"]["after"]["parameters"],
                          {"names": ["code"], "recordedIn": "MethodParameters"})
 
-    def test_a_mutant_entry_is_never_prepared_as_its_base(self):
-        plan = dataclasses.replace(verifier_plan(self.folder), artifacts=({
-            **verifier_plan(self.folder).artifacts[0], "mutant": {"base": {"revision": "after"}, "patch": {}}},))
-        value = runtime.prepare(plan, "after", self.work / "mutant")
-        self.assertIsInstance(value, interfaces.Unsupported)
-        self.assertIn("constructed mutant", value.reason)
+    def test_a_mutants_proof_is_scoped_as_a_constructed_mutation_naming_its_base_and_patch(self):
+        entry = mutant_entry(self.folder)
+        plan = dataclasses.replace(verifier_plan(self.folder), task="mutant-security", revisions=("mutant",),
+                                   artifacts=(entry,))
+        prepared, record = self.verify(plan)
+        scope = record.identities["scope"]
+        self.assertEqual(scope["label"], "constructed-mutation")
+        self.assertEqual(scope["revisions"]["mutant"]["mutant"]["patch"], entry["mutant"]["patch"])
+        self.assertEqual(scope["revisions"]["mutant"]["mutant"]["base"]["revision"], "after")
+        self.assertTrue(scope["revisions"]["mutant"]["origin"].startswith("constructed:"))
+        self.assertEqual(record.identities["commits"]["mutant"], prepared["mutant"].commit)
 
     def test_the_calibration_job_reads_each_verdict_against_the_fixtures_expectation(self):
         import runtime_calibrate

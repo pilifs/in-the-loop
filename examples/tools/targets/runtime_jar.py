@@ -10,6 +10,7 @@ class-file reader, offline; nothing here runs Java. Runtime stream's.
     feature_needed(jar)               the oldest Java feature release that loads every class in it (major - 44)
     methods(class_bytes)              {(name, descriptor)} a class declares
     references(class_bytes)           {(owner, name, descriptor)} the method references in its constant pool
+    debug_attributes(class_bytes)     the debugging attributes it records: which javac flags made it
 """
 
 import hashlib
@@ -212,6 +213,43 @@ def _names(pool, access, descriptor, attributes):
         names.append(table.get(slot))
         slot += 2 if t in ("J", "D") else 1
     return (names, "LocalVariableTable") if all(names) else (fallback, None)
+
+
+DEBUG_ATTRIBUTES = ("SourceFile", "LineNumberTable", "LocalVariableTable", "MethodParameters")
+
+
+def debug_attributes(data):
+    """The debugging attributes a class records anywhere (on the class, a method, or a method's Code), of
+    DEBUG_ATTRIBUTES: which javac flags made it (`-g` for the LocalVariableTable, `-parameters` for MethodParameters;
+    javac's default gives SourceFile and LineNumberTable)."""
+    pool, offset = _pool(data)
+    found = set()
+    offset += 6
+    offset += 2 + 2 * struct.unpack_from(">H", data, offset)[0]
+
+    def attributes(at, inside_code=False):
+        count = struct.unpack_from(">H", data, at)[0]
+        at += 2
+        for _ in range(count):
+            attr, length = struct.unpack_from(">HI", data, at)
+            name = _utf8(pool, attr)
+            if name in DEBUG_ATTRIBUTES:
+                found.add(name)
+            if name == "Code" and not inside_code:
+                code = at + 6
+                code += 8 + struct.unpack_from(">I", data, code + 4)[0]
+                code += 2 + 8 * struct.unpack_from(">H", data, code)[0]
+                attributes(code, True)
+            at += 6 + length
+        return at
+
+    for _ in ("field", "method"):
+        count = struct.unpack_from(">H", data, offset)[0]
+        offset += 2
+        for _ in range(count):
+            offset = attributes(offset + 6)
+    attributes(offset)
+    return found
 
 
 def references(data):

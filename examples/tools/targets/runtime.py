@@ -27,8 +27,16 @@ ordered classpath, the JDK (by full path, `release` file and `java -version`) an
 recorded in the PreparedTarget and in `prepared.json` in the work directory.
 
 A failed preparation's `source` also carries a `blocker` for the handoff: the stage, the command that failed (or the
-one that runs the preparation), the diagnostic, the semantics it needs and the next action. An artifact entry naming
-a constructed `mutant` (workflow's W1) is Unsupported until its preparation is implemented: never its base unpatched.
+one that runs the preparation), the diagnostic, the semantics it needs and the next action.
+
+A constructed `mutant` (workflow's W1: a base revision, a patch by path and sha256, and the mutation in words) is
+prepared on its base's route, never as its base unpatched. Its lock checks the patch's sha256 and reads the files it
+modifies (modifications of existing text files only). Its preparation applies the patch with `git apply`: to a copy of
+the base fixture, built by the fixture recipe; to the base commit's checkout, built by the recorded recipe
+(upstream-build); or to the base commit's checkout, whose patched Java files are compiled against the base's published
+JARs, their classes put in place of the base JAR's own in a copy of it (published-artifact). Its identity is
+`mutant:<base>+<patch sha256>`, and its record keeps the base, the patch, each file's bytes before and after, and the
+scope `constructed-mutation`.
 
 The verifier (R3) runs jvmcontract on the prepared original artifacts only, never the adapter or driver, and records
 what its result is about: a scope label (original bytecode, original bytecode under models, a constructed mutation, a
@@ -96,6 +104,9 @@ NEEDS = {
     "target": ("the selected method, by name and descriptor, in the original artifact", "check the task's target "
                "against the artifact's classes (javap -cp ARTIFACT CLASS)"),
     "adapter": ("an adapter that invokes the selected original method", "make the adapter call the target method"),
+    "mutant": ("the mutant's patch applying to its base's sources, and the patched sources building into the base's "
+               "artifact", "rewrite the patch against the base revision and record its new sha256 in target.json: a "
+               "changed patch is a different mutant, with a new claim"),
 }
 
 
@@ -293,6 +304,122 @@ LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published, "upstr
 ROUTES_TO_COME = {}  # a route named here is Unsupported (not implemented yet), never a stub
 
 
+# -- constructed mutants (workflow's W1): the base's sources patched, then built; never the base unpatched
+
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
+HUNK = re.compile(r"^@@ -\d+(?:,(\d+))? \+\d+(?:,(\d+))? @@")
+# Header lines of a git diff that create, delete, rename, copy, re-mode or binary-patch a file: a mutant's patch only
+# modifies the text of files its base already has.
+NOT_A_MODIFICATION = ("new file mode", "deleted file mode", "rename from", "rename to", "copy from", "copy to",
+                      "old mode", "new mode", "GIT binary patch", "Binary files ")
+MUTANT_HOW = {
+    "fixture": "the base's fixture sources copied, patched there, and built by the fixture recipe",
+    "published-artifact": "the base commit's sources checked out from github.com and patched, the patched Java files "
+                          "compiled against the base's published JARs, and their classes put in place of the base "
+                          "JAR's own in a copy of it; every other class is the published JAR's",
+    "upstream-build": "the base commit checked out from github.com, patched, and built there by the recorded recipe",
+}
+
+
+def _patch_files(text, what):
+    """The files a unified diff modifies (git apply's -p1: each header path's first component dropped), in order;
+    refused unless it only modifies existing text files inside the source root, with both header paths agreeing."""
+    lines, files, i = text.splitlines(), [], 0
+    while i < len(lines):
+        line = lines[i]
+        hunk = HUNK.match(line)
+        if hunk:  # a hunk's lines are counted, so a removed line that reads "--- x" is never taken for a header
+            old, new = (int(g) if g is not None else 1 for g in hunk.groups())
+            i += 1
+            while (old > 0 or new > 0) and i < len(lines):
+                tag = lines[i][:1]
+                if tag in (" ", ""):
+                    old, new = old - 1, new - 1
+                elif tag == "-":
+                    old -= 1
+                elif tag == "+":
+                    new -= 1
+                elif tag != "\\":
+                    raise Refused("lock", f"{what}: a hunk ends early at line {i + 1}: not a well-formed unified diff")
+                i += 1
+            continue
+        if line.startswith(NOT_A_MODIFICATION):
+            raise Refused("lock", f"{what}: {line.strip()!r}: a mutant's patch only modifies the text of files its base "
+                                  f"has, never creates, deletes, renames or re-modes one")
+        if line.startswith("--- ") and i + 1 < len(lines) and lines[i + 1].startswith("+++ "):
+            old_path, new_path = (h[4:].split("\t")[0].strip() for h in lines[i:i + 2])
+            if "/dev/null" in (old_path, new_path):
+                raise Refused("lock", f"{what}: it creates or deletes a file ({old_path} -> {new_path})")
+            stripped = [p.split("/", 1)[1] if "/" in p else "" for p in (old_path, new_path)]
+            if stripped[0] != stripped[1] or not stripped[0]:
+                raise Refused("lock", f"{what}: its headers {old_path} and {new_path} don't name one file (git apply -p1)")
+            path = Path(stripped[0])
+            if path.is_absolute() or ".." in path.parts:
+                raise Refused("lock", f"{what}: {stripped[0]} leads outside the base's source root")
+            files.append(path.as_posix())
+            i += 2
+            continue
+        i += 1
+    if not files:
+        raise Refused("lock", f"{what}: it modifies no file")
+    if len(set(files)) != len(files):
+        raise Refused("lock", f"{what}: it names a file twice")
+    return files
+
+
+def _lock_mutant(plan, revision, entry, folder):
+    """A constructed mutant's lock, offline: its patch hashed and checked against the recorded sha256, the files it
+    modifies read from it, and its base locked as that route locks it (from W1's entry: `mutant.base` carries the
+    base's commit or fixture, and on the published route its `published` JARs). The mutant has no upstream identity
+    of its own: its identity is the base's and the patch's, `mutant:<base>+<patch sha256>`."""
+    m, route = entry.get("mutant"), entry.get("route")
+    what = f"revision {revision}'s mutant"
+    if not isinstance(m, dict):
+        raise Refused("lock", f"{what} is not an object")
+    base, patch, description = m.get("base"), m.get("patch"), m.get("description")
+    if not isinstance(base, dict) or not isinstance(base.get("revision"), str) or not base["revision"]:
+        raise Refused("lock", f"{what} names no base revision")
+    if not isinstance(patch, dict) or not isinstance(patch.get("sha256"), str) or not SHA256.match(patch["sha256"]):
+        raise Refused("lock", f"{what} records no patch sha256: a mutant is its base and the patch's exact bytes")
+    if not isinstance(description, str) or not description.strip():
+        raise Refused("lock", f"{what} has no description of the mutation")
+    own = [k for k in ("commit", "fixture", "published", "parent", "tag", "release", "dependencies", *JAR_KEYS)
+           if k in entry]
+    if own:
+        raise Refused("lock", f"{what} carries {', '.join(own)} of its own: a mutant has no upstream identity, only its "
+                              f"base's and its patch's")
+    path = _inside(folder, patch.get("path"), f"{what}'s patch")
+    if not path.is_file():
+        raise Refused("lock", f"{what}'s patch {patch['path']} is not a file")
+    digest = sha256(path)
+    if digest != patch["sha256"]:
+        raise Refused("lock", f"{what}'s patch {patch['path']} has sha256 {digest}, and the plan locks {patch['sha256']}: "
+                              f"a changed mutant is a different control, never prepared under the old lock")
+    try:
+        files = _patch_files(path.read_text(encoding="utf-8"), f"{what}'s patch {patch['path']}")
+    except UnicodeDecodeError:
+        raise Refused("lock", f"{what}'s patch {patch['path']} is not UTF-8 text") from None
+    if route == "published-artifact":
+        other = [f for f in files if not f.endswith(".java")]
+        if other:
+            raise Refused("lock", f"{what}'s patch modifies {', '.join(other)}: on the published-artifact route only "
+                                  f"Java sources are recompiled into a copy of the base JAR, so a resource or build "
+                                  f"change can't be made; the upstream-build route can")
+        if not runtime_upstream.REPOSITORY.match(str(entry.get("repository", "")).removesuffix(".git")):
+            raise Refused("lock", f"{what}: its sources are checked out from the repository, and "
+                                  f"{entry.get('repository')!r} is not an https repository on github.com")
+    base_name = base["revision"]
+    base_entry = {**{k: v for k, v in entry.items() if k != "mutant"},
+                  **{k: v for k, v in base.items() if k != "revision"}, "revision": base_name}
+    base_commit, base_source = LOCKS[route](plan, base_name, base_entry, folder)
+    source = {**base_source, "revision": revision,
+              "provenance": f"a constructed mutant of {base_name}, never an upstream revision: {MUTANT_HOW[route]}",
+              "mutant": {"base": {"revision": base_name, "identity": base_commit, "provenance": base_source["provenance"]},
+                         "patch": {"path": patch["path"], "sha256": digest}, "files": files,
+                         "description": description, "scope": SCOPES["constructed-mutation"]}}
+    return f"mutant:{base_commit}+{digest}", source
+
+
 def lock(plan, revision):
     """The source lock of one revision: a PreparedTarget at source-locked (nothing fetched or built, every selected
     path inside the folder and hashed), failed at stage `lock`, or Unsupported for a route not implemented yet."""
@@ -305,11 +432,8 @@ def lock(plan, revision):
                                diagnostic=f"revision {revision}: route {route}")
         if route not in LOCKS:
             raise Refused("lock", f"revision {revision} has no known route ({route!r})")
-        if "mutant" in entry:  # never the base prepared unpatched
-            return Unsupported("prepare", RUNTIME, "a constructed mutant's preparation (its base patched, then built) "
-                               "is not implemented yet", stage="lock", diagnostic=f"revision {revision}: {entry['mutant']}")
         folder = Path(plan.folder).resolve()
-        commit, source = LOCKS[route](plan, revision, entry, folder)
+        commit, source = (_lock_mutant if "mutant" in entry else LOCKS[route])(plan, revision, entry, folder)
     except Refused as e:
         return _failed(plan, revision, None, {"route": route}, e, (), ())
     return PreparedTarget(example=plan.example, task=plan.task, revision=revision, commit=commit, stage="source-locked",
@@ -462,13 +586,60 @@ def _add_controls(build, source, folder, workdir, revision, below):
     return classpath, adapter
 
 
+def _mutant_patch(source, folder, workdir):
+    """The mutant's locked patch, copied to workdir/mutant/ and rechecked there: the copy is what is applied."""
+    patch = source["mutant"]["patch"]
+    copy = workdir / "mutant" / Path(patch["path"]).name
+    copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(folder / patch["path"], copy)
+    if sha256(copy) != patch["sha256"]:
+        raise Refused("lock", f"the mutant's patch {patch['path']} changed since it was locked: stale bytes")
+    return copy
+
+
+def _apply_mutant(source, root, patch, workdir, logs):
+    """The patch applied in `root` (runtime_upstream.apply_patch), recorded as the mutant's `applied`."""
+    try:
+        applied = runtime_upstream.apply_patch(runtime_upstream.Steps(workdir, logs), root, patch,
+                                               source["mutant"]["files"], workdir / "home")
+    except runtime_maven.Blocked as b:
+        raise Refused.blocked(b) from None
+    source["mutant"] = {**source["mutant"], "applied": applied}
+    return applied
+
+
+def _fixture_sources(source, folder, workdir, logs):
+    """The fixture revision's sources to compile: for a mutant, its base fixture copied to workdir/mutant/sources
+    (rechecked against the lock) and patched there, with the shared sources from the folder."""
+    files = _files(folder, source["original"])
+    if "mutant" not in source:
+        return files
+    top = (folder / source["fixture"]).resolve()
+    root = workdir / "mutant" / "sources"
+    (workdir / "home").mkdir(exist_ok=True)
+    patch = _mutant_patch(source, folder, workdir)
+    shutil.copytree(top, root)
+    out = []
+    for f, locked in zip(files, source["original"]["files"]):
+        if f.resolve().is_relative_to(top):
+            f = root / f.resolve().relative_to(top)
+            if sha256(f) != locked["sha256"]:
+                raise Refused("lock", f"{locked['path']} changed between its lock and its copy: stale bytes")
+        out.append(f)
+    _apply_mutant(source, root, patch, workdir, logs)
+    return out
+
+
 def _prepare_fixture(plan, revision, locked, workdir):
     source = dict(locked.source)
     folder = Path(plan.folder).resolve()
     build, toolchain = _builder(source, workdir)
     try:
-        original = build.jar("original", build.compile("original", _files(folder, source["original"]), ()),
-                             f"{revision}.jar", "original", f"built from {source['fixture']} by the fixture recipe")
+        sources = _fixture_sources(source, folder, workdir, build.logs)
+        how = (f"constructed: {source['fixture']} with the patch {source['mutant']['patch']['path']} (sha256 "
+               f"{source['mutant']['patch']['sha256']}) applied, built by the fixture recipe" if "mutant" in source
+               else f"built from {source['fixture']} by the fixture recipe")
+        original = build.jar("original", build.compile("original", sources, ()), f"{revision}.jar", "original", how)
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
     except Refused as e:
@@ -510,14 +681,158 @@ def _prepare_published(plan, revision, locked, workdir):
                 (workdir / "logs/acquire.log").write_text("\n".join(log) + "\n")
                 if "logs/acquire.log" not in build.logs:
                     build.logs.append("logs/acquire.log")
-            build.artifacts.append(Artifact(path, item["sha256"], item["role"], coordinates=item["coordinates"],
+            role = "base" if "mutant" in source and item["role"] == "original" else item["role"]
+            build.artifacts.append(Artifact(path, item["sha256"], role, coordinates=item["coordinates"],
                                             origin=item["url"]))
             acquired.append(path)
+        if "mutant" in source:
+            acquired[0] = _published_mutant(plan, source, folder, workdir, build, toolchain, acquired)
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, acquired)
         source["target"] = _check_classpath(plan, workdir, classpath, acquired[0], adapter)
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
+
+
+SIGNATURE = re.compile(r"^META-INF/[^/]+\.(SF|RSA|DSA|EC)$")
+
+
+def _published_mutant(plan, source, folder, workdir, build, toolchain, acquired):
+    """A published-route mutant's JAR: the base commit checked out (runtime_upstream.checkout, by full commit from
+    github.com) and patched; the patched Java files compiled against the base's published JARs, with the --release
+    and debugging flags the base JAR's own classes show; and those classes put in place of the base JAR's own in a
+    copy of it (mutant/<the base JAR's name>). The base JAR stays an artifact (role `base`), off the classpath. That
+    the commit's files are the JAR's sources is the sidecar's linkage, recorded and not checked here."""
+    m = source["mutant"]
+    if not plan.network:
+        raise Refused("acquire", "a published-route mutant's sources are checked out from github.com, and the task's plan "
+                                 "allows no acquisition (network: false)", needs="acquisition",
+                      next="plan the task with acquisition (TaskPlan.network)")
+    patch = _mutant_patch(source, folder, workdir)
+    home, dest, found = workdir / "home", workdir / "checkout", {}
+    home.mkdir(exist_ok=True)
+    steps = runtime_upstream.Steps(workdir, build.logs)
+    source["checkout"] = found
+    try:
+        runtime_upstream.checkout(steps, {"repository": source["repository"], "commit": source["linkage"]["commit"],
+                                          "parent": None}, dest, home, found)
+    except runtime_maven.Blocked as b:
+        raise Refused.blocked(b) from None
+    found.pop("changedByBuild", None)  # nothing is built in this checkout
+    base_jar = workdir / acquired[0]
+    held = runtime_jar.classes(base_jar)
+    signed = [n for n in _jar_names(base_jar) if SIGNATURE.match(n)]
+    if signed:
+        raise Refused("mutant", f"the base JAR {acquired[0]} is signed ({', '.join(signed)}): a copy with recompiled "
+                                f"classes would no longer verify, so no mutant is made of it")
+    tops = {}
+    for f in m["files"]:
+        package = PACKAGE.search((dest / f).read_text(errors="replace"))
+        top = "/".join([*(package.group(1).split(".") if package else []), Path(f).stem])
+        tops[f] = top
+        own = [n for n in held if n == top or n.startswith(top + "$")]
+        if not own:
+            raise Refused("mutant", f"{f} declares {top.replace('/', '.')}, which the base JAR {acquired[0]} doesn't "
+                                    f"hold: the patched file isn't one of the JAR's sources")
+        versioned = [n for n in held if n.startswith("META-INF/versions/") and n.split("/", 3)[3] in own]
+        if versioned:
+            raise Refused("mutant", f"the base JAR holds release-specific copies of {top.replace('/', '.')} "
+                                    f"({', '.join(versioned)}), which one recompile can't replace")
+    expected = {n for n in held for top in tops.values() if n == top or n.startswith(top + "$")}
+    base_bytes = {n: runtime_jar.read_class(base_jar, n) for n in sorted(expected)}
+    release = max(_major(b) for b in base_bytes.values()) - 44
+    debug = set().union(*(runtime_jar.debug_attributes(b) for b in base_bytes.values()))
+    flags = (["-g"] if "LocalVariableTable" in debug else [] if "LineNumberTable" in debug else ["-g:none"]) \
+        + (["-parameters"] if "MethodParameters" in debug else [])
+    empty = workdir / "classes" / "no-sources"
+    empty.mkdir(parents=True)
+
+    def recompile(step, what):
+        classes = workdir / "classes" / step
+        classes.mkdir(parents=True)
+        argv = [str(build.home / "bin/javac"), "--release", str(release), "-encoding", "UTF-8", "-implicit:none",
+                "-proc:none", "-nowarn", "-Xlint:-options", "-sourcepath", str(empty), *flags, "-d", str(classes),
+                "-cp", ":".join(str(workdir / a) for a in acquired), *[str(dest / f) for f in m["files"]]]
+        try:
+            build.run(f"javac-{step}", argv)
+        except Refused as e:
+            raise Refused("mutant", f"the {what} sources don't compile against the base's JARs: {e.diagnostic}",
+                          command=e.command) from None
+        return argv, {p.relative_to(classes).as_posix()[:-6]: p.read_bytes() for p in sorted(classes.rglob("*.class"))}
+
+    # The same files unpatched, compiled the same way: how far the compiler alone moves the base's bytes (recorded).
+    _, unpatched = recompile("unpatched", "unpatched")
+    compiler = [{"class": n, "base": hashlib.sha256(base_bytes[n]).hexdigest(),
+                 "recompiled": hashlib.sha256(unpatched[n]).hexdigest() if n in unpatched else None,
+                 "identical": unpatched.get(n) == base_bytes[n]} for n in sorted(expected)]
+    _apply_mutant(source, dest, patch, workdir, build.logs)
+    argv, made = recompile("mutant", "patched")
+    stale = sorted(expected - set(made))
+    if stale:
+        raise Refused("mutant", f"the recompiled sources give no {', '.join(n.replace('/', '.') for n in stale)}, which "
+                                f"the base JAR holds: the copy would keep the base's stale bytes for them")
+    stray = sorted(n for n in made if not any(n == t or n.startswith(t + "$") for t in tops.values()))
+    if stray:
+        raise Refused("mutant", f"javac wrote {', '.join(stray)}, which no patched file declares")
+    made_debug = set().union(*(runtime_jar.debug_attributes(b) for b in made.values()))
+    if made_debug != debug:
+        raise Refused("mutant", f"the recompiled classes record {sorted(made_debug)}, and the base's {sorted(debug)}: "
+                                f"parameter names and lines would differ from the base's")
+    out = Path("mutant") / Path(acquired[0]).name
+    replaced = _replace_classes(base_jar, workdir / out, made)
+    build.artifacts.append(Artifact(out.as_posix(), sha256(workdir / out), "original",
+                                    origin=f"constructed: {acquired[0]} with {len(made)} class(es) recompiled from "
+                                           f"{', '.join(m['files'])} at {source['linkage']['commit']}, after the patch "
+                                           f"{m['patch']['path']} (sha256 {m['patch']['sha256']})"))
+    toolchain["mutant"] = {"javac": argv, "release": str(release), "flags": flags,
+                           "why": "the --release of the base JAR's own classes (their class-file version) and the "
+                                  "debugging attributes they record, so the recompiled classes differ from the base's "
+                                  "by the patch and the compiler alone (unpatchedRecompile measures the compiler's share)",
+                           "debugAttributes": sorted(debug),
+                           "unpatchedRecompile": {"classes": compiler, "meaning": (
+                               "the patched files compiled unpatched, the same way: where `identical` is false, this "
+                               "compiler alone gives other bytes than the base's for that class, so the mutant differs "
+                               "from the base by the patch and by the compiler; the mutant JAR holds the patched "
+                               "recompile only")}}
+    source["mutant"]["jar"] = {"base": acquired[0], "path": out.as_posix(), "classes": replaced}
+    return out.as_posix()
+
+
+def _major(data):
+    return int.from_bytes(data[6:8], "big")
+
+
+def _jar_names(jar):
+    import zipfile
+    with zipfile.ZipFile(jar) as z:
+        return z.namelist()
+
+
+def _replace_classes(base, out, made):
+    """A copy of the JAR `base` at `out`, entries in their order with their dates, each class in `made` ({internal
+    name: bytes}) in place of its own entry; a class the base doesn't hold (a new nested class) is added after them,
+    dated as its top-level class. [{class, base, mutant}] with each side's sha256 (None where absent)."""
+    import zipfile
+    out.parent.mkdir(parents=True, exist_ok=True)
+    record, done = [], set()
+    with zipfile.ZipFile(base) as zin, zipfile.ZipFile(out, "w") as zout:
+        dates = {}
+        for info in zin.infolist():
+            name = info.filename[:-6] if info.filename.endswith(".class") else None
+            data = zin.read(info)
+            if name in made:
+                record.append({"class": name, "base": hashlib.sha256(data).hexdigest(),
+                               "mutant": hashlib.sha256(made[name]).hexdigest()})
+                data = made[name]
+                done.add(name)
+                dates[name.split("$")[0]] = info.date_time
+            zout.writestr(info, data)
+        for name in sorted(set(made) - done):
+            info = zipfile.ZipInfo(name + ".class", dates.get(name.split("$")[0], (1980, 1, 1, 0, 0, 0)))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            zout.writestr(info, made[name])
+            record.append({"class": name, "base": None, "mutant": hashlib.sha256(made[name]).hexdigest()})
+    return record
 
 
 def _prepare_upstream(plan, revision, locked, workdir):
@@ -530,18 +845,26 @@ def _prepare_upstream(plan, revision, locked, workdir):
     upstream = {}
     try:
         cls = runtime_jar.parse_target(plan.target)[0]
-        recipe = {"repository": source["repository"], "commit": locked.commit,
+        recipe = {"repository": source["repository"], "commit": source["history"]["commit"],
                   "parent": source["history"].get("parent"), **source["upstream"]}
+        patch = None
+        if "mutant" in source:
+            patch = (_mutant_patch(source, folder, workdir), source["mutant"]["files"])
         try:
             built = runtime_upstream.build(recipe, workdir, runtime_jar.internal(cls), build.logs, upstream,
-                                           network=plan.network)
+                                           network=plan.network, patch=patch)
         except runtime_maven.Blocked as b:
             raise Refused.blocked(b) from None
         finally:
             source["checkout"] = upstream.get("checkout")
             source["built"] = upstream.get("outputs")
             toolchain["upstream"] = {**(upstream.get("toolchain") or {}), "steps": upstream.get("steps", [])}
+            if patch and (upstream.get("checkout") or {}).get("patched"):
+                source["mutant"] = {**source["mutant"], "applied": upstream["checkout"]["patched"]}
         for path, digest, role, coords, origin in built:
+            if patch and role == "original":
+                origin = (f"constructed: {origin}, after the patch {source['mutant']['patch']['path']} (sha256 "
+                          f"{source['mutant']['patch']['sha256']}) was applied to the checkout")
             build.artifacts.append(Artifact(path, digest, role, coordinates=coords, origin=origin))
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [p for p, *_ in built])
         source["target"] = _check_classpath(plan, workdir, classpath, built[0][0], adapter)
@@ -840,7 +1163,9 @@ def _scope(plan, sides):
             "revisions": {r: {"commit": p.commit, "loadedFrom": p.source.get("target", {}).get("loadedFrom"),
                               "classSha256": p.source.get("target", {}).get("classSha256"),
                               "origin": next((a.origin for a in p.artifacts if a.role == "original"), None),
-                              "parameters": _parameters(plan, where, p)}
+                              "parameters": _parameters(plan, where, p),
+                              **({"mutant": {k: p.source["mutant"].get(k) for k in ("base", "patch", "description")}}
+                                 if "mutant" in p.source else {})}
                           for r, (where, p, _) in sides.items()},
             "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the "
                        "adapter serves the concrete controls",

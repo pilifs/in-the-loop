@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T17:42:30.357Z",
-  "duration_seconds": 8143,
+  "ended": "2026-11-14T18:06:31.716Z",
+  "duration_seconds": 9584,
   "stats": {
-    "turns": 42,
-    "api_calls": 367,
-    "tool_calls": 377,
-    "tool_errors": 4,
-    "compactions": 8,
-    "peak_context_tokens": 245594,
+    "turns": 47,
+    "api_calls": 436,
+    "tool_calls": 453,
+    "tool_errors": 5,
+    "compactions": 9,
+    "peak_context_tokens": 267209,
     "usage": {
-      "input_tokens": 746,
-      "output_tokens": 386965,
-      "cache_read_input_tokens": 46548853,
-      "cache_creation_input_tokens": 1288489
+      "input_tokens": 884,
+      "output_tokens": 475331,
+      "cache_read_input_tokens": 57420107,
+      "cache_creation_input_tokens": 1546130
     }
   },
   "tools": {
-    "Bash": 318,
-    "Read": 18,
-    "Edit": 17,
+    "Bash": 380,
+    "Edit": 29,
+    "Read": 20,
     "Write": 17,
     "Monitor": 3,
     "ToolSearch": 3,
@@ -173,24 +173,38 @@
     {
       "index": 8,
       "started": "2026-11-14T17:27:26.401Z",
-      "ended": "2026-11-14T17:42:30.357Z",
-      "turns": 4,
-      "api_calls": 41,
+      "ended": "2026-11-14T17:42:49.962Z",
+      "turns": 5,
+      "api_calls": 43,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 27011,
-        "cache_read_input_tokens": 3709340,
-        "cache_creation_input_tokens": 109639
+        "input_tokens": 86,
+        "output_tokens": 28151,
+        "cache_read_input_tokens": 3956090,
+        "cache_creation_input_tokens": 113257
       },
-      "peak_context_tokens": 122825
+      "peak_context_tokens": 126443
+    },
+    {
+      "index": 9,
+      "started": "2026-11-14T17:43:38.547Z",
+      "ended": "2026-11-14T18:06:31.716Z",
+      "turns": 4,
+      "api_calls": 67,
+      "usage": {
+        "input_tokens": 134,
+        "output_tokens": 87226,
+        "cache_read_input_tokens": 10624504,
+        "cache_creation_input_tokens": 254023
+      },
+      "peak_context_tokens": 267209
     }
   ],
   "log": {
-    "sha256": "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2",
-    "bytes": 12121277,
-    "lines": 4087,
-    "gzip_bytes": 2359290,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2.jsonl.gz"
+    "sha256": "505c247f1159e80d46c4626a29e58af0e7637f06647d1eb6c6908931df5b9631",
+    "bytes": 14392411,
+    "lines": 4848,
+    "gzip_bytes": 2749384,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/505c247f1159e80d46c4626a29e58af0e7637f06647d1eb6c6908931df5b9631.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -273,6 +287,14 @@
       "summary": "example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)",
       "body": "The first upstream-build job (20261114-170353, passed) recorded test-scope JARs, JUnit 5.14.4, opentest4j, apiguardian and commons-rng 1.7, as commons-numbers-core's runtime dependencies. runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, but the plugin's descriptor (META-INF/maven/plugin.xml, from the JAR fetched from Maven Central and checked against its .sha1) reads that filter from ${includeScope}. Only the output file is ${mdep.outputFile}. The unknown property was ignored, and the listing was the test classpath. It now passes -DincludeScope=runtime, records the scope, and never passes the plugin's own options through from the recipe. The replay's result stood, since no class was shadowed, but the record misnamed the classpath.\n\nVerified: the test's stand-in Maven now filters by scope as the plugin does, and its default dependencies include a test-scope JAR with the compile JAR's bytes. With the old property name, the ready preparation fails as shadowing; with the fix, test_runtime_upstream.py's 15 tests and the targets suite (111) pass. The real build is rerun as job 20261114-174017-example-targets-runtime-r2-the-upstream, expected to give each commit a classpath of the original, the adapter and the driver alone.",
       "log_sha256": "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2"
+    },
+    {
+      "change_id": "wkkwovlzqrnszuttnmqwquyuyyzwvprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R2: constructed mutants prepared on all three routes, their base patched with git apply, then built (verification pending)",
+      "body": "A W1 mutant entry (a base revision, a patch by path and sha256, the mutation in words) was Unsupported in lock. Now it locks offline: the patch is rehashed against its recorded sha256, the files it modifies are read from it (modifications of existing text files only, hunk lines counted), and the base is locked by its own route. Its identity is mutant:<base>+<patch sha256>, with the scope constructed-mutation. Preparation applies the patch with git apply (checked first, each file's bytes recorded before and after, no enclosing repository consulted) and is never the base unpatched. The fixture route patches a copy of the base fixture, then runs the recipe. The upstream-build route patches the base commit's checkout and builds it, and the build must leave the checkout as patched. The published-artifact route checks out the base commit, compiles the patched Java files against the base's published JARs with the base classes' --release and debugging flags, and puts the classes in place of the base JAR's own in a copy of it. It refuses a signed JAR, release-specific copies of a patched class, a stale nested class and differing debug attributes, and it records an unpatched recompile to show the compiler's share of the difference.\n\nVerified inline. Phase 0's own after-to-mutant patch (the sha256 build_fixtures.py records), applied by the fixture route, gives build_fixtures.py's mutant.jar byte for byte. On the published route the recompiled Gate.class is that JAR's own class. The mutation pair replays as the fixture's recorded controls on all three routes (the mutant fails at 65 on JDK 21 and 25). There are 11 lock refusals and the other blockers are tested. test_runtime.py has 63 tests and test_runtime_upstream.py 22. The integration script exits 0: contract 8 pass and 8 skip, targets suite 125, test_build 190, test_pipeline 29.\n\nJob 20261114-180443-example-targets-runtime-r2-a-constructed runs the published route on real bytes. runtime_simplematch/mutation.json declares a mutant of spring-core 5.3.19 in W1's sidecar shape (beside target.json, since Phase 0's schema has no mutant). Its patch turns simpleMatch's suffix-branch endsWith into contains. The job expects the mutant to disagree with the Javadoc oracle at (*bc, bcx), (a*c*e, abced) and (*a*b, acba), and 5.3.19 nowhere. The earlier rerun 20261114-174017 passed: each commons-numbers classpath is exactly the original, the adapter and the driver, scope runtime. The brief's Progress records both, and its status is now waiting on that job.",
+      "log_sha256": "505c247f1159e80d46c4626a29e58af0e7637f06647d1eb6c6908931df5b9631"
     }
   ],
   "logs": {
@@ -298,6 +320,12 @@
       "bytes": 8844628,
       "lines": 2999,
       "gzip_bytes": 1697164,
+      "url": null
+    },
+    "505c247f1159e80d46c4626a29e58af0e7637f06647d1eb6c6908931df5b9631": {
+      "bytes": 14392411,
+      "lines": 4848,
+      "gzip_bytes": 2749384,
       "url": null
     },
     "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e": {
