@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "70d4b729-3b1f-41d1-a89c-03fd78a71818",
-  "status": "open",
+  "status": "ended",
   "title": "Application-core feature streams exiting early",
   "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.126Z",
-  "ended": "2026-11-14T16:45:42.094Z",
-  "duration_seconds": 4735,
+  "ended": "2026-11-14T16:48:51.417Z",
+  "duration_seconds": 4924,
   "stats": {
-    "turns": 25,
-    "api_calls": 285,
-    "tool_calls": 293,
+    "turns": 30,
+    "api_calls": 296,
+    "tool_calls": 301,
     "tool_errors": 9,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 259463,
     "usage": {
-      "input_tokens": 570,
-      "output_tokens": 357563,
-      "cache_read_input_tokens": 40759267,
-      "cache_creation_input_tokens": 982707
+      "input_tokens": 592,
+      "output_tokens": 365393,
+      "cache_read_input_tokens": 41879125,
+      "cache_creation_input_tokens": 1029243
     }
   },
   "tools": {
-    "Bash": 260,
+    "Bash": 268,
     "Read": 13,
     "Write": 13,
     "Edit": 7
@@ -124,24 +124,38 @@
     {
       "index": 5,
       "started": "2026-11-14T16:36:45.608Z",
-      "ended": "2026-11-14T16:45:42.094Z",
-      "turns": 4,
-      "api_calls": 42,
+      "ended": "2026-11-14T16:46:53.611Z",
+      "turns": 5,
+      "api_calls": 49,
       "usage": {
-        "input_tokens": 84,
-        "output_tokens": 38171,
-        "cache_read_input_tokens": 4140292,
-        "cache_creation_input_tokens": 122000
+        "input_tokens": 98,
+        "output_tokens": 41827,
+        "cache_read_input_tokens": 5116951,
+        "cache_creation_input_tokens": 131047
       },
-      "peak_context_tokens": 135186
+      "peak_context_tokens": 144233
+    },
+    {
+      "index": 6,
+      "started": "2026-11-14T16:47:43.728Z",
+      "ended": "2026-11-14T16:48:51.417Z",
+      "turns": 4,
+      "api_calls": 4,
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 4174,
+        "cache_read_input_tokens": 143199,
+        "cache_creation_input_tokens": 37489
+      },
+      "peak_context_tokens": 50675
     }
   ],
   "log": {
-    "sha256": "0af677ae6c1f4ff4e31ff2612cae1dd766b843c2ba86e73a2fcd9ac28428416c",
-    "bytes": 8549579,
-    "lines": 2850,
-    "gzip_bytes": 1590955,
-    "path": "llm-dlc/traces/70d4b729-3b1f-41d1-a89c-03fd78a71818/logs/0af677ae6c1f4ff4e31ff2612cae1dd766b843c2ba86e73a2fcd9ac28428416c.jsonl.gz"
+    "sha256": "1d3572c4d569a05d3ebb2e5401e4e12094a79d976bef38f3a084f5ea179de860",
+    "bytes": 9091527,
+    "lines": 3018,
+    "gzip_bytes": 1719438,
+    "path": "llm-dlc/traces/70d4b729-3b1f-41d1-a89c-03fd78a71818/logs/1d3572c4d569a05d3ebb2e5401e4e12094a79d976bef38f3a084f5ea179de860.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -178,20 +192,20 @@
       "log_sha256": "e943771275c0ba78e151c2efa40d336c3194a951b701fd56a1f96044681b2a17"
     },
     {
-      "change_id": "nkxllkmuvrnvqlqvrxxtpntryunoysrx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "0af677ae6c1f4ff4e31ff2612cae1dd766b843c2ba86e73a2fcd9ac28428416c"
-    },
-    {
       "change_id": "zuoknplnoqpywrnwmuspmrknsskmlptv",
       "commit_id": null,
       "immutable": false,
       "summary": "example-targets negative N4: CVE-2025-22234 (300) research-only with the 6.3.9 policy as a proposed contract and a source lock; handoffs and acceptance checked",
       "body": "Example 300 (CVE-2025-22234) stays research only and linked to 287. It now keeps three properties apart: 287's blanket rejection of passwords over 72 UTF-8 bytes; the 6.3.9 functional policy of the repair c1aa99fd (encode refuses more than 72 bytes; matching against a valid stored hash never refuses by length and depends only on the first 72 bytes), recorded as a proposed contract, not frozen, in target.json and the README rather than in claims/, where a claim file counts as frozen; and the DaoAuthenticationProvider timing mitigation. No output or call-log equality establishes timing noninterference, and a cost model is outside this wave. A new sources.lock.json records BCrypt.java's blobs at eb013944 -> c1aa99fd and 6.3.8 -> 6.3.9, that c1aa99fd is the only commit in the release window touching crypto's main sources or the provider's package, that the provider, its parent and the delegating encoder are unchanged from 6.3.7 to 6.3.9, and that only BCrypt.hashpw(byte[], String, boolean) differs between the 6.3.8 and 6.3.9 JARs.\n\nDeveloper note, not evidence: 287's driver and oracle were run by hand on the 6.3.9 JAR with spring-jcl 6.1.19 (fetched from Maven Central, sha1 checked, sha256 noted in the lock), on Temurin 21 and 25. Every outcome equals 6.3.7's: overlong candidates sharing a stored password's first 72 bytes authenticate again. So 287's claim fails on 6.3.9 by design, and 287's README and notes now say so. pyca bcrypt 5.0.0 confirms that the repair test's legacy 73-character hash is the hash of the first 72 bytes. Three blockers are predicted for 300: the missing timing oracle or cost model, the provider path's carriers, and 287's Java semantics.\n\nHandoffs and acceptance: no blocker was attempted in this stream (no verifier or capability probe ran; Phase 5 runs them), so no gap packet exists, and all 50 blockers in 285-300 are labelled predicted. All 16 sidecars validate. 285-287 have source locks, frozen claims valid against the workflow stream's schema, the three task relations, probes, oracles whose self-tests pass, mutation patches and drivers, and the workflow planner (W4) plans all 16 tasks. 286 and 287 now mark their release pair selected, as 285 did. llm-dlc/tools/example-targets-integration.sh passes on this workspace. The brief's Status is now done; A3 belongs to Phase 5 after the merge. The latest integration report (16:28) stopped on conflicts in generated shared files (llm-dlc/README.md, index.json, traces/), none of them this stream's.",
       "log_sha256": "0af677ae6c1f4ff4e31ff2612cae1dd766b843c2ba86e73a2fcd9ac28428416c"
+    },
+    {
+      "change_id": "mqnnxzktpvvkpypvzzxwsrttmrnxkskn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the negative stream's last turns, after its last commit zuoknpln, recorded on its branch before the merge. The stream ended done: N1-N4, with 285-287 ready for Phase 5's preparation and 300 research only.\n\nAlso committed: the stream's 8 allow-list proposals in llm-dlc/allowlist.json (long-token false positives, bcrypt test hashes of public test strings), which its last turn made with sync.py allow propose and left uncommitted for the user to approve.",
+      "log_sha256": "1d3572c4d569a05d3ebb2e5401e4e12094a79d976bef38f3a084f5ea179de860"
     }
   ],
   "logs": {
@@ -205,6 +219,12 @@
       "bytes": 1325146,
       "lines": 407,
       "gzip_bytes": 268306,
+      "url": null
+    },
+    "1d3572c4d569a05d3ebb2e5401e4e12094a79d976bef38f3a084f5ea179de860": {
+      "bytes": 9091527,
+      "lines": 3018,
+      "gzip_bytes": 1719438,
       "url": null
     },
     "badab5c257ca61545070c69824ac26ea975340b6183d610831da0dc5d9ce10d4": {
