@@ -226,9 +226,58 @@ Small unit and JVM conformance checks run inline.
   `blocker: Optional[Mapping] = None` would be cleaner. The dependency closure is what the lock declares: no POM is
   resolved (no Maven emulation). A missing dependency shows up as a NoClassDefFoundError in the controls, which is a
   replay failure, not a result.
-- Next: R5's slice on `PatternMatchUtils.simpleMatch` from the pinned spring-core JAR (a runtime-owned test folder,
-  driver and oracle). Then R3's `run_verifier` (needs `jvmcontract` built in this workspace, compiled inline), and the
-  upstream-build route as a job.
+- 2026-11-14, **R5's slice**: `runtime_slice.py` runs one small published upstream method end to end, with
+  `runtime_simplematch/` as its case folder. That folder isn't an example and isn't in the router; its plan uses 315,
+  from this stream's range. The method is `PatternMatchUtils.simpleMatch(String, String)` from spring-core 5.3.18 and
+  5.3.19. The sidecar:
+  - is a valid `example-target/v1`;
+  - names the release tags by full commit, checked with `git ls-remote` (`707a24c4…`, `cedb5874…`);
+  - pins each release's spring-core JAR and spring-jcl, its one compile dependency per its POM, by URL and sha256.
+    `runtime_maven.py pin` recorded each sha256 and checked it against Central's `.sha1`.
+
+  The adapter only calls the method. The driver reads each input as a JSON pair of strings or nulls. The oracle is
+  written from the Javadoc: 45 probes, covering nulls, every pattern style, adjacent stars, backtracking, case, a line
+  break, regex metacharacters and a non-BMP character.
+
+  The path: the sidecar becomes the TaskPlan asked of W1, then `prepare` (acquisition, the checked cache, the adapter
+  and driver built, the classpath checked), then `run_controls`, then `workflow.ingest`, called as `route.run` calls
+  it. Ingestion is still W2's stub, so it answers Unsupported.
+
+  Run inline, once from an empty cache (all 4 JARs fetched from Central and checked) and once `--offline`:
+  - both releases are artifacts-ready, the target loaded from spring-core's JAR;
+  - each release's driver ran in its own JVM on JDK 21 and 25: 4 records, each exited 0 with 45 observations and no
+    oracle problems;
+  - JDK 21 and 25 agree on each release.
+
+  Tests, `test_runtime.py` 43 (4 new):
+  - the sidecar is valid and both releases lock offline;
+  - offline with an empty cache, preparation is a blocker at `acquire` with its command and next action;
+  - the oracle isn't vacuous: it rejects five plausible wrong implementations, and a missing probe raises;
+  - the end-to-end slice runs from a private copy of the four cache entries. It is skipped, never faked, when the
+    cache lacks them.
+
+  The fixture half of R5 is R1, R2 and R4's (the fixture JARs on both routes). The integration script exits 0:
+  contract 8 pass and 8 skip, targets suite 83 (the slice's end-to-end test ran, offline), `test_build` 190,
+  `test_pipeline` 29.
+- Found (for review, the negative and positive streams): `org/springframework/util/PatternMatchUtils.class` is
+  byte-identical in spring-core 5.3.18 and 5.3.19 (sha256 `8562b278…ff28`). The CVE-2022-22968 fix changed
+  `DataBinder`, not this method, so a binder packet that reaches `simpleMatch` has the same callee on both sides.
+- **Note for the positive stream and Phase 5, what 105's migration needs from runtime.** Taken from 105's `README.md`
+  and `example.json`, not checked against upstream:
+  - **Revisions.** The recorded run compared the PR's head `79aa4643` with `e7c172d2`, the commit the squash merge
+    landed on. Both are short SHAs, so the sidecar needs full ones. Neither is a release, so the published-artifact
+    route can't serve that pair. The published route could serve a release pair of `commons-numbers-core`, such as
+    the release before and after the fix, but only once the positive stream shows that `pow(int, int)` is the change
+    between them. That would be a different pair, not the recorded one.
+  - **Build route.** The PR pair needs the upstream-build route: Maven, through the revision's wrapper if it has one,
+    otherwise a pinned Maven distribution fetched by hash, which the route doesn't do yet. 105's historical run
+    compiled `ArithmeticUtils.java` alone with `javac`, because its sandbox refused the Maven build. Reused, that is
+    an extracted source slice, not original bytecode, and needs that scope label.
+  - **JDK and classpath.** The bytecode targets an old release. The controls can run on 21 and 25. The method is
+    `int`-only and has no dependencies, so the classpath is the one JAR. A fixture-shaped `int` driver fits, with
+    `pow(-2, 31)` as the trigger and `k` in {-1, 0, 1} as legitimate inputs.
+- Next: R3's `run_verifier` (needs `jvmcontract` built in this workspace, compiled inline), then the upstream-build
+  route as a job.
 - Status: working
 
 ## Loop settings

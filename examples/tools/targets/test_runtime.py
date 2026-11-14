@@ -2,7 +2,9 @@
 """Tests of runtime.py and its modules (runtime_jdk.py, runtime_jar.py, runtime_maven.py), owned by the runtime stream
 with them: the source lock and the fixture route's preparation (R1), the published-artifact route's hash-pinned
 acquisition and cache (R2, against a local stand-in for Maven Central: nothing here uses the network) and the
-separate-JVM controls (R4), on a copy of Phase 0's fixtures. run_verifier() is still Phase 0's stub, and fails closed.
+separate-JVM controls (R4), on a copy of Phase 0's fixtures; and R5's slice (runtime_slice.py on runtime_simplematch/,
+the published spring-core JARs, run from a private copy of their acquisition cache entries, skipped when the cache
+doesn't hold them). run_verifier() is still Phase 0's stub, and fails closed.
 
   python3 examples/tools/targets/test_runtime.py
 """
@@ -614,6 +616,106 @@ class ControlsTest(FixtureCopy):
         self.assertEqual((value.interface, value.stage), ("run-controls", "workdir"))
         self.assertNotIn(STUB, value.reason)
         self.assertEqual((self.attempt / "controls/notes.txt").read_text(), "mine")
+
+
+class SliceTest(unittest.TestCase):
+    """R5's slice, runtime_slice.py on runtime_simplematch/: PatternMatchUtils.simpleMatch from the published
+    spring-core 5.3.18 and 5.3.19 JARs. Nothing here fetches: the end-to-end test runs from a private copy of the four
+    JARs' cache entries, and is skipped when the acquisition cache doesn't hold them (`runtime_slice.py ATTEMPT`, with
+    the network, fills it)."""
+
+    def setUp(self):
+        import runtime_slice
+        self.slice = runtime_slice
+        self.dir = Path(tempfile.mkdtemp(prefix="test-runtime-slice-"))
+        self.addCleanup(shutil.rmtree, self.dir, True)
+        self.addCleanup(mock.patch.stopall)
+        mock.patch.object(runtime_maven, "FETCH", side_effect=AssertionError("the slice's tests fetched")).start()
+        self.target = json.loads((runtime_slice.FOLDER / "target.json").read_text())
+
+    def private_cache(self):
+        """The four JARs' entries copied from the acquisition cache into one of the test's own, or a skip."""
+        real, cache = runtime_maven.Cache(), self.dir / "cache"
+        for a in self.target["preparation"]["artifacts"]:
+            if not real.path(a["sha256"]).is_file():
+                self.skipTest(f"the acquisition cache holds no {a['coordinates']} (run runtime_slice.py with the network)")
+            runtime_maven.Cache(cache).store(real.path(a["sha256"]), a["sha256"])
+        mock.patch.object(runtime_maven, "CACHE", cache).start()
+        return cache
+
+    def test_the_sidecar_is_valid_and_its_plan_locks_both_releases_offline(self):
+        from targets import sidecar
+        sidecar.check(self.target, self.slice.FOLDER)
+        p = self.slice.plan(network=False)
+        self.assertEqual((p.example, p.kind, p.revisions), ("315", "replay", ("r5-3-18", "r5-3-19")))
+        for revision, version, commit in (("r5-3-18", "5.3.18", "707a24c48b21fc35e8be715afc80f020a24a9714"),
+                                          ("r5-3-19", "5.3.19", "cedb5874b72c3311c8c6e2f03a53537590f2e0dc")):
+            locked = runtime.lock(p, revision)
+            self.assertEqual((locked.stage, locked.commit), ("source-locked", commit), locked.diagnostic)
+            self.assertEqual([(i["coordinates"], i["role"]) for i in locked.source["published"]],
+                             [(f"org.springframework:spring-core:{version}", "original"),
+                              (f"org.springframework:spring-jcl:{version}", "dependency")])
+            self.assertEqual(locked.source["linkage"]["tag"], f"v{version}")
+            self.assertEqual(locked.source["driver"]["main"], "slice.driver.SimpleMatchDriver")
+
+    def test_offline_with_nothing_cached_is_a_blocker_at_acquire_with_its_next_action(self):
+        mock.patch.object(runtime_maven, "CACHE", self.dir / "empty").start()
+        p = self.slice.plan(network=False)
+        prepared = runtime.prepare(p, "r5-3-18", self.dir / "attempt/prepare/r5-3-18")
+        self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "acquire"))
+        blocker = prepared.source["blocker"]
+        self.assertIn("network", blocker["diagnostic"])
+        self.assertTrue(blocker["command"] and blocker["needs"] and blocker["next"], blocker)
+
+    def test_the_oracle_is_not_vacuous(self):
+        """The statement disagrees with plausible wrong implementations on some probe, and a missing probe is a replay
+        problem, never a pass."""
+        oracle = self.slice._oracle(self.slice.FOLDER / "oracle.py")
+        import re as _re
+
+        def lines(decide):
+            return [json.dumps({"input": p, "outcome": "returned", "value": decide(*p)}) for p in oracle.PROBES]
+
+        def glob(pattern, text, flags=_re.DOTALL):
+            if pattern is None or text is None:
+                return False
+            return _re.fullmatch("".join(".*" if c == "*" else _re.escape(c) for c in pattern), text, flags) is not None
+        wrong = {
+            "case-insensitive": lambda p, t: glob(p, t, _re.DOTALL | _re.IGNORECASE),
+            "no line breaks under *": lambda p, t: glob(p, t, 0),
+            "null matches null": lambda p, t: (p is None and t is None) or glob(p, t),
+            "the pattern as a regex": lambda p, t: p is not None and t is not None
+            and _re.fullmatch(p.replace("*", ".*"), t, _re.DOTALL) is not None,
+            "prefix only": lambda p, t: p is not None and t is not None and t.startswith(p.split("*")[0]),
+        }
+        self.assertEqual(oracle.check(lines(oracle.expected)), [])
+        for name, decide in wrong.items():
+            self.assertTrue(oracle.check(lines(decide)), f"the oracle accepts the {name} implementation")
+        with self.assertRaises(ValueError):
+            oracle.check(lines(oracle.expected)[:-1])
+
+    def test_the_slice_runs_both_published_releases_end_to_end_from_the_cache(self):
+        self.private_cache()
+        summary = self.slice.run(self.dir / "attempt", network=False)
+        self.assertTrue(summary["ok"], json.dumps(summary, indent=1)[:3000])
+        for p in summary["preparations"]:
+            self.assertEqual(p["stage"], "artifacts-ready", p)
+            self.assertEqual(p["target"]["loadedFrom"], f"lib/org.springframework/spring-core-{p['revision'][1:].replace('-', '.')}.jar")
+            self.assertEqual(sorted(c["role"] for c in p["classpath"]), ["adapter", "dependency", "driver", "original"])
+            self.assertTrue(all(c["origin"].startswith("https://repo.maven.apache.org/") for c in p["classpath"]
+                                if c["role"] in ("original", "dependency")))
+        oracle = self.slice._oracle(self.slice.FOLDER / "oracle.py")
+        self.assertEqual([(r["revision"], r["jdk"], r["status"], r["observations"], r["problems"], r["replay"])
+                          for r in summary["records"]],
+                         [(rev, jdk, "exited", len(oracle.PROBES), [], "original-jvm")
+                          for rev in ("r5-3-18", "r5-3-19") for jdk in ("21", "25")])
+        self.assertEqual(summary["jdksAgree"], {"r5-3-18": True, "r5-3-19": True})
+        # the records reach workflow's ingestion interface, which is Phase 0's stub until W2
+        self.assertEqual(summary["ingestion"]["records"], 4)
+        self.assertIn("ingest (example-targets-workflow)", summary["ingestion"]["result"])
+        record = json.loads((self.dir / "attempt/controls/controls.json").read_text())["records"][0]
+        self.assertEqual(list(record)[:len(interfaces.ExecutionRecord.__dataclass_fields__)],
+                         list(interfaces.ExecutionRecord.__dataclass_fields__))
 
 
 class StubsFailClosedTest(unittest.TestCase):

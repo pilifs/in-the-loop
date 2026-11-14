@@ -1,0 +1,101 @@
+{
+  "$schema": "../../../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "runtime-slice-simple-match",
+    "family": "runtime-slice",
+    "role": "calibration",
+    "matching": "The runtime stream's vertical slice (R5 of llm-dlc/loops/example-targets-runtime.md): one small published upstream method run through acquisition, preparation and a separate-JVM driver. It checks the route, not a claim. The two releases are the matching-predicates family's release pair, but the method isn't what CVE-2022-22968 changed (DataBinder is), and this is no part of that packet or of the db9a10b positive, which the negative and positive streams own.",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "researchedOn": "2026-11-14",
+    "revisions": {
+      "r5-3-18": {
+        "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
+        "tag": "v5.3.18",
+        "release": "5.3.18",
+        "checked": "git ls-remote on github.com, 2026-11-14: refs/tags/v5.3.18 (annotated, 52c082c3) peels to this commit"
+      },
+      "r5-3-19": {
+        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
+        "tag": "v5.3.19",
+        "release": "5.3.19",
+        "checked": "git ls-remote on github.com, 2026-11-14: refs/tags/v5.3.19 (annotated, 68463808) peels to this commit"
+      }
+    },
+    "pairs": [
+      {
+        "name": "release",
+        "kind": "release",
+        "before": "r5-3-18",
+        "after": "r5-3-19",
+        "selected": true
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "published-artifact",
+    "artifacts": [
+      {
+        "revision": "r5-3-18",
+        "coordinates": "org.springframework:spring-core:5.3.18",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.18/spring-core-5.3.18.jar",
+        "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361"
+      },
+      {
+        "revision": "r5-3-18",
+        "coordinates": "org.springframework:spring-jcl:5.3.18",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.18/spring-jcl-5.3.18.jar",
+        "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e"
+      },
+      {
+        "revision": "r5-3-19",
+        "coordinates": "org.springframework:spring-core:5.3.19",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
+        "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
+      },
+      {
+        "revision": "r5-3-19",
+        "coordinates": "org.springframework:spring-jcl:5.3.19",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
+        "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
+      }
+    ],
+    "jdks": [
+      "21",
+      "25"
+    ],
+    "adapters": [
+      "adapter/slice/adapter/SimpleMatchAdapter.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "release",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "notes": [
+        "Concrete controls only: each release's driver in its own JVM on JDK 21 and 25, on the published spring-core JAR and its one compile dependency, spring-jcl (spring-core's POM at each version, 2026-11-14). The oracle is written from the method's Javadoc."
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "simple-match-driver",
+      "kind": "driver",
+      "path": "driver/slice/driver/SimpleMatchDriver.java"
+    },
+    {
+      "id": "simple-match-oracle",
+      "kind": "oracle",
+      "path": "oracle.py"
+    }
+  ]
+}

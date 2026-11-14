@@ -12,33 +12,38 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T16:00:16.710Z",
-  "duration_seconds": 2009,
+  "ended": "2026-11-14T16:12:04.354Z",
+  "duration_seconds": 2717,
   "stats": {
-    "turns": 15,
-    "api_calls": 86,
-    "tool_calls": 90,
-    "tool_errors": 0,
-    "compactions": 3,
-    "peak_context_tokens": 162980,
+    "turns": 20,
+    "api_calls": 127,
+    "tool_calls": 132,
+    "tool_errors": 3,
+    "compactions": 4,
+    "peak_context_tokens": 167501,
     "usage": {
-      "input_tokens": 172,
-      "output_tokens": 107513,
-      "cache_read_input_tokens": 8943922,
-      "cache_creation_input_tokens": 429979
+      "input_tokens": 254,
+      "output_tokens": 151129,
+      "cache_read_input_tokens": 13107161,
+      "cache_creation_input_tokens": 561270
     }
   },
   "tools": {
-    "Bash": 73,
-    "Edit": 7,
-    "Read": 5,
-    "Write": 5
+    "Bash": 106,
+    "Write": 10,
+    "Edit": 9,
+    "Read": 7
   },
   "files_touched": [
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/runtime_jar.py",
     "examples/tools/targets/runtime_jdk.py",
     "examples/tools/targets/runtime_maven.py",
+    "examples/tools/targets/runtime_simplematch/adapter/slice/adapter/SimpleMatchAdapter.java",
+    "examples/tools/targets/runtime_simplematch/driver/slice/driver/SimpleMatchDriver.java",
+    "examples/tools/targets/runtime_simplematch/oracle.py",
+    "examples/tools/targets/runtime_simplematch/target.json",
+    "examples/tools/targets/runtime_slice.py",
     "examples/tools/targets/test_runtime.py",
     "llm-dlc/loops/example-targets-runtime.md"
   ],
@@ -88,24 +93,38 @@
     {
       "index": 3,
       "started": "2026-11-14T15:49:58.813Z",
-      "ended": "2026-11-14T16:00:16.710Z",
-      "turns": 4,
-      "api_calls": 25,
+      "ended": "2026-11-14T16:00:45.203Z",
+      "turns": 5,
+      "api_calls": 28,
       "usage": {
-        "input_tokens": 50,
-        "output_tokens": 40870,
-        "cache_read_input_tokens": 2773629,
-        "cache_creation_input_tokens": 149794
+        "input_tokens": 56,
+        "output_tokens": 42719,
+        "cache_read_input_tokens": 3266547,
+        "cache_creation_input_tokens": 154315
       },
-      "peak_context_tokens": 162980
+      "peak_context_tokens": 167501
+    },
+    {
+      "index": 4,
+      "started": "2026-11-14T16:01:51.368Z",
+      "ended": "2026-11-14T16:12:04.354Z",
+      "turns": 4,
+      "api_calls": 38,
+      "usage": {
+        "input_tokens": 76,
+        "output_tokens": 41767,
+        "cache_read_input_tokens": 3670321,
+        "cache_creation_input_tokens": 126770
+      },
+      "peak_context_tokens": 139956
     }
   ],
   "log": {
-    "sha256": "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2",
-    "bytes": 3785869,
-    "lines": 1080,
-    "gzip_bytes": 785165,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2.jsonl.gz"
+    "sha256": "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e",
+    "bytes": 4948476,
+    "lines": 1538,
+    "gzip_bytes": 991749,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -132,6 +151,14 @@
       "summary": "example-targets runtime R2: the published-artifact route, hash-pinned acquisition and a rechecked cache",
       "body": "runtime.lock() and prepare() now take route: published-artifact. The lock stays offline. It records the revision's commit as unchecked release linkage, and the JAR and each declared dependency (in classpath order) by fixed coordinates, an allowed URL and a recorded sha256. A dynamic version, a missing hash, a host other than Maven Central or github.com, and a Central URL naming another file are lock blockers. The new runtime_maven.py (stdlib only, so it runs under python3 -I) acquires each JAR from a content-addressed cache that rechecks every restore and moves a corrupt entry aside. On a miss it fetches into a new empty directory and checks the bytes against the lock before caching or using them. A mismatch fails at acquire and is never cached or rebuilt. It fetches only when the plan's network flag allows. The cache log stays out of the PreparedTarget, so a cache hit is reuse, not identity. Every failed preparation now carries source.blocker (stage, command, diagnostic, needed semantics, next action). A missing hash points at 'runtime_maven.py pin G:A:V', which records it after checking Maven Central's .sha1.",
       "log_sha256": "fdc75a261c912094553f1a2d7c6af6e99d8ba6349f105ff6032c5f8cf0e588b2"
+    },
+    {
+      "change_id": "zuzrkvturtxkqttmqnzpqokkykvvtzko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R5: the vertical slice on PatternMatchUtils.simpleMatch from published spring-core",
+      "body": "runtime_slice.py takes one small published upstream method end to end, with runtime_simplematch/ as its case folder (not an example and not in the router; its plan uses 315, from the runtime range). The method is org.springframework.util.PatternMatchUtils#simpleMatch(String,String) from spring-core 5.3.18 and 5.3.19. The sidecar is a valid example-target/v1. It names the release tags by full commit, checked with git ls-remote on github.com. It pins each release's spring-core JAR and spring-jcl (spring-core's one compile dependency, per its POM at that version) by Maven Central URL and sha256. runtime_maven.py pin recorded each sha256 and checked it against Central's .sha1. The adapter only calls the method. The driver reads each input as a JSON pair of strings or nulls and prints the raw outcome. The oracle is written from the Javadoc, not the code: 45 probes over nulls, every pattern style, adjacent stars, backtracking, case, a line break, regex metacharacters and a non-BMP character.\n\nThe path: the sidecar becomes the TaskPlan asked of workflow's W1, then runtime.prepare (hash-checked acquisition and cache, the adapter and driver built, the classpath checked for shadowing and the target method), then run_controls (each release in its own JVM on JDK 21 and 25), then workflow.ingest, called as route.run calls it. Ingestion is still W2's stub, so it answers Unsupported.\n\nVerified inline. The slice was run from an empty cache (the 4 JARs fetched from Central and checked) and again --offline: both releases artifacts-ready, the target loaded from the spring-core JAR, 4 records each exited 0 with 45 observations and no oracle problems, and JDK 21 and 25 agree on each release. test_runtime.py has 43 tests, 4 new: the sidecar validates and both releases lock offline; offline with an empty cache, preparation is an acquire blocker with its command and next action; the oracle rejects five plausible wrong implementations, and a missing probe raises; the end-to-end slice runs from a private copy of the cache entries (skipped, not faked, without them). The integration script exits 0: contract 8 pass and 8 skip, targets suite 83 (the end-to-end slice ran), test_build 190, test_pipeline 29.\n\nProgress also records two things for review. First, PatternMatchUtils.class is byte-identical in the two releases: the CVE-2022-22968 fix changed DataBinder. Second, a note on what 105's migration needs from runtime: the recorded PR pair isn't released, so it needs the upstream-build route (Maven) or a release pair the positive stream would have to justify; the historical single-file javac compile would be an extracted source slice, not original bytecode; the method is int-only with no dependencies, and its controls can run on JDK 21 and 25. Next: R3's run_verifier, then the upstream-build route as a job.",
+      "log_sha256": "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e"
     }
   ],
   "logs": {
@@ -139,6 +166,12 @@
       "bytes": 2347292,
       "lines": 718,
       "gzip_bytes": 480577,
+      "url": null
+    },
+    "7d055e2ba5444978f63b7dd380bec3f9183524c70ca001a8c32225cf2518751e": {
+      "bytes": 4948476,
+      "lines": 1538,
+      "gzip_bytes": 991749,
       "url": null
     },
     "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263": {
