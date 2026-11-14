@@ -33,4 +33,17 @@ What it showed on 2026-11-14:
 - `PatternMatchUtils.class` is byte-identical in the two JARs (sha256 `8562b278…ff28`). The CVE-2022-22968 fix
   between these releases changed `DataBinder`, not this method.
 
+What the mutant job showed (`20261114-180443-example-targets-runtime-r2-a-constructed`, at `b5e28e26`, passed):
+- 5.3.19 and the mutant are artifacts-ready. The mutant's `PatternMatchUtils` was recompiled by javac 25 with
+  `--release 8 -g -parameters`, read off the published class (major 52, with a LocalVariableTable and
+  MethodParameters).
+- On JDK 21 and 25 each, 5.3.19 agrees with the oracle on all 45 probes. The mutant disagrees at `("*bc","bcx")`,
+  `("a*c*e","abced")` and `("*a*b","acba")` alone, each `true` where the statement says `false`. The JDKs agree.
+- The unpatched recompile isn't byte-identical to the published class (`b45705e5…` against `8562b278…`). So the
+  mutant differs from 5.3.19 by the patch and by the compiler. Its class is `93f15dfe…`, its JAR `7887b8fe…`.
+- The job's outputs are in the history under `runtime-mutant/attempt/` (the records, logs and small JARs), but the
+  three spring-core JARs aren't: at 1.4 MiB they exceed jj's snapshot limit (VF-025). Nothing is lost. The two
+  published ones are acquired again by their recorded sha256, and the mutant JAR is rebuilt by the command above.
+  `prepared.json` records its hash and its classes'.
+
 This is a conformance replay of the route, not a claim, and no part of the matching-predicates packets.

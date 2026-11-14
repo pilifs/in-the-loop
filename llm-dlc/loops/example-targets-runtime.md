@@ -581,7 +581,44 @@ Small unit and JVM conformance checks run inline.
     Positive's 306 can then declare its `drop-prefix.patch` as a W1 `mutant` of `release-after`, which is A4's
     "nearby constructed mutation" on this path. Positive's interface request 1 asked for that, and W1 now has the
     schema for it.
-- Status: waiting on jobs ID 20261114-180443-example-targets-runtime-r2-a-constructed
+- 2026-11-14, **the constructed-mutant job passed**: `20261114-180443-example-targets-runtime-r2-a-constructed`, at
+  `b5e28e26`, collected as `msotkvrv`, 6.2 s, peak 197 MiB.
+  - Both revisions are artifacts-ready. The mutant's `PatternMatchUtils` was recompiled from the v5.3.19 commit
+    (`cedb5874`) with the patch applied. The patched file went from `4be3d0c6…` (Central's sources JAR's) to
+    `a2819e26…`. The javac 25 flags were `--release 8 -g -parameters`, taken from the published class.
+  - On JDK 21 and 25, 5.3.19 agrees with the oracle on all 45 probes. The mutant disagrees at exactly the three
+    predicted inputs, `("*bc","bcx")`, `("a*c*e","abced")` and `("*a*b","acba")`, each `true` where the statement
+    says `false`. The JDKs agree on each revision.
+  - The base JAR has role `base` and is off the classpath. The classpath is driver, adapter, the mutant JAR
+    (`7887b8fe…`, class `93f15dfe…`) and spring-jcl.
+  - `unpatchedRecompile` is not identical (`b45705e5…` against the published `8562b278…`), so the mutant differs from
+    its base by the patch and by the compiler, as recorded.
+  - The integration report is still the 17:28 one (generated files only). No open finding is in runtime's files
+    except VF-025.
+- **VF-025, the runtime loop's decision.** The job's three 1.4 MiB spring-core JARs aren't in the history, because
+  they exceed jj's 1 MiB snapshot limit. They needn't be:
+  - the two published ones are acquired again by their recorded sha256;
+  - the mutant JAR is rebuilt by `runtime_slice.py --case simplematch-mutant`, and `prepared.json` records its hash
+    and its classes'.
+
+  `runtime_simplematch/README.md` now says so. Closing VF-025 needs the files ignored in the default workspace.
+  `runtime-mutant/**/spring-core-5.3.19.jar` in `.gitignore` would do it, or a limit decision shared with VF-020.
+  `.gitignore` is shared and the files are on main, so that is for the user or the coordinator, not this branch.
+  A later runtime job should also delete `prepare/*/lib/` in its cleanup step, beside the checkout.
+- **R1–R5 and the acceptance pass**:
+  - Preparation: three routes, each with focused tests. The upstream-build route ran on example 105's real pinned
+    commits (jobs `…170353`, `…174017`). Locks and artifact locks are distinct. Stale bytes, a hash mismatch and
+    shadowing are refused.
+  - Execution: controls per JVM, per JDK, as raw records. Malformed, killed, timed-out and one-sided replays stay
+    failures.
+  - Slice: R5 ran on the fixtures and on spring-core's `simpleMatch`, and the mutant ran too.
+  - Handoff: every failed preparation's `source.blocker`.
+  - Contract: A2 passes, and so do the runtime halves of A3–A5 up to workflow's stubs.
+
+  What is left is for the merge, listed above: `build_fixtures.py -parameters` (VF-024's request), `mutation.json`
+  into `target.json` with 306's `drop-prefix` as a W1 mutant, the optional `blocker` and `workdir` fields, the claim
+  key for an adapter entry point, and VF-025's ignore.
+- Status: done
 
 ## Loop settings
 
