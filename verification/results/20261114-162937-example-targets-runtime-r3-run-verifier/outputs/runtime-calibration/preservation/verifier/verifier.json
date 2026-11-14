@@ -1,0 +1,153 @@
+{
+  "task": "preservation",
+  "record": {
+    "kind": "verifier",
+    "revision": null,
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+      "equivalence",
+      "--before",
+      "prepare/before/before.jar",
+      "--after",
+      "prepare/after/after.jar",
+      "--target",
+      "fixture.Gate#allowed(int)",
+      "--unchanged-unless",
+      "code == 97",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 2,
+    "seconds": 0.003,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+      "command": "equivalence",
+      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jdkFeature": "25",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "fixture.Gate#allowed(I)Z",
+        "revisions": {
+          "before": {
+            "commit": "fixture:gate/before",
+            "loadedFrom": "before.jar",
+            "classSha256": "1cdc8c65e3efd65e3e5dcaadc47516ad6a1dfaf8e2c1d5db4e85ed0f805c1c1d",
+            "origin": "built from gate/before by the fixture recipe"
+          },
+          "after": {
+            "commit": "fixture:gate/after",
+            "loadedFrom": "after.jar",
+            "classSha256": "719fe677491e13fcb3fa95efa7b0bb7da656e8f036205010ae71abe94e83e8a3",
+            "origin": "built from gate/after by the fixture recipe"
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "before": [
+          {
+            "path": "before.jar",
+            "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
+            "role": "original"
+          }
+        ],
+        "after": [
+          {
+            "path": "after.jar",
+            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "before": "fixture:gate/before",
+        "after": "fixture:gate/after"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "before": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "fixture.Gate#allowed(int)",
+            "--classes",
+            "prepare/before/before.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-before.stdout",
+          "stderr": "verifier/probe-before.stderr",
+          "gaps": []
+        },
+        "after": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "fixture.Gate#allowed(int)",
+            "--classes",
+            "prepare/after/after.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-after.stdout",
+          "stderr": "verifier/probe-after.stderr",
+          "gaps": []
+        }
+      }
+    },
+    "observations": null,
+    "control": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation",
+    "problem": "the verifier's standard output is not JSON: Expecting value: line 1 column 1 (char 0)"
+  }
+}

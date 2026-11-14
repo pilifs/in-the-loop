@@ -2,6 +2,44 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261114-162937-example-targets-runtime-r3-run-verifier",
+      "title": "example-targets runtime R3: run_verifier on the fixture's five proof tasks, native strict, with the real jvmcontract",
+      "status": "failed",
+      "summary": "failed: 1 failed, 1 passed step(s) in 45.3s, peak 98.4 MiB (estimated 5m00s, 2.0 GiB); 98 output file(s) changed",
+      "attention": [
+        "step 1 (the fixture's proof tasks through run_verifier) exited 1, expected 0",
+        "step 1 (the fixture's proof tasks through run_verifier) was held back 14.2s by its 1-CPU quota in 16.4s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (the integration contract with jvmcontract present) was held back 25.4s by its 1-CPU quota in 28.9s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jvmcontract:gaps",
+        "bmc:native",
+        "targets:run-verifier"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py",
+          "examples/tools/targets/runtime_calibrate.py",
+          "examples/tools/targets/fixtures/target.json",
+          "llm-dlc/loops/example-targets-runtime.md"
+        ]
+      },
+      "sourceCommit": "b397033c198f0bd55c7dbd19843613267b1841fd",
+      "finishedAt": "2026-11-14T16:34:25+00:00",
+      "wallSeconds": 45.3,
+      "peakMemoryBytes": 103190528,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 300.0,
+        "notes": "five native strict proofs of a one-line int method, plus five static gap scans and ten small javac/jar builds (about 2 s each inline); the jvmcontract build is the runner's"
+      },
+      "host": "vm-1",
+      "result": "20261114-162937-example-targets-runtime-r3-run-verifier/result.json"
+    },
+    {
       "id": "20261108-214557-application-core-phase-5-the-user-s-allo",
       "title": "application-core Phase 5: the user's allocation bounds (basket-first-claim 2, checked-claim 3), the joint acceptance and the contract with no case held",
       "status": "passed",

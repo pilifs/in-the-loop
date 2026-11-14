@@ -1,0 +1,2949 @@
+--- /dev/null
++++ b/runtime-calibration/calibration.json
+@@ -0,0 +1,261 @@
++{
++  "calibration": "runtime R3: run_verifier on the fixture's proof tasks",
++  "ok": false,
++  "jvmcontract": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++  "tasks": [
++    {
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "revisions": [
++        "before"
++      ],
++      "expected": "refuted",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.Gate#allowed(int)",
++        "--classes",
++        "prepare/before/before.jar",
++        "--assert",
++        "!result || (code != 65 && code != 97)",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "unverifiable",
++      "scope": "constructed-fixture",
++      "probe": {
++        "before": []
++      },
++      "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++      "stderrTail": "",
++      "ok": false,
++      "witnessNamesTrigger": false,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "fixed-security",
++      "kind": "prove",
++      "revisions": [
++        "after"
++      ],
++      "expected": "established",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.Gate#allowed(int)",
++        "--classes",
++        "prepare/after/after.jar",
++        "--assert",
++        "!result || (code != 65 && code != 97)",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "unverifiable",
++      "scope": "constructed-fixture",
++      "probe": {
++        "after": []
++      },
++      "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++      "stderrTail": "",
++      "ok": false,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "mutant-security",
++      "kind": "prove",
++      "revisions": [
++        "mutant"
++      ],
++      "expected": "refuted",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.016,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.Gate#allowed(int)",
++        "--classes",
++        "prepare/mutant/mutant.jar",
++        "--assert",
++        "!result || (code != 65 && code != 97)",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "unverifiable",
++      "scope": "constructed-fixture",
++      "probe": {
++        "mutant": []
++      },
++      "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++      "stderrTail": "",
++      "ok": false,
++      "witnessNamesTrigger": false,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "preservation",
++      "kind": "equivalence",
++      "revisions": [
++        "before",
++        "after"
++      ],
++      "expected": "established",
++      "status": "exited",
++      "exitCode": 2,
++      "seconds": 0.003,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "equivalence",
++        "--before",
++        "prepare/before/before.jar",
++        "--after",
++        "prepare/after/after.jar",
++        "--target",
++        "fixture.Gate#allowed(int)",
++        "--unchanged-unless",
++        "code == 97",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": null,
++      "scope": "constructed-fixture",
++      "probe": {
++        "before": [],
++        "after": []
++      },
++      "output": "",
++      "stderrTail": "jvmcontract: Not a directory (os error 20)\n",
++      "ok": false,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    },
++    {
++      "task": "regex-probe",
++      "kind": "prove",
++      "revisions": [
++        "after"
++      ],
++      "expected": "unresolved",
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.004,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "fixture.RegexGate#allowed(java.lang.String)",
++        "--classes",
++        "prepare/after/after.jar",
++        "--assert",
++        "!result || field != null",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "verdict": "unverifiable",
++      "scope": "constructed-fixture",
++      "probe": {
++        "after": [
++          {
++            "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
++            "kind": "jdk-reference-method",
++            "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
++            "sites": [
++              "fixture.RegexGate.allowed:14"
++            ]
++          },
++          {
++            "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
++            "kind": "jdk-primitive-method",
++            "call": "java.util.regex.Matcher.matches()",
++            "sites": [
++              "fixture.RegexGate.allowed:14"
++            ]
++          },
++          {
++            "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++            "kind": "jdk-static-method",
++            "call": "java.util.regex.Pattern.compile(java.lang.String)",
++            "sites": [
++              "fixture.RegexGate.<clinit>:8"
++            ]
++          }
++        ]
++      },
++      "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++      "stderrTail": "",
++      "ok": false,
++      "namesRegex": false,
++      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++    }
++  ],
++  "reading": "the verdicts are read here to check R3's plumbing against the fixture's authored expectations; ingestion judges records in the route"
++}
+Binary file runtime-calibration/fixed-security/prepare/after/adapter-after.jar changed
+Binary file runtime-calibration/fixed-security/prepare/after/after.jar changed
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/fixed-security/prepare/after/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/adapter-after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.102s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.102s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/original fixture/RegexGate.class
++
++exit 0 after 0.102s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.716s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/adapter-after.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.881s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security/prepare/after/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/after/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.761s
+--- /dev/null
++++ b/runtime-calibration/fixed-security/prepare/after/prepared.json
+@@ -0,0 +1,152 @@
++{
++  "example": "999",
++  "task": "fixed-security",
++  "revision": "after",
++  "commit": "fixture:gate/after",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "after",
++    "fixture": "gate/after",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/after",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/after/fixture/Gate.java",
++          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z"
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "after.jar",
++      "classSha256": "719fe677491e13fcb3fa95efa7b0bb7da656e8f036205010ae71abe94e83e8a3",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "after.jar",
++      "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/after by the fixture recipe"
++    },
++    {
++      "path": "adapter-after.jar",
++      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-after.jar",
++    "after.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/probe-after.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "unverifiable",
++          "level": "error",
++          "message": {
++            "text": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/verifier.json
+@@ -0,0 +1,142 @@
++{
++  "task": "fixed-security",
++  "record": {
++    "kind": "verifier",
++    "revision": "after",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.Gate#allowed(int)",
++      "--classes",
++      "prepare/after/after.jar",
++      "--assert",
++      "!result || (code != 65 && code != 97)",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "after": {
++            "commit": "fixture:gate/after",
++            "loadedFrom": "after.jar",
++            "classSha256": "719fe677491e13fcb3fa95efa7b0bb7da656e8f036205010ae71abe94e83e8a3",
++            "origin": "built from gate/after by the fixture recipe"
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "after": [
++          {
++            "path": "after.jar",
++            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "after": "fixture:gate/after"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "after": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/after/after.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-after.stdout",
++          "stderr": "verifier/probe-after.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "unverifiable",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": null,
++        "assume": null,
++        "assert": "!result || (code != 65 && code != 97)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++            "uri": null,
++            "line": 13
++          }
++        ],
++        "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++        "work": "verifier/work"
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/fixed-security"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/fixed-security/verifier/verifier.stdout
+@@ -0,0 +1,25 @@
++[
++  {
++    "verdict": "unverifiable",
++    "target": "fixture.Gate#allowed(int)",
++    "domain": null,
++    "assume": null,
++    "assert": "!result || (code != 65 && code != 97)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++        "uri": null,
++        "line": 13
++      }
++    ],
++    "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++    "work": "verifier/work"
++  }
++]
+Binary file runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/mutant-security/prepare/mutant/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.104s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.113s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/mutant.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/original fixture/RegexGate.class
++
++exit 0 after 0.101s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/mutant.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.701s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/mutant.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.812s
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security/prepare/mutant/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/mutant/fixture/Gate.java
++
++exit 0 after 0.762s
+Binary file runtime-calibration/mutant-security/prepare/mutant/mutant.jar changed
+--- /dev/null
++++ b/runtime-calibration/mutant-security/prepare/mutant/prepared.json
+@@ -0,0 +1,152 @@
++{
++  "example": "999",
++  "task": "mutant-security",
++  "revision": "mutant",
++  "commit": "fixture:gate/mutant",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "mutant",
++    "fixture": "gate/mutant",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/both",
++        "gate/mutant"
++      ],
++      "files": [
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        },
++        {
++          "path": "gate/mutant/fixture/Gate.java",
++          "sha256": "f4e76918a0ebb213967df09b58634bfd4f199e8c2ff50df2bcab8cac387b1cf3"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z"
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "mutant.jar",
++      "classSha256": "372966a9820ccdc1342362989e6ecfd54acd22c2970284459ca167789dce437c",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "mutant.jar",
++      "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/mutant by the fixture recipe"
++    },
++    {
++      "path": "adapter-mutant.jar",
++      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-mutant.jar",
++    "mutant.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/probe-mutant.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "unverifiable",
++          "level": "error",
++          "message": {
++            "text": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/verifier.json
+@@ -0,0 +1,142 @@
++{
++  "task": "mutant-security",
++  "record": {
++    "kind": "verifier",
++    "revision": "mutant",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.Gate#allowed(int)",
++      "--classes",
++      "prepare/mutant/mutant.jar",
++      "--assert",
++      "!result || (code != 65 && code != 97)",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "mutant": {
++            "commit": "fixture:gate/mutant",
++            "loadedFrom": "mutant.jar",
++            "classSha256": "372966a9820ccdc1342362989e6ecfd54acd22c2970284459ca167789dce437c",
++            "origin": "built from gate/mutant by the fixture recipe"
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "mutant": [
++          {
++            "path": "mutant.jar",
++            "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "mutant": "fixture:gate/mutant"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "mutant": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/mutant/mutant.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.064,
++          "stdout": "verifier/probe-mutant.stdout",
++          "stderr": "verifier/probe-mutant.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "unverifiable",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": null,
++        "assume": null,
++        "assert": "!result || (code != 65 && code != 97)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++            "uri": null,
++            "line": 15
++          }
++        ],
++        "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++        "work": "verifier/work"
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/mutant-security/verifier/verifier.stdout
+@@ -0,0 +1,25 @@
++[
++  {
++    "verdict": "unverifiable",
++    "target": "fixture.Gate#allowed(int)",
++    "domain": null,
++    "assume": null,
++    "assert": "!result || (code != 65 && code != 97)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++        "uri": null,
++        "line": 15
++      }
++    ],
++    "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++    "work": "verifier/work"
++  }
++]
+Binary file runtime-calibration/preservation/prepare/after/adapter-after.jar changed
+Binary file runtime-calibration/preservation/prepare/after/after.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/preservation/prepare/after/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/adapter-after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.098s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.159s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/original fixture/RegexGate.class
++
++exit 0 after 0.103s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.703s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/adapter-after.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.817s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/after/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/after/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.793s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/after/prepared.json
+@@ -0,0 +1,152 @@
++{
++  "example": "999",
++  "task": "preservation",
++  "revision": "after",
++  "commit": "fixture:gate/after",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "after",
++    "fixture": "gate/after",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/after",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/after/fixture/Gate.java",
++          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z"
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "after.jar",
++      "classSha256": "719fe677491e13fcb3fa95efa7b0bb7da656e8f036205010ae71abe94e83e8a3",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "after.jar",
++      "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/after by the fixture recipe"
++    },
++    {
++      "path": "adapter-after.jar",
++      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-after.jar",
++    "after.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+Binary file runtime-calibration/preservation/prepare/before/adapter-before.jar changed
+Binary file runtime-calibration/preservation/prepare/before/before.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/preservation/prepare/before/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/adapter-before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.067s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.105s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/original fixture/RegexGate.class
++
++exit 0 after 0.118s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.794s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/adapter-before.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.801s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation/prepare/before/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/before/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.700s
+--- /dev/null
++++ b/runtime-calibration/preservation/prepare/before/prepared.json
+@@ -0,0 +1,152 @@
++{
++  "example": "999",
++  "task": "preservation",
++  "revision": "before",
++  "commit": "fixture:gate/before",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "before",
++    "fixture": "gate/before",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/before",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/before/fixture/Gate.java",
++          "sha256": "92bb0bd6780f029ca862c4b6df5fd378cf911f28fd15bb951e0564097ccd6ed6"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z"
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "before.jar",
++      "classSha256": "1cdc8c65e3efd65e3e5dcaadc47516ad6a1dfaf8e2c1d5db4e85ed0f805c1c1d",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "before.jar",
++      "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/before by the fixture recipe"
++    },
++    {
++      "path": "adapter-before.jar",
++      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-before.jar",
++    "before.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/probe-after.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/probe-before.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/verifier.json
+@@ -0,0 +1,153 @@
++{
++  "task": "preservation",
++  "record": {
++    "kind": "verifier",
++    "revision": null,
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "equivalence",
++      "--before",
++      "prepare/before/before.jar",
++      "--after",
++      "prepare/after/after.jar",
++      "--target",
++      "fixture.Gate#allowed(int)",
++      "--unchanged-unless",
++      "code == 97",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 2,
++    "seconds": 0.003,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "equivalence",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "before": {
++            "commit": "fixture:gate/before",
++            "loadedFrom": "before.jar",
++            "classSha256": "1cdc8c65e3efd65e3e5dcaadc47516ad6a1dfaf8e2c1d5db4e85ed0f805c1c1d",
++            "origin": "built from gate/before by the fixture recipe"
++          },
++          "after": {
++            "commit": "fixture:gate/after",
++            "loadedFrom": "after.jar",
++            "classSha256": "719fe677491e13fcb3fa95efa7b0bb7da656e8f036205010ae71abe94e83e8a3",
++            "origin": "built from gate/after by the fixture recipe"
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "before": [
++          {
++            "path": "before.jar",
++            "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
++            "role": "original"
++          }
++        ],
++        "after": [
++          {
++            "path": "after.jar",
++            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "before": "fixture:gate/before",
++        "after": "fixture:gate/after"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "before": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/before/before.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-before.stdout",
++          "stderr": "verifier/probe-before.stderr",
++          "gaps": []
++        },
++        "after": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/after/after.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-after.stdout",
++          "stderr": "verifier/probe-after.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": null,
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/preservation",
++    "problem": "the verifier's standard output is not JSON: Expecting value: line 1 column 1 (char 0)"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/preservation/verifier/verifier.stderr
+@@ -0,0 +1 @@
++jvmcontract: Not a directory (os error 20)
+Binary file runtime-calibration/regex-probe/prepare/after/adapter-after.jar changed
+Binary file runtime-calibration/regex-probe/prepare/after/after.jar changed
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/regex-probe/prepare/after/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/adapter-after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.109s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.115s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/after.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/original fixture/RegexGate.class
++
++exit 0 after 0.108s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.706s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/adapter-after.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/after.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.877s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe/prepare/after/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/after/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.771s
+--- /dev/null
++++ b/runtime-calibration/regex-probe/prepare/after/prepared.json
+@@ -0,0 +1,152 @@
++{
++  "example": "999",
++  "task": "regex-probe",
++  "revision": "after",
++  "commit": "fixture:gate/after",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "after",
++    "fixture": "gate/after",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/after",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/after/fixture/Gate.java",
++          "sha256": "1048899ce21d1e748dc86165037f279b84ab5410eeef7dc74b74721bb69e03bc"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z"
++    },
++    "target": {
++      "class": "fixture.RegexGate",
++      "method": "allowed",
++      "descriptor": "(Ljava/lang/String;)Z",
++      "loadedFrom": "after.jar",
++      "classSha256": "13e88ee26b073ba361d97a356acd5dd6778dd61cf8ed0442da8e36504ca47404",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": false
++    }
++  },
++  "artifacts": [
++    {
++      "path": "after.jar",
++      "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/after by the fixture recipe"
++    },
++    {
++      "path": "adapter-after.jar",
++      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-after.jar",
++    "after.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/probe-after.stdout
+@@ -0,0 +1,38 @@
++{
++  "roots": [
++    "fixture.RegexGate#allowed(java.lang.String)"
++  ],
++  "methods": 2,
++  "jdk": "25.0.5",
++  "gaps": [
++    {
++      "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
++      "kind": "jdk-reference-method",
++      "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
++      "sites": [
++        "fixture.RegexGate.allowed:14"
++      ],
++      "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments"
++    },
++    {
++      "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
++      "kind": "jdk-primitive-method",
++      "call": "java.util.regex.Matcher.matches()",
++      "sites": [
++        "fixture.RegexGate.allowed:14"
++      ],
++      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
++    },
++    {
++      "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++      "kind": "jdk-static-method",
++      "call": "java.util.regex.Pattern.compile(java.lang.String)",
++      "sites": [
++        "fixture.RegexGate.<clinit>:8"
++      ],
++      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)"
++    }
++  ],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "unverifiable",
++          "level": "error",
++          "message": {
++            "text": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/verifier.json
+@@ -0,0 +1,167 @@
++{
++  "task": "regex-probe",
++  "record": {
++    "kind": "verifier",
++    "revision": "after",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.RegexGate#allowed(java.lang.String)",
++      "--classes",
++      "prepare/after/after.jar",
++      "--assert",
++      "!result || field != null",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.004,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.RegexGate#allowed(Ljava/lang/String;)Z",
++        "revisions": {
++          "after": {
++            "commit": "fixture:gate/after",
++            "loadedFrom": "after.jar",
++            "classSha256": "13e88ee26b073ba361d97a356acd5dd6778dd61cf8ed0442da8e36504ca47404",
++            "origin": "built from gate/after by the fixture recipe"
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "after": [
++          {
++            "path": "after.jar",
++            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "after": "fixture:gate/after"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "after": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.RegexGate#allowed(java.lang.String)",
++            "--classes",
++            "prepare/after/after.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-after.stdout",
++          "stderr": "verifier/probe-after.stderr",
++          "gaps": [
++            {
++              "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
++              "kind": "jdk-reference-method",
++              "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
++              "sites": [
++                "fixture.RegexGate.allowed:14"
++              ]
++            },
++            {
++              "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
++              "kind": "jdk-primitive-method",
++              "call": "java.util.regex.Matcher.matches()",
++              "sites": [
++                "fixture.RegexGate.allowed:14"
++              ]
++            },
++            {
++              "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++              "kind": "jdk-static-method",
++              "call": "java.util.regex.Pattern.compile(java.lang.String)",
++              "sites": [
++                "fixture.RegexGate.<clinit>:8"
++              ]
++            }
++          ]
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "unverifiable",
++        "target": "fixture.RegexGate#allowed(java.lang.String)",
++        "domain": null,
++        "assume": null,
++        "assert": "!result || field != null",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++            "uri": null,
++            "line": 14
++          }
++        ],
++        "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++        "work": "verifier/work"
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/regex-probe/verifier/verifier.stdout
+@@ -0,0 +1,25 @@
++[
++  {
++    "verdict": "unverifiable",
++    "target": "fixture.RegexGate#allowed(java.lang.String)",
++    "domain": null,
++    "assume": null,
++    "assert": "!result || field != null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++        "uri": null,
++        "line": 14
++      }
++    ],
++    "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++    "work": "verifier/work"
++  }
++]
+Binary file runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar changed
+Binary file runtime-calibration/vulnerable-security/prepare/before/before.jar changed
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/controls/oracle.py
+@@ -0,0 +1,36 @@
++"""The fixture's independent oracle: written from the statement, not from either revision's code.
++
++Security property: a field named by the denied code, in either case ('A' = 65, 'a' = 97), is never allowed.
++Legitimate behaviour: every other code in the probe set is allowed. Each revision's driver output (one JSON line per
++input) is checked against it; the oracle never calls the implementation under test."""
++
++import json
++
++DENIED = {65, 97}
++TRIGGER = [97]  # the spelling the vulnerable revision forgets
++LEGITIMATE = [0, 64, 66, 96, 98, -1, 2147483647]
++PROBES = sorted(set(TRIGGER) | {65} | set(LEGITIMATE))
++
++
++def expected(code):
++    return code not in DENIED
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a violation."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[record["input"]] = record
++    missing = [p for p in PROBES if p not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for code in PROBES:
++        record = seen[code]
++        if record["outcome"] != "returned":
++            problems.append((code, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(code):
++            problems.append((code, f"returned {record['value']}, the statement says {expected(code)}"))
++    return problems
+Binary file runtime-calibration/vulnerable-security/prepare/before/driver.jar changed
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/adapter fixture/adapter/GateAdapter.class
++
++exit 0 after 0.107s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/driver fixture/driver/GateDriver.class
++
++exit 0 after 0.112s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/jar-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/before.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/original fixture/Gate.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/original fixture/RegexGate.class
++
++exit 0 after 0.102s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/adapter/fixture/adapter/GateAdapter.java
++
++exit 0 after 0.715s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/before.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/driver/fixture/driver/GateDriver.java
++
++exit 0 after 0.802s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/logs/javac-original.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security/prepare/before/classes/original /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/before/fixture/Gate.java /home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/examples/tools/targets/fixtures/gate/both/fixture/RegexGate.java
++
++exit 0 after 0.793s
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/prepare/before/prepared.json
+@@ -0,0 +1,152 @@
++{
++  "example": "999",
++  "task": "vulnerable-security",
++  "revision": "before",
++  "commit": "fixture:gate/before",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "fixture",
++    "repository": "https://github.com/pilifs/in-the-loop",
++    "revision": "before",
++    "fixture": "gate/before",
++    "provenance": "fixture sources in the example's folder, never an upstream commit",
++    "original": {
++      "roots": [
++        "gate/before",
++        "gate/both"
++      ],
++      "files": [
++        {
++          "path": "gate/before/fixture/Gate.java",
++          "sha256": "92bb0bd6780f029ca862c4b6df5fd378cf911f28fd15bb951e0564097ccd6ed6"
++        },
++        {
++          "path": "gate/both/fixture/RegexGate.java",
++          "sha256": "948f5dfebf7d979c1d10bbae3ca718644126cea5214cf540ee6888faf779c4fa"
++        }
++      ]
++    },
++    "adapter": {
++      "roots": [
++        "gate/adapter"
++      ],
++      "files": [
++        {
++          "path": "gate/adapter/fixture/adapter/GateAdapter.java",
++          "sha256": "0fc398bf3cdde8adc67d141b1c583319a6836bec375a28edca6b327a57c9d6ee"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "gate/driver"
++      ],
++      "files": [
++        {
++          "path": "gate/driver/fixture/driver/GateDriver.java",
++          "sha256": "68484c08c52b92cbf988ffdee0bd2f2405257adb8ca32ef48edc9e66a1bd2c6f"
++        }
++      ],
++      "control": "gate-driver",
++      "main": "fixture.driver.GateDriver"
++    },
++    "oracle": {
++      "control": "gate-oracle",
++      "path": "gate/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z"
++    },
++    "target": {
++      "class": "fixture.Gate",
++      "method": "allowed",
++      "descriptor": "(I)Z",
++      "loadedFrom": "before.jar",
++      "classSha256": "1cdc8c65e3efd65e3e5dcaadc47516ad6a1dfaf8e2c1d5db4e85ed0f805c1c1d",
++      "adapterCalls": [
++        "fixture.Gate#allowed(I)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "before.jar",
++      "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built from gate/before by the fixture recipe"
++    },
++    {
++      "path": "adapter-before.jar",
++      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from gate/adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from gate/driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "gate/oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-before.jar",
++    "before.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/javac-original.log",
++    "logs/jar-original.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/probe-before.stdout
+@@ -0,0 +1,10 @@
++{
++  "roots": [
++    "fixture.Gate#allowed(int)"
++  ],
++  "methods": 1,
++  "jdk": "25.0.5",
++  "gaps": [],
++  "exact": {},
++  "refused": {}
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/report/property.sarif
+@@ -0,0 +1,73 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            },
++            {
++              "id": "effects-changed",
++              "shortDescription": {
++                "text": "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "unverifiable",
++          "level": "error",
++          "message": {
++            "text": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/verifier.json
+@@ -0,0 +1,142 @@
++{
++  "task": "vulnerable-security",
++  "record": {
++    "kind": "verifier",
++    "revision": "before",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++      "prove",
++      "fixture.Gate#allowed(int)",
++      "--classes",
++      "prepare/before/before.jar",
++      "--assert",
++      "!result || (code != 65 && code != 97)",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 1,
++    "seconds": 0.016,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++      "command": "prove",
++      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jdkFeature": "25",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "fixture.Gate#allowed(I)Z",
++        "revisions": {
++          "before": {
++            "commit": "fixture:gate/before",
++            "loadedFrom": "before.jar",
++            "classSha256": "1cdc8c65e3efd65e3e5dcaadc47516ad6a1dfaf8e2c1d5db4e85ed0f805c1c1d",
++            "origin": "built from gate/before by the fixture recipe"
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "before": [
++          {
++            "path": "before.jar",
++            "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "before": "fixture:gate/before"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "probe": {
++        "before": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++            "gaps",
++            "--target",
++            "fixture.Gate#allowed(int)",
++            "--classes",
++            "prepare/before/before.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.064,
++          "stdout": "verifier/probe-before.stdout",
++          "stderr": "verifier/probe-before.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "unverifiable",
++        "target": "fixture.Gate#allowed(int)",
++        "domain": null,
++        "assume": null,
++        "assert": "!result || (code != 65 && code != 97)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++            "uri": null,
++            "line": 13
++          }
++        ],
++        "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++        "work": "verifier/work"
++      }
++    ],
++    "control": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security"
++  }
++}
+--- /dev/null
++++ b/runtime-calibration/vulnerable-security/verifier/verifier.stdout
+@@ -0,0 +1,25 @@
++[
++  {
++    "verdict": "unverifiable",
++    "target": "fixture.Gate#allowed(int)",
++    "domain": null,
++    "assume": null,
++    "assert": "!result || (code != 65 && code != 97)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
++        "uri": null,
++        "line": 13
++      }
++    ],
++    "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
++    "work": "verifier/work"
++  }
++]

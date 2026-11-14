@@ -1,0 +1,142 @@
+{
+  "task": "mutant-security",
+  "record": {
+    "kind": "verifier",
+    "revision": "mutant",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+      "prove",
+      "fixture.Gate#allowed(int)",
+      "--classes",
+      "prepare/mutant/mutant.jar",
+      "--assert",
+      "!result || (code != 65 && code != 97)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.016,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+      "command": "prove",
+      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jdkFeature": "25",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "fixture.Gate#allowed(I)Z",
+        "revisions": {
+          "mutant": {
+            "commit": "fixture:gate/mutant",
+            "loadedFrom": "mutant.jar",
+            "classSha256": "372966a9820ccdc1342362989e6ecfd54acd22c2970284459ca167789dce437c",
+            "origin": "built from gate/mutant by the fixture recipe"
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "mutant": [
+          {
+            "path": "mutant.jar",
+            "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "mutant": "fixture:gate/mutant"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "mutant": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "fixture.Gate#allowed(int)",
+            "--classes",
+            "prepare/mutant/mutant.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.064,
+          "stdout": "verifier/probe-mutant.stdout",
+          "stderr": "verifier/probe-mutant.stderr",
+          "gaps": []
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "unverifiable",
+        "target": "fixture.Gate#allowed(int)",
+        "domain": null,
+        "assume": null,
+        "assert": "!result || (code != 65 && code != 97)",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+            "uri": null,
+            "line": 15
+          }
+        ],
+        "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
+        "work": "verifier/work"
+      }
+    ],
+    "control": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/mutant-security"
+  }
+}

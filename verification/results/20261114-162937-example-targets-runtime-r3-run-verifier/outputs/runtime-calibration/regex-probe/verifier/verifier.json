@@ -1,0 +1,167 @@
+{
+  "task": "regex-probe",
+  "record": {
+    "kind": "verifier",
+    "revision": "after",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+      "prove",
+      "fixture.RegexGate#allowed(java.lang.String)",
+      "--classes",
+      "prepare/after/after.jar",
+      "--assert",
+      "!result || field != null",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.004,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+      "command": "prove",
+      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jdkFeature": "25",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "fixture.RegexGate#allowed(Ljava/lang/String;)Z",
+        "revisions": {
+          "after": {
+            "commit": "fixture:gate/after",
+            "loadedFrom": "after.jar",
+            "classSha256": "13e88ee26b073ba361d97a356acd5dd6778dd61cf8ed0442da8e36504ca47404",
+            "origin": "built from gate/after by the fixture recipe"
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "after": [
+          {
+            "path": "after.jar",
+            "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "after": "fixture:gate/after"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "after": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "fixture.RegexGate#allowed(java.lang.String)",
+            "--classes",
+            "prepare/after/after.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-after.stdout",
+          "stderr": "verifier/probe-after.stderr",
+          "gaps": [
+            {
+              "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
+              "kind": "jdk-reference-method",
+              "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
+              "sites": [
+                "fixture.RegexGate.allowed:14"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.regex.Matcher.matches()",
+              "sites": [
+                "fixture.RegexGate.allowed:14"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
+              "kind": "jdk-static-method",
+              "call": "java.util.regex.Pattern.compile(java.lang.String)",
+              "sites": [
+                "fixture.RegexGate.<clinit>:8"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "unverifiable",
+        "target": "fixture.RegexGate#allowed(java.lang.String)",
+        "domain": null,
+        "assume": null,
+        "assert": "!result || field != null",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
+            "uri": null,
+            "line": 14
+          }
+        ],
+        "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
+        "work": "verifier/work"
+      }
+    ],
+    "control": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/regex-probe"
+  }
+}

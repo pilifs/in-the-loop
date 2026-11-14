@@ -1,0 +1,261 @@
+{
+  "calibration": "runtime R3: run_verifier on the fixture's proof tasks",
+  "ok": false,
+  "jvmcontract": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+  "tasks": [
+    {
+      "task": "vulnerable-security",
+      "kind": "prove",
+      "revisions": [
+        "before"
+      ],
+      "expected": "refuted",
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+        "prove",
+        "fixture.Gate#allowed(int)",
+        "--classes",
+        "prepare/before/before.jar",
+        "--assert",
+        "!result || (code != 65 && code != 97)",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "600",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "verdict": "unverifiable",
+      "scope": "constructed-fixture",
+      "probe": {
+        "before": []
+      },
+      "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
+      "stderrTail": "",
+      "ok": false,
+      "witnessNamesTrigger": false,
+      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
+    },
+    {
+      "task": "fixed-security",
+      "kind": "prove",
+      "revisions": [
+        "after"
+      ],
+      "expected": "established",
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+        "prove",
+        "fixture.Gate#allowed(int)",
+        "--classes",
+        "prepare/after/after.jar",
+        "--assert",
+        "!result || (code != 65 && code != 97)",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "600",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "verdict": "unverifiable",
+      "scope": "constructed-fixture",
+      "probe": {
+        "after": []
+      },
+      "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
+      "stderrTail": "",
+      "ok": false,
+      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
+    },
+    {
+      "task": "mutant-security",
+      "kind": "prove",
+      "revisions": [
+        "mutant"
+      ],
+      "expected": "refuted",
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.016,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+        "prove",
+        "fixture.Gate#allowed(int)",
+        "--classes",
+        "prepare/mutant/mutant.jar",
+        "--assert",
+        "!result || (code != 65 && code != 97)",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "600",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "verdict": "unverifiable",
+      "scope": "constructed-fixture",
+      "probe": {
+        "mutant": []
+      },
+      "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
+      "stderrTail": "",
+      "ok": false,
+      "witnessNamesTrigger": false,
+      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
+    },
+    {
+      "task": "preservation",
+      "kind": "equivalence",
+      "revisions": [
+        "before",
+        "after"
+      ],
+      "expected": "established",
+      "status": "exited",
+      "exitCode": 2,
+      "seconds": 0.003,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+        "equivalence",
+        "--before",
+        "prepare/before/before.jar",
+        "--after",
+        "prepare/after/after.jar",
+        "--target",
+        "fixture.Gate#allowed(int)",
+        "--unchanged-unless",
+        "code == 97",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "600",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "verdict": null,
+      "scope": "constructed-fixture",
+      "probe": {
+        "before": [],
+        "after": []
+      },
+      "output": "",
+      "stderrTail": "jvmcontract: Not a directory (os error 20)\n",
+      "ok": false,
+      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
+    },
+    {
+      "task": "regex-probe",
+      "kind": "prove",
+      "revisions": [
+        "after"
+      ],
+      "expected": "unresolved",
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.004,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+        "prove",
+        "fixture.RegexGate#allowed(java.lang.String)",
+        "--classes",
+        "prepare/after/after.jar",
+        "--assert",
+        "!result || field != null",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "600",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "verdict": "unverifiable",
+      "scope": "constructed-fixture",
+      "probe": {
+        "after": [
+          {
+            "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-25.0.5",
+            "kind": "jdk-reference-method",
+            "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
+            "sites": [
+              "fixture.RegexGate.allowed:14"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-25.0.5",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.regex.Matcher.matches()",
+            "sites": [
+              "fixture.RegexGate.allowed:14"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
+            "kind": "jdk-static-method",
+            "call": "java.util.regex.Pattern.compile(java.lang.String)",
+            "sites": [
+              "fixture.RegexGate.<clinit>:8"
+            ]
+          }
+        ]
+      },
+      "output": "✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
+      "stderrTail": "",
+      "ok": false,
+      "namesRegex": false,
+      "ingestion": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
+    }
+  ],
+  "reading": "the verdicts are read here to check R3's plumbing against the fixture's authored expectations; ingestion judges records in the route"
+}

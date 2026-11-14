@@ -1,0 +1,142 @@
+{
+  "task": "vulnerable-security",
+  "record": {
+    "kind": "verifier",
+    "revision": "before",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+      "prove",
+      "fixture.Gate#allowed(int)",
+      "--classes",
+      "prepare/before/before.jar",
+      "--assert",
+      "!result || (code != 65 && code != 97)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.016,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+      "command": "prove",
+      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jdkFeature": "25",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "fixture.Gate#allowed(I)Z",
+        "revisions": {
+          "before": {
+            "commit": "fixture:gate/before",
+            "loadedFrom": "before.jar",
+            "classSha256": "1cdc8c65e3efd65e3e5dcaadc47516ad6a1dfaf8e2c1d5db4e85ed0f805c1c1d",
+            "origin": "built from gate/before by the fixture recipe"
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "before": [
+          {
+            "path": "before.jar",
+            "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "before": "fixture:gate/before"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "before": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "fixture.Gate#allowed(int)",
+            "--classes",
+            "prepare/before/before.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.064,
+          "stdout": "verifier/probe-before.stdout",
+          "stderr": "verifier/probe-before.stderr",
+          "gaps": []
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "unverifiable",
+        "target": "fixture.Gate#allowed(int)",
+        "domain": null,
+        "assume": null,
+        "assert": "!result || (code != 65 && code != 97)",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result\n",
+        "work": "verifier/work"
+      }
+    ],
+    "control": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/runtime-calibration/vulnerable-security"
+  }
+}

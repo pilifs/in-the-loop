@@ -1,0 +1,1065 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-162937-example-targets-runtime-r3-run-verifier",
+  "title": "example-targets runtime R3: run_verifier on the fixture's five proof tasks, native strict, with the real jvmcontract",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 passed step(s) in 45.3s, peak 98.4 MiB (estimated 5m00s, 2.0 GiB); 98 output file(s) changed",
+  "attention": [
+    "step 1 (the fixture's proof tasks through run_verifier) exited 1, expected 0",
+    "step 1 (the fixture's proof tasks through run_verifier) was held back 14.2s by its 1-CPU quota in 16.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (the integration contract with jvmcontract present) was held back 25.4s by its 1-CPU quota in 28.9s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-162937-example-targets-runtime-r3-run-verifier.json",
+    "sha256": "ea9794b7e174b92bae1d7092226a037fc670fa393d7ac48bcbebbe3b19115a8c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-162937-example-targets-runtime-r3-run-verifier",
+      "title": "example-targets runtime R3: run_verifier on the fixture's five proof tasks, native strict, with the real jvmcontract",
+      "description": "The runtime stream's R3 (llm-dlc/loops/example-targets-runtime.md) replaced Phase 0's run_verifier stub in examples/tools/targets/runtime.py: jvmcontract prove or equivalence on a task's prepared original JARs, never the adapter or driver, with the plan's engine and gap mode, the claim's bounds and statement, a static gap scan as the capability probe, and the scope label recorded, as one raw verifier ExecutionRecord. Its unit tests use a stand-in jvmcontract, so this job is the first run with the real one. Step 1 runs examples/tools/targets/runtime_calibrate.py: each proof task of Phase 0's fixture (examples/tools/targets/fixtures/target.json) is prepared by runtime.prepare and checked by runtime.run_verifier with --engine native --gaps strict, its claim being the property workflow's fixture claim files state (assert '!result || (code != 65 && code != 97)' on fixture.Gate#allowed(int); RegexGate's '!result || field != null'), and the record handed to workflow.ingest (still Phase 0's stub on this branch). Step 2 runs the integration contract with JVMCONTRACT set, so A5 gets past its jvmcontract skip and stops at workflow's task-plan stub. No upstream code is fetched or built: the fixture is local.",
+      "kind": "other",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jvmcontract:gaps",
+        "bmc:native",
+        "targets:run-verifier"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py",
+          "examples/tools/targets/runtime_calibrate.py",
+          "examples/tools/targets/fixtures/target.json",
+          "llm-dlc/loops/example-targets-runtime.md"
+        ]
+      },
+      "expected": "both steps exit 0. Step 1 prints 'as expected' for all five tasks and ends 'ok': vulnerable-security a violation (its witness at code 97), fixed-security verified, mutant-security a violation (at 65), preservation (equivalence of before and after outside code == 97) verified, and regex-probe unverifiable with output naming java.util.regex; each scope constructed-fixture. Step 2: the contract passes, A5's two rows skipped at 'unsupported: task-plan (example-targets-workflow)', not for want of jvmcontract",
+      "submitted": {
+        "at": "2026-11-14T16:29:37+00:00",
+        "session": "3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "five native strict proofs of a one-line int method, plus five static gap scans and ten small javac/jar builds (about 2 s each inline); the jvmcontract build is the runner's"
+      },
+      "steps": [
+        {
+          "name": "the fixture's proof tasks through run_verifier",
+          "run": "python3 examples/tools/targets/runtime_calibrate.py runtime-calibration",
+          "cwd": "."
+        },
+        {
+          "name": "the integration contract with jvmcontract present",
+          "run": "python3 examples/tools/test_targets_contract.py -v",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "runtime-calibration"
+      ]
+    }
+  },
+  "sourceCommit": "b397033c198f0bd55c7dbd19843613267b1841fd",
+  "startedAt": "2026-11-14T16:31:15+00:00",
+  "finishedAt": "2026-11-14T16:34:25+00:00",
+  "wallSeconds": 190.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 523483,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "five native strict proofs of a one-line int method, plus five static gap scans and ten small javac/jar builds (about 2 s each inline); the jvmcontract build is the runner's"
+  },
+  "usage": {
+    "peakMemoryBytes": 103190528,
+    "wallSeconds": 45.3,
+    "cpuSeconds": 44.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 144.123,
+      "cpuSeconds": 143.518,
+      "cpuThrottledSeconds": 0.175,
+      "peakMemoryBytes": 2681102336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "e1a639cb873991a10b7c2741100c198489532f878532345cdd6e1bc531ffb832",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 24s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "the fixture's proof tasks through run_verifier",
+      "run": "python3 examples/tools/targets/runtime_calibrate.py runtime-calibration",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 16.429,
+      "cpuSeconds": 16.218,
+      "cpuThrottledSeconds": 14.192,
+      "peakMemoryBytes": 96600064,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-fixture-s-proof-tasks-thro.log",
+        "lines": 11,
+        "bytes": 1657,
+        "sha256": "4b5a343cc88f22d084e8d54d23dc4c66935817fc01fbf1ce7878a7d818185b22",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "jvmcontract: /home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+        "vulnerable-security: expected refuted, verifier exited exit 1, verdict unverifiable, scope constructed-fixture: NOT as expected",
+        "  ✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+        "fixed-security: expected established, verifier exited exit 1, verdict unverifiable, scope constructed-fixture: NOT as expected",
+        "  ✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+        "mutant-security: expected refuted, verifier exited exit 1, verdict unverifiable, scope constructed-fixture: NOT as expected",
+        "  ✗ fixture.Gate#allowed(int) cannot be verified: the property is not well-formed: in the assertion: unknown name \"code\"; the names are arg0, result",
+        "preservation: expected established, verifier exited exit 2, verdict None, scope constructed-fixture: NOT as expected",
+        "regex-probe: expected unresolved, verifier exited exit 1, verdict unverifiable, scope constructed-fixture: NOT as expected",
+        "  ✗ fixture.RegexGate#allowed(java.lang.String) cannot be verified: parameter arg0 has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are c",
+        "NOT ok (runtime-calibration/calibration.json)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the integration contract with jvmcontract present",
+      "run": "python3 examples/tools/test_targets_contract.py -v",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 28.857,
+      "cpuSeconds": 28.605,
+      "cpuThrottledSeconds": 25.394,
+      "peakMemoryBytes": 103190528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-integration-contract-with.log",
+        "lines": 21,
+        "bytes": 3636,
+        "sha256": "14af97c17481bf681ffe86978a83d361af5cc112c0449bfec8711c64b261ca82",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "test_constructed_and_handwritten_examples_keep_their_route (__main__.A0SharedContract.test_constructed_and_handwritten_examples_keep_their_route) ... ok",
+        "test_the_fixture_is_a_valid_sidecar_example_and_the_route_names_each_stub (__main__.A0SharedContract.test_the_fixture_is_a_valid_sidecar_example_and_the_route_names_each_stub) ... ok",
+        "test_the_numbers_are_reserved (__main__.A0SharedContract.test_the_numbers_are_reserved) ... ok",
+        "test_every_task_plans_offline_as_the_sidecar_states_it (__main__.A1OfflinePlanning.test_every_task_plans_offline_as_the_sidecar_states_it) ... skipped \"stops at unsupported: task-plan (example-targets-workflow): task planning is Phase 0's stub until the workflow stream's W1 replaces it\"",
+        "test_the_handoff_reads_offline_and_keeps_observed_and_predicted_gaps_apart (__main__.A1OfflinePlanning.test_the_handoff_reads_offline_and_keeps_observed_and_predicted_gaps_apart) ... skipped \"stops at unsupported: handoff (example-targets-workflow): the handoff export is Phase 0's stub until the wor",
+        "test_a_fixture_revision_is_prepared_with_its_identities (__main__.A2PreparationIntegrity.test_a_fixture_revision_is_prepared_with_its_identities) ... ok",
+        "test_an_adapter_that_shadows_the_target_class_is_refused (__main__.A2PreparationIntegrity.test_an_adapter_that_shadows_the_target_class_is_refused) ... ok",
+        "test_the_identity_follows_the_bytes (__main__.A2PreparationIntegrity.test_the_identity_follows_the_bytes) ... ok",
+        "test_a3_the_vulnerable_violation_and_the_fix_on_the_same_trigger (__main__.A3A4FixtureReplay.test_a3_the_vulnerable_violation_and_the_fix_on_the_same_trigger) ... ok",
+        "test_a4_the_mutant_fails_the_control_the_fix_passes (__main__.A3A4FixtureReplay.test_a4_the_mutant_fails_the_control_the_fix_passes) ... ok",
+        "test_the_capability_probe_is_refused_by_name (__main__.A5FixtureCalibration.test_the_capability_probe_is_refused_by_name) ... skipped \"stops at unsupported: task-plan (example-targets-workflow): task planning is Phase 0's stub until the workflow stream's W1 replaces it\"",
+        "test_the_fix_is_established_and_the_vulnerable_revision_and_mutant_refuted (__main__.A5FixtureCalibration.test_the_fix_is_established_and_the_vulnerable_revision_and_mutant_refuted) ... skipped \"stops at unsupported: task-plan (example-targets-workflow): task planning is Phase 0's stub until the wor",
+        "test_a_kill_malformed_output_and_a_one_sided_replay_are_not_results (__main__.A6ReceiptIntegrity.test_a_kill_malformed_output_and_a_one_sided_replay_are_not_results) ... skipped \"stops at unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's ",
+        "test_an_exit_code_alone_is_no_violation (__main__.A6ReceiptIntegrity.test_an_exit_code_alone_is_no_violation) ... skipped \"stops at unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it\"",
+        "test_attempts_and_tasks_keep_distinct_receipts (__main__.A6ReceiptIntegrity.test_attempts_and_tasks_keep_distinct_receipts) ... skipped \"stops at unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it\"",
+        "test_the_regex_probe_handoff_reproduces_from_its_inputs (__main__.A7AgentContinuation.test_the_regex_probe_handoff_reproduces_from_its_inputs) ... skipped \"stops at unsupported: handoff (example-targets-workflow): the handoff export is Phase 0's stub until the workflow stream's W3 replaces it\"",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 16 tests in 28.606s",
+        "",
+        "OK (skipped=8)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runtime-calibration/calibration.json",
+      "change": "added",
+      "bytes": 8400,
+      "sha256": "dee0b640a9b80b7e640f5be7f6439f53a7ecba80584aabe67b367848fff3f753",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/adapter-after.jar",
+      "change": "added",
+      "bytes": 419,
+      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/after.jar",
+      "change": "added",
+      "bytes": 994,
+      "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/controls/oracle.py",
+      "change": "added",
+      "bytes": 1512,
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/driver.jar",
+      "change": "added",
+      "bytes": 1030,
+      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "466b21974322f04edeeacc917d2100ac6e28123366b802db4a7bea4239345ecd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 519,
+      "sha256": "1342d2a84da2fc677923a1094c167b484de59f46c2678f26f6a97c0e39d9ba5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/logs/jar-original.log",
+      "change": "added",
+      "bytes": 710,
+      "sha256": "43fbd64075a759f9d16b17f9df96327d8eea1b0e5f552c8de9d046a629d623ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 667,
+      "sha256": "2f738d1a29b90056616e02bc62d687a34db75ae1faff5732611d9b82444dcbb3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 840,
+      "sha256": "c87a37689e57269cc71b63c862638ec6ef2ceac73c073f186d82222b047b2634",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/logs/javac-original.log",
+      "change": "added",
+      "bytes": 653,
+      "sha256": "c40fcdb533e7649e42882e9e2b586f537c0b63c30faea96e0e48ab6ae9a59d83",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/prepare/after/prepared.json",
+      "change": "added",
+      "bytes": 4125,
+      "sha256": "cf9ea737ddbac4321d3e411ca4ce34635ac91d1075567a19b18ed8ff28a4da61",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/verifier/probe-after.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/verifier/probe-after.stdout",
+      "change": "added",
+      "bytes": 134,
+      "sha256": "2ffec0c0b087807c87b0819814439df1f6db72c699323d2b51d27ec1e99853b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/verifier/report/property.sarif",
+      "change": "added",
+      "bytes": 2469,
+      "sha256": "648c3c13979e0ec633e8566fbda4ec17aa140395b393a3a8a2d0ea39e3b543f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/verifier/verifier.json",
+      "change": "added",
+      "bytes": 4664,
+      "sha256": "45490546173cafa19559561680e2d00c9409952cd2085db1e4d9a04e2252d1cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/verifier/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/fixed-security/verifier/verifier.stdout",
+      "change": "added",
+      "bytes": 897,
+      "sha256": "4ef1564dd11e5143a6831c0cce279d7f63076cd8c075f898ab307935f961a5b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar",
+      "change": "added",
+      "bytes": 419,
+      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/controls/oracle.py",
+      "change": "added",
+      "bytes": 1512,
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/driver.jar",
+      "change": "added",
+      "bytes": 1030,
+      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 534,
+      "sha256": "e88fcd2e47270960def83df1aa647acb8cdbd7fc83dbd42a0c4f984454e5d6a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 523,
+      "sha256": "8fab7555dc59311d5910cd131bade5f96dfe3acfddfe3047c94df46c05a0de98",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/logs/jar-original.log",
+      "change": "added",
+      "bytes": 717,
+      "sha256": "3aca5ee2935c2556fd4b0706e96efa6892339ca22d540f2f1bb2ba604f41d372",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 672,
+      "sha256": "4efa77658edf2dc10b44affeb238aa97635412df0ac1f5e0d71f241290d4c22e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 848,
+      "sha256": "5a88933b45f194b35f7cf6ec11f7c71b1297388ef82523ce8cf3e4d39f8cdf97",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/logs/javac-original.log",
+      "change": "added",
+      "bytes": 656,
+      "sha256": "a59ce0b61335aec8e5adb275cdbcb79ee00d5561c7cb21545d702ac187c87830",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/mutant.jar",
+      "change": "added",
+      "bytes": 987,
+      "sha256": "c25e096211c82d77b0371626a3ca307e6d8c6298034b8c30d6b1116bea9e9e10",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/prepare/mutant/prepared.json",
+      "change": "added",
+      "bytes": 4138,
+      "sha256": "bbc46104bd2a6b94847e801e581c75ebdcdb02378a406849fa4a09eab8b57734",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/verifier/probe-mutant.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/verifier/probe-mutant.stdout",
+      "change": "added",
+      "bytes": 134,
+      "sha256": "2ffec0c0b087807c87b0819814439df1f6db72c699323d2b51d27ec1e99853b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/verifier/report/property.sarif",
+      "change": "added",
+      "bytes": 2469,
+      "sha256": "648c3c13979e0ec633e8566fbda4ec17aa140395b393a3a8a2d0ea39e3b543f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/verifier/verifier.json",
+      "change": "added",
+      "bytes": 4682,
+      "sha256": "a49185096d8fb94a828bc153d12ab0de484ef10866d9e73fe278cc61e9923141",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/verifier/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/mutant-security/verifier/verifier.stdout",
+      "change": "added",
+      "bytes": 897,
+      "sha256": "02ad3a192862d0b62d3745ee98f863b1c4a8312dc3f0e7adfa049046069f4a70",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/adapter-after.jar",
+      "change": "added",
+      "bytes": 419,
+      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/after.jar",
+      "change": "added",
+      "bytes": 994,
+      "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/controls/oracle.py",
+      "change": "added",
+      "bytes": 1512,
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/driver.jar",
+      "change": "added",
+      "bytes": 1030,
+      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 525,
+      "sha256": "e87bd2c1279c64feea2460f7b826c2e29c08b945471da926cad0d78196eb5c29",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 515,
+      "sha256": "91d2c581badab4f30ede4c8c7bf949c6e1ba99fe4586c0beb3f489d7c24d04e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/logs/jar-original.log",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "2d277dd2997803fd40647c6b3884da6acd4debdcad899c9ee185128034faaa3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 663,
+      "sha256": "47986335c5e168cea1943e2137d2547b4d7f01a79cc90f2a78e7e8ee6f8f5966",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 834,
+      "sha256": "befa524a5adec1daa3bb45849420798f09eb108249bb911b27881dcf78b43bd1",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/logs/javac-original.log",
+      "change": "added",
+      "bytes": 651,
+      "sha256": "494c858b06f6a2e955117ade12a4ee67f0bd2d96ed342f3f5e21fd4f8297e52e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/after/prepared.json",
+      "change": "added",
+      "bytes": 4123,
+      "sha256": "235ee07f419e60b853914dbc6e484af32864e87274c9feabcdb7d85093a5a016",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/adapter-before.jar",
+      "change": "added",
+      "bytes": 419,
+      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/before.jar",
+      "change": "added",
+      "bytes": 988,
+      "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/controls/oracle.py",
+      "change": "added",
+      "bytes": 1512,
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/driver.jar",
+      "change": "added",
+      "bytes": 1030,
+      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "d15cfcf570bd08e4f6e8837e95e01af5a69523eb84f4bae9d3d5508c3fb86c25",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 517,
+      "sha256": "addf238126560f531461ad3bc5c75eb8be54f2fae007d2fd619cf6e01f62b1d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/logs/jar-original.log",
+      "change": "added",
+      "bytes": 708,
+      "sha256": "879d8fee9890e5d7e970c8f2e902cab1db9c29c756d3d8b5b5db43e7974e34cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 666,
+      "sha256": "4a870be24e1f6d2a62a4d52ff1cf09111c2e316f27992d18804c8cb4b949b0e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 839,
+      "sha256": "88f358c849d8b6806411cfe1537bb627af4b56aceaf26e0a0a79b5b8cb4c70a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/logs/javac-original.log",
+      "change": "added",
+      "bytes": 653,
+      "sha256": "c0ccd8e1495d1dbc7fcf48e9e5aa98fcd633183b65ec9fa9065783e0b1f7272b",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/prepare/before/prepared.json",
+      "change": "added",
+      "bytes": 4135,
+      "sha256": "79d9da2d2abb658a3bec734da33a7fd0142caed2ae44f197d063cf094ce2d9ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/probe-after.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/probe-after.stdout",
+      "change": "added",
+      "bytes": 134,
+      "sha256": "2ffec0c0b087807c87b0819814439df1f6db72c699323d2b51d27ec1e99853b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/probe-before.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/probe-before.stdout",
+      "change": "added",
+      "bytes": 134,
+      "sha256": "2ffec0c0b087807c87b0819814439df1f6db72c699323d2b51d27ec1e99853b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/verifier.json",
+      "change": "added",
+      "bytes": 4951,
+      "sha256": "ea9bde4fb6085f2bdc2723b00bb3bb67d800f5717afbd162f1c149d08fbaba6d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/verifier.stderr",
+      "change": "added",
+      "bytes": 43,
+      "sha256": "6e59fba7154363ac246f3a73bb5883cce7017357ac3f3de6a4305fa7542783dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/preservation/verifier/verifier.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/adapter-after.jar",
+      "change": "added",
+      "bytes": 419,
+      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/after.jar",
+      "change": "added",
+      "bytes": 994,
+      "sha256": "26ffaff0ee184b45c88c2944367d35af1448470d2626f956140873fca48121f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/controls/oracle.py",
+      "change": "added",
+      "bytes": 1512,
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/driver.jar",
+      "change": "added",
+      "bytes": 1030,
+      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 523,
+      "sha256": "ccbb2b7b4f553bae20b1bd24888b0dd37cb27a6e8c651ba45c8e441ec1cfb12b",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 513,
+      "sha256": "24546370115c7cf51f052078829376a7199dc2cbd2e50bef43bac0fb91c19202",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/logs/jar-original.log",
+      "change": "added",
+      "bytes": 701,
+      "sha256": "f10599dbf4b2e23eb59edf7202de25ad31472ce77d29bf808b3a83cdf0f7b1dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 661,
+      "sha256": "05a63ab6b94a6e3aac0b7f71acd8c334019132e3d36ba4a481ec176ea86fe83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 831,
+      "sha256": "9b6c21f10babcf251268313826e9db0637ce70ad52aafd679d3616b852e927ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/logs/javac-original.log",
+      "change": "added",
+      "bytes": 650,
+      "sha256": "4e19902fb2511325d2776a90e2149ee681dd1d7bd7f7be6ac73b5378c8db5a6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/prepare/after/prepared.json",
+      "change": "added",
+      "bytes": 4145,
+      "sha256": "e8d03954e2c8ab5435235d154954dcf0fdbf17f714dee2f452723368c5be1d54",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/verifier/probe-after.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/verifier/probe-after.stdout",
+      "change": "added",
+      "bytes": 1489,
+      "sha256": "cfcff61aaad74bb1bfa67fd9d9092a1679cc81e5be2c43e3d1d873152916b118",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/verifier/report/property.sarif",
+      "change": "added",
+      "bytes": 2722,
+      "sha256": "9d5107e352215e05ab46e60b7a8ae07744cd6ff758da9ed21dca7c22e36b3620",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/verifier/verifier.json",
+      "change": "added",
+      "bytes": 6517,
+      "sha256": "f7fb4d2f4ee19a67746bab601afaef327ca616e4473d1972db011b647a699266",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/verifier/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/regex-probe/verifier/verifier.stdout",
+      "change": "added",
+      "bytes": 1643,
+      "sha256": "0e769eef642f6f2f7e1be9a7a37d8c23d0b0e0567aa1c4f37d439102ebfec22e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar",
+      "change": "added",
+      "bytes": 419,
+      "sha256": "b357870290707f023f396159f63bac4aee3b477710b6587389651b90996365d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/before.jar",
+      "change": "added",
+      "bytes": 988,
+      "sha256": "21f5f04025f4869365ef745ca535b6bf1e20a9d8b02b4dd09f3dc63f6049ea31",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/controls/oracle.py",
+      "change": "added",
+      "bytes": 1512,
+      "sha256": "8611fdc5d235972423306f65a38722e02c646a3de6e07aff083bc7613f675beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/driver.jar",
+      "change": "added",
+      "bytes": 1030,
+      "sha256": "d4874419fbc1f36fd1284e51c5eadb424c031f9d0ba4e408550b301a01f82108",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 542,
+      "sha256": "49ea0ed6b3568ba70d6c3094424edfde00313fd1b380de724180b8fe72b45522",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 531,
+      "sha256": "aec9582a3079801aad24f2cb03fd65040e15f64ee637fa83569224130c8a2ad7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/logs/jar-original.log",
+      "change": "added",
+      "bytes": 729,
+      "sha256": "5d1ff1ec06336f3c1b306995a0cfe08f5c5920b9389af1eacf7f075100bb8d88",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 680,
+      "sha256": "c35f4970fe6a256acfcbef85b80dfe0c87a36d43aeaea7d29b2a6da067689712",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 860,
+      "sha256": "ddf2d749fb0ac7cd972d889153765f4c5a8734da767f03715b4a219b9b091a7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/logs/javac-original.log",
+      "change": "added",
+      "bytes": 660,
+      "sha256": "bb8b4fd4db58ef590021b3262adb054f03a50837bb841c641c05d6178536b4d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/prepare/before/prepared.json",
+      "change": "added",
+      "bytes": 4142,
+      "sha256": "9d4126fc983de4b51e02db219084f2b9d98201941454e011297b214dd28f18ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/verifier/probe-before.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/verifier/probe-before.stdout",
+      "change": "added",
+      "bytes": 134,
+      "sha256": "2ffec0c0b087807c87b0819814439df1f6db72c699323d2b51d27ec1e99853b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/verifier/report/property.sarif",
+      "change": "added",
+      "bytes": 2469,
+      "sha256": "648c3c13979e0ec633e8566fbda4ec17aa140395b393a3a8a2d0ea39e3b543f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/verifier/verifier.json",
+      "change": "added",
+      "bytes": 4690,
+      "sha256": "beea868afe6e09c681fe9829bcc6a3dcd366a92fab2fc65a3138ed64aa7150e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/verifier/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-calibration/vulnerable-security/verifier/verifier.stdout",
+      "change": "added",
+      "bytes": 897,
+      "sha256": "4ef1564dd11e5143a6831c0cce279d7f63076cd8c075f898ab307935f961a5b5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T16:34:28+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "runtime-calibration/calibration.json",
+      "runtime-calibration/fixed-security/prepare/after/adapter-after.jar",
+      "runtime-calibration/fixed-security/prepare/after/after.jar",
+      "runtime-calibration/fixed-security/prepare/after/controls/oracle.py",
+      "runtime-calibration/fixed-security/prepare/after/driver.jar",
+      "runtime-calibration/fixed-security/prepare/after/logs/jar-adapter.log",
+      "runtime-calibration/fixed-security/prepare/after/logs/jar-driver.log",
+      "runtime-calibration/fixed-security/prepare/after/logs/jar-original.log",
+      "runtime-calibration/fixed-security/prepare/after/logs/javac-adapter.log",
+      "runtime-calibration/fixed-security/prepare/after/logs/javac-driver.log",
+      "runtime-calibration/fixed-security/prepare/after/logs/javac-original.log",
+      "runtime-calibration/fixed-security/prepare/after/prepared.json",
+      "runtime-calibration/fixed-security/verifier/probe-after.stderr",
+      "runtime-calibration/fixed-security/verifier/probe-after.stdout",
+      "runtime-calibration/fixed-security/verifier/report/property.sarif",
+      "runtime-calibration/fixed-security/verifier/verifier.json",
+      "runtime-calibration/fixed-security/verifier/verifier.stderr",
+      "runtime-calibration/fixed-security/verifier/verifier.stdout",
+      "runtime-calibration/mutant-security/prepare/mutant/adapter-mutant.jar",
+      "runtime-calibration/mutant-security/prepare/mutant/controls/oracle.py",
+      "runtime-calibration/mutant-security/prepare/mutant/driver.jar",
+      "runtime-calibration/mutant-security/prepare/mutant/logs/jar-adapter.log",
+      "runtime-calibration/mutant-security/prepare/mutant/logs/jar-driver.log",
+      "runtime-calibration/mutant-security/prepare/mutant/logs/jar-original.log",
+      "runtime-calibration/mutant-security/prepare/mutant/logs/javac-adapter.log",
+      "runtime-calibration/mutant-security/prepare/mutant/logs/javac-driver.log",
+      "runtime-calibration/mutant-security/prepare/mutant/logs/javac-original.log",
+      "runtime-calibration/mutant-security/prepare/mutant/mutant.jar",
+      "runtime-calibration/mutant-security/prepare/mutant/prepared.json",
+      "runtime-calibration/mutant-security/verifier/probe-mutant.stderr",
+      "runtime-calibration/mutant-security/verifier/probe-mutant.stdout",
+      "runtime-calibration/mutant-security/verifier/report/property.sarif",
+      "runtime-calibration/mutant-security/verifier/verifier.json",
+      "runtime-calibration/mutant-security/verifier/verifier.stderr",
+      "runtime-calibration/mutant-security/verifier/verifier.stdout",
+      "runtime-calibration/preservation/prepare/after/adapter-after.jar",
+      "runtime-calibration/preservation/prepare/after/after.jar",
+      "runtime-calibration/preservation/prepare/after/controls/oracle.py",
+      "runtime-calibration/preservation/prepare/after/driver.jar",
+      "runtime-calibration/preservation/prepare/after/logs/jar-adapter.log",
+      "runtime-calibration/preservation/prepare/after/logs/jar-driver.log",
+      "runtime-calibration/preservation/prepare/after/logs/jar-original.log",
+      "runtime-calibration/preservation/prepare/after/logs/javac-adapter.log",
+      "runtime-calibration/preservation/prepare/after/logs/javac-driver.log",
+      "runtime-calibration/preservation/prepare/after/logs/javac-original.log",
+      "runtime-calibration/preservation/prepare/after/prepared.json",
+      "runtime-calibration/preservation/prepare/before/adapter-before.jar",
+      "runtime-calibration/preservation/prepare/before/before.jar",
+      "runtime-calibration/preservation/prepare/before/controls/oracle.py",
+      "runtime-calibration/preservation/prepare/before/driver.jar",
+      "runtime-calibration/preservation/prepare/before/logs/jar-adapter.log",
+      "runtime-calibration/preservation/prepare/before/logs/jar-driver.log",
+      "runtime-calibration/preservation/prepare/before/logs/jar-original.log",
+      "runtime-calibration/preservation/prepare/before/logs/javac-adapter.log",
+      "runtime-calibration/preservation/prepare/before/logs/javac-driver.log",
+      "runtime-calibration/preservation/prepare/before/logs/javac-original.log",
+      "runtime-calibration/preservation/prepare/before/prepared.json",
+      "runtime-calibration/preservation/verifier/probe-after.stderr",
+      "runtime-calibration/preservation/verifier/probe-after.stdout",
+      "runtime-calibration/preservation/verifier/probe-before.stderr",
+      "runtime-calibration/preservation/verifier/probe-before.stdout",
+      "runtime-calibration/preservation/verifier/verifier.json",
+      "runtime-calibration/preservation/verifier/verifier.stderr",
+      "runtime-calibration/preservation/verifier/verifier.stdout",
+      "runtime-calibration/regex-probe/prepare/after/adapter-after.jar",
+      "runtime-calibration/regex-probe/prepare/after/after.jar",
+      "runtime-calibration/regex-probe/prepare/after/controls/oracle.py",
+      "runtime-calibration/regex-probe/prepare/after/driver.jar",
+      "runtime-calibration/regex-probe/prepare/after/logs/jar-adapter.log",
+      "runtime-calibration/regex-probe/prepare/after/logs/jar-driver.log",
+      "runtime-calibration/regex-probe/prepare/after/logs/jar-original.log",
+      "runtime-calibration/regex-probe/prepare/after/logs/javac-adapter.log",
+      "runtime-calibration/regex-probe/prepare/after/logs/javac-driver.log",
+      "runtime-calibration/regex-probe/prepare/after/logs/javac-original.log",
+      "runtime-calibration/regex-probe/prepare/after/prepared.json",
+      "runtime-calibration/regex-probe/verifier/probe-after.stderr",
+      "runtime-calibration/regex-probe/verifier/probe-after.stdout",
+      "runtime-calibration/regex-probe/verifier/report/property.sarif",
+      "runtime-calibration/regex-probe/verifier/verifier.json",
+      "runtime-calibration/regex-probe/verifier/verifier.stderr",
+      "runtime-calibration/regex-probe/verifier/verifier.stdout",
+      "runtime-calibration/vulnerable-security/prepare/before/adapter-before.jar",
+      "runtime-calibration/vulnerable-security/prepare/before/before.jar",
+      "runtime-calibration/vulnerable-security/prepare/before/controls/oracle.py",
+      "runtime-calibration/vulnerable-security/prepare/before/driver.jar",
+      "runtime-calibration/vulnerable-security/prepare/before/logs/jar-adapter.log",
+      "runtime-calibration/vulnerable-security/prepare/before/logs/jar-driver.log",
+      "runtime-calibration/vulnerable-security/prepare/before/logs/jar-original.log",
+      "runtime-calibration/vulnerable-security/prepare/before/logs/javac-adapter.log",
+      "runtime-calibration/vulnerable-security/prepare/before/logs/javac-driver.log",
+      "runtime-calibration/vulnerable-security/prepare/before/logs/javac-original.log",
+      "runtime-calibration/vulnerable-security/prepare/before/prepared.json",
+      "runtime-calibration/vulnerable-security/verifier/probe-before.stderr",
+      "runtime-calibration/vulnerable-security/verifier/probe-before.stdout",
+      "runtime-calibration/vulnerable-security/verifier/report/property.sarif",
+      "runtime-calibration/vulnerable-security/verifier/verifier.json",
+      "runtime-calibration/vulnerable-security/verifier/verifier.stderr",
+      "runtime-calibration/vulnerable-security/verifier/verifier.stdout"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-162937-example-targets-runtime-r3-run-verifier"
+}
