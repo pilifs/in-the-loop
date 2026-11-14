@@ -1,0 +1,205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-232735-example-305-mutant-replay-p1-s-mutation",
+  "title": "example 305 mutant-replay (P1's mutation control on the slice): after against the status-200 mutant",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.6s, peak 268.1 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-232735-example-305-mutant-replay-p1-s-mutation.json",
+    "sha256": "db5451d3c7e6629d0b4d6b68a71e496d07521dfde6e6532d2493f2832e487ddf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-232735-example-305-mutant-replay-p1-s-mutation",
+      "title": "example 305 mutant-replay (P1's mutation control on the slice): after against the status-200 mutant",
+      "description": "The job runs python3 examples/tools/build.py 305 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md, now with the source-slice route (the user's decision of 2026-11-14 for P1, example 305): the exact commits of spring-boot's e8de5a6d change can't be built (their builds pin SNAPSHOTs that are gone), so each commit is fetched from github.com at depth 1 or 2 and only WebMvcTags.java (and after's Outcome.java) is compiled, by Temurin 8's javac with -g -parameters -source 1.8 -target 1.8 -encoding UTF-8, against six JARs pinned by sha256: Framework 5.2.0.RC2's spring-web, spring-webmvc, spring-core and spring-jcl from repo.spring.io/milestone (whose 302 to its own S3 storage runtime_maven.py now follows from repo.spring.io only) and micrometer-core 1.2.0 and javax.servlet-api 4.0.1 from Maven Central. The driver (a Proxy HttpServletResponse whose getStatus() returns each of 27 probes) runs in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/mutant-replay/, read by the packet's independent oracle (controls/oracle.py problems(), the status class from the status's decimal spelling) and labelled extracted-source-slice in its claim's target.scopes. A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true. This is the first job of the source-slice route; a failure in its code is a finding to fix with a reproducer. A hand compile (a note) found the after slice's two classes byte-identical to Boot 2.2.0.M6's published ones. This task: the mutation pair, after against the constructed mutant (controls/status-200.patch, sha256 12099f89..., applied to after's checkout with git apply before its slice is compiled the same way), so Outcome.forStatus labels 200 INFORMATIONAL. Expected: after holds, the mutant violates the oracle at status 200 and only there.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay",
+        "target:source-slice"
+      ],
+      "links": {
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "build.py prints '305-...: task mutant-replay: none (completed; as expected)' and exits 0: after holds and the mutant violates the oracle (at 200), on JDK 21 and 25 alike; a receipt under examples/305-*/receipts/mutant-replay/ whose scopes say extracted-source-slice and constructed-mutation-of-a-slice",
+      "submitted": {
+        "at": "2026-11-14T23:27:35+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "two fetches of spring-boot at depth 1-2, six JARs, two javac runs and four short JVMs"
+      },
+      "steps": [
+        {
+          "name": "example 305 task mutant-replay (replay)",
+          "run": "python3 examples/tools/build.py 305 --task mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "6f0e54a8bba66b2ff55882d5fd4c07cdcd65254f",
+  "startedAt": "2026-11-14T23:29:42+00:00",
+  "finishedAt": "2026-11-14T23:29:51+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2786196,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "two fetches of spring-boot at depth 1-2, six JARs, two javac runs and four short JVMs"
+  },
+  "usage": {
+    "peakMemoryBytes": 281153536,
+    "wallSeconds": 7.6,
+    "cpuSeconds": 6.2,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 305 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 7.612,
+      "cpuSeconds": 6.24,
+      "cpuThrottledSeconds": 0.277,
+      "peakMemoryBytes": 281153536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-mutant-replay.log",
+        "lines": 2,
+        "bytes": 286,
+        "sha256": "7cae7281700edf7a5d9309214e589509aec8879b58e50e3f30d1efebb8066774",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T232951Z-3c5edba8/result.json",
+          "groups": [
+            "305",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task mutant-replay (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T232951Z-3c5edba8/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/plan.json",
+      "change": "added",
+      "bytes": 17380,
+      "sha256": "a548776231496e8d81ecb60979874e46d764732b557d134061a3d76cda46048f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/records/execution.json",
+      "change": "added",
+      "bytes": 36569,
+      "sha256": "29fb9c3aa324f7886465a30ded874b9a904a7ce8cdb5bd6971fdde70197bab0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/records/summary.txt",
+      "change": "added",
+      "bytes": 645,
+      "sha256": "5334632e055668bdac84be6b099c31fd7137d771ad7c3ea4b08af5efaf363293",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/result.json",
+      "change": "added",
+      "bytes": 11325,
+      "sha256": "42332aeb34879a1746e37e84ce0f3f7d9f36d44d0e088042b383b7ec1754bc99",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:30:35+00:00",
+    "applied": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/records/summary.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-replay/20261114T232951Z-3c5edba8/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

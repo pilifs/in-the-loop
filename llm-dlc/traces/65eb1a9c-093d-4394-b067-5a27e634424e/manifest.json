@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "65eb1a9c-093d-4394-b067-5a27e634424e",
-  "status": "open",
+  "status": "ended",
   "title": "Feature loop run status",
   "first_prompt": "Give me a status report on the current feature loop run",
   "client": {
@@ -328,14 +328,6 @@
       "summary": "example-targets Phase 5: 307's decided Gradle build can't resolve its buildscript (JCenter-only modules, the plugin portal's content host); route not built, the user's choice recorded",
       "body": "307 (Spring Security fe9e4549, BCrypt UTF-8) was to be built upstream with Gradle 5.5.1, with Spring's four build plugins from maven.aliyun.com's spring-plugin mirror (the user's decision of 2026-11-14). Lookups on 2026-11-14 (HEAD requests and pinned fetches, recorded in 307's sources.lock.json under buildRoute) show the buildscript's closure is still out of reach. plugins.gradle.org serves the plugins it hosts by redirect to plugins-artifacts.gradle.org, which the download policy doesn't follow. At least org.gretty:gretty-core:2.2.0 and org.jfrog.buildinfo:build-info-extractor:2.11.3 were JCenter-only: JCenter now redirects to Maven Central, which lacks them, and only maven.aliyun.com's JCenter mirror serves them. The four plugins (sha1 agreeing) and the 5.5.1 distribution (Gradle's published checksum) are pinned for later. The Gradle route wasn't built, since its only user can't run it.\n\nA fact for the user's choice: before's BCrypt.java compiled alone by javac 1.8.0_512 with -g -source 1.8 -target 1.8 is byte-identical to the BCrypt.class in Spring Security 5.2.0.M4's published JAR (repo.spring.io/milestone, class sha256 0b137406...). 307's handoff gives two options: (a) allow the portal's content host and the JCenter mirror for the build, or (b) the extracted-source slice, with before's class checked against M4's. The loop recommends (b). 307's target.json, README, notes and runtime_upstream.py's docstring say this, and the index is regenerated. Verified: example-targets-integration.sh exits 0 (contract 16, targets 210, test_build 190, test_pipeline 32, build.py --plan).\n\nThe brief is out of date in one place: decision 1's second extension says the mirror gives P3 its upstream build. Next: 305's slice route and the Boot 2.2.0.M6 replay.",
       "log_sha256": "14e24322faff6e81efd065e89d6d8a39d4c20e39478050d9926df5da9ddf4d15"
-    },
-    {
-      "change_id": "umqozkzmonlvlmkpunnkxpprvqynukqz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "e2dbf4e4734713624b23c4092850636a6a48b94c6157afb761bfd7fdae0e5608"
     },
     {
       "change_id": "xovopusrktnwumyrmuvvnnsqquuqowps",

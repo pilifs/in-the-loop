@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (open) |
+| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (ended) |
 | When | 2026-11-14 17:31 UTC to 2026-11-14 23:19 UTC (348 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.325 |
@@ -297,10 +297,6 @@ change `trtnqwqyzuwx` · [log `14e24322faff`](https://terminalvalue.net/raw-trac
 A fact for the user's choice: before's BCrypt.java compiled alone by javac 1.8.0_512 with -g -source 1.8 -target 1.8 is byte-identical to the BCrypt.class in Spring Security 5.2.0.M4's published JAR (repo.spring.io/milestone, class sha256 0b137406...). 307's handoff gives two options: (a) allow the portal's content host and the JCenter mirror for the build, or (b) the extracted-source slice, with before's class checked against M4's. The loop recommends (b). 307's target.json, README, notes and runtime_upstream.py's docstring say this, and the index is regenerated. Verified: example-targets-integration.sh exits 0 (contract 16, targets 210, test_build 190, test_pipeline 32, build.py --plan).
 
 The brief is out of date in one place: decision 1's second extension says the mirror gives P3 its upstream build. Next: 305's slice route and the Boot 2.2.0.M6 replay.
-
-### (in progress)
-
-change `umqozkzmonlv`, not yet described
 
 ### example-targets Phase 5: the source-slice route, and 305's slice replays with the Boot 2.2.0.M6 check queued (verification pending)
 

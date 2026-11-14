@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 97, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 23:28 UTC |
-| Prompts | 2,313 |
-| Model calls | 21,984 |
-| Tool calls | 22,969 (394 failed) |
+| Sessions | 98, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 23:30 UTC |
+| Prompts | 2,315 |
+| Model calls | 21,994 |
+| Tool calls | 22,977 (394 failed) |
 | Compactions | 357 |
 | Subagents | 16 |
-| Tokens written | 22,425,775 |
-| Tokens read | 3,401,306,376 (97.9% from cache) |
-| Commits with a trace | 670 |
-| Log snapshots | 832 (1763.8 MB gzipped, 732 uploaded) |
+| Tokens written | 22,429,455 |
+| Tokens read | 3,402,750,818 (97.9% from cache) |
+| Commits with a trace | 671 |
+| Log snapshots | 834 (1769.3 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -118,12 +118,13 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 16:30 UTC | [8b430aa4-bc67-4493-ac6d-36a360ce06cc](8b430aa4-bc67-4493-ac6d-36a360ce06cc/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 12 | 11 | 0 | 0 | 47,658 | 5 |
 | 2026-11-14 16:47 UTC | [c9b766bf-51e8-4b7e-b1f9-94e31b01568c](c9b766bf-51e8-4b7e-b1f9-94e31b01568c/summary.md) | ended | 2 min | `claude-sonnet-5-5` | 1 | 11 | 11 | 1 | 0 | 44,147 | 2 |
 | 2026-11-14 17:08 UTC | [278c4037-4ac0-4122-ad69-f61e45f5acb6](278c4037-4ac0-4122-ad69-f61e45f5acb6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 11 | 10 | 2 | 0 | 48,157 | 3 |
-| 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | open | 5 h 48 min | `claude-opus-5-5` | 6 | 33 | 30 | 0 | 0 | 101,862 | 35 |
+| 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | ended | 5 h 48 min | `claude-opus-5-5` | 6 | 33 | 30 | 0 | 0 | 101,862 | 35 |
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
-| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 5 h 3 min | `claude-opus-5-5` | 103 | 786 | 801 | 13 | 18 | 307,909 | 31 |
+| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 5 h 4 min | `claude-opus-5-5` | 104 | 790 | 803 | 13 | 18 | 313,393 | 32 |
 | 2026-11-14 22:28 UTC | [778b368b-7c15-49d4-8a80-52a00eae477a](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 2 | 20 | 18 | 4 | 0 | 61,265 | 2 |
 | 2026-11-14 22:40 UTC | [8eb322f2-65b0-48fa-be73-1357ad3bd4d7](8eb322f2-65b0-48fa-be73-1357ad3bd4d7/summary.md) | ended | 0 min | `claude-sonnet-5-5` | 1 | 5 | 4 | 0 | 0 | 36,561 | 2 |
+| 2026-11-14 23:29 UTC | [577f63c1-0bd5-4fa4-9f0e-3c96500c2881](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) | open | 1 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,048 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -227,15 +228,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 17,193 | 72 | 155,749 | 2,228,795 | 93.5% | 139 |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 536,185 | 1,600 | 2,587,279 | 95,326,108 | 97.4% | 183 |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 538,654 | 1,608 | 2,592,763 | 96,565,926 | 97.4% | 184 |
 | [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | 4,497 | 44 | 49,893 | 855,785 | 94.5% | 201 |
 | [`8eb322f2`](8eb322f2-65b0-48fa-be73-1357ad3bd4d7/summary.md) | 1,611 | 10 | 25,189 | 138,543 | 84.6% | 102 |
+| [`577f63c1`](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) | 1,211 | 12 | 26,822 | 172,298 | 86.5% | 164 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 20,137 | 87.7% | 97 |
+| `Bash` | 20,145 | 87.7% | 98 |
 | `Read` | 1,085 | 4.7% | 46 |
 | `Edit` | 852 | 3.7% | 45 |
 | `Write` | 513 | 2.2% | 41 |
@@ -928,6 +930,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 668 | change `ylkruvtn` | Verification findings: VF-026 moved to Decided and closed, and a stray sentence dropped from its Status | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/d95a0a98e22ae1dd2b18d52f7cd0f973fb560e8867643860552fd5b5d732da9e.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/8e7551d437bd66101264e6c4b640740a6f04ea5ab43f5a8b697e9a4ba92bbffd.jsonl.gz)) |
 | 669 | change `trtnqwqy` | example-targets Phase 5: 307's decided Gradle build can't resolve its buildscript (JCenter-only modules, the plugin portal's content host); route not built, the user's choice recorded | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/14e24322faff6e81efd065e89d6d8a39d4c20e39478050d9926df5da9ddf4d15.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/8e7551d437bd66101264e6c4b640740a6f04ea5ab43f5a8b697e9a4ba92bbffd.jsonl.gz)) |
 | 670 | change `xovopusr` | example-targets Phase 5: the source-slice route, and 305's slice replays with the Boot 2.2.0.M6 check queued (verification pending) | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/e2dbf4e4734713624b23c4092850636a6a48b94c6157afb761bfd7fdae0e5608.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/e53aa9cc3e1f61c4a30e75368b97277b997bbd712121efd69ce7d8eb73b6b96e.jsonl.gz)) |
+| 671 | change `xoqmqynm` | Record verification results for 3 job(s): example 305's slice replay, its Boot 2.2.0.M6 check and its mutation control pass | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4.jsonl.gz)), [`577f63c1`](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) ([log](https://terminalvalue.net/raw-traces/577f63c1-0bd5-4fa4-9f0e-3c96500c2881/35ff9984f485f9faf131537324090a6f8f0466ce8743ffab13eab93cb12ff045.jsonl.gz)) |
 
 ## Logs
 
@@ -1029,9 +1032,10 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 6 | 0 | 0.9 MB | `e2dbf4e47347`, not uploaded |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 30 | 0 | 69.7 MB | `e53aa9cc3e1f`, not uploaded |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 31 | 0 | 75.1 MB | `4b17e594bdd8`, not uploaded |
 | [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | 2 | 0 | 0.2 MB | `614c725d7625`, not uploaded |
 | [`8eb322f2`](8eb322f2-65b0-48fa-be73-1357ad3bd4d7/summary.md) | 2 | 0 | 0.2 MB | `2138830cab37`, not uploaded |
+| [`577f63c1`](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) | 1 | 0 | 0.1 MB | `35ff9984f485`, not uploaded |
 
 ## Session notes
 

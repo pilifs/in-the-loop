@@ -1,0 +1,418 @@
+{
+  "plan": {
+    "example": "305",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+    "revisions": [
+      "after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "outcome-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
+        },
+        {
+          "id": "outcome-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p305/OutcomeDriver.java",
+          "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
+        },
+        {
+          "id": "outcome-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
+        },
+        {
+          "id": "status-200-mutant",
+          "kind": "mutation",
+          "path": "controls/status-200.patch",
+          "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+        }
+      ],
+      "key": "79afb10d5a16c77b"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+          },
+          {
+            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+          },
+          {
+            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+          },
+          {
+            "coordinates": "io.micrometer:micrometer-core:1.2.0",
+            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+          },
+          {
+            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+          }
+        ],
+        "slice": {
+          "files": [
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-parameters",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "mutant": {
+          "base": {
+            "revision": "after",
+            "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+                "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+              },
+              {
+                "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+                "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+              },
+              {
+                "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+                "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+                "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+              },
+              {
+                "coordinates": "io.micrometer:micrometer-core:1.2.0",
+                "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+                "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+              },
+              {
+                "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+                "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+                "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+              }
+            ],
+            "slice": {
+              "files": [
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+              ],
+              "jdk": "8",
+              "flags": [
+                "-g",
+                "-parameters",
+                "-source",
+                "1.8",
+                "-target",
+                "1.8",
+                "-encoding",
+                "UTF-8"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/status-200.patch",
+            "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+          },
+          "description": "Outcome.forStatus's first range takes 200 too (status <= 200), so WebMvcTags.outcome labels a 200 response INFORMATIONAL instead of SUCCESS. It breaks preservation at status 200 and only there; the label stays in the finite set, so the finite-outcome property holds on the mutant by design."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/mutant-replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261114-232735-example-305-mutant-replay-p1-s-mutation/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags",
+    "network": true
+  },
+  "inputs": {
+    "example": "305",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+    "revisions": [
+      "after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "outcome-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
+        },
+        {
+          "id": "outcome-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p305/OutcomeDriver.java",
+          "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
+        },
+        {
+          "id": "outcome-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
+        },
+        {
+          "id": "status-200-mutant",
+          "kind": "mutation",
+          "path": "controls/status-200.patch",
+          "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+        }
+      ],
+      "key": "79afb10d5a16c77b"
+    },
+    "artifacts": [
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+          },
+          {
+            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+          },
+          {
+            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+          },
+          {
+            "coordinates": "io.micrometer:micrometer-core:1.2.0",
+            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+          },
+          {
+            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+          }
+        ],
+        "slice": {
+          "files": [
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-parameters",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-boot",
+        "mutant": {
+          "base": {
+            "revision": "after",
+            "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+                "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+              },
+              {
+                "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+                "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+              },
+              {
+                "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+                "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+                "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+                "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+              },
+              {
+                "coordinates": "io.micrometer:micrometer-core:1.2.0",
+                "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+                "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+              },
+              {
+                "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+                "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+                "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+              }
+            ],
+            "slice": {
+              "files": [
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+                "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+              ],
+              "jdk": "8",
+              "flags": [
+                "-g",
+                "-parameters",
+                "-source",
+                "1.8",
+                "-target",
+                "1.8",
+                "-encoding",
+                "UTF-8"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/status-200.patch",
+            "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
+          },
+          "description": "Outcome.forStatus's first range takes 200 too (status <= 200), so WebMvcTags.outcome labels a 200 response INFORMATIONAL instead of SUCCESS. It breaks preservation at status 200 and only there; the label stays in the finite set, so the finite-outcome property holds on the mutant by design."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "50e2df752b030cb034b0693c1f2949a692573a747d029ac4d4d0a25aebd88c90"
+}

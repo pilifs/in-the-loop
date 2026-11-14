@@ -1,0 +1,205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-232734-example-305-replay-p1-source-slice-route",
+  "title": "example 305 replay (P1, source-slice route): WebMvcTags.outcome's tags, before and after e8de5a6d, from each commit's slice",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.0s, peak 268.4 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-232734-example-305-replay-p1-source-slice-route.json",
+    "sha256": "bf024da2ef17a974841b63985fa4576d8e2adf5fab841b6d41851b4bf709b16f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-232734-example-305-replay-p1-source-slice-route",
+      "title": "example 305 replay (P1, source-slice route): WebMvcTags.outcome's tags, before and after e8de5a6d, from each commit's slice",
+      "description": "The job runs python3 examples/tools/build.py 305 --task replay, the target route of llm-dlc/loops/example-targets.md, now with the source-slice route (the user's decision of 2026-11-14 for P1, example 305): the exact commits of spring-boot's e8de5a6d change can't be built (their builds pin SNAPSHOTs that are gone), so each commit is fetched from github.com at depth 1 or 2 and only WebMvcTags.java (and after's Outcome.java) is compiled, by Temurin 8's javac with -g -parameters -source 1.8 -target 1.8 -encoding UTF-8, against six JARs pinned by sha256: Framework 5.2.0.RC2's spring-web, spring-webmvc, spring-core and spring-jcl from repo.spring.io/milestone (whose 302 to its own S3 storage runtime_maven.py now follows from repo.spring.io only) and micrometer-core 1.2.0 and javax.servlet-api 4.0.1 from Maven Central. The driver (a Proxy HttpServletResponse whose getStatus() returns each of 27 probes) runs in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/replay/, read by the packet's independent oracle (controls/oracle.py problems(), the status class from the status's decimal spelling) and labelled extracted-source-slice in its claim's target.scopes. A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true. This is the first job of the source-slice route; a failure in its code is a finding to fix with a reproducer. A hand compile (a note) found the after slice's two classes byte-identical to Boot 2.2.0.M6's published ones. This task: the positive pair, before (9b8decf9) and after (e8de5a6d); both must hold the oracle on every probe.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay",
+        "target:source-slice"
+      ],
+      "links": {
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "build.py prints '305-...: task replay: none (completed; as expected)' and exits 0: before and after both hold the oracle on JDK 21 and 25 alike; a receipt under examples/305-*/receipts/replay/ whose claim.target.scopes says extracted-source-slice for both",
+      "submitted": {
+        "at": "2026-11-14T23:27:34+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "a depth-2 blob-full fetch of spring-boot per revision (a few hundred MB), six JARs (about 4.3 MB), two javac runs and four short JVMs"
+      },
+      "steps": [
+        {
+          "name": "example 305 task replay (replay)",
+          "run": "python3 examples/tools/build.py 305 --task replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay"
+      ]
+    }
+  },
+  "sourceCommit": "6f0e54a8bba66b2ff55882d5fd4c07cdcd65254f",
+  "startedAt": "2026-11-14T23:29:42+00:00",
+  "finishedAt": "2026-11-14T23:29:50+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2786196,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "a depth-2 blob-full fetch of spring-boot per revision (a few hundred MB), six JARs (about 4.3 MB), two javac runs and four short JVMs"
+  },
+  "usage": {
+    "peakMemoryBytes": 281440256,
+    "wallSeconds": 7.0,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task replay (replay)",
+      "run": "python3 examples/tools/build.py 305 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 7.014,
+      "cpuSeconds": 6.26,
+      "cpuThrottledSeconds": 0.331,
+      "peakMemoryBytes": 281440256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-replay-replay.log",
+        "lines": 2,
+        "bytes": 265,
+        "sha256": "12e354e232bacdee9216d5771cdbc85f27277e732f85bcb3286298566e7e7163",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task replay: none (completed; as expected), receipt receipts/replay/20261114T232950Z-89be94d5/result.json",
+          "groups": [
+            "305",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task replay (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task replay: none (completed; as expected), receipt receipts/replay/20261114T232950Z-89be94d5/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/plan.json",
+      "change": "added",
+      "bytes": 15072,
+      "sha256": "67c062bb34f7e14c5356b5625cda62f68cfdc786a86305ed8c706c46b05c6144",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/records/execution.json",
+      "change": "added",
+      "bytes": 36140,
+      "sha256": "d64bd011ad4f4b7b3577adb4df907f7d57277651840adbb74a8dc7d43e8b5619",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/records/summary.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "5b6e7c5995543bbf17511fd393bb174df55d6bd1bcf0c8524b1a173fbd7e9207",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/result.json",
+      "change": "added",
+      "bytes": 10524,
+      "sha256": "08ee03fa697fec9771368f652a1d89ecd643a8d9b114f9fc10f4c1784d246204",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T23:30:35+00:00",
+    "applied": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/records/summary.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay/20261114T232950Z-89be94d5/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
