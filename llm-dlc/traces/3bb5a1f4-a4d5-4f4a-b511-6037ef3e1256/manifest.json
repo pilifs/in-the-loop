@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T18:23:01.219Z",
-  "duration_seconds": 10574,
+  "ended": "2026-11-14T18:25:19.449Z",
+  "duration_seconds": 10712,
   "stats": {
-    "turns": 53,
-    "api_calls": 458,
-    "tool_calls": 474,
+    "turns": 58,
+    "api_calls": 466,
+    "tool_calls": 479,
     "tool_errors": 5,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 272319,
     "usage": {
-      "input_tokens": 928,
-      "output_tokens": 489989,
-      "cache_read_input_tokens": 59315884,
-      "cache_creation_input_tokens": 1618000
+      "input_tokens": 944,
+      "output_tokens": 494397,
+      "cache_read_input_tokens": 59707732,
+      "cache_creation_input_tokens": 1644754
     }
   },
   "tools": {
-    "Bash": 401,
+    "Bash": 406,
     "Edit": 29,
     "Read": 20,
     "Write": 17,
@@ -201,24 +201,38 @@
     {
       "index": 10,
       "started": "2026-11-14T18:07:58.111Z",
-      "ended": "2026-11-14T18:23:01.219Z",
-      "turns": 5,
-      "api_calls": 19,
+      "ended": "2026-11-14T18:23:28.319Z",
+      "turns": 6,
+      "api_calls": 22,
       "usage": {
-        "input_tokens": 38,
-        "output_tokens": 12880,
-        "cache_read_input_tokens": 1088731,
-        "cache_creation_input_tokens": 66760
+        "input_tokens": 44,
+        "output_tokens": 14477,
+        "cache_read_input_tokens": 1331616,
+        "cache_creation_input_tokens": 70574
       },
-      "peak_context_tokens": 79946
+      "peak_context_tokens": 83760
+    },
+    {
+      "index": 11,
+      "started": "2026-11-14T18:24:08.611Z",
+      "ended": "2026-11-14T18:25:19.449Z",
+      "turns": 4,
+      "api_calls": 5,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 2811,
+        "cache_read_input_tokens": 148963,
+        "cache_creation_input_tokens": 22940
+      },
+      "peak_context_tokens": 36126
     }
   ],
   "log": {
-    "sha256": "1340833777b67076b2c1b6011f2b5ecf4be202314e8c250a050e21e832e4ed38",
-    "bytes": 15168764,
-    "lines": 5118,
-    "gzip_bytes": 2924725,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/1340833777b67076b2c1b6011f2b5ecf4be202314e8c250a050e21e832e4ed38.jsonl.gz"
+    "sha256": "bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73",
+    "bytes": 15622377,
+    "lines": 5252,
+    "gzip_bytes": 3036695,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -317,6 +331,14 @@
       "summary": "example-targets runtime: the constructed-mutant job passed, R1-R5 and the acceptance done; VF-025's JARs needn't be in the history",
       "body": "Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e26, collected as msotkvrv) passed. It ran the published-artifact route on real bytes: spring-core 5.3.19's PatternMatchUtils was recompiled from the v5.3.19 commit with suffix-anywhere.patch applied, using javac 25 with --release 8 -g -parameters read off the published class, into a copy of the JAR. On JDK 21 and 25, 5.3.19 agrees with the Javadoc oracle on all 45 probes, and the mutant disagrees at exactly the three predicted inputs. The unpatched recompile isn't byte-identical to the published class, and the record says so.\n\nVF-025 (the job's three 1.4 MiB spring-core JARs exceed jj's snapshot limit): the runtime loop's decision is that they needn't be in the history. Two are re-acquired by sha256, and the mutant is rebuilt by runtime_slice.py --case simplematch-mutant, with its hashes in prepared.json. runtime_simplematch/README.md now records the job's result and this. Closing the finding needs the files ignored on main (.gitignore is shared), so it is left for the user or the coordinator.\n\nThe brief's Progress records the result and the acceptance evidence row by row, and its status is now done. What remains is for the merge, listed under Progress. Verified: test_runtime and test_runtime_upstream, 85 tests, pass.",
       "log_sha256": "1340833777b67076b2c1b6011f2b5ecf4be202314e8c250a050e21e832e4ed38"
+    },
+    {
+      "change_id": "xvvuxmqsstptmlwwowmomuulwksuvkwn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.",
+      "log_sha256": "bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73"
     }
   ],
   "logs": {
@@ -372,6 +394,12 @@
       "bytes": 7179631,
       "lines": 2318,
       "gzip_bytes": 1409615,
+      "url": null
+    },
+    "bf89acfc115a523f4a66dc908a64f06533cc86cb3fd1f18efd37ebdc47cc6f73": {
+      "bytes": 15622377,
+      "lines": 5252,
+      "gzip_bytes": 3036695,
       "url": null
     },
     "cac95f1baaebcc6097ef9369d49b6ffb137ab8da0d45dec1325504b41d7580a2": {
