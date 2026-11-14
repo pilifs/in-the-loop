@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (ended) |
+| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (open) |
 | When | 2026-11-14 17:31 UTC to 2026-11-14 23:19 UTC (348 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.325 |
@@ -313,6 +313,14 @@ Two things the decision didn't foresee. repo.spring.io serves its larger JARs by
 Jobs: 20261114-232734-example-305-replay-p1-source-slice-route, 20261114-232734-example-305-m6-replay-p1-s-check-against, 20261114-232735-example-305-mutant-replay-p1-s-mutation.
 
 Out of date in the brief, outside Progress: the Downloads paragraph and decision 1's text don't mention repo.spring.io's storage redirect or the source-slice route's extra Framework JARs.
+
+### example-targets Phase 5: 305's slice replays read (all pass, a reproducible scaffold at the slice's scope); 285-287 mutant-replay and 105 replay queued (verification pending)
+
+change `rxzozluxtzyv` · [log `e2dbf4e47347`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/e2dbf4e4734713624b23c4092850636a6a48b94c6157afb761bfd7fdae0e5608.jsonl.gz)
+
+Example 305's three source-slice jobs, collected in xoqmqynm, all pass on JDK 21 and 25: both slices of WebMvcTags/Outcome hold the packet's oracle (replay), the after slice and Boot 2.2.0.M6's published actuator JAR give the same observations (m6-replay, the correspondence the user asked for), and the status-200 mutant fails at 200 alone while after holds (mutant-replay). Each receipt labels its scopes (extracted-source-slice, original-bytecode for M6, constructed-mutation-of-a-slice). 305's README state, handoff next and a note record this, and the regenerated index gives it 'scaffolded'. No proof was attempted.
+
+The remaining replays of the brief's Phase 5 step 1 are queued, each a build.py NNN --task T job whose plan was checked offline first: 20261114-233239-example-285-mutant-replay-phase-5-step-1, 20261114-233239-example-286-mutant-replay-phase-5-step-1, 20261114-233239-example-287-mutant-replay-phase-5-step-1 (each fixed release must hold and its constructed mutant fail the same oracle at its stated probes) and 20261114-233239-example-105-replay-phase-5-commons-numbe (before fails at (-2, 31) alone, after holds). Verified with example-targets-integration.sh, which exits 0: the contract (16), the targets suite (220), test_build.py (190), test_pipeline.py (32) and build.py --plan. Out of date in the brief, as recorded before: the Downloads paragraph and decision 1's second extension (307's build).
 
 ## Conversation
 

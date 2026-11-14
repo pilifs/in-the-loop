@@ -2,9 +2,11 @@
 
 [← All examples](../README.md)
 
-**State: a partial scaffold, its slice jobs queued.** Source-locked, with its claims frozen and its oracle, driver,
-probes and mutant written ([the packet](#the-packet)). It is prepared by the source-slice route (below), whose three
-replay jobs are queued: until they pass, no replay has run through the pipeline, so there is no verdict. The work
+**State: a reproducible scaffold at the slice's scope.** Source-locked, with its claims frozen and its oracle, driver,
+probes and mutant written ([the packet](#the-packet)). It is prepared by the source-slice route (below), and its three
+replay jobs passed on 2026-11-14, each on JDK 21 and 25: `replay` (both slices hold the oracle), `m6-replay` (the after
+slice and Boot 2.2.0.M6's published JAR show the same observations) and `mutant-replay` (after holds; the mutant fails
+at 200 alone). Their receipts are under `receipts/`. No proof has been attempted. The work
 manifest is [`target.json`](target.json); what was checked upstream, and how, is in
 [`sources.lock.json`](sources.lock.json).
 

@@ -1282,6 +1282,35 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     Then read 305's three jobs when they are collected. Then step 1's proof tasks and probes, the joint acceptance,
     the gap inventory and the for-review list. 307 still waits on the user's route choice; under (b) it reuses this
     route as it is.
+- 2026-11-14, **305's three slice jobs read: all pass, so P1 is a reproducible scaffold at the slice's scope. The
+  remaining four replays queued.**
+  - **305** (collected in `xoqmqynm`), each on JDK 21.0.13 and 25.0.5, each run exiting 0 with structured observations:
+    - `replay` (`receipts/replay/20261114T232950Z-89be94d5`): the before and after slices both hold the oracle, as a
+      positive pair expects;
+    - `m6-replay` (`20261114T232949Z-d7367f92`): the after slice and Boot 2.2.0.M6's published actuator JAR show the
+      same observations and no problem, as the correspondence expects. So the slice behaves like Spring's own build of
+      after, on top of the byte identity found by hand;
+    - `mutant-replay` (`20261114T232951Z-3c5edba8`): after holds, and the status-200 mutant fails at 200 alone
+      (`outcome=INFORMATIONAL` where the statement says `SUCCESS`).
+    - Each receipt's `claim.target.scopes` labels the slices `extracted-source-slice`, M6 `original-bytecode` and the
+      mutant `constructed-mutation-of-a-slice`. The index now gives 305 `scaffolded` on every task.
+    - 305's README state, handoff `next` and a note record this; the index is regenerated. No proof was attempted: its
+      four native tasks are step 1's proof work.
+  - **Queued** at this commit, each a `build.py NNN --task T` job with 2 CPUs, 3 GiB and 20 minutes, plans checked
+    offline first (all executable):
+    - `20261114-233239-example-285-mutant-replay-phase-5-step-1`: 2.7.18 holds; the `raw-method-fallback` mutant fails
+      at the five triggers and no legitimate probe;
+    - `20261114-233239-example-286-mutant-replay-phase-5-step-1`: 5.3.19 holds; the `pattern-side-unnormalized` mutant
+      fails at 13 probes, `favouriteColour` among them;
+    - `20261114-233239-example-287-mutant-replay-phase-5-step-1`: 6.3.8 holds; the `char-count-guard` mutant fails at
+      the multibyte triggers and the unguarded byte entry;
+    - `20261114-233239-example-105-replay-phase-5-commons-numbe`: before fails at (-2, 31) alone; after holds.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (220), `test_build.py`
+    (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Next**: step 1's proof tasks and probes, queued after checking each plan offline: the six packets' security,
+    preservation and mutant claim tasks (305's four on the slice; 307's wait on the user's route choice), each
+    expected to reach its stated conclusion or an observed capability refusal. Then read the four replays above when
+    collected, then the joint acceptance (A1, A2, A6, A7, A8), the gap inventory and the for-review list.
 - Status: working
 
 ## Loop settings

@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-233239-example-286-mutant-replay-phase-5-step-1",
+  "title": "example 286 mutant-replay (Phase 5 step 1): the constructed pattern-side-unnormalized mutant of Framework 5.3.19 fails the case-protected binding oracle where 5.3.19 holds",
+  "description": "The job runs python3 examples/tools/build.py 286 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision (every pinned file acquired by the sha256 its sidecar records, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. For a mutation pair, runtime prepares the constructed mutant on the published-artifact route: it fetches the base commit from github.com by full SHA at depth 1, checks and applies the patch, recompiles the changed classes against the published JARs with the base class's --release and debugging flags, and puts them in place of the base JAR's classes in a copy of the JAR. The mutant is a sensitivity control (the same oracle must catch a nearby break of the fix), never a revision of Spring. The base must hold and the mutant fail. Example 286 (CVE-2022-22968, DataBinder.isAllowed and bind): fixed-release is Framework 5.3.19 (cedb5874); the mutant is 5.3.19 with controls/pattern-side-unnormalized.patch (sha256 f0a7d64a...), which drops the fix's toLowerCase() on the pattern side of setDisallowedFields, so only the field side is normalized. Gate A3 already passed on 286's release replay (after VF-026's fix); this is the packet's mutation control.",
+  "kind": "example",
+  "capabilities": [
+    "target:replay"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/runtime.py"
+    ],
+    "examples": [
+      "286"
+    ]
+  },
+  "expected": "build.py prints '286-...: task mutant-replay: none (completed; as expected)' and exits 0: fixed-release holds, and the mutant violates the oracle at 13 probes, the exact-case favouriteColour among them, and at no legitimate probe, on JDK 21 and 25 alike; a receipt under examples/286-*/receipts/mutant-replay/",
+  "submitted": {
+    "at": "2026-11-14T23:32:39+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "notes": "a depth-1 fetch of a spring-framework commit from github.com (a few hundred MB), one small javac run, four short JVM runs; 306's comparable mutant replay passed in a few minutes"
+  },
+  "steps": [
+    {
+      "name": "example 286 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 286 --task mutant-replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-replay"
+  ]
+}

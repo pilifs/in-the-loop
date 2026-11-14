@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T23:29:43.146Z",
-  "duration_seconds": 18263,
+  "ended": "2026-11-14T23:37:57.581Z",
+  "duration_seconds": 18757,
   "stats": {
-    "turns": 104,
-    "api_calls": 790,
-    "tool_calls": 803,
-    "tool_errors": 13,
-    "compactions": 18,
+    "turns": 108,
+    "api_calls": 817,
+    "tool_calls": 833,
+    "tool_errors": 15,
+    "compactions": 19,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 1608,
-      "output_tokens": 538654,
-      "cache_read_input_tokens": 96565926,
-      "cache_creation_input_tokens": 2592763
+      "input_tokens": 1662,
+      "output_tokens": 553085,
+      "cache_read_input_tokens": 99327810,
+      "cache_creation_input_tokens": 2709781
     }
   },
   "tools": {
-    "Bash": 693,
-    "Read": 51,
-    "Edit": 48,
+    "Bash": 718,
+    "Read": 54,
+    "Edit": 50,
     "Agent": 4,
     "AskUserQuestion": 2,
     "ToolSearch": 2,
@@ -320,14 +320,28 @@
         "cache_creation_input_tokens": 300207
       },
       "peak_context_tokens": 313393
+    },
+    {
+      "index": 19,
+      "started": "2026-11-14T23:30:45.297Z",
+      "ended": "2026-11-14T23:37:57.581Z",
+      "turns": 4,
+      "api_calls": 27,
+      "usage": {
+        "input_tokens": 54,
+        "output_tokens": 14431,
+        "cache_read_input_tokens": 2761884,
+        "cache_creation_input_tokens": 117018
+      },
+      "peak_context_tokens": 130204
     }
   ],
   "log": {
-    "sha256": "4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4",
-    "bytes": 25740380,
-    "lines": 8240,
-    "gzip_bytes": 5383773,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4.jsonl.gz"
+    "sha256": "26b75001d797a8804c1e80c9156f65ea2e311a47d7cf28440da54067755d7769",
+    "bytes": 26880804,
+    "lines": 8527,
+    "gzip_bytes": 5655750,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/26b75001d797a8804c1e80c9156f65ea2e311a47d7cf28440da54067755d7769.jsonl.gz"
   },
   "subagents": [
     {
@@ -689,20 +703,28 @@
       "log_sha256": "e53aa9cc3e1f61c4a30e75368b97277b997bbd712121efd69ce7d8eb73b6b96e"
     },
     {
-      "change_id": "moqxlrxytwqmtwqquwkmyuzpowzwnvpq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4"
-    },
-    {
       "change_id": "xoqmqynmltoxpzyonxqrupuxslmzqryv",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 3 job(s): example 305's slice replay, its Boot 2.2.0.M6 check and its mutation control pass",
       "body": "The three jobs queued by 6f0e54a8 ran on vm-1 (38G/18 CPUs/9 workers, the streams row) and passed in 6-8 s each, with the example task as expected. Their outputs (the three receipts under example 305, the regenerated examples index) were applied. No findings opened or closed.",
       "log_sha256": "4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4"
+    },
+    {
+      "change_id": "zrowtuzryzqkylrwumkorvnrpvrnyprw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "26b75001d797a8804c1e80c9156f65ea2e311a47d7cf28440da54067755d7769"
+    },
+    {
+      "change_id": "rxzozluxtzyvuprvxvtxxlxvkzmsmxoq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5: 305's slice replays read (all pass, a reproducible scaffold at the slice's scope); 285-287 mutant-replay and 105 replay queued (verification pending)",
+      "body": "Example 305's three source-slice jobs, collected in xoqmqynm, all pass on JDK 21 and 25: both slices of WebMvcTags/Outcome hold the packet's oracle (replay), the after slice and Boot 2.2.0.M6's published actuator JAR give the same observations (m6-replay, the correspondence the user asked for), and the status-200 mutant fails at 200 alone while after holds (mutant-replay). Each receipt labels its scopes (extracted-source-slice, original-bytecode for M6, constructed-mutation-of-a-slice). 305's README state, handoff next and a note record this, and the regenerated index gives it 'scaffolded'. No proof was attempted.\n\nThe remaining replays of the brief's Phase 5 step 1 are queued, each a build.py NNN --task T job whose plan was checked offline first: 20261114-233239-example-285-mutant-replay-phase-5-step-1, 20261114-233239-example-286-mutant-replay-phase-5-step-1, 20261114-233239-example-287-mutant-replay-phase-5-step-1 (each fixed release must hold and its constructed mutant fail the same oracle at its stated probes) and 20261114-233239-example-105-replay-phase-5-commons-numbe (before fails at (-2, 31) alone, after holds). Verified with example-targets-integration.sh, which exits 0: the contract (16), the targets suite (220), test_build.py (190), test_pipeline.py (32) and build.py --plan. Out of date in the brief, as recorded before: the Downloads paragraph and decision 1's second extension (307's build).",
+      "log_sha256": "26b75001d797a8804c1e80c9156f65ea2e311a47d7cf28440da54067755d7769"
     }
   ],
   "logs": {
@@ -722,6 +744,12 @@
       "bytes": 11174857,
       "lines": 3474,
       "gzip_bytes": 2408651,
+      "url": null
+    },
+    "26b75001d797a8804c1e80c9156f65ea2e311a47d7cf28440da54067755d7769": {
+      "bytes": 26880804,
+      "lines": 8527,
+      "gzip_bytes": 5655750,
       "url": null
     },
     "2a7f760e3f0e5c9c69117e42efe1776cda1ccb209c5707fee7534374e32d8234": {

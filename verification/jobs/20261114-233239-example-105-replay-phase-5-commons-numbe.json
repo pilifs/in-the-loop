@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-233239-example-105-replay-phase-5-commons-numbe",
+  "title": "example 105 replay (Phase 5): commons-numbers pow, before deviates from the Javadoc's contract at (-2, 31) alone and after meets it, from each commit's Maven build",
+  "description": "The job runs python3 examples/tools/build.py 105 --task replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision (every pinned file acquired by the sha256 its sidecar records, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. Example 105 (commons-numbers pull request 223, ArithmeticUtils.pow(int,int)), the calibration packet: runtime prepares before (e7c172d2) and after (8cfc04e8) by the upstream-build route, each commit checked out from github.com and built with Maven 3.10.0 on JDK 11 (dependencies from Maven Central, every resolved file hashed), then the driver runs replay/probes.json's 75 probes, every point of the fix-property domain, on JDK 21 and 25. Its two proof tasks already passed gate A5 (jobs 20261114-215343 and 20261114-215345, established and refuted with the witness (-2, 31)); this is the concrete replay task on its own receipt, which those proof receipts don't carry (ingestion bundles no raw streams).",
+  "kind": "example",
+  "capabilities": [
+    "target:replay"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/runtime.py"
+    ],
+    "examples": [
+      "105"
+    ]
+  },
+  "expected": "build.py prints '105-...: task replay: none (completed; as expected)' and exits 0: before violates the oracle at (-2, 31) alone (ArithmeticException), after shows no problem, on JDK 21 and 25 alike; a receipt under examples/105-*/receipts/replay/",
+  "submitted": {
+    "at": "2026-11-14T23:32:39+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "maven",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "notes": "two shallow github.com fetches of commons-numbers and two Maven builds on JDK 11 (runtime's job 20261114-174017 built both in 59 s with a warm cache), four short JVM runs"
+  },
+  "steps": [
+    {
+      "name": "example 105 task replay (replay)",
+      "run": "python3 examples/tools/build.py 105 --task replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/replay"
+  ]
+}
