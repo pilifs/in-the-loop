@@ -143,7 +143,7 @@ timebox, the downloads policy and the safety rules. Queue anything heavy, and re
 - session: 70d4b729-3b1f-41d1-a89c-03fd78a71818
 - model: claude-opus-5-5
 - effort: high
-- memory: 4G
+- memory: 12G
 - workspace: example-targets-negative
 - fork: e9be5afb-09c9-4473-a9e9-38f2fb61ca80
 

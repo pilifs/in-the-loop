@@ -150,7 +150,7 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
 - session: ddf78f27-05e0-438a-81be-8e7620b07bb7
 - model: claude-opus-5-5
 - effort: high
-- memory: 4G
+- memory: 12G
 - workspace: example-targets-positive
 - fork: e9be5afb-09c9-4473-a9e9-38f2fb61ca80
 

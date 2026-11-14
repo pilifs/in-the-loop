@@ -12,58 +12,70 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:11:22.420Z",
-  "ended": "2026-11-14T15:13:08.274Z",
-  "duration_seconds": 106,
+  "ended": "2026-11-14T15:16:22.882Z",
+  "duration_seconds": 300,
   "stats": {
     "turns": 2,
-    "api_calls": 8,
-    "tool_calls": 7,
+    "api_calls": 23,
+    "tool_calls": 22,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 62690,
+    "peak_context_tokens": 93252,
     "usage": {
-      "input_tokens": 18,
-      "output_tokens": 3089,
-      "cache_read_input_tokens": 415016,
-      "cache_creation_input_tokens": 33930
+      "input_tokens": 48,
+      "output_tokens": 12612,
+      "cache_read_input_tokens": 1590960,
+      "cache_creation_input_tokens": 64492
     }
   },
   "tools": {
-    "Bash": 7
+    "Bash": 20,
+    "AskUserQuestion": 1,
+    "Write": 1
   },
-  "files_touched": [],
+  "files_touched": [
+    "verification/pipeline.local.toml"
+  ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-14T15:11:22.420Z",
-      "ended": "2026-11-14T15:13:08.274Z",
+      "ended": "2026-11-14T15:16:22.882Z",
       "turns": 2,
-      "api_calls": 8,
+      "api_calls": 23,
       "usage": {
-        "input_tokens": 18,
-        "output_tokens": 3089,
-        "cache_read_input_tokens": 415016,
-        "cache_creation_input_tokens": 33930
+        "input_tokens": 48,
+        "output_tokens": 12612,
+        "cache_read_input_tokens": 1590960,
+        "cache_creation_input_tokens": 64492
       },
-      "peak_context_tokens": 62690
+      "peak_context_tokens": 93252
     }
   ],
   "log": {
-    "sha256": "1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53",
-    "bytes": 490504,
-    "lines": 86,
-    "gzip_bytes": 117759,
-    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53.jsonl.gz"
+    "sha256": "874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36",
+    "bytes": 759038,
+    "lines": 184,
+    "gzip_bytes": 158033,
+    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36.jsonl.gz"
   },
   "subagents": [],
   "commits": [
     {
       "change_id": "xsusnqssknumllkqrvvnownswsquwlyu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "882459346039929237bb14a12682ada2bf5e1121",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53"
+    },
+    {
+      "change_id": "nkorlnlnwsyuwxxqprknzoyqvrmqvnws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets ready to launch: status working, and memory caps raised for the resized VM",
+      "body": "The push (prerequisite 7) was done, so the main brief's status is now working. The VM was resized from 28 vCPUs / 46 GiB to 30 vCPUs / 105 GiB. The 4G cap per feature loop OOM-killed processes 8 times during application-core (journalctl: reuse once, values four times, the merge loop three times on 2026-11-08), so each example-targets loop now gets 12G: the four stream briefs' '- memory:', a new '- memory: 12G' in the main brief, and the launch command's FEATURE_LOOP_MEMORY_MAX (which overrides the briefs, as does ~/.profile, now also 12G). run-streams.sh's integration check scope goes from 3.5G to 6G. The runner's machine-local pipeline.local.toml (not committed) was rescaled to 13 workers, 26 CPUs, 76G, 24G per job and 8G for builds, which leaves about 34G for jobs while the four streams and the integration check run. Verified: bash -n on run-streams.sh, pipeline.py validate reports 0 problems, and the queue is empty.",
+      "log_sha256": "874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36"
     }
   ],
   "logs": {
@@ -72,6 +84,12 @@
       "lines": 86,
       "gzip_bytes": 117759,
       "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/1e9e697e88e233de232490d970e18a38226d72d2d25e9447443cf3fc59b38c53.jsonl.gz"
+    },
+    "874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36": {
+      "bytes": 759038,
+      "lines": 184,
+      "gzip_bytes": 158033,
+      "url": null
     }
   },
   "redaction_policy": 4,

@@ -291,7 +291,7 @@ fork from it, so Phase 0 is its work, done before any fork ([decision 7](#decisi
    settled by the user (done 2026-11-08).
 7. **Push**, at the user's request.
 8. **This brief's status set to `working`**, and the planning session closed. The user then runs
-   `FEATURE_LOOP_MEMORY_MAX=4G CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh example-targets` from the default
+   `FEATURE_LOOP_MEMORY_MAX=12G CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh example-targets` from the default
    workspace, in tmux. It compacts the planning session once, before the forks.
 
 ## Phase 0: interfaces, hooks and fixtures
@@ -512,13 +512,17 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   `example.json` says `origin: real-world` only because the route takes one; its sidecar's role is `control`. The
   recorded gap scan used a `jvmcontract` built before application-core's last `lib/src` change (noted in the
   fixtures' README).
-- Status: blocked: the push (prerequisite 7), at the user's request; then this line becomes `working` and the user launches
+- 2026-11-14, **pushed** (prerequisite 7, `xsusnqss`). The VM was resized to 30 vCPUs and 105 GiB, so each loop's cap
+  is now 12G (the four streams' `- memory:`, this brief's, and the launch command), up from 4G, which OOM-killed
+  processes 8 times during application-core; the integration check's scope is 6G (`run-streams.sh`).
+- Status: working
 
 ## Loop settings
 
 - session: 051e402b-750c-4a9d-bdd2-24dfb39add84
 - model: claude-opus-5-5
 - effort: high
+- memory: 12G
 - integration: llm-dlc/tools/example-targets-integration.sh
 - new-window: no
 

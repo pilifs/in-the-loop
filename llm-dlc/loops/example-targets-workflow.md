@@ -126,7 +126,7 @@ timebox and the safety rules. Planning and discovery never touch the network.
 - session: eaff7dd7-6d26-4a35-811f-cb8e08f4ee79
 - model: claude-opus-5-5
 - effort: high
-- memory: 4G
+- memory: 12G
 - workspace: example-targets-workflow
 - fork: e9be5afb-09c9-4473-a9e9-38f2fb61ca80
 

@@ -448,7 +448,7 @@
     {
       "change_id": "tspropkoxutymuzvksvzskotmuwxtzsq",
       "commit_id": "2649446c5151435220aec16135d152fcd4906e66",
-      "immutable": false,
+      "immutable": true,
       "summary": "Draft the example-targets loop: four streams that scaffold Spring CVEs and independent upstream changes as reproducible work packets",
       "body": "Adds llm-dlc/loops/example-targets.md, its four stream briefs (runtime, negative, positive, workflow), example-targets-acceptance.md and example-targets-sources.md, adapted from an outside plan the user shared (a review of the repository at main 57f04e55 on GitHub, ~/code/briefs/example-targets-all-documents.txt), with its seed metadata unchanged as example-targets-inputs/seeds.json. The loop scaffolds, it doesn't run the proof campaign: three CVEs (2023-34055, 2022-22968, 2025-22228) and three independent historical positives become packets with pinned history, fixed tasks, independent oracles, mutation controls and replay routes, the 15-CVE registry and CVE-2025-22234 are catalogued, example 105 migrates as the calibration, and the observed capability gaps are ranked as the work list towards a v1.\n\nEach of the review's claims about the code was recounted at 210b9498 (application-core Phase 5 step 1) with file:line evidence, in the main brief's 'Where it starts from'. Three are corrected: the one-sided replay it attributed to example 109 is VF-015's step 4 and already fixed (witness.rs:779-786); example numbers are reserved only in briefs, with 197-279 unused, so this brief takes 280-329; and example.schema.json is closed, so the sidecar reference is a Phase 0 schema change. The review's private link to an earlier document is replaced by a description.\n\nThe user settled four decisions on 2026-11-08: downloads allowed in jobs and loops, from github.com and Maven Central only, hash-pinned (settling build-orchestration.md's open question for this wave); four streams, with the case packets run through the merged infrastructure in Phase 5, since the streams' branches can't share code; JDKs 8, 11 and 17 installed in Phase 0 for upstream builds; and the archived registry supplied by the user. Decisions 5-12 (pipeline mode, one writer for shared files, Phase 0 in this planning session e9be5afb after application-core finishes, memory, model, the number ranges, the v1 gap inventory, and the adaptations) are proposed.\n\nNot launched and not launchable yet: the names are registered in feature-loop.sh and run-streams.sh in Phase 0, after application-core's run (which is using run-streams.sh) finishes, so the main brief's status is blocked. Committed from a workspace of its own, example-targets-plan, based on main, because application-core's Phase 5 has uncommitted work in the default workspace; it is rebased onto application-core's final commit at Phase 0. Verified by checking every relative link in the briefs (only the integration script Phase 0 adds is missing) and that seeds.json parses.",
       "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
@@ -456,7 +456,7 @@
     {
       "change_id": "myyoxkpzvzlurumwnypkpluoxnomqqvv",
       "commit_id": "968a973056308b69200448ecffbb8637ef826ebc",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the JDKs installed now, out of Phase 0, with JDK 25 as the default and main target",
       "body": "At the user's request the planning session installed the JDKs of decision 3 itself instead of leaving them to Phase 0: Temurin 17.0.21+9, 11.0.33+10 and 8u512-b09 with sdkman, beside the 21.0.13+9 and 25.0.5+8 already there. sdkman made each the default as it installed, even with its prompt declined, so the default was set back to 25.0.5.0+8-tem at once. About two minutes passed; the pipeline had no job pending or running, and the application-core merge loop only read and edited files meanwhile, so nothing ran on the wrong JDK.\n\nThe briefs now say: JDK 25 is the default and, as the most relevant for Java development today, the target of everything this wave writes and the JVM for concrete controls wherever a revision's pinned artifacts run on it; an older JDK is used only where a revision's build or runtime needs it, selected by full path, and every preparation and replay records the JDK it used. Phase 0 loses its step 1 (six steps left), the machine row of 'Where it starts from' lists the five JDKs with their identities, decision 3 records the install, and A0 no longer names JDKs. Verified with each JDK's java -version and release file, and sdk current java giving 25.0.5.0+8-tem in a login shell.",
       "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
@@ -464,7 +464,7 @@
     {
       "change_id": "ovzrqrxxnunvlruopvqkrwqvwozzusym",
       "commit_id": "97fb1448bb70773d0d269446d2e01f537f3a0669",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: JDK 21 a main target beside 25",
       "body": "At the user's request, JDKs 21 and 25, the two current LTS releases, are both main targets; 25 stays sdkman's default. Everything this wave writes is compiled with --release 21 so it runs on both, and a revision's concrete controls run on 21 and on 25 wherever its pinned artifacts do, as two JVM identities recorded separately, a disagreement between them being a finding. Older JDKs (8, 11, 17) are used only where a revision's build or runtime needs them. Updates the main brief's JDK rule and decision 3, and the runtime and positive briefs.\n\nVerified that JDK 25's javac --release 21 output runs on both installed JDKs (a class printing java.version: 21.0.13 and 25.0.5).",
       "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
@@ -472,7 +472,7 @@
     {
       "change_id": "ooorlwpzuxwkmszwpvwzuyxvzpypzmul",
       "commit_id": "bd2da6c1cb688894d33c3a79ce4956cdd3b1b49c",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: decisions 5-12 settled by the user, as proposed",
       "body": "The user walked through the eight proposed decisions on 2026-11-08 and settled each as proposed: verification with the pipeline; one writer for shared files (the planning session, in Phase 0); Phase 0 in this planning session e9be5afb after application-core finishes; 4 GB per stream scope with about 24 GB for the runner; claude-opus-5-5 at high effort for all five loops; example numbers 280-329 as allocated, mutation controls inside their packets; the v1 gap inventory as an explicit Phase 5 output; and the adaptations to the outside plan (the three corrected claims, the private link replaced, this repository's launch metadata).\n\nThe main brief's header, Decisions section, prerequisite 6 and Progress record it, and its status is now blocked only on application-core's finish, the archived registry the user is providing, and Phase 0. No stream brief needed a change: their Loop settings already carried these values. Verified by reading the status line back.",
       "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
@@ -480,7 +480,7 @@
     {
       "change_id": "xuzwwrwxymqkoywyuooopovrkmkqzznn",
       "commit_id": "6cd8b64c0bd696474dee460f17ff4768fab50c3f",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the archived CVE registry committed, hash checked (prerequisite 3)",
       "body": "The outside plan pins its 15-CVE research registry, spring-cve-targets.research-2026-11-04.json, by sha256 e86301ab…; the user supplied the plan's package, and its inputs/ file matches that hash. It is committed unchanged under llm-dlc/loops/example-targets-inputs/ as the negative stream's catalog input: 15 cases, none run, with a verifier review from commit 4c279ba6 that the brief already marks stale. The package's other files were compared with the text the briefs were adapted from and match it, so nothing else changes. The main brief's Progress records this, and its status now waits only on application-core's finish and Phase 0.",
       "log_sha256": "3259ebc0f1fc66cbb557899a31e8027a6cd6908f04a0febf81d1ecccd71f04db"
@@ -488,7 +488,7 @@
     {
       "change_id": "ptroqoqmxvsmlxuprwulmzssyxozlzvm",
       "commit_id": "0f09707472d3346ba8657f454498f85eda3ac151",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 0 step 1: the strict target.json sidecar schema, its loader, and the one reference from example.json",
       "body": "examples/schema/target.schema.json (example-target/v1) is the work manifest a real-world example may carry: identity (case, family, role), history (full commit SHAs, separately named pairs, introduction status), preparation (published artifact or upstream build, Maven Central and github.com URLs only, fixed versions, JDK 8/11/17/21/25), tasks (prove/compare/equivalence/replay, revision or pair by kind, explicit engine and bounds, authored expectation, prerequisites), controls and handoff blockers by gap kind. Every object is closed. examples/tools/targets/sidecar.py validates it and adds the checks a schema can't make: paths resolve inside the folder (symlinks included), every named revision, pair and task exists, ids are unique, prerequisites have no cycle, and no mutable artifact version. example.schema.json gains an optional target (always target.json), forbidden for constructed examples; build.py's load_example() checks the sidecar whenever an example is read. Verified: 14 new tests (examples/tools/targets/test_sidecar.py) cover an unknown field at each level, mutable revisions and versions, a foreign download URL, path escapes, a cycle and undefined names; test_build.py's 190 tests pass; --index-only leaves README and index.json unchanged.",
       "log_sha256": "762975fd1c1e6698c86883b50a78ed90ba9494a03a1a5548fce3e919794aad02"
@@ -496,7 +496,7 @@
     {
       "change_id": "quzmrkzxrltovpprxykwuzttqqnpnvvy",
       "commit_id": "4cef09c8a8581c345f501d6461f42a560db175b7",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 0 step 2: the three shared interfaces, frozen, with stubs that fail closed",
       "body": "examples/tools/targets/interfaces.py freezes TaskPlan (a pure resolution of a named task: revisions, declared claim, prerequisites, artifacts, tools, explicit engine and gaps, authored expectation, outputs), PreparedTarget (source-locked, artifacts-ready or failed with its stage, diagnostic and whatever artifacts exist; never a claim decision), the raw ExecutionRecord between runtime and workflow (how a process ended, never a verdict; observations None when unreadable), Receipt (one format-2 receipt per task and attempt) and the named Unsupported result. workflow.py (plan_task, ingest, project) and runtime.py (prepare, run_controls, run_verifier) are the owning streams' files: Phase 0's versions return Unsupported naming the interface and the stream, and project() states only what target.json says, with readiness and claim statuses left None for W4. test_interfaces.py freezes the signatures and field order (a field added later needs a default); test_workflow.py and test_runtime.py, owned by their streams, test the stubs and are rewritten as each is replaced. Verified: 21 tests pass under unittest discovery and each file alone.",
       "log_sha256": "76d2f4d38efe8049fdf4b7108bc2b41d6e60c8ba5f103f47978ff1d0fa7ef828"
@@ -504,7 +504,7 @@
     {
       "change_id": "lrxtyuuxlwnxvkrlvwxtunzqpvzqqnny",
       "commit_id": "1d92e5f2e929246c30b8ee0cec20a25abd017d3b",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 0 step 3: the hooks (build.py --task, pipeline submit --task, index and find.py projections, result-schema extension points)",
       "body": "build.py: --plan NNN --task T prints one task's plan and NNN --task T makes one attempt, both through examples/tools/targets/route.py, which chains plan_task, prepare per revision (only artifacts-ready goes on), run_controls, run_verifier and ingest, and stops at the first Unsupported (printed as not-executed, exit 1). The real-world gate opens only for an example with a target sidecar and a named task; --plan NNN lists a sidecar example's task plans; a bad --task (unknown, no sidecar, two ids, another mode) exits 2 before anything runs. pipeline.py submit --example NNN --task T builds the job from the same plan and refuses a task that isn't executable, so nothing can be queued while Phase 0's stubs answer. render_index() adds each example's  projection (workflow.project()) beside its historical verdictLabel; find.py gains --family, --role, --readiness, --claim-status and --gap (observed gaps only), which nothing without a projected value matches. result.schema.json gains claim.target (task, sidecar hash, revisions, every classpath entry in order by sha256, JDKs, folder files), inputs.dependencies 'pinned in target.dependencies', inputs.patch null only with a target, records/ evidence paths in a bundle, and inputs.contracts, which build.py's claim_record() already writes under --gaps advised and the schema refused (the brief's side finding). Also fixes step 1's break of verification/test_pipeline.py (its stub repo now copies targets/), found by the baseline recount. Verified: test_route.py's 12 tests (hooks, chain order and stops, index, find filters), a new pipeline test for --task, test_pipeline 29/29, test_build 190/190, the targets suite, and all 157 stored results still valid against both result schemas; the docs in examples/README.md and verification/README.md describe the route.",
       "log_sha256": "5e1d08440620906835b072be55666630bca7c0d5a4597861cc25193db73eddf8"
@@ -512,7 +512,7 @@
     {
       "change_id": "ynzpqxsvuzoxwsvylrkkumrxmssruosw",
       "commit_id": "1c00d934d35b7c57a444c32e6963d516c08a5307",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 0 step 4: the fixtures every stream's unit checks run on",
       "body": "examples/tools/targets/fixtures/ holds a constructed two-revision fixture laid out as an example with a target sidecar (role control, never placed in examples/): fixture.Gate.allowed(int) denies code 65 and its fix also denies 97, a constructed mutant of the fix denies 97 only, and fixture.RegexGate (in every revision) goes through java.util.regex as the deliberate capability refusal. A minimal adapter is compiled separately against each revision's JAR and a driver prints one JSON line per input; gate/oracle.py is the independent oracle. build_fixtures.py builds the JARs with --release 21, a fixed timestamp and sorted entries (byte-identical across builds). make_records.py recorded each revision's driver in its own JVM on JDK 25 and 21 (the oracle finds 97 on before, 65 on the mutant, nothing on after, on both JDKs) and the static jvmcontract gaps scan of RegexGate (Pattern.compile, Pattern.matcher, Matcher.matches; it proves nothing, and the binary predates application-core's last lib/src change, noted in the README), and constructed a killed control, malformed output, a one-sided replay, an exit-1 verifier with no witness, and two receipts from example 025's result: one without its conclusion, one whose bundle doesn't match. The sidecar schema gains fixture revisions and route (control only, checked) and a task's allowedChange for preservation. Verified: test_fixtures.py (6: determinism, records against the builder and oracle, the refusal's three calls, the bad runs and receipts refused by the stored schema and bundle_problems), test_sidecar.py 15, the targets suite.",
       "log_sha256": "5faac9e4988ff7c63c0ab2397c920cef96aea575dc4150cc213daaee56b042ad"
@@ -520,7 +520,7 @@
     {
       "change_id": "pqulqqlxyotmwkltwmnuumxstmmyxtsu",
       "commit_id": "0267b0ab86e0a3199174197c35cb24eb585b70a4",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 0 step 5: the integration contract, examples/tools/test_targets_contract.py",
       "body": "One test per Tier A row the streams can reach on the fixtures, each either reaching the row's final outcome or stopping at the named Unsupported result of a Phase 0 stub (a skip naming it); any other Unsupported, type or outcome fails. A0: the fixture is a valid sidecar example, the route answers, and every constructed and handwritten example keeps its route. A1 (workflow): every fixture task plans offline (no socket, no process, no write) as the sidecar states it, with native tasks never requiring JBMC; the handoff reads offline. A2 (runtime): a fixture revision is prepared with its original's identity (build_fixtures.py's after.jar), adapter, ordered classpath and JDK, reproducibly; changed source bytes change the identity; an adapter shadowing fixture.Gate is refused. A3/A4 on the fixture: per-revision JVM controls on JDK 21 and 25, the oracle finding 97 on before, nothing on after, 65 on the mutant. A5 on the fixture (where jvmcontract is built): established, refuted and preservation conclusions through the whole route, and the regex probe refused by name. A6 (workflow): distinct receipts per task and attempt with the earlier kept, valid against both result schemas, claim.target bound; a kill, malformed output, a one-sided replay and an exit code alone never become a result. A7: the regex probe's handoff carries hashed inputs, commands, one next action and the observed gap packet. Runtime's rows use a TaskPlan built from the sidecar and workflow's use PreparedTargets and records built from the fixtures, so each stream's rows move with its own work. Before it, so each stream can be planned from: TaskPlan gains folder and a defined artifact-source shape, a replay task may name a pair (the fixture gains replay and mutant-replay on its pairs), a fixture revision's commit is fixture:<path>, and workflow.handoff() joins the frozen interfaces (W3) with its stub. Verified: 15 tests, 2 pass and 13 stop at the stub of their stream (3.6 s); A2-A4 also pass against plausible fake implementations (a throwaway check), so their final assertions are satisfiable; the targets suite and test_build pass.",
       "log_sha256": "08b29dd7a0c82badb0db8f95fa7b8886ff36698a85fcf3ca379d163f6650a6d3"
@@ -528,15 +528,15 @@
     {
       "change_id": "wylwwystpsxouunztkoyrqyvrzymzwpx",
       "commit_id": "854dacc8ad35d92f79e72891842c8990ed2e1787",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 0 step 6: numbers and names, the integration script, and the briefs brought up to date",
       "body": "examples/README.md records that 280-329 are reserved for the example-targets streams, and the contract's A0 checks it. feature-loop.sh knows example-targets and example-targets-STREAM and refuses example-targets-acceptance, -sources and -inputs, which aren't briefs; run-streams.sh knows example-targets with its streams runtime, negative, positive and workflow; both were replaced by rename. llm-dlc/tools/example-targets-integration.sh runs the contract (CONTRACT FAILED), then the targets suite, test_build.py, test_pipeline.py and every example read with its sidecar (TESTS FAILED), offline. The main brief's starting table is recounted at application-core's final commit a7abc155 (application-core done with what its native checker supports and refuses for Strings, lists, receivers and environment; VF-023 closed; corrected line numbers), the side finding is marked fixed, prerequisites 1-6 are marked done, Phase 0 lists what it delivered, ownership covers the new files (workflow: sidecar.py, test_workflow.py, test_sidecar.py, the fixture's claim files; runtime: test_runtime.py), and the runtime and workflow briefs say which contract rows are theirs. Status: blocked only on the push, at the user's request. Verified: the integration script passed end to end (contract 3 pass and 13 stop at their stubs, targets 41, test_build 190, test_pipeline 29, all sidecars read); feature-loop.sh refuses the non-brief names and an unknown stream.",
       "log_sha256": "94b7843474db6ddd7d432e3497c5645f82a295ae8b218d1322cd37c8537b9d3b"
     },
     {
       "change_id": "xsusnqssknumllkqrvvnownswsquwlyu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "882459346039929237bb14a12682ada2bf5e1121",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "8ae6d8420f559532d1b63e5af345400565d5176212f4cc8f154b66daab044561"

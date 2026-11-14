@@ -152,7 +152,7 @@ Small unit and JVM conformance checks run inline.
 - session: 3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256
 - model: claude-opus-5-5
 - effort: high
-- memory: 4G
+- memory: 12G
 - workspace: example-targets-runtime
 - fork: e9be5afb-09c9-4473-a9e9-38f2fb61ca80
 

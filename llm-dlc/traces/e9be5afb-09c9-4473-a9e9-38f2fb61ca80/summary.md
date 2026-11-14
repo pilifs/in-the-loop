@@ -370,7 +370,7 @@ examples/README.md records that 280-329 are reserved for the example-targets str
 
 ### Record session traces
 
-change `xsusnqssknum` · [log `8ae6d8420f55`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8ae6d8420f559532d1b63e5af345400565d5176212f4cc8f154b66daab044561.jsonl.gz)
+[`882459346039`](https://github.com/pilifs/in-the-loop/commit/882459346039929237bb14a12682ada2bf5e1121) · [log `8ae6d8420f55`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8ae6d8420f559532d1b63e5af345400565d5176212f4cc8f154b66daab044561.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
