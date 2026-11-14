@@ -12,32 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.206Z",
-  "ended": "2026-11-14T16:23:44.878Z",
-  "duration_seconds": 3418,
+  "ended": "2026-11-14T16:35:01.010Z",
+  "duration_seconds": 4094,
   "stats": {
-    "turns": 25,
-    "api_calls": 195,
-    "tool_calls": 196,
+    "turns": 30,
+    "api_calls": 242,
+    "tool_calls": 242,
     "tool_errors": 2,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 226325,
     "usage": {
-      "input_tokens": 390,
-      "output_tokens": 222333,
-      "cache_read_input_tokens": 22669683,
-      "cache_creation_input_tokens": 785621
+      "input_tokens": 484,
+      "output_tokens": 260519,
+      "cache_read_input_tokens": 27177950,
+      "cache_creation_input_tokens": 916655
     }
   },
   "tools": {
-    "Bash": 174,
-    "Read": 13,
-    "Edit": 5,
-    "Write": 4
+    "Bash": 217,
+    "Read": 14,
+    "Edit": 6,
+    "Write": 5
   },
   "files_touched": [
     "examples/schema/target-claim.schema.json",
     "examples/tools/targets/test_workflow.py",
     "examples/tools/targets/workflow.py",
+    "examples/tools/targets/workflow_discovery.py",
     "examples/tools/targets/workflow_handoff.py",
     "examples/tools/targets/workflow_ingest.py",
     "llm-dlc/loops/example-targets-workflow.md"
@@ -116,24 +117,38 @@
     {
       "index": 5,
       "started": "2026-11-14T16:12:31.401Z",
-      "ended": "2026-11-14T16:23:44.878Z",
-      "turns": 4,
-      "api_calls": 40,
+      "ended": "2026-11-14T16:24:06.216Z",
+      "turns": 5,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 80,
-        "output_tokens": 50582,
-        "cache_read_input_tokens": 4475072,
-        "cache_creation_input_tokens": 155746
+        "input_tokens": 84,
+        "output_tokens": 51843,
+        "cache_read_input_tokens": 4817781,
+        "cache_creation_input_tokens": 162688
       },
-      "peak_context_tokens": 168932
+      "peak_context_tokens": 175874
+    },
+    {
+      "index": 6,
+      "started": "2026-11-14T16:25:09.747Z",
+      "ended": "2026-11-14T16:35:01.010Z",
+      "turns": 4,
+      "api_calls": 45,
+      "usage": {
+        "input_tokens": 90,
+        "output_tokens": 36925,
+        "cache_read_input_tokens": 4165558,
+        "cache_creation_input_tokens": 124092
+      },
+      "peak_context_tokens": 137278
     }
   ],
   "log": {
-    "sha256": "c70a93f7dc076eab28aea860306463146b0b2d4d35741b27812fdaa2290825be",
-    "bytes": 6927844,
-    "lines": 2239,
-    "gzip_bytes": 1379557,
-    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/c70a93f7dc076eab28aea860306463146b0b2d4d35741b27812fdaa2290825be.jsonl.gz"
+    "sha256": "c8e1c5a270643da04997ef1199d9fc56d6aee52cae6a326c943894549111ac3d",
+    "bytes": 8252264,
+    "lines": 2739,
+    "gzip_bytes": 1612776,
+    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/c8e1c5a270643da04997ef1199d9fc56d6aee52cae6a326c943894549111ac3d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -184,6 +199,14 @@
       "summary": "example-targets W3: the handoff packet and the gap inventory, offline, with the observed gap's packet",
       "body": "workflow.handoff() (targets/workflow_handoff.py, new) exports one task's packet without running or writing anything: its immutable inputs by path, role and sha256 (sidecar, claim, controls, adapters, fixture sources, gap packets and the records they cite), the exact commands (the offline plan, then a replay inline or a proof through pipeline.py submit), its current receipts with stale ones apart, its readiness, its prerequisites and the first unsatisfied one, one recommended next command with its reason, its gaps and the rules a continuing agent keeps (the claim key stays frozen; a narrower kernel is a separate task). Observed and predicted gaps stay apart, and a build, provenance, oracle or replay blocker (scaffold) stays apart from a library limit (capability). An observed gap carries the brief's capability-gap packet, derived from a recorded jvmcontract gaps run: command, diagnostic ids, verifier and artifact identities, reproducer with its call path, the Java semantics needed, why, needs, likely module, closure check and strategies tried, with whatever can't be derived listed as missing. inventory() groups many targets' gaps by gap id and ranks them by observed, distinct families, then blocked obligations; workflow_handoff.py handoff NNN TASK and inventory print both.\n\nVerified: test_workflow.py 53 tests pass (7 new, among them an isolated copy of only a packet's listed inputs giving the same packet and claim key, and the stub test rewritten); mutations that mark every gap observed, run proofs inline, drop the gap records from the inputs or skip prerequisites each fail them. Contract A1's handoff row and A7 now pass (9 pass, 7 skip at runtime's stubs and for want of jvmcontract). The integration script passes (targets suite 93, test_build.py 190, test_pipeline.py 29). Read-only over the negative and positive streams' 19 current sidecars, every handoff and the inventory ran (9 gap groups, all predicted). Progress records the requests for the merge (a verifier commit in records, the packet-file shapes, a build.py/find.py front for the handoff view) and, for review, that a fixture revision's directory isn't all of its sources (gate/both is compiled into every JAR), so the brief's fixture description is incomplete there.",
       "log_sha256": "c70a93f7dc076eab28aea860306463146b0b2d4d35741b27812fdaa2290825be"
+    },
+    {
+      "change_id": "nqztmpwynrtruowqmpxtuvsrlnssylst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets W4: the index projection for find.py, claim statuses from current receipts and historical labels apart",
+      "body": "workflow.project() (examples/tools/targets/workflow_discovery.py, new) gives the index's target row that find.py's --family, --role, --readiness, --claim-status and --gap read, offline and read-only: each task's derived readiness and authored expectation, each proof task's conclusion in its latest current receipt (None without one; replays decide no claim), stale and unreadable receipts listed apart, observed gaps with their recorded gap ids kept apart from unevidenced and predicted ones, and the example's authored verdictLabel as historical context from which no claim status is derived (the 105-109 rule). The target's readiness summary is derived but held at None in the index behind workflow_discovery.READINESS_IN_INDEX, because the coordinator's test_route.py:132 asserts Phase 0's None; the merge flips the flag and changes that line to \"catalogued\" (recorded as an interface request under Progress).\n\nAlso fixed W2's attempt ids: whole seconds plus a random suffix sorted two attempts in one second at random. The suffix, whose 8-hex pattern stored-result.schema.json fixes, now carries the microseconds in its first five digits, so path order is attempt order. No target receipt existed yet.\n\nVerified: test_workflow.py 57 tests (5 new, through build.py's render_index() and find.py on a temporary examples/), mutation-checked; the integration script passes (contract 9 pass, 7 skip; targets suite 97, test_build.py 190, test_pipeline.py 29). Read-only over the negative and positive streams' 20 sidecars, every projection ran: 13 catalogued, 7 partial, no claim status, only predicted gaps. W1-W4 and the stream's acceptance table are met, and the status is done.\n\nOut of date in the brief: its Starting evidence still says project() states only what the sidecar says; that was Phase 0's and is replaced here.",
+      "log_sha256": "c8e1c5a270643da04997ef1199d9fc56d6aee52cae6a326c943894549111ac3d"
     }
   ],
   "logs": {
@@ -209,6 +232,12 @@
       "bytes": 6927844,
       "lines": 2239,
       "gzip_bytes": 1379557,
+      "url": null
+    },
+    "c8e1c5a270643da04997ef1199d9fc56d6aee52cae6a326c943894549111ac3d": {
+      "bytes": 8252264,
+      "lines": 2739,
+      "gzip_bytes": 1612776,
       "url": null
     },
     "f0a2cb506b9dc262ec07c5d7fe803a699a143ecdc0340b1dad4e174ee93ede2f": {

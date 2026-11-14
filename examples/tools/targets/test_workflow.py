@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Tests of workflow.py, owned by the workflow stream with it: task planning and the readiness milestones (W1), on a
 copy of Phase 0's fixture and on sidecars changed from it, and attempt ingestion (W2) on the fixture's JARs, its
-recorded controls and constructed verifier outcomes, and the handoff packet and gap inventory (W3) on the fixture and
-copies of it.
+recorded controls and constructed verifier outcomes, the handoff packet and gap inventory (W3) on the fixture and
+copies of it, and the index projection that find.py reads (W4), through build.py's render_index() and find.py.
 
   python3 examples/tools/targets/test_workflow.py
 """
@@ -38,6 +38,11 @@ def offline():
     with mock.patch.object(socket.socket, "connect", refuse), mock.patch.object(socket, "create_connection", refuse), \
             mock.patch.object(subprocess, "Popen", refuse), mock.patch.object(os, "system", refuse):
         yield
+
+
+def workflow_discovery_hold():
+    from targets import workflow_discovery
+    return workflow_discovery.HOLD
 
 
 def tree(folder):
@@ -972,6 +977,178 @@ class HandoffTest(Fixture):
         self.assertEqual(json.loads(out.getvalue()), json.loads(json.dumps(self.handoff("regex-probe"))))
 
 
+class DiscoveryTest(Fixture):
+    """W4's projection, the index's `target` row that find.py's target filters read: derived readiness, claim
+    statuses from current receipts only, observed, unevidenced and predicted gaps, and the authored label kept apart
+    as historical context; through build.py's render_index() and find.py on a temporary examples/."""
+
+    prepared, recorded, verifier, ingest = IngestTest.prepared, IngestTest.recorded, IngestTest.verifier, IngestTest.ingest
+
+    @classmethod
+    def setUpClass(cls):
+        cls.manifest = fixture_manifest()
+
+    def setUp(self):
+        super().setUp()
+        self.controls = json.loads((self.folder / "records/controls.json").read_text())["records"]
+
+    def project(self, folder=None, example=None, target=None):
+        folder = folder or self.folder
+        before = tree(folder)
+        with offline():
+            row = workflow.project(folder, example or self.example, target or self.target)
+        self.assertEqual(tree(folder), before, "the projection wrote into the example's folder")
+        json.dumps(row)  # it goes into index.json
+        return row
+
+    def another(self, name, example_id, change):
+        """A copy of the fixture as example `example_id` in the same temporary examples/, its sidecar changed."""
+        folder = Path(self.dir.name) / name
+        shutil.copytree(self.folder, folder)
+        example = {**self.example, "id": example_id}
+        (folder / "example.json").write_text(json.dumps(example))
+        target = json.loads((folder / "target.json").read_text())
+        change(target, folder)
+        (folder / "target.json").write_text(json.dumps(target))
+        return folder
+
+    def find(self, *folders, readiness=False):
+        """The index rendered by build.py over these folders, and a function running find.py on it."""
+        import contextlib as context
+        import io
+        import build
+        import find
+        from targets import workflow_discovery
+        root = Path(self.dir.name)
+        if not (root / "schema").exists():
+            shutil.copytree(build.EXAMPLES / "schema", root / "schema")
+            (root / "tags.json").write_text(json.dumps({"domain": {"open-source-libraries": "d"}}))
+            (root / "README.md").write_text("<!-- examples:begin --><!-- examples:end -->\n"
+                                            "<!-- tags:begin --><!-- tags:end -->\n")
+        patches = (mock.patch.object(build, "EXAMPLES", root), mock.patch.object(find, "EXAMPLES", root),
+                   mock.patch.dict(build._TAGS, clear=True),
+                   mock.patch.object(workflow_discovery, "READINESS_IN_INDEX", readiness))
+        with context.ExitStack() as stack:
+            for patch in patches:
+                stack.enter_context(patch)
+            with offline():
+                build.render_index(sorted(folders))
+        index = {e["id"]: e for e in json.loads((root / "index.json").read_text())["examples"]}
+
+        def run(*argv):
+            out = io.StringIO()
+            with mock.patch.object(find, "EXAMPLES", root), context.redirect_stdout(out):
+                code = find.main(["--json", *argv])
+            return sorted(e["id"] for e in json.loads(out.getvalue())) if code == 0 else []
+        return index, run
+
+    def test_the_fixture_projects_its_readiness_and_no_claim_without_a_receipt(self):
+        row = self.project()
+        tasks = [t["id"] for t in self.target["tasks"]]
+        self.assertEqual((row["family"], row["role"], row["case"], row["tasks"]),
+                         ("phase0-fixture", "control", "phase0-fixture-gate", tasks))
+        self.assertEqual(row["taskReadiness"], {t: "partial" for t in tasks}, "nothing is prepared yet")
+        self.assertEqual((row["readiness"], row["unsupported"]), (None, workflow_discovery_hold()))
+        self.assertEqual(row["expected"], {t["id"]: t.get("expected") for t in self.target["tasks"]})
+        proofs = [t["id"] for t in self.target["tasks"] if t["kind"] != "replay"]
+        self.assertEqual(row["claims"], {t: None for t in proofs}, "an expectation is not a claim status")
+        self.assertEqual((row["receipts"], row["staleReceipts"], row["unreadable"]), ({}, [], []))
+        scan = json.loads((self.folder / "records/regex-gate-gaps.stdout").read_text())
+        self.assertEqual((row["gaps"], row["gapIds"], row["unevidencedGaps"], row["predictedGaps"]),
+                         (["java-semantics"], sorted(g["id"] for g in scan["gaps"]), [], []))
+        self.assertEqual(row["historical"]["verdictLabel"], self.example["verdictLabel"])
+        self.assertEqual(row["handoff"], "python3 examples/tools/targets/workflow_handoff.py handoff 999 TASK")
+        from targets import workflow_discovery
+        with mock.patch.object(workflow_discovery, "READINESS_IN_INDEX", True):
+            row = self.project()
+        self.assertEqual(row["readiness"], workflow.readiness(self.folder, self.example, self.target)["summary"])
+        self.assertNotIn("unsupported", row)
+
+    def test_claim_statuses_come_from_the_latest_current_receipt_and_stale_ones_are_apart(self):
+        witness = {"input": "code=97", "outcome": "returned true"}
+        replay = self.ingest("replay", self.recorded(("before", "after")))
+        first = self.ingest("fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),))
+        latest = self.ingest("fixed-security", (self.verifier(
+            [outcome("unverifiable", problem="the solver gave up")], 1, revision="after"),))
+        refuted = self.ingest("vulnerable-security", (self.verifier([outcome("violation", witness)], 1),))
+        row = self.project()
+        self.assertEqual({k: v for k, v in row["claims"].items() if v}, {"fixed-security": "unresolved",
+                                                                         "vulnerable-security": "refuted"})
+        self.assertNotIn("replay", row["claims"], "a replay decides no claim")
+        fixed = row["receipts"]["fixed-security"]
+        self.assertEqual((fixed["path"], fixed["attempts"], fixed["execution"], fixed["status"]),
+                         (latest.path, 2, "completed", "unresolved"), "the latest attempt, the earlier one kept")
+        self.assertTrue((self.folder / first.path).is_file())
+        self.assertEqual((row["receipts"]["replay"]["status"], row["receipts"]["replay"]["expectation"]), (None, "yes"))
+        self.assertEqual(row["receipts"]["vulnerable-security"]["expectation"], "yes")
+        claim = self.folder / "claims/gate-security.json"
+        claim.write_text(json.dumps({**json.loads(claim.read_text()), "statement": "another statement"}))
+        row = self.project()
+        self.assertEqual((row["claims"]["fixed-security"], row["claims"]["vulnerable-security"]), (None, None),
+                         "a changed claim makes its receipts stale, never silently reused")
+        self.assertEqual(sorted(row["staleReceipts"]), sorted([first.path, latest.path, refuted.path]))
+        self.assertEqual(row["receipts"]["replay"]["path"], replay.path, "the replay's inputs didn't change")
+        (self.folder / "receipts/fixed-security/broken").mkdir()
+        (self.folder / "receipts/fixed-security/broken/result.json").write_text("{")
+        self.assertEqual(self.project()["unreadable"], ["receipts/fixed-security/broken/result.json"])
+
+    def test_a_historical_label_never_becomes_a_claim_status(self):
+        example = {**self.example, "verdictLabel": "\u2713 established on after; \u2717 refuted on before (JBMC, 2026-11-01)"}
+        (self.folder / "example.json").write_text(json.dumps(example))
+        self.example = example
+        row = self.project()
+        self.assertEqual(row["historical"]["verdictLabel"], example["verdictLabel"])
+        self.assertTrue(all(v is None for v in row["claims"].values()))
+        index, find = self.find(self.folder)
+        self.assertEqual(index["999"]["verdictLabel"], example["verdictLabel"], "the authored label, beside the row")
+        self.assertEqual(index["999"]["target"]["historical"]["verdictLabel"], example["verdictLabel"])
+        for status in ("established", "refuted", "unresolved"):
+            self.assertEqual(find("--claim-status", status), [], status)
+        self.ingest("fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),))
+        index, find = self.find(self.folder)
+        self.assertEqual((find("--claim-status", "established"), find("--claim-status", "refuted")), (["999"], []))
+        self.assertEqual(index["999"]["verdictLabel"], example["verdictLabel"], "a receipt never replaces the label")
+
+    def test_find_reaches_catalogued_and_gap_blocked_targets_and_keeps_predictions_apart(self):
+        def catalogued(target, folder):
+            target.pop("preparation")
+            target["identity"]["family"] = "f-catalogued"
+            target["handoff"]["blockers"] = [{"kind": "input-construction", "observed": False, "summary": "predicted"}]
+
+        def unevidenced(target, folder):
+            target["identity"]["family"] = "f-unevidenced"
+            (folder / "records/regex-gate-gaps.json").unlink()
+        folders = [self.folder, self.another("998-catalogued", "998", catalogued),
+                   self.another("997-unevidenced", "997", unevidenced)]
+        index, find = self.find(*folders, readiness=True)
+        self.assertEqual({i: index[i]["target"]["readiness"] for i in ("997", "998", "999")},
+                         {"997": "partial", "998": "catalogued", "999": "partial"})
+        self.assertEqual(index["997"]["target"]["unevidencedGaps"], ["java-semantics"])
+        self.assertEqual(index["998"]["target"]["predictedGaps"], ["input-construction"])
+        self.assertEqual(find("--readiness", "catalogued"), ["998"])
+        self.assertEqual(find("--family", "f-catalogued", "--role", "control"), ["998"])
+        self.assertEqual(find("--readiness", "partial", "--family", "phase0-fixture"), ["999"])
+        self.assertEqual(find("--gap", "java-semantics"), ["999"], "observed with its packet; a missing one doesn't count")
+        self.assertEqual(find("--gap", "input-construction"), [], "a prediction is no observed gap")
+        self.assertEqual(find("--readiness", "blocked"), [])
+        index, find = self.find(*folders)
+        self.assertEqual(find("--readiness", "catalogued"), [], "held until the coordinator's test expects it")
+        self.assertEqual(index["998"]["target"]["taskReadiness"]["fixed-security"], "catalogued")
+
+    def test_a_blocked_target_is_found_by_its_readiness_and_its_gap(self):
+        self.ingest("replay", self.recorded(("before", "after")))
+        self.ingest("mutant-replay", self.recorded(("after", "mutant")))
+        target = copy.deepcopy(self.target)
+        target["tasks"] = [t for t in target["tasks"] if t["id"] in ("regex-probe", "replay")]
+        (self.folder / "target.json").write_text(json.dumps(target))
+        index, find = self.find(self.folder, readiness=True)
+        row = index["999"]["target"]
+        self.assertEqual((row["readiness"], row["taskReadiness"]), ("blocked", {"regex-probe": "blocked",
+                                                                                "replay": "scaffolded"}))
+        self.assertEqual(find("--readiness", "blocked", "--gap", "java-semantics"), ["999"])
+        self.assertEqual(row["claims"], {"regex-probe": None}, "blocked is readiness, not a claim status")
+
+
 class StubsFailClosedTest(unittest.TestCase):
     def check(self, value, interface, owner):
         self.assertTrue(interfaces.unsupported(value))
@@ -987,13 +1164,6 @@ class StubsFailClosedTest(unittest.TestCase):
         value = workflow.handoff(Path("."), {}, {}, "t")
         self.check(value, "handoff", interfaces.WORKFLOW)
         self.assertNotIn("Phase 0's stub", value.reason)
-
-    def test_the_projection_states_only_what_the_sidecar_says(self):
-        target = {"identity": {"case": "c", "family": "f", "role": "negative"}, "tasks": [{"id": "t"}],
-                  "handoff": {"blockers": [{"kind": "java-semantics", "observed": False, "summary": "regex"}]}}
-        row = workflow.project(Path("."), {}, target)
-        self.assertEqual((row["family"], row["role"], row["readiness"], row["gaps"], row["predictedGaps"]),
-                         ("f", "negative", None, [], ["java-semantics"]))
 
 
 if __name__ == "__main__":

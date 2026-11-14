@@ -513,7 +513,10 @@ def publish(plan, prepared, records, out):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc)
-    attempt_id = f"{started:%Y%m%dT%H%M%SZ}-{os.urandom(4).hex()}"
+    # The attempt's id (stored-result.schema.json: YYYYMMDDTHHMMSSZ- and 8 hex digits) sorts in start order to the
+    # microsecond, which the suffix's first five hex digits carry (999999 is f423f), three random ones after them: path
+    # order is attempt order, and discovery reads a task's latest receipt as its last current one.
+    attempt_id = f"{started:%Y%m%dT%H%M%SZ}-{started.microsecond:05x}{os.urandom(2).hex()[:3]}"
     staging = out / f".{attempt_id}.publishing"
     staging.mkdir()
     try:

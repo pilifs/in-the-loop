@@ -2,8 +2,8 @@
 (interfaces.py) of llm-dlc/loops/example-targets.md. plan_task() resolves a task from the sidecar and its claim file
 alone (W1), and readiness() derives each task's readiness milestones and summaries from the sidecar, its files and
 the folder's receipts (W1). ingest() publishes one attempt's format-2 receipt (W2, workflow_ingest.py). handoff()
-exports a task's packet, offline (W3, workflow_handoff.py, which also builds the gap inventory); project() reports only
-what target.json states until W4 projects readiness() into the index. Signatures are frozen.
+exports a task's packet, offline (W3, workflow_handoff.py, which also builds the gap inventory); project() gives the
+index's row for find.py (W4, workflow_discovery.py). Signatures are frozen.
 
 A task's claim is frozen twice. Planning freezes the source-level claim: the task's statement, domain, observations,
 assumptions, allowed change, models and bounds (the tool's defaults resolved), and `key`, their canonical digest,
@@ -535,11 +535,12 @@ def task_readiness(folder, example, target, task_id, recorded=None):
             "receipts": [a["path"] for a in current]}
 
 
-def readiness(folder, example, target):
+def readiness(folder, example, target, recorded=None):
     """The target's readiness: each task's (task_readiness()) and one summary for discovery. Catalogued without a
     preparation or tasks; partial while any task is (or catalogued); blocked when any task is blocked by an observed
-    capability gap; executable when every proof task is; scaffolded otherwise."""
-    recorded = attempts(folder)
+    capability gap; executable when every proof task is; scaffolded otherwise. `recorded` is attempts(folder), when
+    the caller has read it already."""
+    recorded = attempts(folder) if recorded is None else recorded
     tasks = {t["id"]: task_readiness(folder, example, target, t["id"], recorded) for t in target["tasks"]}
     summaries = {r["summary"] for r in tasks.values()}
     proofs = [tasks[t["id"]]["summary"] for t in target["tasks"] if t["kind"] != "replay"]
@@ -577,18 +578,9 @@ def handoff(folder, example, target, task):
 
 
 def project(folder, example, target):
-    """The example's row in the index (examples/index.json's `target`): its family, role, readiness, claim statuses
-    and gaps, for find.py. Phase 0 projects what the sidecar states; readiness, claim statuses and observed gaps are
-    derived from receipts by W4, and stay None until then."""
-    identity = target["identity"]
-    return {
-        "family": identity["family"],
-        "role": identity["role"],
-        "case": identity["case"],
-        "tasks": [t["id"] for t in target["tasks"]],
-        "readiness": None,
-        "claims": None,
-        "gaps": sorted({b["kind"] for b in target.get("handoff", {}).get("blockers", []) if b["observed"]}),
-        "predictedGaps": sorted({b["kind"] for b in target.get("handoff", {}).get("blockers", []) if not b["observed"]}),
-        "unsupported": "readiness and claim statuses: Phase 0's stub until the workflow stream's W4 derives them",
-    }
+    """The example's row in the index (examples/index.json's `target`), for find.py: its family, role, readiness,
+    each task's readiness, authored expectation and claim status from its latest current receipt, and its observed,
+    unevidenced and predicted gaps, the example's authored verdictLabel kept apart as historical context. Offline,
+    read-only. workflow_discovery.py (W4) says what the row holds."""
+    from targets import workflow_discovery
+    return workflow_discovery.project(folder, example, target)

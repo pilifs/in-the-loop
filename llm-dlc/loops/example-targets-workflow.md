@@ -296,9 +296,45 @@ timebox and the safety rules. Planning and discovery never touch the network.
   (`RegexGate`) into every revision's JAR, so neither the handoff's "fixture sources" input nor W2's revision tree id
   covers it (a receipt's claim still follows the bytes through each JAR's sha256 in `claim.target.dependencies`).
   Predicted gaps have no ids, so the inventory groups them only when kind and summary are identical.
-- Next: W4, discovery: `project()` with readiness, claim statuses and gaps for `find.py` and the index, 105–109's
-  historical reports apart.
-- Status: working
+- 2026-11-14, **W4 discovery**: `workflow.project()` (in `targets/workflow_discovery.py`, new and mine) gives the
+  index's `target` row that `find.py`'s target filters read, offline and read-only: `family`, `role`, `case`, `tasks`;
+  `readiness`, the target's summary from `readiness()` (held, below); `taskReadiness`, each task's; `expected`, each
+  task's authored expected outcome; `claims`, each proof task's conclusion in its latest current receipt, None without
+  one, replays left out (they decide no claim); `receipts`, each task's latest current receipt (path, attempt,
+  execution, status, expectation) with its count of current attempts; `staleReceipts` and `unreadable`, listed and
+  never counted; `gaps`, the observed blocker kinds whose packet file is there (`find.py --gap`), `gapIds` from their
+  recorded scans, `unevidencedGaps` (observed, packet missing), `predictedGaps`; `historical`, the example's authored
+  `verdictLabel` with its source and a note that nothing is derived from it; and `handoff`, the packet's command.
+  **105–109**: a historical report's label never becomes a claim status: with "✓ established …" as the label and no
+  receipt, every claim is None and `find.py --claim-status established` finds nothing; a receipt then gives the status
+  while the index's `verdictLabel` stays the authored one. 106–109 have no sidecar, so their row is None (build.py's
+  `target_projection()`) and no target filter matches them. On the other streams' 20 current sidecars (read-only, in
+  their workspaces), all project: 13 catalog entries `catalogued` (no tasks), 7 packets and 105 `partial`, no claim
+  status, only predicted gaps. A target is discoverable by `--readiness catalogued` or `blocked` (tested with the
+  readiness on: a catalogued copy, a blocked one with `--gap java-semantics`) and by family, role and observed gap.
+  **Attempt order**: W2's attempt id had whole seconds and a random suffix, so two attempts in one second sorted at
+  random; its 8-hex suffix (`stored-result.schema.json` fixes the pattern) now carries the microseconds in its first 5
+  digits, 3 random after, so path order is attempt order. No target receipt existed anywhere yet. Submission and
+  scheduling were Phase 0's and stay: `pipeline.py submit --example NNN --task T` reads `route.plan()`, the plan
+  `build.py --plan` prints; the handoff's commands are those two entry points, no second scheduler; a native task names
+  no JBMC (W1's test). Tests: `test_workflow.py` 57 (5 new, the projection stub test removed), mutation-checked
+  (earliest receipt for latest, predictions as observed, a missing packet counted, replays as claims, the hold
+  ignored); the integration script passes (contract 9 pass, 7 skip; targets suite 97, `test_build.py` 190,
+  `test_pipeline.py` 29).
+- **Interface request from W4** (for the merge; `test_route.py` is the coordinator's): `test_route.py:132`
+  (`IndexAndFindTest.test_the_index_carries_the_projection_beside_the_historical_label`) asserts
+  `(t["family"], t["role"], t["readiness"], t["gaps"]) == ("fixture", "negative", None, ["java-semantics"])`, Phase 0's
+  "not derived yet". So the index's `readiness` is held at None, with `unsupported` saying why, behind
+  `workflow_discovery.READINESS_IN_INDEX = False`; every other key is projected now. At the merge: set it to `True` and
+  change that line's `None` to `"catalogued"` (its stub sidecar has no preparation). Line 138 (`--readiness blocked`
+  matches nothing) holds either way. Until then `find.py --readiness` matches nothing, on this branch only.
+- **For review**: `find.py --readiness` matches the target's summary only, and `partial` wins over `blocked` there, so a
+  target with one task blocked by an observed gap and another unprepared reads `partial`: `--gap KIND` finds it, and
+  `taskReadiness` has the task's `blocked`. `find.py` (the coordinator's) could also match a task's readiness. The
+  stream's acceptance table is met: pure planning and strict manifests (W1), durable multi-task results and honest
+  ingestion (W2), a fixture handoff resumed from its inputs alone (W3); A1, A6 and A7 pass on this branch, and wait for
+  Phase 5 with the real packets.
+- Status: done
 
 ## Loop settings
 
