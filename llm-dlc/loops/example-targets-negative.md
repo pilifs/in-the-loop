@@ -265,10 +265,74 @@ timebox, the downloads policy and the safety rules. Queue anything heavy, and re
     suppressed fields only, not on a write. The probes add `32` and the advisory's `Age`.
   - *Further obligations.* Nested paths through a nested bean, and indexed names, are outside the protected-state
     claim. On the int `age`, an indexed name throws `InvalidPropertyException` on both releases.
-- Next: N3, the BCrypt packet (287): read `BCryptPasswordEncoder` and `BCrypt` at the fix and its parent and their
-  tests, select the pair, and write the tasks (`matches` with a valid stored hash given independently; a byte-guard
-  lemma apart), source lock, oracle, probes (71, 72, 73 bytes, a wrong candidate, multibyte), the char-counting mutant
-  and the replay driver.
+- 2026-11-14, **N3 done: the BCrypt packet (287)**, ready for Phase 5's preparation. `target.json` selects the
+  **release pair** (6.3.7 → 6.3.8, `published-artifact`: spring-security-crypto, then the spring-jcl each release
+  manages, 6.1.17 and 6.1.18). The exact-fix pair has no published JAR, and the release pair carries it faithfully:
+  - both releases' `BCrypt.java` and `BCryptPasswordEncoder.java` are the exact-fix pair's blobs (`0f8d082f` →
+    `17292840`; `d17511b0` throughout), also in the sources JARs;
+  - the window's only other crypto commit touches build files;
+  - in the class files only `BCrypt.hashpw(byte[], String, boolean)` differs (compared method by method), and the
+    encoder's classes and spring-jcl's are byte-identical.
+
+  Three claims, six tasks, all native strict and requiring the replay:
+  - `replay`;
+  - `vulnerable-security` (refuted) and `fixed-security` (established), the **public claim**
+    (`claims/overlong-candidate-rejected.json`), entered through a one-call adapter on the encoder's no-argument
+    constructor. For a valid stored hash (minor a/b/y, cost 04–30) and a non-null candidate, `matches` throws
+    `IllegalArgumentException` exactly when the candidate is longer than 72 UTF-8 bytes, and never returns true for one.
+    The byte count is the JDK's `getBytes(UTF_8)`, and Strings are bounded at 80 units (73 bytes take at least 25);
+  - `preservation` (established, `claims/in-range-matching-preserved.json`), outside "a non-null candidate longer than
+    72 UTF-8 bytes", null and malformed stored values included;
+  - `vulnerable-guard` (refuted) and `fixed-guard` (established), the **byte-array lemma** on
+    `BCrypt.checkpw(byte[], String)` (`claims/overlong-bytes-rejected.json`). Their relation is `diagnostic`, with the
+    security task as `parent`, which the lemma never settles.
+
+  The claims validate against W1's schema, and `plan_task` plans all six. A generated Java harness evaluated the public
+  claim's `assume`, `assert` and `throws` on every `matches` outcome, and they agree with the oracle on all three runs.
+
+  Also in the folder:
+  - `sources.lock.json`, with the 6.3.9 hashes for N4;
+  - the adapter `PasswordMatchAdapter` and the driver `BCryptDriver`. Candidates go in and out as UTF-16 units, so
+    lone surrogates survive, and every line carries the JDK's own byte count;
+  - `controls/probes.json`: 9 stored hashes **made independently by pyca bcrypt 5.0.0** from recorded preimages
+    (never `encode(overlong)`), and 33 probes. There are 9 triggers (72 bytes plus more: ASCII, minors b and y,
+    36 × U+00E9 + `x`, 18 × U+1D11E + `x`, a split character, two byte arrays), 3 policy probes (overlong without the
+    prefix, including 25 × U+20AC, the fewest units that cross), 15 legitimate (71 and 72 bytes, right and wrong) and 6
+    edges;
+  - `controls/oracle.py`, from the statement. It names a violation's kind (`authenticated`, `unrejected`,
+    `wrong-exception`, `in-range-exception`) and refuses a run whose JDK counts other bytes. Its self-test rejects
+    deny-all and reject-all, and checks every pre-written expectation against each revision's documented shape;
+  - the mutation `controls/char-count-guard.patch` on 6.3.8: the String entries count UTF-16 units, and the byte
+    guard is gone.
+
+  **Developer note, not evidence**: by hand with pinned JARs (sha256 in the lock), on Temurin 21.0.13 and 25.0.5:
+  - 6.3.7 fails at the 12 overlong probes (9 authenticated, 3 unrejected) and passes every legitimate one;
+  - 6.3.8 holds and passes;
+  - the mutant authenticates the 3 multibyte triggers and the 2 byte arrays, and passes the ASCII triggers and the
+    legitimate probes;
+  - preservation holds, with changes only at the 12;
+  - every outcome is the one written before the run, and lines are identical on both JDKs.
+
+  No capability probe was queued. Four blockers are predicted:
+  - String expressions and regex;
+  - String construction up to 80 units;
+  - `crypt_raw` under "exactly" (resources). The precise gap: no cryptographic summary is claimed, and closing it needs
+    a declared summary, or unchanged-callee pairing for preservation;
+  - spring-jcl's `Class.forName` in the encoder's field initializers.
+
+  **For review**:
+  - *Lone surrogates.* 25 unpaired surrogates match a hash of 25 `?` on every revision (the JDK's lossy encoding; in
+    range, so not this CVE).
+  - *Cost 31.* A stored hash with cost 31 never terminates for an in-range candidate: `crypt_raw`'s `int` counter
+    runs against 2^31 rounds. Read from the bytecode, not run.
+  - *Long legacy passwords.* bcrypt's hash of a 73-byte password is that of its first 72 bytes, so 6.3.8 locks out a
+    stored long password. That is N4's ground (6.3.9's legacy matching).
+  - *Strictness.* The frozen claim asks for the rejection itself. The seed's "may reject" reading would also accept
+    `false`, but `--throws` states only "exactly when". The oracle reports the two kinds apart.
+- Next: N4, the follow-up (300, CVE-2025-22234), research-only and linked to N3. Record the repair pair `eb013944` →
+  `c1aa99fd` (6.3.8 → 6.3.9) and its policy (long new encodings refused, legacy matching allowed) as a separate,
+  unfrozen contract. State that no output or call-log equality establishes timing. Give each attempted blocker its gap
+  packet, with predicted ones labelled. Then the handoffs, and check the three packets against the acceptance.
 - Status: working
 
 ## Loop settings
