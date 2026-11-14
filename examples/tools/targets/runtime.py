@@ -1,6 +1,7 @@
 """Preparation and separate-JVM execution: the runtime stream's side of the interfaces (interfaces.py), for
 llm-dlc/loops/example-targets.md (R1-R4). Signatures are frozen. Acquisition follows the brief's downloads policy:
-github.com and Maven Central only, every file's sha256 recorded and rechecked.
+Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org only
+(runtime_maven.HOSTS), every file's sha256 recorded and rechecked.
 
     lock(plan, revision)                   source-locked: immutable paths, revisions and recipe, hashed; offline, pure
     prepare(plan, revision, workdir)       artifacts-ready: built or fetched, every byte hashed and the classpath
@@ -94,7 +95,7 @@ NEEDS = {
              "plan and prepare again"),
     "workdir": ("a work directory that is empty or holds an earlier preparation", "give the preparation a fresh work "
                 "directory; the files there are not the runtime's to delete"),
-    "acquire": ("the recorded bytes from Maven Central or github.com", "check the network and the recorded sha256"),
+    "acquire": (f"the recorded bytes from {runtime_maven.HOST_NAMES}", "check the network and the recorded sha256"),
     "toolchain": ("a JDK to compile the adapter and driver with", "install the JDK under ~/.sdkman/candidates/java or "
                   "set JAVA_HOME"),
     "build": ("sources that compile with the recipe", "fix the adapter or driver source named in the diagnostic"),

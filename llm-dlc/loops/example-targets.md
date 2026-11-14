@@ -680,6 +680,42 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     (Phase 5 step 2), and it runs as a job, which builds its own binary from `lib/`.
   - **Next**: request 2, the download hosts in `runtime_maven.py`, with a test that other hosts are still refused;
     then P3 (307)'s pinned upstream build, as a job.
+- 2026-11-14, **Phase 5 step 1, request 2 done: the download hosts widened.** P3 (307)'s upstream build isn't queued,
+  because its build plugin is behind credentials.
+  - **Reproducer**: a new test, `test_the_three_hosts_decision_1s_extension_allows_and_no_other`, failed on the merge.
+    `allowed()` refused a repo.spring.io URL.
+  - **The fix**: `runtime_maven.HOSTS` now holds Central, github.com, repo.spring.io, services.gradle.org and
+    plugins.gradle.org. `REDIRECT_HOSTS` adds only github.com's two content hosts, as before. The refusal messages
+    name the five hosts (`HOST_NAMES`). The test also checks what stays refused:
+    - other hosts and look-alikes: `repo.spring.io.example.org`, spring.io, gradle.org and jcenter;
+    - the Gradle CDNs, downloads.gradle.org and plugins-artifacts.gradle.org, neither allowed nor followed as a
+      redirect;
+    - http, a user name or a port in the URL;
+    - a SNAPSHOT on repo.spring.io.
+  - **What wasn't done, and why**: the Gradle route. Runtime's Gradle blocker no longer cites the policy, but it
+    stays a blocker that now says what is missing: no Gradle route yet. Such a route would fetch the wrapper's
+    distribution by sha256, hold the build's repositories to `HOSTS` with an init script, and hash every file the
+    build resolves. A distribution on any other host still blocks as outside the policy (new test). The route wasn't
+    built because its one user can't use it:
+    - **P3 (307)**: HEAD requests on 2026-11-14 found `io.spring.gradle:spring-build-conventions:0.0.23.RELEASE`, its
+      buildscript plugin, on no anonymous repository:
+      - repo.spring.io's plugins-snapshot, plugins-release, release, libs-release and libs-milestone answer 401;
+      - its milestone and snapshot repositories answer 404;
+      - plugins.gradle.org redirects (303) to Maven Central, which answers 404.
+      Boot's 2.2.0.M3 plugin and spring-jcl 5.2.0.RC1 are on repo.spring.io/milestone (200). services.gradle.org
+      redirects the 5.5.1 distribution to github.com, and its `.sha256` to downloads.gradle.org. So a build job would
+      stop at its buildscript.
+    - **307's records**: its target.json blocker (still `observed: false`: no build ran), handoff, notes and README now
+      say this. They name the alternative: the extracted-source slice, each commit's `BCrypt.java` compiled alone,
+      with a narrower claim of its own.
+    - **305**: its blocker's "even if decision 1 were extended" now reads "even with decision 1's extension". P1 stays
+      blocked on its SNAPSHOT pins.
+  - **For the for-review list**: whether repo.spring.io credentials or the 307 slice is wanted. The user decides;
+    neither is in this loop. Until then, P3 is delivered partial at "source locked".
+  - **Checked**: `example-targets-integration.sh` exits 0. The contract (16), the targets suite (183, two of them
+    new), `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan` all pass.
+  - **Next**: request 3, the six packets' constructed mutants as W1 `mutant` revisions (285–287, 305–307), with
+    runtime's `runtime_simplematch/mutation.json` moved into its target.json.
 - Status: working
 
 ## Loop settings

@@ -1,5 +1,6 @@
 """Hash-pinned acquisition of published artifacts (llm-dlc/loops/example-targets.md, runtime's R2, and the brief's
-downloads policy): Maven Central and github.com only, every file by the sha256 its lock records, checked when it is
+downloads policy, decision 1 and its extension of 2026-11-14): Maven Central, github.com, repo.spring.io,
+services.gradle.org and plugins.gradle.org only (HOSTS), every file by the sha256 its lock records, checked when it is
 fetched and again whenever a cached copy is reused. A mutable reference (a range, `+`, LATEST, RELEASE, a SNAPSHOT) and
 a missing hash are preparation blockers, never resolved here. The URL says where bytes came from; the sha256 is what
 they are. Runtime stream's.
@@ -33,8 +34,12 @@ import urllib.request
 from pathlib import Path
 
 CENTRAL = "https://repo.maven.apache.org/maven2/"
-HOSTS = ("repo.maven.apache.org", "github.com")
-# github.com serves release assets by redirecting to its own content hosts; nothing else is followed.
+# Decision 1: Maven Central and github.com; its extension (the user, 2026-11-14): repo.spring.io, services.gradle.org
+# and plugins.gradle.org, under the same hash-pinned acquisition. No other host, and no host by another name.
+HOSTS = ("repo.maven.apache.org", "github.com", "repo.spring.io", "services.gradle.org", "plugins.gradle.org")
+HOST_NAMES = "Maven Central, github.com, repo.spring.io, services.gradle.org or plugins.gradle.org"
+# github.com serves release assets by redirecting to its own content hosts; nothing else is followed (services.gradle.org
+# redirects a distribution to github.com, and its .sha256 to downloads.gradle.org, which is not followed).
 REDIRECT_HOSTS = HOSTS + ("objects.githubusercontent.com", "release-assets.githubusercontent.com")
 CACHE = Path(os.environ.get("TARGETS_CACHE", Path.home() / ".cache/in-the-loop/targets"))
 FETCH_TIMEOUT = 60
@@ -87,13 +92,13 @@ def allowed(url, hosts=HOSTS):
 
 def source_url(url, coords):
     """Where `coords` is fetched from: `url` if the lock records one (on Maven Central, it must be that coordinates'
-    own file), else Central's. Any host but Maven Central and github.com is refused."""
+    own file), else Central's. Any host but HOSTS is refused."""
     expected = central_url(coords)
     if url is None:
         return expected
     if not isinstance(url, str) or not allowed(url):
-        raise Blocked("lock", f"{coords}: {url!r} is not an https URL on Maven Central or github.com",
-                      needs="an artifact from Maven Central or github.com", next="record Maven Central's URL, or none")
+        raise Blocked("lock", f"{coords}: {url!r} is not an https URL on {HOST_NAMES}",
+                      needs=f"an artifact from {HOST_NAMES}", next="record Maven Central's URL, or none")
     if urllib.parse.urlsplit(url).hostname == "repo.maven.apache.org" and url != expected:
         raise Blocked("lock", f"{coords}: {url} is not that artifact's file on Maven Central ({expected})",
                       needs="the URL to name the same artifact as the coordinates", next=f"record {expected}")
@@ -169,7 +174,7 @@ class Cache:
 class _Redirects(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if not allowed(newurl, REDIRECT_HOSTS):
-            raise urllib.error.URLError(f"redirected to {newurl}, outside Maven Central and github.com")
+            raise urllib.error.URLError(f"redirected to {newurl}, outside {HOST_NAMES} and github.com's content hosts")
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
@@ -177,7 +182,7 @@ def fetch(url, dest):
     """`url`'s bytes into `dest` (a file in a new empty directory), over https from an allowed host only, at most
     MAX_BYTES."""
     if not allowed(url):
-        raise Blocked("acquire", f"{url} is not on Maven Central or github.com")
+        raise Blocked("acquire", f"{url} is not on {HOST_NAMES}")
     opener = urllib.request.build_opener(_Redirects)
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
@@ -190,7 +195,7 @@ def fetch(url, dest):
                 out.write(block)
     except (urllib.error.URLError, OSError) as e:
         raise Blocked("acquire", f"GET {url} failed: {e}", command=f"GET {url}",
-                      needs="the recorded bytes from Maven Central or github.com",
+                      needs=f"the recorded bytes from {HOST_NAMES}",
                       next="retry once the network is back (an infrastructure failure, not a finding)") from None
 
 

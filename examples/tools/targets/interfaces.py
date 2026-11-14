@@ -83,7 +83,7 @@ class Artifact:
     sha256: str
     role: str  # original, dependency, adapter, driver, oracle, stub
     coordinates: Optional[str] = None  # group:artifact:version for a published artifact
-    origin: Optional[str] = None  # where it came from: a Maven Central or github.com URL, or the build that made it
+    origin: Optional[str] = None  # where it came from: a URL on an allowed host (runtime_maven.HOSTS), or the build that made it
 
 
 @dataclass(frozen=True)

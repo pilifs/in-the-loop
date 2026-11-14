@@ -330,13 +330,27 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(wrapper.failedStage, "toolchain", wrapper.diagnostic)
         self.assertIn("https://services.gradle.org/distributions/gradle-8.5-bin.zip", wrapper.diagnostic)
         self.assertIn("a" * 64, wrapper.diagnostic)
-        self.assertIn("user decides", wrapper.source["blocker"]["next"])
+        self.assertIn("no Gradle route yet", wrapper.diagnostic, "services.gradle.org is allowed: the route is missing")
+        self.assertNotIn("user decides", wrapper.source["blocker"]["next"])
         self.assertEqual(wrapper.source["checkout"]["commit"], after)
         self.remotes.clear()
         plain = self.prepare(plan=self.plan(commits=commits, parents={}, tool="gradle", argv=["gradle", "jar"]),
                              workdir=self.work / "plain")
         self.assertEqual(plain.failedStage, "toolchain", plain.diagnostic)
         self.assertEqual((self.remotes, self.made_calls()), ([], []))
+
+    def test_a_gradle_distribution_on_any_other_host_is_still_outside_the_policy(self):
+        props = "distributionUrl=https\\://downloads.gradle.org/distributions/gradle-8.5-bin.zip\n"
+        self.upstream, before, after = make_upstream(self.dir / "gradle-other",
+                                                     {"gradle/wrapper/gradle-wrapper.properties": props})
+        wrapper = self.prepare(plan=self.plan(commits={"before": before, "after": after}, parents={},
+                                              tool="gradle-wrapper", argv=["./gradlew", "jar"]),
+                               workdir=self.work / "other")
+        self.assertEqual(wrapper.failedStage, "toolchain", wrapper.diagnostic)
+        self.assertIn("downloads.gradle.org, outside the downloads policy", wrapper.diagnostic)
+        self.assertIn("missing", wrapper.diagnostic)
+        self.assertIn("user decides", wrapper.source["blocker"]["next"])
+        self.assertEqual(self.made_calls(), [])
 
     def test_a_maven_wrapper_runs_its_own_distribution_from_central_by_sha256(self):
         dist = self.dir / "dist/apache-maven-9.9.9-bin.zip"

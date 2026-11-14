@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T20:00:25.970Z",
-  "duration_seconds": 5705,
+  "ended": "2026-11-14T20:10:42.969Z",
+  "duration_seconds": 6322,
   "stats": {
-    "turns": 20,
-    "api_calls": 131,
-    "tool_calls": 129,
+    "turns": 25,
+    "api_calls": 159,
+    "tool_calls": 158,
     "tool_errors": 6,
-    "compactions": 2,
+    "compactions": 3,
     "peak_context_tokens": 164466,
     "usage": {
-      "input_tokens": 280,
-      "output_tokens": 71313,
-      "cache_read_input_tokens": 10918605,
-      "cache_creation_input_tokens": 345630
+      "input_tokens": 336,
+      "output_tokens": 96424,
+      "cache_read_input_tokens": 13269744,
+      "cache_creation_input_tokens": 445944
     }
   },
   "tools": {
-    "Bash": 113,
-    "Edit": 6,
-    "Read": 5,
+    "Bash": 138,
+    "Edit": 8,
+    "Read": 7,
     "Agent": 4,
     "Write": 1
   },
   "files_touched": [
     "CLAUDE.md",
+    "examples/tools/targets/test_runtime.py",
     "llm-dlc/loops/example-targets.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/allowlist-merge-conflicts.md"
   ],
@@ -72,24 +73,38 @@
     {
       "index": 2,
       "started": "2026-11-14T19:47:33.562Z",
-      "ended": "2026-11-14T20:00:25.970Z",
-      "turns": 4,
-      "api_calls": 28,
+      "ended": "2026-11-14T20:00:44.282Z",
+      "turns": 5,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 56,
-        "output_tokens": 14511,
-        "cache_read_input_tokens": 2254984,
-        "cache_creation_input_tokens": 92222
+        "input_tokens": 60,
+        "output_tokens": 15422,
+        "cache_read_input_tokens": 2467959,
+        "cache_creation_input_tokens": 95928
       },
-      "peak_context_tokens": 105408
+      "peak_context_tokens": 109114
+    },
+    {
+      "index": 3,
+      "started": "2026-11-14T20:01:33.966Z",
+      "ended": "2026-11-14T20:10:42.969Z",
+      "turns": 4,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 24200,
+        "cache_read_input_tokens": 2138164,
+        "cache_creation_input_tokens": 96608
+      },
+      "peak_context_tokens": 109794
     }
   ],
   "log": {
-    "sha256": "9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886",
-    "bytes": 3806354,
-    "lines": 1296,
-    "gzip_bytes": 749006,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886.jsonl.gz"
+    "sha256": "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48",
+    "bytes": 4805718,
+    "lines": 1614,
+    "gzip_bytes": 969260,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48.jsonl.gz"
   },
   "subagents": [
     {
@@ -273,9 +288,23 @@
       "summary": "example-targets Phase 5 step 1: the fixture recipe compiles with -parameters, so contract A5 passes",
       "body": "Phase 0's fixture recipe (examples/tools/targets/fixtures/build_fixtures.py) compiled the Gate classes without parameter names, so the verifier called the claims' `code` arg0, and every fixture proof task of contract A5 came back unresolved on the merged streams (VF-024's first point). The recipe now has JAVAC_FLAGS = (\"-parameters\",), which runtime's fixture route already read, and records the flags in its manifest. Runtime's toolchain record lists the recipe's flags too. make_records.py remade records/: every fixture JAR's sha256 changed, but the controls' outputs, the oracle's verdicts on JDK 21 and 25, and the gap scan's three regex calls did not.\n\nThree runtime tests pinned the old bytes and were updated: the verifier's scope names `code` from MethodParameters, the flags test builds its no-names variant with the flags removed and now checks that variant's arg0 scope, and the published mutant route's recompile carries -parameters from its base classes and still gives build_fixtures.py's mutant bytes. runtime_calibrate.py's docstring and the fixtures README are updated; the README also lists claims/.",
       "log_sha256": "9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886"
+    },
+    {
+      "change_id": "owpostsymrqnqtpprkmsskvmntowutkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: the download hosts widened to repo.spring.io and services/plugins.gradle.org; P3's build plugin needs credentials",
+      "body": "runtime_maven.HOSTS now holds decision 1's extended hosts: Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. A new test, which failed first, checks that they are allowed and that the rest stays refused: other hosts and look-alikes, the Gradle CDNs as hosts or redirects, http, a user name or port, and a SNAPSHOT on repo.spring.io. Refusal messages name the five hosts.\n\nThe Gradle route itself was not built. HEAD requests showed that P3's (307) buildscript plugin, spring-build-conventions 0.0.23.RELEASE, is on no anonymous repository: repo.spring.io answers 401, and plugins.gradle.org redirects to Maven Central, which has 404. Its upstream build would stop at the buildscript, so it was not queued. Runtime's Gradle blocker now says that the route is missing, not that the policy forbids it; a distribution on another host is still outside the policy (new test). 307's sidecar blocker, handoff, notes and README record this and name the narrower slice (each commit's BCrypt.java compiled alone) as the alternative. Whether to use repo.spring.io credentials or that slice is left for review. 305's wording about decision 1 is updated.\n\nBrief out of date: Progress's request 2 said 'Runtime's Gradle toolchain blocker goes with it. Then P3 (307) by its pinned upstream build, as a job'; neither happened, for the reason above. Decision 1's extension also assumed that P3's build becomes possible, which it doesn't without credentials.",
+      "log_sha256": "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48"
     }
   ],
   "logs": {
+    "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48": {
+      "bytes": 4805718,
+      "lines": 1614,
+      "gzip_bytes": 969260,
+      "url": null
+    },
     "2d60bea98284ad04b81d0353ea445f475615329f89aff99cee8942cf8e099b92": {
       "bytes": 256222,
       "lines": 43,

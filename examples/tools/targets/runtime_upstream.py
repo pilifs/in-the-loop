@@ -19,9 +19,12 @@ What a build records, beside the bytes:
 
 Maven only, for now. A Maven wrapper's distribution is fetched from Maven Central by the sha256 its properties record,
 or else checked against Central's .sha1 and recorded, then run directly: the wrapper's own download step is not.
-A Gradle build is a preparation blocker: a wrapper's distribution comes from services.gradle.org, outside the downloads
-policy, and an installed Gradle is not the revision's own build tool. No build-enabling patch is applied: one would be
-separate recorded bytes with a scope review.
+A Gradle build is a preparation blocker. Its hosts are allowed since decision 1's extension (services.gradle.org,
+plugins.gradle.org, repo.spring.io), but there is no Gradle route yet: the wrapper's distribution by sha256, the
+build's repositories held to runtime_maven.HOSTS, and every file it resolves hashed. The one packet that would use it,
+example 307, can't resolve its build plugin without credentials (its target.json), so it waits for a packet that can.
+An installed Gradle is not the revision's own build tool. No build-enabling patch is applied: one would be separate
+recorded bytes with a scope review.
 
 A constructed mutant (workflow's W1) is the one patch applied: its locked patch, by `git apply` on the fresh checkout of
 its base commit (apply_patch), before the build, which must then leave the checkout as patched. runtime.py also uses
@@ -321,23 +324,30 @@ def _unzip(path, into):
 def _gradle_blocker(recipe, dest):
     if recipe["tool"] == "gradle":
         return Blocked("toolchain", "a gradle build without its wrapper names no Gradle version: the installed Gradle "
-                       "isn't the revision's own build tool, and Gradle plugins resolve from plugins.gradle.org, outside "
-                       "the downloads policy", needs="the revision's own Gradle, from an allowed host by sha256",
-                       next="the user decides whether a Gradle distribution host may be used; until then use the "
+                       "isn't the revision's own build tool", needs="the revision's own Gradle, by its wrapper",
+                       next="record the gradle-wrapper tool if the revision has a wrapper; otherwise use the "
                             "published-artifact route where the revision is a release")
     props = _properties(dest / "gradle/wrapper/gradle-wrapper.properties") \
         if (dest / "gradle/wrapper/gradle-wrapper.properties").is_file() else {}
     url = props.get("distributionUrl")
-    host = urllib.parse.urlsplit(url).hostname if url else None
-    return Blocked("toolchain", f"the Gradle wrapper's distribution {url or '(none named)'} is on {host or 'no host'}, "
-                   f"outside the downloads policy (github.com and Maven Central); its recorded sha256 is "
-                   f"{props.get('distributionSha256Sum') or 'missing'}",
+    digest = props.get("distributionSha256Sum") or "missing"
+    if not url or not runtime_maven.allowed(url):
+        host = urllib.parse.urlsplit(url).hostname if url else None
+        return Blocked("toolchain", f"the Gradle wrapper's distribution {url or '(none named)'} is on "
+                       f"{host or 'no host'}, outside the downloads policy ({runtime_maven.HOST_NAMES}); its recorded "
+                       f"sha256 is {digest}", command=shlex.join(recipe["argv"]),
+                       needs="the revision's own Gradle distribution, from an allowed host, checked by sha256",
+                       next="the user decides whether that host may serve it; until then use the published-artifact "
+                            "route where the revision is a release")
+    return Blocked("toolchain", f"the Gradle wrapper's distribution {url} (recorded sha256 {digest}) is on an allowed "
+                   f"host, but preparation builds with Maven only: there is no Gradle route yet",
                    command=shlex.join(recipe["argv"]),
-                   needs="the revision's own Gradle distribution, from an allowed host, checked against the commit's "
-                         "distributionSha256Sum",
-                   next="the user decides whether services.gradle.org may serve a wrapper distribution checked against "
-                        "the commit's distributionSha256Sum (and how plugins.gradle.org is handled); until then use "
-                        "the published-artifact route where the revision is a release")
+                   needs="a Gradle route: the wrapper's distribution by sha256 (services.gradle.org redirects it to "
+                         "github.com), the build's repositories held to the allowed hosts by an init script, and every "
+                         "file it resolves hashed",
+                   next="check first that the build's repositories serve its plugins and dependencies without "
+                        "credentials (HEAD requests); then the Gradle route is a runtime item of its own, or use the "
+                        "published-artifact route where the revision is a release")
 
 
 def _settings(path, repository):

@@ -41,8 +41,10 @@ full claim stays unresolved beside a separate local conversion lemma, and no cip
 
 No Maven Central artifact carries either side's exact `BCrypt.java` (before's is 5.2.0.M4's, a milestone; 5.2.0.RELEASE
 differs from after's by an unused import and a `final`). The upstream Gradle build needs services.gradle.org and
-repo.spring.io, outside the downloads policy, but pins no SNAPSHOT. The handoff in `target.json` records this as a
-predicted build blocker.
+repo.spring.io, which decision 1's extension allows (hash-pinned), and pins no SNAPSHOT. But its build plugin,
+`spring-build-conventions` 0.0.23.RELEASE, is served by no anonymous repository: repo.spring.io answers 401, and
+plugins.gradle.org redirects to Maven Central, which has 404 (HEAD requests, 2026-11-14). The handoff in `target.json`
+records this as a predicted build blocker, with the narrower extracted-source scope as the alternative.
 
 ## The packet
 

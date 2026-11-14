@@ -620,6 +620,29 @@ class MavenTest(unittest.TestCase):
         self.assertFalse(runtime_maven.allowed("https://objects.githubusercontent.com/x"))
         self.assertTrue(runtime_maven.allowed("https://objects.githubusercontent.com/x", runtime_maven.REDIRECT_HOSTS))
 
+    def test_the_three_hosts_decision_1s_extension_allows_and_no_other(self):
+        allowed = ("https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC1/spring-jcl-5.2.0.RC1.jar",
+                   "https://services.gradle.org/distributions/gradle-5.5.1-bin.zip",
+                   "https://plugins.gradle.org/m2/x/y/1.0/y-1.0.jar")
+        for url in allowed:
+            self.assertTrue(runtime_maven.allowed(url), url)
+            self.assertTrue(runtime_maven.allowed(url, runtime_maven.REDIRECT_HOSTS), url)
+        lock = runtime_maven.check_item({"coordinates": "org.springframework:spring-jcl:5.2.0.RC1", "url": allowed[0],
+                                         "sha256": "a" * 64}, "dependency")
+        self.assertEqual(lock["url"], allowed[0], "a recorded URL on repo.spring.io is fetched from there")
+        refused = ("http://repo.spring.io/milestone/x", "https://repo.spring.io.example.org/x", "https://spring.io/x",
+                   "https://downloads.gradle.org/distributions/gradle-5.5.1-bin.zip", "https://jcenter.bintray.com/x",
+                   "https://plugins-artifacts.gradle.org/x", "https://user@repo.spring.io/x",
+                   "https://services.gradle.org:444/x", "https://gradle.org/x")
+        for url in refused:
+            self.assertFalse(runtime_maven.allowed(url), url)
+            self.assertFalse(runtime_maven.allowed(url, runtime_maven.REDIRECT_HOSTS), url)
+            with self.assertRaises(runtime_maven.Blocked, msg=url):
+                runtime_maven.check_item({"coordinates": "g.x:a:1.0", "url": url, "sha256": "a" * 64}, "dependency")
+        with self.assertRaises(runtime_maven.Blocked, msg="a SNAPSHOT stays a mutable reference on any host"):
+            runtime_maven.check_item({"coordinates": "org.springframework:spring-jcl:5.2.0.BUILD-SNAPSHOT",
+                                      "url": "https://repo.spring.io/snapshot/x.jar", "sha256": "a" * 64}, "dependency")
+
     def test_pin_checks_centrals_sha1_and_caches_the_bytes(self):
         root = Path(tempfile.mkdtemp(prefix="test-runtime-"))
         self.addCleanup(shutil.rmtree, root, True)
