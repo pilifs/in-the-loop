@@ -1,0 +1,101 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256",
+  "status": "open",
+  "title": "Application-core feature streams exiting early",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-14T15:26:47.223Z",
+  "ended": "2026-11-14T15:37:45.307Z",
+  "duration_seconds": 658,
+  "stats": {
+    "turns": 5,
+    "api_calls": 27,
+    "tool_calls": 30,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 138721,
+    "usage": {
+      "input_tokens": 54,
+      "output_tokens": 35855,
+      "cache_read_input_tokens": 2457262,
+      "cache_creation_input_tokens": 143806
+    }
+  },
+  "tools": {
+    "Bash": 23,
+    "Write": 4,
+    "Edit": 2,
+    "Read": 1
+  },
+  "files_touched": [
+    "examples/tools/targets/runtime.py",
+    "examples/tools/targets/runtime_jar.py",
+    "examples/tools/targets/runtime_jdk.py",
+    "examples/tools/targets/test_runtime.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T15:26:47.223Z",
+      "ended": "2026-11-14T15:26:47.225Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-14T15:26:42.743Z",
+      "ended": "2026-11-14T15:37:45.307Z",
+      "turns": 5,
+      "api_calls": 27,
+      "usage": {
+        "input_tokens": 54,
+        "output_tokens": 35855,
+        "cache_read_input_tokens": 2457262,
+        "cache_creation_input_tokens": 143806
+      },
+      "peak_context_tokens": 138721
+    }
+  ],
+  "log": {
+    "sha256": "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263",
+    "bytes": 1111220,
+    "lines": 322,
+    "gzip_bytes": 225032,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "muqvuqyqpwyzsuuytnsvqpznuvlylszk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime R1: source locks and the fixture route's preparation",
+      "body": "The runtime stream's first piece (llm-dlc/loops/example-targets-runtime.md, R1). runtime.lock(plan, revision) is new and offline: it returns a PreparedTarget at source-locked, with every selected source, adapter, driver and oracle path inside the example's folder (symlinks included) and hashed, and nothing fetched or built. runtime.prepare() now implements the fixture route: it compiles with build_fixtures.py's recipe (--release 21, a fixed JAR date, sorted entries) using the JDK build_fixtures.py would use, resolved to its real home, so the original JAR is byte for byte build_fixtures.py's. It records the original, adapter, driver and oracle by sha256, the ordered classpath, the JDK identity (release file and java -version), the loaded target's origin, and writes prepared.json to the work directory. It returns failed, with its stage, diagnostic and whatever artifacts exist, for a class held by more than one classpath entry (shadowing), a target method the original doesn't declare, an adapter that never references the target method, a compile failure, sources changed between lock and build, and a work directory that isn't an earlier preparation's (left alone). The published-artifact and upstream-build routes return Unsupported until R2. New modules runtime_jdk.py (installed JDKs by full path) and runtime_jar.py (a small class-file reader).",
+      "log_sha256": "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263"
+    }
+  ],
+  "logs": {
+    "7d2ec589a37114bf9e63df810d312bec3b22838cdaa0d9e5dbd411b791afc263": {
+      "bytes": 1111220,
+      "lines": 322,
+      "gzip_bytes": 225032,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

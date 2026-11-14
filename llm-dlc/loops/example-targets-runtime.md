@@ -143,8 +143,22 @@ Small unit and JVM conformance checks run inline.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
-  included.
+- Forked after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0 included, on
+  2026-11-14.
+- 2026-11-14, **R1 on the fixture route**: `runtime.lock(plan, revision)` (new, offline: the source lock, every
+  selected source, adapter, driver and oracle path inside the folder, links included, and hashed; nothing fetched or
+  built) and `runtime.prepare()` for `route: fixture` (build_fixtures.py's recipe, byte for byte, with the JDK it
+  would use resolved to its real home; the original, adapter, driver and oracle hashed; the ordered classpath; the
+  target's origin; `prepared.json` in the work directory). It refuses, as `failed` with its stage, diagnostic and the
+  artifacts that exist: a class on more than one classpath entry (`classpath`), a target method the original doesn't
+  declare (`target`), an adapter that never references the target method (`adapter`), a compile failure (`build`),
+  sources changed between lock and build, and a work directory that isn't an earlier preparation's (`workdir`).
+  `published-artifact` and `upstream-build` return Unsupported (not a Phase 0 stub) until R2. New modules
+  `runtime_jdk.py` (installed JDKs by full path, identity from `release` and `java -version`) and `runtime_jar.py` (a
+  small class-file reader). Contract A2: 3 pass. `test_runtime.py` rewritten: 19 tests.
+- Next: R4, `run_controls` on the fixture (contract A3/A4); then R2's published-artifact route with Maven Central
+  acquisition and a hash-checked cache; R3's `run_verifier` (needs a built `jvmcontract` in this workspace, compiled
+  inline); the upstream-build route as a job; R5's slice on `PatternMatchUtils.simpleMatch`.
 - Status: working
 
 ## Loop settings
