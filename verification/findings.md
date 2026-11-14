@@ -18,6 +18,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-025: example-targets runtime R2: three applied outputs, the 1.4 MiB spring-core 5.3.19 JARs, are over jj's 1 MiB snapshot limit and are not committed
+
+- **Status**: open
+- **Raised**: 2026-11-14 on `vm-1`, job `20261114-180443-example-targets-runtime-r2-a-constructed` (at `b5e28e2663be`; passed in 6.2 s, peak 197 MiB; both steps passed, nothing refuted).
+- **Found**: `collect` applied 54 outputs under `runtime-mutant/attempt/`. Three are JARs of 1,482,575-1,482,592 bytes (`prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar`, `prepare/mutant/mutant/spring-core-5.3.19.jar`, `prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar`), above jj's `snapshot.max-new-file-size` (1 MiB), so every `jj` command warns and the commit leaves them out. The other 51 outputs, the result and its logs are committed. The mutant JAR, the one that is the job's point, is among the missing; its classes' hashes are in the committed `prepared.json`. I did not raise the limit or edit the result.
+- **Needs**: the user or the runtime loop to decide: gitignore these JARs (they are acquired by sha256, or rebuilt from the patch), or raise the limit for the repo (same cause as VF-020). The example's notes should say the JARs are not in the history.
+- **Tracked in**: [`llm-dlc/loops/example-targets-runtime.md`](../llm-dlc/loops/example-targets-runtime.md) (R2).
+- **Closes when**: the JARs are ignored or committed and `jj st` stops warning.
+
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 
 - **Status**: closed by job `20261108-141443-vf-023-rerun-the-conformance-corpus-unde` (at `13f3e9a0dac8`, passed 2026-11-08 on `vm-1`, 23m18s, peak 1.8 GiB: the `auto --confirm` conformance corpus step, after a JBMC refutation through a stub that doesn't reproduce was made no verdict under `--confirm`). Its one output, `lib/target/conformance-confirm.log`, was not applied (the file changed since the commit); it is a build log, so nothing is lost.

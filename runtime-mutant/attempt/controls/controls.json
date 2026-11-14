@@ -1,0 +1,1973 @@
+{
+  "task": "mutant-replay",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "r5-3-19",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-r5-3-19.jar:lib/org.springframework/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
+        "slice.driver.SimpleMatchDriver",
+        "[\"abc\", \"abc\"]",
+        "[\"abc\", \"abd\"]",
+        "[\"\", \"\"]",
+        "[\"\", \"a\"]",
+        "[\"a\", \"\"]",
+        "[null, \"a\"]",
+        "[\"a\", null]",
+        "[null, null]",
+        "[\"ab*\", \"ab\"]",
+        "[\"ab*\", \"abc\"]",
+        "[\"ab*\", \"a\"]",
+        "[\"ab*\", \"ba\"]",
+        "[\"*bc\", \"abc\"]",
+        "[\"*bc\", \"bcx\"]",
+        "[\"*\", \"\"]",
+        "[\"*\", \"anything\"]",
+        "[\"*b*\", \"abc\"]",
+        "[\"*b*\", \"ac\"]",
+        "[\"a*c\", \"abc\"]",
+        "[\"a*c\", \"ac\"]",
+        "[\"a*c\", \"ab\"]",
+        "[\"a*c*e\", \"abcde\"]",
+        "[\"a*c*e\", \"abced\"]",
+        "[\"**\", \"x\"]",
+        "[\"a**b\", \"ab\"]",
+        "[\"*a*a*\", \"aa\"]",
+        "[\"*a*a*\", \"a\"]",
+        "[\"aa*a\", \"aa\"]",
+        "[\"a*a\", \"a\"]",
+        "[\"*ab*ab\", \"xabyab\"]",
+        "[\"*aab\", \"aaab\"]",
+        "[\"*a*b\", \"acab\"]",
+        "[\"*a*b\", \"acba\"]",
+        "[\"Name*\", \"name\"]",
+        "[\"name*\", \"NAME\"]",
+        "[\"name*\", \"name\"]",
+        "[\"a*b\", \"a\\nb\"]",
+        "[\".*\", \"ab\"]",
+        "[\".*\", \".ab\"]",
+        "[\"a.c\", \"abc\"]",
+        "[\"[a]*\", \"[a]x\"]",
+        "[\"a+\", \"aa\"]",
+        "[\"\\u00e9*\", \"\\u00e9a\"]",
+        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
+        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-r5-3-19-jdk21.stdout",
+      "stderr": "controls/control-r5-3-19-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-r5-3-19.jar",
+            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+            "role": "adapter"
+          },
+          {
+            "path": "lib/org.springframework/spring-core-5.3.19.jar",
+            "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
+            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "simple-match-driver",
+          "main": "slice.driver.SimpleMatchDriver"
+        },
+        "inputs": {
+          "from": "PROBES",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "input": [
+            "abc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "abc",
+            "abd"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            ""
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ba"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*bc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*bc",
+            "bcx"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*",
+            "anything"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abcde"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abced"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "**",
+            "x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a**b",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "aa*a",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*a",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*ab*ab",
+            "xabyab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*aab",
+            "aaab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acba"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "Name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "NAME"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*b",
+            "a\nb"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            ".*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            ".*",
+            ".ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a.c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "[a]*",
+            "[a]x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a+",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "é*",
+            "éa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*😀",
+            "x😀"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "Straße*",
+            "STRASSE"
+          ],
+          "outcome": "returned",
+          "value": false
+        }
+      ],
+      "control": "simple-match-driver",
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19"
+      }
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "r5-3-19",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-r5-3-19.jar:lib/org.springframework/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
+        "slice.driver.SimpleMatchDriver",
+        "[\"abc\", \"abc\"]",
+        "[\"abc\", \"abd\"]",
+        "[\"\", \"\"]",
+        "[\"\", \"a\"]",
+        "[\"a\", \"\"]",
+        "[null, \"a\"]",
+        "[\"a\", null]",
+        "[null, null]",
+        "[\"ab*\", \"ab\"]",
+        "[\"ab*\", \"abc\"]",
+        "[\"ab*\", \"a\"]",
+        "[\"ab*\", \"ba\"]",
+        "[\"*bc\", \"abc\"]",
+        "[\"*bc\", \"bcx\"]",
+        "[\"*\", \"\"]",
+        "[\"*\", \"anything\"]",
+        "[\"*b*\", \"abc\"]",
+        "[\"*b*\", \"ac\"]",
+        "[\"a*c\", \"abc\"]",
+        "[\"a*c\", \"ac\"]",
+        "[\"a*c\", \"ab\"]",
+        "[\"a*c*e\", \"abcde\"]",
+        "[\"a*c*e\", \"abced\"]",
+        "[\"**\", \"x\"]",
+        "[\"a**b\", \"ab\"]",
+        "[\"*a*a*\", \"aa\"]",
+        "[\"*a*a*\", \"a\"]",
+        "[\"aa*a\", \"aa\"]",
+        "[\"a*a\", \"a\"]",
+        "[\"*ab*ab\", \"xabyab\"]",
+        "[\"*aab\", \"aaab\"]",
+        "[\"*a*b\", \"acab\"]",
+        "[\"*a*b\", \"acba\"]",
+        "[\"Name*\", \"name\"]",
+        "[\"name*\", \"NAME\"]",
+        "[\"name*\", \"name\"]",
+        "[\"a*b\", \"a\\nb\"]",
+        "[\".*\", \"ab\"]",
+        "[\".*\", \".ab\"]",
+        "[\"a.c\", \"abc\"]",
+        "[\"[a]*\", \"[a]x\"]",
+        "[\"a+\", \"aa\"]",
+        "[\"\\u00e9*\", \"\\u00e9a\"]",
+        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
+        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-r5-3-19-jdk25.stdout",
+      "stderr": "controls/control-r5-3-19-jdk25.stderr",
+      "identities": {
+        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "jdkFeature": "25",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-r5-3-19.jar",
+            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+            "role": "adapter"
+          },
+          {
+            "path": "lib/org.springframework/spring-core-5.3.19.jar",
+            "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
+            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "simple-match-driver",
+          "main": "slice.driver.SimpleMatchDriver"
+        },
+        "inputs": {
+          "from": "PROBES",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "input": [
+            "abc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "abc",
+            "abd"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            ""
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ba"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*bc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*bc",
+            "bcx"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*",
+            "anything"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abcde"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abced"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "**",
+            "x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a**b",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "aa*a",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*a",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*ab*ab",
+            "xabyab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*aab",
+            "aaab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acba"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "Name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "NAME"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*b",
+            "a\nb"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            ".*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            ".*",
+            ".ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a.c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "[a]*",
+            "[a]x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a+",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "é*",
+            "éa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*😀",
+            "x😀"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "Straße*",
+            "STRASSE"
+          ],
+          "outcome": "returned",
+          "value": false
+        }
+      ],
+      "control": "simple-match-driver",
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19"
+      }
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "mutant",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-mutant.jar:mutant/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
+        "slice.driver.SimpleMatchDriver",
+        "[\"abc\", \"abc\"]",
+        "[\"abc\", \"abd\"]",
+        "[\"\", \"\"]",
+        "[\"\", \"a\"]",
+        "[\"a\", \"\"]",
+        "[null, \"a\"]",
+        "[\"a\", null]",
+        "[null, null]",
+        "[\"ab*\", \"ab\"]",
+        "[\"ab*\", \"abc\"]",
+        "[\"ab*\", \"a\"]",
+        "[\"ab*\", \"ba\"]",
+        "[\"*bc\", \"abc\"]",
+        "[\"*bc\", \"bcx\"]",
+        "[\"*\", \"\"]",
+        "[\"*\", \"anything\"]",
+        "[\"*b*\", \"abc\"]",
+        "[\"*b*\", \"ac\"]",
+        "[\"a*c\", \"abc\"]",
+        "[\"a*c\", \"ac\"]",
+        "[\"a*c\", \"ab\"]",
+        "[\"a*c*e\", \"abcde\"]",
+        "[\"a*c*e\", \"abced\"]",
+        "[\"**\", \"x\"]",
+        "[\"a**b\", \"ab\"]",
+        "[\"*a*a*\", \"aa\"]",
+        "[\"*a*a*\", \"a\"]",
+        "[\"aa*a\", \"aa\"]",
+        "[\"a*a\", \"a\"]",
+        "[\"*ab*ab\", \"xabyab\"]",
+        "[\"*aab\", \"aaab\"]",
+        "[\"*a*b\", \"acab\"]",
+        "[\"*a*b\", \"acba\"]",
+        "[\"Name*\", \"name\"]",
+        "[\"name*\", \"NAME\"]",
+        "[\"name*\", \"name\"]",
+        "[\"a*b\", \"a\\nb\"]",
+        "[\".*\", \"ab\"]",
+        "[\".*\", \".ab\"]",
+        "[\"a.c\", \"abc\"]",
+        "[\"[a]*\", \"[a]x\"]",
+        "[\"a+\", \"aa\"]",
+        "[\"\\u00e9*\", \"\\u00e9a\"]",
+        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
+        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-mutant-jdk21.stdout",
+      "stderr": "controls/control-mutant-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-mutant.jar",
+            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+            "role": "adapter"
+          },
+          {
+            "path": "mutant/spring-core-5.3.19.jar",
+            "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
+            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "simple-match-driver",
+          "main": "slice.driver.SimpleMatchDriver"
+        },
+        "inputs": {
+          "from": "PROBES",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "input": [
+            "abc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "abc",
+            "abd"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            ""
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ba"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*bc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*bc",
+            "bcx"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*",
+            "anything"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abcde"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abced"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "**",
+            "x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a**b",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "aa*a",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*a",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*ab*ab",
+            "xabyab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*aab",
+            "aaab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acba"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "Name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "NAME"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*b",
+            "a\nb"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            ".*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            ".*",
+            ".ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a.c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "[a]*",
+            "[a]x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a+",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "é*",
+            "éa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*😀",
+            "x😀"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "Straße*",
+            "STRASSE"
+          ],
+          "outcome": "returned",
+          "value": false
+        }
+      ],
+      "control": "simple-match-driver",
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant"
+      }
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "mutant",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-mutant.jar:mutant/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
+        "slice.driver.SimpleMatchDriver",
+        "[\"abc\", \"abc\"]",
+        "[\"abc\", \"abd\"]",
+        "[\"\", \"\"]",
+        "[\"\", \"a\"]",
+        "[\"a\", \"\"]",
+        "[null, \"a\"]",
+        "[\"a\", null]",
+        "[null, null]",
+        "[\"ab*\", \"ab\"]",
+        "[\"ab*\", \"abc\"]",
+        "[\"ab*\", \"a\"]",
+        "[\"ab*\", \"ba\"]",
+        "[\"*bc\", \"abc\"]",
+        "[\"*bc\", \"bcx\"]",
+        "[\"*\", \"\"]",
+        "[\"*\", \"anything\"]",
+        "[\"*b*\", \"abc\"]",
+        "[\"*b*\", \"ac\"]",
+        "[\"a*c\", \"abc\"]",
+        "[\"a*c\", \"ac\"]",
+        "[\"a*c\", \"ab\"]",
+        "[\"a*c*e\", \"abcde\"]",
+        "[\"a*c*e\", \"abced\"]",
+        "[\"**\", \"x\"]",
+        "[\"a**b\", \"ab\"]",
+        "[\"*a*a*\", \"aa\"]",
+        "[\"*a*a*\", \"a\"]",
+        "[\"aa*a\", \"aa\"]",
+        "[\"a*a\", \"a\"]",
+        "[\"*ab*ab\", \"xabyab\"]",
+        "[\"*aab\", \"aaab\"]",
+        "[\"*a*b\", \"acab\"]",
+        "[\"*a*b\", \"acba\"]",
+        "[\"Name*\", \"name\"]",
+        "[\"name*\", \"NAME\"]",
+        "[\"name*\", \"name\"]",
+        "[\"a*b\", \"a\\nb\"]",
+        "[\".*\", \"ab\"]",
+        "[\".*\", \".ab\"]",
+        "[\"a.c\", \"abc\"]",
+        "[\"[a]*\", \"[a]x\"]",
+        "[\"a+\", \"aa\"]",
+        "[\"\\u00e9*\", \"\\u00e9a\"]",
+        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
+        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-mutant-jdk25.stdout",
+      "stderr": "controls/control-mutant-jdk25.stderr",
+      "identities": {
+        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "jdkFeature": "25",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-mutant.jar",
+            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+            "role": "adapter"
+          },
+          {
+            "path": "mutant/spring-core-5.3.19.jar",
+            "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
+            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "simple-match-driver",
+          "main": "slice.driver.SimpleMatchDriver"
+        },
+        "inputs": {
+          "from": "PROBES",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "input": [
+            "abc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "abc",
+            "abd"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            ""
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a",
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            null,
+            null
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "ab*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "ab*",
+            "ba"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*bc",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*bc",
+            "bcx"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*",
+            ""
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*",
+            "anything"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*b*",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ac"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abcde"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*c*e",
+            "abced"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "**",
+            "x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a**b",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*a*",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "aa*a",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "a*a",
+            "a"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "*ab*ab",
+            "xabyab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*aab",
+            "aaab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*a*b",
+            "acba"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "Name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "NAME"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "name*",
+            "name"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a*b",
+            "a\nb"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            ".*",
+            "ab"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            ".*",
+            ".ab"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a.c",
+            "abc"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "[a]*",
+            "[a]x"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "a+",
+            "aa"
+          ],
+          "outcome": "returned",
+          "value": false
+        },
+        {
+          "input": [
+            "é*",
+            "éa"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "*😀",
+            "x😀"
+          ],
+          "outcome": "returned",
+          "value": true
+        },
+        {
+          "input": [
+            "Straße*",
+            "STRASSE"
+          ],
+          "outcome": "returned",
+          "value": false
+        }
+      ],
+      "control": "simple-match-driver",
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant"
+      }
+    }
+  ]
+}

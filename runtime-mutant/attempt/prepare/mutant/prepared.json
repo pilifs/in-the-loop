@@ -1,0 +1,268 @@
+{
+  "example": "315",
+  "task": "mutant-replay",
+  "revision": "mutant",
+  "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
+  "stage": "artifacts-ready",
+  "source": {
+    "route": "published-artifact",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "revision": "mutant",
+    "provenance": "a constructed mutant of r5-3-19, never an upstream revision: the base commit's sources checked out from github.com and patched, the patched Java files compiled against the base's published JARs, and their classes put in place of the base JAR's own in a copy of it; every other class is the published JAR's",
+    "linkage": {
+      "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
+      "status": "recorded, not checked against the published bytes: a release label supports no source rebuild or introducing-commit experiment"
+    },
+    "published": [
+      {
+        "coordinates": "org.springframework:spring-core:5.3.19",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
+        "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
+        "role": "original"
+      },
+      {
+        "coordinates": "org.springframework:spring-jcl:5.3.19",
+        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
+        "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+        "role": "dependency"
+      }
+    ],
+    "adapter": {
+      "roots": [
+        "adapter"
+      ],
+      "files": [
+        {
+          "path": "adapter/slice/adapter/SimpleMatchAdapter.java",
+          "sha256": "941b82c256320eb3aa80c47d2a09e776aa63806f2297d1b45eb2069bde8aa0d3"
+        }
+      ]
+    },
+    "driver": {
+      "roots": [
+        "driver"
+      ],
+      "files": [
+        {
+          "path": "driver/slice/driver/SimpleMatchDriver.java",
+          "sha256": "f8fdad0ba120f8d12566bdf2d01f04f3dffd8b5821151f856726690ddc98e688"
+        }
+      ],
+      "control": "simple-match-driver",
+      "main": "slice.driver.SimpleMatchDriver"
+    },
+    "oracle": {
+      "control": "simple-match-oracle",
+      "path": "oracle.py",
+      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
+    },
+    "jdks": [
+      "21",
+      "25"
+    ],
+    "recipe": {
+      "tool": "javac",
+      "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; the published JARs are used as fetched",
+      "release": "21",
+      "date": "2026-01-01T00:00:00Z",
+      "flags": []
+    },
+    "mutant": {
+      "base": {
+        "revision": "r5-3-19",
+        "identity": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
+        "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from"
+      },
+      "patch": {
+        "path": "mutant/suffix-anywhere.patch",
+        "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f"
+      },
+      "files": [
+        "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"
+      ],
+      "description": "A leading-star pattern with no second star (\"*xxx\") is matched anywhere in the string instead of at its end: str.endsWith(pattern.substring(1)) becomes str.contains(...). It breaks the suffix branch of simpleMatch, which the oracle's \"*bc\" against \"bcx\" reaches, and the same branch at the end of a recursion (\"a*c*e\" against \"abced\", \"*a*b\" against \"acba\").",
+      "scope": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
+      "applied": {
+        "command": "git apply -p1 --verbose (after git apply --check)",
+        "files": [
+          {
+            "path": "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java",
+            "before": "4be3d0c69f62144a82d134591dc410614bc169d7baeeee7cd9d7de5e37bb4f68",
+            "after": "a2819e26b706f654b3e6108e5f1e1591d51a808ade70a43efa1be9c5639635df"
+          }
+        ]
+      },
+      "jar": {
+        "base": "lib/org.springframework/spring-core-5.3.19.jar",
+        "path": "mutant/spring-core-5.3.19.jar",
+        "classes": [
+          {
+            "class": "org/springframework/util/PatternMatchUtils",
+            "base": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
+            "mutant": "93f15dfe34c278bec984d42895df09003c66e79bcf30350b6539a241b7266782"
+          }
+        ]
+      }
+    },
+    "checkout": {
+      "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
+      "tree": "6ef836c793f746ef4dd8be3ff340d620a3bce676",
+      "fetchedFrom": "https://github.com/spring-projects/spring-framework",
+      "depth": 1,
+      "git": "git version 2.53.0",
+      "submodules": "none declared"
+    },
+    "target": {
+      "class": "org.springframework.util.PatternMatchUtils",
+      "method": "simpleMatch",
+      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
+      "loadedFrom": "mutant/spring-core-5.3.19.jar",
+      "classSha256": "93f15dfe34c278bec984d42895df09003c66e79bcf30350b6539a241b7266782",
+      "adapterCalls": [
+        "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z"
+      ],
+      "adapterCallsTarget": true
+    }
+  },
+  "artifacts": [
+    {
+      "path": "lib/org.springframework/spring-core-5.3.19.jar",
+      "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
+      "role": "base",
+      "coordinates": "org.springframework:spring-core:5.3.19",
+      "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar"
+    },
+    {
+      "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
+      "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+      "role": "dependency",
+      "coordinates": "org.springframework:spring-jcl:5.3.19",
+      "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar"
+    },
+    {
+      "path": "mutant/spring-core-5.3.19.jar",
+      "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
+      "role": "original",
+      "coordinates": null,
+      "origin": "constructed: lib/org.springframework/spring-core-5.3.19.jar with 1 class(es) recompiled from spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java at cedb5874b72c3311c8c6e2f03a53537590f2e0dc, after the patch mutant/suffix-anywhere.patch (sha256 f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f)"
+    },
+    {
+      "path": "adapter-mutant.jar",
+      "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+      "role": "adapter",
+      "coordinates": null,
+      "origin": "built from adapter"
+    },
+    {
+      "path": "driver.jar",
+      "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+      "role": "driver",
+      "coordinates": null,
+      "origin": "built from driver"
+    },
+    {
+      "path": "controls/oracle.py",
+      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3",
+      "role": "oracle",
+      "coordinates": null,
+      "origin": "oracle.py"
+    }
+  ],
+  "classpath": [
+    "driver.jar",
+    "adapter-mutant.jar",
+    "mutant/spring-core-5.3.19.jar",
+    "lib/org.springframework/spring-jcl-5.3.19.jar"
+  ],
+  "toolchain": {
+    "jdk": {
+      "feature": "25",
+      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "release": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "build": {
+      "tool": "javac",
+      "release": "21",
+      "date": "2026-01-01T00:00:00Z",
+      "flags": [
+        "--release",
+        "21",
+        "-encoding",
+        "UTF-8",
+        "-implicit:none"
+      ],
+      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
+    },
+    "mutant": {
+      "javac": [
+        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac",
+        "--release",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-implicit:none",
+        "-proc:none",
+        "-nowarn",
+        "-Xlint:-options",
+        "-sourcepath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/no-sources",
+        "-g",
+        "-parameters",
+        "-d",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/mutant",
+        "-cp",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"
+      ],
+      "release": "8",
+      "flags": [
+        "-g",
+        "-parameters"
+      ],
+      "why": "the --release of the base JAR's own classes (their class-file version) and the debugging attributes they record, so the recompiled classes differ from the base's by the patch and the compiler alone (unpatchedRecompile measures the compiler's share)",
+      "debugAttributes": [
+        "LineNumberTable",
+        "LocalVariableTable",
+        "MethodParameters",
+        "SourceFile"
+      ],
+      "unpatchedRecompile": {
+        "classes": [
+          {
+            "class": "org/springframework/util/PatternMatchUtils",
+            "base": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
+            "recompiled": "b45705e5b925a051fc220c96fac0b32b4c3d27d9abecb0dfdfed20135160c0f7",
+            "identical": false
+          }
+        ],
+        "meaning": "the patched files compiled unpatched, the same way: where `identical` is false, this compiler alone gives other bytes than the base's for that class, so the mutant differs from the base by the patch and by the compiler; the mutant JAR holds the patched recompile only"
+      }
+    }
+  },
+  "failedStage": null,
+  "diagnostic": null,
+  "logs": [
+    "logs/acquire.log",
+    "logs/git-init.log",
+    "logs/git-fetch.log",
+    "logs/git-checkout.log",
+    "logs/git-head.log",
+    "logs/git-tree.log",
+    "logs/git-version.log",
+    "logs/javac-unpatched.log",
+    "logs/git-apply-check.log",
+    "logs/git-apply.log",
+    "logs/javac-mutant.log",
+    "logs/javac-adapter.log",
+    "logs/jar-adapter.log",
+    "logs/javac-driver.log",
+    "logs/jar-driver.log"
+  ]
+}

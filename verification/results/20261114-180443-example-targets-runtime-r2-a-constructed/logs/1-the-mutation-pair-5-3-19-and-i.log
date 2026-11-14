@@ -1,0 +1,9 @@
+prepare r5-3-19: artifacts-ready
+prepare mutant: artifacts-ready
+control r5-3-19 jdk21: exited exit 0, 45 observations, oracle problems []
+control r5-3-19 jdk25: exited exit 0, 45 observations, oracle problems []
+control mutant jdk21: exited exit 0, 45 observations, oracle problems [[['*bc', 'bcx'], 'returned True, the statement says False'], [['a*c*e', 'abced'], 'returned True, the statement says False'], [['*a*b', 'acba'], 'returned True, the statement says False']]
+control mutant jdk25: exited exit 0, 45 observations, oracle problems [[['*bc', 'bcx'], 'returned True, the statement says False'], [['a*c*e', 'abced'], 'returned True, the statement says False'], [['*a*b', 'acba'], 'returned True, the statement says False']]
+expected disagreements: {'r5-3-19': [], 'mutant': ['["*a*b", "acba"]', '["*bc", "bcx"]', '["a*c*e", "abced"]']}
+JDKs agree: {'r5-3-19': True, 'mutant': True}; ingestion got 4 records: unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it
+ok (runtime-mutant/attempt/slice.json)

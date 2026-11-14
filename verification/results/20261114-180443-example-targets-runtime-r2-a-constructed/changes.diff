@@ -1,0 +1,3695 @@
+--- /dev/null
++++ b/runtime-mutant/attempt/case/README.md
+@@ -0,0 +1,36 @@
++# The runtime stream's vertical slice: `PatternMatchUtils.simpleMatch` from published spring-core
++
++Not an example and not in the router. It is the case R5 of
++[`example-targets-runtime.md`](../../../../llm-dlc/loops/example-targets-runtime.md) runs end to end, through
++[`runtime_slice.py`](../runtime_slice.py). The number 315, from the runtime stream's range, is used in its plan.
++
++- `target.json`: a valid `example-target/v1` sidecar. Its revisions are the Spring Framework release tags v5.3.18 and
++  v5.3.19, by their full commits, checked with `git ls-remote` on 2026-11-14. Its preparation is the
++  published-artifact route. Each release lists its spring-core JAR first, then spring-jcl, spring-core's one compile
++  dependency in its POM at that version. Each JAR has its Maven Central URL and the sha256 recorded by
++  `runtime_maven.py pin`, which also checked it against Central's `.sha1`.
++- `adapter/`: calls the original method with the two raw inputs, and nothing else.
++- `driver/`: one JSON line per input, the outcome as the JVM gave it.
++- `oracle.py`: the statement written from the method's Javadoc, and the 45 `PROBES`. It never calls spring-core.
++- `mutation.json` and `mutant/suffix-anywhere.patch`: a constructed mutant of 5.3.19, in workflow W1's sidecar shape
++  (a revision's `mutant`, a `mutation` pair and the `mutant-replay` task). The patch turns the suffix branch's
++  `str.endsWith(pattern.substring(1))` into `str.contains(...)`. It sits beside `target.json` until W1's schema, which
++  adds `mutant`, is merged; then it moves in as it is. `runtime_slice.py` merges it into the plan meanwhile. On the
++  published-artifact route the mutant is a copy of 5.3.19's JAR whose `PatternMatchUtils` is recompiled from the
++  v5.3.19 commit's source with the patch applied. It is a sensitivity control, never a revision of Spring.
++
++```text
++python3 examples/tools/targets/runtime_slice.py ATTEMPT            # acquires what the cache lacks, from Central
++python3 examples/tools/targets/runtime_slice.py ATTEMPT --offline  # the cache only
++python3 examples/tools/targets/runtime_slice.py ATTEMPT --case simplematch-mutant  # a job: checks out the commit
++```
++
++What it showed on 2026-11-14:
++- Both releases are artifacts-ready.
++- On JDK 21 and 25 each, all 45 observations agree with the oracle.
++- The two JDKs agree on each release.
++- The 4 records reached `workflow.ingest`, which is still Phase 0's stub.
++- `PatternMatchUtils.class` is byte-identical in the two JARs (sha256 `8562b278…ff28`). The CVE-2022-22968 fix
++  between these releases changed `DataBinder`, not this method.
++
++This is a conformance replay of the route, not a claim, and no part of the matching-predicates packets.
+Binary file runtime-mutant/attempt/case/__pycache__/oracle.cpython-314.pyc changed
+--- /dev/null
++++ b/runtime-mutant/attempt/case/adapter/slice/adapter/SimpleMatchAdapter.java
+@@ -0,0 +1,15 @@
++package slice.adapter;
++
++import org.springframework.util.PatternMatchUtils;
++
++/** The runtime slice's adapter: it passes the two declared raw inputs to the original published method and returns
++ * its result. It maps nothing, catches nothing and replaces nothing, so spring-core's own bytecode decides. Compiled
++ * separately against each revision's JAR. */
++public final class SimpleMatchAdapter {
++    private SimpleMatchAdapter() {
++    }
++
++    public static boolean simpleMatch(String pattern, String str) {
++        return PatternMatchUtils.simpleMatch(pattern, str);
++    }
++}
+--- /dev/null
++++ b/runtime-mutant/attempt/case/driver/slice/driver/SimpleMatchDriver.java
+@@ -0,0 +1,107 @@
++package slice.driver;
++
++import slice.adapter.SimpleMatchAdapter;
++
++/** The runtime slice's concrete control. Each argument is one input, a JSON array of two strings or nulls
++ * ({@code ["a*", "abc"]}, the oracle's PROBES as runtime passes them). It prints one JSON line per input: the input as
++ * given, and the outcome as the JVM gave it (a value, or the exception's class). It decides nothing: the oracle reads
++ * these lines. An argument it can't read stops it with no line for that input, an incomplete replay. */
++public final class SimpleMatchDriver {
++    private SimpleMatchDriver() {
++    }
++
++    public static void main(String[] args) {
++        for (String arg : args) {
++            String[] input = new Reader(arg).pair();
++            String outcome;
++            try {
++                outcome = "\"returned\",\"value\":" + SimpleMatchAdapter.simpleMatch(input[0], input[1]);
++            } catch (RuntimeException e) {
++                outcome = "\"threw\",\"exception\":\"" + e.getClass().getName() + "\"";
++            }
++            System.out.println("{\"input\":" + arg + ",\"outcome\":" + outcome + "}");
++        }
++    }
++
++    /** Just enough JSON for the inputs: an array of two values, each null or a string with JSON's escapes. */
++    private static final class Reader {
++        private final String text;
++        private int at;
++
++        Reader(String text) {
++            this.text = text;
++        }
++
++        String[] pair() {
++            expect('[');
++            String first = value();
++            expect(',');
++            String second = value();
++            expect(']');
++            space();
++            if (at != text.length()) {
++                throw refuse("trailing text");
++            }
++            return new String[] {first, second};
++        }
++
++        private void space() {
++            while (at < text.length() && " \t\n\r".indexOf(text.charAt(at)) >= 0) {
++                at++;
++            }
++        }
++
++        private void expect(char c) {
++            space();
++            if (at >= text.length() || text.charAt(at) != c) {
++                throw refuse("expected '" + c + "'");
++            }
++            at++;
++        }
++
++        private String value() {
++            space();
++            if (text.startsWith("null", at)) {
++                at += 4;
++                return null;
++            }
++            expect('"');
++            StringBuilder b = new StringBuilder();
++            while (at < text.length()) {
++                char c = text.charAt(at++);
++                if (c == '"') {
++                    return b.toString();
++                }
++                if (c != '\\') {
++                    b.append(c);
++                    continue;
++                }
++                if (at >= text.length()) {
++                    break;
++                }
++                char e = text.charAt(at++);
++                switch (e) {
++                    case '"', '\\', '/' -> b.append(e);
++                    case 'b' -> b.append('\b');
++                    case 'f' -> b.append('\f');
++                    case 'n' -> b.append('\n');
++                    case 'r' -> b.append('\r');
++                    case 't' -> b.append('\t');
++                    case 'u' -> {
++                        if (at + 4 > text.length()) {
++                            throw refuse("a short \\u escape");
++                        }
++                        b.append((char) Integer.parseInt(text.substring(at, at + 4), 16));
++                        at += 4;
++                    }
++                    default -> throw refuse("an unknown escape \\" + e);
++                }
++            }
++            throw refuse("an unterminated string");
++        }
++
++        private IllegalArgumentException refuse(String why) {
++            return new IllegalArgumentException("input " + text + ": " + why + " at " + at);
++        }
++    }
++}
+--- /dev/null
++++ b/runtime-mutant/attempt/case/mutant/suffix-anywhere.patch
+@@ -0,0 +1,11 @@
++--- a/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java
+++++ b/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java
++@@ -51,7 +51,7 @@
++ 			}
++ 			int nextIndex = pattern.indexOf('*', 1);
++ 			if (nextIndex == -1) {
++-				return str.endsWith(pattern.substring(1));
+++				return str.contains(pattern.substring(1));
++ 			}
++ 			String part = pattern.substring(1, nextIndex);
++ 			if (part.isEmpty()) {
+--- /dev/null
++++ b/runtime-mutant/attempt/case/mutation.json
+@@ -0,0 +1,23 @@
++{
++  "about": "A constructed mutation control of r5-3-19, in workflow W1's sidecar shape (a revision's `mutant`, a `mutation` pair and its replay task). It is kept beside target.json, not in it, until W1's schema (which adds `mutant`) is merged: runtime_slice.py merges it into the plan. It is sensitivity evidence for the published-artifact route's mutant preparation, never a real revision or CVE.",
++  "revisions": {
++    "mutant": {
++      "mutant": {
++        "base": "r5-3-19",
++        "patch": "mutant/suffix-anywhere.patch",
++        "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
++        "description": "A leading-star pattern with no second star (\"*xxx\") is matched anywhere in the string instead of at its end: str.endsWith(pattern.substring(1)) becomes str.contains(...). It breaks the suffix branch of simpleMatch, which the oracle's \"*bc\" against \"bcx\" reaches, and the same branch at the end of a recursion (\"a*c*e\" against \"abced\", \"*a*b\" against \"acba\")."
++      }
++    }
++  },
++  "pairs": [
++    { "name": "mutation", "kind": "mutation", "before": "r5-3-19", "after": "mutant" }
++  ],
++  "tasks": [
++    {
++      "id": "mutant-replay", "kind": "replay", "relation": "calibration", "pair": "mutation",
++      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++      "notes": ["The mutation control's concrete side: 5.3.19's published spring-core, and a copy of it whose PatternMatchUtils is recompiled from the v5.3.19 commit's source with the patch applied, each in its own JVM on JDK 21 and 25, read by the same Javadoc oracle. The mutant must disagree with it where the suffix branch decides, and 5.3.19 nowhere."]
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-mutant/attempt/case/oracle.py
+@@ -0,0 +1,72 @@
++"""The runtime slice's independent oracle, written from PatternMatchUtils.simpleMatch's Javadoc, not from its code:
++
++    Match a String against the given pattern, supporting the following simple pattern styles: "xxx*", "*xxx", "*xxx*"
++    and "xxx*yyy" matches (with an arbitrary number of pattern parts), as well as direct equality.
++    Returns: whether the String matches the given pattern; false if either the pattern or the String is null.
++
++Read as a statement: '*' matches any sequence of characters, the empty one and line breaks included; every other
++character, regular-expression metacharacters included, matches only itself, case-sensitively; a null pattern or string
++never matches. This is a conformance oracle for the runtime's vertical slice (llm-dlc/loops/example-targets-runtime.md,
++R5), not a security property. Each revision's driver output (one JSON line per input) is checked against it; it never
++calls the implementation under test."""
++
++import json
++import re
++
++# [pattern, string] pairs, in the order the driver is given them. None is Java's null.
++PROBES = [
++    # direct equality
++    ["abc", "abc"], ["abc", "abd"], ["", ""], ["", "a"], ["a", ""],
++    # null on either side
++    [None, "a"], ["a", None], [None, None],
++    # "xxx*"
++    ["ab*", "ab"], ["ab*", "abc"], ["ab*", "a"], ["ab*", "ba"],
++    # "*xxx", "*" alone
++    ["*bc", "abc"], ["*bc", "bcx"], ["*", ""], ["*", "anything"],
++    # "*xxx*"
++    ["*b*", "abc"], ["*b*", "ac"],
++    # "xxx*yyy", several parts
++    ["a*c", "abc"], ["a*c", "ac"], ["a*c", "ab"], ["a*c*e", "abcde"], ["a*c*e", "abced"],
++    # adjacent stars, overlapping parts, and parts that need a later occurrence
++    ["**", "x"], ["a**b", "ab"], ["*a*a*", "aa"], ["*a*a*", "a"], ["aa*a", "aa"], ["a*a", "a"],
++    ["*ab*ab", "xabyab"], ["*aab", "aaab"], ["*a*b", "acab"], ["*a*b", "acba"],
++    # case: the binder family's question, answered case-sensitively by the statement
++    ["Name*", "name"], ["name*", "NAME"], ["name*", "name"],
++    # a line break inside the starred part
++    ["a*b", "a\nb"],
++    # characters a regular expression would treat specially
++    [".*", "ab"], [".*", ".ab"], ["a.c", "abc"], ["[a]*", "[a]x"], ["a+", "aa"],
++    # beyond ASCII, one character outside the BMP included
++    ["é*", "éa"], ["*\U0001F600", "x\U0001F600"], ["Straße*", "STRASSE"],
++]
++
++
++def expected(pattern, text):
++    if pattern is None or text is None:
++        return False
++    parts = [".*" if c == "*" else re.escape(c) for c in pattern]
++    return re.fullmatch("".join(parts), text, re.DOTALL) is not None
++
++
++def key(value):
++    return json.dumps(value)
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a disagreement."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[key(record["input"])] = record
++    missing = [p for p in PROBES if key(p) not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for probe in PROBES:
++        record = seen[key(probe)]
++        if record["outcome"] != "returned":
++            problems.append((probe, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(*probe):
++            problems.append((probe, f"returned {record['value']}, the statement says {expected(*probe)}"))
++    return problems
+--- /dev/null
++++ b/runtime-mutant/attempt/case/target.json
+@@ -0,0 +1,101 @@
++{
++  "$schema": "../../../schema/target.schema.json",
++  "schema": "example-target/v1",
++  "identity": {
++    "case": "runtime-slice-simple-match",
++    "family": "runtime-slice",
++    "role": "calibration",
++    "matching": "The runtime stream's vertical slice (R5 of llm-dlc/loops/example-targets-runtime.md): one small published upstream method run through acquisition, preparation and a separate-JVM driver. It checks the route, not a claim. The two releases are the matching-predicates family's release pair, but the method isn't what CVE-2022-22968 changed (DataBinder is), and this is no part of that packet or of the db9a10b positive, which the negative and positive streams own.",
++    "sourceConfidence": "reproduced"
++  },
++  "history": {
++    "repository": "https://github.com/spring-projects/spring-framework",
++    "researchedOn": "2026-11-14",
++    "revisions": {
++      "r5-3-18": {
++        "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
++        "tag": "v5.3.18",
++        "release": "5.3.18",
++        "checked": "git ls-remote on github.com, 2026-11-14: refs/tags/v5.3.18 (annotated, 52c082c3) peels to this commit"
++      },
++      "r5-3-19": {
++        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++        "tag": "v5.3.19",
++        "release": "5.3.19",
++        "checked": "git ls-remote on github.com, 2026-11-14: refs/tags/v5.3.19 (annotated, 68463808) peels to this commit"
++      }
++    },
++    "pairs": [
++      {
++        "name": "release",
++        "kind": "release",
++        "before": "r5-3-18",
++        "after": "r5-3-19",
++        "selected": true
++      }
++    ],
++    "introduction": {
++      "status": "unknown"
++    }
++  },
++  "preparation": {
++    "route": "published-artifact",
++    "artifacts": [
++      {
++        "revision": "r5-3-18",
++        "coordinates": "org.springframework:spring-core:5.3.18",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.18/spring-core-5.3.18.jar",
++        "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361"
++      },
++      {
++        "revision": "r5-3-18",
++        "coordinates": "org.springframework:spring-jcl:5.3.18",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.18/spring-jcl-5.3.18.jar",
++        "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e"
++      },
++      {
++        "revision": "r5-3-19",
++        "coordinates": "org.springframework:spring-core:5.3.19",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
++        "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
++      },
++      {
++        "revision": "r5-3-19",
++        "coordinates": "org.springframework:spring-jcl:5.3.19",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
++        "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
++      }
++    ],
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "adapters": [
++      "adapter/slice/adapter/SimpleMatchAdapter.java"
++    ]
++  },
++  "tasks": [
++    {
++      "id": "replay",
++      "kind": "replay",
++      "relation": "calibration",
++      "pair": "release",
++      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++      "notes": [
++        "Concrete controls only: each release's driver in its own JVM on JDK 21 and 25, on the published spring-core JAR and its one compile dependency, spring-jcl (spring-core's POM at each version, 2026-11-14). The oracle is written from the method's Javadoc."
++      ]
++    }
++  ],
++  "controls": [
++    {
++      "id": "simple-match-driver",
++      "kind": "driver",
++      "path": "driver/slice/driver/SimpleMatchDriver.java"
++    },
++    {
++      "id": "simple-match-oracle",
++      "kind": "oracle",
++      "path": "oracle.py"
++    }
++  ]
++}
+--- /dev/null
++++ b/runtime-mutant/attempt/controls/control-mutant-jdk21.stdout
+@@ -0,0 +1,45 @@
++{"input":["abc", "abc"],"outcome":"returned","value":true}
++{"input":["abc", "abd"],"outcome":"returned","value":false}
++{"input":["", ""],"outcome":"returned","value":true}
++{"input":["", "a"],"outcome":"returned","value":false}
++{"input":["a", ""],"outcome":"returned","value":false}
++{"input":[null, "a"],"outcome":"returned","value":false}
++{"input":["a", null],"outcome":"returned","value":false}
++{"input":[null, null],"outcome":"returned","value":false}
++{"input":["ab*", "ab"],"outcome":"returned","value":true}
++{"input":["ab*", "abc"],"outcome":"returned","value":true}
++{"input":["ab*", "a"],"outcome":"returned","value":false}
++{"input":["ab*", "ba"],"outcome":"returned","value":false}
++{"input":["*bc", "abc"],"outcome":"returned","value":true}
++{"input":["*bc", "bcx"],"outcome":"returned","value":true}
++{"input":["*", ""],"outcome":"returned","value":true}
++{"input":["*", "anything"],"outcome":"returned","value":true}
++{"input":["*b*", "abc"],"outcome":"returned","value":true}
++{"input":["*b*", "ac"],"outcome":"returned","value":false}
++{"input":["a*c", "abc"],"outcome":"returned","value":true}
++{"input":["a*c", "ac"],"outcome":"returned","value":true}
++{"input":["a*c", "ab"],"outcome":"returned","value":false}
++{"input":["a*c*e", "abcde"],"outcome":"returned","value":true}
++{"input":["a*c*e", "abced"],"outcome":"returned","value":true}
++{"input":["**", "x"],"outcome":"returned","value":true}
++{"input":["a**b", "ab"],"outcome":"returned","value":true}
++{"input":["*a*a*", "aa"],"outcome":"returned","value":true}
++{"input":["*a*a*", "a"],"outcome":"returned","value":false}
++{"input":["aa*a", "aa"],"outcome":"returned","value":false}
++{"input":["a*a", "a"],"outcome":"returned","value":false}
++{"input":["*ab*ab", "xabyab"],"outcome":"returned","value":true}
++{"input":["*aab", "aaab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acba"],"outcome":"returned","value":true}
++{"input":["Name*", "name"],"outcome":"returned","value":false}
++{"input":["name*", "NAME"],"outcome":"returned","value":false}
++{"input":["name*", "name"],"outcome":"returned","value":true}
++{"input":["a*b", "a\nb"],"outcome":"returned","value":true}
++{"input":[".*", "ab"],"outcome":"returned","value":false}
++{"input":[".*", ".ab"],"outcome":"returned","value":true}
++{"input":["a.c", "abc"],"outcome":"returned","value":false}
++{"input":["[a]*", "[a]x"],"outcome":"returned","value":true}
++{"input":["a+", "aa"],"outcome":"returned","value":false}
++{"input":["\u00e9*", "\u00e9a"],"outcome":"returned","value":true}
++{"input":["*\ud83d\ude00", "x\ud83d\ude00"],"outcome":"returned","value":true}
++{"input":["Stra\u00dfe*", "STRASSE"],"outcome":"returned","value":false}
+--- /dev/null
++++ b/runtime-mutant/attempt/controls/control-mutant-jdk25.stdout
+@@ -0,0 +1,45 @@
++{"input":["abc", "abc"],"outcome":"returned","value":true}
++{"input":["abc", "abd"],"outcome":"returned","value":false}
++{"input":["", ""],"outcome":"returned","value":true}
++{"input":["", "a"],"outcome":"returned","value":false}
++{"input":["a", ""],"outcome":"returned","value":false}
++{"input":[null, "a"],"outcome":"returned","value":false}
++{"input":["a", null],"outcome":"returned","value":false}
++{"input":[null, null],"outcome":"returned","value":false}
++{"input":["ab*", "ab"],"outcome":"returned","value":true}
++{"input":["ab*", "abc"],"outcome":"returned","value":true}
++{"input":["ab*", "a"],"outcome":"returned","value":false}
++{"input":["ab*", "ba"],"outcome":"returned","value":false}
++{"input":["*bc", "abc"],"outcome":"returned","value":true}
++{"input":["*bc", "bcx"],"outcome":"returned","value":true}
++{"input":["*", ""],"outcome":"returned","value":true}
++{"input":["*", "anything"],"outcome":"returned","value":true}
++{"input":["*b*", "abc"],"outcome":"returned","value":true}
++{"input":["*b*", "ac"],"outcome":"returned","value":false}
++{"input":["a*c", "abc"],"outcome":"returned","value":true}
++{"input":["a*c", "ac"],"outcome":"returned","value":true}
++{"input":["a*c", "ab"],"outcome":"returned","value":false}
++{"input":["a*c*e", "abcde"],"outcome":"returned","value":true}
++{"input":["a*c*e", "abced"],"outcome":"returned","value":true}
++{"input":["**", "x"],"outcome":"returned","value":true}
++{"input":["a**b", "ab"],"outcome":"returned","value":true}
++{"input":["*a*a*", "aa"],"outcome":"returned","value":true}
++{"input":["*a*a*", "a"],"outcome":"returned","value":false}
++{"input":["aa*a", "aa"],"outcome":"returned","value":false}
++{"input":["a*a", "a"],"outcome":"returned","value":false}
++{"input":["*ab*ab", "xabyab"],"outcome":"returned","value":true}
++{"input":["*aab", "aaab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acba"],"outcome":"returned","value":true}
++{"input":["Name*", "name"],"outcome":"returned","value":false}
++{"input":["name*", "NAME"],"outcome":"returned","value":false}
++{"input":["name*", "name"],"outcome":"returned","value":true}
++{"input":["a*b", "a\nb"],"outcome":"returned","value":true}
++{"input":[".*", "ab"],"outcome":"returned","value":false}
++{"input":[".*", ".ab"],"outcome":"returned","value":true}
++{"input":["a.c", "abc"],"outcome":"returned","value":false}
++{"input":["[a]*", "[a]x"],"outcome":"returned","value":true}
++{"input":["a+", "aa"],"outcome":"returned","value":false}
++{"input":["\u00e9*", "\u00e9a"],"outcome":"returned","value":true}
++{"input":["*\ud83d\ude00", "x\ud83d\ude00"],"outcome":"returned","value":true}
++{"input":["Stra\u00dfe*", "STRASSE"],"outcome":"returned","value":false}
+--- /dev/null
++++ b/runtime-mutant/attempt/controls/control-r5-3-19-jdk21.stdout
+@@ -0,0 +1,45 @@
++{"input":["abc", "abc"],"outcome":"returned","value":true}
++{"input":["abc", "abd"],"outcome":"returned","value":false}
++{"input":["", ""],"outcome":"returned","value":true}
++{"input":["", "a"],"outcome":"returned","value":false}
++{"input":["a", ""],"outcome":"returned","value":false}
++{"input":[null, "a"],"outcome":"returned","value":false}
++{"input":["a", null],"outcome":"returned","value":false}
++{"input":[null, null],"outcome":"returned","value":false}
++{"input":["ab*", "ab"],"outcome":"returned","value":true}
++{"input":["ab*", "abc"],"outcome":"returned","value":true}
++{"input":["ab*", "a"],"outcome":"returned","value":false}
++{"input":["ab*", "ba"],"outcome":"returned","value":false}
++{"input":["*bc", "abc"],"outcome":"returned","value":true}
++{"input":["*bc", "bcx"],"outcome":"returned","value":false}
++{"input":["*", ""],"outcome":"returned","value":true}
++{"input":["*", "anything"],"outcome":"returned","value":true}
++{"input":["*b*", "abc"],"outcome":"returned","value":true}
++{"input":["*b*", "ac"],"outcome":"returned","value":false}
++{"input":["a*c", "abc"],"outcome":"returned","value":true}
++{"input":["a*c", "ac"],"outcome":"returned","value":true}
++{"input":["a*c", "ab"],"outcome":"returned","value":false}
++{"input":["a*c*e", "abcde"],"outcome":"returned","value":true}
++{"input":["a*c*e", "abced"],"outcome":"returned","value":false}
++{"input":["**", "x"],"outcome":"returned","value":true}
++{"input":["a**b", "ab"],"outcome":"returned","value":true}
++{"input":["*a*a*", "aa"],"outcome":"returned","value":true}
++{"input":["*a*a*", "a"],"outcome":"returned","value":false}
++{"input":["aa*a", "aa"],"outcome":"returned","value":false}
++{"input":["a*a", "a"],"outcome":"returned","value":false}
++{"input":["*ab*ab", "xabyab"],"outcome":"returned","value":true}
++{"input":["*aab", "aaab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acba"],"outcome":"returned","value":false}
++{"input":["Name*", "name"],"outcome":"returned","value":false}
++{"input":["name*", "NAME"],"outcome":"returned","value":false}
++{"input":["name*", "name"],"outcome":"returned","value":true}
++{"input":["a*b", "a\nb"],"outcome":"returned","value":true}
++{"input":[".*", "ab"],"outcome":"returned","value":false}
++{"input":[".*", ".ab"],"outcome":"returned","value":true}
++{"input":["a.c", "abc"],"outcome":"returned","value":false}
++{"input":["[a]*", "[a]x"],"outcome":"returned","value":true}
++{"input":["a+", "aa"],"outcome":"returned","value":false}
++{"input":["\u00e9*", "\u00e9a"],"outcome":"returned","value":true}
++{"input":["*\ud83d\ude00", "x\ud83d\ude00"],"outcome":"returned","value":true}
++{"input":["Stra\u00dfe*", "STRASSE"],"outcome":"returned","value":false}
+--- /dev/null
++++ b/runtime-mutant/attempt/controls/control-r5-3-19-jdk25.stdout
+@@ -0,0 +1,45 @@
++{"input":["abc", "abc"],"outcome":"returned","value":true}
++{"input":["abc", "abd"],"outcome":"returned","value":false}
++{"input":["", ""],"outcome":"returned","value":true}
++{"input":["", "a"],"outcome":"returned","value":false}
++{"input":["a", ""],"outcome":"returned","value":false}
++{"input":[null, "a"],"outcome":"returned","value":false}
++{"input":["a", null],"outcome":"returned","value":false}
++{"input":[null, null],"outcome":"returned","value":false}
++{"input":["ab*", "ab"],"outcome":"returned","value":true}
++{"input":["ab*", "abc"],"outcome":"returned","value":true}
++{"input":["ab*", "a"],"outcome":"returned","value":false}
++{"input":["ab*", "ba"],"outcome":"returned","value":false}
++{"input":["*bc", "abc"],"outcome":"returned","value":true}
++{"input":["*bc", "bcx"],"outcome":"returned","value":false}
++{"input":["*", ""],"outcome":"returned","value":true}
++{"input":["*", "anything"],"outcome":"returned","value":true}
++{"input":["*b*", "abc"],"outcome":"returned","value":true}
++{"input":["*b*", "ac"],"outcome":"returned","value":false}
++{"input":["a*c", "abc"],"outcome":"returned","value":true}
++{"input":["a*c", "ac"],"outcome":"returned","value":true}
++{"input":["a*c", "ab"],"outcome":"returned","value":false}
++{"input":["a*c*e", "abcde"],"outcome":"returned","value":true}
++{"input":["a*c*e", "abced"],"outcome":"returned","value":false}
++{"input":["**", "x"],"outcome":"returned","value":true}
++{"input":["a**b", "ab"],"outcome":"returned","value":true}
++{"input":["*a*a*", "aa"],"outcome":"returned","value":true}
++{"input":["*a*a*", "a"],"outcome":"returned","value":false}
++{"input":["aa*a", "aa"],"outcome":"returned","value":false}
++{"input":["a*a", "a"],"outcome":"returned","value":false}
++{"input":["*ab*ab", "xabyab"],"outcome":"returned","value":true}
++{"input":["*aab", "aaab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acab"],"outcome":"returned","value":true}
++{"input":["*a*b", "acba"],"outcome":"returned","value":false}
++{"input":["Name*", "name"],"outcome":"returned","value":false}
++{"input":["name*", "NAME"],"outcome":"returned","value":false}
++{"input":["name*", "name"],"outcome":"returned","value":true}
++{"input":["a*b", "a\nb"],"outcome":"returned","value":true}
++{"input":[".*", "ab"],"outcome":"returned","value":false}
++{"input":[".*", ".ab"],"outcome":"returned","value":true}
++{"input":["a.c", "abc"],"outcome":"returned","value":false}
++{"input":["[a]*", "[a]x"],"outcome":"returned","value":true}
++{"input":["a+", "aa"],"outcome":"returned","value":false}
++{"input":["\u00e9*", "\u00e9a"],"outcome":"returned","value":true}
++{"input":["*\ud83d\ude00", "x\ud83d\ude00"],"outcome":"returned","value":true}
++{"input":["Stra\u00dfe*", "STRASSE"],"outcome":"returned","value":false}
+--- /dev/null
++++ b/runtime-mutant/attempt/controls/controls.json
+@@ -0,0 +1,1973 @@
++{
++  "task": "mutant-replay",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "r5-3-19",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-r5-3-19.jar:lib/org.springframework/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
++        "slice.driver.SimpleMatchDriver",
++        "[\"abc\", \"abc\"]",
++        "[\"abc\", \"abd\"]",
++        "[\"\", \"\"]",
++        "[\"\", \"a\"]",
++        "[\"a\", \"\"]",
++        "[null, \"a\"]",
++        "[\"a\", null]",
++        "[null, null]",
++        "[\"ab*\", \"ab\"]",
++        "[\"ab*\", \"abc\"]",
++        "[\"ab*\", \"a\"]",
++        "[\"ab*\", \"ba\"]",
++        "[\"*bc\", \"abc\"]",
++        "[\"*bc\", \"bcx\"]",
++        "[\"*\", \"\"]",
++        "[\"*\", \"anything\"]",
++        "[\"*b*\", \"abc\"]",
++        "[\"*b*\", \"ac\"]",
++        "[\"a*c\", \"abc\"]",
++        "[\"a*c\", \"ac\"]",
++        "[\"a*c\", \"ab\"]",
++        "[\"a*c*e\", \"abcde\"]",
++        "[\"a*c*e\", \"abced\"]",
++        "[\"**\", \"x\"]",
++        "[\"a**b\", \"ab\"]",
++        "[\"*a*a*\", \"aa\"]",
++        "[\"*a*a*\", \"a\"]",
++        "[\"aa*a\", \"aa\"]",
++        "[\"a*a\", \"a\"]",
++        "[\"*ab*ab\", \"xabyab\"]",
++        "[\"*aab\", \"aaab\"]",
++        "[\"*a*b\", \"acab\"]",
++        "[\"*a*b\", \"acba\"]",
++        "[\"Name*\", \"name\"]",
++        "[\"name*\", \"NAME\"]",
++        "[\"name*\", \"name\"]",
++        "[\"a*b\", \"a\\nb\"]",
++        "[\".*\", \"ab\"]",
++        "[\".*\", \".ab\"]",
++        "[\"a.c\", \"abc\"]",
++        "[\"[a]*\", \"[a]x\"]",
++        "[\"a+\", \"aa\"]",
++        "[\"\\u00e9*\", \"\\u00e9a\"]",
++        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
++        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-r5-3-19-jdk21.stdout",
++      "stderr": "controls/control-r5-3-19-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-r5-3-19.jar",
++            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++            "role": "adapter"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.19.jar",
++            "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "slice.driver.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "PROBES",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "input": [
++            "abc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "abc",
++            "abd"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            ""
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ba"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*bc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*bc",
++            "bcx"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*",
++            "anything"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abcde"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abced"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "**",
++            "x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a**b",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "aa*a",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*a",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*ab*ab",
++            "xabyab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*aab",
++            "aaab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acba"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "Name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "NAME"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*b",
++            "a\nb"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            ".*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            ".*",
++            ".ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a.c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "[a]*",
++            "[a]x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a+",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "é*",
++            "éa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*😀",
++            "x😀"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "Straße*",
++            "STRASSE"
++          ],
++          "outcome": "returned",
++          "value": false
++        }
++      ],
++      "control": "simple-match-driver",
++      "log": {
++        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19"
++      }
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "r5-3-19",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-r5-3-19.jar:lib/org.springframework/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
++        "slice.driver.SimpleMatchDriver",
++        "[\"abc\", \"abc\"]",
++        "[\"abc\", \"abd\"]",
++        "[\"\", \"\"]",
++        "[\"\", \"a\"]",
++        "[\"a\", \"\"]",
++        "[null, \"a\"]",
++        "[\"a\", null]",
++        "[null, null]",
++        "[\"ab*\", \"ab\"]",
++        "[\"ab*\", \"abc\"]",
++        "[\"ab*\", \"a\"]",
++        "[\"ab*\", \"ba\"]",
++        "[\"*bc\", \"abc\"]",
++        "[\"*bc\", \"bcx\"]",
++        "[\"*\", \"\"]",
++        "[\"*\", \"anything\"]",
++        "[\"*b*\", \"abc\"]",
++        "[\"*b*\", \"ac\"]",
++        "[\"a*c\", \"abc\"]",
++        "[\"a*c\", \"ac\"]",
++        "[\"a*c\", \"ab\"]",
++        "[\"a*c*e\", \"abcde\"]",
++        "[\"a*c*e\", \"abced\"]",
++        "[\"**\", \"x\"]",
++        "[\"a**b\", \"ab\"]",
++        "[\"*a*a*\", \"aa\"]",
++        "[\"*a*a*\", \"a\"]",
++        "[\"aa*a\", \"aa\"]",
++        "[\"a*a\", \"a\"]",
++        "[\"*ab*ab\", \"xabyab\"]",
++        "[\"*aab\", \"aaab\"]",
++        "[\"*a*b\", \"acab\"]",
++        "[\"*a*b\", \"acba\"]",
++        "[\"Name*\", \"name\"]",
++        "[\"name*\", \"NAME\"]",
++        "[\"name*\", \"name\"]",
++        "[\"a*b\", \"a\\nb\"]",
++        "[\".*\", \"ab\"]",
++        "[\".*\", \".ab\"]",
++        "[\"a.c\", \"abc\"]",
++        "[\"[a]*\", \"[a]x\"]",
++        "[\"a+\", \"aa\"]",
++        "[\"\\u00e9*\", \"\\u00e9a\"]",
++        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
++        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-r5-3-19-jdk25.stdout",
++      "stderr": "controls/control-r5-3-19-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-r5-3-19.jar",
++            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++            "role": "adapter"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.19.jar",
++            "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "slice.driver.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "PROBES",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "input": [
++            "abc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "abc",
++            "abd"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            ""
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ba"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*bc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*bc",
++            "bcx"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*",
++            "anything"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abcde"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abced"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "**",
++            "x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a**b",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "aa*a",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*a",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*ab*ab",
++            "xabyab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*aab",
++            "aaab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acba"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "Name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "NAME"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*b",
++            "a\nb"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            ".*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            ".*",
++            ".ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a.c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "[a]*",
++            "[a]x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a+",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "é*",
++            "éa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*😀",
++            "x😀"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "Straße*",
++            "STRASSE"
++          ],
++          "outcome": "returned",
++          "value": false
++        }
++      ],
++      "control": "simple-match-driver",
++      "log": {
++        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19"
++      }
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "mutant",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-mutant.jar:mutant/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
++        "slice.driver.SimpleMatchDriver",
++        "[\"abc\", \"abc\"]",
++        "[\"abc\", \"abd\"]",
++        "[\"\", \"\"]",
++        "[\"\", \"a\"]",
++        "[\"a\", \"\"]",
++        "[null, \"a\"]",
++        "[\"a\", null]",
++        "[null, null]",
++        "[\"ab*\", \"ab\"]",
++        "[\"ab*\", \"abc\"]",
++        "[\"ab*\", \"a\"]",
++        "[\"ab*\", \"ba\"]",
++        "[\"*bc\", \"abc\"]",
++        "[\"*bc\", \"bcx\"]",
++        "[\"*\", \"\"]",
++        "[\"*\", \"anything\"]",
++        "[\"*b*\", \"abc\"]",
++        "[\"*b*\", \"ac\"]",
++        "[\"a*c\", \"abc\"]",
++        "[\"a*c\", \"ac\"]",
++        "[\"a*c\", \"ab\"]",
++        "[\"a*c*e\", \"abcde\"]",
++        "[\"a*c*e\", \"abced\"]",
++        "[\"**\", \"x\"]",
++        "[\"a**b\", \"ab\"]",
++        "[\"*a*a*\", \"aa\"]",
++        "[\"*a*a*\", \"a\"]",
++        "[\"aa*a\", \"aa\"]",
++        "[\"a*a\", \"a\"]",
++        "[\"*ab*ab\", \"xabyab\"]",
++        "[\"*aab\", \"aaab\"]",
++        "[\"*a*b\", \"acab\"]",
++        "[\"*a*b\", \"acba\"]",
++        "[\"Name*\", \"name\"]",
++        "[\"name*\", \"NAME\"]",
++        "[\"name*\", \"name\"]",
++        "[\"a*b\", \"a\\nb\"]",
++        "[\".*\", \"ab\"]",
++        "[\".*\", \".ab\"]",
++        "[\"a.c\", \"abc\"]",
++        "[\"[a]*\", \"[a]x\"]",
++        "[\"a+\", \"aa\"]",
++        "[\"\\u00e9*\", \"\\u00e9a\"]",
++        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
++        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-mutant-jdk21.stdout",
++      "stderr": "controls/control-mutant-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-mutant.jar",
++            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++            "role": "adapter"
++          },
++          {
++            "path": "mutant/spring-core-5.3.19.jar",
++            "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "slice.driver.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "PROBES",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "input": [
++            "abc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "abc",
++            "abd"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            ""
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ba"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*bc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*bc",
++            "bcx"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*",
++            "anything"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abcde"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abced"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "**",
++            "x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a**b",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "aa*a",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*a",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*ab*ab",
++            "xabyab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*aab",
++            "aaab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acba"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "Name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "NAME"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*b",
++            "a\nb"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            ".*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            ".*",
++            ".ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a.c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "[a]*",
++            "[a]x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a+",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "é*",
++            "éa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*😀",
++            "x😀"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "Straße*",
++            "STRASSE"
++          ],
++          "outcome": "returned",
++          "value": false
++        }
++      ],
++      "control": "simple-match-driver",
++      "log": {
++        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant"
++      }
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "mutant",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-mutant.jar:mutant/spring-core-5.3.19.jar:lib/org.springframework/spring-jcl-5.3.19.jar",
++        "slice.driver.SimpleMatchDriver",
++        "[\"abc\", \"abc\"]",
++        "[\"abc\", \"abd\"]",
++        "[\"\", \"\"]",
++        "[\"\", \"a\"]",
++        "[\"a\", \"\"]",
++        "[null, \"a\"]",
++        "[\"a\", null]",
++        "[null, null]",
++        "[\"ab*\", \"ab\"]",
++        "[\"ab*\", \"abc\"]",
++        "[\"ab*\", \"a\"]",
++        "[\"ab*\", \"ba\"]",
++        "[\"*bc\", \"abc\"]",
++        "[\"*bc\", \"bcx\"]",
++        "[\"*\", \"\"]",
++        "[\"*\", \"anything\"]",
++        "[\"*b*\", \"abc\"]",
++        "[\"*b*\", \"ac\"]",
++        "[\"a*c\", \"abc\"]",
++        "[\"a*c\", \"ac\"]",
++        "[\"a*c\", \"ab\"]",
++        "[\"a*c*e\", \"abcde\"]",
++        "[\"a*c*e\", \"abced\"]",
++        "[\"**\", \"x\"]",
++        "[\"a**b\", \"ab\"]",
++        "[\"*a*a*\", \"aa\"]",
++        "[\"*a*a*\", \"a\"]",
++        "[\"aa*a\", \"aa\"]",
++        "[\"a*a\", \"a\"]",
++        "[\"*ab*ab\", \"xabyab\"]",
++        "[\"*aab\", \"aaab\"]",
++        "[\"*a*b\", \"acab\"]",
++        "[\"*a*b\", \"acba\"]",
++        "[\"Name*\", \"name\"]",
++        "[\"name*\", \"NAME\"]",
++        "[\"name*\", \"name\"]",
++        "[\"a*b\", \"a\\nb\"]",
++        "[\".*\", \"ab\"]",
++        "[\".*\", \".ab\"]",
++        "[\"a.c\", \"abc\"]",
++        "[\"[a]*\", \"[a]x\"]",
++        "[\"a+\", \"aa\"]",
++        "[\"\\u00e9*\", \"\\u00e9a\"]",
++        "[\"*\\ud83d\\ude00\", \"x\\ud83d\\ude00\"]",
++        "[\"Stra\\u00dfe*\", \"STRASSE\"]"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-mutant-jdk25.stdout",
++      "stderr": "controls/control-mutant-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-mutant.jar",
++            "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++            "role": "adapter"
++          },
++          {
++            "path": "mutant/spring-core-5.3.19.jar",
++            "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "slice.driver.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "PROBES",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "input": [
++            "abc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "abc",
++            "abd"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            ""
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a",
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            null,
++            null
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "ab*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "ab*",
++            "ba"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*bc",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*bc",
++            "bcx"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*",
++            ""
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*",
++            "anything"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*b*",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ac"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abcde"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*c*e",
++            "abced"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "**",
++            "x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a**b",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*a*",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "aa*a",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "a*a",
++            "a"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "*ab*ab",
++            "xabyab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*aab",
++            "aaab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*a*b",
++            "acba"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "Name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "NAME"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "name*",
++            "name"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a*b",
++            "a\nb"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            ".*",
++            "ab"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            ".*",
++            ".ab"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a.c",
++            "abc"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "[a]*",
++            "[a]x"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "a+",
++            "aa"
++          ],
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "input": [
++            "é*",
++            "éa"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "*😀",
++            "x😀"
++          ],
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "input": [
++            "Straße*",
++            "STRASSE"
++          ],
++          "outcome": "returned",
++          "value": false
++        }
++      ],
++      "control": "simple-match-driver",
++      "log": {
++        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant"
++      }
++    }
++  ]
++}
+Binary file runtime-mutant/attempt/prepare/mutant/adapter-mutant.jar changed
+Binary file runtime-mutant/attempt/prepare/mutant/controls/__pycache__/oracle.cpython-314.pyc changed
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/controls/oracle.py
+@@ -0,0 +1,72 @@
++"""The runtime slice's independent oracle, written from PatternMatchUtils.simpleMatch's Javadoc, not from its code:
++
++    Match a String against the given pattern, supporting the following simple pattern styles: "xxx*", "*xxx", "*xxx*"
++    and "xxx*yyy" matches (with an arbitrary number of pattern parts), as well as direct equality.
++    Returns: whether the String matches the given pattern; false if either the pattern or the String is null.
++
++Read as a statement: '*' matches any sequence of characters, the empty one and line breaks included; every other
++character, regular-expression metacharacters included, matches only itself, case-sensitively; a null pattern or string
++never matches. This is a conformance oracle for the runtime's vertical slice (llm-dlc/loops/example-targets-runtime.md,
++R5), not a security property. Each revision's driver output (one JSON line per input) is checked against it; it never
++calls the implementation under test."""
++
++import json
++import re
++
++# [pattern, string] pairs, in the order the driver is given them. None is Java's null.
++PROBES = [
++    # direct equality
++    ["abc", "abc"], ["abc", "abd"], ["", ""], ["", "a"], ["a", ""],
++    # null on either side
++    [None, "a"], ["a", None], [None, None],
++    # "xxx*"
++    ["ab*", "ab"], ["ab*", "abc"], ["ab*", "a"], ["ab*", "ba"],
++    # "*xxx", "*" alone
++    ["*bc", "abc"], ["*bc", "bcx"], ["*", ""], ["*", "anything"],
++    # "*xxx*"
++    ["*b*", "abc"], ["*b*", "ac"],
++    # "xxx*yyy", several parts
++    ["a*c", "abc"], ["a*c", "ac"], ["a*c", "ab"], ["a*c*e", "abcde"], ["a*c*e", "abced"],
++    # adjacent stars, overlapping parts, and parts that need a later occurrence
++    ["**", "x"], ["a**b", "ab"], ["*a*a*", "aa"], ["*a*a*", "a"], ["aa*a", "aa"], ["a*a", "a"],
++    ["*ab*ab", "xabyab"], ["*aab", "aaab"], ["*a*b", "acab"], ["*a*b", "acba"],
++    # case: the binder family's question, answered case-sensitively by the statement
++    ["Name*", "name"], ["name*", "NAME"], ["name*", "name"],
++    # a line break inside the starred part
++    ["a*b", "a\nb"],
++    # characters a regular expression would treat specially
++    [".*", "ab"], [".*", ".ab"], ["a.c", "abc"], ["[a]*", "[a]x"], ["a+", "aa"],
++    # beyond ASCII, one character outside the BMP included
++    ["é*", "éa"], ["*\U0001F600", "x\U0001F600"], ["Straße*", "STRASSE"],
++]
++
++
++def expected(pattern, text):
++    if pattern is None or text is None:
++        return False
++    parts = [".*" if c == "*" else re.escape(c) for c in pattern]
++    return re.fullmatch("".join(parts), text, re.DOTALL) is not None
++
++
++def key(value):
++    return json.dumps(value)
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a disagreement."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[key(record["input"])] = record
++    missing = [p for p in PROBES if key(p) not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for probe in PROBES:
++        record = seen[key(probe)]
++        if record["outcome"] != "returned":
++            problems.append((probe, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(*probe):
++            problems.append((probe, f"returned {record['value']}, the statement says {expected(*probe)}"))
++    return problems
+Binary file runtime-mutant/attempt/prepare/mutant/driver.jar changed
+Binary file runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar changed
+Binary file runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar changed
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/acquire.log
+@@ -0,0 +1,2 @@
++org.springframework:spring-core:5.3.19 sha256 1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992: cache hit /home/filip/.cache/in-the-loop/targets/sha256/1a/1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992, rechecked
++org.springframework:spring-jcl:5.3.19 sha256 68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8: cache hit /home/filip/.cache/in-the-loop/targets/sha256/68/68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8, rechecked
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-apply-check.log
+@@ -0,0 +1,4 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c core.autocrlf=false apply -p1 --verbose --check /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/mutant/suffix-anywhere.patch
++Checking patch spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java...
++
++exit 0 after 0.001s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-apply.log
+@@ -0,0 +1,5 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c core.autocrlf=false apply -p1 --verbose /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/mutant/suffix-anywhere.patch
++Checking patch spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java...
++Applied patch spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java cleanly.
++
++exit 0 after 0.001s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-checkout.log
+@@ -0,0 +1,3 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c transfer.fsckObjects=true -c core.autocrlf=false -c advice.detachedHead=false -c init.defaultBranch=checkout -c protocol.allow=never -c protocol.https.allow=always -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout checkout -q --detach cedb5874b72c3311c8c6e2f03a53537590f2e0dc
++
++exit 0 after 0.307s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-fetch.log
+@@ -0,0 +1,5 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c transfer.fsckObjects=true -c core.autocrlf=false -c advice.detachedHead=false -c init.defaultBranch=checkout -c protocol.allow=never -c protocol.https.allow=always -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout fetch --no-tags --no-recurse-submodules --depth=1 https://github.com/spring-projects/spring-framework cedb5874b72c3311c8c6e2f03a53537590f2e0dc
++From https://github.com/spring-projects/spring-framework
++ * branch            cedb5874b72c3311c8c6e2f03a53537590f2e0dc -> FETCH_HEAD
++
++exit 0 after 2.215s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-head.log
+@@ -0,0 +1,4 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c transfer.fsckObjects=true -c core.autocrlf=false -c advice.detachedHead=false -c init.defaultBranch=checkout -c protocol.allow=never -c protocol.https.allow=always -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout rev-parse HEAD
++cedb5874b72c3311c8c6e2f03a53537590f2e0dc
++
++exit 0 after 0.001s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-init.log
+@@ -0,0 +1,3 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c transfer.fsckObjects=true -c core.autocrlf=false -c advice.detachedHead=false -c init.defaultBranch=checkout -c protocol.allow=never -c protocol.https.allow=always init -q /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout
++
++exit 0 after 0.003s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-tree.log
+@@ -0,0 +1,4 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c transfer.fsckObjects=true -c core.autocrlf=false -c advice.detachedHead=false -c init.defaultBranch=checkout -c protocol.allow=never -c protocol.https.allow=always -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout rev-parse 'HEAD^{tree}'
++6ef836c793f746ef4dd8be3ff340d620a3bce676
++
++exit 0 after 0.001s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/git-version.log
+@@ -0,0 +1,4 @@
++$ /usr/bin/git -c core.hooksPath=/dev/null -c transfer.fsckObjects=true -c core.autocrlf=false -c advice.detachedHead=false -c init.defaultBranch=checkout -c protocol.allow=never -c protocol.https.allow=always -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout --version
++git version 2.53.0
++
++exit 0 after 0.001s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/adapter-mutant.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/adapter slice/adapter/SimpleMatchAdapter.class
++
++exit 0 after 0.062s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/driver slice/driver/SimpleMatchDriver$Reader.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/driver slice/driver/SimpleMatchDriver.class
++
++exit 0 after 0.060s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/mutant/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/case/adapter/slice/adapter/SimpleMatchAdapter.java
++
++exit 0 after 0.359s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/adapter-mutant.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/mutant/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/case/driver/slice/driver/SimpleMatchDriver.java
++
++exit 0 after 0.433s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/javac-mutant.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 8 -encoding UTF-8 -implicit:none -proc:none -nowarn -Xlint:-options -sourcepath /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/no-sources -g -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/mutant -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java
++
++exit 0 after 0.360s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/logs/javac-unpatched.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 8 -encoding UTF-8 -implicit:none -proc:none -nowarn -Xlint:-options -sourcepath /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/no-sources -g -parameters -d /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/unpatched -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java
++
++exit 0 after 0.354s
+Binary file runtime-mutant/attempt/prepare/mutant/mutant/spring-core-5.3.19.jar changed
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/mutant/suffix-anywhere.patch
+@@ -0,0 +1,11 @@
++--- a/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java
+++++ b/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java
++@@ -51,7 +51,7 @@
++ 			}
++ 			int nextIndex = pattern.indexOf('*', 1);
++ 			if (nextIndex == -1) {
++-				return str.endsWith(pattern.substring(1));
+++				return str.contains(pattern.substring(1));
++ 			}
++ 			String part = pattern.substring(1, nextIndex);
++ 			if (part.isEmpty()) {
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/mutant/prepared.json
+@@ -0,0 +1,268 @@
++{
++  "example": "315",
++  "task": "mutant-replay",
++  "revision": "mutant",
++  "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "published-artifact",
++    "repository": "https://github.com/spring-projects/spring-framework",
++    "revision": "mutant",
++    "provenance": "a constructed mutant of r5-3-19, never an upstream revision: the base commit's sources checked out from github.com and patched, the patched Java files compiled against the base's published JARs, and their classes put in place of the base JAR's own in a copy of it; every other class is the published JAR's",
++    "linkage": {
++      "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++      "status": "recorded, not checked against the published bytes: a release label supports no source rebuild or introducing-commit experiment"
++    },
++    "published": [
++      {
++        "coordinates": "org.springframework:spring-core:5.3.19",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
++        "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++        "role": "original"
++      },
++      {
++        "coordinates": "org.springframework:spring-jcl:5.3.19",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
++        "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++        "role": "dependency"
++      }
++    ],
++    "adapter": {
++      "roots": [
++        "adapter"
++      ],
++      "files": [
++        {
++          "path": "adapter/slice/adapter/SimpleMatchAdapter.java",
++          "sha256": "941b82c256320eb3aa80c47d2a09e776aa63806f2297d1b45eb2069bde8aa0d3"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "driver"
++      ],
++      "files": [
++        {
++          "path": "driver/slice/driver/SimpleMatchDriver.java",
++          "sha256": "f8fdad0ba120f8d12566bdf2d01f04f3dffd8b5821151f856726690ddc98e688"
++        }
++      ],
++      "control": "simple-match-driver",
++      "main": "slice.driver.SimpleMatchDriver"
++    },
++    "oracle": {
++      "control": "simple-match-oracle",
++      "path": "oracle.py",
++      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; the published JARs are used as fetched",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": []
++    },
++    "mutant": {
++      "base": {
++        "revision": "r5-3-19",
++        "identity": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++        "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from"
++      },
++      "patch": {
++        "path": "mutant/suffix-anywhere.patch",
++        "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f"
++      },
++      "files": [
++        "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"
++      ],
++      "description": "A leading-star pattern with no second star (\"*xxx\") is matched anywhere in the string instead of at its end: str.endsWith(pattern.substring(1)) becomes str.contains(...). It breaks the suffix branch of simpleMatch, which the oracle's \"*bc\" against \"bcx\" reaches, and the same branch at the end of a recursion (\"a*c*e\" against \"abced\", \"*a*b\" against \"acba\").",
++      "scope": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
++      "applied": {
++        "command": "git apply -p1 --verbose (after git apply --check)",
++        "files": [
++          {
++            "path": "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java",
++            "before": "4be3d0c69f62144a82d134591dc410614bc169d7baeeee7cd9d7de5e37bb4f68",
++            "after": "a2819e26b706f654b3e6108e5f1e1591d51a808ade70a43efa1be9c5639635df"
++          }
++        ]
++      },
++      "jar": {
++        "base": "lib/org.springframework/spring-core-5.3.19.jar",
++        "path": "mutant/spring-core-5.3.19.jar",
++        "classes": [
++          {
++            "class": "org/springframework/util/PatternMatchUtils",
++            "base": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
++            "mutant": "93f15dfe34c278bec984d42895df09003c66e79bcf30350b6539a241b7266782"
++          }
++        ]
++      }
++    },
++    "checkout": {
++      "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++      "tree": "6ef836c793f746ef4dd8be3ff340d620a3bce676",
++      "fetchedFrom": "https://github.com/spring-projects/spring-framework",
++      "depth": 1,
++      "git": "git version 2.53.0",
++      "submodules": "none declared"
++    },
++    "target": {
++      "class": "org.springframework.util.PatternMatchUtils",
++      "method": "simpleMatch",
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "loadedFrom": "mutant/spring-core-5.3.19.jar",
++      "classSha256": "93f15dfe34c278bec984d42895df09003c66e79bcf30350b6539a241b7266782",
++      "adapterCalls": [
++        "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "lib/org.springframework/spring-core-5.3.19.jar",
++      "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++      "role": "base",
++      "coordinates": "org.springframework:spring-core:5.3.19",
++      "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar"
++    },
++    {
++      "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++      "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++      "role": "dependency",
++      "coordinates": "org.springframework:spring-jcl:5.3.19",
++      "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar"
++    },
++    {
++      "path": "mutant/spring-core-5.3.19.jar",
++      "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
++      "role": "original",
++      "coordinates": null,
++      "origin": "constructed: lib/org.springframework/spring-core-5.3.19.jar with 1 class(es) recompiled from spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java at cedb5874b72c3311c8c6e2f03a53537590f2e0dc, after the patch mutant/suffix-anywhere.patch (sha256 f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f)"
++    },
++    {
++      "path": "adapter-mutant.jar",
++      "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-mutant.jar",
++    "mutant/spring-core-5.3.19.jar",
++    "lib/org.springframework/spring-jcl-5.3.19.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    },
++    "mutant": {
++      "javac": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac",
++        "--release",
++        "8",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none",
++        "-proc:none",
++        "-nowarn",
++        "-Xlint:-options",
++        "-sourcepath",
++        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/no-sources",
++        "-g",
++        "-parameters",
++        "-d",
++        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/mutant",
++        "-cp",
++        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar",
++        "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"
++      ],
++      "release": "8",
++      "flags": [
++        "-g",
++        "-parameters"
++      ],
++      "why": "the --release of the base JAR's own classes (their class-file version) and the debugging attributes they record, so the recompiled classes differ from the base's by the patch and the compiler alone (unpatchedRecompile measures the compiler's share)",
++      "debugAttributes": [
++        "LineNumberTable",
++        "LocalVariableTable",
++        "MethodParameters",
++        "SourceFile"
++      ],
++      "unpatchedRecompile": {
++        "classes": [
++          {
++            "class": "org/springframework/util/PatternMatchUtils",
++            "base": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
++            "recompiled": "b45705e5b925a051fc220c96fac0b32b4c3d27d9abecb0dfdfed20135160c0f7",
++            "identical": false
++          }
++        ],
++        "meaning": "the patched files compiled unpatched, the same way: where `identical` is false, this compiler alone gives other bytes than the base's for that class, so the mutant differs from the base by the patch and by the compiler; the mutant JAR holds the patched recompile only"
++      }
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/acquire.log",
++    "logs/git-init.log",
++    "logs/git-fetch.log",
++    "logs/git-checkout.log",
++    "logs/git-head.log",
++    "logs/git-tree.log",
++    "logs/git-version.log",
++    "logs/javac-unpatched.log",
++    "logs/git-apply-check.log",
++    "logs/git-apply.log",
++    "logs/javac-mutant.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+Binary file runtime-mutant/attempt/prepare/r5-3-19/adapter-r5-3-19.jar changed
+Binary file runtime-mutant/attempt/prepare/r5-3-19/controls/__pycache__/oracle.cpython-314.pyc changed
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/controls/oracle.py
+@@ -0,0 +1,72 @@
++"""The runtime slice's independent oracle, written from PatternMatchUtils.simpleMatch's Javadoc, not from its code:
++
++    Match a String against the given pattern, supporting the following simple pattern styles: "xxx*", "*xxx", "*xxx*"
++    and "xxx*yyy" matches (with an arbitrary number of pattern parts), as well as direct equality.
++    Returns: whether the String matches the given pattern; false if either the pattern or the String is null.
++
++Read as a statement: '*' matches any sequence of characters, the empty one and line breaks included; every other
++character, regular-expression metacharacters included, matches only itself, case-sensitively; a null pattern or string
++never matches. This is a conformance oracle for the runtime's vertical slice (llm-dlc/loops/example-targets-runtime.md,
++R5), not a security property. Each revision's driver output (one JSON line per input) is checked against it; it never
++calls the implementation under test."""
++
++import json
++import re
++
++# [pattern, string] pairs, in the order the driver is given them. None is Java's null.
++PROBES = [
++    # direct equality
++    ["abc", "abc"], ["abc", "abd"], ["", ""], ["", "a"], ["a", ""],
++    # null on either side
++    [None, "a"], ["a", None], [None, None],
++    # "xxx*"
++    ["ab*", "ab"], ["ab*", "abc"], ["ab*", "a"], ["ab*", "ba"],
++    # "*xxx", "*" alone
++    ["*bc", "abc"], ["*bc", "bcx"], ["*", ""], ["*", "anything"],
++    # "*xxx*"
++    ["*b*", "abc"], ["*b*", "ac"],
++    # "xxx*yyy", several parts
++    ["a*c", "abc"], ["a*c", "ac"], ["a*c", "ab"], ["a*c*e", "abcde"], ["a*c*e", "abced"],
++    # adjacent stars, overlapping parts, and parts that need a later occurrence
++    ["**", "x"], ["a**b", "ab"], ["*a*a*", "aa"], ["*a*a*", "a"], ["aa*a", "aa"], ["a*a", "a"],
++    ["*ab*ab", "xabyab"], ["*aab", "aaab"], ["*a*b", "acab"], ["*a*b", "acba"],
++    # case: the binder family's question, answered case-sensitively by the statement
++    ["Name*", "name"], ["name*", "NAME"], ["name*", "name"],
++    # a line break inside the starred part
++    ["a*b", "a\nb"],
++    # characters a regular expression would treat specially
++    [".*", "ab"], [".*", ".ab"], ["a.c", "abc"], ["[a]*", "[a]x"], ["a+", "aa"],
++    # beyond ASCII, one character outside the BMP included
++    ["é*", "éa"], ["*\U0001F600", "x\U0001F600"], ["Straße*", "STRASSE"],
++]
++
++
++def expected(pattern, text):
++    if pattern is None or text is None:
++        return False
++    parts = [".*" if c == "*" else re.escape(c) for c in pattern]
++    return re.fullmatch("".join(parts), text, re.DOTALL) is not None
++
++
++def key(value):
++    return json.dumps(value)
++
++
++def check(lines):
++    """[(input, problem)] for each observation the statement disagrees with, from the driver's stdout lines. An
++    unreadable line or a missing probe is a replay problem: it raises, never counts as a disagreement."""
++    seen = {}
++    for line in lines:
++        record = json.loads(line)
++        seen[key(record["input"])] = record
++    missing = [p for p in PROBES if key(p) not in seen]
++    if missing:
++        raise ValueError(f"no observation for {missing}: an incomplete replay")
++    problems = []
++    for probe in PROBES:
++        record = seen[key(probe)]
++        if record["outcome"] != "returned":
++            problems.append((probe, f"threw {record.get('exception')}"))
++        elif record["value"] != expected(*probe):
++            problems.append((probe, f"returned {record['value']}, the statement says {expected(*probe)}"))
++    return problems
+Binary file runtime-mutant/attempt/prepare/r5-3-19/driver.jar changed
+Binary file runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar changed
+Binary file runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-jcl-5.3.19.jar changed
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/logs/acquire.log
+@@ -0,0 +1,2 @@
++org.springframework:spring-core:5.3.19 sha256 1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992: cache hit /home/filip/.cache/in-the-loop/targets/sha256/1a/1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992, rechecked
++org.springframework:spring-jcl:5.3.19 sha256 68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8: cache hit /home/filip/.cache/in-the-loop/targets/sha256/68/68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8, rechecked
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/logs/jar-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/adapter-r5-3-19.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/classes/adapter slice/adapter/SimpleMatchAdapter.class
++
++exit 0 after 0.078s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/logs/jar-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/jar --create --file /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/driver.jar --date=2026-01-01T00:00:00Z --no-manifest -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/classes/driver slice/driver/SimpleMatchDriver$Reader.class -C /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/classes/driver slice/driver/SimpleMatchDriver.class
++
++exit 0 after 0.062s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/logs/javac-adapter.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/classes/adapter -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-jcl-5.3.19.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/case/adapter/slice/adapter/SimpleMatchAdapter.java
++
++exit 0 after 0.407s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/logs/javac-driver.log
+@@ -0,0 +1,3 @@
++$ /home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac --release 21 -encoding UTF-8 -implicit:none -d /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/classes/driver -cp /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/adapter-r5-3-19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-jcl-5.3.19.jar /home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/case/driver/slice/driver/SimpleMatchDriver.java
++
++exit 0 after 0.450s
+--- /dev/null
++++ b/runtime-mutant/attempt/prepare/r5-3-19/prepared.json
+@@ -0,0 +1,163 @@
++{
++  "example": "315",
++  "task": "mutant-replay",
++  "revision": "r5-3-19",
++  "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++  "stage": "artifacts-ready",
++  "source": {
++    "route": "published-artifact",
++    "repository": "https://github.com/spring-projects/spring-framework",
++    "revision": "r5-3-19",
++    "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from",
++    "linkage": {
++      "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++      "tag": "v5.3.19",
++      "release": "5.3.19",
++      "status": "recorded, not checked against the published bytes: a release label supports no source rebuild or introducing-commit experiment"
++    },
++    "published": [
++      {
++        "coordinates": "org.springframework:spring-core:5.3.19",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
++        "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++        "role": "original"
++      },
++      {
++        "coordinates": "org.springframework:spring-jcl:5.3.19",
++        "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
++        "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++        "role": "dependency"
++      }
++    ],
++    "adapter": {
++      "roots": [
++        "adapter"
++      ],
++      "files": [
++        {
++          "path": "adapter/slice/adapter/SimpleMatchAdapter.java",
++          "sha256": "941b82c256320eb3aa80c47d2a09e776aa63806f2297d1b45eb2069bde8aa0d3"
++        }
++      ]
++    },
++    "driver": {
++      "roots": [
++        "driver"
++      ],
++      "files": [
++        {
++          "path": "driver/slice/driver/SimpleMatchDriver.java",
++          "sha256": "f8fdad0ba120f8d12566bdf2d01f04f3dffd8b5821151f856726690ddc98e688"
++        }
++      ],
++      "control": "simple-match-driver",
++      "main": "slice.driver.SimpleMatchDriver"
++    },
++    "oracle": {
++      "control": "simple-match-oracle",
++      "path": "oracle.py",
++      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3"
++    },
++    "jdks": [
++      "21",
++      "25"
++    ],
++    "recipe": {
++      "tool": "javac",
++      "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; the published JARs are used as fetched",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": []
++    },
++    "target": {
++      "class": "org.springframework.util.PatternMatchUtils",
++      "method": "simpleMatch",
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "loadedFrom": "lib/org.springframework/spring-core-5.3.19.jar",
++      "classSha256": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
++      "adapterCalls": [
++        "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z"
++      ],
++      "adapterCallsTarget": true
++    }
++  },
++  "artifacts": [
++    {
++      "path": "lib/org.springframework/spring-core-5.3.19.jar",
++      "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++      "role": "original",
++      "coordinates": "org.springframework:spring-core:5.3.19",
++      "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar"
++    },
++    {
++      "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++      "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++      "role": "dependency",
++      "coordinates": "org.springframework:spring-jcl:5.3.19",
++      "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar"
++    },
++    {
++      "path": "adapter-r5-3-19.jar",
++      "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++      "role": "adapter",
++      "coordinates": null,
++      "origin": "built from adapter"
++    },
++    {
++      "path": "driver.jar",
++      "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++      "role": "driver",
++      "coordinates": null,
++      "origin": "built from driver"
++    },
++    {
++      "path": "controls/oracle.py",
++      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3",
++      "role": "oracle",
++      "coordinates": null,
++      "origin": "oracle.py"
++    }
++  ],
++  "classpath": [
++    "driver.jar",
++    "adapter-r5-3-19.jar",
++    "lib/org.springframework/spring-core-5.3.19.jar",
++    "lib/org.springframework/spring-jcl-5.3.19.jar"
++  ],
++  "toolchain": {
++    "jdk": {
++      "feature": "25",
++      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++      "release": {
++        "JAVA_VERSION": "25.0.5",
++        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "build": {
++      "tool": "javac",
++      "release": "21",
++      "date": "2026-01-01T00:00:00Z",
++      "flags": [
++        "--release",
++        "21",
++        "-encoding",
++        "UTF-8",
++        "-implicit:none"
++      ],
++      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
++    }
++  },
++  "failedStage": null,
++  "diagnostic": null,
++  "logs": [
++    "logs/acquire.log",
++    "logs/javac-adapter.log",
++    "logs/jar-adapter.log",
++    "logs/javac-driver.log",
++    "logs/jar-driver.log"
++  ]
++}
+--- /dev/null
++++ b/runtime-mutant/attempt/slice.json
+@@ -0,0 +1,399 @@
++{
++  "slice": "runtime R2: a constructed mutant of published spring-core 5.3.19's simpleMatch",
++  "case": "simplematch-mutant",
++  "caseFolder": {
++    "from": "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/examples/tools/targets/runtime_simplematch",
++    "copy": "runtime-mutant/attempt/case"
++  },
++  "ok": true,
++  "expectedProblems": {
++    "r5-3-19": [],
++    "mutant": [
++      "[\"*a*b\", \"acba\"]",
++      "[\"*bc\", \"bcx\"]",
++      "[\"a*c*e\", \"abced\"]"
++    ]
++  },
++  "network": true,
++  "plan": {
++    "example": "315",
++    "task": "mutant-replay",
++    "kind": "replay",
++    "relation": "calibration",
++    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++    "revisions": [
++      "r5-3-19",
++      "mutant"
++    ],
++    "claim": {
++      "task": "mutant-replay",
++      "notes": [
++        "The mutation control's concrete side: 5.3.19's published spring-core, and a copy of it whose PatternMatchUtils is recompiled from the v5.3.19 commit's source with the patch applied, each in its own JVM on JDK 21 and 25, read by the same Javadoc oracle. The mutant must disagree with it where the suffix branch decides, and 5.3.19 nowhere."
++      ]
++    },
++    "prerequisites": [],
++    "artifacts": [
++      {
++        "revision": "r5-3-19",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++        "tag": "v5.3.19",
++        "release": "5.3.19",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-core:5.3.19",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
++            "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.19",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
++            "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
++          }
++        ],
++        "adapters": [
++          "adapter/slice/adapter/SimpleMatchAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      },
++      {
++        "revision": "mutant",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "mutant": {
++          "base": {
++            "revision": "r5-3-19",
++            "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++            "published": [
++              {
++                "coordinates": "org.springframework:spring-core:5.3.19",
++                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
++                "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
++              },
++              {
++                "coordinates": "org.springframework:spring-jcl:5.3.19",
++                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar",
++                "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
++              }
++            ]
++          },
++          "patch": {
++            "path": "mutant/suffix-anywhere.patch",
++            "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f"
++          },
++          "description": "A leading-star pattern with no second star (\"*xxx\") is matched anywhere in the string instead of at its end: str.endsWith(pattern.substring(1)) becomes str.contains(...). It breaks the suffix branch of simpleMatch, which the oracle's \"*bc\" against \"bcx\" reaches, and the same branch at the end of a recursion (\"a*c*e\" against \"abced\", \"*a*b\" against \"acba\")."
++        },
++        "adapters": [
++          "adapter/slice/adapter/SimpleMatchAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac"
++      ],
++      "optional": []
++    },
++    "engine": null,
++    "gaps": null,
++    "expected": null,
++    "outputs": {
++      "receipts": "receipts/mutant-replay"
++    },
++    "folder": "runtime-mutant/attempt/case",
++    "network": true
++  },
++  "preparations": [
++    {
++      "revision": "r5-3-19",
++      "stage": "artifacts-ready",
++      "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++      "failedStage": null,
++      "diagnostic": null,
++      "blocker": null,
++      "classpath": [
++        {
++          "path": "lib/org.springframework/spring-core-5.3.19.jar",
++          "role": "original",
++          "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
++          "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar"
++        },
++        {
++          "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++          "role": "dependency",
++          "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++          "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar"
++        },
++        {
++          "path": "adapter-r5-3-19.jar",
++          "role": "adapter",
++          "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++          "origin": "built from adapter"
++        },
++        {
++          "path": "driver.jar",
++          "role": "driver",
++          "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++          "origin": "built from driver"
++        }
++      ],
++      "target": {
++        "class": "org.springframework.util.PatternMatchUtils",
++        "method": "simpleMatch",
++        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++        "loadedFrom": "lib/org.springframework/spring-core-5.3.19.jar",
++        "classSha256": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
++        "adapterCalls": [
++          "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z"
++        ],
++        "adapterCallsTarget": true
++      },
++      "checkout": null,
++      "built": null,
++      "mutant": null,
++      "mutantBuild": null,
++      "upstream": {}
++    },
++    {
++      "revision": "mutant",
++      "stage": "artifacts-ready",
++      "commit": "mutant:cedb5874b72c3311c8c6e2f03a53537590f2e0dc+f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
++      "failedStage": null,
++      "diagnostic": null,
++      "blocker": null,
++      "classpath": [
++        {
++          "path": "lib/org.springframework/spring-jcl-5.3.19.jar",
++          "role": "dependency",
++          "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
++          "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.19/spring-jcl-5.3.19.jar"
++        },
++        {
++          "path": "mutant/spring-core-5.3.19.jar",
++          "role": "original",
++          "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
++          "origin": "constructed: lib/org.springframework/spring-core-5.3.19.jar with 1 class(es) recompiled from spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java at cedb5874b72c3311c8c6e2f03a53537590f2e0dc, after the patch mutant/suffix-anywhere.patch (sha256 f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f)"
++        },
++        {
++          "path": "adapter-mutant.jar",
++          "role": "adapter",
++          "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
++          "origin": "built from adapter"
++        },
++        {
++          "path": "driver.jar",
++          "role": "driver",
++          "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
++          "origin": "built from driver"
++        }
++      ],
++      "target": {
++        "class": "org.springframework.util.PatternMatchUtils",
++        "method": "simpleMatch",
++        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++        "loadedFrom": "mutant/spring-core-5.3.19.jar",
++        "classSha256": "93f15dfe34c278bec984d42895df09003c66e79bcf30350b6539a241b7266782",
++        "adapterCalls": [
++          "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z"
++        ],
++        "adapterCallsTarget": true
++      },
++      "checkout": {
++        "commit": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++        "tree": "6ef836c793f746ef4dd8be3ff340d620a3bce676",
++        "fetchedFrom": "https://github.com/spring-projects/spring-framework",
++        "depth": 1,
++        "git": "git version 2.53.0",
++        "submodules": "none declared"
++      },
++      "built": null,
++      "mutant": {
++        "base": {
++          "revision": "r5-3-19",
++          "identity": "cedb5874b72c3311c8c6e2f03a53537590f2e0dc",
++          "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from"
++        },
++        "patch": {
++          "path": "mutant/suffix-anywhere.patch",
++          "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f"
++        },
++        "files": [
++          "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"
++        ],
++        "description": "A leading-star pattern with no second star (\"*xxx\") is matched anywhere in the string instead of at its end: str.endsWith(pattern.substring(1)) becomes str.contains(...). It breaks the suffix branch of simpleMatch, which the oracle's \"*bc\" against \"bcx\" reaches, and the same branch at the end of a recursion (\"a*c*e\" against \"abced\", \"*a*b\" against \"acba\").",
++        "scope": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
++        "applied": {
++          "command": "git apply -p1 --verbose (after git apply --check)",
++          "files": [
++            {
++              "path": "spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java",
++              "before": "4be3d0c69f62144a82d134591dc410614bc169d7baeeee7cd9d7de5e37bb4f68",
++              "after": "a2819e26b706f654b3e6108e5f1e1591d51a808ade70a43efa1be9c5639635df"
++            }
++          ]
++        },
++        "jar": {
++          "base": "lib/org.springframework/spring-core-5.3.19.jar",
++          "path": "mutant/spring-core-5.3.19.jar",
++          "classes": [
++            {
++              "class": "org/springframework/util/PatternMatchUtils",
++              "base": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
++              "mutant": "93f15dfe34c278bec984d42895df09003c66e79bcf30350b6539a241b7266782"
++            }
++          ]
++        }
++      },
++      "mutantBuild": {
++        "javac": [
++          "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/javac",
++          "--release",
++          "8",
++          "-encoding",
++          "UTF-8",
++          "-implicit:none",
++          "-proc:none",
++          "-nowarn",
++          "-Xlint:-options",
++          "-sourcepath",
++          "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/no-sources",
++          "-g",
++          "-parameters",
++          "-d",
++          "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/classes/mutant",
++          "-cp",
++          "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar:/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar",
++          "/home/filip/code/in-the-loop/verification/.state/work/20261114-180443-example-targets-runtime-r2-a-constructed/runtime-mutant/attempt/prepare/mutant/checkout/spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java"
++        ],
++        "release": "8",
++        "flags": [
++          "-g",
++          "-parameters"
++        ],
++        "why": "the --release of the base JAR's own classes (their class-file version) and the debugging attributes they record, so the recompiled classes differ from the base's by the patch and the compiler alone (unpatchedRecompile measures the compiler's share)",
++        "debugAttributes": [
++          "LineNumberTable",
++          "LocalVariableTable",
++          "MethodParameters",
++          "SourceFile"
++        ],
++        "unpatchedRecompile": {
++          "classes": [
++            {
++              "class": "org/springframework/util/PatternMatchUtils",
++              "base": "8562b278625e0cdc0212dc39acc5c443d13d5beffe9f2d86719f9b50c5fbff28",
++              "recompiled": "b45705e5b925a051fc220c96fac0b32b4c3d27d9abecb0dfdfed20135160c0f7",
++              "identical": false
++            }
++          ],
++          "meaning": "the patched files compiled unpatched, the same way: where `identical` is false, this compiler alone gives other bytes than the base's for that class, so the mutant differs from the base by the patch and by the compiler; the mutant JAR holds the patched recompile only"
++        }
++      },
++      "upstream": {}
++    }
++  ],
++  "records": [
++    {
++      "revision": "r5-3-19",
++      "jdk": "21",
++      "status": "exited",
++      "exitCode": 0,
++      "observations": 45,
++      "replay": "original-jvm",
++      "stdout": "controls/control-r5-3-19-jdk21.stdout",
++      "problems": []
++    },
++    {
++      "revision": "r5-3-19",
++      "jdk": "25",
++      "status": "exited",
++      "exitCode": 0,
++      "observations": 45,
++      "replay": "original-jvm",
++      "stdout": "controls/control-r5-3-19-jdk25.stdout",
++      "problems": []
++    },
++    {
++      "revision": "mutant",
++      "jdk": "21",
++      "status": "exited",
++      "exitCode": 0,
++      "observations": 45,
++      "replay": "original-jvm",
++      "stdout": "controls/control-mutant-jdk21.stdout",
++      "problems": [
++        [
++          [
++            "*bc",
++            "bcx"
++          ],
++          "returned True, the statement says False"
++        ],
++        [
++          [
++            "a*c*e",
++            "abced"
++          ],
++          "returned True, the statement says False"
++        ],
++        [
++          [
++            "*a*b",
++            "acba"
++          ],
++          "returned True, the statement says False"
++        ]
++      ]
++    },
++    {
++      "revision": "mutant",
++      "jdk": "25",
++      "status": "exited",
++      "exitCode": 0,
++      "observations": 45,
++      "replay": "original-jvm",
++      "stdout": "controls/control-mutant-jdk25.stdout",
++      "problems": [
++        [
++          [
++            "*bc",
++            "bcx"
++          ],
++          "returned True, the statement says False"
++        ],
++        [
++          [
++            "a*c*e",
++            "abced"
++          ],
++          "returned True, the statement says False"
++        ],
++        [
++          [
++            "*a*b",
++            "acba"
++          ],
++          "returned True, the statement says False"
++        ]
++      ]
++    }
++  ],
++  "jdksAgree": {
++    "r5-3-19": true,
++    "mutant": true
++  },
++  "ingestion": {
++    "records": 4,
++    "result": "unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it"
++  },
++  "reading": "the oracle's reading is the slice's conformance check, not a claim's result; ingestion judges records in the route"
++}

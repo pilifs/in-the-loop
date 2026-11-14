@@ -1,0 +1,643 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-180443-example-targets-runtime-r2-a-constructed",
+  "title": "example-targets runtime R2: a constructed mutant on the published-artifact route, spring-core 5.3.19's simpleMatch patched and recompiled into a copy of its JAR",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 6.2s, peak 197.3 MiB (estimated 15m00s, 3.0 GiB); 54 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-180443-example-targets-runtime-r2-a-constructed.json",
+    "sha256": "4a47d17c1f141d9625ddc63bef9e58e321cfd116491488b38a4dd82fb2343e08",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-180443-example-targets-runtime-r2-a-constructed",
+      "title": "example-targets runtime R2: a constructed mutant on the published-artifact route, spring-core 5.3.19's simpleMatch patched and recompiled into a copy of its JAR",
+      "description": "Runtime now prepares workflow W1's constructed mutant entries (a base revision, a patch by path and sha256, the mutation in words) on all three routes instead of refusing them; before, a mutant was Unsupported in lock. This job runs the published-artifact route on real bytes. runtime_simplematch/mutation.json declares a mutant of r5-3-19 (spring-core 5.3.19, published on Maven Central, linked to the v5.3.19 commit cedb5874 of spring-projects/spring-framework): mutant/suffix-anywhere.patch (sha256 f7171285...374f) turns PatternMatchUtils.simpleMatch's str.endsWith(pattern.substring(1)) into str.contains(...), so a '*xxx' pattern matches anywhere. runtime_slice.py --case simplematch-mutant plans the mutation pair (r5-3-19, mutant) as W1 would. The mutant's preparation acquires 5.3.19's spring-core and spring-jcl JARs by sha256, fetches the base commit from github.com by full SHA at depth 1, compiles the unpatched PatternMatchUtils.java once (recorded: how far javac alone moves the bytes), applies the patch with git apply (checked first), recompiles it against the published JARs with the base class's --release (8, from its class-file version) and debugging flags (-g -parameters, from the attributes the published class records), and puts the classes in place of the base JAR's own in a copy of it. The base JAR stays off the classpath. Each revision's driver then runs in its own JVM on JDK 21 and 25 over the slice's 45 Javadoc-oracle probes. Step 2 deletes the checkout so that only the records come back.",
+      "kind": "other",
+      "capabilities": [
+        "targets:mutant",
+        "targets:controls"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime.py",
+          "examples/tools/targets/runtime_upstream.py",
+          "examples/tools/targets/runtime_slice.py",
+          "examples/tools/targets/runtime_simplematch",
+          "llm-dlc/loops/example-targets-runtime.md"
+        ]
+      },
+      "expected": "step 1 exits 0 and prints 'ok': prepare r5-3-19 and mutant artifacts-ready; the mutant's classpath is driver, adapter, mutant/spring-core-5.3.19.jar, spring-jcl, its commit mutant:cedb5874...+f7171285..., its preparation's mutant.applied naming PatternMatchUtils.java with different before and after sha256s, mutant.jar.classes exactly [org/springframework/util/PatternMatchUtils], mutantBuild release 8 and flags [-g, -parameters]; four controls (each revision on JDK 21 and 25) exited 0 with 45 observations each; oracle problems none on r5-3-19 and exactly [*bc, bcx], [a*c*e, abced] and [*a*b, acba] on the mutant (as a model of the patched method predicts); JDKs agree on each revision; ingestion at workflow's Phase 0 stub. Step 2 exits 0",
+      "submitted": {
+        "at": "2026-11-14T18:04:43+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "one depth-1 fetch of a spring-framework commit from github.com (the bulk: a few hundred MB, git with fsckObjects), two small javac runs and four short JVM runs; the published JARs come from Maven Central"
+      },
+      "steps": [
+        {
+          "name": "the mutation pair: 5.3.19 and its constructed mutant, prepared and replayed",
+          "run": "python3 examples/tools/targets/runtime_slice.py runtime-mutant/attempt --case simplematch-mutant",
+          "cwd": "."
+        },
+        {
+          "name": "keep the records, not the checkout",
+          "run": "rm -rf runtime-mutant/attempt/prepare/*/checkout runtime-mutant/attempt/prepare/*/home && du -sh runtime-mutant",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "runtime-mutant"
+      ]
+    }
+  },
+  "sourceCommit": "b5e28e2663be3485c5e3c741c8152bb42f7b1bad",
+  "startedAt": "2026-11-14T18:08:09+00:00",
+  "finishedAt": "2026-11-14T18:08:16+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1507500,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "one depth-1 fetch of a spring-framework commit from github.com (the bulk: a few hundred MB, git with fsckObjects), two small javac runs and four short JVM runs; the published JARs come from Maven Central"
+  },
+  "usage": {
+    "peakMemoryBytes": 206934016,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the mutation pair: 5.3.19 and its constructed mutant, prepared and replayed",
+      "run": "python3 examples/tools/targets/runtime_slice.py runtime-mutant/attempt --case simplematch-mutant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 6.01,
+      "cpuSeconds": 6.56,
+      "cpuThrottledSeconds": 0.234,
+      "peakMemoryBytes": 206934016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-mutation-pair-5-3-19-and-i.log",
+        "lines": 9,
+        "bytes": 1083,
+        "sha256": "1e5706e178d546438ee614f224523965bd40a8202c1b5e9db1ea2e15f480884d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "prepare r5-3-19: artifacts-ready",
+        "prepare mutant: artifacts-ready",
+        "control r5-3-19 jdk21: exited exit 0, 45 observations, oracle problems []",
+        "control r5-3-19 jdk25: exited exit 0, 45 observations, oracle problems []",
+        "control mutant jdk21: exited exit 0, 45 observations, oracle problems [[['*bc', 'bcx'], 'returned True, the statement says False'], [['a*c*e', 'abced'], 'returned True, the statement says False'], [['*a*b', 'acba'], 'returned True, the statement says False']]",
+        "control mutant jdk25: exited exit 0, 45 observations, oracle problems [[['*bc', 'bcx'], 'returned True, the statement says False'], [['a*c*e', 'abced'], 'returned True, the statement says False'], [['*a*b', 'acba'], 'returned True, the statement says False']]",
+        "expected disagreements: {'r5-3-19': [], 'mutant': ['[\"*a*b\", \"acba\"]', '[\"*bc\", \"bcx\"]', '[\"a*c*e\", \"abced\"]']}",
+        "JDKs agree: {'r5-3-19': True, 'mutant': True}; ingestion got 4 records: unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it",
+        "ok (runtime-mutant/attempt/slice.json)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "keep the records, not the checkout",
+      "run": "rm -rf runtime-mutant/attempt/prepare/*/checkout runtime-mutant/attempt/prepare/*/home && du -sh runtime-mutant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.087,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1982464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-keep-the-records-not-the-check.log",
+        "lines": 1,
+        "bytes": 20,
+        "sha256": "8d12dc204fb9bd525a123bde767c6480a3292ee7def1ccb8a252f300a6fce0b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "4.7M\truntime-mutant"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runtime-mutant/attempt/case/README.md",
+      "change": "added",
+      "bytes": 2699,
+      "sha256": "5ae7d290934242fe3539c813efc737e450dbf5b02f0aefa677fede783ecb1475",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/__pycache__/oracle.cpython-314.pyc",
+      "change": "added",
+      "bytes": 4580,
+      "sha256": "72339b2256cf2d141636d6cd69b3d3a8b727fbeee9274ed01325954968de5242",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/adapter/slice/adapter/SimpleMatchAdapter.java",
+      "change": "added",
+      "bytes": 574,
+      "sha256": "941b82c256320eb3aa80c47d2a09e776aa63806f2297d1b45eb2069bde8aa0d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/driver/slice/driver/SimpleMatchDriver.java",
+      "change": "added",
+      "bytes": 3804,
+      "sha256": "f8fdad0ba120f8d12566bdf2d01f04f3dffd8b5821151f856726690ddc98e688",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/mutant/suffix-anywhere.patch",
+      "change": "added",
+      "bytes": 435,
+      "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/mutation.json",
+      "change": "added",
+      "bytes": 1732,
+      "sha256": "d6f45ed192077125df5b784b9c63af2a152536c361ea57da063d78246b47adbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/oracle.py",
+      "change": "added",
+      "bytes": 3469,
+      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/case/target.json",
+      "change": "added",
+      "bytes": 3886,
+      "sha256": "39d328af3f5b84a15baf961b05c8f10d15efa49b6e91b9e6394f94840fcac93d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 2705,
+      "sha256": "108fe0d3c64b3b46dfa6a418be19631b0ecc8d743811b22f58a3463461a7d975",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-mutant-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-mutant-jdk25.stdout",
+      "change": "added",
+      "bytes": 2705,
+      "sha256": "108fe0d3c64b3b46dfa6a418be19631b0ecc8d743811b22f58a3463461a7d975",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-r5-3-19-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-r5-3-19-jdk21.stdout",
+      "change": "added",
+      "bytes": 2708,
+      "sha256": "9039c9095866dbd2c68686c80f7335a10cb508554de4eb5d5bd0d922642a6737",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-r5-3-19-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/control-r5-3-19-jdk25.stdout",
+      "change": "added",
+      "bytes": 2708,
+      "sha256": "9039c9095866dbd2c68686c80f7335a10cb508554de4eb5d5bd0d922642a6737",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/controls/controls.json",
+      "change": "added",
+      "bytes": 44883,
+      "sha256": "8f21c4c37bdc68cffdce3a9ab1e5d4078d8bc7d0924a24b27934ed7c304dc0a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/adapter-mutant.jar",
+      "change": "added",
+      "bytes": 467,
+      "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/controls/__pycache__/oracle.cpython-314.pyc",
+      "change": "added",
+      "bytes": 4599,
+      "sha256": "2ff60b6a9fcad5d1aaaf465f5d64a553cf8cc3ddbf9a77b1164935ddef413ef9",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/controls/oracle.py",
+      "change": "added",
+      "bytes": 3469,
+      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/driver.jar",
+      "change": "added",
+      "bytes": 2772,
+      "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar",
+      "change": "added",
+      "bytes": 1482575,
+      "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar",
+      "change": "added",
+      "bytes": 24439,
+      "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/acquire.log",
+      "change": "added",
+      "bytes": 493,
+      "sha256": "c82af4ecf28d90ba25feae9d6dabeb592b22abfe4cf54638583c9f82ab312c08",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-apply-check.log",
+      "change": "added",
+      "bytes": 385,
+      "sha256": "f8ef6cbba6c6efdadc0e50015038360b329434c937fdb85ce1930159bdc4260e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-apply.log",
+      "change": "added",
+      "bytes": 474,
+      "sha256": "baef76ad9ac44daa822938c29367ac96b8d0cbf100e7e5afd5b591a454d994d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-checkout.log",
+      "change": "added",
+      "bytes": 454,
+      "sha256": "4a661a057330838c12443b508b16c6478ffb70fe85a92e8109081e6c21d3215f",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-fetch.log",
+      "change": "added",
+      "bytes": 668,
+      "sha256": "190937045a6f321700b5abdf65f9e860c2b02bcbf71a4f11699c5a1c87b4c93b",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-head.log",
+      "change": "added",
+      "bytes": 448,
+      "sha256": "c4ef41141b904516ee3cf72af7e4b298c46a78639d1bdd5fd01b20ad1537e626",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-init.log",
+      "change": "added",
+      "bytes": 397,
+      "sha256": "21a5ebda9bc38db3bbf1aa4f7fab6ac50cee72217869d51e3ff59c28e62ff75e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-tree.log",
+      "change": "added",
+      "bytes": 457,
+      "sha256": "09209a51b43ff7863693b7ab18cd7a677114ce0aea39b2e050f98bb5f8fd9e47",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/git-version.log",
+      "change": "added",
+      "bytes": 421,
+      "sha256": "2efb8c2de43ba533b4a840c18f8a1cce05d06829cd9e2d0552cdd2e1773f01d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 515,
+      "sha256": "3415842258b68c8b31f26d6ab336301b569dbccaeacac81d14b41a5810595f30",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 715,
+      "sha256": "795e084480782c0f2ed3a87b1b7d7d3b52e3272ce67ca554456d1e6726f1f653",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 859,
+      "sha256": "d24f304602d68a2a54ef49b9ed06e029bc5568357429671133a9f78c67c9243e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 1023,
+      "sha256": "bd6301537a8e9d6fd33040d8e9c2bd5a793a03e21ae3021a39e4cd14fb752a4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/javac-mutant.log",
+      "change": "added",
+      "bytes": 1151,
+      "sha256": "2bc69550bb3ee3db79f22d1e05596e7ad75e9ee8eb97c5557e56e237efca0bd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/logs/javac-unpatched.log",
+      "change": "added",
+      "bytes": 1154,
+      "sha256": "3688adb0a01a5ddfd5d9ccbaafc9f002621ea342ad80c96d216d444a0e5ec99d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/mutant/spring-core-5.3.19.jar",
+      "change": "added",
+      "bytes": 1482592,
+      "sha256": "7887b8fe8019abb4cf399d1f82720a80800f499a03a6be046ea38f11863c079f",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/mutant/suffix-anywhere.patch",
+      "change": "added",
+      "bytes": 435,
+      "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/mutant/prepared.json",
+      "change": "added",
+      "bytes": 11229,
+      "sha256": "65569f03c64a4bef18abbc3ff2d99c621fb083ab96d1dae709782047ed4d1567",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/adapter-r5-3-19.jar",
+      "change": "added",
+      "bytes": 467,
+      "sha256": "43af1b474c691d65a55c5a822617e4e1dd3840cf75e0b0d05245b7cc7aae462e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/controls/__pycache__/oracle.cpython-314.pyc",
+      "change": "added",
+      "bytes": 4600,
+      "sha256": "5542ee1be78a84aa5f658312a3408e6de16da7b2cbd37926f5a9d80c8ff27f78",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/controls/oracle.py",
+      "change": "added",
+      "bytes": 3469,
+      "sha256": "43a83291258f1cc0467378c52009723da1230268100ef9088c161d41d8b862f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/driver.jar",
+      "change": "added",
+      "bytes": 2772,
+      "sha256": "6cd9c0611b0e8c52b2fc794d442a078801fb7d2d97f9f7e8a9daef9e1041e121",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar",
+      "change": "added",
+      "bytes": 1482575,
+      "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-jcl-5.3.19.jar",
+      "change": "added",
+      "bytes": 24439,
+      "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/logs/acquire.log",
+      "change": "added",
+      "bytes": 493,
+      "sha256": "c82af4ecf28d90ba25feae9d6dabeb592b22abfe4cf54638583c9f82ab312c08",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 518,
+      "sha256": "3eaaad42f195db31aad95fae0bfe868cc36e2b78be9b3fe5e84c0a6f21e761c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 718,
+      "sha256": "23854db1171be056ba1b45db252b3aea74dc7ef27814e9c36c91265a076f2e0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 879,
+      "sha256": "46c065b038bcb20ffc0e26a80d034256fb587b0b506f14d812c03f260c24f402",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 1045,
+      "sha256": "b68c1e2432f176f75817811e639c5796f75cecc956d91a10f5ac1386e0f26f85",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/prepare/r5-3-19/prepared.json",
+      "change": "added",
+      "bytes": 5479,
+      "sha256": "7bcb82f76cfc510ffbec1f23627e456252dfbba661d034811a6d2ce4fed1f716",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-mutant/attempt/slice.json",
+      "change": "added",
+      "bytes": 15723,
+      "sha256": "60f08d3f18938bbe7ffacdd2530da6b0e22384299ba988b671d368168735243b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T18:18:14+00:00",
+    "applied": [
+      "runtime-mutant/attempt/case/README.md",
+      "runtime-mutant/attempt/case/__pycache__/oracle.cpython-314.pyc",
+      "runtime-mutant/attempt/case/adapter/slice/adapter/SimpleMatchAdapter.java",
+      "runtime-mutant/attempt/case/driver/slice/driver/SimpleMatchDriver.java",
+      "runtime-mutant/attempt/case/mutant/suffix-anywhere.patch",
+      "runtime-mutant/attempt/case/mutation.json",
+      "runtime-mutant/attempt/case/oracle.py",
+      "runtime-mutant/attempt/case/target.json",
+      "runtime-mutant/attempt/controls/control-mutant-jdk21.stderr",
+      "runtime-mutant/attempt/controls/control-mutant-jdk21.stdout",
+      "runtime-mutant/attempt/controls/control-mutant-jdk25.stderr",
+      "runtime-mutant/attempt/controls/control-mutant-jdk25.stdout",
+      "runtime-mutant/attempt/controls/control-r5-3-19-jdk21.stderr",
+      "runtime-mutant/attempt/controls/control-r5-3-19-jdk21.stdout",
+      "runtime-mutant/attempt/controls/control-r5-3-19-jdk25.stderr",
+      "runtime-mutant/attempt/controls/control-r5-3-19-jdk25.stdout",
+      "runtime-mutant/attempt/controls/controls.json",
+      "runtime-mutant/attempt/prepare/mutant/adapter-mutant.jar",
+      "runtime-mutant/attempt/prepare/mutant/controls/__pycache__/oracle.cpython-314.pyc",
+      "runtime-mutant/attempt/prepare/mutant/controls/oracle.py",
+      "runtime-mutant/attempt/prepare/mutant/driver.jar",
+      "runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar",
+      "runtime-mutant/attempt/prepare/mutant/lib/org.springframework/spring-jcl-5.3.19.jar",
+      "runtime-mutant/attempt/prepare/mutant/logs/acquire.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-apply-check.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-apply.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-checkout.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-fetch.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-head.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-init.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-tree.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/git-version.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/jar-adapter.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/jar-driver.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/javac-adapter.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/javac-driver.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/javac-mutant.log",
+      "runtime-mutant/attempt/prepare/mutant/logs/javac-unpatched.log",
+      "runtime-mutant/attempt/prepare/mutant/mutant/spring-core-5.3.19.jar",
+      "runtime-mutant/attempt/prepare/mutant/mutant/suffix-anywhere.patch",
+      "runtime-mutant/attempt/prepare/mutant/prepared.json",
+      "runtime-mutant/attempt/prepare/r5-3-19/adapter-r5-3-19.jar",
+      "runtime-mutant/attempt/prepare/r5-3-19/controls/__pycache__/oracle.cpython-314.pyc",
+      "runtime-mutant/attempt/prepare/r5-3-19/controls/oracle.py",
+      "runtime-mutant/attempt/prepare/r5-3-19/driver.jar",
+      "runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar",
+      "runtime-mutant/attempt/prepare/r5-3-19/lib/org.springframework/spring-jcl-5.3.19.jar",
+      "runtime-mutant/attempt/prepare/r5-3-19/logs/acquire.log",
+      "runtime-mutant/attempt/prepare/r5-3-19/logs/jar-adapter.log",
+      "runtime-mutant/attempt/prepare/r5-3-19/logs/jar-driver.log",
+      "runtime-mutant/attempt/prepare/r5-3-19/logs/javac-adapter.log",
+      "runtime-mutant/attempt/prepare/r5-3-19/logs/javac-driver.log",
+      "runtime-mutant/attempt/prepare/r5-3-19/prepared.json",
+      "runtime-mutant/attempt/slice.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
