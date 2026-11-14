@@ -2,8 +2,8 @@
 (interfaces.py) of llm-dlc/loops/example-targets.md. plan_task() resolves a task from the sidecar and its claim file
 alone (W1), and readiness() derives each task's readiness milestones and summaries from the sidecar, its files and
 the folder's receipts (W1). ingest() publishes one attempt's format-2 receipt (W2, workflow_ingest.py). handoff()
-fails closed with the named Unsupported result until the workflow stream replaces it (W3); project() reports only what
-target.json states until W4 projects readiness() into the index. Signatures are frozen.
+exports a task's packet, offline (W3, workflow_handoff.py, which also builds the gap inventory); project() reports only
+what target.json states until W4 projects readiness() into the index. Signatures are frozen.
 
 A task's claim is frozen twice. Planning freezes the source-level claim: the task's statement, domain, observations,
 assumptions, allowed change, models and bounds (the tool's defaults resolved), and `key`, their canonical digest,
@@ -568,9 +568,12 @@ def handoff(folder, example, target, task):
     """The task's handoff packet, for an agent that continues it without rediscovery: its immutable inputs with their
     hashes, the exact commands, its current receipts, the next prerequisite and one recommended action, and for an
     observed gap the brief's capability-gap packet. Predicted and observed gaps stay apart. Offline, read-only: a
-    dict, or Unsupported."""
-    return Unsupported("handoff", WORKFLOW, "the handoff export is Phase 0's stub until the workflow stream's W3 replaces it",
-                       stage="handoff")
+    dict, or Unsupported. workflow_handoff.py (W3) says what the packet holds; inventory() there groups many targets'
+    gaps for the v1 ranking."""
+    if task not in [t["id"] for t in target.get("tasks", [])]:
+        return Unsupported("handoff", WORKFLOW, f"example {example.get('id')} has no task {task!r}", stage="handoff")
+    from targets import workflow_handoff
+    return workflow_handoff.packet(folder, example, target, task)
 
 
 def project(folder, example, target):

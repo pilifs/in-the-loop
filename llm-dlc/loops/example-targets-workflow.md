@@ -247,7 +247,57 @@ timebox and the safety rules. Planning and discovery never touch the network.
 - **For review**: the sidecar states no per-revision expected concrete outcome, so a replay's expectation comes from
   its pair's kind (`workflow_ingest.SIDES`); a one-revision replay takes it from the pairs it appears in, and none or
   conflicting ones leave its expectation `no`, with the label saying so.
-- Next: W3, the handoff packet and the gap inventory (A1's handoff row and A7), then W4.
+- 2026-11-14, **W3 handoff and gap inventory**: `workflow.handoff()` (in `targets/workflow_handoff.py`, new and mine)
+  exports a task's packet, offline and read-only (no process, no network, nothing written): `inputs`, every immutable
+  file the task rests on by path, role and sha256 (sidecar, `example.json`, claim file, controls, models, plan,
+  contracts, adapters, a mutant's patch, each fixture revision's sources as the sha256 of their listing with their git
+  tree id, and each gap packet with the stdout and stderr it cites); `commands` (`build.py --plan NNN --task T`, then
+  the attempt: `build.py NNN --task T` for a replay, inline, or `pipeline.py submit --example NNN --task T --title ...
+  --description ...` for a proof, queued); `receipts`, the current ones with their sha256, engine and label
+  (`staleReceipts` apart, with why); readiness; `prerequisites` depth first, each satisfied or not (a replay needs a
+  completed current attempt with expectation `yes`, a proof a completed one), and `nextPrerequisite`; `next`, one exact
+  command, with `nextReason`; `gaps`; and `rules` (the claim key stays frozen, a narrower kernel is a separate task, a
+  gap closes only by rerunning this claim, proofs are queued). The next action, in order: the plan command when the
+  task doesn't plan; the first unsatisfied prerequisite's attempt; the attempt again for an observed scaffold blocker;
+  for an observed capability blocker the attempt that records it as the task's own receipt, or once one exists the
+  same command as its closure; the attempt when no current one completed; else the plan of the target's next task
+  without a receipt, else the sidecar's `handoff.next`. Each gap keeps `observed` (a predicted one has no packet and
+  says it is a hypothesis; an observed one whose packet file is missing says so and doesn't count) and `class`
+  (capability: java-semantics, input-construction, verifier-bug, resources; scaffold: provenance, build, oracle,
+  replay, so a build failure is never a library limit). An observed one carries the brief's gap packet: case, task,
+  claim (file, sha256, key), verifier (the binary's sha256), the minimal command, its diagnostic (each gap's id, kind,
+  call, sites and current approximation, from a recorded `jvmcontract gaps --json` stdout), artifact identities, the
+  reproducer (the original method in the original artifact, with its call path), the Java semantics needed (gap ids
+  without their JDK suffix), why the claim needs them, what it needs (domain, exceptions, observations, bounds), the
+  likely module (`lib/src/models.rs` for the `jdk-*` gaps, with the contract route named as trusted-level only), related
+  tasks, findings, the closure check (this claim key rerun, decided, naming none of the ids) and the strategies tried;
+  a field neither stated nor derivable is listed under `missing` (the fixture's: `verifier.commit`). A packet file may
+  state any of these fields as top-level keys (`PACKET_FIELDS`), which then stand as written. `inventory(rows)` groups
+  many targets' gaps by gap id (else kind and summary), with families, cases, roles, obligations (example, case, task,
+  claim key, observed), modules, closures and findings, ranked observed first, then by distinct families, then blocked
+  obligations; `negativeAndPositive` marks a gap a family's CVE and its positive share. `python3
+  examples/tools/targets/workflow_handoff.py handoff NNN TASK` and `... inventory` print them. A1's handoff row and A7
+  pass (contract 9 pass, 7 skip: runtime's stubs and A5 for want of `jvmcontract`). Read-only over the negative and
+  positive streams' current sidecars in their workspaces (19 targets, 18 tasks), every handoff and the inventory ran,
+  with 9 gap groups, all predicted. Tests: `test_workflow.py` 53 (7 new, the stub test rewritten), among them an
+  isolated copy of only a packet's listed inputs giving the same packet and claim key; the integration script passes
+  (contract 9 pass, 7 skip; targets suite 93, `test_build.py` 190, `test_pipeline.py` 29).
+- **For the merge** (W3):
+  - *Runtime*: a gap packet names the verifier by the `jvmcontract` binary's sha256 only; a verifier record's
+    `identities` could add the `lib/` commit it was built from (`identities.commit`), which the packet then reports as
+    `verifier.commit` and stops listing as missing.
+  - *Negative and positive*: an observed blocker's `packet` file is read as a recorded verifier run (`{"record":
+    {"kind": "verifier", "argv", "stdout", "identities", ...}}`, its stdout a `jvmcontract gaps --json` scan), or states
+    the gap-packet fields itself as top-level keys (`workflow_handoff.PACKET_FIELDS`); every blocker today is
+    predicted.
+  - *Coordinator*: the handoff view runs as `workflow_handoff.py handoff NNN TASK`; `build.py` or `find.py` could
+    expose it beside `--plan` at the merge. Nothing depends on that.
+- **For review**: a fixture revision's directory isn't all of its sources: `build_fixtures.py` compiles `gate/both`
+  (`RegexGate`) into every revision's JAR, so neither the handoff's "fixture sources" input nor W2's revision tree id
+  covers it (a receipt's claim still follows the bytes through each JAR's sha256 in `claim.target.dependencies`).
+  Predicted gaps have no ids, so the inventory groups them only when kind and summary are identical.
+- Next: W4, discovery: `project()` with readiness, claim statuses and gaps for `find.py` and the index, 105–109's
+  historical reports apart.
 - Status: working
 
 ## Loop settings

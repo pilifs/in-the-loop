@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Tests of workflow.py, owned by the workflow stream with it: task planning and the readiness milestones (W1), on a
 copy of Phase 0's fixture and on sidecars changed from it, and attempt ingestion (W2) on the fixture's JARs, its
-recorded controls and constructed verifier outcomes. handoff() is still Phase 0's stub, which fails closed with the
-named Unsupported result; its test is rewritten when it is replaced.
+recorded controls and constructed verifier outcomes, and the handoff packet and gap inventory (W3) on the fixture and
+copies of it.
 
   python3 examples/tools/targets/test_workflow.py
 """
@@ -786,6 +786,192 @@ class IngestTest(Fixture):
         self.assertEqual(value["tasks"]["fixed-security"]["summary"], "partial")
 
 
+class HandoffTest(Fixture):
+    """W3's handoff: a task's packet, offline and read-only, from the sidecar, its files and the folder's receipts;
+    an isolated copy of its referenced inputs resumes it; and the gap inventory across families."""
+
+    prepared, recorded, verifier, ingest = IngestTest.prepared, IngestTest.recorded, IngestTest.verifier, IngestTest.ingest
+
+    @classmethod
+    def setUpClass(cls):
+        cls.manifest = fixture_manifest()
+
+    def setUp(self):
+        super().setUp()
+        self.controls = json.loads((self.folder / "records/controls.json").read_text())["records"]
+
+    def handoff(self, task_id, target=None, folder=None):
+        folder = folder or self.folder
+        before = tree(folder)
+        with offline():
+            value = workflow.handoff(folder, self.example, target or self.target, task_id)
+        self.assertEqual(tree(folder), before, "the handoff wrote into the example's folder")
+        self.assertIsInstance(value, dict, getattr(value, "reason", value))
+        return value
+
+    def blocked(self, *blockers, target=None):
+        target = copy.deepcopy(target or self.target)
+        target["handoff"]["blockers"] += [dict(b) for b in blockers]
+        return target
+
+    def test_the_regex_probe_packet_carries_its_observed_gap_packet(self):
+        from targets import workflow_handoff
+        value = self.handoff("regex-probe")
+        key = self.planned("regex-probe").claim["key"]
+        for item in value["inputs"]:
+            path = self.folder / item["path"]
+            digest = workflow_handoff.tree_sha256(path) if path.is_dir() else workflow.file_sha256(path)
+            self.assertEqual(item["sha256"], digest, item)
+        roles = {i["path"]: i["role"] for i in value["inputs"]}
+        self.assertEqual((roles["target.json"], roles["claims/regex-probe.json"], roles["records/regex-gate-gaps.json"],
+                          roles["records/regex-gate-gaps.stdout"], roles["gate/after"]),
+                         ("sidecar", "claim", "gap packet", "gap record (stdout)", "fixture sources"))
+        self.assertEqual(value["commands"][0], "python3 examples/tools/build.py --plan 999 --task regex-probe")
+        self.assertTrue(value["commands"][1].startswith("python3 verification/pipeline.py submit --example 999 "
+                                                        "--task regex-probe --title "), value["commands"][1])
+        self.assertEqual(value["next"], value["commands"][1], "a proof is queued, never run inline")
+        self.assertIn("reproduce the observed java-semantics blocker", value["nextReason"])
+        self.assertEqual((value["receipts"], value["prerequisites"], value["nextPrerequisite"]), ([], [], None))
+        self.assertEqual(value["plan"]["claim"]["key"], key)
+        self.assertTrue(any(key in r for r in value["rules"]))
+        [gap] = value["gaps"]
+        self.assertEqual((gap["kind"], gap["observed"], gap["class"]), ("java-semantics", True, "capability"))
+        packet = gap["packet"]
+        self.assertEqual((packet["file"], packet["present"], packet["task"], packet["claim"]["key"]),
+                         ("records/regex-gate-gaps.json", True, "regex-probe", key))
+        self.assertEqual(packet["command"][:2], ["jvmcontract", "gaps"])
+        scan = json.loads((self.folder / "records/regex-gate-gaps.stdout").read_text())
+        self.assertEqual([d["id"] for d in packet["diagnostic"]], [g["id"] for g in scan["gaps"]])
+        self.assertIn("java.util.regex.Pattern.compile(java.lang.String)", [s["call"] for s in packet["semantics"]])
+        self.assertNotIn("@jdk-", json.dumps([s["gap"] for s in packet["semantics"]]))
+        self.assertEqual(packet["reproducer"]["revision"], "after")
+        self.assertIn("fixture.RegexGate.<clinit>:8", packet["reproducer"]["callPath"])
+        self.assertEqual(packet["module"]["likely"], ["lib/src/models.rs"])
+        self.assertEqual(packet["closure"]["command"], value["next"])
+        self.assertIn(key, packet["closure"]["check"])
+        self.assertEqual(packet["needs"]["observations"], ["result", "exception"])
+        self.assertEqual(packet["verifier"]["jvmcontract"], json.loads(
+            (self.folder / "records/regex-gate-gaps.json").read_text())["record"]["identities"]["jvmcontract"])
+        self.assertEqual(packet["missing"], ["verifier.commit"], "the record names the binary, not its commit")
+
+    def test_an_isolated_copy_of_the_referenced_inputs_resumes_the_task(self):
+        for task_id in ("regex-probe", "preservation"):
+            value = self.handoff(task_id)
+            copy_ = Path(self.dir.name) / f"isolated-{task_id}" / "999-fixture"
+            for item in value["inputs"]:
+                source, dest = self.folder / item["path"], copy_ / item["path"]
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                (shutil.copytree if source.is_dir() else shutil.copy2)(source, dest)
+            target = sidecar.load(copy_, self.example)
+            with offline():
+                resumed = workflow.handoff(copy_, self.example, target, task_id)
+                plan = workflow.plan_task(copy_, self.example, target, task_id)
+            self.assertEqual(resumed, value, f"{task_id}: the copy gives another packet")
+            self.assertEqual(plan.claim["key"], self.planned(task_id).claim["key"])
+
+    def test_observed_predicted_scaffold_and_unevidenced_gaps_stay_apart(self):
+        from targets import workflow_handoff
+        (self.folder / "records/build-failure.json").write_text(json.dumps({"stage": "build", "log": "javac: error"}))
+        target = self.blocked(
+            {"kind": "input-construction", "observed": False, "task": "fixed-security", "summary": "a predicted one"},
+            {"kind": "build-or-dependency", "observed": True, "task": "fixed-security", "summary": "the build failed",
+             "packet": "records/build-failure.json"},
+            {"kind": "java-semantics", "observed": True, "task": "mutant-security", "summary": "no evidence",
+             "packet": "records/absent.json"})
+        value = self.handoff("fixed-security", target)
+        predicted, build = value["gaps"]
+        self.assertEqual((predicted["observed"], predicted["class"], predicted["packet"]), (False, "capability", None))
+        self.assertIn("hypothesis", predicted["evidence"])
+        self.assertEqual((build["observed"], build["class"]), (True, "scaffold"))
+        self.assertIn("runtime.py", build["packet"]["module"]["likely"][0])
+        self.assertIn("command", build["packet"]["missing"], "a packet that records no command says so")
+        self.assertEqual(value["next"], "python3 examples/tools/build.py 999 --task fixed-security")
+        self.assertIn("leaves the scaffold partial", value["nextReason"])
+        value = self.handoff("mutant-security", target)
+        [unevidenced] = value["gaps"]
+        self.assertTrue(unevidenced["observed"])
+        self.assertIn("missing", unevidenced["evidence"])
+        self.assertFalse(unevidenced["packet"]["present"])
+        self.assertNotIn("reproduce", value["nextReason"], "an observed gap without its packet is not reproduced")
+        groups = {g["gap"]: g for g in workflow_handoff.inventory([(self.folder, self.example, target)])["gaps"]}
+        self.assertEqual((groups["java-semantics: no evidence"]["observed"],
+                          groups["java-semantics: no evidence"]["blockedObligations"]), (False, 0))
+        self.assertEqual((groups["build-or-dependency: the build failed"]["observed"],
+                          groups["build-or-dependency: the build failed"]["class"]), (True, "scaffold"))
+        self.assertFalse(groups["input-construction: a predicted one"]["observed"])
+
+    def test_prerequisites_come_first_and_a_stale_receipt_is_apart(self):
+        value = self.handoff("preservation")
+        self.assertEqual(value["nextPrerequisite"], "replay")
+        self.assertEqual(value["next"], "python3 examples/tools/build.py 999 --task replay", "a replay runs inline")
+        receipt = self.ingest("replay", self.recorded(("before", "after")))
+        value = self.handoff("preservation")
+        self.assertEqual((value["nextPrerequisite"], value["prerequisites"][0]["satisfied"]), (None, True))
+        self.assertTrue(value["next"].startswith("python3 verification/pipeline.py submit --example 999 --task "
+                                                 "preservation "), value["next"])
+        replay = self.handoff("replay")
+        [current] = replay["receipts"]
+        self.assertEqual((current["path"], current["execution"], current["expectation"]),
+                         (receipt.path, "completed", "yes"))
+        self.assertEqual(current["sha256"], workflow.file_sha256(self.folder / receipt.path))
+        self.assertEqual(replay["next"], "python3 examples/tools/build.py --plan 999 --task vulnerable-security")
+        oracle = self.folder / "gate/oracle.py"
+        oracle.write_text(oracle.read_text() + "\n")
+        replay = self.handoff("replay")
+        self.assertEqual(replay["receipts"], [])
+        self.assertEqual([s["path"] for s in replay["staleReceipts"]], [receipt.path])
+        self.assertEqual(self.handoff("preservation")["nextPrerequisite"], "replay")
+
+    def test_a_task_that_doesnt_plan_says_so_and_keeps_its_gaps(self):
+        target = self.changed("regex-probe", engine=None)
+        self.task(target, "regex-probe").pop("engine")
+        value = self.handoff("regex-probe", target)
+        self.assertFalse(value["plan"]["executable"])
+        self.assertEqual(value["next"], "python3 examples/tools/build.py --plan 999 --task regex-probe")
+        self.assertIn("engine", value["nextReason"])
+        self.assertIn("claims/regex-probe.json", [i["path"] for i in value["inputs"]])
+        [gap] = value["gaps"]
+        self.assertIn("refused", gap["packet"]["claim"])
+        self.assertTrue(interfaces.unsupported(workflow.handoff(self.folder, self.example, self.target, "no-such")))
+
+    def test_the_inventory_groups_gaps_across_families_by_blocked_obligations(self):
+        from targets import workflow_handoff
+        rows = [(self.folder, self.example, self.blocked(
+            {"kind": "input-construction", "observed": False, "task": "fixed-security", "summary": "predicted"}))]
+        for name, family, role in (("two", "f-two", "negative"), ("three", "f-two", "positive")):
+            folder = Path(self.dir.name) / name
+            shutil.copytree(self.folder, folder)
+            target = copy.deepcopy(self.target)
+            target["identity"].update(family=family, role=role, case=f"case-{name}")
+            rows.append((folder, {**self.example, "id": f"99{len(rows)}"}, target))
+        with offline():
+            value = workflow_handoff.inventory(rows)
+        self.assertEqual(value["schema"], "example-target-gap-inventory/v1")
+        regex = value["gaps"][:3]
+        self.assertTrue(all(g["observed"] and g["families"] == ["f-two", "phase0-fixture"]
+                            and g["blockedObligations"] == 3 and g["negativeAndPositive"] for g in regex), regex)
+        self.assertEqual({g["gap"] for g in regex}, {workflow_handoff.strip_jdk(g["id"]) for g in json.loads(
+            (self.folder / "records/regex-gate-gaps.stdout").read_text())["gaps"]})
+        self.assertEqual(regex[0]["modules"], ["lib/src/models.rs"])
+        predicted = value["gaps"][-1]
+        self.assertEqual((predicted["observed"], predicted["blockedObligations"], predicted["predictedObligations"]),
+                         (False, 0, 1))
+
+    def test_the_command_line_prints_the_packet(self):
+        import contextlib as context
+        import io
+        import build
+        from targets import workflow_handoff
+        root = Path(self.dir.name)
+        shutil.copytree(build.EXAMPLES / "schema", root / "schema")
+        (root / "tags.json").write_text(json.dumps({"domain": {"open-source-libraries": "d"}}))
+        out = io.StringIO()
+        with mock.patch.object(build, "EXAMPLES", root), mock.patch.dict(build._TAGS, clear=True), \
+                context.redirect_stdout(out):
+            workflow_handoff.main(["handoff", "999", "regex-probe"])
+        self.assertEqual(json.loads(out.getvalue()), json.loads(json.dumps(self.handoff("regex-probe"))))
+
+
 class StubsFailClosedTest(unittest.TestCase):
     def check(self, value, interface, owner):
         self.assertTrue(interfaces.unsupported(value))
@@ -797,8 +983,10 @@ class StubsFailClosedTest(unittest.TestCase):
         self.check(value, "ingest", interfaces.WORKFLOW)
         self.assertNotIn("Phase 0's stub", value.reason)
 
-    def test_handoff(self):
-        self.check(workflow.handoff(Path("."), {}, {}, "t"), "handoff", interfaces.WORKFLOW)
+    def test_a_handoff_of_an_unknown_task_is_refused(self):
+        value = workflow.handoff(Path("."), {}, {}, "t")
+        self.check(value, "handoff", interfaces.WORKFLOW)
+        self.assertNotIn("Phase 0's stub", value.reason)
 
     def test_the_projection_states_only_what_the_sidecar_says(self):
         target = {"identity": {"case": "c", "family": "f", "role": "negative"}, "tasks": [{"id": "t"}],
