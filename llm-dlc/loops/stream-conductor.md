@@ -1,7 +1,26 @@
 # Brief: a conductor for parallel streams
 
-**Drafted 2026-11-14; its [decisions](#decisions) settled by the user the same day. Not to start until example-targets
-is merged and done**: it changes `run-streams.sh`, `feature-loop.sh` and how streams talk, which the running loop uses.
+**Drafted 2026-11-14; its [decisions](#decisions) settled by the user the same day. Steps 1–3 of [the plan](#the-plan)
+run now, beside example-targets' Phase 5, in the jj workspace `stream-conductor`; this branch is merged, and steps 4–6
+start, only after example-targets is done**: it changes `run-streams.sh`, `feature-loop.sh` and `sync.py`, which the
+running loop uses. See [This run](#this-run-steps-13-beside-example-targets).
+
+## This run: steps 1–3 beside example-targets
+
+The user started this loop on 2026-11-14 while example-targets' own loop runs Phase 5 in the default workspace
+(`../in-the-loop`), from that loop's commit `krnmkrsm`. Keep out of its way:
+- Work only in this workspace (`../in-the-loop-stream-conductor`). Never edit, snapshot or run jj commands against the
+  default workspace's files, never merge this branch into its line or rebase onto it, and never push. The merge is the
+  user's to start once example-targets is `done`, with `sync.py regenerate` after `jj new`.
+- Test on made-up data in temporary repositories, as `llm-dlc/tools/test_workspaces.py` does. Don't start Claude
+  sessions, `feature-loop.sh`, `run-streams.sh` or systemd scopes: a scope named `feature-loop-*` counts as a loop in the
+  verification runner's budget, and a real two-stream trial belongs to step 6.
+- No verification jobs are expected. The runner reads the default workspace's queue, so a job submitted here would not
+  run until the merge; if one is needed, record it in Progress instead.
+- Gitignored local files (`verification/pipeline.local.toml`, uploaded logs) are not in this workspace; nothing in steps
+  1–3 needs them.
+- Example-targets is the source of the [table above](#where-it-starts-from), and its data may change while you work;
+  read it, don't edit its brief or files.
 
 ## Direction
 
@@ -283,4 +302,24 @@ The next parallel run uses the conductor:
 - 2026-11-14, the user's directional answers to the five decisions folded in. Design 3 is now act-first with a recovery
   test and review afterwards, and Design 4 is the decision record and its projections. Early merge is contextual, and
   there is no rebase.
-- Status: draft: implement after example-targets is done, starting with step 1
+- 2026-11-14, the user chose to run steps 1–3 now in the workspace `stream-conductor`, beside example-targets' Phase 5
+  (see [This run](#this-run-steps-13-beside-example-targets)); steps 4–6 wait for its merge. Next: step 1, the decision
+  record.
+- Status: working
+
+## Loop settings
+
+- session: 4a47a539-a6f1-4f2d-b4c9-828596296714
+- model: claude-opus-5-5
+- effort: high
+- memory: 12G
+- workspace: stream-conductor
+- fork: d34058d5-39ed-426b-a9ff-d538463f39cc
+
+## Loop until
+
+Steps 1–3 of the plan, one commit each with its tests, in order. Keep the last line of Progress a status: `working`, or
+`blocked: ...` with what needs the user. Once step 3 is committed, record in Progress what step 4 needs from the merge
+and stop with `blocked: steps 1–3 done; step 4 waits for example-targets to be done and this branch merged`. Never start
+step 4 in this run. A decision the brief leaves open is yours to propose and take, recorded in Progress; stop `blocked:`
+only for one the brief says belongs to the user.
