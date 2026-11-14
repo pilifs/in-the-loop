@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.206Z",
-  "ended": "2026-11-14T15:34:58.744Z",
-  "duration_seconds": 492,
+  "ended": "2026-11-14T15:41:41.942Z",
+  "duration_seconds": 895,
   "stats": {
-    "turns": 5,
-    "api_calls": 32,
-    "tool_calls": 33,
-    "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 166146,
+    "turns": 10,
+    "api_calls": 59,
+    "tool_calls": 59,
+    "tool_errors": 1,
+    "compactions": 2,
+    "peak_context_tokens": 168840,
     "usage": {
-      "input_tokens": 64,
-      "output_tokens": 37503,
-      "cache_read_input_tokens": 3452436,
-      "cache_creation_input_tokens": 171231
+      "input_tokens": 118,
+      "output_tokens": 60190,
+      "cache_read_input_tokens": 5940698,
+      "cache_creation_input_tokens": 276362
     }
   },
   "tools": {
-    "Bash": 28,
-    "Read": 3,
+    "Bash": 52,
+    "Read": 5,
     "Write": 2
   },
   "files_touched": [
@@ -55,24 +55,38 @@
     {
       "index": 1,
       "started": "2026-11-14T15:26:42.743Z",
-      "ended": "2026-11-14T15:34:58.744Z",
-      "turns": 5,
-      "api_calls": 32,
+      "ended": "2026-11-14T15:35:18.030Z",
+      "turns": 6,
+      "api_calls": 34,
       "usage": {
-        "input_tokens": 64,
-        "output_tokens": 37503,
-        "cache_read_input_tokens": 3452436,
-        "cache_creation_input_tokens": 171231
+        "input_tokens": 68,
+        "output_tokens": 38662,
+        "cache_read_input_tokens": 3785567,
+        "cache_creation_input_tokens": 173925
       },
-      "peak_context_tokens": 166146
+      "peak_context_tokens": 168840
+    },
+    {
+      "index": 2,
+      "started": "2026-11-14T15:36:22.958Z",
+      "ended": "2026-11-14T15:41:41.942Z",
+      "turns": 4,
+      "api_calls": 25,
+      "usage": {
+        "input_tokens": 50,
+        "output_tokens": 21528,
+        "cache_read_input_tokens": 2155131,
+        "cache_creation_input_tokens": 102437
+      },
+      "peak_context_tokens": 113693
     }
   ],
   "log": {
-    "sha256": "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3",
-    "bytes": 1295319,
-    "lines": 377,
-    "gzip_bytes": 263588,
-    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3.jsonl.gz"
+    "sha256": "29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d",
+    "bytes": 2346043,
+    "lines": 705,
+    "gzip_bytes": 477280,
+    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -83,9 +97,23 @@
       "summary": "example-targets W1: pure task planning from the sidecar and a frozen claim file",
       "body": "workflow.plan_task() replaces Phase 0's stub: it resolves a named task of a target.json sidecar into a TaskPlan from local metadata alone (no network, process or write), with its revisions, per-revision artifact sources, tools (never JBMC for a native task), explicit engine and gap mode, expected outcome, prerequisites and outputs. The source-level claim comes from a new claim file format, example-target-claim/v1 (examples/schema/target-claim.schema.json): the property, its domain, observations, assumptions, bounds and models. Planning resolves the tool's default bounds, hashes every referenced file and control, and computes a canonical key that tasks sharing a claim file share (the vulnerable, fixed and mutant security tasks), while ingestion will bind it to artifacts. Catalogued cases, incomplete routes, proof tasks without an explicit engine or gap mode, prove tasks without a claim file, invalid or mismatched claim files, replays without an oracle and driver, and unjustified introduction tasks are refused by name, which build.py --plan shows as notExecuted.\n\nThe fixture gains claims/ (gate-security, gate-preservation, regex-probe) and the claim keys naming them, the one fixture edit the brief allows this stream. Verified: test_workflow.py (24 tests, rewritten from the stub tests), and the integration script passes: the contract's A1 planning row now passes (4 pass, 12 stop at their stubs), the targets suite 61, test_build.py 190, test_pipeline.py 29. Coordination notes for the merge are in the stream brief's Progress.",
       "log_sha256": "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3"
+    },
+    {
+      "change_id": "zvnrtxsunllxowyvlswpsnzsorlvmtmu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets W1: constructed mutant revisions, one patch from a base and kept constructed",
+      "body": "The sidecar schema (example-target/v1, additive) gains a third kind of revision, a constructed mutant: its base revision, a patch file in the example's folder, the patch's sha256 and the mutation in words, for any role, so a positive or negative packet can declare its mutation control with its own provenance. sidecar.py keeps it constructed: one patch from a commit or fixture revision, no upstream parent, tag or release, never named by a published artifact, and compared only as the after of a mutation pair against its own base; a mutation pair's after is never an upstream commit.\n\nworkflow.plan_task() resolves a mutant on its base's route. Its artifact entry carries no commit or fixture of its own, only a mutant key with the base (and its published artifacts on that route), the patch by path and sha256 and the description, so a preparation that does not know the key fails rather than building the base unpatched. The patch hash is checked against the lock at planning, and a changed or missing patch is refused at the prepare stage. git, and javac on the published-artifact route, become required tools. A mutant task shares the source-level claim key with the fixed task of the same claim file; W2's artifact binding separates them.\n\nVerified: test_sidecar.py 18 (3 new) and test_workflow.py 29 (5 new) pass; the other streams' 19 current sidecars still pass the stricter checks; llm-dlc/tools/example-targets-integration.sh exits 0 (contract 4 pass, 12 at stubs; targets suite 69, test_build.py 190, test_pipeline.py 29). The runtime request (how to prepare a mutant entry) is recorded under the brief's Progress.",
+      "log_sha256": "29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d"
     }
   ],
   "logs": {
+    "29fc88c5ea5d9d49b278599b9d1d02ef56891d4e7e6d4ffa3ac2839f5bc9b97d": {
+      "bytes": 2346043,
+      "lines": 705,
+      "gzip_bytes": 477280,
+      "url": null
+    },
     "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3": {
       "bytes": 1295319,
       "lines": 377,

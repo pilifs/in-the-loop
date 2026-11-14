@@ -2,7 +2,8 @@
 
 The schema checks the shape: closed objects, full commit SHAs, fixed artifact versions, relative paths. This module
 adds what a schema can't: every path resolves inside the example's folder, every revision, pair and task a sidecar
-names is defined, ids are unique, and task prerequisites have no cycle. A sidecar that fails any of it is refused
+names is defined, ids are unique, task prerequisites have no cycle, and a constructed mutant stays constructed (one
+patch from an upstream or fixture revision, compared only with its base in a mutation pair, never published). A sidecar that fails any of it is refused
 with SidecarError, and nothing reads it. Offline: it reads two files.
 """
 
@@ -75,6 +76,8 @@ def files(target):
     for name, revision in target["history"]["revisions"].items():
         if "fixture" in revision:
             out.append((f"history/revisions/{name}/fixture", revision["fixture"]))
+        if "mutant" in revision:
+            out.append((f"history/revisions/{name}/mutant/patch", revision["mutant"]["patch"]))
     for i, blocker in enumerate(target.get("handoff", {}).get("blockers", [])):
         if "packet" in blocker:
             out.append((f"handoff/blockers/{i}/packet", blocker["packet"]))
@@ -95,6 +98,7 @@ def consistency_problems(target, folder):
         problems.append(f"revisions {', '.join(fixtures)}: only a control may name a fixture instead of an upstream commit")
     if target.get("preparation", {}).get("route") == "fixture" and not control:
         problems.append("preparation route fixture: only a control is built from fixtures")
+    problems += mutant_problems(target)
     pairs = {}
     for p in target["history"].get("pairs", []):
         if p["name"] in pairs:
@@ -142,6 +146,50 @@ def consistency_problems(target, folder):
     for b in target.get("handoff", {}).get("blockers", []):
         if "task" in b and b["task"] not in tasks:
             problems.append(f"blocker: task {b['task']} is not a task")
+    return problems
+
+
+def mutant_problems(target):
+    """A constructed mutant stays constructed: its base is an upstream or fixture revision of the sidecar, it carries
+    no upstream identity, nothing publishes it, and it is compared only in a mutation pair, against its base. A
+    mutation pair's `after` is constructed: a mutant, or a control's fixture."""
+    problems = []
+    revisions = target["history"]["revisions"]
+    for name, revision in revisions.items():
+        if "mutant" not in revision:
+            continue
+        base = revision["mutant"]["base"]
+        if base == name:
+            problems.append(f"revision {name}: a mutant is not its own base")
+        elif base not in revisions:
+            problems.append(f"revision {name}: its base {base} is not defined")
+        elif "mutant" in revisions[base]:
+            problems.append(f"revision {name}: its base {base} is a mutant itself; a mutant's base is an upstream "
+                            "commit or a fixture, so its provenance is one patch deep")
+        upstream = [k for k in ("parent", "parentReason", "tag", "release") if k in revision]
+        if upstream:
+            problems.append(f"revision {name}: a constructed mutant has no upstream {', '.join(upstream)}")
+    for a in target.get("preparation", {}).get("artifacts", []):
+        if "mutant" in revisions.get(a["revision"], {}):
+            problems.append(f"artifact {a['coordinates']}: revision {a['revision']} is a constructed mutant, which "
+                            "nothing publishes")
+    for p in target["history"].get("pairs", []):
+        before, after = revisions.get(p["before"], {}), revisions.get(p["after"], {})
+        if p["kind"] != "mutation":
+            for side, revision in (("before", before), ("after", after)):
+                if "mutant" in revision:
+                    problems.append(f"pair {p['name']}: {side} {p[side]} is a constructed mutant, compared only in a "
+                                    f"mutation pair, never in a pair of kind {p['kind']}")
+            continue
+        if "mutant" in before:
+            problems.append(f"pair {p['name']}: before {p['before']} is a mutant; a mutation pair compares the mutant, "
+                            "as after, with its base")
+        if after and "commit" in after:
+            problems.append(f"pair {p['name']}: after {p['after']} is an upstream commit, and a mutation pair's after "
+                            "is constructed (a mutant, or a control's fixture)")
+        if "mutant" in after and after["mutant"]["base"] != p["before"]:
+            problems.append(f"pair {p['name']}: the mutant {p['after']} is built from {after['mutant']['base']}, and "
+                            f"the pair compares it with {p['before']}")
     return problems
 
 

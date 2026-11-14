@@ -103,17 +103,38 @@ def controls_of(target, task, revisions):
             if c.get("task", task["id"]) == task["id"] and c.get("revision", revisions[0]) in revisions]
 
 
-def artifact_sources(target, revisions):
-    """Per revision, what preparation starts from (interfaces.ARTIFACT_SOURCE), or a reason it can't start."""
+def artifact_sources(folder, target, revisions):
+    """Per revision, what preparation starts from (interfaces.ARTIFACT_SOURCE), or a reason it can't start.
+
+    A constructed mutant's entry has no `commit` or `fixture` of its own: `mutant` names its base (with the base's
+    commit or fixture), its patch by path and sha256, checked here, and the mutation in words. A preparation that
+    doesn't know the key fails on it, rather than preparing the base unpatched. On the published-artifact route the
+    base's published artifacts come with it: the mutant itself is built (patched sources against them), never
+    fetched."""
     prep = target.get("preparation")
     if prep is None:
         return "the sidecar has no preparation: the case is catalogued, and nothing says how to obtain its artifacts"
     route = prep["route"]
+    defined = target["history"]["revisions"]
     out = []
     for name in revisions:
-        revision = target["history"]["revisions"][name]
+        revision = defined[name]
         entry = {"revision": name, "route": route, "repository": target["history"]["repository"]}
-        if "commit" in revision:
+        source = name
+        if "mutant" in revision:
+            m = revision["mutant"]
+            source = m["base"]
+            try:
+                patch = hashed(folder, m["patch"])
+            except ClaimError as e:
+                return f"revision {name}: its patch {e}"
+            if patch["sha256"] != m["sha256"]:
+                return (f"revision {name}: its patch {m['patch']} has sha256 {patch['sha256']}, and the sidecar locks "
+                        f"{m['sha256']}: a changed mutant is a different control, never prepared under the old lock")
+            base = {"revision": source}
+            base.update({k: defined[source][k] for k in ("commit", "fixture") if k in defined[source]})
+            entry["mutant"] = {"base": base, "patch": patch, "description": m["description"]}
+        elif "commit" in revision:
             entry["commit"] = revision["commit"]
             if "parent" in revision:
                 entry["parent"] = revision["parent"]
@@ -121,33 +142,41 @@ def artifact_sources(target, revisions):
             entry["fixture"] = revision["fixture"]
         if route == "published-artifact":
             published = [{k: a[k] for k in ("coordinates", "url", "sha256") if k in a}
-                         for a in prep.get("artifacts", []) if a["revision"] == name]
+                         for a in prep.get("artifacts", []) if a["revision"] == source]
             if not published:
-                return f"revision {name}: the published-artifact route names no artifact for it"
-            entry["published"] = published
-            if len(published) == 1:
-                entry.update(published[0])
+                return f"revision {source}: the published-artifact route names no artifact for it"
+            if source == name:
+                entry["published"] = published
+                if len(published) == 1:
+                    entry.update(published[0])
+            else:
+                entry["mutant"]["base"]["published"] = published
         if route == "upstream-build":
             if "build" not in prep:
                 return "the upstream-build route names no build (tool, argv, jdk)"
             entry["build"] = prep["build"]
-        if (route == "fixture") != ("fixture" in revision):
-            return (f"revision {name}: the {route} route and a {'fixture' if 'fixture' in revision else 'commit'} "
-                    "revision: only the fixture route builds fixture sources, and it builds nothing else")
+        fixture = "fixture" in defined[source]
+        if (route == "fixture") != fixture:
+            return (f"revision {name}: the {route} route and a {'fixture' if fixture else 'commit'} revision"
+                    f"{' (the base of a mutant)' if source != name else ''}: only the fixture route builds fixture "
+                    "sources, and it builds nothing else")
         entry["adapters"] = list(prep.get("adapters", []))
         entry["jdks"] = list(prep.get("jdks", []))
         out.append(entry)
     return tuple(out)
 
 
-def tools_of(task, route, prep, controls):
-    """What the task's preparation, controls and verifier call: never JBMC for a native task."""
+def tools_of(task, route, prep, controls, artifacts=()):
+    """What the task's preparation, controls and verifier call: never JBMC for a native task. A constructed mutant
+    needs git (`git apply`), and on the published-artifact route javac, to build its patched sources."""
+    mutants = any("mutant" in a for a in artifacts)
     required = ["java"]
     sources = list(prep.get("adapters", [])) + [c["path"] for c in controls]
-    if route == "fixture" or any(s.endswith(".java") for s in sources):
+    if route == "fixture" or any(s.endswith(".java") for s in sources) or (mutants and route == "published-artifact"):
         required.append("javac")
-    if route == "upstream-build":
+    if route == "upstream-build" or mutants:
         required.append("git")
+    if route == "upstream-build":
         tool = BUILD_TOOLS.get(prep["build"]["tool"])
         if tool:
             required.append(tool)
@@ -247,7 +276,7 @@ def plan_task(folder, example, target, task):
         if missing:
             return refuse(f"a proof task names its {' and '.join(missing)} explicitly (the CLI's defaults are JBMC and "
                           "strict, and a claim never rests on a default)")
-    artifacts = artifact_sources(target, revisions)
+    artifacts = artifact_sources(folder, target, revisions)
     if isinstance(artifacts, str):
         return refuse(artifacts, stage="prepare")
     controls = controls_of(target, t, revisions)
@@ -265,7 +294,7 @@ def plan_task(folder, example, target, task):
     return TaskPlan(
         example=example["id"], task=task, kind=t["kind"], relation=t["relation"], target=t["target"],
         revisions=revisions, claim=claim, prerequisites=tuple(t.get("requires", [])), artifacts=artifacts,
-        tools=tools_of(t, prep["route"], prep, controls), engine=t.get("engine"), gaps=t.get("gaps"),
+        tools=tools_of(t, prep["route"], prep, controls, artifacts), engine=t.get("engine"), gaps=t.get("gaps"),
         expected=t.get("expected"), outputs={"receipts": f"receipts/{task}"}, folder=str(folder.resolve()),
         network=prep["route"] in ("published-artifact", "upstream-build"))
 

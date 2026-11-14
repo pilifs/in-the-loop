@@ -144,11 +144,28 @@ timebox and the safety rules. Planning and discovery never touch the network.
     selected parent) and `published` (every published artifact of the revision; the singular `coordinates`, `url` and
     `sha256` only when there is exactly one).
   - *Coordinator*: the fixtures' README could list `claims/` (its table is the coordinator's).
-  - *Schema gap*: a positive packet's constructed mutant can't be a revision (a fixture revision is a control's only),
-    so the positive stream can't plan its mutation task yet; an additive revision kind (base revision, patch, patch
-    hash) is my next W1 step.
-- Next: W1's mutant revisions and readiness milestones (provenance locked, artifacts prepared, oracle replay
-  validated, claim frozen, capability probed, attempt recorded), then W2 ingestion.
+  - *Positive (and negative)*: a constructed mutant is now a revision (below): `{"mutant": {"base", "patch",
+    "sha256", "description"}}`, as the `after` of a `mutation` pair whose `before` is its base.
+  - *Runtime*: a mutant's artifact entry has no `commit` or `fixture`; `mutant` carries `base` (its revision name and
+    commit or fixture, and on the published-artifact route the base's `published` list), `patch` (path and sha256,
+    checked at planning) and `description`. Preparing it means the base's sources with the patch applied (`git apply`
+    in the source root), then the route's build, or on the published-artifact route the patched sources compiled
+    against the base's artifacts; the sha256 is rechecked before applying. A preparation that ignores the key fails
+    on the missing commit instead of building the base unpatched.
+- 2026-11-14, **W1 constructed mutants**: an additive revision kind in `target.schema.json`, `mutant` (base revision,
+  patch file in the folder, its sha256, the mutation in words), for any role. `sidecar.py` keeps it constructed: its
+  base is a commit or fixture revision (one patch deep, never its own base), it has no parent, tag or release, no
+  published artifact names it, and it appears only as the `after` of a `mutation` pair against its own base; a
+  mutation pair's `after` is never an upstream commit, and a mutant never sits in an exact-fix, positive, release or
+  introduction pair. Planning resolves a mutant on its base's route: no `commit` or `fixture` in its entry (above), the
+  patch's sha256 checked against the lock and a mismatch or missing patch refused at `prepare` ("a changed mutant is a
+  different control"), git (and javac on the published-artifact route) required. A mutant task shares the source
+  claim's `key` with the fixed task of the same claim file; the artifact-bound identity (W2) separates them through the
+  patch hash. The other streams' 19 current sidecars still pass the stricter checks. Tests: `test_sidecar.py` 18 (3
+  new), `test_workflow.py` 29 (5 new); the integration script passes (contract 4 pass, 12 at stubs; targets suite 69,
+  `test_build.py` 190, `test_pipeline.py` 29).
+- Next: W1's readiness milestones (provenance locked, artifacts prepared, oracle replay validated, claim frozen,
+  capability probed, attempt recorded) and the summaries derived from them, then W2 ingestion.
 - Status: working
 
 ## Loop settings

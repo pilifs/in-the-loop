@@ -305,6 +305,94 @@ class RouteTest(Fixture):
         self.assertEqual(p["claim"]["property"], "gate-denies-both-cases")
 
 
+class MutantTest(Fixture):
+    """A constructed mutant on an upstream route: one patch from a revision, planned on the path a revision takes,
+    with its own provenance (base, patch sha256), and never prepared as its base."""
+
+    PATCH = "--- a/fixture/Gate.java\n+++ b/fixture/Gate.java\n@@ -1 +1 @@\n-        return code != 65 && code != 97;\n+        return code != 97;\n"
+
+    def positive(self, route_name, **prep):
+        (self.folder / "controls").mkdir(exist_ok=True)
+        (self.folder / "controls/mutant.patch").write_text(self.PATCH)
+        target = self.changed()
+        target["identity"] = {"case": "c", "family": "f", "role": "positive"}
+        target["history"]["revisions"] = {
+            "before": {"commit": SHA}, "after": {"commit": SHA2, "parent": SHA},
+            "mutant": {"mutant": {"base": "after", "patch": "controls/mutant.patch",
+                                  "sha256": workflow.file_sha256(self.folder / "controls/mutant.patch"),
+                                  "description": "drop the check of 65"}}}
+        target["history"]["pairs"] = [{"name": "positive", "kind": "positive", "before": "before", "after": "after"},
+                                      {"name": "mutation", "kind": "mutation", "before": "after", "after": "mutant"}]
+        target["tasks"] = [t for t in target["tasks"] if t["id"] in ("fixed-security", "mutant-security", "mutant-replay")]
+        for t in target["tasks"]:
+            t.pop("requires", None)
+        target["handoff"] = {}
+        target["preparation"] = {"route": route_name, "jdks": ["21", "25"], **prep}
+        return target
+
+    BUILD = {"tool": "gradle-wrapper", "argv": ["./gradlew", "jar"], "jdk": "17"}
+
+    def test_a_mutant_is_planned_from_its_base_and_its_patch(self):
+        target = self.positive("upstream-build", build=self.BUILD)
+        with offline():
+            p = self.planned("mutant-security", target)
+        (entry,) = p.artifacts
+        self.assertNotIn("commit", entry, "a mutant is never prepared as its base")
+        self.assertNotIn("fixture", entry)
+        self.assertEqual(entry["mutant"]["base"], {"revision": "after", "commit": SHA2})
+        self.assertEqual(entry["mutant"]["patch"]["path"], "controls/mutant.patch")
+        self.assertEqual(entry["mutant"]["patch"]["sha256"], target["history"]["revisions"]["mutant"]["mutant"]["sha256"])
+        self.assertEqual(entry["mutant"]["description"], "drop the check of 65")
+        self.assertEqual(entry["build"], self.BUILD)
+        self.assertIn("git", p.tools["required"])
+        fixed = self.planned("fixed-security", target)
+        self.assertEqual(p.claim["key"], fixed.claim["key"], "one property and domain; artifacts bind them apart")
+        self.assertNotEqual(p.artifacts, fixed.artifacts)
+
+    def test_the_mutation_pair_prepares_the_base_and_the_mutant(self):
+        p = self.planned("mutant-replay", self.positive("upstream-build", build=self.BUILD))
+        self.assertEqual(p.revisions, ("after", "mutant"))
+        base, mutant = p.artifacts
+        self.assertEqual(base["commit"], SHA2)
+        self.assertEqual(mutant["mutant"]["base"]["commit"], SHA2)
+
+    def test_a_published_base_gives_its_artifacts_and_the_mutant_is_built(self):
+        url = "https://repo.maven.apache.org/maven2/org/example/gate/"
+        target = self.positive("published-artifact", artifacts=[
+            {"revision": "before", "coordinates": "org.example:gate:1.0.0", "url": url + "1.0.0/gate-1.0.0.jar"},
+            {"revision": "after", "coordinates": "org.example:gate:1.0.1", "url": url + "1.0.1/gate-1.0.1.jar"}])
+        p = self.planned("mutant-security", target)
+        (entry,) = p.artifacts
+        self.assertNotIn("coordinates", entry, "nothing publishes a mutant")
+        self.assertEqual([a["coordinates"] for a in entry["mutant"]["base"]["published"]], ["org.example:gate:1.0.1"])
+        self.assertTrue({"git", "javac"} <= set(p.tools["required"]))
+        target["preparation"]["artifacts"] = target["preparation"]["artifacts"][:1]
+        self.refused("mutant-security", target, stage="prepare", says="revision after")
+
+    def test_a_changed_or_missing_patch_is_refused_before_preparation(self):
+        target = self.positive("upstream-build", build=self.BUILD)
+        (self.folder / "controls/mutant.patch").write_text(self.PATCH.replace("97", "98"))
+        with offline():
+            self.refused("mutant-security", target, stage="prepare", says="a changed mutant is a different control")
+        (self.folder / "controls/mutant.patch").unlink()
+        self.refused("mutant-security", target, stage="prepare", says="does not exist")
+        self.planned("fixed-security", target)
+
+    def test_a_mutant_of_a_fixture_takes_the_fixture_route(self):
+        target = self.changed()
+        (self.folder / "controls").mkdir(exist_ok=True)
+        (self.folder / "controls/mutant.patch").write_text(self.PATCH)
+        target["history"]["revisions"]["mutant"] = {"mutant": {
+            "base": "after", "patch": "controls/mutant.patch",
+            "sha256": workflow.file_sha256(self.folder / "controls/mutant.patch"), "description": "drop the check of 65"}}
+        (entry,) = self.planned("mutant-security", target).artifacts
+        self.assertEqual(entry["mutant"]["base"], {"revision": "after", "fixture": "gate/after"})
+        target["preparation"]["route"] = "upstream-build"
+        target["preparation"]["build"] = self.BUILD
+        target["identity"]["role"] = "control"
+        self.refused("mutant-security", target, stage="prepare", says="(the base of a mutant)")
+
+
 class StubsFailClosedTest(unittest.TestCase):
     def check(self, value, interface, owner):
         self.assertTrue(interfaces.unsupported(value))
