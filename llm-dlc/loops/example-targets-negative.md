@@ -206,9 +206,69 @@ timebox, the downloads policy and the safety rules. Queue anything heavy, and re
      `example285.driver.MethodTagDriver`, its arguments are `python3 controls/oracle.py argv`, and the oracle's entry
      points are `check(lines)` and `compare(before, after)`. Runtime's `run_controls` and workflow's ingestion need a
      field or a convention for these.
-- Next: N2, the binder packet (286): read `DataBinder` at the fix and its parent and the regression tests, select the
-  pair, and write the tasks (predicate lemma and `protected-state-mutation` apart), source lock, oracle, probes,
-  mutation control and replay driver, with the default locale pinned.
+- 2026-11-14, **N2 done: the binder packet (286)**, ready for Phase 5's preparation. `target.json` selects the
+  **release pair** (5.3.18 → 5.3.19, `published-artifact`, four JARs per release). The exact-fix pair has no published
+  JAR, and the release pair carries it faithfully:
+  - each release's `DataBinder.java` is the exact-fix pair's blob (`612dfc56`, `8ee5e43b`, also in the sources JARs);
+  - the decision's helpers are byte-identical across the closures;
+  - the release window's two `CachedIntrospectionResults` commits filter properties the probe bean doesn't have, and
+    the driver prints the resolved properties on every run.
+
+  Three claims, six tasks, all native strict and requiring the replay:
+  - `replay`;
+  - `vulnerable-security` (refuted) and `fixed-security` (established), the **decision lemma**
+    (`claims/disallowed-field-denied-ignoring-case.json`): a field a canonical disallowed pattern matches ignoring
+    ASCII case is denied;
+  - `preservation` (established, `claims/permitted-fields-preserved.json`): outside the case aliases both releases
+    decide alike;
+  - `vulnerable-protected-state-mutation` (refuted) and `fixed-protected-state-mutation` (established), the
+    **protected-state claim** on the actual `bind` (`claims/protected-age-not-mutated.json`): with `AGE` or `age`
+    disallowed, binding a simple name never writes `age`.
+
+  The domain is ASCII, a canonical field, and the default locale pinned to `Locale.ROOT`. The driver pins it before any
+  Spring class loads, and the oracle refuses a run without it. The claims are Java over the adapters' parameters; their
+  matching uses `java.util.regex` with ASCII `CASE_INSENSITIVE`, written independently of the patch. A Java harness
+  confirmed that they agree with the oracle on every in-domain decision probe. They validate against W1's schema, and
+  its `plan_task` plans all six.
+
+  Also in the folder:
+  - `sources.lock.json`;
+  - the adapters: `ExposedDataBinder` (a subclass whose `decide` is one call of the protected `isAllowed`),
+    `BinderDecisionAdapter`, `BindingAdapter` and `ProtectedBean`;
+  - the driver `BinderDriver`;
+  - `controls/probes.json`: 46 probes, 35 decisions and 11 bindings, on 10 configurations, five of them the upstream
+    tests' inputs. Roles: 12 triggers, 30 legitimate, the regression's own inputs, and 3 edges outside the domain;
+  - `controls/oracle.py`, from the statement. Its self-test tells case-sensitive, ignoring-case, deny-all and
+    field-lowered binders apart;
+  - the mutation `controls/pattern-side-unnormalized.patch`, on 5.3.19: one side normalized.
+
+  **Developer note, not evidence**: by hand with pinned JARs, on Temurin 21.0.13 and 25.0.5:
+  - 5.3.18 fails at exactly the 12 triggers (4 of them bindings that write `age`, `favouriteColour` or
+    `someMap[key3]` through an alias) and passes every legitimate probe;
+  - 5.3.19 holds and passes;
+  - preservation holds, with changes only at the triggers and the regression's inputs;
+  - the mutant fails 13 probes, the exact-case `favouriteColour` among them, and passes the legitimate ones;
+  - lines are identical on both JDKs.
+
+  No capability probe was queued. Four blockers are predicted: `toLowerCase` and regex, `String[]` construction, the
+  `Class.forName` in spring-jcl's `LogAdapter.<clinit>` that `DataBinder.<clinit>` reaches, and the binder's
+  reflection.
+
+  **For review**:
+  - *Final sigma.* Outside the ASCII domain, 5.3.19 is not even monotone. With the pattern `dataΣ*`, it allows
+    `dataΣx`, which 5.3.18 denies by exact match: `String.toLowerCase` maps the pattern's `Σ` to a final `ς` and the
+    field's to a medial `σ`. This is in any locale, and so not CVE-2024-38820's locale issue. Seen on the JVM
+    (probe `sigma-exact`); not part of any claim.
+  - *Locale.* Under `tr-TR`, 5.3.19 allows the alias `favouriteColour` against `FAVOURITECOLOUR` (example 288's
+    property).
+  - *The regression's value.* The upstream test's value `32x` doesn't convert, so on 5.3.18 that test fails on the
+    suppressed fields only, not on a write. The probes add `32` and the advisory's `Age`.
+  - *Further obligations.* Nested paths through a nested bean, and indexed names, are outside the protected-state
+    claim. On the int `age`, an indexed name throws `InvalidPropertyException` on both releases.
+- Next: N3, the BCrypt packet (287): read `BCryptPasswordEncoder` and `BCrypt` at the fix and its parent and their
+  tests, select the pair, and write the tasks (`matches` with a valid stored hash given independently; a byte-guard
+  lemma apart), source lock, oracle, probes (71, 72, 73 bytes, a wrong candidate, multibyte), the char-counting mutant
+  and the replay driver.
 - Status: working
 
 ## Loop settings

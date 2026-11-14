@@ -12,32 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.126Z",
-  "ended": "2026-11-14T15:53:01.759Z",
-  "duration_seconds": 1575,
+  "ended": "2026-11-14T16:15:29.075Z",
+  "duration_seconds": 2922,
   "stats": {
-    "turns": 10,
-    "api_calls": 104,
-    "tool_calls": 106,
-    "tool_errors": 2,
-    "compactions": 2,
-    "peak_context_tokens": 224350,
+    "turns": 15,
+    "api_calls": 168,
+    "tool_calls": 172,
+    "tool_errors": 4,
+    "compactions": 3,
+    "peak_context_tokens": 254844,
     "usage": {
-      "input_tokens": 208,
-      "output_tokens": 112776,
-      "cache_read_input_tokens": 13558057,
-      "cache_creation_input_tokens": 379179
+      "input_tokens": 336,
+      "output_tokens": 224132,
+      "cache_read_input_tokens": 24422272,
+      "cache_creation_input_tokens": 625553
     }
   },
   "tools": {
-    "Bash": 95,
-    "Read": 4,
-    "Write": 4,
-    "Edit": 3
+    "Bash": 154,
+    "Read": 8,
+    "Write": 6,
+    "Edit": 4
   },
   "files_touched": [
     "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md",
     "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/controls/oracle.py",
     "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/sources.lock.json",
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/README.md",
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/controls/oracle.py",
     "llm-dlc/loops/example-targets-negative.md",
     "~/.cache/in-the-loop/example-targets-negative/import_catalog.py"
   ],
@@ -73,24 +75,38 @@
     {
       "index": 2,
       "started": "2026-11-14T15:36:43.700Z",
-      "ended": "2026-11-14T15:53:01.759Z",
-      "turns": 4,
-      "api_calls": 64,
+      "ended": "2026-11-14T15:53:32.674Z",
+      "turns": 5,
+      "api_calls": 67,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 74874,
-        "cache_read_input_tokens": 9344598,
-        "cache_creation_input_tokens": 211164
+        "input_tokens": 134,
+        "output_tokens": 76759,
+        "cache_read_input_tokens": 10021845,
+        "cache_creation_input_tokens": 215880
       },
-      "peak_context_tokens": 224350
+      "peak_context_tokens": 229066
+    },
+    {
+      "index": 3,
+      "started": "2026-11-14T15:55:00.464Z",
+      "ended": "2026-11-14T16:15:29.075Z",
+      "turns": 4,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 109471,
+        "cache_read_input_tokens": 10186968,
+        "cache_creation_input_tokens": 241658
+      },
+      "peak_context_tokens": 254844
     }
   ],
   "log": {
-    "sha256": "c3b5a8346843292efa34e7f358a96c42912344ebb0feb23da551c6d598aaba39",
-    "bytes": 3205261,
-    "lines": 1046,
-    "gzip_bytes": 603233,
-    "path": "llm-dlc/traces/70d4b729-3b1f-41d1-a89c-03fd78a71818/logs/c3b5a8346843292efa34e7f358a96c42912344ebb0feb23da551c6d598aaba39.jsonl.gz"
+    "sha256": "badab5c257ca61545070c69824ac26ea975340b6183d610831da0dc5d9ce10d4",
+    "bytes": 5243790,
+    "lines": 1682,
+    "gzip_bytes": 987242,
+    "path": "llm-dlc/traces/70d4b729-3b1f-41d1-a89c-03fd78a71818/logs/badab5c257ca61545070c69824ac26ea975340b6183d610831da0dc5d9ce10d4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -109,6 +125,14 @@
       "summary": "example-targets negative N1: the CVE-2023-34055 method-label packet (285), source-locked with frozen claims, oracle, carrier, driver and mutant",
       "body": "Example 285 (Spring Boot WebMvcTags.method, CVE-2023-34055) becomes a deep negative packet ready for Phase 5's preparation. The release pair 2.7.17 -> 2.7.18 is selected, on the published-artifact route: the exact-fix pair 7ad6e447 -> 5490e739 has no published JAR, and each release's WebMvcTags.java is that pair's blob (also in the sources JARs), with Tag, ImmutableTag and HttpMethod byte-identical across the two releases' closures. sources.lock.json records the blobs, the managed versions, each release's seven-JAR class path with sha256 (sha1 checked against Maven Central) and what javap shows of the method, its class initializer and its callees.\n\ntarget.json has four tasks, all native strict and requiring the replay: replay (concrete controls on the pair); vulnerable-security (expected refuted) and fixed-security (expected established), sharing claims/bounded-method-label.json, whose label set is frozen as Spring Framework 5.3's eight HttpMethod names plus UNKNOWN; and preservation (expected established) of the eight names and the null request outside the allowed change. The claim files follow the workflow stream's example-target-claim/v1 (on its branch); they validate against its schema and its W1 planner plans all four tasks from this folder. The packet adds a request carrier that hands the raw token through unchanged and throws from every other servlet method, a minimal adapter and a JSON-lines driver (--release 21), 15 probes, an independent oracle whose self-test rejects an all-UNKNOWN implementation and refuses malformed or incomplete output, and a mutation patch that restores raw emission in the fixed release's fallback.\n\nVerified: the integration script passes (contract 3 pass and 13 stubs, targets 41, test_build 190, test_pipeline 29, every sidecar valid through build.py --plan). As a developer note only, the pinned JARs were fetched by hand and run in separate JVMs on Temurin 21.0.13 and 25.0.5: 2.7.17 violates the property at exactly the five trigger probes, 2.7.18 holds, the mutant fails at the same five, every legitimate probe passes on all three, and the outputs are identical on both JDKs. No verifier ran; the blockers stay predicted. The stream brief's Progress records two interface requests for the merge: a constructed mutant as a revision, and how a driver is invoked.",
       "log_sha256": "c3b5a8346843292efa34e7f358a96c42912344ebb0feb23da551c6d598aaba39"
+    },
+    {
+      "change_id": "kwzmplxtmktnpnxowvworomnotqntunv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets negative N2: the CVE-2022-22968 binder packet (286), source-locked, with the decision lemma, preservation and protected-state claims, oracle, driver and mutant",
+      "body": "Example 286 is now a deep negative packet. It selects the release pair (Spring Framework 5.3.18 -> 5.3.19, published JARs). Each release's DataBinder.java is the exact-fix pair's blob (612dfc56, 8ee5e43b), and the decision's helpers are byte-identical across the closures. Two CachedIntrospectionResults commits in the release window filter properties the probe bean doesn't have, and the driver prints the resolved properties on every run. sources.lock.json records the tags, commits, blobs, ancestry, the other commits between the releases, the JARs' sha1 against Maven Central with their sha256, and the javap facts.\n\nThere are three claims and six tasks. The decision lemma (vulnerable-security, expected refuted; fixed-security, expected established): a field that a canonical disallowed pattern matches ignoring ASCII case is denied. Preservation (established): outside the case aliases, both releases decide alike. The protected-state claim, on the actual bind (its own vulnerable and fixed tasks): with AGE or age disallowed, binding a simple name never writes age. The domain is ASCII, a canonical field, and the default locale pinned to Locale.ROOT. The claims validate against the workflow stream's W1 schema, and its plan_task plans all six tasks.\n\nThe controls: a delegating subclass that exposes the protected isAllowed, adapters that catch nothing, a driver, 46 probes, an independent oracle with a self-test, and a mutant that lower-cases one side only. The probes are 35 decisions and 11 bindings, five of their configurations copied from the upstream tests. Run by hand with pinned JARs on Temurin 21.0.13 and 25.0.5, a developer note and not evidence: 5.3.18 fails at exactly the 12 triggers and passes every legitimate probe; 5.3.19 holds; preservation holds; the mutant fails 13 probes and passes the legitimate ones. The output lines were identical on both JDKs. The integration script passes.\n\nFor review, under Progress. Outside the ASCII domain, 5.3.19 allows dataΣx against the pattern dataΣ*, which 5.3.18 denies by exact match: String.toLowerCase maps the final sigma by context, in any locale. Under tr-TR, 5.3.19 allows an alias (example 288's property).\n\nWhere the brief is out of date: N2 asks for the upstream 'changed wildcard and map tests', but a7cf19ce changes no wildcard test. bindingWithAllowedFieldsUsingAsterisks is only renamed. The packet copies that test's inputs and adds constructed disallowed wildcards, as recorded in target.json's unresolved list.",
+      "log_sha256": "badab5c257ca61545070c69824ac26ea975340b6183d610831da0dc5d9ce10d4"
     }
   ],
   "logs": {
@@ -116,6 +140,12 @@
       "bytes": 1325146,
       "lines": 407,
       "gzip_bytes": 268306,
+      "url": null
+    },
+    "badab5c257ca61545070c69824ac26ea975340b6183d610831da0dc5d9ce10d4": {
+      "bytes": 5243790,
+      "lines": 1682,
+      "gzip_bytes": 987242,
       "url": null
     },
     "c3b5a8346843292efa34e7f358a96c42912344ebb0feb23da551c6d598aaba39": {
