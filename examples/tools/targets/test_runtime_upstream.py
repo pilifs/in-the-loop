@@ -199,7 +199,7 @@ class UpstreamTest(UpstreamCase):
         for why, change in refused.items():
             value = runtime.lock(self.plan(**change), "after")
             self.assertEqual(value.failedStage, "lock", why)
-            self.assertIn("next", value.source["blocker"], why)
+            self.assertIn("next", value.blocker, why)
         self.assertEqual(self.remotes, [])
 
     def test_artifacts_ready_records_the_checkout_toolchain_build_and_every_output(self):
@@ -274,14 +274,14 @@ class UpstreamTest(UpstreamCase):
         prepared = self.prepare(parents={"after": "1" * 40})
         self.assertEqual(prepared.failedStage, "history", prepared.diagnostic)
         self.assertIn("1" * 40, prepared.diagnostic)
-        self.assertIn("history", prepared.source["blocker"]["next"])
+        self.assertIn("history", prepared.blocker["next"])
         self.assertEqual(prepared.source["checkout"]["parents"], [self.commits["before"]])
         self.assertEqual(self.made_calls(), [], "a build ran on a history that is wrong")
 
     def test_a_commit_the_repository_lacks_is_an_acquire_blocker_with_its_command(self):
         prepared = self.prepare(commits={"after": "f" * 40}, parents={})
         self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
-        self.assertIn("fetch", prepared.source["blocker"]["command"])
+        self.assertIn("fetch", prepared.blocker["command"])
         self.assertIn("logs/git-fetch.log", prepared.logs)
 
     def test_without_acquisition_nothing_is_fetched_or_built(self):
@@ -294,7 +294,7 @@ class UpstreamTest(UpstreamCase):
         failed = self.prepare(workdir=self.work / "fail")
         self.assertEqual(failed.failedStage, "build", failed.diagnostic)
         self.assertIn("BUILD FAILURE", failed.diagnostic)
-        self.assertEqual(failed.source["blocker"]["command"], " ".join(ARGV))
+        self.assertEqual(failed.blocker["command"], " ".join(ARGV))
         self.assertIn("logs/build.log", failed.logs)
         self.set_knobs(touch=True)
         touched = self.prepare(workdir=self.work / "touch")
@@ -331,7 +331,7 @@ class UpstreamTest(UpstreamCase):
         self.assertIn("https://services.gradle.org/distributions/gradle-8.5-bin.zip", wrapper.diagnostic)
         self.assertIn("a" * 64, wrapper.diagnostic)
         self.assertIn("no Gradle route yet", wrapper.diagnostic, "services.gradle.org is allowed: the route is missing")
-        self.assertNotIn("user decides", wrapper.source["blocker"]["next"])
+        self.assertNotIn("user decides", wrapper.blocker["next"])
         self.assertEqual(wrapper.source["checkout"]["commit"], after)
         self.remotes.clear()
         plain = self.prepare(plan=self.plan(commits=commits, parents={}, tool="gradle", argv=["gradle", "jar"]),
@@ -349,7 +349,7 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(wrapper.failedStage, "toolchain", wrapper.diagnostic)
         self.assertIn("downloads.gradle.org, outside the downloads policy", wrapper.diagnostic)
         self.assertIn("missing", wrapper.diagnostic)
-        self.assertIn("user decides", wrapper.source["blocker"]["next"])
+        self.assertIn("user decides", wrapper.blocker["next"])
         self.assertEqual(self.made_calls(), [])
 
     def test_a_maven_wrapper_runs_its_own_distribution_from_central_by_sha256(self):
@@ -586,7 +586,7 @@ class NumbersCaseTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="test-numbers-") as d:
             prepared = runtime.prepare(p, "after", Path(d) / "attempt/prepare/after")
         self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
-        self.assertTrue(all(prepared.source["blocker"][k] for k in ("command", "needs", "next")))
+        self.assertTrue(all(prepared.blocker[k] for k in ("command", "needs", "next")))
 
     def test_the_oracle_is_not_vacuous_and_tells_the_two_commits_apart(self):
         import importlib.util

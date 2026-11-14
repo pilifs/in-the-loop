@@ -25,10 +25,11 @@ On the classpath a preparation refuses: a class held by more than one entry (an 
 target, or two dependencies with one class), a target method missing from the original artifact, and an adapter that
 never references the target method (R3's "calls the selected upstream method"). The loaded target's origin, the
 ordered classpath, the JDK (by full path, `release` file and `java -version`) and every artifact's sha256 are
-recorded in the PreparedTarget and in `prepared.json` in the work directory.
+recorded in the PreparedTarget and in `prepared.json` in the work directory, which the PreparedTarget names
+(`workdir`): run_controls and run_verifier find the preparation there, never by route.py's layout.
 
-A failed preparation's `source` also carries a `blocker` for the handoff: the stage, the command that failed (or the
-one that runs the preparation), the diagnostic, the semantics it needs and the next action.
+A failed preparation also carries a `blocker` for the handoff: the stage, the command that failed (or the one that
+runs the preparation), the diagnostic, the semantics it needs and the next action. Neither field is in `source`.
 
 A constructed `mutant` (workflow's W1: a base revision, a patch by path and sha256, and the mutation in words) is
 prepared on its base's route, never as its base unpatched. Its lock checks the patch's sha256 and reads the files it
@@ -45,6 +46,7 @@ constructed fixture), the loaded class and its origin, the models and assumption
 gap scan). Proofs run as pipeline jobs (runtime_calibrate.py on the fixture), never inline.
 """
 
+import dataclasses
 import hashlib
 import importlib.util
 import json
@@ -446,8 +448,9 @@ def _failed(plan, revision, commit, source, refused, artifacts, logs, toolchain=
                "command": refused.command or f"python3 examples/tools/build.py {plan.example} --task {plan.task}",
                "diagnostic": refused.diagnostic, "needs": refused.needs or needs, "next": refused.next or next_}
     return PreparedTarget(example=plan.example, task=plan.task, revision=revision, commit=commit or "", stage="failed",
-                          source={**(source or {}), "blocker": blocker}, artifacts=tuple(artifacts), toolchain=toolchain or {},
-                          failedStage=refused.stage, diagnostic=refused.diagnostic, logs=tuple(logs))
+                          source={k: v for k, v in (source or {}).items() if k != "blocker"}, artifacts=tuple(artifacts),
+                          toolchain=toolchain or {}, failedStage=refused.stage, diagnostic=refused.diagnostic,
+                          logs=tuple(logs), blocker=blocker)
 
 
 # -- artifacts ready
@@ -892,6 +895,7 @@ def prepare(plan, revision, workdir):
         prepared = PREPARES[locked.source["route"]](plan, revision, locked, workdir)
     except Refused as e:  # before any build step: no toolchain
         prepared = _failed(plan, revision, locked.commit, locked.source, e, (), ())
+    prepared = dataclasses.replace(prepared, workdir=str(workdir))
     (workdir / RECORD).write_text(json.dumps(prepared.as_dict(), indent=2, ensure_ascii=False) + "\n")
     return prepared
 
@@ -908,11 +912,13 @@ CONTROL_FLAGS = ("-Xmx512m", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8",
                  "-Duser.language=en", "-Duser.country=US", "-Duser.timezone=UTC")
 
 
-def _preparation_dir(prepared, workdir):
-    """Where `prepared`'s files are: route.py's layout, <attempt>/prepare/<revision> beside <attempt>/controls (the
-    PreparedTarget doesn't carry its directory; an interface request under the brief's Progress). The directory
-    counts only if its prepared.json is this PreparedTarget."""
-    where = Path(workdir).resolve().parent / "prepare" / prepared.revision
+def _preparation_dir(prepared):
+    """Where `prepared`'s files are: the directory it names (`workdir`). One that names none (made by hand, or
+    recorded before the field) is not run, and the directory counts only if its prepared.json is this
+    PreparedTarget."""
+    if not prepared.workdir:
+        raise Refused("controls", f"revision {prepared.revision}'s preparation names no work directory")
+    where = Path(prepared.workdir)
     try:
         recorded = json.loads((where / RECORD).read_text())
     except (OSError, json.JSONDecodeError) as e:
@@ -993,7 +999,7 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
     try:
         if prepared is None:
             raise Refused("controls", f"revision {revision} was not prepared: a one-sided replay")
-        where = _preparation_dir(prepared, workdir)
+        where = _preparation_dir(prepared)
         artifacts = _checked(where, prepared)
         driver = (prepared.source.get("driver") or {})
         if not driver.get("main"):
@@ -1359,7 +1365,7 @@ def run_verifier(plan, prepared, workdir):
             p = prepared.get(r)
             if p is None:
                 raise Refused("verifier", f"revision {r} was not prepared: a one-sided {plan.kind}")
-            where = _preparation_dir(p, workdir)
+            where = _preparation_dir(p)
             arts = _checked(where, p)
             if not (p.source.get("target") or {}).get("loadedFrom"):
                 raise Refused("verifier", f"revision {r}'s preparation records no loaded target")

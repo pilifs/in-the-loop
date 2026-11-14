@@ -813,6 +813,32 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: request 7, `PreparedTarget.workdir: Optional[str] = None` and `blocker: Optional[Mapping] = None` in
     `interfaces.py`, with `run_controls` and ingestion reading them instead of `route.py`'s layout and
     `source.blocker`.
+- 2026-11-14, **Phase 5 step 1, request 7 done: a preparation names its directory and its blocker.**
+  - **Reproducer**: three new tests failed on `krnmkrsm`, and 14 existing ones errored once they read `.blocker`:
+    - `test_interfaces.py`: `PreparedTarget`'s frozen fields end with `workdir` and `blocker`, both None by default;
+    - `test_runtime.py`: a preparation names its directory, and a temporary path stays out of `source`. A failed
+      build carries `blocker` and no `source.blocker`. A preparation made outside `<attempt>/prepare/<revision>` runs
+      its controls, and one that names no directory doesn't. Before the change, `run_controls` looked for it under
+      route.py's layout and refused it.
+  - **The change**:
+    - `interfaces.py` appends `workdir: Optional[str] = None` and `blocker: Optional[Mapping] = None` to
+      `PreparedTarget`, an additive change with defaults, as its docstring allows.
+    - `runtime.prepare()` sets `workdir` (absolute) on every preparation made once its directory exists, the failed
+      ones included, since their logs are there, and writes it to `prepared.json`. A source lock has none.
+    - `_failed()` puts the blocker in the field, never in `source`. `runtime_slice.py` reads it from there.
+    - `run_controls` and `run_verifier` find the preparation by `prepared.workdir`, still only if its `prepared.json`
+      is the PreparedTarget given. One without a directory is a not-started record.
+    - `runtime.py`'s docstring is updated. The cache-hit test now compares two preparations without their directories,
+      which differ by design and are no identity.
+  - **What the request got wrong** (workflow's half): ingestion never derived the preparation from a directory, and
+    `workdir` doesn't let it bundle the raw stdout and stderr. An `ExecutionRecord`'s stream paths are relative to the
+    attempt's directory, not a preparation's, and ingestion is still given neither. So it still bundles none, and
+    `attempt.stages` keeps the relative paths. Closing that needs the attempt's directory passed to `ingest` (a
+    frozen signature) or absolute stream paths. It goes on the for-review list, not into this loop.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (195, three new),
+    `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
+  - **Next**: request 8, `result.schema.json`: null `existingTests` and `before`/`after` allowed when `claim.target`
+    is present, and `claim.target.revisions`' description fixed.
 - Status: working
 
 ## Loop settings

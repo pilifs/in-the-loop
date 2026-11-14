@@ -145,7 +145,7 @@ def run(attempt, network=True, folder=None, case="simplematch"):
         prepared[revision] = r
         preparations.append({"revision": revision, "stage": r.stage, "commit": r.commit,
                              "failedStage": r.failedStage, "diagnostic": r.diagnostic,
-                             "blocker": r.source.get("blocker"),
+                             "blocker": r.blocker,
                              "classpath": [{"path": a.path, "role": a.role, "sha256": a.sha256, "origin": a.origin}
                                            for a in r.artifacts if a.path in r.classpath],
                              "target": r.source.get("target"), "checkout": r.source.get("checkout"),

@@ -134,6 +134,16 @@ class PrepareTest(FixtureCopy):
         self.assertTrue(all((self.work / "after" / log).is_file() for log in prepared.logs))
         self.assertFalse((self.work / "after" / "classes").exists(), "intermediate classes left behind")
 
+    def test_the_preparation_names_its_work_directory_outside_its_source(self):
+        """Request 7: the PreparedTarget carries its directory, so nothing derives it from route.py's layout, and a
+        temporary path stays out of `source`, which claims are bound to. A source lock has none."""
+        prepared = self.prepare()
+        self.assertEqual(prepared.workdir, str((self.work / "after").resolve()))
+        self.assertIsNone(prepared.blocker)
+        self.assertNotIn(str(self.work), json.dumps(prepared.source))
+        self.assertEqual(json.loads((self.work / "after" / runtime.RECORD).read_text())["workdir"], prepared.workdir)
+        self.assertIsNone(runtime.lock(fixture_plan(self.folder, "after"), "after").workdir)
+
     def test_revisions_get_their_own_bytes_and_the_same_adapter_source(self):
         before, after = self.prepare("before"), self.prepare("after")
         original = lambda p: next(a.sha256 for a in p.artifacts if a.role == "original")
@@ -202,6 +212,9 @@ class PrepareTest(FixtureCopy):
         self.assertIn("javac-original failed", prepared.diagnostic)
         self.assertEqual(prepared.artifacts, ())
         self.assertTrue(prepared.logs and (self.work / "after" / prepared.logs[0]).is_file())
+        self.assertEqual(prepared.workdir, str((self.work / "after").resolve()), "the logs are under it")
+        self.assertEqual((prepared.blocker["stage"], prepared.blocker["diagnostic"]), ("build", prepared.diagnostic))
+        self.assertNotIn("blocker", prepared.source)
 
 
 class JarTest(unittest.TestCase):
@@ -392,7 +405,9 @@ class PublishedTest(FixtureCopy):
         self.repo.requests.clear()
         second = self.prepare(workdir=self.work / "two")
         self.assertEqual(self.repo.requests, [], "a cached artifact was fetched again")
-        self.assertEqual(first, second, "a cache hit changed the preparation: reuse is not part of any identity")
+        # the two differ only in where they are (`workdir`, which is no identity)
+        self.assertEqual(dataclasses.replace(first, workdir=None), dataclasses.replace(second, workdir=None),
+                         "a cache hit changed the preparation: reuse is not part of any identity")
         self.assertIn("cache hit", (self.work / "two/logs/acquire.log").read_text())
 
     def test_a_corrupt_cache_entry_is_moved_aside_and_fetched_again(self):
@@ -413,7 +428,7 @@ class PublishedTest(FixtureCopy):
         self.assertIn("not the recorded", prepared.diagnostic)
         self.assertEqual(prepared.artifacts, ())
         self.assertFalse(runtime_maven.Cache().path(manifest()["jars"]["before"]["sha256"]).exists())
-        blocker = prepared.source["blocker"]
+        blocker = prepared.blocker
         self.assertEqual(blocker["command"], f"GET {self.items['after'][0]['url']}")
         self.assertTrue(blocker["needs"] and blocker["next"] and blocker["diagnostic"] == prepared.diagnostic)
 
@@ -432,9 +447,9 @@ class PublishedTest(FixtureCopy):
             prepared = self.prepare()
             self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "lock"), name)
             self.assertEqual(self.repo.requests, [], name)
-            self.assertTrue(set(prepared.source["blocker"]) >= {"command", "diagnostic", "needs", "next"}, name)
+            self.assertTrue(set(prepared.blocker) >= {"command", "diagnostic", "needs", "next"}, name)
         self.items["after"] = (dict(original, sha256=None), [self.dep])
-        blocker = self.prepare().source["blocker"]
+        blocker = self.prepare().blocker
         self.assertEqual(blocker["command"], runtime_maven.pin_command("fixture.example:gate:1.1"))
         self.assertIn("no recorded sha256", blocker["diagnostic"])
 
@@ -583,7 +598,7 @@ class MutantTest(FixtureCopy):
         prepared = runtime.prepare(self.plan(base="before"), "mutant", self.work / "mutant")
         self.assertEqual(prepared.failedStage, "mutant", prepared.diagnostic)
         self.assertIn("git-apply-check failed", prepared.diagnostic)
-        self.assertIn("rewrite the patch against the base revision", prepared.source["blocker"]["next"])
+        self.assertIn("rewrite the patch against the base revision", prepared.blocker["next"])
         self.assertFalse(any(a.role == "original" for a in prepared.artifacts), "the base is never built unpatched")
 
     def test_the_mutation_pair_runs_in_its_own_jvms_and_the_mutant_fails_the_oracle_the_base_passes(self):
@@ -808,6 +823,18 @@ class ControlsTest(FixtureCopy):
                 log = json.loads((self.attempt / "controls" / runtime.CONTROLS).read_text())["records"][0]["log"]
                 self.assertEqual(bool(log.get("problem")), name != "exit-one", log)
 
+    def test_a_preparation_is_found_by_its_own_work_directory_not_by_route_pys_layout(self):
+        """Request 7: a preparation outside <attempt>/prepare/<revision> runs from the directory it names; one that
+        names none (built by hand, or recorded before the field) is not run."""
+        plan = pair_plan(self.folder, ("after",))
+        elsewhere = runtime.prepare(plan, "after", self.dir / "elsewhere" / "after")
+        self.assertEqual(elsewhere.stage, "artifacts-ready", elsewhere.diagnostic)
+        _, _, records = self.controls(plan, {"after": elsewhere}, ("after",))
+        self.assertEqual({r.status for r in records}, {"exited"}, [self.stderr(r) for r in records])
+        _, _, records = self.controls(plan, {"after": dataclasses.replace(elsewhere, workdir=None)}, ("after",))
+        self.assertEqual({r.status for r in records}, {"not-started"})
+        self.assertIn("names no work directory", self.stderr(records[0]))
+
     def test_a_work_directory_that_is_not_ours_is_unsupported_not_a_stub(self):
         (self.attempt / "controls").mkdir(parents=True)
         (self.attempt / "controls/notes.txt").write_text("mine")
@@ -889,7 +916,7 @@ class SliceTest(unittest.TestCase):
         p = self.slice.plan(network=False)
         prepared = runtime.prepare(p, "r5-3-18", self.dir / "attempt/prepare/r5-3-18")
         self.assertEqual((prepared.stage, prepared.failedStage), ("failed", "acquire"))
-        blocker = prepared.source["blocker"]
+        blocker = prepared.blocker
         self.assertIn("network", blocker["diagnostic"])
         self.assertTrue(blocker["command"] and blocker["needs"] and blocker["next"], blocker)
 

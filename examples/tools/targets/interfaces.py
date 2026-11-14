@@ -90,7 +90,7 @@ class Artifact:
 class PreparedTarget:
     """One revision of a task made callable, or how far that got. `stage` is source-locked (immutable coordinates,
     paths and recipe, nothing fetched), artifacts-ready (everything resolved, built and hashed: only this supplies a
-    proof attempt's identities) or failed (with `failedStage`, the diagnostic, and whatever artifacts exist). It
+    proof attempt's identities) or failed (with `failedStage`, the diagnostic, its `blocker`, and whatever artifacts exist). It
     never decides a security claim."""
     example: str
     task: str
@@ -104,6 +104,9 @@ class PreparedTarget:
     failedStage: Optional[str] = None  # acquire, build, adapter, classpath ...
     diagnostic: Optional[str] = None
     logs: Tuple[str, ...] = ()
+    # Added in Phase 5 (step 1's request 7), after the streams merged:
+    workdir: Optional[str] = None  # the preparation's directory, absolute, which `artifacts`, `classpath` and `logs` are relative to; None for a source lock, or a failure before it existed. A temporary path, so never in `source` or a claim
+    blocker: Optional[Mapping] = None  # a failed preparation's handoff: stage, command, diagnostic, needs, next
 
     def as_dict(self):
         return to_dict(self)

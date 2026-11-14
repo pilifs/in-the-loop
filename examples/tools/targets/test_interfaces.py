@@ -36,7 +36,7 @@ FIELDS = {
                           "artifacts", "tools", "engine", "gaps", "expected", "outputs", "folder", "network"],
     interfaces.Artifact: ["path", "sha256", "role", "coordinates", "origin"],
     interfaces.PreparedTarget: ["example", "task", "revision", "commit", "stage", "source", "artifacts", "classpath",
-                                "toolchain", "failedStage", "diagnostic", "logs"],
+                                "toolchain", "failedStage", "diagnostic", "logs", "workdir", "blocker"],
     interfaces.ExecutionRecord: ["kind", "revision", "argv", "status", "exitCode", "seconds", "stdout", "stderr",
                                  "identities", "observations", "control"],
     interfaces.Receipt: ["path", "claim", "attempt", "status", "execution"],
@@ -74,6 +74,14 @@ class InterfacesTest(unittest.TestCase):
                                             stderr="err.txt", identities={"jdk": "21"})
         self.assertIsNone(record.observations)  # raw: nothing was read from a killed process
         json.dumps(record.as_dict())
+
+    def test_a_preparations_directory_and_blocker_are_fields_of_their_own(self):
+        """Phase 5 step 1's request 7: the work directory and a failed preparation's blocker were carried by
+        route.py's layout and by `source`, which claims are bound to; both are optional fields, None by default."""
+        prepared = interfaces.PreparedTarget(example="999", task="fixed-security", revision="fixed",
+                                             commit="fixture:gate/fixed", stage="source-locked", source={})
+        self.assertEqual((prepared.workdir, prepared.blocker), (None, None))
+        json.dumps(prepared.as_dict())
 
 
 if __name__ == "__main__":

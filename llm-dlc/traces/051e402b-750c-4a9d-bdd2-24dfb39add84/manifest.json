@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T20:40:38.741Z",
-  "duration_seconds": 8118,
+  "ended": "2026-11-14T20:51:49.668Z",
+  "duration_seconds": 8789,
   "stats": {
-    "turns": 45,
-    "api_calls": 264,
-    "tool_calls": 264,
+    "turns": 50,
+    "api_calls": 288,
+    "tool_calls": 287,
     "tool_errors": 7,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 164466,
     "usage": {
-      "input_tokens": 548,
-      "output_tokens": 154956,
-      "cache_read_input_tokens": 22695499,
-      "cache_creation_input_tokens": 827424
+      "input_tokens": 596,
+      "output_tokens": 169969,
+      "cache_read_input_tokens": 24807037,
+      "cache_creation_input_tokens": 935547
     }
   },
   "tools": {
-    "Bash": 226,
-    "Read": 17,
+    "Bash": 247,
+    "Read": 19,
     "Edit": 15,
     "Agent": 4,
     "Write": 2
@@ -144,24 +144,38 @@
     {
       "index": 7,
       "started": "2026-11-14T20:35:12.091Z",
-      "ended": "2026-11-14T20:40:38.741Z",
-      "turns": 4,
-      "api_calls": 13,
+      "ended": "2026-11-14T20:40:57.364Z",
+      "turns": 5,
+      "api_calls": 15,
       "usage": {
-        "input_tokens": 26,
-        "output_tokens": 8413,
-        "cache_read_input_tokens": 802971,
-        "cache_creation_input_tokens": 65928
+        "input_tokens": 30,
+        "output_tokens": 9267,
+        "cache_read_input_tokens": 963654,
+        "cache_creation_input_tokens": 69895
       },
-      "peak_context_tokens": 79114
+      "peak_context_tokens": 83081
+    },
+    {
+      "index": 8,
+      "started": "2026-11-14T20:41:27.849Z",
+      "ended": "2026-11-14T20:51:49.668Z",
+      "turns": 4,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 14159,
+        "cache_read_input_tokens": 1950855,
+        "cache_creation_input_tokens": 104156
+      },
+      "peak_context_tokens": 117342
     }
   ],
   "log": {
-    "sha256": "d6b1e0f6099f160c26d02842600e56921a17e69111362bad6939acf71ff50511",
-    "bytes": 9022890,
-    "lines": 2842,
-    "gzip_bytes": 1924437,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/d6b1e0f6099f160c26d02842600e56921a17e69111362bad6939acf71ff50511.jsonl.gz"
+    "sha256": "1221486e5ef2212ba36e234399358a655c9c33ccbc63264ae22cbe40f64bad5a",
+    "bytes": 10091195,
+    "lines": 3130,
+    "gzip_bytes": 2167342,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/1221486e5ef2212ba36e234399358a655c9c33ccbc63264ae22cbe40f64bad5a.jsonl.gz"
   },
   "subagents": [
     {
@@ -385,6 +399,14 @@
       "summary": "example-targets Phase 5 step 1: 305-307 name 285-287 as companions, and the sidecar examples carry external-target and their family's domain tag",
       "body": "Request 6 of Phase 5 step 1 in llm-dlc/loops/example-targets.md (the positive stream's request 3). Each family's CVE packet already named its positive, but the positives 305, 306 and 307 named no companion. Their target.json identities now name 285, 286 and 287, and each matching text gives that number. Tags: 105 and 305-307 gain external-target, which until now covered only 285-300 though all four have a sidecar. 305 gains metrics and 307 password-hashing, their families' domain tags. 306's request-binding, a defect tag for handler parameters that can't bind, becomes data-binding, the domain of DataBinder's field checks, which call PatternMatchUtils. Each example.json has a note, and build.py --index-only regenerated examples/README.md and index.json.",
       "log_sha256": "d6b1e0f6099f160c26d02842600e56921a17e69111362bad6939acf71ff50511"
+    },
+    {
+      "change_id": "ptnszuvlzszxwulpsmoskrsnvyyqqmzl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: PreparedTarget names its work directory and its blocker, so the controls and the verifier stop relying on route.py's layout",
+      "body": "Request 7 of the example-targets brief's Phase 5 step 1. interfaces.py appends two optional fields to PreparedTarget, workdir and blocker, both None by default, an additive change. runtime.prepare() now records the preparation's absolute directory in workdir, on every preparation made once that directory exists, failed ones included, and writes it to prepared.json. A failed preparation's blocker (stage, command, diagnostic, needs, next) moves out of source, which claims are bound to, into its own field, and runtime_slice.py reads it there. run_controls and run_verifier find a preparation by its workdir, still only if its prepared.json matches; one without a directory is a not-started record, never run.\n\nReproducer: three new tests failed first: the frozen field order in test_interfaces.py, a preparation that names its directory outside source, and controls run from a preparation outside <attempt>/prepare/<revision>, which runtime used to refuse. The existing tests that read source[\"blocker\"] now read the field. The cache-hit test compares two preparations without their directories, which differ by design. example-targets-integration.sh exits 0: the contract (16), the targets suite (195), test_build.py (190), test_pipeline.py (29) and build.py --plan.\n\nThe brief is out of date on one point. Its request 7 says workdir would let ingestion stop deriving the preparation from route.py's layout, and bundle raw stdout and stderr. In fact ingestion never read a preparation's directory. The raw streams are relative to the attempt's directory, which workdir doesn't give, so ingestion still bundles none. That goes on the for-review list (Progress).",
+      "log_sha256": "1221486e5ef2212ba36e234399358a655c9c33ccbc63264ae22cbe40f64bad5a"
     }
   ],
   "logs": {
@@ -392,6 +414,12 @@
       "bytes": 6300228,
       "lines": 2152,
       "gzip_bytes": 1247462,
+      "url": null
+    },
+    "1221486e5ef2212ba36e234399358a655c9c33ccbc63264ae22cbe40f64bad5a": {
+      "bytes": 10091195,
+      "lines": 3130,
+      "gzip_bytes": 2167342,
       "url": null
     },
     "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48": {
