@@ -1,0 +1,752 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-174017-example-targets-runtime-r2-the-upstream",
+  "title": "example-targets runtime R2: the upstream-build route rerun on 105's two commons-numbers commits, with the runtime classpath's scope filter applied",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 57.5s, peak 782.8 MiB (estimated 10m00s, 3.0 GiB); 67 output file(s) changed",
+  "attention": [
+    "45 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261114-174017-example-targets-runtime-r2-the-upstream.json",
+    "sha256": "056e4eb195c923e67a88bb4eb2536eeb13a19aeb2803b9477a093ce4dc0537f8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-174017-example-targets-runtime-r2-the-upstream",
+      "title": "example-targets runtime R2: the upstream-build route rerun on 105's two commons-numbers commits, with the runtime classpath's scope filter applied",
+      "description": "A rerun of 20261114-170353, which passed but recorded test-scope JARs (JUnit 5.14.4, opentest4j, apiguardian, commons-rng 1.7) as commons-numbers-core's runtime dependencies: runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, whose descriptor names that filter's user property includeScope, so the filter was ignored and the listing was the test classpath. It now passes -DincludeScope=runtime and records the scope. The rest is as before: each exact commit of apache/commons-numbers fetched from github.com into an isolated checkout (after's recorded parent checked), the 105 sidecar's recipe (mvn --projects commons-numbers-core ... package) run by the installed Maven 3.10.0 on JDK 11, both by full path, with Maven Central as the one repository, a fresh local repository and --strict-checksums; the one produced non-auxiliary JAR holding ArithmeticUtils taken as the original; then runtime_numbers/'s adapter and driver run pow(int, int) in a separate JVM per commit on JDK 21 and 25 over 45 probes, read by a Javadoc oracle. The slice now plans from a copy of the case folder (ATTEMPT/case), where ingestion would publish receipts. Step 2 deletes the checkouts so that only the records come back.",
+      "kind": "other",
+      "capabilities": [
+        "targets:upstream-build",
+        "targets:controls"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/runtime_upstream.py",
+          "examples/tools/targets/runtime_slice.py",
+          "examples/tools/targets/runtime_numbers",
+          "llm-dlc/loops/example-targets-runtime.md"
+        ],
+        "examples": [
+          "105"
+        ]
+      },
+      "expected": "step 1 exits 0 and prints 'ok': prepare before and after artifacts-ready, each classpath exactly original (built/commons-numbers-core-1.4-SNAPSHOT.jar), adapter and driver, with no dependency (commons-numbers-core has no compile or runtime dependency), slice.json's preparations[*].built.dependencies.command ending -DincludeScope=runtime; four controls (before and after, JDK 21 and 25) exited 0 with 45 observations each; oracle problems exactly [-2, 31] on before and none on after; JDKs agree on each commit; ingestion at workflow's Phase 0 stub. Step 2 exits 0",
+      "submitted": {
+        "at": "2026-11-14T17:40:17+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "the earlier run took 59 s and peaked at 858 MiB: two Maven builds of one small module and four short JVM runs; network to github.com and Maven Central"
+      },
+      "steps": [
+        {
+          "name": "105's two commits built by their own Maven and replayed, runtime scope",
+          "run": "python3 examples/tools/targets/runtime_slice.py runtime-upstream/attempt --case numbers",
+          "cwd": "."
+        },
+        {
+          "name": "keep the records, not the checkouts",
+          "run": "rm -rf runtime-upstream/attempt/prepare/*/checkout runtime-upstream/attempt/prepare/*/home runtime-upstream/attempt/prepare/*/maven/repository && du -sh runtime-upstream",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "runtime-upstream"
+      ]
+    }
+  },
+  "sourceCommit": "44bfe0ecfa1a2300e5a0350a1d902a6941b2a468",
+  "startedAt": "2026-11-14T17:43:39+00:00",
+  "finishedAt": "2026-11-14T17:44:38+00:00",
+  "wallSeconds": 59.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1333646,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "the earlier run took 59 s and peaked at 858 MiB: two Maven builds of one small module and four short JVM runs; network to github.com and Maven Central"
+  },
+  "usage": {
+    "peakMemoryBytes": 820858880,
+    "wallSeconds": 57.5,
+    "cpuSeconds": 76.6,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "105's two commits built by their own Maven and replayed, runtime scope",
+      "run": "python3 examples/tools/targets/runtime_slice.py runtime-upstream/attempt --case numbers",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 57.325,
+      "cpuSeconds": 76.562,
+      "cpuThrottledSeconds": 6.887,
+      "peakMemoryBytes": 820858880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-105-s-two-commits-built-by-the.log",
+        "lines": 9,
+        "bytes": 833,
+        "sha256": "bdad6f69618379e0fcc00174af0a563fe6c4aeefd865c1d0d7daad40892bc25a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "prepare before: artifacts-ready",
+        "prepare after: artifacts-ready",
+        "control before jdk21: exited exit 0, 45 observations, oracle problems [[[-2, 31], 'threw java.lang.ArithmeticException, the statement says returned -2147483648']]",
+        "control before jdk25: exited exit 0, 45 observations, oracle problems [[[-2, 31], 'threw java.lang.ArithmeticException, the statement says returned -2147483648']]",
+        "control after jdk21: exited exit 0, 45 observations, oracle problems []",
+        "control after jdk25: exited exit 0, 45 observations, oracle problems []",
+        "expected disagreements: {'before': ['[-2, 31]'], 'after': []}",
+        "JDKs agree: {'before': True, 'after': True}; ingestion got 4 records: unsupported: ingest (example-targets-workflow): attempt ingestion is Phase 0's stub until the workflow stream's W2 replaces it",
+        "ok (runtime-upstream/attempt/slice.json)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "keep the records, not the checkouts",
+      "run": "rm -rf runtime-upstream/attempt/prepare/*/checkout runtime-upstream/attempt/prepare/*/home runtime-upstream/attempt/prepare/*/maven/repository && du -sh runtime-upstream",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.031,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2027520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-keep-the-records-not-the-check.log",
+        "lines": 1,
+        "bytes": 22,
+        "sha256": "3f27098095c3a539841fcbffbe5cb888abb4b13e9eec3177de9a5b6f5e679835",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2.6M\truntime-upstream"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runtime-upstream/attempt/case/README.md",
+      "change": "added",
+      "bytes": 2026,
+      "sha256": "2829130126beecf0cd295f26fe13c56646c87f287ec92a130e29a4516eff1752",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/case/__pycache__/oracle.cpython-314.pyc",
+      "change": "added",
+      "bytes": 4819,
+      "sha256": "43a64145cd3e21c8e0983cbb291d9d3a3df45f94f21f9363d518d06d75cc0513",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/case/adapter/upstream/adapter/PowAdapter.java",
+      "change": "added",
+      "bytes": 533,
+      "sha256": "9000d38aa6caaa70495a0f876d9e9660add414886b190bfe881ead595e52e315",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/case/driver/upstream/driver/PowDriver.java",
+      "change": "added",
+      "bytes": 1628,
+      "sha256": "8b8af1fcb8700772093fbfe38bf408af7668e2ad4084c1b76e5ab86c9ac8a8e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/case/oracle.py",
+      "change": "added",
+      "bytes": 3672,
+      "sha256": "8f6289fca3a7b2d4196d3b5a0da89bd30c4bd4745ac3fb5e6f523da3dca04dfa",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/case/target.json",
+      "change": "added",
+      "bytes": 3497,
+      "sha256": "eacb52d37308534ad9dafaaee4b6fb64d62a48318b086d6455ec737b19877f97",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-after-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-after-jdk21.stdout",
+      "change": "added",
+      "bytes": 2959,
+      "sha256": "b4115a5b8865ac803c0b4bc83f5eaf11f1c51de2f0fbc992848f8de5534cb5bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-after-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-after-jdk25.stdout",
+      "change": "added",
+      "bytes": 2959,
+      "sha256": "b4115a5b8865ac803c0b4bc83f5eaf11f1c51de2f0fbc992848f8de5534cb5bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-before-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-before-jdk21.stdout",
+      "change": "added",
+      "bytes": 2980,
+      "sha256": "20820fb0343184d99a983ac0e58c6045adf734120c5e6982c0f1ee3849a04ffd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-before-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/control-before-jdk25.stdout",
+      "change": "added",
+      "bytes": 2980,
+      "sha256": "20820fb0343184d99a983ac0e58c6045adf734120c5e6982c0f1ee3849a04ffd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/controls/controls.json",
+      "change": "added",
+      "bytes": 43008,
+      "sha256": "360fe5b2163fd260ed482671b2be82d0f3e7c8dd47653cb7e7d129ab8b1536ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/adapter-after.jar",
+      "change": "added",
+      "bytes": 446,
+      "sha256": "b317459b98f56e62b6bc32922e0229f0fa15701643188c02a29c330076ec5856",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "change": "added",
+      "bytes": 39695,
+      "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/controls/__pycache__/oracle.cpython-314.pyc",
+      "change": "added",
+      "bytes": 4837,
+      "sha256": "38b4781ab8d13f248cf4044974d640990d418d20c733cc5481a1bc7fdd4dd015",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/controls/oracle.py",
+      "change": "added",
+      "bytes": 3672,
+      "sha256": "8f6289fca3a7b2d4196d3b5a0da89bd30c4bd4745ac3fb5e6f523da3dca04dfa",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/driver.jar",
+      "change": "added",
+      "bytes": 1386,
+      "sha256": "05d667863619de04aabb066bb7f56b630025856ccbac818c7da6cf4a1d130f8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/build.log",
+      "change": "added",
+      "bytes": 15053,
+      "sha256": "6f3b090b2862fc573b9a6554e1a7e5f574ffacfa415631f61a2cc6651bb8b308",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/dependencies.log",
+      "change": "added",
+      "bytes": 2293,
+      "sha256": "563a087174e60b9b1ae5dc99e347e3bd65f53a8cf1fab15f3c266e08787c75a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-checkout.log",
+      "change": "added",
+      "bytes": 454,
+      "sha256": "c505c164aa2dcb0b92911d632afa24de281a2428e91989302b09fff5c7e9be79",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-fetch.log",
+      "change": "added",
+      "bytes": 648,
+      "sha256": "aa75444ac368943386417e2ce0151bb86a33aca7e6e0c44797731b38d9850034",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-head.log",
+      "change": "added",
+      "bytes": 448,
+      "sha256": "fdf77bfe4ff50fdcbdb13a50dbe28df1808941a615f9e4efcb4490878d0fb4a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-init.log",
+      "change": "added",
+      "bytes": 397,
+      "sha256": "084e9799c2e487a84f4ef9eb1fbb8e78c3f3042b83245e0d145b7ecfb859e90a",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-parents.log",
+      "change": "added",
+      "bytes": 503,
+      "sha256": "01f127a898a11f1c49f52ee319973befb83bf0c29ec0c49074ff9e6212a1149d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-status-after.log",
+      "change": "added",
+      "bytes": 432,
+      "sha256": "d24b40ad963331d673fa6c3d498d5f63d6053f39aa0eed896b59cbdfcfd68793",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-status-before.log",
+      "change": "added",
+      "bytes": 432,
+      "sha256": "ba89189bd5bae317d31eca3630ca1b78ba645600c853708cdaef3b89d6c32c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-tree.log",
+      "change": "added",
+      "bytes": 457,
+      "sha256": "b9cf1d1825b00cbad9a7482a454c693ba8e581ad7aab2408aca234619ba7e386",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-untracked.log",
+      "change": "added",
+      "bytes": 3154,
+      "sha256": "61d05cd17b36e2d792a8b97d3f055ab9fa89b1acb8c6fe3c133971fbb819165f",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/git-version.log",
+      "change": "added",
+      "bytes": 421,
+      "sha256": "b2865e995e0e29fbb1f5b3a0af2e775d3a9f507d6b58fe5b77664e395d9b2cbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 509,
+      "sha256": "dc70bdecf86dab3791304fd2d469d611b276b1ab41b949eb24ccf8941a7038b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 499,
+      "sha256": "e7ea14e52f7d6dfaec238c5f0f31fa548afb02d7c49af272ee51e6feeef717e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 674,
+      "sha256": "7f51ff5097c65b857acdb0f3f628893593e9ab0c0eae047cd7e782e98e0a42bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 837,
+      "sha256": "373d941f387792ab7997743ee538896f717039002076d855074ce198f723568c",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/logs/maven-version.log",
+      "change": "added",
+      "bytes": 453,
+      "sha256": "736dfc384b191915ddcfa2cbab7e598c323317847fa1c5eb1f926de64d2f8a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/maven/classpath.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/maven/resolution.json",
+      "change": "added",
+      "bytes": 1072117,
+      "sha256": "05b43a3574a66ba1b31c4620176e1394b01cbb805e24d05fa4826105c0688f7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/maven/settings.xml",
+      "change": "added",
+      "bytes": 433,
+      "sha256": "948b18d00ca14a0cf3dbe1f62c7087eee47b14ce0351960bac7f6a3baae6c418",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/after/prepared.json",
+      "change": "added",
+      "bytes": 22477,
+      "sha256": "b984835a8572f2a7faa0a74809ba052f97798f4e407adc2c282a7382433dade9",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/adapter-before.jar",
+      "change": "added",
+      "bytes": 446,
+      "sha256": "b317459b98f56e62b6bc32922e0229f0fa15701643188c02a29c330076ec5856",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "change": "added",
+      "bytes": 39695,
+      "sha256": "e3a1b00d529d504cf8fdff8c3fb2d2150df154c98687b204aac49a35d33f9bcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/controls/__pycache__/oracle.cpython-314.pyc",
+      "change": "added",
+      "bytes": 4838,
+      "sha256": "cc879c369fb22cd847d47c5a5c2e93b4cf81d818644fc5f9e98f191b122457d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/controls/oracle.py",
+      "change": "added",
+      "bytes": 3672,
+      "sha256": "8f6289fca3a7b2d4196d3b5a0da89bd30c4bd4745ac3fb5e6f523da3dca04dfa",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/driver.jar",
+      "change": "added",
+      "bytes": 1386,
+      "sha256": "05d667863619de04aabb066bb7f56b630025856ccbac818c7da6cf4a1d130f8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/build.log",
+      "change": "added",
+      "bytes": 15074,
+      "sha256": "03b9903914a33b469d297049e53de3555184d2d68172d02bf9d0489da3a17914",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/dependencies.log",
+      "change": "added",
+      "bytes": 2299,
+      "sha256": "6faa6d0f0407e0eb0fd5748baa001a0f14ad2f32bec4870c28ce9dcfa265a987",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-checkout.log",
+      "change": "added",
+      "bytes": 455,
+      "sha256": "c7d2e8ff7de487a2b6c72cf900cd45d499a941ef0762f9d2fae0d847f55c5337",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-fetch.log",
+      "change": "added",
+      "bytes": 649,
+      "sha256": "30a1c56ac09dc69133c81457892a0e9e9a11f73b809287c270974415b3049da7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-head.log",
+      "change": "added",
+      "bytes": 449,
+      "sha256": "d7ab17208dcc1d29af9e9fc25bd397edb2fd9a780b43400431384055116077af",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-init.log",
+      "change": "added",
+      "bytes": 398,
+      "sha256": "456fe002212360eec1bd9dd73033b618ae2a49d429e4031c5a527620b83b68d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-status-after.log",
+      "change": "added",
+      "bytes": 433,
+      "sha256": "73c7680b889dfdd1f3f4691f817f4a5462615b74369b6e63f901541d952073e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-status-before.log",
+      "change": "added",
+      "bytes": 433,
+      "sha256": "11f19d688b82ea7f25e1e88e74618ebfa8c51922a76292973220e938ba8aefe9",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-tree.log",
+      "change": "added",
+      "bytes": 458,
+      "sha256": "2bd0b6ca6ac4e2468cda2bfe907da3414aa070382a132902bace234c89cd0b4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-untracked.log",
+      "change": "added",
+      "bytes": 3155,
+      "sha256": "7f86861c3fc5349fbbe43fa10d25d156f67f25babbeb415892df9f59c7e48f40",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/git-version.log",
+      "change": "added",
+      "bytes": 422,
+      "sha256": "caa86f165739b421185d4f80653fa5f5f88c1a6add3bc17ddfb6622c640c6e16",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/jar-adapter.log",
+      "change": "added",
+      "bytes": 512,
+      "sha256": "2b9bcdc49a1688b5b972f3177036a980a480068adf2a8c8f6b6e438dc315f493",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/jar-driver.log",
+      "change": "added",
+      "bytes": 501,
+      "sha256": "e0062a3b1f03f83bf4fbeea20225d331e52421c267cfd7442830028f8fbd10c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/javac-adapter.log",
+      "change": "added",
+      "bytes": 676,
+      "sha256": "408546c68c8f29a5a661a76948aa576b305a6950740c6e05cc05ea81abeaac0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/javac-driver.log",
+      "change": "added",
+      "bytes": 841,
+      "sha256": "1628bb46761a4d6dc0ba58ef413dc38936b3fdb38d9e7cb451d3f5beac0ffe90",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/logs/maven-version.log",
+      "change": "added",
+      "bytes": 453,
+      "sha256": "f0c08200cc16c3d912308248d73254361890983a6db122dc7bc5d369b77fe9b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/maven/classpath.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/maven/resolution.json",
+      "change": "added",
+      "bytes": 1072117,
+      "sha256": "75a604c002f7ea3302fe4c77b6de8b78296ce6171318645769f12537149591e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/maven/settings.xml",
+      "change": "added",
+      "bytes": 434,
+      "sha256": "610b3cfc78fb69aa0cca0ddd135556c2dcc20bc08fb2564f7d98da7595f92f8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/prepare/before/prepared.json",
+      "change": "added",
+      "bytes": 21406,
+      "sha256": "b0aab2e075a42a989104360b70f226f3a4a8691f399f3bc27a24533a006a1057",
+      "sourceSha256": null
+    },
+    {
+      "path": "runtime-upstream/attempt/slice.json",
+      "change": "added",
+      "bytes": 17861,
+      "sha256": "1ee3e62bdc05b021623bda405dc0438b8d3ae6a2dccc2dc8430eba56eb08bb5d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T17:50:43+00:00",
+    "applied": [
+      "runtime-upstream/attempt/case/README.md",
+      "runtime-upstream/attempt/case/__pycache__/oracle.cpython-314.pyc",
+      "runtime-upstream/attempt/case/adapter/upstream/adapter/PowAdapter.java",
+      "runtime-upstream/attempt/case/driver/upstream/driver/PowDriver.java",
+      "runtime-upstream/attempt/case/oracle.py",
+      "runtime-upstream/attempt/case/target.json",
+      "runtime-upstream/attempt/controls/control-after-jdk21.stderr",
+      "runtime-upstream/attempt/controls/control-after-jdk21.stdout",
+      "runtime-upstream/attempt/controls/control-after-jdk25.stderr",
+      "runtime-upstream/attempt/controls/control-after-jdk25.stdout",
+      "runtime-upstream/attempt/controls/control-before-jdk21.stderr",
+      "runtime-upstream/attempt/controls/control-before-jdk21.stdout",
+      "runtime-upstream/attempt/controls/control-before-jdk25.stderr",
+      "runtime-upstream/attempt/controls/control-before-jdk25.stdout",
+      "runtime-upstream/attempt/prepare/after/adapter-after.jar",
+      "runtime-upstream/attempt/prepare/after/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "runtime-upstream/attempt/prepare/after/controls/oracle.py",
+      "runtime-upstream/attempt/prepare/after/driver.jar",
+      "runtime-upstream/attempt/prepare/before/adapter-before.jar",
+      "runtime-upstream/attempt/prepare/before/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "runtime-upstream/attempt/prepare/before/controls/oracle.py",
+      "runtime-upstream/attempt/prepare/before/driver.jar"
+    ],
+    "conflicts": [
+      "runtime-upstream/attempt/controls/controls.json",
+      "runtime-upstream/attempt/prepare/after/controls/__pycache__/oracle.cpython-314.pyc",
+      "runtime-upstream/attempt/prepare/after/logs/build.log",
+      "runtime-upstream/attempt/prepare/after/logs/dependencies.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-checkout.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-fetch.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-head.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-init.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-parents.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-status-after.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-status-before.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-tree.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-untracked.log",
+      "runtime-upstream/attempt/prepare/after/logs/git-version.log",
+      "runtime-upstream/attempt/prepare/after/logs/jar-adapter.log",
+      "runtime-upstream/attempt/prepare/after/logs/jar-driver.log",
+      "runtime-upstream/attempt/prepare/after/logs/javac-adapter.log",
+      "runtime-upstream/attempt/prepare/after/logs/javac-driver.log",
+      "runtime-upstream/attempt/prepare/after/logs/maven-version.log",
+      "runtime-upstream/attempt/prepare/after/maven/classpath.txt",
+      "runtime-upstream/attempt/prepare/after/maven/resolution.json",
+      "runtime-upstream/attempt/prepare/after/maven/settings.xml",
+      "runtime-upstream/attempt/prepare/after/prepared.json",
+      "runtime-upstream/attempt/prepare/before/controls/__pycache__/oracle.cpython-314.pyc",
+      "runtime-upstream/attempt/prepare/before/logs/build.log",
+      "runtime-upstream/attempt/prepare/before/logs/dependencies.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-checkout.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-fetch.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-head.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-init.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-status-after.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-status-before.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-tree.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-untracked.log",
+      "runtime-upstream/attempt/prepare/before/logs/git-version.log",
+      "runtime-upstream/attempt/prepare/before/logs/jar-adapter.log",
+      "runtime-upstream/attempt/prepare/before/logs/jar-driver.log",
+      "runtime-upstream/attempt/prepare/before/logs/javac-adapter.log",
+      "runtime-upstream/attempt/prepare/before/logs/javac-driver.log",
+      "runtime-upstream/attempt/prepare/before/logs/maven-version.log",
+      "runtime-upstream/attempt/prepare/before/maven/classpath.txt",
+      "runtime-upstream/attempt/prepare/before/maven/resolution.json",
+      "runtime-upstream/attempt/prepare/before/maven/settings.xml",
+      "runtime-upstream/attempt/prepare/before/prepared.json",
+      "runtime-upstream/attempt/slice.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,648 @@
+{
+  "example": "316",
+  "task": "replay",
+  "revision": "after",
+  "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+  "stage": "artifacts-ready",
+  "source": {
+    "route": "upstream-build",
+    "repository": "https://github.com/apache/commons-numbers",
+    "revision": "after",
+    "provenance": "the exact commit, fetched from github.com into an isolated checkout and built there by its recorded recipe with its own build tool; the original sources stay untouched",
+    "history": {
+      "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+      "parent": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91"
+    },
+    "upstream": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "--projects",
+        "commons-numbers-core",
+        "-Dmaven.test.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dpmd.skip=true",
+        "-Dcpd.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Djapicmp.skip=true",
+        "-Danimal.sniffer.skip=true",
+        "-Djacoco.skip=true",
+        "-Dmaven.javadoc.skip=true",
+        "-Dmaven.source.skip=true",
+        "package"
+      ],
+      "jdk": "11"
+    },
+    "adapter": {
+      "roots": [
+        "adapter"
+      ],
+      "files": [
+        {
+          "path": "adapter/upstream/adapter/PowAdapter.java",
+          "sha256": "9000d38aa6caaa70495a0f876d9e9660add414886b190bfe881ead595e52e315"
+        }
+      ]
+    },
+    "driver": {
+      "roots": [
+        "driver"
+      ],
+      "files": [
+        {
+          "path": "driver/upstream/driver/PowDriver.java",
+          "sha256": "8b8af1fcb8700772093fbfe38bf408af7668e2ad4084c1b76e5ab86c9ac8a8e0"
+        }
+      ],
+      "control": "pow-driver",
+      "main": "upstream.driver.PowDriver"
+    },
+    "oracle": {
+      "control": "pow-oracle",
+      "path": "oracle.py",
+      "sha256": "8f6289fca3a7b2d4196d3b5a0da89bd30c4bd4745ac3fb5e6f523da3dca04dfa"
+    },
+    "jdks": [
+      "21",
+      "25"
+    ],
+    "recipe": {
+      "tool": "javac",
+      "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; the original is built by the upstream recipe",
+      "release": "21",
+      "date": "2026-01-01T00:00:00Z",
+      "flags": []
+    },
+    "checkout": {
+      "commit": "8cfc04e8719d00bde40b3faba19180cc92e20f9e",
+      "tree": "9bca61dddca5ad76fb6993bafbb4a22318f69745",
+      "fetchedFrom": "https://github.com/apache/commons-numbers",
+      "depth": 2,
+      "git": "git version 2.53.0",
+      "parents": [
+        "e7c172d2f4c7d171fed9060e77b5f91a20c36c91"
+      ],
+      "parentChecked": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+      "submodules": "none declared",
+      "changedByBuild": []
+    },
+    "built": {
+      "jars": [
+        {
+          "path": "commons-numbers-core/target/commons-numbers-core-1.4-SNAPSHOT.jar",
+          "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7",
+          "auxiliary": false
+        }
+      ],
+      "original": "commons-numbers-core/target/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "dependencies": {
+        "order": "Maven's runtime classpath order (dependency:build-classpath)",
+        "command": "org.apache.maven.plugins:maven-dependency-plugin:3.9.0:build-classpath -DincludeScope=runtime",
+        "scope": "runtime: the compile and runtime scopes, no test or provided",
+        "passed": [
+          "-Dmaven.test.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dpmd.skip=true",
+          "-Dcpd.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Djapicmp.skip=true",
+          "-Danimal.sniffer.skip=true",
+          "-Djacoco.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Dmaven.source.skip=true"
+        ]
+      }
+    },
+    "target": {
+      "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+      "method": "pow",
+      "descriptor": "(II)I",
+      "loadedFrom": "built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "classSha256": "f78b4e644833192cba93144152879eb26e0caedf0c610d0f757df8b8d3a84f54",
+      "adapterCalls": [
+        "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I"
+      ],
+      "adapterCallsTarget": true
+    }
+  },
+  "artifacts": [
+    {
+      "path": "built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/commons-numbers at 8cfc04e8719d00bde40b3faba19180cc92e20f9e: commons-numbers-core/target/commons-numbers-core-1.4-SNAPSHOT.jar"
+    },
+    {
+      "path": "adapter-after.jar",
+      "sha256": "b317459b98f56e62b6bc32922e0229f0fa15701643188c02a29c330076ec5856",
+      "role": "adapter",
+      "coordinates": null,
+      "origin": "built from adapter"
+    },
+    {
+      "path": "driver.jar",
+      "sha256": "05d667863619de04aabb066bb7f56b630025856ccbac818c7da6cf4a1d130f8c",
+      "role": "driver",
+      "coordinates": null,
+      "origin": "built from driver"
+    },
+    {
+      "path": "controls/oracle.py",
+      "sha256": "8f6289fca3a7b2d4196d3b5a0da89bd30c4bd4745ac3fb5e6f523da3dca04dfa",
+      "role": "oracle",
+      "coordinates": null,
+      "origin": "oracle.py"
+    }
+  ],
+  "classpath": [
+    "driver.jar",
+    "adapter-after.jar",
+    "built/commons-numbers-core-1.4-SNAPSHOT.jar"
+  ],
+  "toolchain": {
+    "jdk": {
+      "feature": "25",
+      "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "release": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "build": {
+      "tool": "javac",
+      "release": "21",
+      "date": "2026-01-01T00:00:00Z",
+      "flags": [
+        "--release",
+        "21",
+        "-encoding",
+        "UTF-8",
+        "-implicit:none"
+      ],
+      "jar": "jar --date=2026-01-01T00:00:00Z --no-manifest, entries sorted"
+    },
+    "upstream": {
+      "tool": "maven",
+      "jdk": {
+        "feature": "11",
+        "version": "openjdk version \"11.0.33\" 2026-10-20",
+        "home": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem",
+        "release": {
+          "JAVA_VERSION": "11.0.33",
+          "JAVA_RUNTIME_VERSION": "11.0.33+10",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-11.0.33+10",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "maven": {
+        "path": "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+        "version": [
+          "Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)",
+          "Maven home: /home/filip/.sdkman/candidates/maven/3.10.0",
+          "Java version: 11.0.33, vendor: Eclipse Adoptium, runtime: /home/filip/.sdkman/candidates/java/11.0.33.0+10-tem"
+        ]
+      },
+      "argv": {
+        "recorded": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "--projects",
+          "commons-numbers-core",
+          "-Dmaven.test.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dpmd.skip=true",
+          "-Dcpd.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Djapicmp.skip=true",
+          "-Danimal.sniffer.skip=true",
+          "-Djacoco.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Dmaven.source.skip=true",
+          "package"
+        ],
+        "run": [
+          "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+          "-s",
+          "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/settings.xml",
+          "-gs",
+          "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/settings.xml",
+          "-Dmaven.repo.local=/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/repository",
+          "--strict-checksums",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "--projects",
+          "commons-numbers-core",
+          "-Dmaven.test.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dpmd.skip=true",
+          "-Dcpd.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Djapicmp.skip=true",
+          "-Danimal.sniffer.skip=true",
+          "-Djacoco.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Dmaven.source.skip=true",
+          "package"
+        ]
+      },
+      "env": {
+        "PATH": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem/bin:/usr/bin:/bin",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem",
+        "HOME": "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/home",
+        "MAVEN_SKIP_RC": "1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC"
+      },
+      "settings": {
+        "path": "maven/settings.xml",
+        "sha256": "948b18d00ca14a0cf3dbe1f62c7087eee47b14ce0351960bac7f6a3baae6c418",
+        "meaning": "Maven Central the one repository (a mirror of every other), a fresh local repository, strict checksums, no user settings (HOME is the work directory's, MAVEN_SKIP_RC)"
+      },
+      "resolution": {
+        "path": "maven/resolution.json",
+        "sha256": "05b43a3574a66ba1b31c4620176e1394b01cbb805e24d05fa4826105c0688f7e",
+        "files": 5764,
+        "versionLookups": [],
+        "meaning": "a version lookup is metadata Maven read to choose a version: recorded, and the bytes it chose are hashed, but a later build may choose differently"
+      },
+      "steps": [
+        {
+          "step": "git-init",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "init",
+            "-q",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout"
+          ],
+          "exit": 0,
+          "seconds": 0.004
+        },
+        {
+          "step": "git-fetch",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "fetch",
+            "--no-tags",
+            "--no-recurse-submodules",
+            "--depth=2",
+            "https://github.com/apache/commons-numbers",
+            "8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+          ],
+          "exit": 0,
+          "seconds": 0.519
+        },
+        {
+          "step": "git-checkout",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "checkout",
+            "-q",
+            "--detach",
+            "8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+          ],
+          "exit": 0,
+          "seconds": 0.034
+        },
+        {
+          "step": "git-head",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit": 0,
+          "seconds": 0.001
+        },
+        {
+          "step": "git-tree",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "rev-parse",
+            "HEAD^{tree}"
+          ],
+          "exit": 0,
+          "seconds": 0.001
+        },
+        {
+          "step": "git-version",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "--version"
+          ],
+          "exit": 0,
+          "seconds": 0.002
+        },
+        {
+          "step": "git-parents",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "rev-list",
+            "--parents",
+            "-n",
+            "1",
+            "HEAD"
+          ],
+          "exit": 0,
+          "seconds": 0.001
+        },
+        {
+          "step": "git-status-before",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "status",
+            "--porcelain",
+            "--untracked-files=no"
+          ],
+          "exit": 0,
+          "seconds": 0.047
+        },
+        {
+          "step": "maven-version",
+          "argv": [
+            "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+            "--version"
+          ],
+          "exit": 0,
+          "seconds": 0.257
+        },
+        {
+          "step": "build",
+          "argv": [
+            "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+            "-s",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/settings.xml",
+            "-gs",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/settings.xml",
+            "-Dmaven.repo.local=/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/repository",
+            "--strict-checksums",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "exit": 0,
+          "seconds": 24.296
+        },
+        {
+          "step": "git-status-after",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "status",
+            "--porcelain",
+            "--untracked-files=no"
+          ],
+          "exit": 0,
+          "seconds": 0.064
+        },
+        {
+          "step": "git-untracked",
+          "argv": [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "transfer.fsckObjects=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "advice.detachedHead=false",
+            "-c",
+            "init.defaultBranch=checkout",
+            "-c",
+            "protocol.allow=never",
+            "-c",
+            "protocol.https.allow=always",
+            "-C",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout",
+            "ls-files",
+            "-z",
+            "--others"
+          ],
+          "exit": 0,
+          "seconds": 0.005
+        },
+        {
+          "step": "dependencies",
+          "argv": [
+            "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+            "-s",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/settings.xml",
+            "-gs",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/settings.xml",
+            "-Dmaven.repo.local=/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/repository",
+            "--strict-checksums",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-f",
+            "/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/checkout/commons-numbers-core/pom.xml",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "org.apache.maven.plugins:maven-dependency-plugin:3.9.0:build-classpath",
+            "-Dmdep.outputFile=/home/filip/code/in-the-loop/verification/.state/work/20261114-174017-example-targets-runtime-r2-the-upstream/runtime-upstream/attempt/prepare/after/maven/classpath.txt",
+            "-DincludeScope=runtime"
+          ],
+          "exit": 0,
+          "seconds": 2.923
+        }
+      ]
+    }
+  },
+  "failedStage": null,
+  "diagnostic": null,
+  "logs": [
+    "logs/git-init.log",
+    "logs/git-fetch.log",
+    "logs/git-checkout.log",
+    "logs/git-head.log",
+    "logs/git-tree.log",
+    "logs/git-version.log",
+    "logs/git-parents.log",
+    "logs/git-status-before.log",
+    "logs/maven-version.log",
+    "logs/build.log",
+    "logs/git-status-after.log",
+    "logs/git-untracked.log",
+    "logs/dependencies.log",
+    "logs/javac-adapter.log",
+    "logs/jar-adapter.log",
+    "logs/javac-driver.log",
+    "logs/jar-driver.log"
+  ]
+}
