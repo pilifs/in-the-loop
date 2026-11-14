@@ -356,7 +356,57 @@ The next parallel run uses the conductor:
 
     All 220 tool tests pass.
   - Next: step 3, the rolling integration line.
-- Status: working
+- 2026-11-14, step 3 done: the rolling integration line, `llm-dlc/tools/integration.py`. `run-streams.sh`'s
+  `integrate_once` now calls it, with the systemd scope around the script only. `integrate()` still decides when.
+  - Each run merges every stream's `@-` in `NAME-integration`, with the line's newest passing merge as a parent too, so
+    the line is one chain. It settles the generated files with that tree's `sync.py regenerate`. With no other conflict
+    it runs the script, then drops whatever the script wrote into the tree.
+  - A passing merge is committed there with `Integration-Line: NAME` and an `Integration-Head: STREAM COMMIT` per stream.
+    `integration.py line NAME` names the newest. Nothing is pushed or committed in the default workspace.
+  - A failing merge, a real conflict or a failing script, is left uncommitted and triaged. It is attributed to the
+    streams whose changes since they branched touch the files in conflict, or the files the output names (Python
+    tracebacks, `path:line`, a Java frame's `File.java`).
+    - One stream: a `failure` item, with no decision.
+    - Two or more: an open decision asked by `integration`, with options for each side standing, a rule both adapt to,
+      and `settled`. Each side gets a `queued` item: hold back on those files, go on with the rest.
+    - None named: one stream that changed anything since the last pass, by elimination. Otherwise an open decision,
+      with nothing sent.
+  - A merge that passes closes each open, unanswered question the line asked as `settled`: by the conductor, high
+    confidence and cheap, so unreviewed. Each side it held back gets an `unblocked` item.
+  - The same failure again (result, files, streams) sends nothing new. The last triage is kept in
+    `NAME-integration.json` beside the report.
+  - The report keeps its path and its `- Result:` line for the status bar. Its first word is `passed`, `failed`,
+    `conflict`, `error` or `unchanged`.
+  - Decisions the brief left open, taken here:
+    - the line chains its merges;
+    - the script's output is kept out of the line;
+    - the line never decides how two sides meet, since it can't name a basis (Design 3), so it queues the question
+      and decides only `settled`;
+    - attribution goes by files, with elimination as the fallback;
+    - one stream's failure is an item, not a decision.
+
+    The `queued` kind's heading now reads "a question about your work is queued for the user".
+  - Tests: `test_integration.py` (5). The fixture run is a real jj repo with two streams and a stand-in `regenerate`.
+    It covers, in order: a pass after a generated-file conflict, committed without the script's output; a two-sided
+    failure; the same failure again; a pass that settles it; a textual conflict; and a one-stream failure. The other
+    tests cover attribution and the `run-streams.sh` wiring. All 225 tool tests pass. No verification job is needed.
+  - **What step 4 needs from the merge** (after example-targets is `done`, by the user, with `sync.py regenerate`
+    after `jj new`):
+    - This branch's changes to `run-streams.sh`, `feature-loop.sh`, `sync.py`, the README and the brief template,
+      merged with whatever example-targets changed in them. Steps 1–3's tests must pass on the merged tree.
+    - Someone must commit the decision record. `integration.py` and `inbox.py` write
+      `llm-dlc/decisions/NAME.jsonl` and its view in the default workspace, uncommitted. Step 4's conductor commits
+      them with its Progress (Design 4). Until then, a run's merge loop must commit them.
+    - The conductor's cycle has three duties that nothing runs today:
+      - `inbox.py collect`;
+      - taking the line's open `integration` questions, deciding or leaving them for the user by Design 3;
+      - running `inbox.py send` for interface requests in Progress.
+    - Wake-ups: a change in `NAME-integration.md` is one of the events `run-streams.sh` watches.
+    - The line's commits stay visible as heads after the run. The final merge should start from `integration.py line
+      BRIEF`, or abandon them. Otherwise `prune_workspaces.py` (rule 2) won't delete `NAME-integration`. This is for
+      step 4 or 5 to settle.
+    - The first real run of the line, the conductor and the inboxes is step 6's.
+- Status: blocked: steps 1–3 done; step 4 waits for example-targets to be done and this branch merged
 
 ## Loop settings
 

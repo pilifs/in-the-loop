@@ -111,7 +111,7 @@ Settled by the user on DATE, numbered.
 - memory: 3.5G (optional)
 - workspace: NAME (streams only)
 - fork: SESSION (streams only: the planning session)
-- integration: SCRIPT (optional, main brief of streams: the integration check)
+- integration: SCRIPT (optional, main brief of streams: the check the rolling integration line runs on each merge)
 - verification: separate (optional: see Verification mode)
 - new-window: no (optional, main brief of streams: run-streams.sh stays in its tmux pane instead of moving to a new
   window with a long history; RUN_STREAMS_NEW_WINDOW overrides it)

@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 96, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 21:35 UTC |
-| Prompts | 2,256 |
-| Model calls | 21,485 |
-| Tool calls | 22,461 (384 failed) |
-| Compactions | 348 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 21:48 UTC |
+| Prompts | 2,261 |
+| Model calls | 21,531 |
+| Tool calls | 22,506 (385 failed) |
+| Compactions | 349 |
 | Subagents | 16 |
-| Tokens written | 22,131,644 |
-| Tokens read | 3,333,318,041 (97.9% from cache) |
-| Commits with a trace | 656 |
-| Log snapshots | 808 (1701.7 MB gzipped, 732 uploaded) |
+| Tokens written | 22,194,331 |
+| Tokens read | 3,338,459,355 (97.9% from cache) |
+| Commits with a trace | 657 |
+| Log snapshots | 809 (1702.5 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -122,7 +122,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
 | 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 2 h 15 min | `claude-opus-5-5` | 45 | 264 | 264 | 7 | 7 | 164,466 | 14 |
-| 2026-11-14 21:13 UTC | [Recent sessions summary](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | open | 21 min | `claude-opus-5-5` | 11 | 88 | 88 | 0 | 2 | 217,136 | 3 |
+| 2026-11-14 21:13 UTC | [Recent sessions summary](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | open | 34 min | `claude-opus-5-5` | 16 | 134 | 133 | 1 | 3 | 217,136 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -227,16 +227,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 154,956 | 548 | 827,424 | 22,695,499 | 96.5% | 152 |
-| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 122,663 | 176 | 365,978 | 10,655,088 | 96.7% | 90 |
+| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 185,350 | 268 | 509,254 | 15,653,034 | 96.8% | 87 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 19,692 | 87.7% | 96 |
-| `Read` | 1,053 | 4.7% | 46 |
-| `Edit` | 824 | 3.7% | 46 |
-| `Write` | 518 | 2.3% | 42 |
+| `Bash` | 19,733 | 87.7% | 96 |
+| `Read` | 1,054 | 4.7% | 46 |
+| `Edit` | 825 | 3.7% | 46 |
+| `Write` | 520 | 2.3% | 42 |
 | `ToolSearch` | 125 | 0.6% | 32 |
 | `Monitor` | 98 | 0.4% | 36 |
 | `AskUserQuestion` | 36 | 0.2% | 12 |
@@ -912,6 +912,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 654 | change `ltmykkvx` | stream-conductor step 1: the decision record, llm-dlc/decisions/NAME.jsonl, with decisions.py and its view | [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) ([log](https://terminalvalue.net/raw-traces/4a47a539-a6f1-4f2d-b4c9-828596296714/d4a7bf8b9a2e9c2e599bcff247583084ee5a4abba02118296fe7d3808e92eb69.jsonl.gz)) |
 | 655 | change `rsmpqlsw` | sync.py check: a shared change stamped in another workspace is a note while that workspace's manifest lists its log | [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) ([log](https://terminalvalue.net/raw-traces/4a47a539-a6f1-4f2d-b4c9-828596296714/e76a41014145c27970f9faff5a85b4e5b8f6d42d587627957bc570781ada9e19.jsonl.gz)) |
 | 656 | change `zkyqxvtx` | stream-conductor step 2: inboxes, llm-dlc/tools/inbox.py, and the sentence feature-loop.sh adds to every brief's instruction | [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) ([log](https://terminalvalue.net/raw-traces/4a47a539-a6f1-4f2d-b4c9-828596296714/4fe1c5d13c96d51b0450cdc86a4017d73bd4a85c119dc32195ddb4506931714a.jsonl.gz)) |
+| 657 | change `znxmmrnv` | stream-conductor step 3: the rolling integration line, llm-dlc/tools/integration.py, in place of run-streams.sh's integrate_once | [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) ([log](https://terminalvalue.net/raw-traces/4a47a539-a6f1-4f2d-b4c9-828596296714/1c7d65830a310043238c0ec85969ebc1339adeebfca2735bec6b1a528ed65d24.jsonl.gz)) |
 
 ## Logs
 
@@ -1014,7 +1015,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 14 | 0 | 9.7 MB | `d6b1e0f6099f`, not uploaded |
-| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 3 | 0 | 1.2 MB | `4fe1c5d13c96`, not uploaded |
+| [`4a47a539`](4a47a539-a6f1-4f2d-b4c9-828596296714/summary.md) | 4 | 0 | 2.0 MB | `1c7d65830a31`, not uploaded |
 
 ## Session notes
 

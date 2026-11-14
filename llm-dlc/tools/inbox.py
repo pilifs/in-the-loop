@@ -23,7 +23,8 @@ commit):
   failure     an integration failure in its code: what to fix
   interface   the rule two streams' interfaces are to meet by (a decided decision)
   answer      an answer it was waiting for (a decided decision)
-  queued      its question is queued for the user (an open decision): what to go on with meanwhile
+  queued      a question about its work is queued for the user (an open decision): what to go on with
+              meanwhile
   unblocked   it may now go on with what it was waiting for
   overturned  a decision overturned that touches its work: the decision that replaced it (whose
               supersedes names it), and the undo steps the overturned one's record lists
@@ -67,7 +68,7 @@ KINDS = {
     "failure": "an integration failure in your code",
     "interface": "the rule two streams' interfaces are to meet by",
     "answer": "an answer you were waiting for",
-    "queued": "your question is queued for the user",
+    "queued": "a question about your work is queued for the user",
     "unblocked": "you may go on",
     "overturned": "a decision overturned that touches your work",
 }
