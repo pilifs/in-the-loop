@@ -258,11 +258,14 @@ timebox, the downloads policy and the safety rules. Queue upstream builds, and r
     unchanged callee, bound to its bytecode, which the packet records the basis for.
 - **For the coordinator**: after each of this run's commits, `sync.py check` reported ERRORs "session … has no
   manifest" on other streams' changes, never this one's:
-  - the changes, eight by this commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
-    `onssronow` and `mkwpnuru`;
+  - the changes, eleven by P3's commit: `tvvqulnk`, `nrpqnlol`, `zvnrtxsu`, `muqvuqyq`, `pomrmppu`, `wqsyopql`,
+    `onssronow`, `mkwpnuru`, `zuzrkvtu`, `monsvovy` and `uoztsmtq`;
   - the sessions: 3bb5a1f4 (runtime), eaff7dd7 (workflow) and 70d4b729 (negative).
 
   It looks like a cross-workspace effect of the check. Nothing was changed for it here.
+- **For the user**: P3's commit warned about 15 long tokens in this session's log. They are the expected hashes of
+  upstream's public `BCryptTests` test vectors, printed while choosing 307's salt. All 15 are proposed for the allow list
+  (`sync.py allow approve` when you choose); nothing waits on it.
 - Next: P5, migrating 105 (Commons Numbers `pow`, commons-numbers#223):
   - resolve its revisions and artifacts afresh;
   - write its sidecar and packet, its README unchanged;

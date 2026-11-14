@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.109Z",
-  "ended": "2026-11-14T16:12:26.760Z",
-  "duration_seconds": 2740,
+  "ended": "2026-11-14T16:13:11.164Z",
+  "duration_seconds": 2784,
   "stats": {
     "turns": 20,
-    "api_calls": 182,
-    "tool_calls": 184,
+    "api_calls": 186,
+    "tool_calls": 188,
     "tool_errors": 7,
     "compactions": 4,
-    "peak_context_tokens": 213820,
+    "peak_context_tokens": 219329,
     "usage": {
-      "input_tokens": 364,
-      "output_tokens": 195513,
-      "cache_read_input_tokens": 21481333,
-      "cache_creation_input_tokens": 631070
+      "input_tokens": 372,
+      "output_tokens": 198110,
+      "cache_read_input_tokens": 22346228,
+      "cache_creation_input_tokens": 636579
     }
   },
   "tools": {
-    "Bash": 160,
+    "Bash": 164,
     "Write": 10,
     "Read": 8,
     "Edit": 6
@@ -107,24 +107,24 @@
     {
       "index": 4,
       "started": "2026-11-14T16:00:17.814Z",
-      "ended": "2026-11-14T16:12:26.760Z",
+      "ended": "2026-11-14T16:13:11.164Z",
       "turns": 4,
-      "api_calls": 52,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 104,
-        "output_tokens": 61315,
-        "cache_read_input_tokens": 8002175,
-        "cache_creation_input_tokens": 200634
+        "input_tokens": 112,
+        "output_tokens": 63912,
+        "cache_read_input_tokens": 8867070,
+        "cache_creation_input_tokens": 206143
       },
-      "peak_context_tokens": 213820
+      "peak_context_tokens": 219329
     }
   ],
   "log": {
-    "sha256": "be8cbc04ea49f12b7bbec0cd5ad74d2598e9b853c195e28ff59dbfb63ad2b718",
-    "bytes": 5652319,
-    "lines": 1866,
-    "gzip_bytes": 1095233,
-    "path": "llm-dlc/traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/logs/be8cbc04ea49f12b7bbec0cd5ad74d2598e9b853c195e28ff59dbfb63ad2b718.jsonl.gz"
+    "sha256": "bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc",
+    "bytes": 5754949,
+    "lines": 1911,
+    "gzip_bytes": 1109985,
+    "path": "llm-dlc/traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/logs/bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -159,6 +159,14 @@
       "summary": "example-targets positive P3: 307's claim, oracle, driver, probes and US-ASCII mutant",
       "body": "Example 307 (Spring Security fe9e4549, BCrypt.hashpw(String,String) moving from getBytes(\"UTF-8\") to getBytes(StandardCharsets.UTF_8)) gets its packet. claims/hashpw-preservation.json, in workflow W1's example-target-claim/v1 format, freezes the domain. The password is null or at most 80 UTF-16 code units of any values. The salt is one of seven fixed strings from upstream's BCryptTests: the 'abc' test vector's cost-6 salt and its stored hash, the $2$05$ salt, and null, empty, cost-03 and too-short salts. The claim observes the returned String or the exception's class. The brief's three domain decisions are explicit: a null password (NullPointerException), malformed surrogates (encoded as '?', as String.getBytes specifies) and invalid salts (IllegalArgumentException) are all in the domain. Exception messages are excluded, because since JDK 14 an NPE's message names the method the patch changes.\n\nreplay/probes.json has 45 probes, among them 71, 72 and 73 UTF-8 bytes in 1- to 4-byte characters and a character straddling byte 72, plus three upstream known answers. controls/oracle.py computes no cipher. It encodes UTF-8 itself, and predicts that probes with the same salt and the same first 72 bytes of bcrypt's cyclic key share a result; that distinct keys give distinct results is a stated assumption. That makes the encoding observable, also against the stored hash. The driver passes arguments as UTF-16 code units. The mutant controls/us-ascii.patch (sha256 a2b4e97f...) is on after. target.json gains the claim, the controls and two predicted blockers (java-semantics, input-construction); README and example.json describe the packet.\n\nVerified by hand, as notes, not evidence. Each commit's BCrypt.java was compiled alone with javac 8, and Central's spring-security-crypto 5.2.0.RELEASE (sha1 checked) was run beside them. All three agree with the oracle and with each other on all 45 probes, byte-identically on JDK 21 and 25. The mutant breaks the oracle 9 times and differs on 17 non-ASCII probes. javap shows before and after differ only in hashpw(String,String), apart from constant-pool indices. A jvmcontract gaps scan (records/hashpw-gaps.json) refuses the changed conversion itself on both sides (getBytes(String), getBytes(Charset), StandardCharsets.UTF_8), plus Arrays.copyOf, Integer.parseInt and StringBuilder.charAt in the callee. W1's planner, run from a temporary copy of wqsyopql, plans both tasks. The targets suite (41), test_build.py (190), the contract (16, 13 skipped) and build.py --plan pass. Progress names P5 (example 105) as next; the brief is otherwise accurate.",
       "log_sha256": "be8cbc04ea49f12b7bbec0cd5ad74d2598e9b853c195e28ff59dbfb63ad2b718"
+    },
+    {
+      "change_id": "vwsxyvlrttlqyyuttwowlqotzvvxuvps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets positive: propose upstream BCrypt test vectors for the allow list",
+      "body": "P3's commit warned about 15 long-token findings in this session's log. Each was checked with review show (masked): every one is an expected hash from the public test_vectors table of Spring Security's BCryptTests.java (blob dc242a49), printed while choosing example 307's fixed salt. That is published upstream test data, not a credential. Each is proposed with sync.py allow propose and stays a warning until the user approves it. Progress records this for the user, and brings the coordinator's list of cross-workspace 'no manifest' errors to eleven changes, all other streams'.",
+      "log_sha256": "bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc"
     }
   ],
   "logs": {
@@ -172,6 +180,12 @@
       "bytes": 3837165,
       "lines": 1329,
       "gzip_bytes": 747840,
+      "url": null
+    },
+    "bb08aaaf882442c2d375a4debb50a9481a7c55e2e6f371bb321c6f22d33066bc": {
+      "bytes": 5754949,
+      "lines": 1911,
+      "gzip_bytes": 1109985,
       "url": null
     },
     "be8cbc04ea49f12b7bbec0cd5ad74d2598e9b853c195e28ff59dbfb63ad2b718": {
