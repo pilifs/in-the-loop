@@ -100,6 +100,27 @@ def coverage(probes):
     return sorted({expected(p)[1] for p in probes})
 
 
+# The runner's interface (examples/tools/targets/runtime.py's docstring, "the oracle convention"): what
+# runtime.run_controls passes the driver, and how workflow_ingest reads one revision's lines. An exception is a replay
+# that can't be judged, never a violation.
+
+def _checked_probes():
+    probes = load_probes()
+    if coverage(probes) != sorted(set(CLASSES.values()) | {"UNKNOWN"}):
+        raise ValueError("the probes don't reach every outcome value")
+    return probes
+
+
+def driver_args():
+    """The driver's whole argument vector."""
+    return argv(_checked_probes())
+
+
+def problems(lines):
+    """[(probe, problem)] where one revision's lines disagree with the statement."""
+    return check(lines, _checked_probes())
+
+
 def main(args):
     probes = load_probes()
     if coverage(probes) != sorted(set(CLASSES.values()) | {"UNKNOWN"}):

@@ -40,6 +40,20 @@ JARs, their classes put in place of the base JAR's own in a copy of it (publishe
 `mutant:<base>+<patch sha256>`, and its record keeps the base, the patch, each file's bytes before and after, and the
 scope `constructed-mutation`.
 
+A case's oracle (its sidecar's `oracle` control) is how the controls get their inputs and how ingestion reads their
+output, by one convention for the runner (run_controls) and ingestion (workflow_ingest) alike:
+  - inputs: the oracle's `driver_args()`, the driver's whole argument vector, when it defines one (the case packets,
+    whose drivers take one or two arguments per probe and print their own identity line); otherwise its `PROBES`, one
+    argument per probe, each echoed as one output line's `input`, in order (the fixture and the slices);
+  - reading: the oracle's `problems(lines)` when it defines one, otherwise its `check(lines)`: one revision's driver
+    lines in, [(input, problem)] out, where the independent statement disagrees; an exception means a replay that
+    can't be judged (incomplete, repeated, unknown or unreadable lines), never a violation;
+  - the driver's main class is the class its source file declares, by its path under its source root;
+  - the files the oracle reads, the sidecar's `probe` and `trigger` controls, are locked and copied with it, where they
+    sit relative to it in the folder.
+A packet's own pair comparison (`compare` or `differences`, its preservation side) stays its developer tool:
+ingestion reads each revision's problems against what its pair's kind expects.
+
 The verifier (R3) runs jvmcontract on the prepared original artifacts only, never the adapter or driver, and records
 what its result is about: a scope label (original bytecode, original bytecode under models, a constructed mutation, a
 constructed fixture), the loaded class and its origin, the models and assumptions, and a capability probe (the static
@@ -50,6 +64,7 @@ import dataclasses
 import hashlib
 import importlib.util
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -187,14 +202,20 @@ def _main_class(folder, relative):
 def _controls_source(folder, entry):
     """The parts a preparation compiles or copies besides the original, from the example's folder: the adapter (the
     entry's `adapters`), the driver and oracle (the sidecar's controls), and the JDKs the controls run on."""
-    controls = {c["kind"]: c for c in _sidecar(folder).get("controls", []) if c["kind"] in ("driver", "oracle")}
+    listed = _sidecar(folder).get("controls", [])
+    controls = {c["kind"]: c for c in listed if c["kind"] in ("driver", "oracle")}
+    oracle = None
+    if "oracle" in controls:
+        oracle = {"control": controls["oracle"]["id"], **_hashed(folder, [_inside(folder, controls["oracle"]["path"], "oracle")])[0]}
+        data = sorted({c["path"] for c in listed if c["kind"] in ORACLE_DATA})
+        if data:  # the files the oracle reads (its probes), locked and copied with it
+            oracle["data"] = _hashed(folder, [_inside(folder, d, "oracle data") for d in data])
     return {
         "adapter": _component(folder, entry.get("adapters") or [], "adapter") if entry.get("adapters") else None,
         "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
                        main=_main_class(folder, controls["driver"]["path"]))
         if "driver" in controls else None,
-        "oracle": {"control": controls["oracle"]["id"], **_hashed(folder, [_inside(folder, controls["oracle"]["path"], "oracle")])[0]}
-        if "oracle" in controls else None,
+        "oracle": oracle,
         "jdks": list(entry.get("jdks") or []),
     }
 
@@ -562,6 +583,23 @@ def _files(folder, part):
     return [folder / f["path"] for f in part["files"]]
 
 
+ORACLE_DATA = ("probe", "trigger")  # control kinds whose files the oracle reads, copied beside it
+
+
+def _oracle_files(oracle):
+    """[(path in the work directory, sha256, path in the folder)]: the oracle as controls/<its name>, then each file
+    it reads where it sits relative to the oracle in the folder (controls/probes.json beside it, replay/probes.json
+    for ../replay/probes.json), so the copy imports and reads as the original does; never outside the directory."""
+    copied = Path("controls") / Path(oracle["path"]).name
+    out = [(copied, oracle["sha256"], oracle["path"])]
+    for f in oracle.get("data") or []:
+        where = Path(os.path.normpath(copied.parent / os.path.relpath(f["path"], Path(oracle["path"]).parent)))
+        if where.is_absolute() or where.parts[:1] == ("..",):
+            raise Refused("lock", f"the oracle's file {f['path']} would be copied outside the work directory ({where})")
+        out.append((where, f["sha256"], f["path"]))
+    return out
+
+
 def _add_controls(build, source, folder, workdir, revision, below):
     """The adapter and driver compiled against the classpath `below` them (the original, then its dependencies), and
     the oracle copied, each hashed; the sources rechecked against the lock. (classpath, adapter JAR or None)."""
@@ -576,13 +614,14 @@ def _add_controls(build, source, folder, workdir, revision, below):
                            "driver.jar", "driver", "built from " + ", ".join(source["driver"]["roots"]))
         classpath.insert(0, driver)
     if source.get("oracle"):
-        copied = Path("controls") / Path(source["oracle"]["path"]).name
-        (workdir / copied).parent.mkdir(exist_ok=True)
-        shutil.copyfile(folder / source["oracle"]["path"], workdir / copied)
-        if sha256(workdir / copied) != source["oracle"]["sha256"]:
-            raise Refused("lock", f"the oracle {source['oracle']['path']} changed since it was locked")
-        build.artifacts.append(Artifact(copied.as_posix(), source["oracle"]["sha256"], "oracle",
-                                        origin=source["oracle"]["path"]))
+        for copied, digest, origin in _oracle_files(source["oracle"]):
+            if (workdir / copied).exists():
+                raise Refused("lock", f"the oracle's file {origin} would be copied over {copied}, which the preparation holds")
+            (workdir / copied).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(folder / origin, workdir / copied)
+            if sha256(workdir / copied) != digest:
+                raise Refused("lock", f"the oracle's file {origin} changed since it was locked")
+            build.artifacts.append(Artifact(copied.as_posix(), digest, "oracle", origin=origin))
     for part in ("original", "adapter", "driver"):  # the sources compiled are still the ones locked
         for f in (source.get(part) or {}).get("files", []):
             if sha256(folder / f["path"]) != f["sha256"]:
@@ -928,18 +967,34 @@ def _preparation_dir(prepared):
     return where
 
 
-def _oracle_probes(where, prepared):
-    """The inputs every control is run on: the case's oracle's PROBES, from the prepared copy, its hash rechecked."""
-    oracle = next((a for a in prepared.artifacts if a.role == "oracle"), None)
+def _oracle_inputs(where, prepared):
+    """The driver's arguments, from the prepared copy of the case's oracle (its hash rechecked at preparation), by one
+    of two conventions (the module's docstring): the oracle's driver_args(), the whole argument vector of a driver whose
+    output lines the oracle matches to its probes itself (the case packets); or its PROBES, one argument per probe,
+    each echoed as the `input` of one output line, in order (the fixture). (arguments, oracle artifact, convention)."""
+    origin = (prepared.source.get("oracle") or {}).get("path")
+    oracle = next((a for a in prepared.artifacts if a.role == "oracle" and (a.origin == origin or origin is None)), None)
     if oracle is None:
         raise Refused("controls", f"revision {prepared.revision}'s preparation has no oracle, so no inputs to run on")
     spec = importlib.util.spec_from_file_location(f"targets_oracle_{oracle.sha256[:16]}", where / oracle.path)
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    probes = getattr(module, "PROBES", None)
-    if not probes:
-        raise Refused("controls", f"the oracle {oracle.path} names no PROBES")
-    return [p if isinstance(p, str) else json.dumps(p) for p in probes], oracle
+    try:
+        spec.loader.exec_module(module)
+        if callable(getattr(module, "driver_args", None)):
+            args, convention = module.driver_args(), "driver_args"
+        else:
+            args, convention = getattr(module, "PROBES", None), "PROBES"
+    except (Exception, SystemExit) as e:
+        raise Refused("controls", f"the oracle {oracle.path} could not give the driver's arguments: "
+                                  f"{type(e).__name__}: {e}") from None
+    if not isinstance(args, (list, tuple)) or not args:
+        raise Refused("controls", f"the oracle {oracle.path} gives no driver arguments: it defines neither driver_args() "
+                                  f"nor a non-empty PROBES list ({convention} is {type(args).__name__})")
+    if convention == "driver_args":
+        if not all(isinstance(a, str) for a in args):
+            raise Refused("controls", f"the oracle {oracle.path}'s driver_args() is not a list of strings")
+        return list(args), oracle, convention
+    return [p if isinstance(p, str) else json.dumps(p) for p in args], oracle, convention
 
 
 def _checked(where, prepared):
@@ -958,9 +1013,11 @@ def _checked(where, prepared):
     return [by_path[e] for e in prepared.classpath]
 
 
-def _observations(stdout, inputs):
-    """The driver's structured output, one JSON object per input in order, or None (with why) when it can't be
-    read: a line that isn't a JSON object, or inputs missing, extra or out of order. Raw: nothing is judged here."""
+def _observations(stdout, inputs, convention="PROBES"):
+    """The driver's structured output, one JSON object per line, or None (with why) when it can't be read: a line that
+    isn't a JSON object, no line at all, or, under PROBES, inputs missing, extra or out of order. Under driver_args the
+    oracle matches the lines to its probes (and refuses a missing, repeated or unknown one), so every line is kept as
+    printed, a driver's own identity line included. Raw: nothing is judged here."""
     lines = [line for line in stdout.splitlines() if line.strip()]
     try:
         observed = [json.loads(line) for line in lines]
@@ -968,6 +1025,8 @@ def _observations(stdout, inputs):
         return None, f"a line of the driver's output is not JSON: {e}"
     if not all(isinstance(o, dict) for o in observed):
         return None, "a line of the driver's output is not a JSON object"
+    if convention == "driver_args":
+        return (tuple(observed), None) if observed else (None, "the driver printed nothing")
     seen = [o.get("input") for o in observed]
     if [x if isinstance(x, str) else json.dumps(x) for x in seen] != inputs:
         return None, f"the driver observed inputs {seen}, not the {len(inputs)} it was given: an incomplete replay"
@@ -1007,7 +1066,7 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
         if (prepared.source.get("target") or {}).get("adapterCallsTarget") is False:
             raise Refused("controls", f"revision {revision}'s adapter doesn't call the task's target {plan.target}: "
                                       "its controls are not this task's evidence")
-        inputs, oracle = _oracle_probes(where, prepared)
+        inputs, oracle, convention = _oracle_inputs(where, prepared)
         home = runtime_jdk.home(feature)
         if home is None:
             raise Refused("controls", f"no JDK {feature} under {runtime_jdk.CANDIDATES}")
@@ -1017,7 +1076,7 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
                       "jdkRelease": jdk["release"], "commit": prepared.commit,
                       "classpath": [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in artifacts],
                       "driver": {"control": driver.get("control"), "main": driver["main"]},
-                      "inputs": {"from": "PROBES", "oracle": oracle.path, "oracleSha256": oracle.sha256},
+                      "inputs": {"from": convention, "oracle": oracle.path, "oracleSha256": oracle.sha256},
                       "environment": dict(CONTROL_ENV), "flags": list(CONTROL_FLAGS),
                       "replay": "model" if any(a.role == "stub" for a in artifacts) else "original-jvm"}
         argv = (str(Path(home) / "bin/java"), *CONTROL_FLAGS, "-cp", ":".join(prepared.classpath), driver["main"], *inputs)
@@ -1033,7 +1092,7 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
             control=(prepared.source.get("driver") or {}).get("control") if prepared else None), log
     status, code, seconds = _run_one(argv, where, out, err, CONTROL_TIMEOUT)
     observations, problem = (None, f"the JVM {status}" + (f" (signal {-code})" if status == "killed" else "")) \
-        if status != "exited" else _observations(out.read_text(errors="replace"), inputs)
+        if status != "exited" else _observations(out.read_text(errors="replace"), inputs, convention)
     log = {"cwd": str(where), "problem": problem} if problem else {"cwd": str(where)}
     return interfaces.ExecutionRecord(
         kind="jvm-control", revision=revision, argv=argv, status=status, exitCode=code, seconds=seconds,
@@ -1051,7 +1110,7 @@ def _jdks(plan, revision, prepared):
 
 def run_controls(plan, prepared, workdir):
     """The task's concrete controls: each revision's driver in its own JVM, on its own prepared classpath, on each JDK
-    its artifact entry names (else the one it was built with), run on the oracle's PROBES. A tuple of raw
+    its artifact entry names (else the one it was built with), on the oracle's driver_args() or PROBES. A tuple of raw
     ExecutionRecords, one per revision and JDK, in the plan's order: a revision that wasn't prepared or is not
     artifacts-ready, bytes that changed since preparation, a missing JDK or one too old for the classes gives a
     not-started record, never a skipped one; a kill, a timeout, or output that can't be read gives a record with no

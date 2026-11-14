@@ -110,6 +110,27 @@ def coverage(probes):
     return sorted({expected(p, s) for p, s in probes if reaches_prefix_check(p, s)})
 
 
+# The runner's interface (examples/tools/targets/runtime.py's docstring, "the oracle convention"): what
+# runtime.run_controls passes the driver, and how workflow_ingest reads one revision's lines. An exception is a replay
+# that can't be judged, never a violation.
+
+def _checked_probes():
+    probes = load_probes()
+    if coverage(probes) != [False, True]:
+        raise ValueError("the probes don't reach the changed prefix check with both a true and a false case")
+    return probes
+
+
+def driver_args():
+    """The driver's whole argument vector: a pattern and a string per probe."""
+    return argv(_checked_probes())
+
+
+def problems(lines):
+    """[((pattern, string), problem)] where one revision's lines disagree with the statement."""
+    return check(lines, _checked_probes())
+
+
 def main(args):
     probes = load_probes()
     if coverage(probes) != [False, True]:

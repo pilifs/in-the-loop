@@ -32,7 +32,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PROBES = HERE.parent / "replay" / "probes.json"
+PROBES_FILE = HERE.parent / "replay" / "probes.json"
 INT_MIN, INT_MAX = -(2 ** 31), 2 ** 31 - 1
 IAE, AE = "java.lang.IllegalArgumentException", "java.lang.ArithmeticException"
 
@@ -58,7 +58,7 @@ def contract(k, e):
     return ("threw", AE)
 
 
-def load(path=PROBES):
+def load(path=PROBES_FILE):
     data = json.loads(path.read_text(encoding="utf-8"))
     probes = [tuple(p) for p in data["probes"]]
     for k, e in probes:
@@ -154,6 +154,36 @@ def table(probes, deviations):
             if p in deviations[r]:
                 line[r] = deviations[r][p]
         print(json.dumps(line))
+
+
+# The runner's interface (examples/tools/targets/runtime.py's docstring, "the oracle convention"): what
+# runtime.run_controls passes the driver, and how workflow_ingest reads one revision's lines. An exception is a replay
+# that can't be judged, never a violation.
+
+def _checked_probes():
+    probes, deviations, domain = load()
+    missing = coverage(probes, deviations, domain)
+    if missing:
+        raise ValueError(f"the probes don't reach: {', '.join(missing)}")
+    return probes
+
+
+def driver_args():
+    """The driver's whole argument vector: k and e per probe."""
+    return argv(_checked_probes())
+
+
+def problems(lines):
+    """[([k, e], problem)] where one revision's lines disagree with the Javadoc's contract (rules 1-3), without the
+    declared deviations: those are what the exact fix's pair expects of its before (it violates, at (-2)^31) and
+    after (it holds). read()'s refusal of an incomplete or unexpected replay is raised, never a problem."""
+    probes = _checked_probes()
+    try:
+        seen = read(lines, probes)
+    except SystemExit as e:
+        raise ValueError(str(e)) from None
+    return [(list(p), f"{seen[p][0]} {seen[p][1]}, the contract says {contract(*p)[0]} {contract(*p)[1]}")
+            for p in probes if seen[p] != contract(*p)]
 
 
 def main(args):

@@ -255,6 +255,29 @@ def table(probes):
         print(json.dumps(row, ensure_ascii=False))
 
 
+# The runner's interface (examples/tools/targets/runtime.py's docstring, "the oracle convention"): what
+# runtime.run_controls passes the driver, and how workflow_ingest reads one revision's lines. An exception is a replay
+# that can't be judged, never a violation.
+
+def _checked_probes():
+    probes, known = load()
+    missing = coverage(probes, known)
+    if missing:
+        raise ValueError(f"the probes don't reach: {', '.join(missing)}")
+    return probes, known
+
+
+def driver_args():
+    """The driver's whole argument vector: a password and a salt per probe."""
+    return argv(_checked_probes()[0])
+
+
+def problems(lines):
+    """[(probe, problem)] where one revision's lines disagree with the statement (rules 1-7)."""
+    probes, known = _checked_probes()
+    return check(lines, probes, known)
+
+
 def main(args):
     probes, known = load()
     missing = coverage(probes, known)

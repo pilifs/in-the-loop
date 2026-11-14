@@ -860,6 +860,58 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`.
   - **Next**: request 9, a `driver` control's invocation (main class, arguments, the oracle's `check` and `compare`)
     for 285–287, checked against runtime's lock and controls runner.
+- 2026-11-14, **Phase 5 step 1, request 9 done: one oracle convention for the runner and ingestion.** The request named
+  285–287, but all seven packets were affected, 105 and 305–307 too.
+  - **What was wrong**:
+    - *Runner*: `run_controls` took its inputs from the oracle's `PROBES` list. It expected each driver line to echo
+      one input as `input`, in order. No packet oracle has `PROBES`: 285–287's drivers print a JVM line first, and
+      306, 307 and 105 take two arguments per probe. 105's `PROBES` was a `Path`, which would have raised a
+      `TypeError`, not a refusal.
+    - *Preparation*: it copied only `oracle.py`, so a prepared oracle couldn't find the probes file it reads.
+    - *Ingestion*: it called `check(lines)` and read the result as `(input, problem)` pairs. 305–307 and 105's
+      `check` need more arguments, so every replay would have errored. 285–287's `check` returns a dict, read as
+      character pairs (`['j', 'v']` from `"jvm"`). So a fixed release would have counted as violating.
+  - **Reproducer**: `test_packets.py`'s `OracleConventionTest`, 5 tests. On `vukqmmvo`'s code they gave 15 failures
+    and 2 errors.
+  - **The convention** (runtime.py's docstring):
+    - *Inputs*: the oracle's `driver_args()`, the whole argument vector, if it defines one, else its `PROBES` (the
+      fixture's and the slices' form, unchanged). The record's `inputs.from` names which was used.
+    - *Lines*: under `driver_args`, every JSON-object line the driver prints is kept, its identity line included. The
+      oracle itself matches the lines to its probes. A line that isn't JSON, or no line at all, still gives no
+      observations.
+    - *Reading*: ingestion uses `problems(lines)` if the oracle defines it, else `check(lines)`. A result that isn't
+      a list of `(input, problem)` pairs is an error, never a verdict, and so is a `SystemExit`.
+    - *Probes files*: the preparation locks the sidecar's `probe` and `trigger` controls with the oracle. It copies
+      them where they sit relative to it, refuses a path that would leave the work directory, and refuses a copy over
+      a file the preparation already holds.
+    - *Main class*: as before, the class the driver's source file declares, by its path under its source root (it
+      resolves for all seven).
+  - **Not part of the runner**: `compare`/`differences`, each packet's pair comparison. Each stays the packet's
+    developer tool. Ingestion reads each revision's problems against what its pair's kind expects, and the
+    preservation tasks are proof tasks.
+  - **The seven oracles**: each gains `driver_args()` (equal to its `argv` command's output) and `problems(lines)`, on
+    top of its unchanged logic. The CLI is unchanged.
+    - 285–287: the property's failures, then the legitimate controls'.
+    - 305–307: their `check`, with the coverage check that their `main` makes.
+    - 105: disagreements with the Javadoc's contract, without the declared deviations. So before violates at
+      (-2)^31 and after holds, as the exact-fix pair expects. Its constant is now `PROBES_FILE`.
+
+    Each `example.json` gains a note, and the index is regenerated. No file pinned the oracles' old hashes, and no
+    packet has a receipt.
+  - **What the tests check**:
+    - each packet's oracle part is prepared by `_add_controls`, and the runner's arguments equal `oracle.py argv`;
+    - ingestion reads a constructed replay the statement accepts as no problems (all but 307, which has no
+      constructed implementation), and one it doesn't as pairs (105's only at `[-2, 31]`, 285's at its triggers);
+    - an incomplete replay is an error;
+    - the dict and `SystemExit` cases;
+    - the runner's refusals;
+    - `_observations` under each convention.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (201, five new),
+    `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan`. No driver was run against real JARs: the
+    packets' preparations are Phase 5's jobs.
+  - **Next**: request 10's remaining items: a verifier record's `identities.commit`, and a claim-schema key for an
+    adapter entry point (or a recorded reason to leave it a gap). The handoff beside `--plan` and `find.py`'s task
+    readiness are optional. The fixtures README's `claims/` row was done with request 1.
 - Status: working
 
 ## Loop settings

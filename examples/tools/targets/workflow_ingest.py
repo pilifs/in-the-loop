@@ -54,18 +54,25 @@ ORACLE_TIMEOUT = 60
 SIDES = {"exact-fix": ("violates", "holds"), "release": ("violates", "holds"), "introduction": ("holds", "violates"),
          "mutation": ("holds", "violates"), "positive": ("holds", "holds")}
 PRIORITY = ("killed", "timed-out", "tool-error", "invalid-output")
-# Reads each record's observation lines with the oracle's check(lines), in a separate interpreter (-I: the oracle sees
-# only the standard library). A ValueError from check() is the oracle refusing an incomplete replay.
+# Reads each record's observation lines with the oracle's problems(lines), or its check(lines) when it has no problems
+# (runtime.py's docstring: the oracle convention), in a separate interpreter (-I: the oracle sees only the standard
+# library). An exception (SystemExit included) is the oracle refusing a replay it can't judge; a result that isn't a
+# list of (input, problem) pairs is an oracle that doesn't follow the convention, never a verdict.
 ORACLE_RUNNER = r"""
 import importlib.util, json, sys
 spec = importlib.util.spec_from_file_location("target_oracle", sys.argv[1])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
+read = getattr(module, "problems", None) if callable(getattr(module, "problems", None)) else module.check
+name = read.__name__
 out = []
 for lines in json.load(sys.stdin):
     try:
-        out.append({"problems": [[p[0], str(p[1])] for p in module.check(lines)]})
-    except Exception as e:
+        found = read(lines)
+        if not isinstance(found, (list, tuple)) or not all(isinstance(p, (list, tuple)) and len(p) == 2 for p in found):
+            raise TypeError(f"{name}() returned {type(found).__name__} {str(found)[:120]}, not a list of (input, problem)")
+        out.append({"problems": [[p[0], str(p[1])] for p in found]})
+    except (Exception, SystemExit) as e:
         out.append({"error": f"{type(e).__name__}: {e}"})
 print(json.dumps(out))
 """

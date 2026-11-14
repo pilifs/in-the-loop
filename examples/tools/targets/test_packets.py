@@ -2,17 +2,23 @@
 """The case packets' constructed mutants, planned by the merged code (Phase 5 step 1's request 3 of
 llm-dlc/loops/example-targets.md): each of the six deep packets declares its mutation control as workflow's W1
 `mutant` revision, the `after` of a `mutation` pair over its base, with a replay task and a claim task of its own, and
-runtime's simplematch slice keeps its mutant in its target.json. Offline: nothing is prepared or run."""
+runtime's simplematch slice keeps its mutant in its target.json. Request 9: the runner gives each packet's driver the
+arguments its oracle documents, and ingestion reads each revision's lines with the oracle's problems(lines).
+Offline: nothing is prepared, and no JVM runs."""
 
+import importlib.util
 import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
-from targets import interfaces, sidecar, workflow  # noqa: E402
+from targets import interfaces, runtime, sidecar, workflow, workflow_ingest  # noqa: E402
 
 # Each packet: the mutant's base, its patch, the task whose claim the mutant is meant to fail, and the mutant's own
 # claim task. A CVE packet's mutant fails the fixed release's security property; a positive's fails its preservation
@@ -160,6 +166,135 @@ class CompanionTest(unittest.TestCase):
                     # request-binding is a defect of handler parameters, not of a matching helper
                     self.assertNotIn("request-binding", example["tags"])
 
+
+
+def oracle_module(folder):
+    spec = importlib.util.spec_from_file_location(f"oracle_{folder.name[:3]}", folder / "controls/oracle.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def replays(number, m):
+    """(lines the statement accepts, lines it doesn't) for one packet, constructed from its oracle, no JVM."""
+    if number == "285":
+        probes = m.load_probes()
+        return (m.constructed(probes, lambda t: t if t in m.KNOWN else m.SENTINEL),
+                m.constructed(probes, lambda t: m.SENTINEL if t is None else t))
+    if number == "286":
+        probes = m.load_probes()
+        return m.constructed(probes, "ascii"), m.constructed(probes, "exact")
+    if number == "287":
+        data = m.load_probes()
+        return m.constructed(data, "byte-guard"), m.constructed(data, "plain")
+    if number == "305":
+        good = [{"probe": m.token(p), "outcome": "returned", "key": m.expected(p)[0], "value": m.expected(p)[1]}
+                for p in m.load_probes()]
+    elif number == "306":
+        good = [{"pattern": m.token(p), "str": m.token(q), "outcome": "returned", "value": m.expected(p, q)}
+                for p, q in m.load_probes()]
+    elif number == "307":
+        probes, _ = m.load()
+        bad = [{"password": m.key(p)[0], "salt": m.key(p)[1], "outcome": "threw", "exception": "java.lang.Error"}
+               for p in probes]
+        return None, [json.dumps(r) for r in bad]
+    else:  # 105: the contract everywhere is the after revision; before overflows at (-2)^31
+        probes = m.load()[0]
+        good = [{"k": k, "e": e, "outcome": c[0], ("value" if c[0] == "returned" else "exception"): c[1]}
+                for (k, e), c in ((p, m.contract(*p)) for p in probes)]
+    bad = [dict(r, outcome="threw", exception="java.lang.IllegalStateException") for r in good]
+    if number == "105":
+        bad = [dict(r) if (r["k"], r["e"]) != (-2, 31) else {"k": -2, "e": 31, "outcome": "threw",
+                                                               "exception": m.AE} for r in good]
+    return [json.dumps(r) for r in good], [json.dumps(r) for r in bad]
+
+
+class OracleConventionTest(unittest.TestCase):
+    """Request 9: one convention for every packet's controls (runtime.py's docstring). The runner gives the driver
+    the oracle's driver_args() and keeps every line it prints; the preparation copies the probes the oracle reads;
+    ingestion reads each revision's lines with problems(lines), and refuses a result of any other shape."""
+    NUMBERS = ("105", "285", "286", "287", "305", "306", "307")
+
+    def prepare_oracle(self, folder, workdir):
+        """The oracle part of a preparation, as runtime._add_controls makes it (no adapter or driver here)."""
+        source = runtime._controls_source(folder.resolve(), {})
+        build = SimpleNamespace(artifacts=[])
+        runtime._add_controls(build, {"oracle": source["oracle"]}, folder.resolve(), workdir, "r", [])
+        return SimpleNamespace(revision="r", source=source, artifacts=build.artifacts)
+
+    def test_the_runner_gives_each_driver_the_arguments_its_oracle_documents(self):
+        for number in self.NUMBERS:
+            with self.subTest(number), tempfile.TemporaryDirectory() as tmp:
+                folder = next(EXAMPLES.glob(f"{number}-*"))
+                prepared = self.prepare_oracle(folder, Path(tmp))
+                data = [c["path"] for c in json.loads((folder / "target.json").read_text())["controls"]
+                        if c["kind"] in ("probe", "trigger")]
+                self.assertTrue(data)
+                self.assertEqual({a.origin for a in prepared.artifacts}, {"controls/oracle.py", *data})
+                args, oracle, convention = runtime._oracle_inputs(Path(tmp), prepared)
+                documented = subprocess.run([sys.executable, "-I", str(folder / "controls/oracle.py"), "argv"],
+                                            capture_output=True, text=True, check=True).stdout.splitlines()
+                self.assertEqual((args, convention, oracle.path), (documented, "driver_args", "controls/oracle.py"))
+
+    def test_ingestion_reads_each_revisions_lines_with_the_oracles_problems(self):
+        for number in self.NUMBERS:
+            with self.subTest(number):
+                folder = next(EXAMPLES.glob(f"{number}-*"))
+                good, bad = replays(number, oracle_module(folder))
+                runs = ([good] if good else []) + [bad, bad[:-1]]
+                read = workflow_ingest.read_with_oracle(
+                    SimpleNamespace(folder=str(folder)), {"path": "controls/oracle.py"},
+                    [SimpleNamespace(observations=tuple(json.loads(line) for line in lines)) for lines in runs])
+                if good:
+                    self.assertEqual(read[0], {"problems": []})
+                self.assertTrue(read[-2].get("problems"), read[-2])
+                self.assertTrue(all(isinstance(p, list) and len(p) == 2 for p in read[-2]["problems"]))
+                self.assertIn("error", read[-1], "an incomplete replay is no verdict")
+                if number == "105":
+                    self.assertEqual([p[0] for p in read[-2]["problems"]], [[-2, 31]])
+                if number == "285":
+                    triggers = sorted(p["id"] for p in oracle_module(folder).load_probes() if p["role"] == "trigger")
+                    self.assertEqual(sorted(p[0] for p in read[-2]["problems"]), triggers)
+
+    def test_an_oracle_result_of_another_shape_is_no_verdict(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "dict.py").write_text("def check(lines):\n    return {'property': 'holds', 'security': []}\n")
+            (folder / "exits.py").write_text("import sys\ndef problems(lines):\n    sys.exit('incomplete')\n")
+            (folder / "both.py").write_text("def check(lines):\n    return {}\n"
+                                            "def problems(lines):\n    return [('a', 'b')]\n")
+            records = [SimpleNamespace(observations=({"input": 1},))]
+            plan = SimpleNamespace(folder=str(folder))
+            dict_read = workflow_ingest.read_with_oracle(plan, {"path": "dict.py"}, records)
+            self.assertIn("not a list of (input, problem)", dict_read[0].get("error", ""), dict_read)
+            self.assertIn("SystemExit", workflow_ingest.read_with_oracle(plan, {"path": "exits.py"}, records)[0]["error"])
+            self.assertEqual(workflow_ingest.read_with_oracle(plan, {"path": "both.py"}, records),
+                             [{"problems": [["a", "b"]]}])
+
+    def test_the_runner_refuses_an_oracle_that_gives_no_arguments_or_leads_out(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            where = Path(tmp)
+            (where / "controls").mkdir()
+            (where / "controls/oracle.py").write_text("from pathlib import Path\nPROBES = Path('probes.json')\n")
+            prepared = SimpleNamespace(revision="r", source={"oracle": {"path": "o/oracle.py"}},
+                                       artifacts=[interfaces.Artifact("controls/oracle.py", "0" * 64, "oracle",
+                                                                      origin="o/oracle.py")])
+            with self.assertRaisesRegex(runtime.Refused, "neither driver_args"):
+                runtime._oracle_inputs(where, prepared)
+            (where / "controls/oracle.py").write_text("def driver_args():\n    raise SystemExit('no probes')\n")
+            with self.assertRaisesRegex(runtime.Refused, "could not give the driver's arguments"):
+                runtime._oracle_inputs(where, prepared)
+        with self.assertRaisesRegex(runtime.Refused, "outside the work directory"):
+            runtime._oracle_files({"path": "a/b/oracle.py", "sha256": "0" * 64,
+                                   "data": [{"path": "probes.json", "sha256": "1" * 64}]})
+
+    def test_under_driver_args_every_line_is_kept_and_an_unreadable_one_is_no_observation(self):
+        lines = '{"jvm": {"version": "25"}}\n{"probe": "a", "outcome": "returned"}\n'
+        observed, problem = runtime._observations(lines, ["a=GET"], "driver_args")
+        self.assertEqual((len(observed), problem), (2, None))
+        self.assertIsNone(runtime._observations(lines, ["a=GET"], "PROBES")[0], "PROBES still matches inputs")
+        self.assertIsNone(runtime._observations(lines + "not json\n", ["a=GET"], "driver_args")[0])
+        self.assertEqual(runtime._observations("", ["a=GET"], "driver_args"), (None, "the driver printed nothing"))
 
 if __name__ == "__main__":
     unittest.main()
