@@ -156,8 +156,59 @@ timebox, the downloads policy and the safety rules. Queue anything heavy, and re
 - **Interface request (coordinator, at the merge)**: regenerate the router (`build.py --index-only`) so 285–300 appear
   in `examples/README.md` and `index.json`, and so `find.py --tag external-target` or `--role catalog` finds them. This
   stream doesn't write those generated files.
-- Next: N1, the method-label packet (285): read the fix and parent sources of `WebMvcTags`, select the exact-fix pair,
-  and write the tasks, source lock, oracle, probes, mutation control and replay driver.
+- 2026-11-14, **N1 done: the method-label packet (285)**, ready for Phase 5's preparation. `target.json` selects the
+  **release pair** (2.7.17 → 2.7.18, `published-artifact`). The exact-fix pair (`7ad6e447` → `5490e739`) has no
+  published JAR, and the release pair carries it faithfully: each release's `WebMvcTags.java` has the exact-fix pair's
+  blob (`e5e2147b`, `9f92c1ce`, also in the sources JARs), and `Tag`, `ImmutableTag` and `HttpMethod` are
+  byte-identical across the two closures. Four tasks, all native strict and requiring the replay:
+  - `replay`;
+  - `vulnerable-security` (expected refuted) and `fixed-security` (expected established), sharing
+    `claims/bounded-method-label.json`: the label is one of Framework 5.3's eight `HttpMethod` names or `UNKNOWN`, with
+    the request nullable, `maxArrayLength` 8 and the exception observed;
+  - `preservation` (expected established), on `claims/known-method-labels-preserved.json`, outside the allowed change
+    "a non-null request whose method is none of the eight".
+
+  The claim files are in the workflow stream's `example-target-claim/v1` (W1, on its branch). They validate against
+  its schema, and W1's `plan_task` plans all four tasks from this folder (read-only, from its workspace).
+
+  Also in the folder:
+  - `sources.lock.json`: blobs, managed versions, the class path's seven JARs per release with their sha256 (sha1
+    checked against Central), and `javap` facts;
+  - the request carrier `MethodOnlyRequest`: the token as given, and every other servlet method throws and is recorded;
+  - the adapter and driver, compiled with `--release 21`;
+  - `controls/probes.json`, with 15 probes: the eight names and a null request as legitimate; `XSCF`, `get`, the
+    empty token, a 64-char token and `CONNECT` as triggers; `UNKNOWN` as an edge;
+  - `controls/oracle.py`, from the statement. Its `self-test` rejects an all-`UNKNOWN` implementation through the
+    legitimate controls and preservation, and refuses malformed, incomplete, duplicated or over-reaching output;
+  - the mutation `controls/raw-method-fallback.patch`: the fix with the raw token as the fallback's label, compiled
+    into a copy of the 2.7.18 JAR.
+
+  **Developer note, not evidence**: by hand with pinned JARs, on Temurin 21.0.13 and 25.0.5:
+  - 2.7.17 fails at exactly the five triggers and passes every legitimate probe;
+  - 2.7.18 holds and passes;
+  - the mutant fails at the same five;
+  - preservation holds, with the changes only in the allowed region;
+  - each revision's lines are identical on both JDKs, and no probe read the request beyond `getMethod()`.
+
+  No capability probe was queued: Phase 5 runs it on prepared artifacts. The three blockers are rewritten for this
+  packet, still predicted, and the exact `jvmcontract gaps` probe is in `handoff.next`.
+
+  **For review**: the frozen set is version-specific, so the fix labels `CONNECT` and `get` `UNKNOWN`. The claim fixes
+  the set, not each token's label inside the allowed change, so a case-folding fix would pass it too. `WebFluxTags`'s
+  fix moves classification into `ServerHttpRequest.getMethod()`, so its obligation rests on the server adapter. A null
+  `getMethod()` is outside the domain (2.7.17 throws an NPE, 2.7.18 returns `UNKNOWN`).
+- **Interface requests (at the merge)**, beside the router request above:
+  1. *A constructed mutant as a revision*, as the positive stream's Progress asks: a negative sidecar can't name one,
+     since a `fixture` revision is allowed only in a `control` role. Until then 285's mutant is a `controls` entry of
+     kind `mutation`, with its base revision, its task (`fixed-security`) and the patch's sha256, and runtime's
+     preparation needs a step that compiles the patched class into a copy of the base JAR.
+  2. *How a driver is invoked*: a `driver` control names a source file only. 285's main class is
+     `example285.driver.MethodTagDriver`, its arguments are `python3 controls/oracle.py argv`, and the oracle's entry
+     points are `check(lines)` and `compare(before, after)`. Runtime's `run_controls` and workflow's ingestion need a
+     field or a convention for these.
+- Next: N2, the binder packet (286): read `DataBinder` at the fix and its parent and the regression tests, select the
+  pair, and write the tasks (predicate lemma and `protected-state-mutation` apart), source lock, oracle, probes,
+  mutation control and replay driver, with the default locale pinned.
 - Status: working
 
 ## Loop settings
