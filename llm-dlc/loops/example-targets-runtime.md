@@ -454,9 +454,42 @@ Small unit and JVM conformance checks run inline.
   Result pending.
 - For review: no checkout or build cache yet. Each preparation fetches its commit and the build's plugins again. A
   cache is allowed ("may"), not needed for the acceptance.
+- 2026-11-14, **both jobs passed.**
+  - `20261114-164239-example-targets-runtime-r3-after-vf-024`, at `ba4ec0f1`, collected as `plxytuvu`. The
+    calibration on the recipe with `-parameters` got all five expected verdicts: VF-024 is closed. Its contract step
+    passed on Phase 0's bytes.
+  - `20261114-170353-example-targets-runtime-r2-the-upstream`, at `c46f8f5c`, collected as `mpqzpuvo`: 59 s, peak
+    858 MiB. This is the acceptance's real pinned revision on the upstream-build route.
+    - Both commits are artifacts-ready, each built by Maven 3.10.0 on Temurin 11.0.33 from a fresh checkout.
+    - After's recorded parent `e7c172d2` was checked, and the build changed no tracked file on either commit.
+    - On JDK 21 and 25, before disagrees with the oracle at `pow(-2, 31)` alone (it threw `ArithmeticException`, where
+      the statement says `-2147483648`), and after nowhere. The JDKs agree on each commit.
+    - The built `commons-numbers-core-1.4-SNAPSHOT.jar` differs between the commits (`e3a1b00d…` and `103dfca4…`).
+- **Found in that result, the next piece:** the recorded dependency classpath includes test-scope JARs: JUnit 5.14.4,
+  opentest4j, apiguardian and commons-rng 1.7. The likely cause is that `-Dmdep.includeScope=runtime` isn't the
+  plugin's property name; it should be `includeScope`, so the filter was ignored. No class was shadowed, so the
+  replay stands, but the record calls the classpath the runtime classpath when it isn't.
+- 2026-11-14, **the integration report of 17:13 (runtime with workflow, merged in scratch)**: three failures in
+  runtime's tests, all fixed on this side. No interface request is needed:
+  1. **Receipts outside the example.** Workflow's W2 `publish` records a receipt's path relative to the plan's
+     folder, which is what `route.run` assumes: it ingests into `<folder>/receipts/<task>`. Runtime's two callers
+     wrote beside it instead. Now each copies its case folder first and ingests where `route.run` would, under the
+     copy, so a run never writes into the repository's case folder:
+     - `runtime_slice.py` copies to `ATTEMPT/case`, recorded as `caseFolder`;
+     - `runtime_calibrate.py` copies to `ATTEMPT/fixture`.
+
+     The lock hashes every selected file, so the copy locks the same.
+  2. **W1 ships `fixtures/claims/`.** The verifier test that made that folder now tolerates it and uses a name of its
+     own.
+  3. A new test holds both callers to W2's rule with a stand-in `ingest` that refuses an `out` outside the plan's
+     folder (`test_runtime.py`: 56 tests).
+
+  Checked on a scratch tree: workflow's `8c051f19` with runtime's files laid over it. Its targets suite gives 167
+  tests OK, 1 skipped. The slice published a real receipt there (`receipts/replay/…/result.json`, execution
+  `completed`). The slice test now accepts either Phase 0's stub answer or a receipt under the copy. On this branch,
+  the integration script exits 0: contract 8 pass and 8 skip, targets suite 111, `test_build` 190, `test_pipeline` 29.
 - Next:
-  1. The two jobs' results: `20261114-164239-example-targets-runtime-r3-after-vf-024` and
-     `20261114-170353-example-targets-runtime-r2-the-upstream`.
+  1. The dependency classpath's scope filter (above), with a rerun of the upstream job.
   2. Prepare a constructed `mutant` (its base patched, then built), on the upstream-build checkout first.
 - Status: working
 

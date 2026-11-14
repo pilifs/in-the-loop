@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:26:47.223Z",
-  "ended": "2026-11-14T17:07:31.233Z",
-  "duration_seconds": 6044,
+  "ended": "2026-11-14T17:38:09.059Z",
+  "duration_seconds": 7882,
   "stats": {
-    "turns": 37,
-    "api_calls": 322,
-    "tool_calls": 332,
+    "turns": 42,
+    "api_calls": 350,
+    "tool_calls": 359,
     "tool_errors": 3,
-    "compactions": 7,
-    "peak_context_tokens": 240654,
+    "compactions": 8,
+    "peak_context_tokens": 245594,
     "usage": {
-      "input_tokens": 654,
-      "output_tokens": 358281,
-      "cache_read_input_tokens": 41869004,
-      "cache_creation_input_tokens": 1173910
+      "input_tokens": 712,
+      "output_tokens": 376312,
+      "cache_read_input_tokens": 44665688,
+      "cache_creation_input_tokens": 1266716
     }
   },
   "tools": {
-    "Bash": 277,
-    "Read": 17,
+    "Bash": 302,
+    "Read": 18,
     "Write": 17,
-    "Edit": 14,
+    "Edit": 15,
     "Monitor": 3,
     "ToolSearch": 3,
     "ScheduleWakeup": 1
@@ -159,24 +159,38 @@
     {
       "index": 7,
       "started": "2026-11-14T16:47:48.454Z",
-      "ended": "2026-11-14T17:07:31.233Z",
-      "turns": 5,
-      "api_calls": 54,
+      "ended": "2026-11-14T17:26:18.861Z",
+      "turns": 6,
+      "api_calls": 58,
       "usage": {
-        "input_tokens": 112,
-        "output_tokens": 90780,
-        "cache_read_input_tokens": 9185587,
-        "cache_creation_input_tokens": 227468
+        "input_tokens": 122,
+        "output_tokens": 92453,
+        "cache_read_input_tokens": 10156096,
+        "cache_creation_input_tokens": 232408
       },
-      "peak_context_tokens": 240654
+      "peak_context_tokens": 245594
+    },
+    {
+      "index": 8,
+      "started": "2026-11-14T17:27:26.401Z",
+      "ended": "2026-11-14T17:38:09.059Z",
+      "turns": 4,
+      "api_calls": 24,
+      "usage": {
+        "input_tokens": 48,
+        "output_tokens": 16358,
+        "cache_read_input_tokens": 1826175,
+        "cache_creation_input_tokens": 87866
+      },
+      "peak_context_tokens": 101052
     }
   ],
   "log": {
-    "sha256": "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb",
-    "bytes": 10838124,
-    "lines": 3606,
-    "gzip_bytes": 2116610,
-    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb.jsonl.gz"
+    "sha256": "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5",
+    "bytes": 11782452,
+    "lines": 3941,
+    "gzip_bytes": 2313708,
+    "path": "llm-dlc/traces/3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/logs/0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -243,9 +257,23 @@
       "summary": "example-targets runtime R2: the upstream-build route, the pinned commit checked out and built by its own Maven (verification pending)",
       "body": "runtime.py's lock() and prepare() now take route: upstream-build, through the new runtime_upstream.py, so every route of the sidecar schema is implemented. The lock is offline: a github.com repository, the full commit and its recorded parent, and the build recipe (tool, argv starting with that tool's command, JDK by feature), refusing an argv that sets its own settings, local repository or offline mode. Preparation fetches the exact commit by full SHA into an isolated checkout (https only, no tags, hooks, submodules or user configuration), records its tree and parents (a recorded parent the commit doesn't have is a history blocker), runs the recorded argv with the revision's JDK and Maven by full path, with Maven Central as the one repository, a fresh local repository, strict checksums and no inherited environment, refuses a build that changes tracked sources, takes the one produced non-auxiliary JAR holding the target class as the original, resolves the module's runtime classpath with maven-dependency-plugin 3.9.0 (pinned), and hashes every produced JAR and every file the build resolved (maven/resolution.json, version lookups named). A Maven wrapper's distribution is fetched from Maven Central by sha256 (its properties' own, or Central's .sha1 checked through the new runtime_maven.pin_file) and run directly; Gradle is a toolchain blocker naming the distribution it would need, since services.gradle.org is outside the downloads policy (307 needs the user's decision on that).\n\nVerified: the new test_runtime_upstream.py (15 tests, against a local git repository standing in for github.com and a stand-in mvn recording its argv, cwd and environment: lock refusals, every record of a ready build, wrong parent, missing commit, no network, failing and source-editing builds, no or two original JARs, shadowing, both Gradle tools, the wrapper with its sha256 rechecked and a mismatch, an escaping zip entry, controls of both built revisions on JDK 21 and 25, and the job's case) and test_runtime.py (55) pass; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 110, test_build 190, test_pipeline 29, build.py --plan).\n\nThe acceptance's real pinned revision is queued as job 20261114-170353-example-targets-runtime-r2-the-upstream: runtime_slice.py --case numbers builds example 105's two commons-numbers commits (e7c172d2, 8cfc04e8; the positive stream's recipe, Maven on JDK 11) and replays ArithmeticUtils.pow in separate JVMs on JDK 21 and 25 through runtime_numbers/, this stream's own case folder (adapter, driver, Javadoc oracle, number 316). Expected: before disagrees at pow(-2, 31) alone, after nowhere.",
       "log_sha256": "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb"
+    },
+    {
+      "change_id": "pvwsoqrklqmylxqllrwnkqutokvvwwwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets runtime: receipts under the case folder's copy, as route.run puts them; W1's shipped claims tolerated",
+      "body": "The integration report of 2026-11-14 17:13 (runtime and workflow merged in scratch) found three failures in runtime's tests. Workflow's W2 publish records a receipt relative to the plan's folder, as route.run assumes (it ingests into <folder>/receipts/<task>), while runtime_slice.py and runtime_calibrate.py ingested beside the folder. Each now copies its case folder into the attempt (ATTEMPT/case, ATTEMPT/fixture) and ingests under the copy, so no run writes into the repository's case folder; the lock hashes every selected file, so the copy locks the same. A verifier test no longer fails on the fixtures/claims/ folder W1 ships. A new test holds both callers to W2's rule with a stand-in ingest that refuses an out outside the plan's folder. No interface request is needed.\n\nVerified: test_runtime.py 56 tests; the integration script exits 0 (contract 8 pass and 8 skip, targets suite 111, test_build 190, test_pipeline 29, build.py --plan). On a scratch tree, workflow's 8c051f19 with runtime's files laid over it, the targets suite gives 167 OK (1 skipped) and the slice published a real receipt. Progress also records both jobs' results: 20261114-164239 (VF-024's rerun, all five verdicts as expected) and 20261114-170353 (the upstream-build route on 105's two commons-numbers commits, before disagrees at pow(-2, 31) alone, after nowhere, on JDK 21 and 25). That result shows test-scope JARs in the recorded dependency classpath, the next piece.",
+      "log_sha256": "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5"
     }
   ],
   "logs": {
+    "0ff64d62bdff08dd102bc237c97b0711248821c5dccdb53fbe4b92c7824d74a5": {
+      "bytes": 11782452,
+      "lines": 3941,
+      "gzip_bytes": 2313708,
+      "url": null
+    },
     "1273880c402884eb0a1bcfb2aaaa39101f5ca3c22f103356d207ec9516fc7edb": {
       "bytes": 10838124,
       "lines": 3606,

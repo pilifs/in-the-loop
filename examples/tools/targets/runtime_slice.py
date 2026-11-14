@@ -11,7 +11,9 @@ driver and a Javadoc-derived oracle:
 
     python3 examples/tools/targets/runtime_slice.py ATTEMPT [--offline] [--case simplematch|numbers]
 
-ATTEMPT is a new directory, laid out as route.py lays out an attempt (prepare/<revision>, controls, receipts).
+ATTEMPT is a new directory, laid out as route.py lays out an attempt (prepare/<revision>, controls). The case folder
+is copied to ATTEMPT/case first and planned from there, so its receipts go where route.py puts them, under the
+example's folder (`receipts/<task>`), without writing into the repository's copy.
 --offline uses only what the acquisition cache already holds (the plan's `network: false`; an upstream build needs
 the network). Exit 0 when every revision is artifacts-ready, every control exited with complete observations, the
 oracle's disagreements on each revision are exactly the case's expected ones (none for simplematch; for numbers, before
@@ -28,6 +30,7 @@ records in the route.
 import argparse
 import importlib.util
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -89,13 +92,27 @@ def _oracle(path):
     return module
 
 
+def case_copy(folder, dest):
+    """A copy of the case folder `folder` at `dest` (new), links kept as links and no byte caches, to plan from: the
+    lock hashes every selected file, and ingestion publishes receipts under the plan's folder, as route.run asks it
+    to (the integration report of 2026-11-14 17:13), so a run never writes into the repository's case folder."""
+    shutil.copytree(folder, dest, symlinks=True, ignore=shutil.ignore_patterns("__pycache__", "receipts"))
+    return Path(dest)
+
+
+def receipts(p):
+    """Where route.run has ingestion publish an attempt's receipt: under the example's folder."""
+    return Path(p.folder) / p.outputs.get("receipts", f"receipts/{p.task}")
+
+
 def run(attempt, network=True, folder=None, case="simplematch"):
     """The slice of `case` (its own folder, unless `folder` names another) in a new directory `attempt`: a summary
     dict (also attempt/slice.json), with `ok`."""
     attempt = Path(attempt)
     attempt.mkdir(parents=True, exist_ok=False)
     spec = CASES[case]
-    folder = Path(folder) if folder else spec["folder"]
+    source = Path(folder) if folder else spec["folder"]
+    folder = case_copy(source, attempt / "case")
     p = plan(folder, network=network, example=spec["example"])
     prepared, preparations = {}, []
     for revision in p.revisions:
@@ -137,7 +154,7 @@ def run(attempt, network=True, folder=None, case="simplematch"):
         records_out.append(entry)
     agreement = {r: all(obs == runs[0] for obs in runs[1:]) for r, runs in by_revision.items()}
     # The call route.py makes once the controls have run (a replay task runs no verifier).
-    receipt = workflow.ingest(p, prepared, tuple(records), attempt / "receipts" / p.task)
+    receipt = workflow.ingest(p, prepared, tuple(records), receipts(p))
     ingestion = {"records": len(records), "result": receipt.describe() if isinstance(receipt, Unsupported)
                  else interfaces.to_dict(receipt)}
     expected_records = sum(len(a.get("jdks") or [None]) for a in p.artifacts)
@@ -150,7 +167,7 @@ def run(attempt, network=True, folder=None, case="simplematch"):
           and all(agreement.get(r) for r in p.revisions))
     titles = {"simplematch": "runtime R5: PatternMatchUtils.simpleMatch, published spring-core",
               "numbers": "runtime R2: ArithmeticUtils.pow, commons-numbers built from its pinned commits"}
-    summary = {"slice": titles[case], "case": case, "ok": ok, "expectedProblems": expected,
+    summary = {"slice": titles[case], "case": case, "caseFolder": {"from": str(source), "copy": str(folder)}, "ok": ok, "expectedProblems": expected,
                "network": network, "plan": p.as_dict(), "preparations": preparations, "records": records_out,
                "jdksAgree": agreement, "ingestion": ingestion,
                "reading": "the oracle's reading is the slice's conformance check, not a claim's result; ingestion "

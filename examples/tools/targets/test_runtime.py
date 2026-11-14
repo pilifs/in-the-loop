@@ -668,6 +668,17 @@ class ControlsTest(FixtureCopy):
         self.assertEqual((self.attempt / "controls/notes.txt").read_text(), "mine")
 
 
+def ingest_as_w2_publishes(calls):
+    """A stand-in for workflow.ingest that holds its caller to W2's receipt rule (workflow_ingest.publish records each
+    receipt's path relative to the plan's folder, so `out` must be inside it, as route.run puts it): the integration
+    report of 2026-11-14 17:13 found runtime's callers writing receipts beside the folder instead."""
+    def ingest(plan, prepared, records, out):
+        calls.append(Path(out))
+        Path(out).resolve().relative_to(Path(plan.folder).resolve())  # raises ValueError as publish does
+        return interfaces.Unsupported("ingest", "example-targets-workflow", "the test's stand-in", stage="ingest")
+    return ingest
+
+
 class SliceTest(unittest.TestCase):
     """R5's slice, runtime_slice.py on runtime_simplematch/: PatternMatchUtils.simpleMatch from the published
     spring-core 5.3.18 and 5.3.19 JARs. Nothing here fetches: the end-to-end test runs from a private copy of the four
@@ -744,6 +755,19 @@ class SliceTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             oracle.check(lines(oracle.expected)[:-1])
 
+    def test_receipts_go_under_a_copy_of_the_case_folder_never_the_repositorys(self):
+        mock.patch.object(runtime_maven, "CACHE", self.dir / "empty").start()
+        calls = []
+        mock.patch.object(self.slice.workflow, "ingest", ingest_as_w2_publishes(calls)).start()
+        before = sorted(p.relative_to(self.slice.FOLDER) for p in self.slice.FOLDER.rglob("*"))
+        summary = self.slice.run(self.dir / "attempt", network=False)
+        self.assertEqual(calls, [self.dir / "attempt/case/receipts/replay"])
+        self.assertEqual(summary["caseFolder"], {"from": str(self.slice.FOLDER), "copy": str(self.dir / "attempt/case")})
+        self.assertEqual(sorted(p.relative_to(self.slice.FOLDER) for p in self.slice.FOLDER.rglob("*")), before)
+        copied = self.dir / "attempt/case/target.json"
+        self.assertEqual(copied.read_bytes(), (self.slice.FOLDER / "target.json").read_bytes())
+        self.assertEqual(summary["plan"]["folder"], str(self.dir / "attempt/case"))
+
     def test_the_slice_runs_both_published_releases_end_to_end_from_the_cache(self):
         self.private_cache()
         summary = self.slice.run(self.dir / "attempt", network=False)
@@ -760,9 +784,16 @@ class SliceTest(unittest.TestCase):
                          [(rev, jdk, "exited", len(oracle.PROBES), [], "original-jvm")
                           for rev in ("r5-3-18", "r5-3-19") for jdk in ("21", "25")])
         self.assertEqual(summary["jdksAgree"], {"r5-3-18": True, "r5-3-19": True})
-        # the records reach workflow's ingestion interface, which is Phase 0's stub until W2
+        # the records reach workflow's ingestion interface: Phase 0's stub on this branch, a receipt under the case
+        # folder's copy once W2 is merged (as a trial on workflow's tree showed, 2026-11-14)
         self.assertEqual(summary["ingestion"]["records"], 4)
-        self.assertIn("ingest (example-targets-workflow)", summary["ingestion"]["result"])
+        result = summary["ingestion"]["result"]
+        if isinstance(result, str):
+            self.assertIn("ingest (example-targets-workflow)", result)
+        else:
+            self.assertTrue(result["path"].startswith("receipts/replay/"), result)
+            self.assertEqual(result["execution"], "completed")
+            self.assertTrue((self.dir / "attempt/case" / result["path"]).is_file())
         record = json.loads((self.dir / "attempt/controls/controls.json").read_text())["records"][0]
         self.assertEqual(list(record)[:len(interfaces.ExecutionRecord.__dataclass_fields__)],
                          list(interfaces.ExecutionRecord.__dataclass_fields__))
@@ -967,10 +998,10 @@ class VerifierTest(FixtureCopy):
 
     def test_what_cant_be_attempted_as_stated_is_unsupported_not_a_stub(self):
         prepared, _ = self.verify(verifier_plan(self.folder))
-        claim_file = self.folder / "claims/plan.json"
-        claim_file.parent.mkdir()
+        claim_file = self.folder / "claims/runtime-test-plan.json"  # the folder may ship claims (workflow's W1)
+        claim_file.parent.mkdir(exist_ok=True)
         claim_file.write_text("{}")
-        frozen = {"path": "claims/plan.json", "sha256": runtime.sha256(claim_file)}
+        frozen = {"path": "claims/runtime-test-plan.json", "sha256": runtime.sha256(claim_file)}
         cases = {
             "replay": dataclasses.replace(verifier_plan(self.folder), kind="replay"),
             "default engine": verifier_plan(self.folder, engine=None),
@@ -1042,6 +1073,9 @@ class VerifierTest(FixtureCopy):
                  ("regex-probe", [{"verdict": "unverifiable", "output": "⚠ java.util.regex.Pattern.matcher\n"}], 1, True),
                  ("regex-probe", [{"verdict": "verified", "output": "✓\n"}], 0, False))
         no_regex = {"stdout": json.dumps({**GAPS_OUT, "gaps": []})}
+        calls = []
+        mock.patch.object(runtime_calibrate.workflow, "ingest", ingest_as_w2_publishes(calls)).start()
+        self.addCleanup(mock.patch.stopall)
         for n, (task, outcome, code, ok) in enumerate(cases):
             self.answer(prove={"stdout": json.dumps(outcome), "exit": code}, gaps=no_regex)
             entry = runtime_calibrate.attempt(task, self.work / f"calibrate-{n}", self.folder)
@@ -1053,6 +1087,8 @@ class VerifierTest(FixtureCopy):
         entry = runtime_calibrate.attempt("regex-probe", self.work / "calibrate-probe", self.folder)
         self.assertEqual((entry["ok"], entry["refusalNamesRegex"], entry["probeNamesRegex"]), (True, False, True))
         self.assertEqual(runtime_calibrate.plan("preservation", self.folder).claim["allowedChange"], "code == 97")
+        self.assertEqual(calls[:2], [self.folder / "receipts/fixed-security"] * 2)
+        self.assertEqual(len(calls), len(cases) + 1)
 
     def test_descriptors_become_jvmcontracts_target_spelling(self):
         for target, expected in (("fixture.Gate#allowed(I)Z", "fixture.Gate#allowed(int)"),

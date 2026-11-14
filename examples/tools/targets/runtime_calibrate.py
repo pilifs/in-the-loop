@@ -7,8 +7,11 @@ with the real jvmcontract, native and strict, its raw records handed to workflow
 
 It runs proofs, so it runs as a pipeline job (one that requires jvmcontract, which gets $JVMCONTRACT), never inline.
 ATTEMPT is a new directory, with one attempt per task laid out as route.py lays one out (prepare/<revision>,
-verifier). Exit 0 when every task's verifier record exited with a readable --json outcome whose verdict is the one the
-fixture's task expects (verified for established, violation for refuted, unverifiable or a refusal for unresolved),
+verifier). The fixture is copied to ATTEMPT/fixture and planned from there, so each receipt goes where route.py puts
+it, under the example's folder (ATTEMPT/fixture/receipts/<task>), never into the repository's fixture.
+
+Exit 0 when every task's verifier record exited with a readable --json outcome whose verdict is the one the fixture's
+task expects (verified for established, violation for refuted, unverifiable or a refusal for unresolved),
 and java.util.regex is named in regex-probe's record (its refusal, or its capability probe: each is reported apart);
 1 otherwise. ATTEMPT/calibration.json says what happened.
 
@@ -32,7 +35,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 if __name__ == "__main__":
     sys.path.insert(0, str(HERE.parent))
-from targets import interfaces, runtime, workflow  # noqa: E402
+from targets import interfaces, runtime, runtime_slice, workflow  # noqa: E402
 from targets.interfaces import Unsupported  # noqa: E402
 
 FOLDER = HERE / "fixtures"
@@ -119,7 +122,7 @@ def attempt(task, where, folder=FOLDER):
         entry["ok"] = entry["ok"] and entry["namesRegex"]
     if task in TRIGGERS:  # informational: whether the witness's text names the input the oracle fails on
         entry["witnessNamesTrigger"] = TRIGGERS[task] in output
-    receipt = workflow.ingest(p, prepared, (record,), where / "receipts" / task)
+    receipt = workflow.ingest(p, prepared, (record,), runtime_slice.receipts(p))
     entry["ingestion"] = receipt.describe() if isinstance(receipt, Unsupported) else interfaces.to_dict(receipt)
     return entry
 
@@ -151,8 +154,9 @@ def main(argv=None):
     if args.flags:
         print(f"variant: {variant}")
     entries = []
+    folder = runtime_slice.case_copy(FOLDER, args.attempt / "fixture")
     for task in args.task or list(CLAIMS):
-        entry = attempt(task, args.attempt / task)
+        entry = attempt(task, args.attempt / task, folder)
         entries.append(entry)
         print(f"{task}: expected {entry['expected']}, verifier {entry.get('status') or entry.get('unsupported')} "
               f"exit {entry.get('exitCode')}, verdict {entry.get('verdict')}, scope {entry.get('scope')}: "
