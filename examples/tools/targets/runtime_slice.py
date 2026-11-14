@@ -8,7 +8,7 @@ driver and a Javadoc-derived oracle:
 - `numbers` (runtime_numbers/, R2's upstream-build route): `ArithmeticUtils.pow(int, int)` from apache/commons-numbers
   at example 105's two pinned commits, each fetched from github.com and built by its own Maven on JDK 11. A pipeline
   job: an upstream build is never run inline.
-- `simplematch-mutant` (runtime_simplematch/mutation.json, a constructed mutant on the published-artifact route):
+- `simplematch-mutant` (runtime_simplematch's `mutant-replay` task, a constructed mutant on the published-artifact route):
   5.3.19 against a copy of its JAR whose PatternMatchUtils is recompiled from the v5.3.19 commit's source, patched so
   a "*xxx" pattern matches anywhere. A pipeline job: it checks out spring-framework's commit from github.com.
 
@@ -51,12 +51,11 @@ EXAMPLE = "315"  # reserved by the runtime stream (315-319) for this slice; the 
 CASES = {
     "simplematch": {"folder": FOLDER, "example": EXAMPLE, "expected": {}},
     "numbers": {"folder": HERE / "runtime_numbers", "example": "316", "expected": {"before": [[-2, 31]]}},
-    # mutation.json's constructed mutant of 5.3.19 against 5.3.19 itself; the disagreements are the ones a model of
+    # the sidecar's constructed mutant of 5.3.19 against 5.3.19 itself; the disagreements are the ones a model of
     # the patched method predicts on the oracle's probes (a note: the job's replay is the evidence)
     "simplematch-mutant": {"folder": FOLDER, "example": EXAMPLE, "task": "mutant-replay",
                            "expected": {"mutant": [["*bc", "bcx"], ["a*c*e", "abced"], ["*a*b", "acba"]]}},
 }
-MUTATION = "mutation.json"  # a case's constructed mutants in W1's sidecar shape, beside target.json until W1 is merged
 
 
 def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
@@ -66,11 +65,6 @@ def plan(folder=FOLDER, task="replay", network=True, example=EXAMPLE):
     upstream-build revision's carries its commit, its recorded parent and the recipe's `build`."""
     folder = Path(folder)
     target = json.loads((folder / "target.json").read_text())
-    if (folder / MUTATION).is_file():  # W1's sidecar shape, merged here until W1's schema is
-        extra = json.loads((folder / MUTATION).read_text())
-        target["history"]["revisions"].update(extra.get("revisions", {}))
-        target["history"].setdefault("pairs", []).extend(extra.get("pairs", []))
-        target["tasks"].extend(extra.get("tasks", []))
     t = next(x for x in target["tasks"] if x["id"] == task)
     history, prep = target["history"], target["preparation"]
     if t.get("pair"):

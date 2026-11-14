@@ -19,6 +19,14 @@
         "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
         "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
         "checked": "2026-11-14: fetched by SHA from github.com; one parent, 9b8decf9 (not a merge); author Andy Wilkinson, 2019-09-05 20:54:35 +0100, 'Provide a public API for determining a request's outcome', closes gh-18150."
+      },
+      "mutant": {
+        "mutant": {
+          "base": "after",
+          "patch": "controls/status-200.patch",
+          "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0",
+          "description": "Outcome.forStatus's first range takes 200 too (status <= 200), so WebMvcTags.outcome labels a 200 response INFORMATIONAL instead of SUCCESS. It breaks preservation at status 200 and only there; the label stays in the finite set, so the finite-outcome property holds on the mutant by design."
+        }
       }
     },
     "pairs": [
@@ -28,6 +36,12 @@
         "before": "before",
         "after": "after",
         "selected": true
+      },
+      {
+        "name": "mutation",
+        "kind": "mutation",
+        "before": "after",
+        "after": "mutant"
       }
     ],
     "links": [
@@ -113,6 +127,33 @@
         "The same property and domain as finite-outcome-before, on after's artifact: one property, two claim identities."
       ],
       "claim": "claims/finite-outcome.json"
+    },
+    {
+      "id": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "pair": "mutation",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "notes": [
+        "The mutation control's concrete side: after and the constructed mutant (after's sources with controls/status-200.patch applied, built by after's recipe), each in its own JVM on JDK 21 and 25, with replay's driver, probes and oracle. Expected: after holds, and the mutant fails at status 200 and only there."
+      ]
+    },
+    {
+      "id": "mutant-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "mutation",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "claim": "claims/outcome-preservation.json",
+      "expected": "refuted",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "mutant-replay"
+      ],
+      "notes": [
+        "The mutation control: preservation's claim, its file and domain unchanged, over the mutation pair, after against the constructed mutant. Expected refuted, at status 200 and only there. Sensitivity evidence for the preservation claim, never a historical result."
+      ]
     }
   ],
   "handoff": {
@@ -156,7 +197,7 @@
       "id": "status-200-mutant",
       "kind": "mutation",
       "path": "controls/status-200.patch",
-      "revision": "after",
+      "revision": "mutant",
       "sha256": "12099f891012c175683b8f340d1996f18d9f60dd5a4f708b1e5849f4e84d4de0"
     }
   ]

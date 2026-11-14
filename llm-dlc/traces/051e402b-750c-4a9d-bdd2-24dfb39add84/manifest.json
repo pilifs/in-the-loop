@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-14T20:10:42.969Z",
-  "duration_seconds": 6322,
+  "ended": "2026-11-14T20:22:00.699Z",
+  "duration_seconds": 7000,
   "stats": {
-    "turns": 25,
-    "api_calls": 159,
-    "tool_calls": 158,
+    "turns": 30,
+    "api_calls": 212,
+    "tool_calls": 210,
     "tool_errors": 6,
-    "compactions": 3,
+    "compactions": 4,
     "peak_context_tokens": 164466,
     "usage": {
-      "input_tokens": 336,
-      "output_tokens": 96424,
-      "cache_read_input_tokens": 13269744,
-      "cache_creation_input_tokens": 445944
+      "input_tokens": 444,
+      "output_tokens": 129323,
+      "cache_read_input_tokens": 18882451,
+      "cache_creation_input_tokens": 593226
     }
   },
   "tools": {
-    "Bash": 138,
-    "Edit": 8,
-    "Read": 7,
+    "Bash": 185,
+    "Read": 10,
+    "Edit": 9,
     "Agent": 4,
-    "Write": 1
+    "Write": 2
   },
   "files_touched": [
     "CLAUDE.md",
+    "examples/tools/targets/test_packets.py",
     "examples/tools/targets/test_runtime.py",
     "llm-dlc/loops/example-targets.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/allowlist-merge-conflicts.md"
@@ -87,24 +88,38 @@
     {
       "index": 3,
       "started": "2026-11-14T20:01:33.966Z",
-      "ended": "2026-11-14T20:10:42.969Z",
-      "turns": 4,
-      "api_calls": 26,
+      "ended": "2026-11-14T20:11:03.994Z",
+      "turns": 5,
+      "api_calls": 28,
       "usage": {
-        "input_tokens": 52,
-        "output_tokens": 24200,
-        "cache_read_input_tokens": 2138164,
-        "cache_creation_input_tokens": 96608
+        "input_tokens": 58,
+        "output_tokens": 25303,
+        "cache_read_input_tokens": 2360778,
+        "cache_creation_input_tokens": 101020
       },
-      "peak_context_tokens": 109794
+      "peak_context_tokens": 114208
+    },
+    {
+      "index": 4,
+      "started": "2026-11-14T20:11:45.084Z",
+      "ended": "2026-11-14T20:22:00.699Z",
+      "turns": 4,
+      "api_calls": 51,
+      "usage": {
+        "input_tokens": 102,
+        "output_tokens": 31796,
+        "cache_read_input_tokens": 5390093,
+        "cache_creation_input_tokens": 142870
+      },
+      "peak_context_tokens": 156056
     }
   ],
   "log": {
-    "sha256": "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48",
-    "bytes": 4805718,
-    "lines": 1614,
-    "gzip_bytes": 969260,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48.jsonl.gz"
+    "sha256": "056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea",
+    "bytes": 6300228,
+    "lines": 2152,
+    "gzip_bytes": 1247462,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea.jsonl.gz"
   },
   "subagents": [
     {
@@ -296,9 +311,23 @@
       "summary": "example-targets Phase 5 step 1: the download hosts widened to repo.spring.io and services/plugins.gradle.org; P3's build plugin needs credentials",
       "body": "runtime_maven.HOSTS now holds decision 1's extended hosts: Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. A new test, which failed first, checks that they are allowed and that the rest stays refused: other hosts and look-alikes, the Gradle CDNs as hosts or redirects, http, a user name or port, and a SNAPSHOT on repo.spring.io. Refusal messages name the five hosts.\n\nThe Gradle route itself was not built. HEAD requests showed that P3's (307) buildscript plugin, spring-build-conventions 0.0.23.RELEASE, is on no anonymous repository: repo.spring.io answers 401, and plugins.gradle.org redirects to Maven Central, which has 404. Its upstream build would stop at the buildscript, so it was not queued. Runtime's Gradle blocker now says that the route is missing, not that the policy forbids it; a distribution on another host is still outside the policy (new test). 307's sidecar blocker, handoff, notes and README record this and name the narrower slice (each commit's BCrypt.java compiled alone) as the alternative. Whether to use repo.spring.io credentials or that slice is left for review. 305's wording about decision 1 is updated.\n\nBrief out of date: Progress's request 2 said 'Runtime's Gradle toolchain blocker goes with it. Then P3 (307) by its pinned upstream build, as a job'; neither happened, for the reason above. Decision 1's extension also assumed that P3's build becomes possible, which it doesn't without credentials.",
       "log_sha256": "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48"
+    },
+    {
+      "change_id": "lllrnmuoqwvszoyvltqttvruprmwmrto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets Phase 5 step 1: the six packets' mutation controls become W1 mutant revisions, with tasks of their own",
+      "body": "Each deep packet (285, 286, 287, 305, 306, 307) declared its constructed mutant only as a controls entry of kind mutation on its base revision, which no task prepared. Each patch is now workflow W1's revision mutant (base fixed-release, after or release-after; the patch's sha256 unchanged; the mutation described in words), the after of a new mutation pair. Each packet gains a mutant-replay task (the concrete controls on that pair: base holds, mutant fails) and a claim task expected refuted: mutant-security, fixed-security's claim on the mutant (285-287), or mutant-preservation, preservation's claim over the mutation pair (305-307; 306's is gate A4's nearby mutation). The mutation control now names the revision mutant, as the fixture's does. Side effect: the patch is no longer among fixed-security's or replay's controls, so those plans' input keys changed (and replay's claim key for 305-307); no packet has a receipt, so nothing went stale. Runtime's slice runtime_simplematch/mutation.json moved into its target.json unchanged, and runtime_slice.py no longer merges it. The READMEs, example.json notes and the slice README say so.",
+      "log_sha256": "056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea"
     }
   ],
   "logs": {
+    "056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea": {
+      "bytes": 6300228,
+      "lines": 2152,
+      "gzip_bytes": 1247462,
+      "url": null
+    },
     "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48": {
       "bytes": 4805718,
       "lines": 1614,

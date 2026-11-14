@@ -23,6 +23,14 @@
         "tag": "v5.3.19",
         "release": "5.3.19",
         "checked": "git ls-remote on github.com, 2026-11-14: refs/tags/v5.3.19 (annotated, 68463808) peels to this commit"
+      },
+      "mutant": {
+        "mutant": {
+          "base": "r5-3-19",
+          "patch": "mutant/suffix-anywhere.patch",
+          "sha256": "f71712857d33766e356b5390427902b0364f39b69fe10fed7c4ee21867a5374f",
+          "description": "A leading-star pattern with no second star (\"*xxx\") is matched anywhere in the string instead of at its end: str.endsWith(pattern.substring(1)) becomes str.contains(...). It breaks the suffix branch of simpleMatch, which the oracle's \"*bc\" against \"bcx\" reaches, and the same branch at the end of a recursion (\"a*c*e\" against \"abced\", \"*a*b\" against \"acba\")."
+        }
       }
     },
     "pairs": [
@@ -32,6 +40,12 @@
         "before": "r5-3-18",
         "after": "r5-3-19",
         "selected": true
+      },
+      {
+        "name": "mutation",
+        "kind": "mutation",
+        "before": "r5-3-19",
+        "after": "mutant"
       }
     ],
     "introduction": {
@@ -83,6 +97,16 @@
       "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
       "notes": [
         "Concrete controls only: each release's driver in its own JVM on JDK 21 and 25, on the published spring-core JAR and its one compile dependency, spring-jcl (spring-core's POM at each version, 2026-11-14). The oracle is written from the method's Javadoc."
+      ]
+    },
+    {
+      "id": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "mutation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "notes": [
+        "The mutation control's concrete side: 5.3.19's published spring-core, and a copy of it whose PatternMatchUtils is recompiled from the v5.3.19 commit's source with the patch applied, each in its own JVM on JDK 21 and 25, read by the same Javadoc oracle. The mutant must disagree with it where the suffix branch decides, and 5.3.19 nowhere."
       ]
     }
   ],

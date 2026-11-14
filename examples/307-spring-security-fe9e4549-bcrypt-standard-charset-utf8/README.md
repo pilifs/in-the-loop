@@ -33,6 +33,8 @@ representation.
 |---|---|---|---|
 | `replay` | replay, both revisions | (controls) | Each revision's original class in its own JVM on JDK 21 and 25, over the 45 probes of [`replay/probes.json`](replay/probes.json): fixed salts from upstream's tests, passwords empty, ASCII, BMP non-ASCII, supplementary, 71, 72 and 73 UTF-8 bytes, malformed surrogates and null, and four invalid salts |
 | `preservation` | equivalence | established | [`claims/hashpw-preservation.json`](claims/hashpw-preservation.json): a null password or one of at most 80 UTF-16 code units (any values), one of seven fixed salts (null and three other invalid ones included); the same returned String or the same exception class, on one JDK |
+| `mutant-replay` | replay, the `mutation` pair | (controls) | `after` against the constructed mutant (the revision `mutant`, `after` with the patch applied), with the same driver, probes and oracle: `after` holds, the mutant fails at the non-ASCII probes |
+| `mutant-preservation` | equivalence, the `mutation` pair | refuted | `preservation`'s claim file and domain, unchanged, over `after` and the mutant: the mutation control |
 
 A proof may reuse a checked summary of the unchanged `hashpw(byte[],String)`, bound to its bytecode; without it the
 full claim stays unresolved beside a separate local conversion lemma, and no cipher is substituted.

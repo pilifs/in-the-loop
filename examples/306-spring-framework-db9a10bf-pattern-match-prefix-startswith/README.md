@@ -34,6 +34,8 @@ The JARs' sha256s are pinned in `target.json`. The method calls only `String` me
 |---|---|---|---|
 | `replay` | replay, release pair | (controls) | Each release's original JAR in its own JVM on JDK 21 and 25, over the probes `(null,"x")`, `("*","")`, `("abc*","ab")`, `("abc*","abcdef")`, `("abc*","xbcdef")`, `("a*c","abbbc")`, `("a*c","abbbd")`, `("a**c","abc")`, `("é*","éx")` and the star shapes |
 | `preservation` | equivalence | established | Same boolean and exceptions over a declared bounded UTF-16 domain of nullable strings; bounds frozen in the claim file |
+| `mutant-replay` | replay, the `mutation` pair | (controls) | `release-after` against the constructed mutant (the revision `mutant`, `release-after` with the patch applied), with the same driver, probes and oracle: `release-after` holds, the mutant fails at `("abc*","xbcdef")` |
+| `mutant-preservation` | equivalence, the `mutation` pair | refuted | `preservation`'s claim file and domain, unchanged, over `release-after` and the mutant: the mutation control (gate A4's nearby mutation) |
 
 At least one true and one false case must reach the changed prefix branch (`("abc*","abcdef")` and `("abc*","xbcdef")`).
 

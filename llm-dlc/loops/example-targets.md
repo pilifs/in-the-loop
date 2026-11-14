@@ -716,6 +716,39 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     new), `test_build.py` (190), `test_pipeline.py` (29) and `build.py --plan` all pass.
   - **Next**: request 3, the six packets' constructed mutants as W1 `mutant` revisions (285–287, 305–307), with
     runtime's `runtime_simplematch/mutation.json` moved into its target.json.
+- 2026-11-14, **Phase 5 step 1, request 3 done: the constructed mutants are revisions.**
+  - **Reproducer**: a new test, `examples/tools/targets/test_packets.py`, failed on the six packets and on the slice.
+    No packet had a `mutant` revision, a `mutation` pair or a mutant task. The slice still had its `mutation.json`.
+  - **The change**: each packet's `controls` patch is now W1's revision `mutant`. Its base is the old control's
+    revision (`fixed-release` for 285–287, `after` for 305 and 307, `release-after` for 306). The patch's sha256 is
+    unchanged, and each revision says in words what it breaks. Each packet also gains:
+    - a `mutation` pair, from the base to `mutant`;
+    - `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail (ingestion's
+      expectation for a mutation pair);
+    - a claim task, expected `refuted`: `mutant-security` (285–287, `fixed-security`'s claim file on the mutant) or
+      `mutant-preservation` (305–307, `preservation`'s claim over the mutation pair). 306's is gate A4's "nearby
+      constructed mutation fails the same claim and control".
+
+    The `mutation` control stays, now on the revision `mutant`, as in the fixture. The source-level claim key is the
+    reference task's (one property). The attempt's inputs differ, and runtime binds the claim to
+    `mutant:<base commit>+<patch sha256>`.
+  - **Side effect**: the patch is no longer among `fixed-security`'s controls (285–287) or `replay`'s (305–307). So
+    those plans' input keys changed, and `replay`'s claim key too for 305–307. No packet has a receipt, so nothing went
+    stale.
+  - **The slice**: `runtime_simplematch/mutation.json` moved into its `target.json` unchanged. `runtime_slice.py` no
+    longer merges it.
+  - **Docs**: each packet's README lists the two tasks (and, for 285–287, the `mutant` revision). Each `example.json`
+    has a note. The slice's README is updated.
+  - **For review**: 287's `mutant-security` reaches only the multibyte triggers. The unguarded byte entry is
+    `fixed-guard`'s target, so no task states a mutant claim on it.
+  - **Checked**:
+    - `example-targets-integration.sh` exits 0: the contract (16), the targets suite (187, four new), `test_build.py`
+      (190), `test_pipeline.py` (29) and `build.py --plan`;
+    - `build.py --plan` gives an executable plan for 306 `mutant-preservation`, 285 `mutant-security` and 307
+      `mutant-replay`.
+
+    No mutant was prepared: those are Phase 5's packet jobs.
+  - **Next**: request 4, `build.py --index-only`, so the router lists 285–300 and 305–307.
 - Status: working
 
 ## Loop settings

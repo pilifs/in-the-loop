@@ -31,11 +31,19 @@
         "tag": "v5.3.7",
         "release": "5.3.7",
         "checked": "2026-11-14: the tag v5.3.7 fetched from github.com and resolved to this commit. Its PatternMatchUtils.java is blob 67871015, the same as after's, and so is the file in Maven Central's spring-core-5.3.7-sources.jar (sources.lock.json)."
+      },
+      "mutant": {
+        "mutant": {
+          "base": "release-after", "patch": "controls/drop-prefix.patch",
+          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734",
+          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
+        }
       }
     },
     "pairs": [
       { "name": "positive", "kind": "positive", "before": "before", "after": "after" },
-      { "name": "release", "kind": "release", "before": "release-before", "after": "release-after", "selected": true }
+      { "name": "release", "kind": "release", "before": "release-before", "after": "release-after", "selected": true },
+      { "name": "mutation", "kind": "mutation", "before": "release-after", "after": "mutant" }
     ],
     "links": [
       "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
@@ -71,13 +79,24 @@
       "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
       "expected": "established", "engine": "native", "gaps": "strict", "requires": ["replay"],
       "notes": ["Decision preservation: over a declared bounded UTF-16 domain of nullable pattern and string, both revisions return the same boolean and throw the same exceptions. No allowed-change region. The bounds are part of the claim, frozen in its claim file before any attempt; a proof by induction over unbounded strings is a separate, stronger scope. Application-core's native checker refuses a null String parameter, so a null case the domain declares and the checker can't take is reported as a refusal, never dropped from the domain."]
+    },
+    {
+      "id": "mutant-replay", "kind": "replay", "relation": "preservation", "pair": "mutation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "notes": ["The mutation control's concrete side: release-after and the constructed mutant (release-after's sources with controls/drop-prefix.patch applied, its changed classes recompiled into a copy of release-after's artifact), each in its own JVM on JDK 21 and 25, with replay's driver, probes and oracle. Expected: release-after holds, and the mutant fails at \"abc*\" against \"xbcdef\"."]
+    },
+    {
+      "id": "mutant-preservation", "claim": "claims/simple-match-preservation.json", "kind": "equivalence", "relation": "preservation", "pair": "mutation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "expected": "refuted", "engine": "native", "gaps": "strict", "requires": ["mutant-replay"],
+      "notes": ["The mutation control (gate A4's nearby mutation): preservation's claim, its file and domain unchanged, over the mutation pair, release-after against the constructed mutant. Expected refuted, at \"abc*\" against \"xbcdef\". Sensitivity evidence for the preservation claim, never a historical result."]
     }
   ],
   "controls": [
     { "id": "glob-oracle", "kind": "oracle", "path": "controls/oracle.py" },
     { "id": "simple-match-driver", "kind": "driver", "path": "replay/driver/inloop/p306/SimpleMatchDriver.java" },
     { "id": "simple-match-probes", "kind": "probe", "path": "replay/probes.json" },
-    { "id": "drop-prefix-mutant", "kind": "mutation", "path": "controls/drop-prefix.patch", "revision": "release-after",
+    { "id": "drop-prefix-mutant", "kind": "mutation", "path": "controls/drop-prefix.patch", "revision": "mutant",
       "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734" }
   ],
   "handoff": {

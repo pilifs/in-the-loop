@@ -32,6 +32,8 @@ WebClient and WebFlux tag factories and remove a client exception catch: none of
 | `replay` | replay, both revisions | (controls) | Each revision's original JAR in its own JVM on JDK 21 and 25, over null and the statuses 99, 100, 199, 200, 299, 300, 399, 400, 499, 500, 599, 600, `Integer.MIN_VALUE`, `Integer.MAX_VALUE` |
 | `preservation` | equivalence | established | Same tag key and value, and the same specified exceptions, for a null response or any `int` status; object identity excluded on purpose (the patch moves allocation and caching) |
 | `finite-outcome-before`, `finite-outcome-after` | prove, one revision each | established | The tag's key is `outcome` and its value one of INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR, UNKNOWN |
+| `mutant-replay` | replay, the `mutation` pair | (controls) | `after` against the constructed mutant (the revision `mutant`, `after` with the patch applied), with the same driver, probes and oracle: `after` holds, the mutant fails at status 200 alone (INFORMATIONAL for SUCCESS) |
+| `mutant-preservation` | equivalence, the `mutation` pair | refuted | `preservation`'s claim file and domain, unchanged, over `after` and the mutant: the mutation control |
 
 All proof tasks name `--engine native --gaps strict`. Established would say one tag dimension of one entry is finite and
 preserved, not that a server or release is secure. Compared with the negative (CVE-2023-34055's method label), the input
