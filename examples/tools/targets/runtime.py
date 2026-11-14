@@ -18,8 +18,11 @@ Routes: `fixture` (a control's fixture revisions, built locally with build_fixtu
 `published-artifact` (the revision's JAR and its declared dependencies from Maven Central, each by its recorded sha256,
 through runtime_maven.py's checked cache) and `upstream-build` (the exact commit fetched from github.com and built by
 its recorded recipe with its own tool and JDK, through runtime_upstream.py: Maven and the Maven wrapper; Gradle is a
-blocker). The adapter and driver are compiled separately, with the fixture recipe's --release and JAR date, on every
-route.
+blocker) and `source-slice` (the exact commit fetched from github.com, and only the slice's named files compiled, by
+the slice's recorded JDK and javac flags, against its recorded JARs: an extracted source slice, labelled
+`extracted-source-slice`, never the commit's own build; a revision of its sidecar may instead be a published release
+of the same sources, prepared as published and compared with a slice in a correspondence pair). The adapter and
+driver are compiled separately, with the fixture recipe's --release and JAR date, on every route.
 
 On the classpath a preparation refuses: a class held by more than one entry (an adapter or driver shadowing the
 target, or two dependencies with one class), a target method missing from the original artifact, and an adapter that
@@ -38,7 +41,8 @@ A constructed `mutant` (workflow's W1: a base revision, a patch by path and sha2
 prepared on its base's route, never as its base unpatched. Its lock checks the patch's sha256 and reads the files it
 modifies (modifications of existing text files only). Its preparation applies the patch with `git apply`: to a copy of
 the base fixture, built by the fixture recipe; to the base commit's checkout, built by the recorded recipe
-(upstream-build); or to the base commit's checkout, whose patched Java files are compiled against the base's published
+(upstream-build) or compiled as the base's slice (source-slice, whose patch may change only the slice's files); or
+to the base commit's checkout, whose patched Java files are compiled against the base's published
 JARs, their classes put in place of the base JAR's own in a copy of it (published-artifact). Its identity is
 `mutant:<base>+<patch sha256>`, and its record keeps the base, the patch, each file's bytes before and after, and the
 scope `constructed-mutation`.
@@ -74,7 +78,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream
+from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
@@ -326,7 +330,59 @@ def _lock_upstream(plan, revision, entry, folder):
     return recipe["commit"], source
 
 
-LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published, "upstream-build": _lock_upstream}
+SLICE_PATH = re.compile(r"^(?!/)(?!.*(^|/)\.\.?(/|$))[A-Za-z0-9_][A-Za-z0-9_./-]*\.java$")
+
+
+def _lock_slice(plan, revision, entry, folder):
+    """A source-slice revision's lock, offline: the github.com repository, the full commit and its recorded parent,
+    the slice's recipe (the files compiled, the JDK and the javac flags, checked as sidecar.py checks them) and the
+    JARs it is compiled against, each by fixed coordinates, an allowed URL and a recorded sha256. Nothing is fetched."""
+    repository, commit, parent = entry.get("repository"), entry.get("commit"), entry.get("parent")
+    if not isinstance(repository, str) or not runtime_upstream.REPOSITORY.match(repository.removesuffix(".git")):
+        raise Refused("lock", f"revision {revision}: {repository!r} is not an https repository on github.com, the one "
+                              f"host commits are fetched from")
+    for what, sha in (("commit", commit), ("recorded parent", parent)):
+        if (what == "commit" or sha is not None) and (not isinstance(sha, str) or not FULL_SHA.match(sha)):
+            raise Refused("lock", f"revision {revision}: its {what} {sha!r} is not a full commit")
+    recipe = entry.get("slice")
+    if not isinstance(recipe, dict):
+        raise Refused("lock", f"revision {revision}: the source-slice route names no slice (files, jdk, flags)")
+    files, jdk, flags = recipe.get("files"), recipe.get("jdk"), recipe.get("flags")
+    if (not isinstance(files, list) or not files or len(set(files)) != len(files)
+            or not all(isinstance(f, str) and SLICE_PATH.match(f) for f in files)):
+        raise Refused("lock", f"revision {revision}: the slice's files {files!r} are not distinct .java paths inside "
+                              f"the repository")
+    if not isinstance(jdk, str) or not jdk.isdigit():
+        raise Refused("lock", f"revision {revision}: the slice's JDK {jdk!r} is not a feature release")
+    if not isinstance(flags, list) or not all(isinstance(f, str) for f in flags):
+        raise Refused("lock", f"revision {revision}: the slice's flags are not a list of strings")
+    wrong = sidecar.slice_flag_problems(flags)
+    if wrong:
+        raise Refused("lock", f"revision {revision}: " + "; ".join(wrong))
+    dependencies = entry.get("published") or []
+    try:
+        items = [runtime_maven.check_item(d, "dependency") for d in dependencies]
+    except runtime_maven.Blocked as b:
+        raise Refused.blocked(b) from None
+    if len({i["coordinates"] for i in items}) != len(items):
+        raise Refused("lock", f"revision {revision}: a JAR is listed twice on the slice's classpath")
+    source = {
+        "route": "source-slice", "repository": repository, "revision": revision,
+        "provenance": "an extracted source slice: the named files of the exact commit, fetched from github.com, compiled "
+                      "alone by the recorded JDK and flags against the recorded JARs; never the commit's own build, "
+                      "and a narrower scope than it",
+        "history": {"commit": commit, **({"parent": parent} if parent else {})},
+        "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), "scope": SCOPES["extracted-source-slice"]},
+        "published": items,
+        **_controls_source(folder, entry),
+        "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
+                                          "the slice is compiled by its own recorded JDK and flags", **_fixture_recipe()},
+    }
+    return commit, source
+
+
+LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published, "upstream-build": _lock_upstream,
+         "source-slice": _lock_slice}
 ROUTES_TO_COME = {}  # a route named here is Unsupported (not implemented yet), never a stub
 
 
@@ -344,6 +400,8 @@ MUTANT_HOW = {
                           "compiled against the base's published JARs, and their classes put in place of the base "
                           "JAR's own in a copy of it; every other class is the published JAR's",
     "upstream-build": "the base commit checked out from github.com, patched, and built there by the recorded recipe",
+    "source-slice": "the base commit checked out from github.com, patched, and its slice's files compiled by the slice's "
+                    "recorded JDK and flags, as the base's are",
 }
 
 
@@ -434,6 +492,12 @@ def _lock_mutant(plan, revision, entry, folder):
         if not runtime_upstream.REPOSITORY.match(str(entry.get("repository", "")).removesuffix(".git")):
             raise Refused("lock", f"{what}: its sources are checked out from the repository, and "
                                   f"{entry.get('repository')!r} is not an https repository on github.com")
+    if route == "source-slice":
+        compiled = (base.get("slice") or {}).get("files") or []
+        other = [f for f in files if f not in compiled]
+        if other:
+            raise Refused("lock", f"{what}'s patch modifies {', '.join(other)}, which the base's slice doesn't compile: "
+                                  f"the mutant would be its base unchanged")
     base_name = base["revision"]
     base_entry = {**{k: v for k, v in entry.items() if k != "mutant"},
                   **{k: v for k, v in base.items() if k != "revision"}, "revision": base_name}
@@ -932,7 +996,110 @@ def _prepare_upstream(plan, revision, locked, workdir):
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
 
 
-PREPARES = {"fixture": _prepare_fixture, "published-artifact": _prepare_published, "upstream-build": _prepare_upstream}
+def _git_blob(data):
+    """The git blob id of `data` (git hash-object), how sources.lock.json names a file's bytes at a commit."""
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def _prepare_slice(plan, revision, locked, workdir):
+    """A source slice: the JARs it is compiled against acquired by their recorded sha256; the exact commit checked out
+    (runtime_upstream.checkout, with its parent when recorded); for a mutant, its patch applied there; the slice's
+    files, each hashed and named by its git blob id, compiled alone by the recorded JDK's javac with the recorded
+    flags (no annotation processing, no implicit compilation, an empty source path, so nothing else of the checkout
+    is read); and their classes put in a JAR, the revision's original. A class javac writes that none of the files
+    declares is refused."""
+    source = dict(locked.source)
+    folder = Path(plan.folder).resolve()
+    build, toolchain = _builder(source, workdir)
+    acquired, log, cache = [], [], runtime_maven.Cache()
+    try:
+        if not plan.network:
+            raise Refused("acquire", "a source slice is checked out from github.com, and the task's plan allows no "
+                                     "acquisition (network: false)", needs="acquisition",
+                          next="plan the task with acquisition (TaskPlan.network)")
+        for item in source["published"]:
+            path = _jar_path(item["coordinates"])
+            (workdir / path).parent.mkdir(parents=True, exist_ok=True)
+            try:
+                log += runtime_maven.acquire(item, workdir / path, cache, network=plan.network)
+            except runtime_maven.Blocked as b:
+                raise Refused.blocked(b) from None
+            finally:
+                (workdir / "logs").mkdir(exist_ok=True)
+                (workdir / "logs/acquire.log").write_text("\n".join(log) + "\n")
+                if "logs/acquire.log" not in build.logs:
+                    build.logs.append("logs/acquire.log")
+            build.artifacts.append(Artifact(path, item["sha256"], item["role"], coordinates=item["coordinates"],
+                                            origin=item["url"]))
+            acquired.append(path)
+        recipe = source["slice"]
+        home, dest, found = workdir / "home", workdir / "checkout", {}
+        home.mkdir(exist_ok=True)
+        source["checkout"] = found
+        try:
+            runtime_upstream.checkout(runtime_upstream.Steps(workdir, build.logs),
+                                      {"repository": source["repository"], "commit": source["history"]["commit"],
+                                       "parent": source["history"].get("parent")}, dest, home, found)
+        except runtime_maven.Blocked as b:
+            raise Refused.blocked(b) from None
+        found.pop("changedByBuild", None)  # nothing is built in this checkout
+        root = dest.resolve()
+        for f in recipe["files"]:
+            path = (dest / f)
+            if not path.is_file() or not path.resolve().is_relative_to(root):
+                raise Refused("lock", f"{f}, a file of the slice, is not a file of {source['history']['commit']}",
+                              needs="the slice's files at the commit", next="correct slice.files in target.json")
+        if "mutant" in source:
+            _apply_mutant(source, dest, _mutant_patch(source, folder, workdir), workdir, build.logs)
+        compiled = []
+        for f in recipe["files"]:
+            data = (dest / f).read_bytes()
+            compiled.append({"path": f, "sha256": hashlib.sha256(data).hexdigest(), "gitBlob": _git_blob(data)})
+        jdk = runtime_jdk.home(recipe["jdk"])
+        if jdk is None:
+            raise Refused("toolchain", f"no JDK {recipe['jdk']} under {runtime_jdk.CANDIDATES} to compile the slice with",
+                          needs=f"JDK {recipe['jdk']}", next=f"install Temurin {recipe['jdk']} with sdkman")
+        classes, empty = workdir / "classes" / "slice", workdir / "classes" / "no-sources"
+        classes.mkdir(parents=True)
+        empty.mkdir(parents=True)
+        argv = [str(Path(jdk) / "bin/javac"), *recipe["flags"], "-implicit:none", "-proc:none", "-nowarn",
+                "-sourcepath", str(empty), "-d", str(classes)]
+        if acquired:
+            argv += ["-cp", ":".join(str(workdir / a) for a in acquired)]
+        build.run("javac-slice", argv + [str(dest / f) for f in recipe["files"]])
+        tops = []
+        for f in recipe["files"]:
+            package = PACKAGE.search((dest / f).read_text(errors="replace"))
+            tops.append("/".join([*(package.group(1).split(".") if package else []), Path(f).stem]))
+        made = {c.relative_to(classes).as_posix()[:-6]: c for c in sorted(classes.rglob("*.class"))}
+        stray = sorted(n for n in made if not any(n == t or n.startswith(t + "$") for t in tops))
+        if stray:
+            raise Refused("build", f"javac wrote {', '.join(stray)}, which no file of the slice declares")
+        missing = sorted(t for t in tops if t not in made)
+        if missing:
+            raise Refused("build", f"the slice's files give no class {', '.join(missing)}: a file's name or package "
+                                   f"doesn't match the class it declares")
+        name = f"slice/{revision}.jar"
+        (workdir / "slice").mkdir(exist_ok=True)
+        what = (f"constructed: the slice of {source['history']['commit']} ({', '.join(recipe['files'])}) after the patch "
+                f"{source['mutant']['patch']['path']} (sha256 {source['mutant']['patch']['sha256']}), compiled by JDK "
+                f"{recipe['jdk']}" if "mutant" in source else
+                f"an extracted source slice of {source['history']['commit']}: {', '.join(recipe['files'])}, compiled by "
+                f"JDK {recipe['jdk']} with {' '.join(recipe['flags']) or 'no flags'}")
+        original = build.jar("slice", classes, name, "original", what)
+        identity = runtime_jdk.identity(jdk)
+        toolchain["slice"] = {"jdk": identity, "javac": argv, "flags": list(recipe["flags"]),
+                              "classes": {n: sha256(c) for n, c in made.items()}}
+        source["slice"] = {**recipe, "compiled": compiled, "jar": name}
+        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *acquired])
+        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
+    except Refused as e:
+        return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
+    return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
+
+
+PREPARES = {"fixture": _prepare_fixture, "published-artifact": _prepare_published, "upstream-build": _prepare_upstream,
+            "source-slice": _prepare_slice}
 
 
 def prepare(plan, revision, workdir):
@@ -1167,6 +1334,9 @@ SCOPES = {
                          "called directly; the adapter and driver are not on the verifier's classpath",
     "original-bytecode-under-models": "the original bytecode, with stated models of what it calls (a model boundary)",
     "constructed-mutation": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
+    "extracted-source-slice": "an extracted source slice: the named files of the exact commit compiled alone against "
+                              "pinned published JARs, not the commit's own build; a claim about it is about those "
+                              "classes, and reaches the commit's build only through a recorded correspondence",
     "constructed-fixture": "a fixture revision: constructed control code built locally, never an upstream result",
 }
 # Refusals that are the claim's or the task's, not the attempt's: Unsupported, before any process (a not-started
@@ -1253,6 +1423,8 @@ def _scope(plan, sides):
         label = "constructed-mutation"
     elif any(entries.get(r, {}).get("route") == "fixture" for r in sides):
         label = "constructed-fixture"
+    elif any(entries.get(r, {}).get("route") == "source-slice" for r in sides):
+        label = "extracted-source-slice"
     elif models or stubs:
         label = "original-bytecode-under-models"
     else:

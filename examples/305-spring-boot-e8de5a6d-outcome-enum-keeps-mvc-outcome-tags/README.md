@@ -2,10 +2,11 @@
 
 [← All examples](../README.md)
 
-**State: a partial scaffold.** Source-locked, with its claims frozen and its oracle, driver, probes and mutant
-written ([the packet](#the-packet)); not prepared, since its build route waits on a decision (below). No build, replay
-or proof has run through the pipeline, so there is no verdict. The work manifest is [`target.json`](target.json); what
-was checked upstream, and how, is in [`sources.lock.json`](sources.lock.json).
+**State: a partial scaffold, its slice jobs queued.** Source-locked, with its claims frozen and its oracle, driver,
+probes and mutant written ([the packet](#the-packet)). It is prepared by the source-slice route (below), whose three
+replay jobs are queued: until they pass, no replay has run through the pipeline, so there is no verdict. The work
+manifest is [`target.json`](target.json); what was checked upstream, and how, is in
+[`sources.lock.json`](sources.lock.json).
 
 ## The change
 
@@ -43,9 +44,24 @@ here is an `int`, not a method string.
 
 The exact commits' Maven build is predicted irreproducible: both pin SNAPSHOT and milestone dependencies (Spring Data
 Moore-BUILD-SNAPSHOT, Spring Framework 5.2.0.RC2 and 12 more, listed in `sources.lock.json`), which Maven Central does
-not have and whose 2019 snapshots are gone. 2.2.0.RELEASE carries after's `WebMvcTags.java` unchanged; no release
-carries before's. The handoff in `target.json` records this as a predicted build blocker, and the narrower scope that
-stays possible.
+not have and whose 2019 snapshots are gone. The handoff in `target.json` keeps that as a predicted build blocker.
+
+The user's decision of 2026-11-14 is the narrower **source-slice route**, a separately labelled scope
+(`extracted-source-slice` in every receipt):
+- each commit's `WebMvcTags.java` (and after's `Outcome.java`) is taken from its checkout and compiled alone by JDK 8,
+  with `-g -parameters -source 1.8 -target 1.8 -encoding UTF-8`;
+- it is compiled against Framework 5.2.0.RC2's spring-web, spring-webmvc and spring-core (with spring-jcl), from
+  repo.spring.io/milestone, and micrometer-core 1.2.0 and javax.servlet-api 4.0.1, from Central, each pinned by
+  sha256. spring-webmvc and spring-core weren't named in the decision, but `WebMvcTags` needs them to compile.
+- Boot 2.2.0.M6 (`fb75cbbc`) carries after's two files unchanged, so its published spring-boot-actuator JAR is the
+  revision `release-m6`. The task `m6-replay` replays it beside the after slice, and the two must show the same
+  observations (a `correspondence` pair).
+- A hand compile (a note, in `sources.lock.json`) found the after slice's `WebMvcTags.class` and `Outcome.class`
+  byte-identical to M6's published ones. So after's slice is Spring's own build of those sources. Before has no
+  published counterpart, so its slice is checked only by the same recipe.
+
+A claim about the slices is about these classes. It reaches the commits' own builds only through such a
+correspondence: for after there is one (M6), for before there is none.
 
 ## The packet
 
@@ -57,6 +73,7 @@ stays possible.
 | [`controls/oracle.py`](controls/oracle.py) | The independent oracle: the HTTP status class read from the status's decimal spelling (RFC 9110, section 15), unlike either revision's division or ranges; it checks each revision's lines and the revisions against each other |
 | [`replay/driver`](replay/driver/inloop/p305/OutcomeDriver.java) | The driver: one JSON line per probe, the response a `Proxy` carrier whose `getStatus()` returns the probe and whose other methods throw, with its `getStatus()` call count as an annotation |
 | [`controls/status-200.patch`](controls/status-200.patch) | The mutant: after's `Outcome.forStatus` with `status < 200` turned into `status <= 200`, so 200 is INFORMATIONAL. It must fail the oracle and the preservation claim at 200, and only there |
+| [`sources.lock.json`](sources.lock.json) | The commits' source blob ids, the slice's six pinned JARs (`sliceDependencies`), and M6's published JAR and class hashes with the byte-identical slice compile |
 | [`records/outcome-gaps.json`](records/outcome-gaps.json) | A static `jvmcontract gaps` scan, run by hand (a note): `Pattern.compile` in `WebMvcTags.<clinit>` and `Objects.requireNonNull` in micrometer's `ImmutableTag.<init>`, on both sides, so every strict attempt is predicted to be refused |
 
 A hand replay (a note, in `example.json`) found before and after agreeing with the oracle and with each other on every

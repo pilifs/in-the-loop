@@ -554,6 +554,138 @@ class MutantRoutesTest(UpstreamCase):
         self.assertIn("only Java sources are recompiled", locked.diagnostic)
 
 
+GATE = "gate/src/main/java/fixture/Gate.java"
+
+
+class SliceRouteTest(UpstreamCase):
+    """The source-slice route: the stand-in's commit checked out, the slice's files compiled alone by the recorded JDK
+    and flags against the recorded JARs (here a dependency on the stand-in for Central), the classes put in a JAR.
+    With the fixture recipe's own flags, the slice's Gate is build_fixtures.py's byte for byte."""
+
+    FLAGS = ["-parameters", "--release", "21", "-encoding", "UTF-8"]
+
+    def setUp(self):
+        super().setUp()
+        self.central = base.Repository(self, self.dir / "central")
+        self.items = [self.central.publish("fixture.example:gate-util:2.0", self.dep)]
+
+    def entry(self, revision="after", files=(GATE,), flags=None, jdk="21", **extra):
+        entry = {"revision": revision, "route": "source-slice", "repository": "https://github.com/example/gate",
+                 "commit": self.commits[revision], **({"parent": self.commits["before"]} if revision == "after" else {}),
+                 "slice": {"files": list(files), "jdk": jdk, "flags": list(self.FLAGS if flags is None else flags)},
+                 "published": self.items, "adapters": ["gate/adapter/fixture/adapter/GateAdapter.java"],
+                 "jdks": ["21", "25"]}
+        entry.update(extra)
+        return entry
+
+    def mutant_entry(self):
+        (self.folder / "gate/mutant.patch").write_text(gate_patch())
+        base_entry = self.entry()
+        return {"revision": "mutant", "route": "source-slice", "repository": base_entry["repository"],
+                "mutant": {"base": {"revision": "after", **{k: base_entry[k] for k in ("commit", "published", "slice")}},
+                           "patch": {"path": "gate/mutant.patch",
+                                     "sha256": runtime.sha256(self.folder / "gate/mutant.patch")},
+                           "description": "the fix normalizes one side only: 65 allowed again"},
+                "adapters": base_entry["adapters"], "jdks": base_entry["jdks"]}
+
+    def plan_of(self, entries, network=True):
+        return dataclasses.replace(base.mutant_plan(self.folder, entries, revisions=tuple(e["revision"] for e in entries),
+                                                    task="replay"), network=network)
+
+    def test_a_slice_lock_fetches_nothing_and_refuses_a_recipe_it_cant_pin(self):
+        with mock.patch.object(runtime_upstream, "REMOTE", side_effect=AssertionError("a source lock fetched")):
+            locked = runtime.lock(self.plan_of([self.entry()]), "after")
+        self.assertEqual((locked.stage, locked.commit), ("source-locked", self.commits["after"]), locked.diagnostic)
+        self.assertEqual(locked.source["slice"]["files"], [GATE])
+        self.assertEqual(locked.source["slice"]["scope"], runtime.SCOPES["extracted-source-slice"])
+        self.assertEqual([i["role"] for i in locked.source["published"]], ["dependency"])
+        self.assertIn("never the commit's own build", locked.source["provenance"])
+        for change, says in (({"flags": ["-g", "-processorpath", "x"]}, "not one a slice may set"),
+                             ({"flags": ["-d", "/tmp"]}, "not one a slice may set"),
+                             ({"flags": ["-source"]}, "needs a value"),
+                             ({"files": ["../x/Gate.java"]}, "not distinct .java paths"),
+                             ({"files": ["gate/pom.xml"]}, "not distinct .java paths"),
+                             ({"files": []}, "not distinct .java paths"),
+                             ({"jdk": "x"}, "not a feature release")):
+            with self.subTest(change=change):
+                entry = self.entry()
+                entry["slice"].update(change)
+                refused = runtime.lock(self.plan_of([entry]), "after")
+                self.assertEqual(refused.failedStage, "lock")
+                self.assertIn(says, refused.diagnostic)
+        no_recipe = self.entry()
+        del no_recipe["slice"]
+        self.assertIn("names no slice", runtime.lock(self.plan_of([no_recipe]), "after").diagnostic)
+
+    def test_the_slice_compiles_only_its_files_and_gives_the_fixture_recipes_bytes(self):
+        prepared = runtime.prepare(self.plan_of([self.entry()]), "after", self.work / "after")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        self.assertEqual(prepared.classpath, ("driver.jar", "adapter-after.jar", "slice/after.jar",
+                                              "lib/fixture.example/gate-util-2.0.jar"))
+        work = self.work / "after"
+        self.assertEqual(sorted(runtime.runtime_jar.classes(work / "slice/after.jar")), ["fixture/Gate"],
+                         "RegexGate, in the same package of the checkout, is not compiled: only the slice's files are")
+        self.assertEqual(runtime.runtime_jar.read_class(work / "slice/after.jar", "fixture/Gate"),
+                         runtime.runtime_jar.read_class(Path(base.manifest()["dir"]) / "after.jar", "fixture/Gate"))
+        compiled = prepared.source["slice"]["compiled"]
+        self.assertEqual([(c["path"], c["gitBlob"]) for c in compiled],
+                         [(GATE, git(self.upstream, "rev-parse", f"{self.commits['after']}:{GATE}"))])
+        self.assertEqual(prepared.source["checkout"]["parentChecked"], self.commits["before"])
+        self.assertEqual(prepared.toolchain["slice"]["jdk"]["feature"], "21")
+        self.assertIn("-implicit:none", prepared.toolchain["slice"]["javac"])
+        original = next(a for a in prepared.artifacts if a.role == "original")
+        self.assertTrue(original.origin.startswith("an extracted source slice of"), original.origin)
+        self.assertEqual(prepared.source["target"]["loadedFrom"], "slice/after.jar")
+
+    def test_a_file_the_commit_lacks_offline_or_a_stray_class_is_refused(self):
+        missing = runtime.prepare(self.plan_of([self.entry(files=("gate/src/main/java/fixture/Nope.java",))]), "after",
+                                  self.work / "a")
+        self.assertEqual(missing.failedStage, "lock", missing.diagnostic)
+        self.assertIn("is not a file of", missing.diagnostic)
+        fetched = len(self.remotes)
+        offline = runtime.prepare(self.plan_of([self.entry()], network=False), "after", self.work / "b")
+        self.assertEqual(offline.failedStage, "acquire")
+        self.assertEqual(len(self.remotes), fetched, "offline, nothing is checked out")
+        shutil.rmtree(self.upstream)
+        self.upstream, before, after = make_upstream(self.dir / "upstream2", {
+            "gate/src/main/java/fixture/Pair.java": "package fixture;\npublic class Pair {}\nclass Stray {}\n"})
+        self.commits = {"before": before, "after": after}
+        stray = runtime.prepare(self.plan_of([self.entry(files=(GATE, "gate/src/main/java/fixture/Pair.java"))]),
+                                "after", self.work / "c")
+        self.assertEqual(stray.failedStage, "build", stray.diagnostic)
+        self.assertIn("fixture/Stray", stray.diagnostic)
+
+    def test_a_slice_mutant_is_its_base_commit_patched_then_compiled_as_the_base(self):
+        prepared = runtime.prepare(self.plan_of([self.mutant_entry()]), "mutant", self.work / "mutant")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        self.assertTrue(prepared.commit.startswith(f"mutant:{self.commits['after']}+"))
+        self.assertEqual(runtime.runtime_jar.read_class(self.work / "mutant/slice/mutant.jar", "fixture/Gate"),
+                         runtime.runtime_jar.read_class(Path(base.manifest()["dir"]) / "mutant.jar", "fixture/Gate"),
+                         "after patched and compiled by the slice's recipe is build_fixtures.py's mutant class")
+        self.assertEqual([f["path"] for f in prepared.source["mutant"]["applied"]["files"]], [GATE])
+        outside = self.mutant_entry()
+        outside["mutant"]["base"]["slice"] = {**outside["mutant"]["base"]["slice"],
+                                              "files": ["gate/src/main/java/fixture/RegexGate.java"]}
+        refused = runtime.lock(self.plan_of([outside]), "mutant")
+        self.assertEqual(refused.failedStage, "lock")
+        self.assertIn("which the base's slice doesn't compile", refused.diagnostic)
+
+    def test_the_slice_mutation_pair_replays_as_the_fixtures(self):
+        if not {"21", "25"} <= set(runtime_jdk.homes()):
+            self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
+        plan = self.plan_of([self.entry(), self.mutant_entry()])
+        attempt = self.work / "attempt"
+        prepared = {r: runtime.prepare(plan, r, attempt / "prepare" / r) for r in plan.revisions}
+        for r, p in prepared.items():
+            self.assertEqual(p.stage, "artifacts-ready", f"{r}: {p.diagnostic}")
+        problems = {}
+        for r in runtime.run_controls(plan, prepared, attempt / "controls"):
+            self.assertEqual((r.status, r.exitCode), ("exited", 0))
+            problems.setdefault(r.revision, set()).add(
+                tuple(c for c, _ in base.oracle().check([json.dumps(o) for o in r.observations])))
+        self.assertEqual(problems, {"after": {()}, "mutant": {(65,)}})
+
+
 class NumbersCaseTest(unittest.TestCase):
     """The case the upstream-build job runs (runtime_slice.py --case numbers, runtime_numbers/): example 105's two
     pinned commons-numbers commits. Nothing here fetches or builds; the job does."""

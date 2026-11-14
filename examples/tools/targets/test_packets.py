@@ -209,6 +209,68 @@ class ReplayExpectationTest(unittest.TestCase):
 
 
 
+class SliceRouteTest(unittest.TestCase):
+    """305 on the source-slice route (the user's decision of 2026-11-14): each commit's WebMvcTags (and after's Outcome)
+    compiled alone against Framework 5.2.0.RC2, micrometer-core 1.2.0 and javax.servlet-api 4.0.1, and the after slice
+    checked against Boot 2.2.0.M6's published JAR in a correspondence pair, which ingestion reads as alike or not."""
+
+    def test_305s_tasks_plan_slices_a_published_reference_and_a_slice_mutant(self):
+        folder, example, target = packet("305")
+        replay = workflow.plan_task(folder, example, target, "replay")
+        self.assertEqual([(a["route"], len(a["slice"]["files"]), len(a["published"])) for a in replay.artifacts],
+                         [("source-slice", 1, 6), ("source-slice", 2, 6)])
+        self.assertEqual(replay.artifacts[0]["slice"]["flags"][:2], ["-g", "-parameters"])
+        self.assertTrue(replay.network)
+        self.assertIn("git", replay.tools["required"])
+        m6 = workflow.plan_task(folder, example, target, "m6-replay")
+        self.assertEqual([(a["revision"], a["route"]) for a in m6.artifacts],
+                         [("after", "source-slice"), ("release-m6", "published-artifact")])
+        self.assertEqual(m6.artifacts[1]["published"][0]["coordinates"],
+                         "org.springframework.boot:spring-boot-actuator:2.2.0.M6")
+        mutant = workflow.plan_task(folder, example, target, "mutant-replay").artifacts[1]
+        self.assertEqual(set(mutant["mutant"]["base"]), {"revision", "commit", "published", "slice"})
+        for r in ("before", "after", "release-m6"):
+            self.assertEqual(runtime.lock(m6 if r != "before" else replay, r).stage, "source-locked", r)
+        self.assertEqual(runtime.lock(workflow.plan_task(folder, example, target, "mutant-replay"), "mutant").stage,
+                         "source-locked")
+
+    def test_a_slice_receipts_claim_names_each_revisions_scope_and_other_routes_are_unchanged(self):
+        def scopes(number, task):
+            folder, example, target = packet(number)
+            p = workflow.plan_task(folder, example, target, task)
+            return workflow_ingest.artifact_scopes({a["revision"]: (a, None, None) for a in p.artifacts})
+        self.assertEqual(scopes("305", "m6-replay"), {"after": "extracted-source-slice", "release-m6": "original-bytecode"})
+        self.assertEqual(scopes("305", "mutant-replay"), {"after": "extracted-source-slice",
+                                                          "mutant": "constructed-mutation-of-a-slice"})
+        self.assertIsNone(scopes("306", "mutant-replay"), "no slice, no new field: other routes' claims stay as they were")
+        self.assertIsNone(scopes("285", "replay"))
+
+    def test_the_m6_correspondence_expects_both_sides_alike(self):
+        folder, example, target = packet("305")
+        p = workflow.plan_task(folder, example, target, "m6-replay")
+        good, bad = replays("305", oracle_module(folder))
+        good = tuple(json.loads(line) for line in good)
+        other_calls = tuple(dict(o, getStatusCalls=7) for o in good)  # the oracle doesn't read it, the comparison does
+        bad = tuple(json.loads(line) for line in bad)
+        bound = {r: ({"jdks": ["21", "25"]}, SimpleNamespace(artifacts=()), None) for r in p.revisions}
+
+        def outcome(after, m6):
+            records = [interfaces.ExecutionRecord(kind="jvm-control", revision=r, argv=("java",), status="exited",
+                                                  exitCode=0, seconds=0.1, stdout="o", stderr="e",
+                                                  identities={"jdk": f'openjdk version "{j}.0.1"'}, observations=obs)
+                       for r, obs in (("after", after), ("release-m6", m6)) for j in ("21", "25")]
+            fields, _, _ = workflow_ingest.replay_outcome(p, target, bound, records, {"path": "controls/oracle.py"})
+            return fields["expectation"], fields["verdictLabel"]
+
+        self.assertEqual(outcome(good, good)[0], "yes")
+        self.assertIn("as the m6-correspondence correspondence expects", outcome(good, good)[1])
+        self.assertEqual(outcome(bad, bad)[0], "yes", "alike is what a correspondence asks, holding or not")
+        self.assertEqual(outcome(good, bad), ("no", outcome(good, bad)[1]))
+        self.assertIn("problems differ", outcome(good, bad)[1])
+        self.assertEqual(outcome(good, other_calls)[0], "no")
+        self.assertIn("observations differ", outcome(good, other_calls)[1])
+
+
 def oracle_module(folder):
     spec = importlib.util.spec_from_file_location(f"oracle_{folder.name[:3]}", folder / "controls/oracle.py")
     module = importlib.util.module_from_spec(spec)

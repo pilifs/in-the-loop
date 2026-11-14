@@ -49,6 +49,12 @@ PATH_PREFIXES = {"maven.aliyun.com": "/repository/spring-plugin/"}
 # github.com serves release assets by redirecting to its own content hosts; nothing else is followed (services.gradle.org
 # redirects a distribution to github.com, and its .sha256 to downloads.gradle.org, which is not followed).
 REDIRECT_HOSTS = HOSTS + ("objects.githubusercontent.com", "release-assets.githubusercontent.com")
+# A host's own storage, followed only from that host and only under its path: repo.spring.io serves most of its JARs
+# by a 302 to JFrog's S3 bucket, at a path named by the file's sha1 (found 2026-11-14 on Spring Framework 5.2.0.RC2's
+# and Boot 2.2.0.M6's JARs, each one's sha1 agreeing with the repository's .sha1). The bytes are still checked against
+# the lock's sha256, as from any host.
+ORIGIN_REDIRECTS = {"repo.spring.io": ("jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com",
+                                       "/aol-springsource/filestore/")}
 CACHE = Path(os.environ.get("TARGETS_CACHE", Path.home() / ".cache/in-the-loop/targets"))
 FETCH_TIMEOUT = 60
 MAX_BYTES = 256 * 1024 * 1024
@@ -185,10 +191,26 @@ class Cache:
         return path
 
 
+def redirect_allowed(origin, url):
+    """Whether a redirect from the URL `origin` to `url` is followed: to an allowed host or one of github.com's
+    content hosts, or from a host in ORIGIN_REDIRECTS to its own storage host, under that storage's path."""
+    if allowed(url, REDIRECT_HOSTS):
+        return True
+    storage = ORIGIN_REDIRECTS.get(urllib.parse.urlsplit(origin).hostname)
+    if storage is None:
+        return False
+    parts, (host, prefix) = urllib.parse.urlsplit(url), storage
+    segments = parts.path.split("/")
+    return (parts.scheme == "https" and parts.hostname == host and not parts.username and not parts.port
+            and parts.path.startswith(prefix) and "%" not in parts.path and "." not in segments
+            and ".." not in segments)
+
+
 class _Redirects(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        if not allowed(newurl, REDIRECT_HOSTS):
-            raise urllib.error.URLError(f"redirected to {newurl}, outside {HOST_NAMES} and github.com's content hosts")
+        if not redirect_allowed(req.full_url, newurl):
+            raise urllib.error.URLError(f"redirected to {newurl}, outside {HOST_NAMES}, github.com's content hosts "
+                                        f"and repo.spring.io's storage")
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 

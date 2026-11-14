@@ -1223,6 +1223,65 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `Outcome` against spring-web 5.2.0.RC2, micrometer-core 1.2.0 and javax.servlet-api 4.0.1, as a separately
     labelled scope, and replay Boot 2.2.0.M6's published classes beside the after slice. Build it so 307 can reuse
     it if the user chooses (b). Then the remaining replays (285–287 `mutant-replay`, 105 `replay`).
+- 2026-11-14, **305's source-slice route built, and its three replay jobs queued** (the user's decision on P1).
+  - **A fact found first** (a note: a hand fetch and compile): the after slice's `WebMvcTags.class` and `Outcome.class`
+    are byte-identical to Boot 2.2.0.M6's published ones.
+    - The recipe: javac 1.8.0_512 with `-g -parameters -source 1.8 -target 1.8 -encoding UTF-8`, against six pinned
+      JARs. M6 (`fb75cbbc`) carries after's two files.
+    - With `-g` alone the bytes differ.
+    - Before has no published counterpart.
+  - **Two things the decision didn't foresee**:
+    - repo.spring.io serves its larger JARs by a 302 to its own storage (`jfrog-prod-use1-shared-virginia-main.s3.
+      amazonaws.com/aol-springsource/filestore/<sha1>`). `runtime_maven.py` refused it, so the allowed milestone
+      repository served nothing. It now follows that one redirect, from repo.spring.io only and only under that path
+      (`ORIGIN_REDIRECTS`). The bytes are still checked against the sha256.
+    - `WebMvcTags` imports `HandlerMapping` and `StringUtils`, so the slice also needs spring-webmvc and spring-core
+      (with spring-jcl) from the same Framework 5.2.0.RC2 milestone, beside the three JARs the decision named.
+  - **The route** (`source-slice`), reusable by 307 under option (b):
+    - Schema: the route; `preparation.slice` (files per revision, the JDK, javac flags from a closed list); a
+      revision's own `route: published-artifact`, for a published reference on this route only; the pair kind
+      `correspondence`; and repo.spring.io in an artifact's URL pattern.
+    - `sidecar.py`: the slice names files for exactly the revisions it compiles. A published reference is no mutant's
+      base, lists its JARs, and is compared only in a correspondence pair.
+    - Workflow's planner gives each revision its own route. A slice entry carries `slice` and its `published` JARs,
+      and so does a mutant's base.
+    - Runtime: `_lock_slice` (offline) and `_prepare_slice`:
+      - the JARs are acquired, and the commit is checked out with its parent;
+      - a mutant's patch is applied there, and may change only the slice's files;
+      - each file is hashed and named by its git blob id;
+      - the files are compiled alone by the recorded JDK, with `-implicit:none`, `-proc:none` and an empty source
+        path;
+      - a class no file declares is refused.
+
+      The verifier's scope label is `extracted-source-slice`.
+    - Ingestion: a correspondence matches only when both sides show the same observations and oracle problems on
+      every JDK. A slice receipt's claim gains `target.scopes` per revision (result schema, additive). No other
+      route's claim changes.
+  - **305's sidecar**: the route `source-slice`, and a new revision `release-m6` (M6's actuator JAR plus the slice's
+    six JARs). There is a new pair `m6-correspondence`, and a new task `m6-replay` (relation `calibration`). The
+    build blocker stays, for the exact commits' own builds, with the slice as the decided scope. Its
+    `sources.lock.json`, README and a note record the pins and the byte identity. The index is regenerated.
+  - **Tests**, 10 new, all offline:
+    - the storage redirect, and what stays refused;
+    - five of the slice route against the local stand-ins: the lock and its refusals; the fixture recipe's bytes
+      from a slice; a missing file, offline and a stray class; the slice mutant; and the mutation pair's replay;
+    - the sidecar's slice rules;
+    - 305's plans and locks, the correspondence reading, and the scopes.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (220, ten new),
+    `test_build.py` (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Queued**, each `build.py 305 --task T` with 2 CPUs, 3 GiB and 20 minutes:
+    - `20261114-232734-example-305-replay-p1-source-slice-route`: before and after both hold;
+    - `20261114-232734-example-305-m6-replay-p1-s-check-against`: the after slice and M6's JAR alike;
+    - `20261114-232735-example-305-mutant-replay-p1-s-mutation`: after holds, the mutant violates at 200.
+  - **For the for-review list**:
+    - following repo.spring.io's storage redirect is this loop's reading of decision 1's extension, as github.com's
+      content hosts are followed;
+    - spring-webmvc and spring-core were added to the decided JARs;
+    - the M6 correspondence runs M6's JAR on the slice's dependencies, not on M6's own POM's.
+  - **Next**: the remaining replays, which need only this loop: 285–287 `mutant-replay` and 105 `replay`, queued.
+    Then read 305's three jobs when they are collected. Then step 1's proof tasks and probes, the joint acceptance,
+    the gap inventory and the for-review list. 307 still waits on the user's route choice; under (b) it reuses this
+    route as it is.
 - Status: working
 
 ## Loop settings

@@ -182,6 +182,52 @@ class SidecarTest(unittest.TestCase):
                          c=lambda t: t["identity"].update(role="control"))
         sidecar.check(control, self.folder)
 
+    def with_slice(self, **recipe):
+        t = edited(p=lambda t: t.update(preparation={
+            "route": "source-slice",
+            "slice": {"files": {"vulnerable": ["src/fixture/Gate.java"], "fixed": ["src/fixture/Gate.java"]},
+                      "jdk": "8", "flags": ["-g", "-parameters", "-source", "1.8", "-target", "1.8"], **recipe},
+            "artifacts": [{"revision": "fixed", "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+                           "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/"
+                                  "spring-web-5.2.0.RC2.jar", "sha256": "e" * 64}]}))
+        return t
+
+    def with_reference(self, t):
+        t["history"]["revisions"]["release"] = {"commit": "c" * 40, "route": "published-artifact", "release": "1.0"}
+        t["history"]["pairs"].append({"name": "check", "kind": "correspondence", "before": "fixed", "after": "release"})
+        t["preparation"]["artifacts"].append({"revision": "release", "coordinates": "g.x:gate:1.0",
+                                              "url": "https://repo.maven.apache.org/maven2/g/x/gate/1.0/gate-1.0.jar"})
+        return t
+
+    def test_a_source_slice_names_its_files_and_flags_and_a_reference_is_compared_only_in_a_correspondence(self):
+        sidecar.check(self.with_slice(), self.folder)
+        sidecar.check(self.with_reference(self.with_slice()), self.folder)
+        self.refused(self.with_slice(files={"vulnerable": ["src/fixture/Gate.java"]}),
+                     "revision fixed is compiled by the slice, and slice.files names no files for it")
+        self.refused(self.with_slice(files={"vulnerable": ["a/G.java"], "fixed": ["a/G.java"], "other": ["a/G.java"]}),
+                     "slice.files names revision other, which is not defined")
+        self.refused(self.with_slice(files={"vulnerable": ["../G.java"], "fixed": ["a/G.java"]}), "does not match")
+        self.refused(self.with_slice(flags=["-processorpath", "x"]), "is not one a slice may set")
+        self.refused(self.with_slice(flags=["-source", "eight"]), "needs a value it accepts")
+        no_recipe = self.with_slice()
+        del no_recipe["preparation"]["slice"]
+        self.refused(no_recipe, "names no slice")
+        stray = self.with_slice()
+        stray["preparation"]["route"] = "upstream-build"
+        self.refused(stray, "preparation.slice is the source-slice route's recipe")
+        own = self.with_reference(self.with_slice())
+        own["history"]["pairs"][-1]["kind"] = "release"
+        self.refused(own, "is compared only in a correspondence pair")
+        two = self.with_reference(self.with_slice())
+        two["history"]["pairs"][-1]["after"] = "vulnerable"
+        self.refused(two, "a correspondence compares one slice revision with one published reference")
+        unlisted = self.with_reference(self.with_slice())
+        unlisted["preparation"]["artifacts"].pop()
+        self.refused(unlisted, "lists no JAR for it")
+        elsewhere = self.with_reference(edited(p=lambda t: t.update(preparation={"route": "published-artifact",
+                                                                                 "artifacts": []})))
+        self.refused(elsewhere, "a revision's own route is only for the source-slice route's published references")
+
     def test_undefined_names_are_refused(self):
         self.refused(edited(x=lambda t: t["tasks"][0].update(revision="introduced")), "revision introduced is not defined")
         self.refused(edited(x=lambda t: t["tasks"][2].update(pair="release")), "pair release is not defined")

@@ -693,6 +693,32 @@ class MavenTest(unittest.TestCase):
                                       "url": "https://maven.aliyun.com/repository/spring-plugin/x.jar",
                                       "sha256": "a" * 64}, "dependency")
 
+    def test_repo_spring_io_is_followed_to_its_own_storage_and_nothing_else_is(self):
+        # repo.spring.io serves most JARs by a 302 to JFrog's S3 bucket, at a path named by the file's sha1 (Spring
+        # Framework 5.2.0.RC2's and Boot 2.2.0.M6's, 2026-11-14): without following it, the milestone repository the
+        # user allowed serves nothing. Only from repo.spring.io, only to that host, only under its filestore path.
+        origin = "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar"
+        storage = ("https://jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/aol-springsource/filestore/43/"
+                   "436bdc305a2367eec412f5da802bf35a75de6f07?X-Amz-Signature=abc%3D")
+        self.assertTrue(runtime_maven.redirect_allowed(origin, storage))
+        self.assertFalse(runtime_maven.allowed(storage), "never a host to fetch from directly")
+        self.assertFalse(runtime_maven.allowed(storage, runtime_maven.REDIRECT_HOSTS))
+        for other in ("https://repo.maven.apache.org/maven2/x.jar", "https://github.com/o/r/x.jar",
+                      "https://maven.aliyun.com/repository/spring-plugin/x.jar", "https://plugins.gradle.org/m2/x.jar"):
+            self.assertFalse(runtime_maven.redirect_allowed(other, storage), f"{other} has no storage of its own")
+        refused = ("http://jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/aol-springsource/filestore/43/x",
+                   "https://jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/other-bucket/x",
+                   "https://jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/aol-springsource/filestore/../x",
+                   "https://jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/aol-springsource/filestore/%2e%2e/x",
+                   "https://jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com:444/aol-springsource/filestore/43/x",
+                   "https://user@jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/aol-springsource/filestore/4/x",
+                   "https://s3.amazonaws.com/aol-springsource/filestore/43/x",
+                   "https://plugins-artifacts.gradle.org/x", "https://downloads.gradle.org/x")
+        for url in refused:
+            self.assertFalse(runtime_maven.redirect_allowed(origin, url), url)
+        self.assertTrue(runtime_maven.redirect_allowed(origin, "https://objects.githubusercontent.com/x"),
+                        "the redirect hosts stay what they were")
+
     def test_pin_checks_centrals_sha1_and_caches_the_bytes(self):
         root = Path(tempfile.mkdtemp(prefix="test-runtime-"))
         self.addCleanup(shutil.rmtree, root, True)

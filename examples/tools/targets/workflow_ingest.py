@@ -58,6 +58,9 @@ SIDES = {"exact-fix": ("violates", "holds"), "introduction": ("holds", "violates
 # case's preserving change, so its sides follow the case's role. Another role's (a control's, a calibration's) say
 # nothing.
 RELEASE_SIDES = {"negative": ("violates", "holds"), "positive": ("holds", "holds")}
+# A `correspondence` pair (a source slice against a published build of the same sources) says no side violates or holds:
+# it expects the two sides to agree, the same observations and the same oracle problems on every JDK.
+CORRESPONDENCE = "correspondence"
 PRIORITY = ("killed", "timed-out", "tool-error", "invalid-output")
 # Reads each record's observation lines with the oracle's problems(lines), or its check(lines) when it has no problems
 # (runtime.py's docstring: the oracle convention), in a separate interpreter (-I: the oracle sees only the standard
@@ -267,7 +270,22 @@ def claim_record(plan, target_path, bound, records, oracle):
                        "revisions": {revision: identity for revision, (_, _, identity) in bound.items()},
                        "dependencies": dependencies, "jdks": jdks_of(bound, records),
                        "files": claim_files(plan, oracle)}}
+    scopes = artifact_scopes(bound)
+    if scopes:
+        body["target"]["scopes"] = scopes
     return {"id": build.canonical_digest(body)[:16], **body}
+
+
+def artifact_scopes(bound):
+    """{revision: scope} when any revision is an extracted source slice (its own, or its mutant base's, route is
+    source-slice), else None: a slice's receipt says so per revision, and nothing changes for the other routes."""
+    def scope(entry):
+        if "mutant" in entry:
+            return "constructed-mutation-of-a-slice" if entry.get("route") == "source-slice" else "constructed-mutation"
+        return {"source-slice": "extracted-source-slice", "fixture": "constructed-fixture"}.get(entry.get("route"),
+                                                                                                 "original-bytecode")
+    scopes = {revision: scope(entry) for revision, (entry, _, _) in bound.items()}
+    return scopes if any("slice" in s for s in scopes.values()) else None
 
 
 def record_problem(record, bound):
@@ -350,6 +368,7 @@ def replay_outcome(plan, target, bound, records, oracle):
             entries.append(None)
     read = read_with_oracle(plan, oracle, usable)
     outcomes = {}  # revision -> {feature: (violates|holds, problems)}
+    observed = {}  # revision -> {feature: the observations, as JSON lines}
     for r, verdict in zip(usable, read):
         i = next(i for i, e in enumerate(entries) if e is None)
         entries[i] = {**r.as_dict(), "oracle": verdict}
@@ -358,6 +377,7 @@ def replay_outcome(plan, target, bound, records, oracle):
             problems.append(("invalid-output", f"revision {r.revision} on JDK {feature}: {verdict['error']}"))
             continue
         outcomes.setdefault(r.revision, {})[feature] = ("violates" if verdict["problems"] else "holds", verdict["problems"])
+        observed.setdefault(r.revision, {})[feature] = [json.dumps(o, sort_keys=True) for o in r.observations or []]
     for revision, (entry, _, _) in bound.items():
         wanted = [str(j) for j in entry.get("jdks") or []]
         got = outcomes.get(revision, {})
@@ -381,12 +401,27 @@ def replay_outcome(plan, target, bound, records, oracle):
         expectation, label = "not-evaluable", build.no_verdict_label(execution)
     else:
         execution = {"status": "completed", "exitCode": 0, "reason": None}
-        matches = bool(sides) and all(shown.get(rev) == {side} for rev, side in sides.items()) \
-            and set(sides) == set(plan.revisions)
-        expectation = "yes" if matches else "no"
         pair = task.get("pair")
-        said = (f"as the {pair} pair's kind expects" if matches else
-                f"not what the {pair} pair's kind expects" if sides else "no pair says what these controls should show")
+        kind = next((x.get("kind") for x in (target.get("history") or {}).get("pairs") or [] if x.get("name") == pair),
+                    None)
+        if kind == CORRESPONDENCE:
+            revs = list(plan.revisions)
+            same_problems = len(revs) == 2 and all(
+                {f: sorted(json.dumps(p, default=str) for p in ps) for f, (_, ps) in outcomes.get(r, {}).items()}
+                == {f: sorted(json.dumps(p, default=str) for p in ps) for f, (_, ps) in outcomes.get(revs[0], {}).items()}
+                for r in revs)
+            same_observations = len(revs) == 2 and bool(observed.get(revs[0])) \
+                and observed.get(revs[0]) == observed.get(revs[1])
+            matches = same_problems and same_observations
+            said = (f"the same observations and problems on each JDK, as the {pair} correspondence expects" if matches
+                    else f"the two sides' {'observations' if same_problems else 'problems'} differ, and the {pair} "
+                         f"correspondence expects them alike")
+        else:
+            matches = bool(sides) and all(shown.get(rev) == {side} for rev, side in sides.items()) \
+                and set(sides) == set(plan.revisions)
+            said = (f"as the {pair} pair's kind expects" if matches else
+                    f"not what the {pair} pair's kind expects" if sides else "no pair says what these controls should show")
+        expectation = "yes" if matches else "no"
         label = f"Replay: {'; '.join(words)}, on every JDK named: {said}"
     counterexamples = [{"input": str(p[0]), "contract": f"the oracle ({oracle['path']})",
                         "actual": f"revision {rev} on JDK {feature}: {p[1]}"}

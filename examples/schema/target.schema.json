@@ -47,6 +47,7 @@
             "additionalProperties": false,
             "properties": {
               "commit": { "$ref": "#/$defs/sha1" },
+              "route": { "description": "This revision's own route, where it differs from preparation.route: on the source-slice route only, a published release that carries a slice revision's sources (its JAR, then its dependencies, in preparation.artifacts), compared with that slice revision in a `correspondence` pair.", "enum": ["published-artifact"] },
               "fixture": { "description": "For a control only: the revision's sources, a directory in the folder.", "$ref": "#/$defs/file" },
               "mutant": {
                 "description": "A constructed mutation control (added by the workflow stream, additive): the revision `base` with the patch `patch` applied, its sha256 checked before anything is prepared from it. Its base is a commit or fixture revision of this sidecar, and it appears only as the `after` of a `mutation` pair whose `before` is that base. It has no upstream identity: no parent, tag or release, and no published artifact.",
@@ -69,7 +70,7 @@
           }
         },
         "pairs": {
-          "description": "Separately named revision pairs: a release comparison, the exact fix, an introduction, a positive change, a constructed mutation. A fix's parent is never an introduction by default.",
+          "description": "Separately named revision pairs: a release comparison, the exact fix, an introduction, a positive change, a constructed mutation, a correspondence (a slice revision against a published build of the same sources: both sides must show the same problems, on every JDK). A fix's parent is never an introduction by default.",
           "type": "array",
           "items": {
             "type": "object",
@@ -77,7 +78,7 @@
             "additionalProperties": false,
             "properties": {
               "name": { "$ref": "#/$defs/name" },
-              "kind": { "enum": ["release", "exact-fix", "introduction", "positive", "mutation"] },
+              "kind": { "enum": ["release", "exact-fix", "introduction", "positive", "mutation", "correspondence"] },
               "before": { "description": "A revision name.", "$ref": "#/$defs/name" },
               "after": { "description": "A revision name.", "$ref": "#/$defs/name" },
               "selected": { "description": "The pair executed, chosen explicitly before a claim is frozen.", "type": "boolean" }
@@ -108,8 +109,9 @@
       "required": ["route"],
       "additionalProperties": false,
       "properties": {
-        "route": { "description": "published-artifact: specific JARs from Maven Central, checksums checked; upstream-build: the exact commit built with its own build tool and a JDK it supports; fixture: a control's fixture revisions, built locally (Phase 0's examples/tools/targets/fixtures/build_fixtures.py).", "enum": ["published-artifact", "upstream-build", "fixture"] },
+        "route": { "description": "published-artifact: specific JARs from Maven Central or repo.spring.io, checksums checked; upstream-build: the exact commit built with its own build tool and a JDK it supports; source-slice: named source files of each exact commit compiled alone, by a pinned JDK and javac flags, against pinned published JARs (`slice`), an extracted source slice: a narrower scope than the commit's own build, labelled so in every receipt; fixture: a control's fixture revisions, built locally (Phase 0's examples/tools/targets/fixtures/build_fixtures.py).", "enum": ["published-artifact", "upstream-build", "source-slice", "fixture"] },
         "artifacts": {
+          "description": "Per revision, in classpath order: on the published-artifact route the revision's own JAR first, then its dependencies; on the source-slice route the JARs its slice is compiled against and run with.",
           "type": "array",
           "items": {
             "type": "object",
@@ -118,7 +120,7 @@
             "properties": {
               "revision": { "description": "A revision name.", "$ref": "#/$defs/name" },
               "coordinates": { "description": "group:artifact:version, a fixed version: a range, `+`, LATEST, RELEASE or a SNAPSHOT is refused.", "type": "string", "pattern": "^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[0-9][A-Za-z0-9_.-]*$" },
-              "url": { "description": "Where it is fetched from: Maven Central or github.com only.", "type": "string", "pattern": "^https://(repo\\.maven\\.apache\\.org/maven2|github\\.com)/" },
+              "url": { "description": "Where it is fetched from: Maven Central, repo.spring.io or github.com only (runtime_maven.py's policy decides).", "type": "string", "pattern": "^https://(repo\\.maven\\.apache\\.org/maven2|repo\\.spring\\.io|github\\.com)/" },
               "sha256": { "description": "Recorded the first time it is fetched, checked on every reuse.", "$ref": "#/$defs/sha256" }
             }
           }
@@ -131,6 +133,23 @@
             "tool": { "description": "The revision's own build tool, by its wrapper where it has one.", "enum": ["gradle-wrapper", "maven-wrapper", "gradle", "maven"] },
             "argv": { "description": "The exact argument vector, run in the checkout's root.", "type": "array", "minItems": 1, "items": { "type": "string" } },
             "jdk": { "$ref": "#/$defs/jdk" }
+          }
+        },
+        "slice": {
+          "description": "The source-slice route's recipe: which files of each revision's checkout are compiled, and how. A mutant compiles its base's files, patched.",
+          "type": "object",
+          "required": ["files", "jdk", "flags"],
+          "additionalProperties": false,
+          "properties": {
+            "files": {
+              "description": "Per revision name, the paths of the Java sources compiled together, from the repository's root; nothing else of the checkout is compiled.",
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { "$ref": "#/$defs/name" },
+              "additionalProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[A-Za-z0-9_][A-Za-z0-9_./-]*\\.java$", "maxLength": 300 } }
+            },
+            "jdk": { "description": "The JDK whose javac compiles the slice.", "$ref": "#/$defs/jdk" },
+            "flags": { "description": "javac's flags, in order, from -g, -g:none, -g:{source,lines,vars}, -parameters, -source N, -target N, --release N and -encoding NAME only (runtime checks them).", "type": "array", "items": { "type": "string", "minLength": 1 } }
           }
         },
         "jdks": { "description": "The JDKs the concrete controls run on, each a separate identity (21 and 25 wherever the artifacts run on them).", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/jdk" } },

@@ -3,7 +3,9 @@
 The schema checks the shape: closed objects, full commit SHAs, fixed artifact versions, relative paths. This module
 adds what a schema can't: every path resolves inside the example's folder, every revision, pair and task a sidecar
 names is defined, ids are unique, task prerequisites have no cycle, and a constructed mutant stays constructed (one
-patch from an upstream or fixture revision, compared only with its base in a mutation pair, never published). A sidecar that fails any of it is refused
+patch from an upstream or fixture revision, compared only with its base in a mutation pair, never published), and a
+source slice names its files and flags, with a published reference compared only in a correspondence pair. A sidecar
+that fails any of it is refused
 with SidecarError, and nothing reads it. Offline: it reads two files.
 """
 
@@ -99,6 +101,7 @@ def consistency_problems(target, folder):
     if target.get("preparation", {}).get("route") == "fixture" and not control:
         problems.append("preparation route fixture: only a control is built from fixtures")
     problems += mutant_problems(target)
+    problems += slice_problems(target)
     pairs = {}
     for p in target["history"].get("pairs", []):
         if p["name"] in pairs:
@@ -190,6 +193,79 @@ def mutant_problems(target):
         if "mutant" in after and after["mutant"]["base"] != p["before"]:
             problems.append(f"pair {p['name']}: the mutant {p['after']} is built from {after['mutant']['base']}, and "
                             f"the pair compares it with {p['before']}")
+    return problems
+
+
+SLICE_FLAG = re.compile(r"^(-g|-g:none|-g:(source|lines|vars)(,(source|lines|vars))*|-parameters)$")
+SLICE_VALUED = {"-source": re.compile(r"^(1\.[5-8]|[0-9]{1,2})$"), "-target": re.compile(r"^(1\.[5-8]|[0-9]{1,2})$"),
+                "--release": re.compile(r"^[0-9]{1,2}$"), "-encoding": re.compile(r"^[A-Za-z0-9_.-]+$")}
+
+
+def slice_flag_problems(flags):
+    """What is wrong with a source-slice's javac flags: only the debugging, parameter, language-level and encoding
+    flags that decide the classes' bytes, each valued flag followed by its value; never a classpath, a processor or an
+    output directory, which preparation sets itself."""
+    problems, i = [], 0
+    while i < len(flags):
+        flag = flags[i]
+        if flag in SLICE_VALUED:
+            if i + 1 >= len(flags) or not SLICE_VALUED[flag].match(flags[i + 1]):
+                problems.append(f"slice flag {flag} needs a value it accepts")
+            i += 2
+            continue
+        if not SLICE_FLAG.match(flag):
+            problems.append(f"slice flag {flag!r} is not one a slice may set (-g, -g:none, -g:..., -parameters, -source, "
+                            "-target, --release, -encoding)")
+        i += 1
+    return problems
+
+
+def slice_problems(target):
+    """The source-slice route: its recipe names files for exactly the revisions it compiles (every upstream commit
+    without a route of its own; a mutant compiles its base's); a revision's own route (published-artifact) only on
+    this route, for an upstream commit that is no mutant's base and has its JARs listed; and a correspondence pair
+    compares one slice revision with one such published revision."""
+    problems = []
+    prep = target.get("preparation") or {}
+    revisions = target["history"]["revisions"]
+    is_slice = prep.get("route") == "source-slice"
+    own = {n for n, r in revisions.items() if "route" in r}
+    if own and not is_slice:
+        problems.append(f"revisions {', '.join(sorted(own))}: a revision's own route is only for the source-slice "
+                        "route's published references")
+    if "slice" in prep and not is_slice:
+        problems.append(f"preparation.slice is the source-slice route's recipe, and the route is {prep.get('route')}")
+    if not is_slice:
+        return problems
+    recipe = prep.get("slice")
+    if recipe is None:
+        return problems + ["the source-slice route names no slice (files, jdk, flags)"]
+    compiled = {n for n, r in revisions.items() if "commit" in r and "route" not in r}
+    files = set(recipe["files"])
+    for name in sorted(files - compiled):
+        why = ("not defined" if name not in revisions else "a mutant, which compiles its base's files" if "mutant" in
+               revisions[name] else "published by its own route")
+        problems.append(f"slice.files names revision {name}, which is {why}")
+    for name in sorted(compiled - files):
+        problems.append(f"revision {name} is compiled by the slice, and slice.files names no files for it")
+    problems += slice_flag_problems(recipe["flags"])
+    listed = {a["revision"] for a in prep.get("artifacts", [])}
+    bases = {r["mutant"]["base"] for r in revisions.values() if "mutant" in r}
+    for name in sorted(own):
+        if "commit" not in revisions[name]:
+            problems.append(f"revision {name}: only an upstream commit has a published route of its own")
+        if name in bases:
+            problems.append(f"revision {name}: a published reference is no mutant's base")
+        if name not in listed:
+            problems.append(f"revision {name} has its own published route and preparation.artifacts lists no JAR for it")
+    for p in target["history"].get("pairs", []):
+        sides = {p["before"], p["after"]}
+        if p["kind"] == "correspondence" and (len(sides & own) != 1 or len(sides & compiled) != 1):
+            problems.append(f"pair {p['name']}: a correspondence compares one slice revision with one published "
+                            "reference")
+        elif p["kind"] != "correspondence" and sides & own:
+            problems.append(f"pair {p['name']}: the published reference {', '.join(sorted(sides & own))} is compared "
+                            "only in a correspondence pair")
     return problems
 
 

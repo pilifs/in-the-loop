@@ -21,6 +21,13 @@
         "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
         "checked": "2026-11-14: fetched by SHA from github.com; one parent, 9b8decf9 (not a merge); author Andy Wilkinson, 2019-09-05 20:54:35 +0100, 'Provide a public API for determining a request's outcome', closes gh-18150."
       },
+      "release-m6": {
+        "commit": "fb75cbbc5c19bb96adbf18c38aa5a1b1d9edd048",
+        "route": "published-artifact",
+        "tag": "v2.2.0.M6",
+        "release": "2.2.0.M6",
+        "checked": "2026-11-14: refs/tags/v2.2.0.M6 resolved to this commit (git fetch --depth=1 --filter=blob:none from github.com); its WebMvcTags.java (78c4c0b9) and Outcome.java (dcbc759e) are after's blobs. Its spring-boot-actuator JAR is on repo.spring.io/milestone, sha1 f8edf16d agreeing with the repository's .sha1. A published reference of the after slice, compared with it in the m6-correspondence pair, never a side of the positive pair."
+      },
       "mutant": {
         "mutant": {
           "base": "after",
@@ -43,6 +50,12 @@
         "kind": "mutation",
         "before": "after",
         "after": "mutant"
+      },
+      {
+        "name": "m6-correspondence",
+        "kind": "correspondence",
+        "before": "after",
+        "after": "release-m6"
       }
     ],
     "links": [
@@ -50,23 +63,149 @@
       "https://github.com/spring-projects/spring-boot/issues/18150"
     ],
     "unresolved": [
-      "No Maven Central artifact has before's WebMvcTags: its source equals neither 2.1.8.RELEASE's (whose outcome() classifies by status < 200 ... and differs on 99 and 600) nor any 2.2.0 release's. after's WebMvcTags.java is byte-identical in 2.2.0.RELEASE, whose Outcome.java differs only in a Javadoc line (sources.lock.json), so a published after-side artifact exists, but a pair needs both sides."
+      "No Maven Central artifact has before's WebMvcTags: its source equals neither 2.1.8.RELEASE's (whose outcome() classifies by status < 200 ... and differs on 99 and 600) nor any 2.2.0 release's. after's sources are 2.2.0.M6's exactly (repo.spring.io/milestone), and the after slice's two classes are byte-identical to M6's published ones (sources.lock.json), so a published after side exists; before has none, so the pair is compared as slices.",
+      "The exact commits' own builds are not reproducible (the build-or-dependency blocker): the positive pair is an extracted source slice, a narrower scope."
     ]
   },
   "preparation": {
-    "route": "upstream-build",
-    "build": {
-      "tool": "maven-wrapper",
-      "argv": [
-        "./mvnw",
-        "-B",
-        "-pl",
-        "spring-boot-project/spring-boot-actuator",
-        "-am",
-        "-DskipTests",
-        "install"
-      ],
-      "jdk": "8"
+    "route": "source-slice",
+    "artifacts": [
+      {
+        "revision": "before",
+        "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+        "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+      },
+      {
+        "revision": "before",
+        "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+        "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+      },
+      {
+        "revision": "before",
+        "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+        "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+      },
+      {
+        "revision": "before",
+        "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+        "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+      },
+      {
+        "revision": "before",
+        "coordinates": "io.micrometer:micrometer-core:1.2.0",
+        "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+        "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+      },
+      {
+        "revision": "before",
+        "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+        "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+        "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+      },
+      {
+        "revision": "after",
+        "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+        "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+      },
+      {
+        "revision": "after",
+        "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+        "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+      },
+      {
+        "revision": "after",
+        "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+        "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+      },
+      {
+        "revision": "after",
+        "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+        "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+      },
+      {
+        "revision": "after",
+        "coordinates": "io.micrometer:micrometer-core:1.2.0",
+        "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+        "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+      },
+      {
+        "revision": "after",
+        "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+        "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+        "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "org.springframework.boot:spring-boot-actuator:2.2.0.M6",
+        "url": "https://repo.spring.io/milestone/org/springframework/boot/spring-boot-actuator/2.2.0.M6/spring-boot-actuator-2.2.0.M6.jar",
+        "sha256": "930eda8f32058ce7e2b157dce17243dff0699ea91b9431a838fb2b86c8b99cac"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "org.springframework:spring-web:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
+        "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
+        "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "org.springframework:spring-core:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
+        "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
+        "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
+        "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "io.micrometer:micrometer-core:1.2.0",
+        "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
+        "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
+      },
+      {
+        "revision": "release-m6",
+        "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
+        "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
+        "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+      }
+    ],
+    "slice": {
+      "files": {
+        "before": [
+          "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java"
+        ],
+        "after": [
+          "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
+          "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
+        ]
+      },
+      "jdk": "8",
+      "flags": [
+        "-g",
+        "-parameters",
+        "-source",
+        "1.8",
+        "-target",
+        "1.8",
+        "-encoding",
+        "UTF-8"
+      ]
     },
     "jdks": [
       "21",
@@ -81,7 +220,17 @@
       "pair": "positive",
       "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
       "notes": [
-        "Concrete controls only: each revision's original actuator JAR and its own dependency closure in its own JVM, on JDK 21 and 25, over the probes null; 99, 100, 199, 200, 299, 300, 399, 400, 499, 500, 599, 600; Integer.MIN_VALUE and Integer.MAX_VALUE. Observed: tag key and value, normal or exceptional termination and the exception's class. Object identity is excluded on purpose: the patch moves the tags' allocation and caching from WebMvcTags to Outcome."
+        "Concrete controls only: each revision's slice (WebMvcTags, and after's Outcome, compiled from the commit by JDK 8 with the recorded flags against Framework 5.2.0.RC2, micrometer-core 1.2.0 and javax.servlet-api 4.0.1) in its own JVM, on JDK 21 and 25, over the probes null; 99, 100, 199, 200, 299, 300, 399, 400, 499, 500, 599, 600; Integer.MIN_VALUE and Integer.MAX_VALUE. Observed: tag key and value, normal or exceptional termination and the exception's class. Object identity is excluded on purpose: the patch moves the tags' allocation and caching from WebMvcTags to Outcome. Scope: an extracted source slice, not the commits' own builds."
+      ]
+    },
+    {
+      "id": "m6-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "m6-correspondence",
+      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "notes": [
+        "The slice's check against Spring's own build (the user's decision of 2026-11-14): the after slice and Boot 2.2.0.M6's published spring-boot-actuator JAR, which carries after's two source files, each with the slice's dependency JARs, in its own JVM on JDK 21 and 25, with replay's driver, probes and oracle. Expected: the same observations and the same oracle problems on each JDK. It checks that the slice behaves like the published build of the same sources; it is no evidence about before, which has no published counterpart."
       ]
     },
     {
@@ -162,7 +311,7 @@
       {
         "kind": "build-or-dependency",
         "observed": false,
-        "summary": "Predicted from the build files, not from a build: at both commits Boot is 2.2.0.BUILD-SNAPSHOT, and spring-boot-dependencies pins 14 pre-release versions, among them SNAPSHOTs (Spring Data Moore-BUILD-SNAPSHOT, Spring Security, AMQP, Batch, Integration and Kafka BUILD-SNAPSHOTs) and milestones from https://repo.spring.io/milestone (Spring Framework 5.2.0.RC2, Reactor Dysprosium-RC1). The actuator module compiles against many of them as optional dependencies. A SNAPSHOT is a mutable reference whose 2019 contents are gone, so the exact-commit Maven build cannot be reproduced, even with decision 1's extension to repo.spring.io (the user, 2026-11-14). What remains possible is a narrower, separately labelled scope: WebMvcTags and Outcome from each commit's sources compiled outside the upstream build against pinned Central releases of their direct dependencies (sources.lock.json)."
+        "summary": "Predicted from the build files, not from a build: at both commits Boot is 2.2.0.BUILD-SNAPSHOT, and spring-boot-dependencies pins 14 pre-release versions, among them SNAPSHOTs (Spring Data Moore-BUILD-SNAPSHOT, Spring Security, AMQP, Batch, Integration and Kafka BUILD-SNAPSHOTs) and milestones from https://repo.spring.io/milestone (Spring Framework 5.2.0.RC2, Reactor Dysprosium-RC1). A SNAPSHOT is a mutable reference whose 2019 contents are gone (repo.spring.io/snapshot keeps only each SNAPSHOT's last builds), so the exact-commit Maven build cannot be reproduced, even with decision 1's extension to repo.spring.io. The user's decision (2026-11-14): the narrower source-slice route instead, each commit's WebMvcTags (and after's Outcome) compiled by JDK 8 against Framework 5.2.0.RC2's spring-web, spring-webmvc and spring-core (with spring-jcl), micrometer-core 1.2.0 and javax.servlet-api 4.0.1, labelled extracted-source-slice in every receipt. Checked by hand (a note): with -g -parameters -source 1.8 -target 1.8, the after slice's WebMvcTags.class and Outcome.class are byte-identical to Boot 2.2.0.M6's published ones (sources.lock.json); the m6-replay task replays M6's JAR beside the slice. The blocker stays for the exact commits' builds, which no task here claims."
       },
       {
         "kind": "java-semantics",
@@ -176,7 +325,7 @@
         "summary": "Predicted from lib/README.md: the parameter is javax.servlet's HttpServletResponse, a library interface, and the checker dispatches invokeinterface only to application methods and passes an interface-typed dependency null (refused if reached). The claims' domain is a null response or one whose getStatus() returns any int (claims/outcome-preservation.json); an attempt that can only take the null response is that refusal, and the claim stays unresolved, never re-read as the null-only domain. The finite-outcome property also reads the result through micrometer's Tag interface (getKey, getValue). The replay's carrier covers the int domain concretely."
       }
     ],
-    "next": "The build route first: the user's decision on the predicted build-or-dependency blocker (Progress of llm-dlc/loops/example-targets-positive.md). Then runtime's preparation of both revisions, the replay task (the driver on each revision's actuator classes in its own JVM, on JDK 21 and 25, read by controls/oracle.py), and the mutant: status-200.patch applied to after's Outcome.java and its class compiled into a copy of after's artifact, replayed against the same oracle (it must fail at 200 and only there). The native attempts are queued only after the replay, and their predicted refusals recorded as observed or withdrawn."
+    "next": "The slice's jobs: replay (both slices on JDK 21 and 25, read by controls/oracle.py; both expected to hold), m6-replay (the after slice against M6's published JAR: the same observations expected) and mutant-replay (status-200.patch applied to after's Outcome.java, compiled into the mutant's slice; it must fail at 200 and only there). Their receipts make the packet a reproducible scaffold at the slice's scope. Then the native attempts, queued only after the replay, their predicted refusals recorded as observed or withdrawn; a proof about the slice's classes reaches the commits' own builds only through the recorded correspondence, which exists for after (M6) and not for before."
   },
   "controls": [
     {

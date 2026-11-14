@@ -111,15 +111,19 @@ def artifact_sources(folder, target, revisions):
     commit or fixture), its patch by path and sha256, checked here, and the mutation in words. A preparation that
     doesn't know the key fails on it, rather than preparing the base unpatched. On the published-artifact route the
     base's published artifacts come with it: the mutant itself is built (patched sources against them), never
-    fetched."""
+    fetched.
+
+    On the source-slice route a compiled revision's entry carries `slice` (its files, the JDK and javac flags) and its
+    `published` JARs (what the slice is compiled against and run with); a mutant's base carries both. A revision with
+    a route of its own (a published reference of the slice) is planned on that route."""
     prep = target.get("preparation")
     if prep is None:
         return "the sidecar has no preparation: the case is catalogued, and nothing says how to obtain its artifacts"
-    route = prep["route"]
     defined = target["history"]["revisions"]
     out = []
     for name in revisions:
         revision = defined[name]
+        route = revision.get("route", prep["route"])
         entry = {"revision": name, "route": route, "repository": target["history"]["repository"]}
         source = name
         if "mutant" in revision:
@@ -141,17 +145,21 @@ def artifact_sources(folder, target, revisions):
                 entry["parent"] = revision["parent"]
         else:
             entry["fixture"] = revision["fixture"]
-        if route == "published-artifact":
+        if route in ("published-artifact", "source-slice"):
             published = [{k: a[k] for k in ("coordinates", "url", "sha256") if k in a}
                          for a in prep.get("artifacts", []) if a["revision"] == source]
-            if not published:
+            if not published and route == "published-artifact":
                 return f"revision {source}: the published-artifact route names no artifact for it"
-            if source == name:
-                entry["published"] = published
-                if len(published) == 1:
-                    entry.update(published[0])
-            else:
-                entry["mutant"]["base"]["published"] = published
+            where = entry if source == name else entry["mutant"]["base"]
+            where["published"] = published
+            if source == name and len(published) == 1 and route == "published-artifact":
+                entry.update(published[0])
+            if route == "source-slice":
+                recipe = prep.get("slice") or {}
+                files = (recipe.get("files") or {}).get(source)
+                if not files:
+                    return f"revision {source}: the source-slice route names no files for it"
+                where["slice"] = {"files": list(files), "jdk": recipe["jdk"], "flags": list(recipe["flags"])}
         if route == "upstream-build":
             if "build" not in prep:
                 return "the upstream-build route names no build (tool, argv, jdk)"
@@ -169,13 +177,14 @@ def artifact_sources(folder, target, revisions):
 
 def tools_of(task, route, prep, controls, artifacts=()):
     """What the task's preparation, controls and verifier call: never JBMC for a native task. A constructed mutant
-    needs git (`git apply`), and on the published-artifact route javac, to build its patched sources."""
+    needs git (`git apply`), and on the published-artifact route javac, to build its patched sources. A source slice
+    needs git (its checkout) and javac (its compile, by the recipe's JDK)."""
     mutants = any("mutant" in a for a in artifacts)
     required = ["java"]
     sources = list(prep.get("adapters", [])) + [c["path"] for c in controls]
-    if route == "fixture" or any(s.endswith(".java") for s in sources) or (mutants and route == "published-artifact"):
+    if route in ("fixture", "source-slice") or any(s.endswith(".java") for s in sources) or (mutants and route == "published-artifact"):
         required.append("javac")
-    if route == "upstream-build" or mutants:
+    if route in ("upstream-build", "source-slice") or mutants:
         required.append("git")
     if route == "upstream-build":
         tool = BUILD_TOOLS.get(prep["build"]["tool"])
@@ -297,7 +306,7 @@ def plan_task(folder, example, target, task):
         revisions=revisions, claim=claim, prerequisites=tuple(t.get("requires", [])), artifacts=artifacts,
         tools=tools_of(t, prep["route"], prep, controls, artifacts), engine=t.get("engine"), gaps=t.get("gaps"),
         expected=t.get("expected"), outputs={"receipts": f"receipts/{task}"}, folder=str(folder.resolve()),
-        network=prep["route"] in ("published-artifact", "upstream-build"))
+        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice"))
 
 
 

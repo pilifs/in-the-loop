@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-232734-example-305-replay-p1-source-slice-route",
+  "title": "example 305 replay (P1, source-slice route): WebMvcTags.outcome's tags, before and after e8de5a6d, from each commit's slice",
+  "description": "The job runs python3 examples/tools/build.py 305 --task replay, the target route of llm-dlc/loops/example-targets.md, now with the source-slice route (the user's decision of 2026-11-14 for P1, example 305): the exact commits of spring-boot's e8de5a6d change can't be built (their builds pin SNAPSHOTs that are gone), so each commit is fetched from github.com at depth 1 or 2 and only WebMvcTags.java (and after's Outcome.java) is compiled, by Temurin 8's javac with -g -parameters -source 1.8 -target 1.8 -encoding UTF-8, against six JARs pinned by sha256: Framework 5.2.0.RC2's spring-web, spring-webmvc, spring-core and spring-jcl from repo.spring.io/milestone (whose 302 to its own S3 storage runtime_maven.py now follows from repo.spring.io only) and micrometer-core 1.2.0 and javax.servlet-api 4.0.1 from Maven Central. The driver (a Proxy HttpServletResponse whose getStatus() returns each of 27 probes) runs in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/replay/, read by the packet's independent oracle (controls/oracle.py problems(), the status class from the status's decimal spelling) and labelled extracted-source-slice in its claim's target.scopes. A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true. This is the first job of the source-slice route; a failure in its code is a finding to fix with a reproducer. A hand compile (a note) found the after slice's two classes byte-identical to Boot 2.2.0.M6's published ones. This task: the positive pair, before (9b8decf9) and after (e8de5a6d); both must hold the oracle on every probe.",
+  "kind": "example",
+  "capabilities": [
+    "target:replay",
+    "target:source-slice"
+  ],
+  "links": {
+    "examples": [
+      "305"
+    ]
+  },
+  "expected": "build.py prints '305-...: task replay: none (completed; as expected)' and exits 0: before and after both hold the oracle on JDK 21 and 25 alike; a receipt under examples/305-*/receipts/replay/ whose claim.target.scopes says extracted-source-slice for both",
+  "submitted": {
+    "at": "2026-11-14T23:27:34+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "notes": "a depth-2 blob-full fetch of spring-boot per revision (a few hundred MB), six JARs (about 4.3 MB), two javac runs and four short JVMs"
+  },
+  "steps": [
+    {
+      "name": "example 305 task replay (replay)",
+      "run": "python3 examples/tools/build.py 305 --task replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/replay"
+  ]
+}

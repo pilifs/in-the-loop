@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "$comment": "The direct dependencies of the selected method's classes, as spring-boot-dependencies pins them at both commits (unchanged by the patch).",
+    "$comment": "The direct dependencies of the selected method's classes, as spring-boot-dependencies pins them at both commits (unchanged by the patch). The slice's pinned JARs are under sliceDependencies.",
     "org.springframework:spring-web": "5.2.0.RC2 (HttpStatus.Series.resolve, before's path; a milestone on repo.spring.io, not on Maven Central)",
     "io.micrometer:micrometer-core": "1.2.0 (Tag; on Maven Central)",
     "javax.servlet:javax.servlet-api": "4.0.1 (HttpServletResponse; on Maven Central)",
@@ -47,9 +47,30 @@
       "tag": "v2.2.0.M6",
       "commit": "fb75cbbc5c19bb96adbf18c38aa5a1b1d9edd048",
       "files": {
-        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "78c4c0b970c1ad1bc09dfdde394162ad57e6e46f"
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java": "78c4c0b970c1ad1bc09dfdde394162ad57e6e46f",
+        "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java": "dcbc759eba99eb0d20f722ca7a6c0fbbf35b44bf"
       },
-      "finding": "WebMvcTags.java identical to after's; a milestone, published only to repo.spring.io."
+      "finding": "WebMvcTags.java and Outcome.java identical to after's; a milestone, published only to repo.spring.io. Target.json's release-m6 revision, the published reference of the after slice.",
+      "coordinates": "org.springframework.boot:spring-boot-actuator:2.2.0.M6",
+      "published": {
+        "url": "https://repo.spring.io/milestone/org/springframework/boot/spring-boot-actuator/2.2.0.M6/spring-boot-actuator-2.2.0.M6.jar",
+        "bytes": 565912,
+        "sha256": "930eda8f32058ce7e2b157dce17243dff0699ea91b9431a838fb2b86c8b99cac",
+        "sha1": "f8edf16d74646f22f4dcf977574781540bb074ba",
+        "manifest": "Created-By: Maven Archiver 3.4.0, Build-Jdk-Spec: 1.8",
+        "classes": {
+          "org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.class": "1a737c8eec60888c8c256d0499cf7e0fc31621aab1abec3949cf7af34abed9d0",
+          "org/springframework/boot/actuate/metrics/http/Outcome.class": "e6c6b402ccef27d0ef977c502784dbb41c87a99985bd7bff9c059e4385f098e2"
+        },
+        "debugAttributes": "LineNumberTable, LocalVariableTable and MethodParameters: built with -g and -parameters"
+      },
+      "sliceCompile": {
+        "checkedOn": "2026-11-14",
+        "how": "by hand (a note): after's two files from the commit, compiled by javac 1.8.0_512 (Temurin 8) with -implicit:none -proc:none and an empty -sourcepath against the six sliceDependencies",
+        "identical": "-g -parameters -source 1.8 -target 1.8 -encoding UTF-8 gives WebMvcTags.class and Outcome.class byte-identical to M6's published ones (the sha256s above)",
+        "different": "-g alone (no -parameters) gives other bytes for both (WebMvcTags 68fd82c0..., Outcome 940eed7a...)",
+        "before": "before's WebMvcTags.java by the same recipe gives WebMvcTags.class 49b77d26cdd8777686cf581471020d6c7d6a543e51f34b2edc0e4b354ce8a5db and WebMvcTags$1.class 321a5cf96713bf9a961d2304c6e6af97eebd55f2bb86f2024acab542c182f3de (its switch over HttpStatus.Series); no published build carries before's source to compare with"
+      }
     },
     {
       "release": "2.1.8.RELEASE",
@@ -60,5 +81,38 @@
       },
       "finding": "Not before's code: the 2.1.x outcome() classifies by status < 200, < 300, < 400, < 500, else SERVER_ERROR, so 99 is INFORMATIONAL and 600 SERVER_ERROR where before says UNKNOWN. A release pair 2.1.8 -> 2.2.0 would be a different change."
     }
-  ]
+  ],
+  "sliceDependencies": {
+    "$comment": "The JARs the source slice of each revision is compiled against and run with (target.json's preparation.artifacts), fetched on 2026-11-14 by hand (a note) with the generic User-Agent, each one's sha1 agreeing with its repository's .sha1. repo.spring.io served the larger ones by a 302 to its storage (jfrog-prod-use1-shared-virginia-main.s3.amazonaws.com/aol-springsource/filestore/<sha1>), which runtime_maven.py now follows from repo.spring.io only. spring-webmvc (HandlerMapping) and spring-core (StringUtils) are needed to compile WebMvcTags, beside the three JARs the user's decision named, from the same Framework 5.2.0.RC2 milestone.",
+    "org.springframework:spring-web:5.2.0.RC2": {
+      "bytes": 1404534,
+      "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
+      "sha1": "436bdc305a2367eec412f5da802bf35a75de6f07"
+    },
+    "org.springframework:spring-webmvc:5.2.0.RC2": {
+      "bytes": 938879,
+      "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
+      "sha1": "04520046329dcd4b5f7802c8433ed15a8b602eed"
+    },
+    "org.springframework:spring-core:5.2.0.RC2": {
+      "bytes": 1426622,
+      "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
+      "sha1": "338a5bc5b73b608ddf5e24003c5661f0dd45da4b"
+    },
+    "org.springframework:spring-jcl:5.2.0.RC2": {
+      "bytes": 23757,
+      "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
+      "sha1": "f7b0ec098d8ee43ad3568c2a0bfeb7b7b746ea77"
+    },
+    "io.micrometer:micrometer-core:1.2.0": {
+      "bytes": 443787,
+      "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
+      "sha1": "0e085f337633b807020596b37dc9c9ccd3ee1a1f"
+    },
+    "javax.servlet:javax.servlet-api:4.0.1": {
+      "bytes": 95505,
+      "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
+      "sha1": "a27082684a2ff0bf397666c3943496c44541d1ca"
+    }
+  }
 }
