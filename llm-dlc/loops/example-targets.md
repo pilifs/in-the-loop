@@ -473,6 +473,12 @@ Settled by the user on 2026-11-08:
    without an upstream build route, recorded as that blocker, never counted as a success; its published-artifact
    evidence (2.2.0.RELEASE carries after's class) stands as it is. The runtime stream's `runtime_maven.py` allows only
    Central and github.com (`HOSTS`, `REDIRECT_HOSTS`): widening it is a merge-time item (Progress).
+   **Extended again by the user on 2026-11-14**, after the merge found P3's build plugin behind repo.spring.io's
+   login: **maven.aliyun.com** (Alibaba Cloud's anonymous mirror of Spring's plugin repository) is allowed too, with
+   the same hash-pinned acquisition, for P3's four Spring Gradle plugins. No independent hash of them exists, so P3's
+   build job also compares the `before` `BCrypt.class` it builds with Spring Security 5.2.0.M4's published one. P1
+   (305) takes the narrower slice instead, checked against Boot 2.2.0.M6's published classes (Progress, the user's
+   decisions of 2026-11-14).
 2. **Four streams, and the case packets run in Phase 5**: the streams build against Phase 0's frozen interfaces and
    fixtures, and this brief's own loop runs the original-JVM replays and the calibration after the merge (gates A3–A5).
 3. **Older JDKs installed**, so each revision is built with its own build tool and a JDK it supports: Temurin 8, 11 and
@@ -1041,7 +1047,59 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     the remaining replays (285–287 `mutant-replay`, 105 `replay`), step 1's proof tasks and probes, the joint
     acceptance, the gap inventory and the for-review list. Once they are collected, read each receipt, fix a failure
     with a reproducer (two substantive failures per item), then queue the rest.
-- Status: waiting on jobs ID 20261114-214754-example-targets-phase-5-gate-a3-example 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 20261114-214818-example-287-replay-gate-a3-cve-2025-2222 20261114-214818-example-306-replay-gate-a4-framework-db9 20261114-214818-example-306-mutant-replay-gate-a4-the-ne 20261114-215343-example-105-fix-property-gate-a5-arithme 20261114-215345-example-105-fix-property-before-gate-a5
+- 2026-11-14, **the user's decisions on four for-review items** (a review with the user after the run stopped; the
+  lookups were HEAD requests and small metadata fetches on 2026-11-14).
+  - **P3 (307): the upstream build, with its plugin from an anonymous mirror and an output check.**
+    - `spring-build-conventions 0.0.23.RELEASE` is served without login by Alibaba Cloud's mirror of Spring's plugin
+      repository, `https://maven.aliyun.com/repository/spring-plugin/`: 416,730 bytes, sha256
+      `65b65633191873ed903a7a74d32420cd6dcbe377783acd2a090fb69609746c74` (the mirror's sha1 `753001a6…` agrees). The
+      mirror cached it on 2019-02-26; its `META-INF/` is dated 2019-01-10 18:52, the minute of upstream's commit
+      "Release 0.0.23.RELEASE" (`f373956f` in `github.com/spring-gradle-plugins/spring-build-conventions`).
+    - No independent hash exists: repo.spring.io's checksums answer 401 like the JAR, and the Wayback Machine has no
+      capture. Building the plugin from its tag doesn't avoid the mirror either: three of its compile dependencies,
+      `docbook-reference-plugin 0.3.1`, `propdeps-plugin 0.0.10.RELEASE` and `spring-io-plugin 0.0.8.RELEASE`, are
+      also only there (Central and plugins.gradle.org 404). Security's buildscript resolves them transitively, so the
+      build needs all four from the mirror.
+    - **Decided**: the download hosts gain `maven.aliyun.com` (an extension of decision 1), each file pinned by
+      sha256. The build job also compares the `BCrypt.class` it builds for `before` with Spring Security 5.2.0.M4's
+      published one (before's `BCrypt.java` equals 5.2.0.M4's, and repo.spring.io/milestone serves 5.2.0.M4
+      anonymously). A match shows that the plugins left the proved class alone, whoever served them. A mismatch is
+      recorded as a blocker. The commit's sources stay unedited: the route points the buildscript's repository
+      lookups at the mirror, for example with a Gradle init script.
+  - **P1 (305): the narrower slice, checked against Boot 2.2.0.M6's published classes.**
+    - The SNAPSHOTs that the two commits (2019-09-05) resolved are gone. repo.spring.io/snapshot is anonymous but
+      keeps only each SNAPSHOT's last builds (spring-data-commons `2.2.0.BUILD-SNAPSHOT`: only 2019-09-30's), and
+      the Aliyun mirror carries no snapshots.
+    - Boot 2.2.0.M6 (tag `fb75cbbc`) has after's exact `WebMvcTags.java` (`78c4c0b9…`) and `Outcome.java`
+      (`dcbc759e…`), by git blob id (the GitHub contents API). Its `spring-boot-actuator` JAR is on
+      repo.spring.io/milestone (200). M5's `WebMvcTags.java` (`477d7b42…`) is neither side's, so no published pair
+      exists.
+    - **Decided**: each commit's `WebMvcTags` and `Outcome` compiled outside the upstream build against spring-web
+      5.2.0.RC2 (repo.spring.io/milestone), micrometer-core 1.2.0 and javax.servlet-api 4.0.1 (Central), a separately
+      labelled scope. M6's published classes are replayed beside the `after` slice as an independent check that the
+      slice behaves like Spring's own build. Substituting the 2019-09-30 SNAPSHOTs was rejected.
+  - **`msotkvrv`'s JARs are published** as they are; no history rewrite. That for-review item is closed.
+  - **307's `authentication` tag is dropped**, because the vocabulary entry means tokens and their validation. 307
+    keeps `password-hashing` and `text-encoding`. 300 keeps the tag (`DaoAuthenticationProvider`'s login timing).
+    Done in this commit: 307's `example.json` (tag and a note), and the router regenerated with
+    `build.py --index-only`.
+  - **Checked**: `test_packets.py` (16) passes.
+  - **Next**, before the seven pending jobs are read:
+    1. the host extension in `runtime_maven.py`, with a reproducer;
+    2. 307's Gradle route with the mirror and the 5.2.0.M4 output check, queued as a job;
+    3. 305's slice route and the M6 replay, queued.
+
+    The seven jobs still pending:
+    - `20261114-214754-example-targets-phase-5-gate-a3-example`
+    - `20261114-214818-example-286-replay-gate-a3-cve-2022-2296`
+    - `20261114-214818-example-287-replay-gate-a3-cve-2025-2222`
+    - `20261114-214818-example-306-replay-gate-a4-framework-db9`
+    - `20261114-214818-example-306-mutant-replay-gate-a4-the-ne`
+    - `20261114-215343-example-105-fix-property-gate-a5-arithme`
+    - `20261114-215345-example-105-fix-property-before-gate-a5`
+
+    Once they are collected, read each receipt as the previous entry's Next says.
+- Status: working
 
 ## Loop settings
 
