@@ -117,8 +117,38 @@ timebox and the safety rules. Planning and discovery never touch the network.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
+- Forked 2026-11-14 after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
   included.
+- 2026-11-14, **W1 planning**: `workflow.plan_task()` resolves a task from the sidecar and its claim file alone (no
+  network, process or write), and A1's planning row passes. A claim file is `example-target-claim/v1`
+  ([`examples/schema/target-claim.schema.json`](../../examples/schema/target-claim.schema.json), new and mine):
+  property, kind (property, or preservation/compatibility), statement, `assume` (the domain), `assert`, `throws`,
+  `nullable`, `mayAlias`, observations, assumptions with their basis, bounds, models, construction plan and gap
+  contracts. `TaskPlan.claim` carries all of it, with the task's `allowedChange`, the bounds resolved (jvmcontract's
+  defaults `unwind` 16 and `maxArrayLength` 8 stated, and listed in `defaultBounds`), every referenced file and
+  applicable control hashed, and `key`, the source-level claim's canonical digest (build.py's `canonical_digest`):
+  vulnerable, fixed and mutant tasks sharing a claim file share it; the engine is left out (a strategy), the gap mode
+  kept. Refused by name: no preparation (catalogued), a route missing its artifacts or build, a proof task without an
+  explicit engine or gap mode, a prove task without a claim file, a claim file missing, invalid, of the wrong kind,
+  outside the folder or at odds with the task's bounds, a replay without an oracle and a driver, and an introduction
+  task until the introduction is `established` with an oracle control. The fixture's claim files are
+  `fixtures/claims/` (gate-security for the three security tasks, gate-preservation, regex-probe). `test_workflow.py`
+  24 tests; the integration script passes (contract 4 pass and 12 at stubs, targets suite 61, `test_build.py` 190,
+  `test_pipeline.py` 29).
+- **For the merge** (coordination, not blocking):
+  - *Negative and positive*: a task's `claim` file is read as `example-target-claim/v1`. A claim file in another shape
+    leaves the sidecar valid and the task unplannable, with the schema error as its `notExecuted`.
+  - *Runtime*: `run_verifier` can build its argv from `plan.claim` (`assume`, `assert`, `throws`, `nullable`,
+    `mayAlias`, `allowedChange`, `bounds`, `plan`, `contracts`); the contract test's own `fixture_plan()` carries only
+    `task`, `allowedChange` and `bounds`. Artifact entries add two keys to `ARTIFACT_SOURCE`: `parent` (a commit's
+    selected parent) and `published` (every published artifact of the revision; the singular `coordinates`, `url` and
+    `sha256` only when there is exactly one).
+  - *Coordinator*: the fixtures' README could list `claims/` (its table is the coordinator's).
+  - *Schema gap*: a positive packet's constructed mutant can't be a revision (a fixture revision is a control's only),
+    so the positive stream can't plan its mutation task yet; an additive revision kind (base revision, patch, patch
+    hash) is my next W1 step.
+- Next: W1's mutant revisions and readiness milestones (provenance locked, artifacts prepared, oracle replay
+  validated, claim frozen, capability probed, attempt recorded), then W2 ingestion.
 - Status: working
 
 ## Loop settings

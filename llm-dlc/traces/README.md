@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 84, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 15:23 UTC |
-| Prompts | 2,028 |
-| Model calls | 19,711 |
-| Tool calls | 20,674 (349 failed) |
-| Compactions | 307 |
+| Sessions | 85, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 15:34 UTC |
+| Prompts | 2,033 |
+| Model calls | 19,743 |
+| Tool calls | 20,707 (349 failed) |
+| Compactions | 308 |
 | Subagents | 12 |
-| Tokens written | 20,355,723 |
-| Tokens read | 3,113,404,950 (97.9% from cache) |
-| Commits with a trace | 599 |
-| Log snapshots | 732 (1640.0 MB gzipped, 732 uploaded) |
+| Tokens written | 20,393,226 |
+| Tokens read | 3,117,028,681 (97.9% from cache) |
+| Commits with a trace | 600 |
+| Log snapshots | 733 (1640.3 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -111,6 +111,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 8 | 7 | 1 | 0 | 36,075 | 2 |
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | ended | 13 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 37,319 | 7 |
 | 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | open | 12 min | `claude-opus-5-5` | 4 | 42 | 40 | 0 | 0 | 128,012 | 4 |
+| 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/summary.md) | open | 8 min | `claude-opus-5-5` | 5 | 32 | 33 | 0 | 1 | 166,146 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -204,15 +205,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1,587 | 16 | 24,690 | 229,016 | 90.3% | 160 |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 2,191 | 20 | 25,935 | 291,628 | 91.8% | 145 |
 | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 35,559 | 90 | 97,062 | 3,724,229 | 97.5% | 107 |
+| [`eaff7dd7`](eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/summary.md) | 37,503 | 64 | 171,231 | 3,452,436 | 95.3% | 97 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 18,139 | 87.7% | 84 |
-| `Read` | 972 | 4.7% | 40 |
+| `Bash` | 18,167 | 87.7% | 85 |
+| `Read` | 975 | 4.7% | 41 |
 | `Edit` | 747 | 3.6% | 40 |
-| `Write` | 455 | 2.2% | 36 |
+| `Write` | 457 | 2.2% | 37 |
 | `ToolSearch` | 122 | 0.6% | 31 |
 | `Monitor` | 93 | 0.4% | 33 |
 | `AskUserQuestion` | 36 | 0.2% | 12 |
@@ -831,6 +833,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 597 | [`1715bfbd`](https://github.com/pilifs/in-the-loop/commit/1715bfbd07a623ee8a613edc33b96c5c271f0494) | example-targets ready to launch: status working, and memory caps raised for the resized VM | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/874d1f1659f39ae9a9f328187ad3fac18ce4f0e7497fd3f86f073bbf7042ec36.jsonl.gz)) |
 | 598 | [`1b9cc03d`](https://github.com/pilifs/in-the-loop/commit/1b9cc03d50a12cce6a580b0456f91ffadbe0889c) | Share the resized VM between feature loops, verification jobs and the user's terminals | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/8be4ed69e783338fdc8ed81de5d2c72ca894c137a5a831b04c766a696ed19ccf.jsonl.gz)) |
 | 599 | change `qpvlyptu` | Record session traces | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz)) |
+| 600 | change `wqsyopql` | example-targets W1: pure task planning from the sidecar and a frozen claim file | [`eaff7dd7`](eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/summary.md) ([log](https://terminalvalue.net/raw-traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3.jsonl.gz)) |
 
 ## Logs
 
@@ -922,6 +925,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`2d3839f7`](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 2 | 2 | 0.2 MB | [`f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz) |
 | [`50cf0225`](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 4 | 4 | 0.3 MB | [`891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz) |
 | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 4 | 4 | 0.7 MB | [`289209a3a4c5`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/289209a3a4c5f98b1f142c6dafa055ba6847ed7c9ff0e2ff26f76587c9ca6ede.jsonl.gz) |
+| [`eaff7dd7`](eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/summary.md) | 1 | 0 | 0.3 MB | `fe7c35165a2f`, not uploaded |
 
 ## Session notes
 

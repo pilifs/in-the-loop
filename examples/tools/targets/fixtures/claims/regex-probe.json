@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "regex-gate-never-allows-null",
+  "kind": "property",
+  "statement": "RegexGate.allowed(field) never allows a null field. True on the JVM; the claim is a diagnostic, whose strict proof reaches java.util.regex (Pattern.compile in the class initializer, Pattern.matcher, Matcher.matches), which the tool's own checker does not implement, so it is expected unresolved: an observed capability refusal, never a verdict.",
+  "assert": "!result || field != null",
+  "observations": ["result", "exception"]
+}

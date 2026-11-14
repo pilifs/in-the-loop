@@ -1,0 +1,98 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "eaff7dd7-6d26-4a35-811f-cb8e08f4ee79",
+  "status": "open",
+  "title": "Application-core feature streams exiting early",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-14T15:26:47.206Z",
+  "ended": "2026-11-14T15:34:58.744Z",
+  "duration_seconds": 492,
+  "stats": {
+    "turns": 5,
+    "api_calls": 32,
+    "tool_calls": 33,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 166146,
+    "usage": {
+      "input_tokens": 64,
+      "output_tokens": 37503,
+      "cache_read_input_tokens": 3452436,
+      "cache_creation_input_tokens": 171231
+    }
+  },
+  "tools": {
+    "Bash": 28,
+    "Read": 3,
+    "Write": 2
+  },
+  "files_touched": [
+    "examples/schema/target-claim.schema.json",
+    "examples/tools/targets/test_workflow.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T15:26:47.206Z",
+      "ended": "2026-11-14T15:26:47.209Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-14T15:26:42.743Z",
+      "ended": "2026-11-14T15:34:58.744Z",
+      "turns": 5,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 64,
+        "output_tokens": 37503,
+        "cache_read_input_tokens": 3452436,
+        "cache_creation_input_tokens": 171231
+      },
+      "peak_context_tokens": 166146
+    }
+  ],
+  "log": {
+    "sha256": "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3",
+    "bytes": 1295319,
+    "lines": 377,
+    "gzip_bytes": 263588,
+    "path": "llm-dlc/traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/logs/fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wqsyopqlqlnotrzvpnmskrxpkyzmtsmn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets W1: pure task planning from the sidecar and a frozen claim file",
+      "body": "workflow.plan_task() replaces Phase 0's stub: it resolves a named task of a target.json sidecar into a TaskPlan from local metadata alone (no network, process or write), with its revisions, per-revision artifact sources, tools (never JBMC for a native task), explicit engine and gap mode, expected outcome, prerequisites and outputs. The source-level claim comes from a new claim file format, example-target-claim/v1 (examples/schema/target-claim.schema.json): the property, its domain, observations, assumptions, bounds and models. Planning resolves the tool's default bounds, hashes every referenced file and control, and computes a canonical key that tasks sharing a claim file share (the vulnerable, fixed and mutant security tasks), while ingestion will bind it to artifacts. Catalogued cases, incomplete routes, proof tasks without an explicit engine or gap mode, prove tasks without a claim file, invalid or mismatched claim files, replays without an oracle and driver, and unjustified introduction tasks are refused by name, which build.py --plan shows as notExecuted.\n\nThe fixture gains claims/ (gate-security, gate-preservation, regex-probe) and the claim keys naming them, the one fixture edit the brief allows this stream. Verified: test_workflow.py (24 tests, rewritten from the stub tests), and the integration script passes: the contract's A1 planning row now passes (4 pass, 12 stop at their stubs), the targets suite 61, test_build.py 190, test_pipeline.py 29. Coordination notes for the merge are in the stream brief's Progress.",
+      "log_sha256": "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3"
+    }
+  ],
+  "logs": {
+    "fe7c35165a2f0273f170b06be50ae785e915f90cd8d3a5817e4755ffc0e785a3": {
+      "bytes": 1295319,
+      "lines": 377,
+      "gzip_bytes": 263588,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
