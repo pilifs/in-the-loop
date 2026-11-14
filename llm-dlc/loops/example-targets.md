@@ -571,8 +571,91 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: fold the streams' Progress, deferrals and interface requests here (step 5); forget the five workspaces
     (step 6); then Phase 5, starting with the fixture recipe's `-parameters` and contract A5, and runtime's
     `runtime_maven.py` hosts for P3.
-- Status: in progress: the streams are merged; next, reconcile steps 5–6, then Phase 5 (the fixture recipe and A5
-  first)
+- 2026-11-14, **the reconcile, steps 5–6 done: the streams' Progress folded here, the workspaces forgotten.**
+  - **Step 6**: the workspaces `example-targets-runtime`, `-negative`, `-positive`, `-workflow` and `-integration`
+    are forgotten. Their directories, `../in-the-loop-example-targets-*`, are the user's to delete. The integration
+    workspace's `@` was an empty trial-merge revision, still conflicted, so nothing is lost with it.
+  - **Deferred by the timebox**: none, in any stream. No blocker was attempted by a verifier on a real packet, so
+    every gap in the case packets is still `observed: false` ("Predicted ..."). **Deferred for the user**: the
+    positive stream's build-route question for P1 (305) and P3 (307), answered by decision 1's extension (above).
+    P1 stays without an upstream build, on its SNAPSHOT pins. P4, the optional `d676147` control, wasn't done.
+  - **Interface requests that waited for the merge**, Phase 5 step 1's work, grouped by the owner of the file
+    (each checked against the merged code on 2026-11-14 and still open):
+    1. **The fixture recipe** (coordinator's `fixtures/build_fixtures.py`): `JAVAC_FLAGS = ("-parameters",)`, so the
+       fixture classes keep the parameter names the sidecar (`code == 97`) and the claim files (`code`, RegexGate's
+       `field`) use. Runtime's `_fixture_recipe()` already reads an optional `JAVAC_FLAGS`. The fixture JARs'
+       hashes change, and the recorded controls and the gap scan with them. Contract A5 is its reproducer
+       (runtime, VF-024's closure covered the recipe with `-parameters`, not Phase 0's bytes).
+    2. **The download hosts** (runtime's `runtime_maven.py`): widen `HOSTS` and `REDIRECT_HOSTS` to repo.spring.io,
+       services.gradle.org and plugins.gradle.org (decision 1's extension), with a test that any other host is
+       still refused. Runtime's Gradle `toolchain` blocker ("outside the downloads policy") goes with it. Then P3
+       (307) by its pinned upstream build, as a job.
+    3. **Constructed mutants as revisions** (the six packets' sidecars; negative's and positive's request 1, settled
+       on the other branches: workflow's W1 `mutant` revision kind, `zvnrtxsu`, and runtime's preparation of it on all
+       three routes, `wkkwovlz`). 285, 286, 287, 305, 306 and 307 still declare their mutant as a `controls` entry of
+       kind `mutation`. Each becomes a W1 `mutant`, the `after` of a `mutation` pair over its base, with a task and
+       claim key of its own. Runtime's slice `runtime_simplematch/mutation.json` moves into its `target.json` the same
+       way, and 306's `drop-prefix.patch` gives A4 its nearby mutation.
+    4. **The router** (coordinator's generated files; negative's and positive's request 2): `build.py --index-only`,
+       so `examples/README.md` and `index.json` list 285–300 and 305–307. The index has none of them today.
+    5. **Readiness in the index** (workflow's `workflow_discovery.py` and the coordinator's `test_route.py:132`): set
+       `READINESS_IN_INDEX = True` and change that test's expected `None` to `"catalogued"`. Until then
+       `find.py --readiness` matches nothing.
+    6. **Companions** (positive's request 3): link 305–307 to 285–287.
+    7. **Interfaces, additive** (coordinator's `interfaces.py`, runtime's requests): `PreparedTarget.workdir:
+       Optional[str] = None`, kept out of `source`, so that `run_controls` and ingestion stop deriving the
+       preparation from `route.py`'s layout. Ingestion bundles no raw stdout and stderr until it has it (workflow's
+       request). And `PreparedTarget.blocker: Optional[Mapping] = None`, for the blocker now in `source.blocker`.
+    8. **The result schema** (coordinator's `result.schema.json`, workflow's requests): allow `existingTests` and
+       `before`/`after` to be null when `claim.target` is present. Until then a target receipt writes "none: a target
+       task's attempt runs no module tests" with `passed: false`, which nothing may read as a test failure. Also,
+       `claim.target.revisions`' description should say a fixture revision's id is its source tree's, and a mutant's
+       its base's.
+    9. **A driver's invocation** (negative's request 3): a field or convention for a `driver` control's main class,
+       its arguments (`controls/oracle.py argv`) and the oracle's `check(lines)` and `compare(before, after)`.
+       Runtime's lock names the main class and runs the oracle's `PROBES`, which doesn't match 285–287's entry
+       points; to be confirmed when 285 is prepared.
+    10. **Smaller ones**: a verifier record's `identities.commit` (the `lib/` commit of the binary), so a packet stops
+        listing `verifier.commit` as missing; a claim-schema key for an adapter entry point (the verifier can't go
+        through an adapter yet, so such a task needs `--plan` or stays a gap); the handoff beside `--plan` in
+        `build.py` or `find.py`, and `find.py` matching a task's readiness (both optional); the fixtures README
+        listing `claims/`.
+    11. **VF-025** (`.gitignore`, the user's or this loop's): ignore `runtime-mutant/**/spring-core-5.3.19.jar`, or
+        decide jj's 1 MiB limit together with VF-020. Later runtime jobs should delete `prepare/*/lib/` in cleanup.
+  - **The case packets at the merge, by the streams' accounts**, all source-locked and none prepared, replayed or
+    probed by a job (every run was a developer note on Temurin 21 and 25):
+    - negative: the catalog 285–300 (16 CVEs, 301–304 free) checked against upstream; 285 (4 tasks, 15 probes), 286
+      (6 tasks, 46 probes, `Locale.ROOT`) and 287 (6 tasks, 33 probes against 9 independent pyca hashes) ready for
+      preparation by the published-artifact route; 300 research-only, its 6.3.9 policy a proposed contract;
+    - positive: 306 complete (40 probes, spring-core 5.3.6/5.3.7 published, the A4 candidate); 305 partial (no
+      upstream build); 307 partial (45 probes, the UTF-8 conversion lemma not written, its upstream build now
+      allowed); 105 migrated (`pow-minus-two.json` for A5, 75 probes, `PowDriver.java`), its upstream Maven build of
+      each commit on JDK 11 predicted to need Central only, with 106 an unused fallback. Its claims were checked
+      against a copy of workflow's W1 before the merge, so they are rechecked on the merged planner;
+    - runtime: R1–R5 done; five jobs, all collected, the last four passed (`20261114-164239`, `-170353`,
+      `-174017`, `-180443`); VF-024 closed, VF-025 open;
+    - workflow: W1–W4 done, no jobs; A1, A6 and A7 pass on the fixture and wait for real packets. Over the merged
+      sidecars, every gap group of the inventory is predicted, none observed.
+  - **Found by the streams, for the for-review list** (each in its stream's Progress, with lines):
+    - runtime: a killed record's `exitCode` is `-9` in `build.py` but `None` in `bad-runs.json`; no POM is resolved,
+      so the dependency closure is what the lock declares; `PatternMatchUtils.class` is byte-identical in 5.3.18 and
+      5.3.19 (CVE-2022-22968's fix is in `DataBinder`); regex-probe's refusal is named by the probe, not a proof; no
+      checkout or build cache; the published route's commit-to-JAR link is recorded, not checked;
+    - negative: 285's frozen labels are version-specific and a null `getMethod()` is outside its domain; 286's
+      final-sigma and `tr-TR` behaviour of 5.3.19; 287's 25 lone surrogates match 25 `?`, a cost-31 stored hash
+      never terminates, and 6.3.8 locks out stored long passwords; 300's possible non-timing distinguisher on 6.3.8,
+      read from source, not run;
+    - positive: 305's mutant satisfies the finite-outcome property by design, and a range property can't be stated
+      through the response parameter; 307's gap scan refuses the changed conversion itself;
+    - workflow: a replay's expectation comes from its pair's kind, as the sidecar states none per revision;
+      `build_fixtures.py` compiles RegexGate into every revision's JAR, outside the tree id; `partial` beats
+      `blocked` in a target's summary.
+  - **Checked**: `sync.py check` reports 0 errors at the merge, so the streams' "has no manifest" errors are gone,
+    as expected. Each open request above was checked against the merged code (`HOSTS`, `READINESS_IN_INDEX`,
+    `build_fixtures.py`, `examples/index.json`, the six sidecars' mutants, `result.schema.json`).
+  - **Next**: Phase 5 step 1's requests, in the order above, each a cycle with its reproducer: first the fixture
+    recipe, which makes contract A5 pass, then the hosts.
+- Status: working
 
 ## Loop settings
 
