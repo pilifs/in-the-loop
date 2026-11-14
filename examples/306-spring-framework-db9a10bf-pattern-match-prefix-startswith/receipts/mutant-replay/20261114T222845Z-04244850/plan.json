@@ -1,0 +1,268 @@
+{
+  "plan": {
+    "example": "306",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+    "revisions": [
+      "release-after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "glob-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
+        },
+        {
+          "id": "simple-match-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
+          "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
+        },
+        {
+          "id": "simple-match-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
+        },
+        {
+          "id": "drop-prefix-mutant",
+          "kind": "mutation",
+          "path": "controls/drop-prefix.patch",
+          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+        }
+      ],
+      "key": "9b988a831822a641"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "release-after",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-core:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "mutant": {
+          "base": {
+            "revision": "release-after",
+            "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-core:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+                "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+                "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/drop-prefix.patch",
+            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+          },
+          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/mutant-replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261114-214818-example-306-mutant-replay-gate-a4-the-ne/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith",
+    "network": true
+  },
+  "inputs": {
+    "example": "306",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+    "revisions": [
+      "release-after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "glob-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
+        },
+        {
+          "id": "simple-match-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
+          "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
+        },
+        {
+          "id": "simple-match-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
+        },
+        {
+          "id": "drop-prefix-mutant",
+          "kind": "mutation",
+          "path": "controls/drop-prefix.patch",
+          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+        }
+      ],
+      "key": "9b988a831822a641"
+    },
+    "artifacts": [
+      {
+        "revision": "release-after",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-core:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.3.7",
+            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "mutant": {
+          "base": {
+            "revision": "release-after",
+            "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+            "published": [
+              {
+                "coordinates": "org.springframework:spring-core:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+                "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+              },
+              {
+                "coordinates": "org.springframework:spring-jcl:5.3.7",
+                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+                "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/drop-prefix.patch",
+            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
+          },
+          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "6d41af733f2efd195e3a199de926b6ef81b053cb927e73d8007418e87988a40a"
+}

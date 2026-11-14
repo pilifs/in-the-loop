@@ -1,0 +1,431 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "5955760df7c21aec",
+    "format": 1,
+    "example": "105",
+    "statement": {
+      "approach": "target",
+      "task": "fix-property",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "revisions": [
+        "after"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "fix-property",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+        "file": "claims/pow-minus-two.json",
+        "sha256": "32dcc9f1290aebf8c259d3b6be75d73d251701e5a688def39b5fcf659d1ae355",
+        "property": "pow-int-minus-two-exact",
+        "claimKind": "property",
+        "statement": "For k == -2 and every e from 0 to 31, ArithmeticUtils.pow(int k, int e) returns (-2)^e: 1, -2, 4, ..., 2^30, and -2^31 (Integer.MIN_VALUE) at e = 31, all representable as an int, so the Javadoc's '@return k^e' applies and its '@throws ArithmeticException if the result would overflow' does not. Shared by the fix commit 8cfc04e8 (expected established) and its parent e7c172d2 (expected refuted at e = 31, where it throws ArithmeticException: the overflow report NUMBERS-218 fixed). The result and the exception are observed: with no throws clause, a revision that throws anywhere in the domain fails the property.",
+        "assume": "k == -2 && e >= 0 && e <= 31",
+        "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [
+          {
+            "text": "The assertion is evaluated in Java int arithmetic, and states (-2)^e exactly on the whole domain: 1 << e is 2^e for e <= 30, and at e = 31 both 1 << 31 and its negation are Integer.MIN_VALUE, which is -2^31 = (-2)^31.",
+            "basis": "JLS 15.19 (a shift uses the low five bits of e, here e itself) and 15.15.4 (negating Integer.MIN_VALUE gives Integer.MIN_VALUE). controls/oracle.py computes (-2)^e with unbounded integers instead, and the replay checks every point of the domain against it."
+          },
+          {
+            "text": "unwind 16 completes the method's only loop on this domain: the square-and-multiply loop runs once per bit of e, at most 5 times for e <= 31.",
+            "basis": "Read from pow(int,int)'s bytecode at both revisions (exp >>= 1 until exp == 0; records/pow-gaps.json lists the classes read). A bound the check can't complete leaves the attempt unresolved, never established."
+          }
+        ],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 16
+        },
+        "defaultBounds": [
+          "maxArrayLength"
+        ],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "javadoc-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+          },
+          {
+            "id": "pow-driver",
+            "kind": "driver",
+            "path": "replay/driver/inloop/p105/PowDriver.java",
+            "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+          },
+          {
+            "id": "pow-probes",
+            "kind": "probe",
+            "path": "replay/probes.json",
+            "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+          }
+        ],
+        "key": "8a4071f6a417d239"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "fix-property",
+      "sidecar": "2c4cd533a6647041a69dbaf417923b1db34d29422e3760e62a769f23a27e5cbc",
+      "revisions": {
+        "after": "8cfc04e8719d00bde40b3faba19180cc92e20f9e"
+      },
+      "dependencies": [
+        {
+          "revision": "after",
+          "position": 0,
+          "role": "driver",
+          "sha256": "369ee0485f1f717e2309103649e4a04ece29f8a00ce85b1f15297fcde9a33833"
+        },
+        {
+          "revision": "after",
+          "position": 1,
+          "role": "original",
+          "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/pow-minus-two.json": "32dcc9f1290aebf8c259d3b6be75d73d251701e5a688def39b5fcf659d1ae355",
+        "controls/oracle.py": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797",
+        "replay/driver/inloop/p105/PowDriver.java": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3",
+        "replay/probes.json": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261114T222911Z-a26d0f04",
+    "claim": "5955760df7c21aec",
+    "startedAt": "2026-11-14T22:29:11+00:00",
+    "seconds": 3.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+      "--classes",
+      "prepare/after/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "--assume",
+      "k == -2 && e >= 0 && e <= 31",
+      "--assert",
+      "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "271368dc574a59644b8bca149f2a519e9288aa9f78edb6649ecfe53cecff7de7",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261114-215343-example-105-fix-property-gate-a5-arithme",
+      "sourceCommit": "92df73a37d5af793f6a6e31aa1e4473cef96f808",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-215343-example-105-fix-property-gate-a5-arithme"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control after on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-after-jdk21.stdout",
+        "stderr": "controls/control-after-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-after-jdk25.stdout",
+        "stderr": "controls/control-after-jdk25.stderr"
+      },
+      {
+        "name": "verifier after on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 3.023,
+        "stdout": "verifier/verifier.stdout",
+        "stderr": "verifier/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "5955760df7c21aec",
+    "attempt": "20261114T222911Z-a26d0f04",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+          "assume": "k == -2 && e >= 0 && e <= 31",
+          "verdict": "verified",
+          "domain": "k: int × e: int",
+          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over k: int × e: int in 3.0 s; loops unwound 16 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 2.979,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 2.917,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.023,
+                  "encoding": 0.339,
+                  "solving": 2.555,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 290455,
+                  "clauses": 978588
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 597.021,
+                "seconds": 0.001,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.0,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 532,
+                  "clauses": 1599
+                }
+              }
+            ],
+            "native": {
+              "paths": 35,
+              "merges": 0,
+              "solverCalls": 171,
+              "solvingSeconds": 2.554612332,
+              "gatesEvaluated": 706445,
+              "evaluatingSeconds": 0.012365756,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 290455,
+              "clauses": 978588,
+              "seconds": 2.916537523,
+              "loadingSeconds": 0.00010667,
+              "decodingSeconds": 1.6491e-05,
+              "encodingSeconds": 0.339004207,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "k",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "e",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "k: int × e: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "k == -2 && e >= 0 && e <= 31",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+              "classes": 17,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found pow(k=-2, e=0).",
+              "witness": "pow(k=-2, e=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"after\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over k: int × e: int in 3.0 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "domain": "k: int × e: int",
+    "replay": null,
+    "property": {
+      "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "assume": "k == -2 && e >= 0 && e <= 31"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "bb7c1eaa9be384814d345bafec1f23f292647bc87c96e8d584d37e5fe8c28faf",
+        "bytes": 41569
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "e985d61e7bec29803c0c407c358cf0c746df60917e56e99436ac43c19abdfac7",
+        "bytes": 362
+      }
+    ]
+  }
+}

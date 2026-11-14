@@ -18,6 +18,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-026: example-targets Phase 5 gate A3: example 286's replay is not executed, its `vulnerable-release` revision failed to prepare
+
+- **Status**: open
+- **Raised**: 2026-11-14 on `vm-1`, job `20261114-214818-example-286-replay-gate-a3-cve-2022-2296` (at `863e10158f94`; failed in 1.8 s, peak 114 MiB; no verdict, nothing refuted). Its six siblings passed: 285 and 287 replay, 306 replay and mutant-replay, and 105's two gate A5 proofs, each giving `task-as-expected`.
+- **Found**: `build.py 286 --task replay` printed `not-executed (task replay: unsupported: prepare (example-targets-runtime): revision vulnerable-release is failed, not artifacts-ready)` and exited 1; no receipt under `examples/286-*/receipts/replay`. The log says only that the revision's prepare state is `failed`, not why (Framework 5.3.18's closure, which 287's and 306's analogous revisions prepared without trouble). The reason is in the runtime's prepare record for that revision, which the job did not keep as an output.
+- **Needs**: the example-targets loop (`llm-dlc/loops/example-targets.md`, gate A3) to find why 5.3.18 failed to prepare (a JAR in 286's `sources.lock.json` not fetched or its sha mismatching, or a runtime defect), fix it, and resubmit 286's replay (`pipeline.py resubmit 20261114-214818-example-286-replay-gate-a3-cve-2022-2296`). Not a pipeline problem; the job's steps and expectations were not changed. The cause was not found by running anything by hand.
+- **Tracked in**: not yet in the brief's Progress (the loop is not running in this session).
+- **Closes when**: the resubmitted job passes with `task-as-expected` and a receipt under `examples/286-*/receipts/replay/`.
+
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 
 - **Status**: closed by job `20261108-141443-vf-023-rerun-the-conformance-corpus-unde` (at `13f3e9a0dac8`, passed 2026-11-08 on `vm-1`, 23m18s, peak 1.8 GiB: the `auto --confirm` conformance corpus step, after a JBMC refutation through a stub that doesn't reproduce was made no verdict under `--confirm`). Its one output, `lib/target/conformance-confirm.log`, was not applied (the file changed since the commit); it is a build log, so nothing is lost.

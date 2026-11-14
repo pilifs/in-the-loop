@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 95, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-14 22:25 UTC |
-| Prompts | 2,289 |
-| Model calls | 21,742 |
-| Tool calls | 22,723 (388 failed) |
+| Sessions | 96, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-14 22:29 UTC |
+| Prompts | 2,293 |
+| Model calls | 21,778 |
+| Tool calls | 22,757 (392 failed) |
 | Compactions | 354 |
 | Subagents | 16 |
-| Tokens written | 22,242,358 |
-| Tokens read | 3,359,500,229 (97.9% from cache) |
-| Commits with a trace | 663 |
-| Log snapshots | 819 (1735.6 MB gzipped, 732 uploaded) |
+| Tokens written | 22,251,048 |
+| Tokens read | 3,362,994,141 (97.8% from cache) |
+| Commits with a trace | 664 |
+| Log snapshots | 821 (1739.9 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -121,7 +121,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | ended | 3 h 3 min | `claude-opus-5-5` | 2 | 19 | 18 | 0 | 0 | 74,420 | 19 |
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
-| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 4 h 0 min | `claude-opus-5-5` | 86 | 583 | 589 | 11 | 15 | 182,954 | 24 |
+| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 4 h 4 min | `claude-opus-5-5` | 88 | 600 | 605 | 11 | 15 | 218,268 | 25 |
+| 2026-11-14 22:28 UTC | [778b368b-7c15-49d4-8a80-52a00eae477a](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | open | 1 min | `claude-sonnet-5-5` | 2 | 19 | 18 | 4 | 0 | 60,733 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -225,18 +226,19 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 7,953 | 38 | 83,802 | 1,037,701 | 92.5% | 141 |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 368,116 | 1,188 | 1,841,839 | 56,598,352 | 96.8% | 159 |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 373,114 | 1,224 | 1,931,480 | 59,158,130 | 96.8% | 164 |
+| [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | 3,692 | 42 | 49,361 | 795,054 | 94.1% | 229 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 19,924 | 87.7% | 95 |
-| `Read` | 1,069 | 4.7% | 46 |
+| `Bash` | 19,949 | 87.7% | 96 |
+| `Read` | 1,075 | 4.7% | 46 |
 | `Edit` | 840 | 3.7% | 45 |
 | `Write` | 513 | 2.3% | 41 |
-| `ToolSearch` | 126 | 0.6% | 33 |
-| `Monitor` | 98 | 0.4% | 36 |
+| `ToolSearch` | 127 | 0.6% | 34 |
+| `Monitor` | 100 | 0.4% | 37 |
 | `AskUserQuestion` | 38 | 0.2% | 13 |
 | `TaskStop` | 34 | 0.1% | 14 |
 | `WebFetch` | 27 | 0.1% | 7 |
@@ -917,6 +919,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 661 | change `vxwvxmtw` | example-targets: the user's decisions on four for-review items; 307 loses the authentication tag | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/c8aa7b9f45698460845095862fdc09ba4ceca5edefccf6d33f6101a7ac1b86c8.jsonl.gz)) |
 | 662 | change `vwuvypsk` | Propose the asciidoctor plugin's version 1.5.8.1 for the allow list | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/cb18941a9608eaafcc48d89c8fe47fec089843300dab11ffd48d783ef90e7e05.jsonl.gz)) |
 | 663 | change `nosxmsrx` | Allow list: Filip Stankovic approved 531caa54 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/fda79ced1b3cbdeb54a971385b9dd964e2db55a609362943dc4999ac96af305b.jsonl.gz)) |
+| 664 | change `kkppnnuy` | Record verification results for 7 example-targets jobs (6 passed, 1 failed: 286 replay) | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/581b5270378ae12362ef006ecca65c53b6cf265652fe3a1413d87cc658f3c004.jsonl.gz)), [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) ([log](https://terminalvalue.net/raw-traces/778b368b-7c15-49d4-8a80-52a00eae477a/dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70.jsonl.gz)) |
 
 ## Logs
 
@@ -1018,7 +1021,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 3 | 0 | 0.4 MB | `eb9ec59e4450`, not uploaded |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 24 | 0 | 42.4 MB | `fda79ced1b3c`, not uploaded |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 25 | 0 | 46.5 MB | `581b5270378a`, not uploaded |
+| [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | 1 | 0 | 0.1 MB | `dc725083a4b1`, not uploaded |
 
 ## Session notes
 

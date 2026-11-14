@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-214818-example-306-mutant-replay-gate-a4-the-ne",
+  "title": "example 306 mutant-replay (gate A4): the nearby constructed mutation drop-prefix fails the same oracle where 5.3.7 holds",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.4s, peak 225.4 MiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-214818-example-306-mutant-replay-gate-a4-the-ne.json",
+    "sha256": "d491423a57648337c9f822e6bb589d4f64626282d51e23f20ebb4d3d44184d44",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-214818-example-306-mutant-replay-gate-a4-the-ne",
+      "title": "example 306 mutant-replay (gate A4): the nearby constructed mutation drop-prefix fails the same oracle where 5.3.7 holds",
+      "description": "The job runs python3 examples/tools/build.py 306 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision by the published-artifact route (every JAR acquired from Maven Central by the sha256 its sidecar pins, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/mutant-replay/, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. This is Phase 5 step 1's first run of a real packet through the merged infrastructure; a failure in a stream's code is a finding to fix with a reproducer. Example 306's mutation pair: release-after (spring-core 5.3.7, b1280ffe) against the constructed mutant, 5.3.7 with controls/drop-prefix.patch applied (the prefix condition dropped). Runtime prepares the mutant on the published-artifact route: it fetches the base commit from github.com by full SHA at depth 1, applies the patch (checked first), recompiles PatternMatchUtils against the published JARs with the base class's --release and debugging flags, and puts it in place of the base JAR's class in a copy of the JAR. The mutant is a sensitivity control, never a revision of Spring. A4 needs the base to hold and the mutant to fail the same oracle.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "306"
+        ],
+        "paths": [
+          "examples/tools/targets/runtime.py"
+        ]
+      },
+      "expected": "build.py prints '306-...: task mutant-replay: none (completed; as expected)' and exits 0: release-after holds and the mutant violates the oracle (at least at (\"abc*\",\"xbcdef\")), on JDK 21 and 25 alike; a receipt under examples/306-*/receipts/mutant-replay/",
+      "submitted": {
+        "at": "2026-11-14T21:48:18+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "one depth-1 fetch of a spring-framework commit from github.com (the bulk, a few hundred MB), small javac runs, four short JVM runs; R2's comparable job took 7 s and 200 MiB with a warm cache"
+      },
+      "steps": [
+        {
+          "name": "example 306 task mutant-replay (replay)",
+          "run": "python3 examples/tools/build.py 306 --task mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "863e10158f949ef73d1b0a1d62a290cea58615a0",
+  "startedAt": "2026-11-14T22:28:37+00:00",
+  "finishedAt": "2026-11-14T22:28:45+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2439770,
+    "workers": 14,
+    "cpus": 28.0,
+    "memoryBudgetBytes": 98784247808,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "one depth-1 fetch of a spring-framework commit from github.com (the bulk, a few hundred MB), small javac runs, four short JVM runs; R2's comparable job took 7 s and 200 MiB with a warm cache"
+  },
+  "usage": {
+    "peakMemoryBytes": 236347392,
+    "wallSeconds": 5.4,
+    "cpuSeconds": 5.3,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 306 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 306 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 5.409,
+      "cpuSeconds": 5.309,
+      "cpuThrottledSeconds": 0.234,
+      "peakMemoryBytes": 236347392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-306-task-mutant-replay.log",
+        "lines": 2,
+        "bytes": 288,
+        "sha256": "387e1c0a37d78e0d673aee61b91d9c6e7a986b33c9f5be518d0e26f9291ee4a8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T222845Z-04244850/result.json",
+          "groups": [
+            "306",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task mutant-replay (target route)",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261114T222845Z-04244850/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/plan.json",
+      "change": "added",
+      "bytes": 9608,
+      "sha256": "900ecee6728f49b661b785f2ac2e32013b25d79124b1adf18adf8d2b39260831",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/records/execution.json",
+      "change": "added",
+      "bytes": 45525,
+      "sha256": "9cc74a04979ae643c98fcd36b816bbc5a9b976e130b41b9f9ff36d461e3693f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/records/summary.txt",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "075a764748c09c472b5895d5073a0c7f5c2d5343a9ed7146989dbced6188f7b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/result.json",
+      "change": "added",
+      "bytes": 11105,
+      "sha256": "6c92fdd2bb6838b6357ee78b82594bff21a8a5ac97a7927b0c9654e4bfcba196",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T22:29:15+00:00",
+    "applied": [
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/plan.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/records/execution.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/records/summary.txt",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-replay/20261114T222845Z-04244850/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

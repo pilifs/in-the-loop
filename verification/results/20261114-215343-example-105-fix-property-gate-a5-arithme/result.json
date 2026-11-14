@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-215343-example-105-fix-property-gate-a5-arithme",
+  "title": "example 105 fix-property (gate A5): ArithmeticUtils.pow(int,int) at commons-numbers 8cfc04e8, native strict, expected established",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 31.9s, peak 773.6 MiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-215343-example-105-fix-property-gate-a5-arithme.json",
+    "sha256": "66afb03f1343fc0cc7710cd753b87c61a90330d27f2a4925a562743d65f486a1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-215343-example-105-fix-property-gate-a5-arithme",
+      "title": "example 105 fix-property (gate A5): ArithmeticUtils.pow(int,int) at commons-numbers 8cfc04e8, native strict, expected established",
+      "description": "The job runs python3 examples/tools/build.py 105 --task fix-property, the target route of llm-dlc/loops/example-targets.md, for gate A5 of its acceptance contract (Supported verifier calibration: an actual established or refuted structured result through the integrated path under a fixed claim; unresolved doesn't pass). Example 105 is apache/commons-numbers pull request 223 (NUMBERS-218): commit 8cfc04e8 changed ArithmeticUtils.pow(int,int)'s overflow check from e >= 31 to e > 31, so pow(-2, 31) returns Integer.MIN_VALUE instead of throwing; its parent is e7c172d2. Workflow plans the task from target.json; runtime prepares the revision by the upstream-build route (the exact commit fetched from github.com, its recorded parent checked, the sidecar's mvn --projects commons-numbers-core ... package run by the installed Maven 3.10.0 on JDK 11, by full path, with Maven Central as the one repository, a fresh local repository and --strict-checksums; runtime's job 20261114-174017 built both commits this way in 59 s); its controls run the packet's PowDriver over 75 probes in a separate JVM on JDK 21 and 25, read by controls/oracle.py (the Javadoc's contract); then jvmcontract prove (built by the runner from lib/ at this commit) runs --engine native --gaps strict on the original class with claims/pow-minus-two.json: assume k == -2 && 0 <= e <= 31, assert result == (-2)^e in int arithmetic, result and exception observed, unwind 16. Workflow ingests every record into one format-2 receipt under receipts/fix-property/, and build.py exits 0 only when the receipt's matchesExpected is true. This is the first proof task of a real upstream packet on the merged infrastructure; a failure in a stream's code is a finding to fix with a reproducer, within the brief's timebox of two substantive failures. This job: the fixed commit 8cfc04e8, expected established (non-vacuous: all 32 inputs satisfy the assume and are replay probes, and the companion job refutes the same claim on the parent).",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "examples": [
+          "105"
+        ]
+      },
+      "expected": "example 105 task fix-property gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-14T21:53:43+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "runtime's R2 job built both commits and replayed them in 59 s at 858 MiB peak; one Maven build of one module, two short JVM runs, one native strict proof of a 32-input int method; plus jvmcontract's cargo build if lib/'s tree isn't cached; network to github.com and Maven Central"
+      },
+      "steps": [
+        {
+          "name": "example 105 task fix-property (prove)",
+          "run": "python3 examples/tools/build.py 105 --task fix-property",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property"
+      ]
+    }
+  },
+  "sourceCommit": "92df73a37d5af793f6a6e31aa1e4473cef96f808",
+  "startedAt": "2026-11-14T22:28:37+00:00",
+  "finishedAt": "2026-11-14T22:29:11+00:00",
+  "wallSeconds": 34.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2439770,
+    "workers": 14,
+    "cpus": 28.0,
+    "memoryBudgetBytes": 98784247808,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "runtime's R2 job built both commits and replayed them in 59 s at 858 MiB peak; one Maven build of one module, two short JVM runs, one native strict proof of a 32-input int method; plus jvmcontract's cargo build if lib/'s tree isn't cached; network to github.com and Maven Central"
+  },
+  "usage": {
+    "peakMemoryBytes": 811225088,
+    "wallSeconds": 31.9,
+    "cpuSeconds": 42.8,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task fix-property (prove)",
+      "run": "python3 examples/tools/build.py 105 --task fix-property",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 31.87,
+      "cpuSeconds": 42.777,
+      "cpuThrottledSeconds": 5.047,
+      "peakMemoryBytes": 811225088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-fix-property.log",
+        "lines": 2,
+        "bytes": 270,
+        "sha256": "d591ea38d1f77ff9259c24bb2306637bb9c8dc76edbd306184f900e75196f186",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property: established (completed; as expected), receipt receipts/fix-property/20261114T222911Z-a26d0f04/result.json",
+          "groups": [
+            "105",
+            "fix-property",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task fix-property (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property: established (completed; as expected), receipt receipts/fix-property/20261114T222911Z-a26d0f04/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/plan.json",
+      "change": "added",
+      "bytes": 9833,
+      "sha256": "609a8410b0a216cf54ed9a062f84e3228c0b52189f09a0d3fd9ad275120cb933",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/records/execution.json",
+      "change": "added",
+      "bytes": 41569,
+      "sha256": "bb7c1eaa9be384814d345bafec1f23f292647bc87c96e8d584d37e5fe8c28faf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 362,
+      "sha256": "e985d61e7bec29803c0c407c358cf0c746df60917e56e99436ac43c19abdfac7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/result.json",
+      "change": "added",
+      "bytes": 15035,
+      "sha256": "da466b3c8b82dd7408449f4bce9b374a7261f53f4fcc11d115ea1a18d27d41b8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T22:29:15+00:00",
+    "applied": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/plan.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/records/execution.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/records/verifier-output.txt",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property/20261114T222911Z-a26d0f04/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

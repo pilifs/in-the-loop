@@ -1,0 +1,208 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-214754-example-targets-phase-5-gate-a3-example",
+  "title": "example-targets Phase 5, gate A3: example 285 (CVE-2023-34055) replay of Boot 2.7.17 and 2.7.18's WebMvcTags.method on the original JARs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.6s, peak 149.6 MiB (estimated 10m00s, 2.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-214754-example-targets-phase-5-gate-a3-example.json",
+    "sha256": "dfb648303db51d670f98f5bc8ad64265a64cee4ca25230bbc76be4535f0febc5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-214754-example-targets-phase-5-gate-a3-example",
+      "title": "example-targets Phase 5, gate A3: example 285 (CVE-2023-34055) replay of Boot 2.7.17 and 2.7.18's WebMvcTags.method on the original JARs",
+      "description": "The job runs python3 examples/tools/build.py 285 --task replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision by the published-artifact route (every JAR acquired from Maven Central by the sha256 its sidecar pins, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/replay/, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. This is Phase 5 step 1's first run of a real packet through the merged infrastructure; a failure in a stream's code is a finding to fix with a reproducer. Example 285: Spring Boot's WebMvcTags.method(HttpServletRequest), the actuator's HTTP method tag, unbounded before the fix (any method string becomes a tag value) and limited to known methods after it. The release pair is v2.7.17 (2caabd06) and v2.7.18 (0c8b382d): spring-boot-actuator with its declared closure (micrometer-core 1.9.16, spring-web/webmvc/core/jcl 5.3.30, javax.servlet-api 4.0.1; 14 pinned JARs). A3 needs the vulnerable release to violate the oracle on the triggers and the fixed one to hold, with the legitimate controls retained.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "285"
+        ],
+        "paths": [
+          "examples/tools/targets/route.py"
+        ]
+      },
+      "expected": "build.py prints '285-...: task replay: none (completed; as expected)' and exits 0: vulnerable-release violates the oracle at its trigger probes and fixed-release holds, on JDK 21 and 25 alike; a receipt under examples/285-*/receipts/replay/",
+      "submitted": {
+        "at": "2026-11-14T21:47:54+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "14 small JARs from Maven Central (a few MB), two javac runs per revision, four short JVM runs"
+      },
+      "steps": [
+        {
+          "name": "example 285 task replay (replay)",
+          "run": "python3 examples/tools/build.py 285 --task replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay"
+      ]
+    }
+  },
+  "sourceCommit": "863e10158f949ef73d1b0a1d62a290cea58615a0",
+  "startedAt": "2026-11-14T22:28:37+00:00",
+  "finishedAt": "2026-11-14T22:28:44+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2439770,
+    "workers": 14,
+    "cpus": 28.0,
+    "memoryBudgetBytes": 98784247808,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "14 small JARs from Maven Central (a few MB), two javac runs per revision, four short JVM runs"
+  },
+  "usage": {
+    "peakMemoryBytes": 156844032,
+    "wallSeconds": 4.6,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 285 task replay (replay)",
+      "run": "python3 examples/tools/build.py 285 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 4.607,
+      "cpuSeconds": 6.298,
+      "cpuThrottledSeconds": 0.533,
+      "peakMemoryBytes": 156844032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-replay-replay.log",
+        "lines": 2,
+        "bytes": 263,
+        "sha256": "cf9c96af2c08b5fcd4625d442b917d9587cf0efd1acdae82e4fa759521503363",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task replay: none (completed; as expected), receipt receipts/replay/20261114T222844Z-5de1b31c/result.json",
+          "groups": [
+            "285",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task replay (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task replay: none (completed; as expected), receipt receipts/replay/20261114T222844Z-5de1b31c/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/plan.json",
+      "change": "added",
+      "bytes": 15244,
+      "sha256": "04372ea682b232087a82286eb5af89713cce20decca793d49e4ef4eca3a0bf69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/records/execution.json",
+      "change": "added",
+      "bytes": 42716,
+      "sha256": "2a7b181bb42881186a302dc70da7b99e65b8f63a35ec38871eb4f056040b40fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/records/summary.txt",
+      "change": "added",
+      "bytes": 1282,
+      "sha256": "3ac03eaac06642b8211c876e556e4e84298e11064598027d070e2e191f99fb9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/result.json",
+      "change": "added",
+      "bytes": 13751,
+      "sha256": "eb8e02076cb1a42da33118078a93a35ce2822844c1aeb23d3b56c98db1c0f0fb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T22:29:15+00:00",
+    "applied": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/plan.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/records/execution.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/records/summary.txt",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/replay/20261114T222844Z-5de1b31c/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "778b368b-7c15-49d4-8a80-52a00eae477a",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-14T22:28:20.477Z",
+  "ended": "2026-11-14T22:29:51.078Z",
+  "duration_seconds": 91,
+  "stats": {
+    "turns": 2,
+    "api_calls": 19,
+    "tool_calls": 18,
+    "tool_errors": 4,
+    "compactions": 0,
+    "peak_context_tokens": 60733,
+    "usage": {
+      "input_tokens": 42,
+      "output_tokens": 3692,
+      "cache_read_input_tokens": 795054,
+      "cache_creation_input_tokens": 49361
+    }
+  },
+  "tools": {
+    "Bash": 15,
+    "Monitor": 2,
+    "ToolSearch": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-14T22:28:20.477Z",
+      "ended": "2026-11-14T22:29:51.078Z",
+      "turns": 2,
+      "api_calls": 19,
+      "usage": {
+        "input_tokens": 42,
+        "output_tokens": 3692,
+        "cache_read_input_tokens": 795054,
+        "cache_creation_input_tokens": 49361
+      },
+      "peak_context_tokens": 60733
+    }
+  ],
+  "log": {
+    "sha256": "dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70",
+    "bytes": 539524,
+    "lines": 136,
+    "gzip_bytes": 117859,
+    "path": "llm-dlc/traces/778b368b-7c15-49d4-8a80-52a00eae477a/logs/dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "kkppnnuympxquouvtylzlrwrkzszkmns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 7 example-targets jobs (6 passed, 1 failed: 286 replay)",
+      "body": "Run on vm-1 with the whole 92G/28-CPU budget (no feature loop, no streams). Passed as expected: 285 and 287 replay (gate A3), 306 replay and mutant-replay (gate A4), and 105's fix-property and fix-property-before (gate A5); their receipts and outputs were applied. 286's replay was not executed: revision vulnerable-release (Framework 5.3.18) failed to prepare. Recorded as VF-026 for the example-targets loop; nothing in the job was changed.",
+      "log_sha256": "dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70"
+    }
+  ],
+  "logs": {
+    "dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70": {
+      "bytes": 539524,
+      "lines": 136,
+      "gzip_bytes": 117859,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

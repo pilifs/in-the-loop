@@ -1,0 +1,208 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-214818-example-306-replay-gate-a4-framework-db9",
+  "title": "example 306 replay (gate A4, Framework db9a10bf): spring-core 5.3.6 and 5.3.7's PatternMatchUtils.simpleMatch on the original JARs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.2s, peak 110.9 MiB (estimated 10m00s, 2.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-214818-example-306-replay-gate-a4-framework-db9.json",
+    "sha256": "20d7c22cd51bb8a6554a6a0183fa89b93e3b72c95b95988448677c1b02a17d36",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-214818-example-306-replay-gate-a4-framework-db9",
+      "title": "example 306 replay (gate A4, Framework db9a10bf): spring-core 5.3.6 and 5.3.7's PatternMatchUtils.simpleMatch on the original JARs",
+      "description": "The job runs python3 examples/tools/build.py 306 --task replay, the target route of llm-dlc/loops/example-targets.md: workflow plans the task from target.json, runtime prepares each revision by the published-artifact route (every JAR acquired from Maven Central by the sha256 its sidecar pins, refused on a mismatch; driver and adapter compiled with --release 21), runs the packet's driver over its probes in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt under receipts/replay/, reading each revision's driver lines with the packet's independent oracle (controls/oracle.py problems()). A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true, i.e. every revision ran on both JDKs, exited 0 with structured observations, and each shows what its pair's kind expects on both JDKs alike. No proof runs. This is Phase 5 step 1's first run of a real packet through the merged infrastructure; a failure in a stream's code is a finding to fix with a reproducer. Example 306, an independent historical positive: commit db9a10bf replaced simpleMatch's prefix-substring equality with startsWith, a behaviour-preserving change. Its release pair is v5.3.6 (83c6d100) and v5.3.7 (b1280ffe), spring-core and spring-jcl (4 pinned JARs); the oracle is a statement written from the method's Javadoc, over 40 probes. The pair's kind is release on a positive case, so both releases must hold: this job is the first after ingestion stopped reading every release pair as a fix (this commit).",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "306"
+        ],
+        "paths": [
+          "examples/tools/targets/workflow_ingest.py"
+        ]
+      },
+      "expected": "build.py prints '306-...: task replay: none (completed; as expected)' and exits 0: release-before and release-after both hold the oracle on all probes, on JDK 21 and 25 alike; a receipt under examples/306-*/receipts/replay/",
+      "submitted": {
+        "at": "2026-11-14T21:48:18+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "4 small JARs from Maven Central, two javac runs per revision, four short JVM runs"
+      },
+      "steps": [
+        {
+          "name": "example 306 task replay (replay)",
+          "run": "python3 examples/tools/build.py 306 --task replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay"
+      ]
+    }
+  },
+  "sourceCommit": "863e10158f949ef73d1b0a1d62a290cea58615a0",
+  "startedAt": "2026-11-14T22:28:37+00:00",
+  "finishedAt": "2026-11-14T22:28:42+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2439770,
+    "workers": 14,
+    "cpus": 28.0,
+    "memoryBudgetBytes": 98784247808,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "4 small JARs from Maven Central, two javac runs per revision, four short JVM runs"
+  },
+  "usage": {
+    "peakMemoryBytes": 116269056,
+    "wallSeconds": 2.2,
+    "cpuSeconds": 3.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 306 task replay (replay)",
+      "run": "python3 examples/tools/build.py 306 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 3.017,
+      "cpuThrottledSeconds": 0.164,
+      "peakMemoryBytes": 116269056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-306-task-replay-replay.log",
+        "lines": 2,
+        "bytes": 267,
+        "sha256": "3f2372a58cd566d91e6778186b87768803e985769fa919a267c7ac6131320603",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task replay: none (completed; as expected), receipt receipts/replay/20261114T222841Z-c5a86341/result.json",
+          "groups": [
+            "306",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task replay (target route)",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task replay: none (completed; as expected), receipt receipts/replay/20261114T222841Z-c5a86341/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/plan.json",
+      "change": "added",
+      "bytes": 7882,
+      "sha256": "2165add4dfe4208a6493579d13356d999e3052a794b084e8dc72381755962f9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/records/execution.json",
+      "change": "added",
+      "bytes": 43380,
+      "sha256": "cd5415e6e73409153cc9f0b533f79cd27ca28ae6c17d0fccd659b12301cd34c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/records/summary.txt",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "28865fef9c0d72f5c21eaa4b931823f50f7c2315f4fe66fcf064b6c72b4f0a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/result.json",
+      "change": "added",
+      "bytes": 8000,
+      "sha256": "fe0370945c0a7a124a7473f4d435a3089f70134b1b6e0d15b6e2857b6d153d88",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-14T22:29:15+00:00",
+    "applied": [
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/plan.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/records/execution.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/records/summary.txt",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/replay/20261114T222841Z-c5a86341/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

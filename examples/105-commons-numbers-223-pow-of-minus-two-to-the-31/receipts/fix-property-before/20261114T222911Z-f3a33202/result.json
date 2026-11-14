@@ -1,0 +1,498 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "bb2955ce1c93a5d7",
+    "format": 1,
+    "example": "105",
+    "statement": {
+      "approach": "target",
+      "task": "fix-property-before",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "revisions": [
+        "before"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "fix-property-before",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+        "file": "claims/pow-minus-two.json",
+        "sha256": "32dcc9f1290aebf8c259d3b6be75d73d251701e5a688def39b5fcf659d1ae355",
+        "property": "pow-int-minus-two-exact",
+        "claimKind": "property",
+        "statement": "For k == -2 and every e from 0 to 31, ArithmeticUtils.pow(int k, int e) returns (-2)^e: 1, -2, 4, ..., 2^30, and -2^31 (Integer.MIN_VALUE) at e = 31, all representable as an int, so the Javadoc's '@return k^e' applies and its '@throws ArithmeticException if the result would overflow' does not. Shared by the fix commit 8cfc04e8 (expected established) and its parent e7c172d2 (expected refuted at e = 31, where it throws ArithmeticException: the overflow report NUMBERS-218 fixed). The result and the exception are observed: with no throws clause, a revision that throws anywhere in the domain fails the property.",
+        "assume": "k == -2 && e >= 0 && e <= 31",
+        "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [
+          {
+            "text": "The assertion is evaluated in Java int arithmetic, and states (-2)^e exactly on the whole domain: 1 << e is 2^e for e <= 30, and at e = 31 both 1 << 31 and its negation are Integer.MIN_VALUE, which is -2^31 = (-2)^31.",
+            "basis": "JLS 15.19 (a shift uses the low five bits of e, here e itself) and 15.15.4 (negating Integer.MIN_VALUE gives Integer.MIN_VALUE). controls/oracle.py computes (-2)^e with unbounded integers instead, and the replay checks every point of the domain against it."
+          },
+          {
+            "text": "unwind 16 completes the method's only loop on this domain: the square-and-multiply loop runs once per bit of e, at most 5 times for e <= 31.",
+            "basis": "Read from pow(int,int)'s bytecode at both revisions (exp >>= 1 until exp == 0; records/pow-gaps.json lists the classes read). A bound the check can't complete leaves the attempt unresolved, never established."
+          }
+        ],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 16
+        },
+        "defaultBounds": [
+          "maxArrayLength"
+        ],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "javadoc-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+          },
+          {
+            "id": "pow-driver",
+            "kind": "driver",
+            "path": "replay/driver/inloop/p105/PowDriver.java",
+            "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+          },
+          {
+            "id": "pow-probes",
+            "kind": "probe",
+            "path": "replay/probes.json",
+            "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+          },
+          {
+            "id": "pow-witness",
+            "kind": "trigger",
+            "path": "replay/probes.json",
+            "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+          }
+        ],
+        "key": "8a4071f6a417d239"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "fix-property-before",
+      "sidecar": "2c4cd533a6647041a69dbaf417923b1db34d29422e3760e62a769f23a27e5cbc",
+      "revisions": {
+        "before": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91"
+      },
+      "dependencies": [
+        {
+          "revision": "before",
+          "position": 0,
+          "role": "driver",
+          "sha256": "369ee0485f1f717e2309103649e4a04ece29f8a00ce85b1f15297fcde9a33833"
+        },
+        {
+          "revision": "before",
+          "position": 1,
+          "role": "original",
+          "sha256": "e3a1b00d529d504cf8fdff8c3fb2d2150df154c98687b204aac49a35d33f9bcc"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/pow-minus-two.json": "32dcc9f1290aebf8c259d3b6be75d73d251701e5a688def39b5fcf659d1ae355",
+        "controls/oracle.py": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797",
+        "replay/driver/inloop/p105/PowDriver.java": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3",
+        "replay/probes.json": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261114T222911Z-f3a33202",
+    "claim": "bb2955ce1c93a5d7",
+    "startedAt": "2026-11-14T22:29:11+00:00",
+    "seconds": 3.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+      "--classes",
+      "prepare/before/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "--assume",
+      "k == -2 && e >= 0 && e <= 31",
+      "--assert",
+      "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "7334896cbdae5368813bac5f5d99aa23f5571d46ce6893d68d78fd4228e0434f",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261114-215345-example-105-fix-property-before-gate-a5",
+      "sourceCommit": "92df73a37d5af793f6a6e31aa1e4473cef96f808",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261114-215345-example-105-fix-property-before-gate-a5"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control before on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-before-jdk21.stdout",
+        "stderr": "controls/control-before-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control before on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "controls/control-before-jdk25.stdout",
+        "stderr": "controls/control-before-jdk25.stderr"
+      },
+      {
+        "name": "verifier before on JDK 25",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 3.074,
+        "stdout": "verifier/verifier.stdout",
+        "stderr": "verifier/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    }
+  },
+  "conclusion": {
+    "claim": "bb2955ce1c93a5d7",
+    "attempt": "20261114T222911Z-f3a33202",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+          "assume": "k == -2 && e >= 0 && e <= 31",
+          "verdict": "violation",
+          "domain": "k: int × e: int",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 3.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "pow(k=-2, e=31)",
+            "contract": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+            "actual": "throws ArithmeticException(\"integer overflow\")",
+            "shrinkRuns": 8,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "k",
+                  "type": "int",
+                  "value": -2
+                },
+                {
+                  "name": "e",
+                  "type": "int",
+                  "value": 31
+                }
+              ],
+              "call": {
+                "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+                "classFile": "org/apache/commons/numbers/core/ArithmeticUtils.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "pow",
+                "descriptor": "(II)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "k",
+                    "type": "int",
+                    "value": -2,
+                    "from": "k"
+                  },
+                  {
+                    "name": "e",
+                    "type": "int",
+                    "value": 31,
+                    "from": "e"
+                  }
+                ]
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 3.026,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": "[-100000:100000]",
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 2.956,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.023,
+                  "encoding": 0.34,
+                  "solving": 2.592,
+                  "trace": 0.001,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 281308,
+                  "clauses": 947831
+                }
+              }
+            ],
+            "native": {
+              "paths": 35,
+              "merges": 0,
+              "solverCalls": 170,
+              "solvingSeconds": 2.592026764,
+              "gatesEvaluated": 680622,
+              "evaluatingSeconds": 0.012372023,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 281308,
+              "clauses": 947831,
+              "seconds": 2.956320195,
+              "loadingSeconds": 0.000340166,
+              "decodingSeconds": 2.5879e-05,
+              "encodingSeconds": 0.340425074,
+              "witnessSeconds": 0.000572565
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "k",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "e",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "k: int × e: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "k == -2 && e >= 0 && e <= 31",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+              "classes": 17,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 14,
+      "code": "\"before\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "pow(k=-2, e=31)",
+        "contract": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "actual": "throws ArithmeticException(\"integer overflow\")",
+        "shrinkRuns": 8,
+        "witness": {
+          "inputs": [
+            {
+              "name": "k",
+              "type": "int",
+              "value": -2
+            },
+            {
+              "name": "e",
+              "type": "int",
+              "value": 31
+            }
+          ],
+          "call": {
+            "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+            "classFile": "org/apache/commons/numbers/core/ArithmeticUtils.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "pow",
+            "descriptor": "(II)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "k",
+                "type": "int",
+                "value": -2,
+                "from": "k"
+              },
+              {
+                "name": "e",
+                "type": "int",
+                "value": 31,
+                "from": "e"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 3.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int",
+    "problem": null,
+    "domain": "k: int × e: int",
+    "replay": null,
+    "property": {
+      "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "assume": "k == -2 && e >= 0 && e <= 31"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "7ed37e17e1073ff90becd893fc3c661d69c5c5acd82630c5f638aa0e87ef4793",
+        "bytes": 42722
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "00eece927b11b0be334c32aefbdf926eafef61d92f985ec6d7dac20e932a2458",
+        "bytes": 644
+      }
+    ]
+  }
+}
