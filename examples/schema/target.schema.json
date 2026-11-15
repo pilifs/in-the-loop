@@ -217,7 +217,7 @@
             "properties": {
               "kind": { "description": "The capability-gap kinds of the brief, kept apart.", "enum": ["java-semantics", "input-construction", "oracle-ambiguity", "source-provenance", "build-or-dependency", "replay", "resources", "verifier-bug"] },
               "observed": { "description": "true: a probe or attempt produced it; false: predicted, a hypothesis until a probe reaches it.", "type": "boolean" },
-              "task": { "$ref": "#/$defs/name" },
+              "task": { "description": "The task it blocks. Omitted: the whole target's, which applies to every task, a capability kind only to the tasks that run the verifier.", "$ref": "#/$defs/name" },
               "summary": { "type": "string" },
               "packet": { "description": "The gap packet's file in the folder.", "$ref": "#/$defs/file" },
               "finding": { "description": "An existing finding id it reuses.", "type": "string", "pattern": "^VF-[0-9]{3}$" }

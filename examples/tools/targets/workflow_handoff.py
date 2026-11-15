@@ -12,8 +12,9 @@ packet(folder, example, target, task) is workflow.handoff()'s dict:
   receipts      the current receipts of the task's claim and inputs (stale and unreadable ones apart)
   prerequisites each prerequisite task, satisfied or not, and nextPrerequisite, the first that isn't
   next          one recommended action, an exact command, and nextReason, why it is the one
-  gaps          each blocker the sidecar records for the task: kind, observed (true: a probe or attempt produced it;
-                false: predicted, a hypothesis until a probe reaches it), class (capability: a library limit;
+  gaps          each blocker the sidecar records for the task, or for the whole target (one naming no task; a
+                capability one only on a task that runs the verifier): kind, observed (true: a probe or attempt
+                produced it; false: predicted, a hypothesis until a probe reaches it), class (capability: a library limit;
                 scaffold: provenance, a build, the oracle or the replay, which leave the scaffold partial), summary,
                 and for an observed one with its packet file the brief's capability-gap packet (gap_packet())
   rules         what continuing may not change: the claim stays as it is; a narrower kernel is a separate task
@@ -359,7 +360,8 @@ def gaps_of(folder, example, target, t, plan, found, receipts):
                 gap["evidence"] = f"missing: {b['packet']} is not in the folder, so it doesn't count as observed"
             related = [{"task": o["task"], "summary": o["summary"]}
                        for o in target.get("handoff", {}).get("blockers", [])
-                       if o.get("task") != t["id"] and (o.get("packet") and o.get("packet") == b.get("packet"))]
+                       if o.get("task") not in (None, t["id"])  # another task's; a target blocker is this one's
+                       and (o.get("packet") and o.get("packet") == b.get("packet"))]
             gap["packet"] = gap_packet(folder, example, target, t, plan, b, found, receipts, related)
         else:
             gap["evidence"] = "predicted: a hypothesis until a probe reaches it"
@@ -492,7 +494,7 @@ def inventory(rows):
     for folder, example, target in rows:
         identity = target["identity"]
         for t in target["tasks"]:
-            if not any(b.get("task") == t["id"] for b in target.get("handoff", {}).get("blockers", [])):
+            if not workflow.task_blockers(folder, target, t):
                 continue
             p = packet(folder, example, target, t["id"])
             for gap in p["gaps"]:

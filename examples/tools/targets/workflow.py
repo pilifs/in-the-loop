@@ -468,10 +468,15 @@ def oracle(folder, example, target, plan, recorded):
 
 
 def task_blockers(folder, target, task):
-    """The sidecar's blockers of this task, each with whether its packet file is there."""
+    """The sidecar's blockers of this task, each with whether its packet file is there. A blocker that names no task is
+    the target's, as discovery reads it (workflow_discovery.gaps): it applies to every task, except that a capability
+    blocker (CAPABILITY_KINDS) applies only to the tasks that run the verifier, since a replay runs none."""
     out = []
     for b in target.get("handoff", {}).get("blockers", []):
-        if b.get("task") != task["id"]:
+        named = b.get("task")
+        if named is not None and named != task["id"]:
+            continue
+        if named is None and task["kind"] == "replay" and b["kind"] in CAPABILITY_KINDS:
             continue
         packet = b.get("packet")
         present = None

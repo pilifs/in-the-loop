@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261114-235737-example-105-task-fix-property-before-the",
+  "title": "example 105 task fix-property-before: the calibration prove of org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+  "description": "Runs task fix-property-before of example 105 through the target route of build.py: its frozen claim 8a4071f6a417d239, engine native, gaps strict, expected refuted. The receipt is ingested by workflow.ingest(); an unresolved result stays unresolved.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/workflow_handoff.py"
+    ],
+    "examples": [
+      "105"
+    ]
+  },
+  "expected": "Conclusion refuted under the same frozen claim key 8a4071f6a417d239 (engine native, gaps strict, unwind 16, maxArrayLength 8), matching the packet expectation and the existing receipt 20261114T222911Z-f3a33202; the witness pow(k=-2, e=31) throwing ArithmeticException(\"integer overflow\") is replayed. An unresolved result, a different claim key, or a refutation whose witness is not replayed is not a pass.",
+  "submitted": {
+    "at": "2026-11-14T23:57:37+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop, gate A7: an isolated session following 105's exported handoff"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "maven",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "same task as the receipt the packet names; it ran in seconds"
+  },
+  "steps": [
+    {
+      "name": "example 105 task fix-property-before (prove)",
+      "run": "python3 examples/tools/build.py 105 --task fix-property-before",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before"
+  ]
+}

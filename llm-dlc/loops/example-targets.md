@@ -1350,6 +1350,81 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     discovery and handoff), A2 (preparation integrity, from the replay receipts), A6 (distinct receipts) and A7 (an
     isolated session following one packet's exported handoff). Then read the four replays once collected, and the 24
     jobs above, for A8, the gap inventory and the for-review list.
+- 2026-11-15, **Phase 5 step 3, the joint acceptance: A1, A2 and A6 pass on the real packets and their receipts.
+  A1 found that a target's blocker reached no task's handoff, now fixed. A7's isolated session followed 105's
+  exported handoff and queued its job.**
+  - **The four replays** (collected in `mtvwvktk`), all as expected on JDK 21 and 25:
+    - 105 `replay`: before fails at (-2, 31) alone, and after holds;
+    - 285–287 `mutant-replay`: the fixed release holds. The mutant fails at 5, 13 and 7 probes, as predicted:
+      - 285: the five triggers;
+      - 286: helper and `bind` probes, `favouriteColour` among them;
+      - 287: the multibyte triggers and the unguarded `bytes-73-*` entry.
+
+    So every packet but 307 has its constructed mutation replayed and caught by its oracle.
+  - **A1's defect**:
+    - What was wrong: `workflow.task_blockers` kept only blockers naming the task. 305's and 307's blockers name
+      none, though discovery (`workflow_discovery.gaps`) reads them as the target's. So 307's predicted Gradle build
+      blocker was in none of its four handoffs. Its replay handoff said to run the replay, with no word of the build.
+      The gap inventory also skipped every task whose blockers name no task, so 305's and 307's predicted gaps were
+      missing from it.
+    - Reproducers, both failing on the old code: `test_workflow.py`'s `test_a_blocker_naming_no_task_is_the_targets`,
+      and `test_acceptance.py`'s blocker test (24 subtests).
+    - Fix: a blocker that names no task applies to every task of its target. A capability-kind one applies only to
+      the tasks that run the verifier, since a replay runs none. The inventory reads the same function.
+      `target.schema.json` describes an omitted `task`, and the handoff docstring says it too. A prediction still
+      blocks nothing: `next` is unchanged, and so is the index (`build.py --index-only` gives no diff).
+  - **A new test, `examples/tools/targets/test_acceptance.py`**: 13 tests, offline, over the 20 sidecar examples and
+    the 15 receipts now in the tree.
+    - A1: every task of every sidecar plans and hands off with no network, subprocess or write. A native task needs no
+      JBMC, and a task that acquires says so. Each recorded blocker is in the handoff of every task it blocks.
+      Discovery's projection equals the committed index.
+    - A2: each receipt's revisions are the sidecar's commits; a mutant's JVM records name
+      `mutant:<base>+<patch sha256>`. Each JVM record:
+      - names a JDK `release` file;
+      - runs the claim's classpath in order, role and sha256;
+      - uses the oracle hash in the claim;
+      - runs on both JDK 21 and 25.
+
+      Every library JAR, and a published revision's original, is a sidecar pin. The refusals (wrong bytes, a shadowed
+      class, an escaping path) are runtime's and the sidecar's unit tests, named so a rename is noticed.
+    - A6: each receipt passes `build.check_result` (schema, round trip, bundle) with its `plan.json` beside it. Attempt
+      ids are distinct, and each claim id belongs to one task. Execution, conclusion, expectation, scope and replay
+      stay separate fields: a replay concludes nothing; a proof is native and not vacuous; a refutation carries its
+      witness. Each receipt is its task's current one, and none is stale.
+  - **A7, the isolated session**: a subagent got only `workflow_handoff.py handoff 105 fix-property-before`'s export
+    (sha256 `de11d49c…`). It was told to read nothing but the packet, its inputs and the receipt it names. It found:
+    - all 6 inputs matched their sha256;
+    - `build.py --plan` equals the packet field by field (claim key `8a4071f6a417d239`, bounds, native, strict,
+      refuted);
+    - the receipt's witness is `pow(-2, 31)`.
+
+    It queued the attempt with the packet's own command:
+    `20261114-235737-example-105-task-fix-property-before-the`. It expects the same refutation under the same key.
+    **A7 passes once that job comes back as expected.** It needed nothing outside the packet, and reported four
+    things for the for-review list:
+    - a property check's receipt has `evidence.replay: null`, and its witness replay is stated only in the proof text
+      (an equivalence's, like 105 `regression`, has the structured `{"by": "interpreter", "reproduced": true}`);
+    - a one-revision task's witness names its classes `after`;
+    - the receipt's `claim.id` (`bb2955ce…`) is not the frozen claim key, and nothing says which a reader compares;
+    - the claim's assumptions cite `records/pow-gaps.json`, which the handoff doesn't list as an input.
+  - **The 24 proof jobs** were collected by the verification loop in `ynvtsvxs`, with **VF-027** opened. 105
+    `regression` is `refuted` as expected: witness `pow(-2, 31)`, replayed in the interpreter, after 223 s. The
+    other 23 give no verdict. VF-027 gives five causes:
+    1. an interface parameter (285, 305);
+    2. a receiver the checker can't build (286, 287);
+    3. a `String` parameter outside a regression check, or a nullable one (287's guard tasks; 306
+       `mutant-preservation`);
+    4. different dependency closures for the two sides, so the four `preservation` tasks weren't executed;
+    5. 105 `confined-change` refused at `StringBuilder.<init>` under strict.
+
+    Not read further this cycle.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (234: 13 in
+    `test_acceptance.py` and one in `test_workflow.py` are new), `test_build.py` (190), `test_pipeline.py` (32) and
+    `build.py --plan`.
+  - **Next**: read the 24 jobs' receipts (VF-027) for step 4, the v1 gap inventory. Each cause observed on a task
+    becomes an observed blocker of that task, citing its verifier output. The claims and expectations stay as they
+    are: an observed refusal is a diagnostic, and the claim stays unresolved. Then A8 (examples keep their outcomes;
+    native without JBMC; the queued acceptance jobs), and step 5, the for-review list. A7's job runs meanwhile.
 - Status: working
 
 ## Loop settings

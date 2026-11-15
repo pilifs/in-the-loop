@@ -1012,6 +1012,33 @@ class HandoffTest(Fixture):
         self.assertEqual((predicted["observed"], predicted["blockedObligations"], predicted["predictedObligations"]),
                          (False, 0, 1))
 
+    def test_a_blocker_naming_no_task_is_the_targets(self):
+        """A blocker without a task is the whole target's, as discovery reads it: every task's handoff shows it, a
+        capability one only on the tasks that run the verifier, and the inventory counts it. Phase 5's A1 found 307's
+        predicted build blocker in no task's handoff, and 305's and 307's predicted gaps outside the inventory."""
+        from targets import workflow_handoff
+        target = self.blocked({"kind": "build-or-dependency", "observed": False, "summary": "the build"},
+                              {"kind": "input-construction", "observed": False, "summary": "the receiver"})
+        replay = self.handoff("replay", target)
+        self.assertEqual([(g["kind"], g["observed"], g["class"]) for g in replay["gaps"]],
+                         [("build-or-dependency", False, "scaffold")], "a replay runs no verifier")
+        self.assertEqual(replay["next"], self.handoff("replay")["next"], "a prediction blocks nothing")
+        self.assertEqual([g["kind"] for g in self.handoff("preservation", target)["gaps"]],
+                         ["build-or-dependency", "input-construction"])
+        regex = self.handoff("regex-probe", target)
+        self.assertEqual([(g["kind"], g["observed"]) for g in regex["gaps"]],
+                         [("java-semantics", True), ("build-or-dependency", False), ("input-construction", False)])
+        with offline():
+            value = workflow_handoff.inventory([(self.folder, self.example, target)])
+        counts = {g["gap"].split(":")[0]: g["predictedObligations"] for g in value["gaps"] if not g["observed"]}
+        proofs = sum(t["kind"] != "replay" for t in target["tasks"])
+        self.assertEqual((counts["build-or-dependency"], counts["input-construction"]), (len(target["tasks"]), proofs))
+        observed = target["handoff"]["blockers"][0]
+        target["handoff"]["blockers"] += [{**observed, "kind": "build-or-dependency", "packet": None}]
+        del target["handoff"]["blockers"][-1]["task"], target["handoff"]["blockers"][-1]["packet"]
+        self.assertEqual(workflow.readiness(self.folder, self.example, target)["tasks"]["fixed-security"]["summary"],
+                         "partial", "an observed build blocker of the target leaves every task partial")
+
     def test_the_command_line_prints_the_packet(self):
         import contextlib as context
         import io
