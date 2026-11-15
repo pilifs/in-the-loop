@@ -686,7 +686,9 @@ inputs before shrinking. Counterexamples recorded before 2026-11-05 have no `wit
 
 Take the next free number; constructed and real-world examples share the sequence. Numbers 280–329 are reserved for
 [`example-targets.md`](../llm-dlc/loops/example-targets.md)'s streams (its [Streams](../llm-dlc/loops/example-targets.md#streams)
-section allocates them): skip them when you take the next free number.
+section allocates them): skip them when you take the next free number. Numbers 900–999 are never used here: they are
+for the examples a user adds in a runtime checkout ([`llm-dlc/runtime.md`](../llm-dlc/runtime.md)), so that an update
+never brings one with the same number.
 
 **A constructed example:**
 

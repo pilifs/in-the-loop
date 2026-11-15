@@ -10,6 +10,7 @@ The formal verification work itself is in [`examples/`](../examples/README.md). 
 llm-dlc/
   README.md                         this file: the procedure, and an index of sessions
   specification.md                  the specification: identifiers, invariants, storage, redaction
+  runtime.md                        runtime mode: a released copy on a user's machine, where none of the tracing applies
   performance.md                    where sync.py's time goes, measured, and why it stays in Python for now
   index.json                        every session and the commits it made (generated)
   pricing.json                      list prices per model, written by hand, used for the metrics
@@ -31,6 +32,8 @@ llm-dlc/
   tools/sync.py                     the hook and commands that capture, redact, publish and check traces;
                                     test_review.py, test_performance.py, test_runs.py and test_workspaces.py test it,
                                     `sync.py perf` times it
+  tools/mode.py                     which mode a checkout is in, development or runtime; test_mode.py tests it and what
+                                    sync.py does in a runtime one
   tools/redaction_rules.py          what counts as sensitive, and the stamp that says which files have been checked
   tools/redactor.py                 the redactor and the local caches of its results, keyed on it and the rules alone
   tools/measure.py                  where a command's time goes, for `sync.py perf`
@@ -80,6 +83,8 @@ The first two are links for readers. The last is the identifier: the SHA-256 of 
 ## Procedure for agents
 
 Claude Code runs this procedure in this repo. `CLAUDE.md` points here, and the hooks and permissions in `.claude/settings.json` let it run without prompts. Other agents should follow the same steps.
+
+It is the procedure of a development checkout. In a runtime one, a released copy on a user's machine, [`runtime.md`](runtime.md) replaces it: the same `sync.py commit` makes a plain commit with an `In-The-Loop-Runtime` trailer, and nothing below about traces, redaction or pushing applies. A commit that carries that trailer here was contributed from such a checkout: no session of this repository made it, and `sync.py` never stamps one on it.
 
 **What happens without you.** The repo changes only when something is committed or pushed, so it stays clean between commits. At the end of every turn, a hook only sends finished turns to Langfuse. If a commit is made with plain `jj commit` or `git commit`, a hook traces it straight after, as `sync.py commit` would have. Never edit the generated files or the trailer lines by hand.
 
