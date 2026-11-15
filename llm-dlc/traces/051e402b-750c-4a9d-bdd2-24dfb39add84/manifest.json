@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T12:14:15.484Z",
-  "duration_seconds": 64135,
+  "ended": "2026-11-15T12:15:06.643Z",
+  "duration_seconds": 64186,
   "stats": {
     "turns": 222,
-    "api_calls": 1790,
-    "tool_calls": 1832,
+    "api_calls": 1793,
+    "tool_calls": 1834,
     "tool_errors": 36,
     "compactions": 40,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3628,
-      "output_tokens": 1141726,
-      "cache_read_input_tokens": 234321523,
-      "cache_creation_input_tokens": 6332745
+      "input_tokens": 3634,
+      "output_tokens": 1143266,
+      "cache_read_input_tokens": 234655565,
+      "cache_creation_input_tokens": 6335288
     }
   },
   "tools": {
-    "Bash": 1566,
+    "Bash": 1568,
     "Read": 136,
     "Edit": 98,
     "Write": 10,
@@ -637,24 +637,24 @@
     {
       "index": 40,
       "started": "2026-11-15T06:02:02.125Z",
-      "ended": "2026-11-15T12:14:15.484Z",
+      "ended": "2026-11-15T12:15:06.643Z",
       "turns": 8,
-      "api_calls": 37,
+      "api_calls": 40,
       "usage": {
-        "input_tokens": 80,
-        "output_tokens": 20685,
-        "cache_read_input_tokens": 2792752,
-        "cache_creation_input_tokens": 127787
+        "input_tokens": 86,
+        "output_tokens": 22225,
+        "cache_read_input_tokens": 3126794,
+        "cache_creation_input_tokens": 130330
       },
-      "peak_context_tokens": 110330
+      "peak_context_tokens": 112873
     }
   ],
   "log": {
-    "sha256": "0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b",
-    "bytes": 60159055,
-    "lines": 18391,
-    "gzip_bytes": 12998117,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b.jsonl.gz"
+    "sha256": "18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7",
+    "bytes": 60209157,
+    "lines": 18412,
+    "gzip_bytes": 13008248,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz"
   },
   "subagents": [
     {
@@ -1365,18 +1365,42 @@
     {
       "change_id": "mmnktupmzkknmpqpptyvvwtpoooxunoz",
       "commit_id": "b3f163386a3663ef32f55dcf984fca4f455710f8",
-      "immutable": false,
+      "immutable": true,
       "summary": "run-streams status bar: a loop's spend is what its sessions' running totals rose by, not their sum",
       "body": "The status bar of run-streams.sh added up the dollar figure of every 'turn done' line a loop printed. That figure is Claude Code's total_cost_usd, the session's cost so far: each cycle resumes one session, and a resumed session goes on from its total, so every turn counted all the turns before it again. A forked stream's total also starts at the planning session's, which every stream of a run inherited. On the recorded runs the bar's figures were 15 to 36 times too high, for example example-targets $3,893 against $216 by the new count (still including the four inherited starting totals of $28.32, which the old state files don't mark), and application-core $14,056 against $392.\n\nstreams_status.py tag now marks the figure of a fork's first turn, the turn after feature-loop.sh's 'starting session ... as a fork of ...' line, as '=X' in LABEL.cost, and spend() counts each figure's rise over the one before, a fork's marked figure only as where the rises start, and a figure below the last as a new session counted whole. The fork turn's own cost (one turn without tools) is the only spend left out. The module docstring and run-streams.sh's header say what the figure is. Verified: test_streams_status.py's tests now use running totals as the loops print them, with three new ones (a resumed session across a restart, a fork, a new session after a drop); 8 of its 9 tests fail on the old code and all 9 pass. render on the example-targets run's state prints the bar line, and bash -n passes on run-streams.sh. The state files of past runs, local and ignored by git, are left as they are.",
       "log_sha256": "b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede"
     },
     {
       "change_id": "quqryrynzroqwntsrllrmpzwruswqtvk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fbd1fa86f69d0f4ba94d7e1c3c16702cd8f9d42d",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b"
+    },
+    {
+      "change_id": "suovqrmsxsvvmmvmrwqyutmtrypnlzlt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests",
+      "body": "A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where\nthey can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract\nloops (2026-10-31 to 11-14): of 112h of active agent time, 45.5h was blocked on tools, and cargo test (17.8h, plus 5.7h\nwaiting on background runs) was the largest part; about 90% of it was running tests, not compiling, mostly in five test\nfiles that call JBMC, javac or the binary end to end. The plan: measure each test as a job, tier every test (unit, tool,\nproof), skip the proof tier by default and run it as a job only for changed inputs, put a cheap proxy (record and replay\nof JBMC's answer) beside each proof-tier test, lint the tags, and write the guidance into CLAUDE.md and the brief\ntemplate. Eight decisions are proposed for the user; the loop launches after example-targets is done.\n\nDrafted in the workspace test-cost-plan, from krnmkrsm, so as not to disturb the example-targets loop in the default\nworkspace.",
+      "log_sha256": "18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7"
+    },
+    {
+      "change_id": "urxxvmutpszvxmvtyrzrxlmqtsnyokko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief: the user's eight decisions settled",
+      "body": "All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and\nthe inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt\ngithub.com release, hash-pinned. The JBMC answer cache is allowed with exact keys and labelled sources. Python is tagged\nnow with the same tiers, and gets proxies only where the measurement shows a file worth one; Rust first. The brief is\nready, to launch alone after example-targets is done.",
+      "log_sha256": "18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7"
+    },
+    {
+      "change_id": "qrlylnvuqtsqoypsrqwnvovrooxmquwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief: ready to launch, before the stream conductor's steps 4-6",
+      "body": "Example-targets is done and pushed, and the user chose to run the test-cost loop next, ahead of the stream conductor's steps 4-6. The brief's two commits moved from the side workspace test-cost-plan onto main (that workspace is forgotten), its header and decision 8 say this loop runs first and that the conductor's unmerged steps 1-3 in workspace stream-conductor are not its to touch, the count of Python test files is brought up to date (24 to 28, from git ls-files), and its status is working. Verified that the Rust counts the brief quotes still hold (25 files, 384 tests, 12 ignored) and that the verification README lines it quotes are unchanged.",
+      "log_sha256": "18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7"
     }
   ],
   "logs": {
@@ -1415,6 +1439,12 @@
       "lines": 9470,
       "gzip_bytes": 6260999,
       "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff.jsonl.gz"
+    },
+    "18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7": {
+      "bytes": 60209157,
+      "lines": 18412,
+      "gzip_bytes": 13008248,
+      "url": null
     },
     "1de356b88c17c3c9f73b02ef570f7bf5117ac4c8e3f417f562f63041b90a3dc0": {
       "bytes": 11174857,

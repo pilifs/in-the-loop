@@ -652,6 +652,22 @@
       "summary": "example-targets brief: the capability-gap packet lists nine kinds, with verifier-interface",
       "body": "The brief's section The capability-gap packet ('Kinds stay apart') listed eight gap kinds. Since the user's review item 4 (lpmxuzzz, 2026-11-15) examples/schema/target.schema.json has nine: verifier-interface, a task the verifier's command line can't express as stated (equivalence's single --classpath for a pair with two dependency closures, the gap of 285, 286, 287 and 306's preservation tasks). The passage now lists it in the schema's order, dated, and says the list is the schema's blocker kind enum. Done at the user's request; only that paragraph changed, and no test reads it. The brief has no other known stale passage.",
       "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "suovqrmsxsvvmmvmrwqyutmtrypnlzlt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests",
+      "body": "A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where\nthey can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract\nloops (2026-10-31 to 11-14): of 112h of active agent time, 45.5h was blocked on tools, and cargo test (17.8h, plus 5.7h\nwaiting on background runs) was the largest part; about 90% of it was running tests, not compiling, mostly in five test\nfiles that call JBMC, javac or the binary end to end. The plan: measure each test as a job, tier every test (unit, tool,\nproof), skip the proof tier by default and run it as a job only for changed inputs, put a cheap proxy (record and replay\nof JBMC's answer) beside each proof-tier test, lint the tags, and write the guidance into CLAUDE.md and the brief\ntemplate. Eight decisions are proposed for the user; the loop launches after example-targets is done.\n\nDrafted in the workspace test-cost-plan, from krnmkrsm, so as not to disturb the example-targets loop in the default\nworkspace.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "urxxvmutpszvxmvtyrzrxlmqtsnyokko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief: the user's eight decisions settled",
+      "body": "All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and\nthe inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt\ngithub.com release, hash-pinned. The JBMC answer cache is allowed with exact keys and labelled sources. Python is tagged\nnow with the same tiers, and gets proxies only where the measurement shows a file worth one; Rust first. The brief is\nready, to launch alone after example-targets is done.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
     }
   ],
   "logs": {

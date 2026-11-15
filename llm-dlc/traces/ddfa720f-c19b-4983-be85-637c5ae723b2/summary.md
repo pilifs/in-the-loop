@@ -46,6 +46,16 @@ Reproducer: test_runtime.py's mirror test, now test_the_aliyun_mirror_withdrawn_
 
 A7 (agent continuation) passes: the isolated session's job 20261114-235737-example-105-task-fix-property-before-the, collected in olumqtlx, came back task-as-expected, with the earlier attempt's claim id and refuted with the witness pow(-2, 31). Both attempts are kept.
 
+### test-cost brief: the user's eight decisions settled
+
+change `urxxvmutpszv` · [log `f5312e5c0bda`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/f5312e5c0bda6b0f36ec871e657e77c68622db2ec735bd469ddc845eb19279cb.jsonl.gz)
+
+All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and
+the inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt
+github.com release, hash-pinned. The JBMC answer cache is allowed with exact keys and labelled sources. Python is tagged
+now with the same tiers, and gets proxies only where the measurement shows a file worth one; Rust first. The brief is
+ready, to launch alone after example-targets is done.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/f5312e5c0bda6b0f36ec871e657e77c68622db2ec735bd469ddc845eb19279cb.jsonl.gz) has every step in between: reasoning, tool calls and their results.

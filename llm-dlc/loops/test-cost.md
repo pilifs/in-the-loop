@@ -3,8 +3,9 @@
 **Status of the brief**: drafted 2026-11-15 from the user's request and a measurement of the loops' time; the
 [decisions](#decisions) settled by the user the same day.
 
-A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh), run alone in the default workspace once example-targets
-is done: `llm-dlc/tools/feature-loop.sh llm-dlc/loops/test-cost.md`.
+A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh), run alone in the default workspace after example-targets
+(done 2026-11-15) and before the stream conductor's steps 4–6:
+`llm-dlc/tools/feature-loop.sh llm-dlc/loops/test-cost.md`.
 
 Every test gets a cost tier, the tests run by default are cheap, and an expensive test runs as a queued job, once for the
 inputs it checks. Agents are steered away from running expensive tests and from writing them where a cheaper test shows
@@ -109,7 +110,7 @@ example-targets). Each batch of parallel tool calls is counted once, as the time
   | engine-priorities, application-core, example-targets | 0.3h or less, with the verification loop beside the streams |
 
 What exists already:
-- **The suites:** 25 test files in `lib/tests/` with 384 `#[test]`s, and 258 unit tests in `lib/src/`. Python has 24
+- **The suites:** 25 test files in `lib/tests/` with 384 `#[test]`s, and 258 unit tests in `lib/src/`. Python has 28
   `test_*.py` files across `examples/tools/` (and `targets/`), `llm-dlc/tools/`, `verification/`, `lib/benchmark/` and
   `lib/solvers/`.
 - **Twelve ignored tests** with a reason, of which eleven say they "run JBMC …: a pipeline job" and one is a benchmark.
@@ -272,6 +273,8 @@ Settled by the user on 2026-11-15:
    - Model `claude-opus-5-5` at high effort, 12G.
    - Not beside conductor steps 4–6, which also edit the brief template and the integration check `run-streams.sh`
      runs; one after the other, in either order.
+   - The user chose this loop first (2026-11-15). The conductor's steps 1–3 stay unmerged in the jj workspace
+     `stream-conductor` (`../in-the-loop-stream-conductor`): not this loop's to merge, edit or rebase.
 
 ## Progress
 
@@ -280,7 +283,10 @@ Settled by the user on 2026-11-15:
   unnecessary, or at minimum, provide the option to run proxy tests that are much cheaper") and the measurement above.
 - 2026-11-15, the user settled the eight decisions: as proposed, except decision 4, which allows one narrow inline
   exception. For decision 7, the user asked first for the case for including Python.
-- Status: ready: launch after example-targets is done (set `working` at launch)
+- 2026-11-15, example-targets done and pushed. The user chose to run this loop before the conductor's steps 4–6. The
+  brief moved from the side workspace `test-cost-plan` onto main, and its count of Python test files was brought up to
+  date (28). Next: Phase 1 step 1, `tool_time.py`.
+- Status: working
 
 ## Loop settings
 
