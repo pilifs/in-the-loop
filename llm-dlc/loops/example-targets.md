@@ -1780,7 +1780,192 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`. `pipeline.py validate` finds no problem.
   - **Next**: step 5, the for-review list, with A8 pending on the two jobs. Read them when they are collected: A8
     passes if both pass. A failing step that names `jbmc` is a hidden dependency, a finding to fix with a reproducer.
-- Status: working
+- 2026-11-15, **Phase 5 step 5: the for-review list**, at `uwuktzll` (`22115dcb`). A0–A7 pass. A8 waits on its two
+  jobs, so Tier A is not complete yet. When this was written:
+  - `20261115-020015-…` had finished `passed`, all 28 steps as expected, but wasn't collected;
+  - `20261115-015944-…` was at its fourth step of 49, and the three before it had passed.
+
+  The runner's state isn't evidence until the verification loop collects it.
+  - **Tier A, on the merged line.** The merge is `ptyqvxxl`. `example-targets-integration.sh` has exited 0 at every
+    commit since `nrtqqxqx`.
+    - **A0 passes.** Phase 0, 2026-11-09: `ptroqoqm`, `quzmrkzx`, `lrxtyuux`, `ynzpqxsv`, `pqulqqlx` and step 6's
+      commit. The contract's 16 tests have all passed on the fixtures since `nrtqqxqx`, which compiled them with
+      `-parameters`.
+    - **A1 passes.** `test_acceptance.py`'s A1 (`ssyppxlv`) covers the 20 sidecar examples:
+      - every task plans and hands off with no network, subprocess or write;
+      - a native task needs no JBMC;
+      - each blocker is in the handoff of every task it blocks. The defect this test found, a target-wide blocker
+        that reached no handoff, was fixed in that commit;
+      - discovery's projection equals the committed index.
+    - **A2 passes.** `test_acceptance.py`'s A2 checks the receipts' revisions, classpaths (order, role, sha256), JDK
+      `release` files, oracle hashes, and the JVM identities 21 and 25, all against the sidecars' pins. The refusals
+      (wrong bytes, a shadowed class, an escaping path) are runtime's and `sidecar.py`'s unit tests.
+    - **A3 passes, on all three negative packets**, in published-artifact replays on JDK 21 and 25. Each vulnerable
+      release violates its independent oracle at the triggers. The fixed release shows no problem on the same
+      triggers, and its legitimate probes hold.
+      - 285: `20261114-214754-…`, collected in `kkppnnuy`;
+      - 287: `20261114-214818-…-287-replay-…`, collected in `kkppnnuy`;
+      - 286: `20261114-223812-…`, collected in `kxzlrsou`, after VF-026's adapter-check fix in `nrxvrqpx`.
+    - **A4 passes, on 306**: `20261114-214818-…-306-replay-…` (5.3.6 and 5.3.7 both hold) and `…-306-mutant-replay-…`
+      (the `drop-prefix` mutant violates the same oracle), collected in `kkppnnuy`.
+    - **A5 passes, on 105**, through the upstream Maven build on JDK 11, native and strict. Both collected in
+      `kkppnnuy`:
+      - `20261114-215343-…`: `fix-property` on 8cfc04e8 is `established`, and not vacuous;
+      - `20261114-215345-…`: `fix-property-before` on e7c172d2 is `refuted` with `pow(-2, 31)`, replayed.
+    - **A6 passes.** `test_acceptance.py`'s A6 checks all 39 receipts in the tree:
+      - each passes `check_result`;
+      - attempt ids are distinct, and each claim id belongs to one task;
+      - execution, conclusion, expectation, scope and replay stay separate.
+
+      It allows an `unresolved` receipt only for a refusal its gap packet records, and never as expected
+      (`zkqwwplu`).
+    - **A7 passes.** An isolated subagent had only `handoff 105 fix-property-before`'s export. Its job
+      `20261114-235737-…` came back as expected (collected in `olumqtlx`, read in `vwrqwqqy`).
+    - **A8 pending.** The offline part passes (`uwuktzll`):
+      - each of the 42 packet tasks' latest collected step passed;
+      - the legacy reports stay historical;
+      - `lib/` is unchanged since application-core's passing cargo run at `47358229`.
+
+      Jobs `20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na` (the tasks with JBMC absent) and
+      `20261115-020015-gate-a8-one-constructed-example-per-buil` (28 constructed run paths) decide the rest.
+  - **The portfolio, in counts.** There are 16 CVE entries (285–300, three promoted in place), three positives
+    (305–307), the calibration 105, and the legacy reports 106–109.
+    - **Catalogued only: 13** (288–300). Each is `catalogued` in the index, with its predicted gaps. 300 is
+      research-only, and its 6.3.9 policy is a proposed contract.
+    - **Partial scaffold: none of the six at its decided scope.** At the exact commits' original-bytecode scope, 305
+      and 307 are partial. Their commits' own builds stay recorded blockers: SNAPSHOT pins for 305, and for 307 a
+      buildscript whose closure is behind repo.spring.io's login or only on JCenter.
+    - **Reproducible scaffold: all six.** Both revisions materialize, each oracle runs on JDK 21 and 25, the claims
+      are frozen, and each mutant is replayed and caught:
+      - 285, 286, 287 and 306 on the published original JARs (original bytecode);
+      - 305 and 307 as extracted-source slices. 305's after slice equals Boot 2.2.0.M6's classes byte for byte, and
+        `m6-replay` agrees. 307's before class is checked against 5.2.0.M4's in every preparation.
+    - **Attempted: all six.** Each has at least one verifier receipt, all `unresolved`. The four `preservation` tasks
+      of 285, 286, 287 and 306 stop before the verifier, and have none.
+    - **Claim closed: none of the six packets' 24 claim tasks. 105 has 3 of its 4.**
+    - **The index**: the six and 105 read `blocked`, because a proof task of each is blocked by an observed gap. Their
+      14 replay tasks read `scaffolded`, and 105's three closed tasks `executable`.
+    - **106–109** stay historical, not executable, with their authored labels. 106, the documented fallback, was not
+      needed.
+
+    | Target | Role, family | Scope | Replays (as expected) | Claim tasks |
+    |---|---|---|---|---|
+    | 105 | calibration, commons-numbers `pow` | original bytecode, upstream Maven build | `replay` | `fix-property` established; `fix-property-before` and `regression` refuted; `confined-change` blocked |
+    | 285 | negative, boot-method-metrics | original bytecode, published | `replay`, `mutant-replay` | 3 unresolved, `preservation` not executed |
+    | 286 | negative, spring-data-binding | original bytecode, published | `replay`, `mutant-replay` | 5 unresolved, `preservation` not executed |
+    | 287 | negative, bcrypt-input-limit | original bytecode, published | `replay`, `mutant-replay` | 5 unresolved, `preservation` not executed |
+    | 305 | positive, boot-method-metrics | source slice; M6 correspondence | `replay`, `m6-replay`, `mutant-replay` | 4 unresolved |
+    | 306 | positive, spring-data-binding | original bytecode, published | `replay`, `mutant-replay` | 1 unresolved, `preservation` not executed |
+    | 307 | positive, bcrypt-input-limit | source slice; before = M4's class | `replay`, `mutant-replay` | 2 unresolved |
+
+    Each target's `handoff.next` and README give its next action.
+  - **Claims**, the 28 claim tasks of the seven packets:
+    - **Proved: 1**, 105 `fix-property` (`claims/pow-minus-two.json`). In Maven's build of 8cfc04e8, `pow(-2, e)`
+      returns (-2)^e exactly, with no exception, for every e from 0 to 31. It was unwound to 16 with unwinding
+      assertions. The claim is that domain, the one NUMBERS-218 reported, and no wider statement about `pow`.
+    - **Refuted: 2**, both at `pow(-2, 31)`, each witness replayed in the interpreter:
+      - 105 `fix-property-before`: the same property fails on e7c172d2, which throws there;
+      - `regression`: the two commits differ there.
+
+      105's `replay` shows the same input on JDK 21 and 25.
+    - **Unresolved: 21.** These are the six packets' claims and 105 `confined-change`. Each stops at one of the five
+      observed gaps, and its `expected` is unchanged. No conclusion follows from them about the CVE, its fix or its
+      positive.
+    - **Not executed: 4**, the `preservation` tasks above (the two dependency closures).
+    - **Not attempted**:
+      - introductions, which are `unknown` in every packet and get no task by the contract;
+      - 300's proposed policy;
+      - the 13 catalog entries.
+    - **What the replays permit concluding**: at the probes listed, on these JVMs, the original vulnerable release
+      shows the defect and the fixed one doesn't, and each positive pair holds. None of this proves security or
+      preservation for other inputs. A slice's replay is about the slice's classes, joined to Spring's own build
+      only by the byte matches above.
+  - **Observed capability packets**: five gaps over 25 blocked obligations, ranked in
+    [`examples/gap-inventory.md`](../../examples/gap-inventory.md) (step 4, `tupmvork`). Each has its reproducer, owner
+    module and closure test:
+    1. `input-construction:two-dependency-closures`: 3 families, 4 obligations;
+    2. `input-construction:receiver-of-several-constructors`: 2 families, 8 obligations;
+    3. `input-construction:string-parameter`: 2 families, 5 obligations;
+    4. `input-construction:interface-parameter`: 1 family, 7 obligations;
+    5. `jdk-constructor:java.lang.StringBuilder.<init>()V`: 1 family, 1 obligation.
+
+    Gaps 1, 3 and 4 each block a CVE and its positive companion. The packets are `records/refusals/TASK.json`, VF-027
+    (23) and VF-028 (2), both closed by the user's decision of 2026-11-15. Each rerun stopped at its recorded
+    refusal. The page lists the 17 predicted groups apart; they block nothing.
+  - **Pending jobs**: the two A8 jobs above. No other job of this brief is pending or uncollected.
+  - **Deferred by the timebox**: none, in any stream or in Phase 5. **Deferred by the user**: VF-015's remaining
+    work.
+  - **Optional and not done**:
+    - P4, the `d676147` control;
+    - the handoff beside `--plan` in `build.py` or `find.py`, and `find.py` matching a task's readiness (request 10).
+  - **For the user**:
+    - the allow-list proposals now open: 7e48b0a7 (public-ip), and 71c156ce, 345f455a and f5f8f407 (long-token), with
+      `sync.py allow approve`;
+    - the stream workspaces' directories, `../in-the-loop-example-targets-*`, are yours to delete;
+    - a push, whenever you choose.
+  - **Found, for review**. Each item is in its entry above, with its commit.
+    - **Evidence in the receipts**:
+      - ingestion bundles no raw JVM or verifier streams (request 7). So A5's JVM side of the witness is in the job,
+        not the receipt. And a `not-started` controls record doesn't say why: 287's guard tasks, whose adapter doesn't
+        call their target;
+      - A7's four observations:
+        - a property check's receipt has `evidence.replay: null`, and its replay is stated only in the proof text;
+        - a one-revision witness names its classes `after`;
+        - `claim.id` is not the frozen claim key, and nothing says which a reader compares;
+        - the handoff doesn't list `records/pow-gaps.json` as an input, though the claim cites it;
+      - 307's receipt doesn't record `source.slice.matched`. The M4 match is shown by the preparation, which refuses a
+        mismatch (tested), not by the receipt;
+      - a failed job's outputs aren't applied. So each example holds only the rerun's receipt of a VF-027 or VF-028
+        task, and the packet cites the first attempt's in `verification/results/`. One collect counted 18 jobs with
+        outputs applied, but 19 receipts arrived.
+    - **Gaps and handoffs**:
+      - `two-dependency-closures` is recorded as `input-construction`, for want of a closer kind among the schema's
+        eight. It is the runtime's refusal and equivalence's single `--classpath`;
+      - there is no claim key for an adapter entry point (request 10). A receiver only an adapter builds is a gap,
+        observed as `receiver-of-several-constructors`;
+      - a blocked task's handoff `next` still offers `pipeline.py submit --example N --task T`, which would end NOT AS
+        EXPECTED. The check that reruns its refusal is `workflow_refusal.py N T`, named in the packets and the gap
+        inventory;
+      - 285–287's prediction summaries still say "no verifier has run on this packet", kept as recorded;
+      - the gap-inventory page is regenerated by hand, since `build.py --index-only` doesn't regenerate it. Its test
+        fails until it is;
+      - VF-027 and VF-028 were closed by the user's decision against the collect's reading of "Closes when", which
+        wanted `task-as-expected`. The collect left VF-026 and VF-028 under Open with a closed status. VF-026 was
+        moved by `ylkruvtn`, and VF-028 by this loop's `tupmvork`.
+    - **This loop's readings of decisions**:
+      - repo.spring.io's storage redirect is followed (`ORIGIN_REDIRECTS`), as github.com's content hosts are;
+      - spring-webmvc and spring-core (with spring-jcl) were added to 305's decided JARs;
+      - the M6 correspondence runs M6's JAR on the slice's dependencies, not on M6's own POM's;
+      - 307's after slice has no published counterpart. It rests on the recipe that reproduces before's class;
+      - request 9 was broader than stated: all seven packets' oracles, not 285–287's;
+      - a `release` pair's sides follow the case's role. The finished workflow stream's brief still states the old
+        rule (`example-targets-workflow.md:219`);
+      - A8:
+        - "at the merged revision" is read as the merged line;
+        - the 28 run paths are a sample;
+        - JBMC is made unrunnable rather than uninstalled;
+        - 147 and 148 aren't run (VF-002);
+        - the cargo suites weren't rerun, as `lib/` is unchanged.
+    - **The packets**:
+      - 287's `mutant-security` reaches only the multibyte triggers. No mutant claim covers the unguarded byte entry;
+      - the streams' findings, listed in the reconcile's step 5–6 entry:
+        - runtime: a killed record's exit code, no POM resolution, `PatternMatchUtils` identical across 5.3.18/19, and
+          the published route's commit-to-JAR link recorded, not checked;
+        - negative: 285's version-specific labels, 286's final sigma and `tr-TR`, 287's lone surrogates, cost-31 and
+          lockout, and 300's possible distinguisher;
+        - positive: 305's mutant and its range property, and 307's gap scan;
+        - workflow: the replay expectation, RegexGate in every fixture JAR, `partial` over `blocked`;
+      - Phase 0's notes:
+        - the fixture's `origin: real-world` is there only because the route needs one;
+        - the fixture gap scan and the contract's A5 ran a developer `jvmcontract` (`7462d0c9…`) built on 2026-11-08.
+          Tier A's A5 is 105's job, which built its own.
+    - **Out of date in the brief**, outside Progress:
+      - [Streams](#streams)' memory figures (4 GB a stream) predate the 12G caps (Progress, 2026-11-14);
+      - [Where it starts from](#where-it-starts-from) is a recount at `a7abc155`, kept as recorded.
+  - **Next**: read the two A8 jobs when they are collected. If both pass, A8 and Tier A pass, and the status is `done`.
+    A failing step that names `jbmc` is a hidden dependency, a finding to fix with a reproducer. Any other failure is
+    read as a finding too.
+- Status: waiting on jobs 20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na 20261115-020015-gate-a8-one-constructed-example-per-buil
 
 ## Loop settings
 
