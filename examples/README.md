@@ -530,6 +530,8 @@ the prepared artifacts, so two receipts with one id ran one claim on the same by
 frozen source-level key that plans, handoffs, refusal records and jobs name, shared by the tasks stating one property
 on several revisions. Compare the key for "the same claim", the id for "on the same artifacts". A witness call
 names the revision its classes are (`revision`), since the verifier calls a one-revision proof's classes `after`.
+A source slice's receipt labels each revision's scope (`claim.target.scopes`), and lists in `claim.target.matched`
+each class its preparation found byte-identical with a published JAR the sidecar names (`slice.matches`).
 Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
 it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
 `--role`, `--readiness`, `--claim-status` and `--gap` filter on. [`gap-inventory.md`](gap-inventory.md) ranks the

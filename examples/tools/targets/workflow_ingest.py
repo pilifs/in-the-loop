@@ -29,7 +29,11 @@ about one claim, and the id to tell whether they ran it on the same artifacts.
 
 A revision's identity is its full commit SHA. A fixture revision has no commit: its identity is the git tree id of
 its source directory, which `git rev-parse <commit>:<path>` reproduces from any commit holding the folder unchanged.
-A constructed mutant's is its base's, its patch among the files.
+A constructed mutant's is its base's, its patch among the files. A revision that is an extracted source slice is
+labelled so in claim.target.scopes; one whose slice the sidecar checks against published classes
+(`preparation.slice.matches`, 307's before against Spring Security 5.2.0.M4) also gets claim.target.matched, each class
+its preparation found byte-identical with the published JAR (source.slice.matched; the user's review item 7,
+2026-11-15). A preparation that doesn't record exactly the matches its plan declares is not bound.
 
 What an attempt shows stays apart: how it ran (execution), what it concluded (status, per obligation), whether that is
 what the task expects (expectation), what it is about (scope) and whether its concrete side replayed (replay).
@@ -293,7 +297,33 @@ def claim_record(plan, target_path, bound, records, oracle):
     scopes = artifact_scopes(bound)
     if scopes:
         body["target"]["scopes"] = scopes
+    matched = published_matches(bound)
+    if matched:
+        body["target"]["matched"] = matched
     return {"id": build.canonical_digest(body)[:16], **body}
+
+
+def published_matches(bound):
+    """{revision: [match]} for each revision whose slice the plan checks against published classes
+    (`preparation.slice.matches`), from what its preparation recorded (`source.slice.matched`): the class entry, its
+    sha256, and the published JAR by coordinates, URL and sha256. The preparation refuses a slice whose class differs,
+    so a listed class is the published one byte for byte. None when no revision declares a match, so the other routes'
+    claims and 305's are unchanged. Refused when a preparation doesn't record exactly the matches its plan declares."""
+    def key(m):
+        return m.get("class"), m.get("sha256"), (m.get("jar") or {}).get("sha256")
+    out = {}
+    for revision, (entry, prepared, _) in bound.items():
+        declared = (entry.get("slice") or {}).get("matches") or []
+        found = (((prepared.source or {}).get("slice") or {}).get("matched")) or []
+        if sorted(map(key, declared)) != sorted(key(m) for m in found if m.get("identical") is True):
+            raise Refused(f"revision {revision}'s preparation doesn't record the published-class match its plan declares "
+                          f"({len(declared)} declared in slice.matches, {len(found)} recorded in source.slice.matched): "
+                          f"the slice's correspondence with the published build isn't shown", stage="prepare")
+        if found:
+            out[revision] = [{"class": m["class"], "sha256": m["sha256"],
+                              "jar": {k: m["jar"][k] for k in ("coordinates", "url", "sha256")}}
+                             for m in sorted(found, key=lambda m: m["class"])]
+    return out or None
 
 
 def artifact_scopes(bound):

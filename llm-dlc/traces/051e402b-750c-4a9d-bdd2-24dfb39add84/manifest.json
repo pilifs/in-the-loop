@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T05:32:24.192Z",
-  "duration_seconds": 40024,
+  "ended": "2026-11-15T05:43:52.991Z",
+  "duration_seconds": 40712,
   "stats": {
-    "turns": 197,
-    "api_calls": 1653,
-    "tool_calls": 1690,
-    "tool_errors": 30,
-    "compactions": 36,
+    "turns": 203,
+    "api_calls": 1700,
+    "tool_calls": 1742,
+    "tool_errors": 33,
+    "compactions": 37,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3348,
-      "output_tokens": 1068138,
-      "cache_read_input_tokens": 217652779,
-      "cache_creation_input_tokens": 5737910
+      "input_tokens": 3442,
+      "output_tokens": 1094010,
+      "cache_read_input_tokens": 224929854,
+      "cache_creation_input_tokens": 5918615
     }
   },
   "tools": {
-    "Bash": 1449,
-    "Read": 118,
-    "Edit": 91,
+    "Bash": 1492,
+    "Read": 124,
+    "Edit": 94,
     "Write": 10,
     "ToolSearch": 7,
     "AskUserQuestion": 6,
@@ -57,12 +57,14 @@
     "examples/tools/targets/test_receipt_streams.py",
     "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_runtime.py",
+    "examples/tools/targets/test_runtime_upstream.py",
     "examples/tools/targets/test_without_jbmc.py",
     "examples/tools/targets/test_workflow.py",
     "examples/tools/targets/test_workflow_refusal.py",
     "examples/tools/targets/without_jbmc.sh",
     "examples/tools/targets/workflow.py",
     "examples/tools/targets/workflow_handoff.py",
+    "examples/tools/targets/workflow_ingest.py",
     "examples/tools/targets/workflow_refusal.py",
     "llm-dlc/loops/example-targets.md",
     "verification/findings.md",
@@ -578,24 +580,38 @@
     {
       "index": 36,
       "started": "2026-11-15T05:15:27.762Z",
-      "ended": "2026-11-15T05:32:24.192Z",
-      "turns": 5,
-      "api_calls": 75,
+      "ended": "2026-11-15T05:32:52.576Z",
+      "turns": 7,
+      "api_calls": 78,
       "usage": {
-        "input_tokens": 152,
-        "output_tokens": 38352,
-        "cache_read_input_tokens": 12648802,
-        "cache_creation_input_tokens": 202497
+        "input_tokens": 158,
+        "output_tokens": 39614,
+        "cache_read_input_tokens": 13298702,
+        "cache_creation_input_tokens": 207665
       },
-      "peak_context_tokens": 215683
+      "peak_context_tokens": 220851
+    },
+    {
+      "index": 37,
+      "started": "2026-11-15T05:33:40.799Z",
+      "ended": "2026-11-15T05:43:52.991Z",
+      "turns": 4,
+      "api_calls": 44,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 24610,
+        "cache_read_input_tokens": 6627175,
+        "cache_creation_input_tokens": 175537
+      },
+      "peak_context_tokens": 188723
     }
   ],
   "log": {
-    "sha256": "8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941",
-    "bytes": 54664428,
-    "lines": 16880,
-    "gzip_bytes": 11684309,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941.jsonl.gz"
+    "sha256": "51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11",
+    "bytes": 56458263,
+    "lines": 17375,
+    "gzip_bytes": 12103000,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11.jsonl.gz"
   },
   "subagents": [
     {
@@ -1246,6 +1262,14 @@
       "summary": "example-targets: a receipt fills a refuted property check's replay, names each witness's revision, records the frozen claim key, and the handoff lists the files a claim cites (review item 6)",
       "body": "The user's review item 6 (2026-11-15) fixes the four observations of gate A7's isolated session. (1) A refuted property check's receipt now gives evidence.replay: how its witnesses were run again, reproduced only when every refuted property's was, null when any states none (workflow_ingest.property_replay). (2) Each witness call gains 'revision', the plan's revision its classes are: jvmcontract calls a one-revision proof's classes 'after', whatever the revision (105's before, 287's fixed-release). 'classes' keeps the tool's label. (3) claim.target.claimKey records the frozen source-level key, the one a plan, a handoff, a refusal record and a job name, beside claim.id, the claim bound to the prepared artifacts. The result schema, the ingestion docstring and examples/README.md say to compare the key for the same claim and the id for the same artifacts. (4) The handoff's inputs list, with sha256, every file of the example's folder that the claim file names in its text (workflow_handoff.cited_by_claim), so 105's handoffs now list records/pow-gaps.json. result.schema.json gains the optional typedCall.revision and claim.target.claimKey. Old receipts stay valid.",
       "log_sha256": "8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941"
+    },
+    {
+      "change_id": "xsnuottlxuvpsyttwukottqwmrxttkvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: a source slice's receipt records its published-class match, so 307's says before's BCrypt.class is 5.2.0.M4's (review item 7) (verification pending)",
+      "body": "The user's review item 7 of 2026-11-15: 307's replay receipt labelled both revisions extracted-source slices, but the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made only by the preparation, which refuses a mismatch, and was not in the receipt. Ingestion (workflow_ingest.published_matches, called by claim_record) now copies each revision's recorded matches (source.slice.matched) into the claim's target.matched: the class entry, its sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the matches its plan's slice.matches declares is refused, so nothing is published. A revision without matches adds nothing, so 305's and every other route's claims are unchanged. result.schema.json gains the closed claim.target.matched; the ingestion docstring, examples/README.md and a note in 307's example.json say what it means (a class-by-class join to the published build, not an original-bytecode scope).\n\nReproducer: test_runtime_upstream.py's test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made failed before the change. It prepares a slice with a match on the local stand-ins, binds the claim, validates it against the schema, and checks that a preparation missing the match or recording another hash is refused. example-targets-integration.sh exits 0: the contract (16), the targets suite (271, one new), test_build.py (190), test_pipeline.py (33) and build.py --plan. A8 needs no rerun: verdict rules are unchanged and the field is additive.\n\nJob 20261115-054311-example-307-replay-its-receipt-records-b reruns build.py 307 --task replay unchanged and then exits 1 unless the new receipt's claim.target.matched lists exactly before's class (sha256 0b137406...) in M4's JAR (8871c1fe...). Its check was run on the kept receipt first and correctly reported the match as not recorded. Next is review item 8, the 18-versus-19 count of kqpykqpp's collect.",
+      "log_sha256": "51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11"
     }
   ],
   "logs": {
@@ -1373,6 +1397,12 @@
       "bytes": 2828744,
       "lines": 964,
       "gzip_bytes": 545832,
+      "url": null
+    },
+    "51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11": {
+      "bytes": 56458263,
+      "lines": 17375,
+      "gzip_bytes": 12103000,
       "url": null
     },
     "581b5270378ae12362ef006ecca65c53b6cf265652fe3a1413d87cc658f3c004": {

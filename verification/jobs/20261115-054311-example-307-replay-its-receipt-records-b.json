@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-054311-example-307-replay-its-receipt-records-b",
+  "title": "example 307 replay: its receipt records before's published-class match with Spring Security 5.2.0.M4 (review item 7)",
+  "description": "The user's review item 7 of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): a source slice's receipt now records, in claim.target.matched, each class its preparation found byte-identical with a published JAR the sidecar names (preparation.slice.matches), taken from the preparation's source.slice.matched. Before this, 307's replay receipt showed only that both revisions are extracted-source slices; the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made by the preparation (which refuses a mismatch) but not recorded in the receipt. Step 1 reruns task replay of example 307 unchanged (build.py 307 --task replay: the source-slice route, each commit's BCrypt.java compiled with javac 8 -g -source 1.8 -target 1.8 -encoding UTF-8, the oracle on JDK 21 and 25, both slices expected to hold), adding a receipt beside the one kept. Step 2 reads the new receipt offline and exits 1 unless claim.target.matched lists exactly before's org/springframework/security/crypto/bcrypt/BCrypt.class, sha256 0b137406..., in spring-security-crypto 5.2.0.M4's JAR, sha256 8871c1fe..., and nothing for after (which has no published counterpart). No claim, expectation or verdict changes.",
+  "kind": "example",
+  "capabilities": [
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "307"
+    ],
+    "paths": [
+      "examples/tools/targets/workflow_ingest.py"
+    ]
+  },
+  "expected": "Step 1 prints 'as expected' and exits 0: both slices hold the oracle on JDK 21 and 25; step 2 prints 'slice match recorded'",
+  "submitted": {
+    "at": "2026-11-15T05:43:11+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "the same task as job 20261115-003616-example-307-replay-p3-source-slice-route, which passed in about 6 s; step 2 is offline"
+  },
+  "steps": [
+    {
+      "name": "example 307 task replay",
+      "run": "python3 examples/tools/build.py 307 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "the new receipt records before's published-class match",
+      "run": "python3 -c 'import glob, json, sys; path = sorted(glob.glob(\"examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/*/result.json\"))[-1]; matched = json.load(open(path))[\"claim\"][\"target\"].get(\"matched\") or {}; print(path); print(json.dumps(matched, indent=1)); before = matched.get(\"before\") or [{}]; ok = len(before) == 1 and before[0].get(\"class\") == \"org/springframework/security/crypto/bcrypt/BCrypt.class\" and before[0].get(\"sha256\") == \"0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb\" and before[0].get(\"jar\", {}).get(\"sha256\") == \"8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774\" and set(matched) == {\"before\"}; print(\"slice match recorded\" if ok else \"SLICE MATCH NOT RECORDED\"); sys.exit(0 if ok else 1)'",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay"
+  ]
+}

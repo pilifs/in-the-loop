@@ -712,6 +712,59 @@ class SliceRouteTest(UpstreamCase):
                 e["slice"]["matches"] = change
                 self.assertIn(says, runtime.lock(self.plan_of([e]), "after").diagnostic)
 
+    def test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made(self):
+        """Review item 7 (2026-11-15): 307's receipt says that before's class is Spring Security 5.2.0.M4's, byte for
+        byte. The claim's target.matched carries each revision's matches from the preparation (source.slice.matched):
+        the class entry, its sha256, and the JAR by coordinates, URL and sha256. A preparation that doesn't record a
+        match its plan declares, or records another, is not bound; a revision with no matches adds nothing."""
+        import hashlib
+        from targets import workflow_ingest
+        fixture = Path(base.manifest()["dir"])
+        same = runtime.runtime_jar.read_class(fixture / "after.jar", "fixture/Gate")
+        path = self.dir / "gate-pub.jar"
+        with zipfile.ZipFile(path, "w") as z:
+            z.writestr("fixture/Gate.class", same)
+        good = self.central.publish("fixture.example:gate:1.0", path)
+        match = {"class": "fixture/Gate.class", "sha256": hashlib.sha256(same).hexdigest(), "jar": good}
+        entry = self.entry()
+        entry["slice"]["matches"] = [match]
+        plan = self.plan_of([entry])
+        prepared = runtime.prepare(plan, "after", self.work / "after")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        bound = {"after": (entry, prepared, self.commits["after"])}
+        expected = {"after": [{"class": "fixture/Gate.class", "sha256": match["sha256"],
+                               "jar": {k: good[k] for k in ("coordinates", "url", "sha256")}}]}
+        self.assertEqual(workflow_ingest.published_matches(bound), expected)
+        record = workflow_ingest.claim_record(plan, self.folder / "target.json", bound, (), None)
+        self.assertEqual(record["target"]["matched"], expected)
+        self.assertEqual(record["target"]["scopes"], {"after": "extracted-source-slice"})
+        import jsonschema
+        schema = json.loads((Path(__file__).resolve().parents[2] / "schema/result.schema.json").read_text())
+        target_schema = schema["properties"]["claim"]["properties"]["target"]
+        jsonschema.validate(record["target"], target_schema)
+        for bad in ({"after": []}, {"after": [{**expected["after"][0], "identical": True}]},
+                    {"after": [{**expected["after"][0], "jar": {"coordinates": "x"}}]}):
+            with self.subTest(schema=bad), self.assertRaises(jsonschema.ValidationError):
+                jsonschema.validate({**record["target"], "matched": bad}, target_schema)
+
+        source = dict(prepared.source)
+        for name, slice_ in (("not recorded", {k: v for k, v in source["slice"].items() if k != "matched"}),
+                             ("another class", {**source["slice"], "matched": [{**source["slice"]["matched"][0],
+                                                                                 "sha256": "0" * 64}]})):
+            with self.subTest(name):
+                other = dataclasses.replace(prepared, source={**source, "slice": slice_})
+                with self.assertRaises(workflow_ingest.Refused) as refused:
+                    workflow_ingest.published_matches({"after": (entry, other, self.commits["after"])})
+                self.assertIn("published-class match", refused.exception.reason)
+
+        plain = self.entry()
+        unmatched = runtime.prepare(self.plan_of([plain]), "after", self.work / "plain")
+        self.assertEqual(unmatched.stage, "artifacts-ready", unmatched.diagnostic)
+        self.assertIsNone(workflow_ingest.published_matches({"after": (plain, unmatched, self.commits["after"])}))
+        self.assertNotIn("matched", workflow_ingest.claim_record(
+            self.plan_of([plain]), self.folder / "target.json", {"after": (plain, unmatched, self.commits["after"])},
+            (), None)["target"], "305's slice, which has no matches, keeps its claim as it was")
+
     def test_a_slice_mutant_is_its_base_commit_patched_then_compiled_as_the_base(self):
         prepared = runtime.prepare(self.plan_of([self.mutant_entry()]), "mutant", self.work / "mutant")
         self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)

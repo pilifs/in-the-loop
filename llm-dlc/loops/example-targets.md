@@ -2258,6 +2258,36 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
   - **Next**: item 7. 307's receipt records the slice's published-class match (entry, sha256, JAR), from the
     preparation's `source.slice.matched`.
+- 2026-11-15, **review item 7 done: a slice's receipt records its published-class match.** One job shows it on 307's
+  real replay (verification pending).
+  - **Reproducer**: `test_runtime_upstream.py`'s
+    `test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made` failed on `mmlyrukr`, since
+    ingestion had no reading of `source.slice.matched`. It prepares a slice with a `slice.matches` entry on the local
+    stand-ins and binds the claim from that preparation.
+  - **The change** (`workflow_ingest.published_matches`, called by `claim_record`): for each revision whose plan entry
+    declares `slice.matches`, the claim's `target.matched` lists what the preparation recorded: the class entry, its
+    sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the
+    declared matches (one left out, or another class's hash) is refused at `prepare`, so nothing is published. A
+    revision without matches adds nothing: 305's and every other route's claims are unchanged.
+    - `result.schema.json` gains `claim.target.matched`, closed like its neighbours. Its description says a listed
+      class joins the slice to the published build class by class, and doesn't make the scope original bytecode. The
+      test validates the claim against it and checks three malformed values are refused.
+    - The ingestion docstring, `examples/README.md`'s targets paragraph and a note in 307's `example.json` say this.
+      The index is regenerated (the note).
+  - **What changes for 307**: a new receipt of a task that prepares `before` (`replay`, `preservation`) lists
+    `BCrypt.class` `0b137406…` in spring-security-crypto 5.2.0.M4 (`8871c1fe…`). Its claim id changes with the field,
+    and its frozen key doesn't, which A6 now checks (item 6). The kept receipts lack the field.
+  - **Queued**: `20261115-054311-example-307-replay-its-receipt-records-b`. It reruns `build.py 307 --task replay`
+    unchanged, then exits 1 unless the new receipt's `claim.target.matched` lists exactly before's class, its sha256 and
+    M4's JAR. The check was run on the kept receipt first, where it says `SLICE MATCH NOT RECORDED` and exits 1. 2 CPUs,
+    3 GiB, 15 minutes.
+  - **A8**: no rerun. Verdict rules are unchanged, and the field is additive. The refusal applies only to a revision
+    that declares matches, which only 307's `before` does, and its preparation records them (tested). `build.py`,
+    `without_jbmc.sh` and the constructed run paths are untouched.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (271, one new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`. `pipeline.py validate` finds no problem.
+  - **Next**: item 8, the 18-versus-19 count of `kqpykqpp`'s collect: find whether `pipeline.py collect` miscounts,
+    and fix it with a reproducer if so. Read the job above when it is collected.
 - Status: working
 
 ## Loop settings
