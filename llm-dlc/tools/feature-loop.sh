@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Repeat one instruction unattended, chosen by name.
+# Repeat one instruction unattended: a moonshot, chosen by name, or a brief.
 #
 # Each cycle resumes one Claude Code session and runs: instruction, commit, compact.
 # A cycle that leaves no new commit stops the loop, before compacting, so the
@@ -11,10 +11,14 @@
 # Usage: [FEATURE_LOOP_MEMORY_MAX=3.5G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
 #
 # Each loop runs in a systemd scope of its own name, feature-loop-PROMPT.scope.
+# Moonshots, a one-line instruction repeated every cycle:
 #   features  add features and examples to jvmcontract
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
 #   relational  make relational verification more efficient and accurate, with examples
+# Templated moonshots, one item of a list per cycle:
+#   prove-examples  formally prove examples 285 to 300, one per cycle, as elegantly and efficiently as possible
+# Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
 #   foundations  work through llm-dlc/loops/foundations.md (relational heap, proof caching, observations, alignment)
@@ -29,6 +33,14 @@
 #   CYCLES    how many cycles to run at most; without it there is no limit
 #   UNTIL     instructions the session weighs after each commit to decide whether
 #             the loop goes on; a second argument that isn't a count is UNTIL
+#
+# A templated moonshot puts the next item of its list into its template, at
+# {}, each cycle. It has a session of its own, fixed here: the first run creates
+# it and every later run resumes it. An item is done once an earlier run's
+# record (llm-dlc/loop-summaries/*-NAME.md) lists a commit for it, so a run starts
+# at the first item none has committed, and ends when the list does; CYCLES still
+# caps it. A cycle that makes no commit stops the loop as usual, and leaves its
+# item for the next run.
 #
 # A stopped loop is continued by running the same command again: the brief fixes
 # the session, its Progress section says what is done, and each cycle first
@@ -88,9 +100,11 @@ EFFORT=high
 MEMORY_MAX=3.5G
 WORKSPACE=
 FORK_FROM=
+TEMPLATE=
+ITEMS=()
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|prove-examples|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -177,6 +191,12 @@ case "$PROMPT" in
   relational)
     INSTRUCTION="Enhance relational verification capabilities to be more efficient and accurate, adding examples where appropriate"
     ;;
+  prove-examples)
+    TEMPLATE="Formally prove example {} as elegantly and efficiently as possible"
+    ITEMS=($(seq 285 300))
+    SESSION_ID=a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31
+    MODEL=claude-fable-5-2
+    ;;
   *) usage ;;
 esac
 
@@ -252,6 +272,25 @@ contain "$@"
 SUMMARIES=llm-dlc/loop-summaries
 mkdir -p "$SUMMARIES" || exit 1
 SUMMARY=$SUMMARIES/$(date +%F-%H%M%S)-$PROMPT.md
+
+# A templated moonshot: the items no earlier run of it has committed, in order.
+# A run takes one per cycle, so it runs at most that many cycles.
+PENDING=()
+if [[ -n "$TEMPLATE" ]]; then
+  done_items=$(cat "$SUMMARIES"/*-"$PROMPT".md 2>/dev/null | sed -n 's/^- cycle [0-9]*, item \([^,]*\),.*/\1/p')
+  for item in "${ITEMS[@]}"; do
+    grep -qxF -- "$item" <<<"$done_items" || PENDING+=("$item")
+  done
+  if (( ${#PENDING[@]} == 0 )); then
+    log "every item of $PROMPT has a commit (${ITEMS[*]}): nothing to do"
+    exit 0
+  fi
+  if [[ "$CYCLES" == inf ]] || (( CYCLES > ${#PENDING[@]} )); then
+    CYCLES=${#PENDING[@]}
+  fi
+  INSTRUCTION=$TEMPLATE
+  log "$PROMPT: ${#PENDING[@]} of ${#ITEMS[@]} items left, from ${PENDING[0]}; this run takes $CYCLES"
+fi
 START=$(jj log --no-graph -r @- -T change_id) || exit 1
 
 # A fresh session gets its id here, and it and a session with no transcript yet
@@ -284,6 +323,10 @@ fi
   echo
   echo "> $INSTRUCTION"
   echo
+  if [[ -n "$TEMPLATE" ]]; then
+    echo "Each cycle puts the next item in place of {}: ${PENDING[*]:0:$CYCLES} (the list: ${ITEMS[*]})."
+    echo
+  fi
   [[ -n "$BRIEF" ]] && { echo "Brief \`$BRIEF\` at sha256 $BRIEF_HASH."; echo; }
   if [[ -n "$UNTIL" ]]; then
     echo "After each commit the session decides whether to go on:"
@@ -558,7 +601,23 @@ while :; do
     exit 1
   fi
 
-  log "cycle $cycle: $PROMPT instruction"
+  item=
+  if [[ -n "$TEMPLATE" ]]; then
+    # Only a count raised while it runs (+N, inf) gets past the end of the list.
+    if (( cycle > ${#PENDING[@]} )); then
+      cycle=$(( cycle - 1 ))
+      log "no items left: stopping after cycle $cycle"
+      summarize
+      note; note "Ended $(date '+%F %T') after $cycle cycle(s): no items left."
+      log "record of the run: $SUMMARY"
+      exit 0
+    fi
+    item=${PENDING[cycle - 1]}
+    INSTRUCTION=${TEMPLATE//\{\}/$item}
+    log "cycle $cycle: $PROMPT, item $item"
+  else
+    log "cycle $cycle: $PROMPT instruction"
+  fi
   with_state standing
   [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop, ? or help"
   run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
@@ -570,7 +629,7 @@ while :; do
     exit 1
   fi
   log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
-  note "- cycle $cycle, $(date '+%F %T'), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+  note "- cycle $cycle, ${item:+item $item, }$(date '+%F %T'), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
 
   decision=continue
   # The last cycle of a count ends the loop anyway, so there is nothing to decide.
