@@ -1,7 +1,7 @@
 ---
 name: prove-java-change
-description: Formally prove a change to Java code (a pull request, a commit, or work not committed yet) with the in-the-loop project's verifier. Sets up and checks the machine, prepares the change as an example with its claims, runs an unattended proof loop, and reports what was proved, refuted or left open.
-argument-hint: "[the change: a pull request, a commit or range, a path, or what to prove about it]"
+description: Formally prove a change to Java code on GitHub (a pull request, a commit or a range of commits) with the in-the-loop project's verifier. Sets up and checks the machine, prepares the change as an example with its claims, runs an unattended proof loop, and reports what was proved, refuted or left open.
+argument-hint: "[the change: a pull request, a commit or a range on GitHub, and what to prove about it]"
 disable-model-invocation: true
 model: claude-fable-5-2
 effort: high
@@ -57,8 +57,9 @@ fixed first: by another setup session, or by the user, who then runs the skill a
 
 In this session, not a subagent: the proof loop starts as a fork of it and inherits what you learn here.
 
-- **Understand the change.** Its two revisions as exact commits, what it is meant to change, and what it must keep.
-  Read the code; ask the user only for intent the code and its history don't give.
+- **Understand the change.** Its two revisions as exact commits on github.com, what it is meant to change, and what
+  it must keep. Read the code; ask the user only for intent the code and its history don't give. A change that is
+  not on GitHub is a blocker, not something to work around: the user pushes it and runs the skill again.
 - **Size it roughly.** Find the closest past examples and what they cost, and set that against this machine's budget.
   Enough to say whether a proof is plausible here and what will be hard. Don't start solving it.
 - **Add the example** to the home, numbered 900 to 999: its sidecar, its claims, its revisions prepared and compiled,

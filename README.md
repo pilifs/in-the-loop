@@ -70,7 +70,8 @@ The folder also holds everything that makes this work:
 
 ## [`/prove-java-change`](llm-dlc/runtime.md): the repository as a skill
 
-A Claude Code skill that formally proves a change to Java code on your own machine, with this repository as its tool.
+A Claude Code skill that formally proves a change to Java code on GitHub, on your own machine, with this repository
+as its tool.
 It installs a released copy of the repository, checked against a hash the skill carries, measures the machine,
 prepares the change as an example with its claims, proves it in an unattended loop on Fable 5.2, and reports what was
 proved, refuted or left open. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you
@@ -80,7 +81,7 @@ agree to send a contribution back as a pull request.
 claude plugin marketplace add pilifs/in-the-loop
 claude plugin install in-the-loop@in-the-loop
 # then, in Claude Code, on Fable 5.2 at high effort:
-/in-the-loop:prove-java-change <the change: a pull request, a commit, or what to prove about it>
+/in-the-loop:prove-java-change <the change: a pull request, a commit or a range on GitHub, and what to prove about it>
 ```
 
 | Path | What it is |

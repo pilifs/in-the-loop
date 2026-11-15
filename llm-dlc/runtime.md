@@ -25,18 +25,18 @@ step is for and when to stop, and this repository holds what the steps stand on.
 | Step | Runs in | Stands on |
 |---|---|---|
 | 1. Set up, verify and measure the machine | a subagent on Opus, only when something needs setting up | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough) |
-| 2. Assess the change and set the example up | the orchestrating session | [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task |
+| 2. Assess the change and set the example up | the orchestrating session | what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for one change. [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task |
 | 3. Prove it | a fork of that session, in a moonshot loop it conducts | [the proof loop](#the-proof-loop) |
 | 4. Report, and offer to contribute | the orchestrating session | [contributing back](#contributing-back) |
 
 The user confirms after steps 1 and 2, and a blocker is settled before the next step starts.
 
-**Not there yet: a change that is not public.** A revision is prepared from a commit on github.com or a published
-JAR on an allowed host ([`examples/README.md`](../examples/README.md#add-an-example)); the `fixture` route, sources
-copied into the example's folder, is the only one that takes code from the machine itself, and it was made for
-constructed controls. A change in a private repository, or one not committed yet, has no route of its own until a
-local repository can be a revision's source. Until then step 2 names this as a blocker, or uses a fixture when the
-change is small enough to copy; either way such an example stays local, and `contribute.py` refuses to send it.
+**GitHub only.** The official plugin proves changes whose revisions are commits on github.com, with dependencies
+from the allowed hosts (Maven Central, repo.spring.io, the Gradle hosts), and nothing else: the routes that prepare a
+revision refuse any other source ([`examples/README.md`](../examples/README.md#add-an-example)), and the skill does
+not work around them. A change in a repository elsewhere, or one not pushed yet, is a blocker at step 2 until it is
+on GitHub. The user decided this on 2026-11-15; a local or private source could be added here later, or by a fork of
+this repository with its own release.
 
 **In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
 plugin, so `/prove-java-change NNN` runs the copy being worked on. The bootstrap answers `development`, steps 1 and 2
