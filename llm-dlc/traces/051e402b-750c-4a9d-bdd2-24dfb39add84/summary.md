@@ -635,7 +635,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests
 
-change `suovqrmsxsvv` · [log `18616d13dbeb`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz)
+[`e9ce8eec6351`](https://github.com/pilifs/in-the-loop/commit/e9ce8eec63516b899e96b0eb1a8c02071d566971) · [log `18616d13dbeb`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz)
 
 A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where
 they can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract
@@ -651,7 +651,7 @@ workspace.
 
 ### test-cost brief: the user's eight decisions settled
 
-change `urxxvmutpszv` · [log `18616d13dbeb`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz)
+[`31f2a32a8f9d`](https://github.com/pilifs/in-the-loop/commit/31f2a32a8f9deaa4ba3088c142b67193aafc8cd7) · [log `18616d13dbeb`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz)
 
 All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and
 the inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt
@@ -661,13 +661,13 @@ ready, to launch alone after example-targets is done.
 
 ### test-cost brief: ready to launch, before the stream conductor's steps 4-6
 
-change `qrlylnvuqtsq` · [log `18616d13dbeb`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz)
+[`5600573824a0`](https://github.com/pilifs/in-the-loop/commit/5600573824a0b1441ec6475edb3ec5038c92473a) · [log `18616d13dbeb`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz)
 
 Example-targets is done and pushed, and the user chose to run the test-cost loop next, ahead of the stream conductor's steps 4-6. The brief's two commits moved from the side workspace test-cost-plan onto main (that workspace is forgotten), its header and decision 8 say this loop runs first and that the conductor's unmerged steps 1-3 in workspace stream-conductor are not its to touch, the count of Python test files is brought up to date (24 to 28, from git ls-files), and its status is working. Verified that the Rust counts the brief quotes still hold (25 files, 384 tests, 12 ignored) and that the verification README lines it quotes are unchanged.
 
 ### tool_time.py: where loops' time went, by category, loop and cargo test binary, from the redacted logs
 
-change `spvkptmntrss` · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
+[`06f49b7c4535`](https://github.com/pilifs/in-the-loop/commit/06f49b7c4535ffb4d6d6342b769e974b11714bea) · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
 
 Phase 1 step 1 of the test-cost brief (llm-dlc/loops/test-cost.md). llm-dlc/tools/tool_time.py turns the 2026-11-15 ad-hoc time analysis, whose scripts were not kept, into a tool Phase 5 runs again on the next loop. It finds loop sessions from the briefs' Loop settings and the loop summaries (a stream counts towards its loop), reads each session's redacted log (with --fetch, the published copy of one not stored here, checked against its sha256), and reports: active and model time (metrics.py's), blocked time per batch of parallel calls (counted once, given to the call that finished last, calls over two hours left out) by category, waits on commands started in the background, per-loop shares, cargo's compile and per-binary test timings, and full-suite, debug and release spreads. Markdown or --format json.
 

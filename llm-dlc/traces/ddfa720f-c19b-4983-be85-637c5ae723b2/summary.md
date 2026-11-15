@@ -48,7 +48,7 @@ A7 (agent continuation) passes: the isolated session's job 20261114-235737-examp
 
 ### test-cost brief: the user's eight decisions settled
 
-change `urxxvmutpszv` · [log `f5312e5c0bda`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/f5312e5c0bda6b0f36ec871e657e77c68622db2ec735bd469ddc845eb19279cb.jsonl.gz)
+[`31f2a32a8f9d`](https://github.com/pilifs/in-the-loop/commit/31f2a32a8f9deaa4ba3088c142b67193aafc8cd7) · [log `f5312e5c0bda`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/f5312e5c0bda6b0f36ec871e657e77c68622db2ec735bd469ddc845eb19279cb.jsonl.gz)
 
 All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and
 the inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt

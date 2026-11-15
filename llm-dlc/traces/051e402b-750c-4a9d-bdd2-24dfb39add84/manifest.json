@@ -1380,7 +1380,7 @@
     },
     {
       "change_id": "suovqrmsxsvvmmvmrwqyutmtrypnlzlt",
-      "commit_id": null,
+      "commit_id": "e9ce8eec63516b899e96b0eb1a8c02071d566971",
       "immutable": false,
       "summary": "test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests",
       "body": "A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where\nthey can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract\nloops (2026-10-31 to 11-14): of 112h of active agent time, 45.5h was blocked on tools, and cargo test (17.8h, plus 5.7h\nwaiting on background runs) was the largest part; about 90% of it was running tests, not compiling, mostly in five test\nfiles that call JBMC, javac or the binary end to end. The plan: measure each test as a job, tier every test (unit, tool,\nproof), skip the proof tier by default and run it as a job only for changed inputs, put a cheap proxy (record and replay\nof JBMC's answer) beside each proof-tier test, lint the tags, and write the guidance into CLAUDE.md and the brief\ntemplate. Eight decisions are proposed for the user; the loop launches after example-targets is done.\n\nDrafted in the workspace test-cost-plan, from krnmkrsm, so as not to disturb the example-targets loop in the default\nworkspace.",
@@ -1388,7 +1388,7 @@
     },
     {
       "change_id": "urxxvmutpszvxmvtyrzrxlmqtsnyokko",
-      "commit_id": null,
+      "commit_id": "31f2a32a8f9deaa4ba3088c142b67193aafc8cd7",
       "immutable": false,
       "summary": "test-cost brief: the user's eight decisions settled",
       "body": "All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and\nthe inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt\ngithub.com release, hash-pinned. The JBMC answer cache is allowed with exact keys and labelled sources. Python is tagged\nnow with the same tiers, and gets proxies only where the measurement shows a file worth one; Rust first. The brief is\nready, to launch alone after example-targets is done.",
@@ -1396,7 +1396,7 @@
     },
     {
       "change_id": "qrlylnvuqtsqoypsrqwnvovrooxmquwk",
-      "commit_id": null,
+      "commit_id": "5600573824a0b1441ec6475edb3ec5038c92473a",
       "immutable": false,
       "summary": "test-cost brief: ready to launch, before the stream conductor's steps 4-6",
       "body": "Example-targets is done and pushed, and the user chose to run the test-cost loop next, ahead of the stream conductor's steps 4-6. The brief's two commits moved from the side workspace test-cost-plan onto main (that workspace is forgotten), its header and decision 8 say this loop runs first and that the conductor's unmerged steps 1-3 in workspace stream-conductor are not its to touch, the count of Python test files is brought up to date (24 to 28, from git ls-files), and its status is working. Verified that the Rust counts the brief quotes still hold (25 files, 384 tests, 12 ignored) and that the verification README lines it quotes are unchanged.",
@@ -1404,7 +1404,7 @@
     },
     {
       "change_id": "spvkptmntrssrlsuqkrmquwvpwryyrvp",
-      "commit_id": null,
+      "commit_id": "06f49b7c4535ffb4d6d6342b769e974b11714bea",
       "immutable": false,
       "summary": "tool_time.py: where loops' time went, by category, loop and cargo test binary, from the redacted logs",
       "body": "Phase 1 step 1 of the test-cost brief (llm-dlc/loops/test-cost.md). llm-dlc/tools/tool_time.py turns the 2026-11-15 ad-hoc time analysis, whose scripts were not kept, into a tool Phase 5 runs again on the next loop. It finds loop sessions from the briefs' Loop settings and the loop summaries (a stream counts towards its loop), reads each session's redacted log (with --fetch, the published copy of one not stored here, checked against its sha256), and reports: active and model time (metrics.py's), blocked time per batch of parallel calls (counted once, given to the call that finished last, calls over two hours left out) by category, waits on commands started in the background, per-loop shares, cargo's compile and per-binary test timings, and full-suite, debug and release spreads. Markdown or --format json.\n\nVerified: test_tool_time.py (10 tests on made-up logs: classification, batching, the two-hour cut, background waits by task id and by redirected file, cargo output parsing, full-suite detection, discovery, an end-to-end JSON report, and fetch refusing content that doesn't match its name) and test_metrics.py pass. Run on the measurement's 26 sessions it reproduces the compile/test split exactly (936 timed runs, 0.9h compiling, 8.2h tests) and the slow files' order (conformance.rs, observations.rs, integration.rs, alignment.rs, application_core.rs).\n\nThe brief is out of date in places: its 'Where it starts from' totals came from those scripts, under other definitions. This tool gives active 116h, tools 47.8h, cargo test 20.8h, proofs inline 4.7h; and for full-suite debug runs 91 calls, 14% of cargo test time, median 11s, p90 579s, against the brief's 542 runs, 48%, median 17s and p90 136s (all debug runs: 788, 44%, median 8s, p90 82s). It finds 26 loop sessions, not 27. Done-when's 60-second budget is unaffected; Phase 5 should compare against this tool's numbers. Progress records the command line.",
@@ -1452,7 +1452,7 @@
       "bytes": 60209157,
       "lines": 18412,
       "gzip_bytes": 13008248,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/18616d13dbeb1a121a5f110429958379e640ddfef5cddee09ae3929a5b1351b7.jsonl.gz"
     },
     "1de356b88c17c3c9f73b02ef570f7bf5117ac4c8e3f417f562f63041b90a3dc0": {
       "bytes": 11174857,
@@ -1608,7 +1608,7 @@
       "bytes": 60210853,
       "lines": 18415,
       "gzip_bytes": 13008316,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz"
     },
     "6a05a266e222a78a6f3b7aeeb5d5426b109f2cafc5c4d14334ca790aba4d5029": {
       "bytes": 46123574,

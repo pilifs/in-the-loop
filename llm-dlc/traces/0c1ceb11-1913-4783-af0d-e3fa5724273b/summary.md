@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Test tiers: the lint, test_costs.py lint, in the default run as tests/tiers.rs and tools/test_tier_lint.py
 
-change `sxutsywlupks` · [log `c107bd60d372`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8.jsonl.gz)
+[`009ab4d56f2a`](https://github.com/pilifs/in-the-loop/commit/009ab4d56f2a4ac19be6fe8c898c42b84743ecf7) · [log `c107bd60d372`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8.jsonl.gz)
 
 Phase 2 step 7 of llm-dlc/loops/test-cost.md. The lint checks four things against the sources and lib/tests/costs.json: every ignore reason is a cost:proof tag with a proxy that runs by default, or proxy: none yet for a test on the inventory's list; no test outside the proof tier calls JBMC or TLC, except the retier: pending tests; the inventory and the sources name the same tests, and what it records of each is current; and every tool_tier! or @cost tag is the one its row asks for. It runs in the default run twice, both at the unit tier. lib/tests/tiers.rs is in cargo test and checks what it can read without following a test into its helpers. lib/tools/test_tier_lint.py is in the Python run and checks all of it for both languages, with ten more tests of the lint on made-up sources. lib/README.md's Tests section says what each problem asks for.
 
@@ -30,7 +30,7 @@ Verified: tiers.rs, test_tier_lint.py, test_cost_inventory.py and test_test_cost
 
 ### Test tiers: the guidance, in CLAUDE.md, the brief template, verification/README.md and lib/README.md
 
-change `xnxwypkxqyuu` · [log `c107bd60d372`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8.jsonl.gz)
+[`8a13b919d54a`](https://github.com/pilifs/in-the-loop/commit/8a13b919d54a65c84bc107964430cfcd9300996a) · [log `c107bd60d372`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8.jsonl.gz)
 
 Phase 3 step 8 of llm-dlc/loops/test-cost.md. CLAUDE.md gets a Tests section: the unit, tool and proof tiers; the default run (python3 lib/tools/test_costs.py run) is what runs inline; the proof tier runs as a job for the tests a change touched, with decision 4's one exception stated narrowly; write the cheapest test that shows the behaviour, and give a new proof-tier test a tag, a reason and a proxy; adding a test to the retier: pending or proxy: none yet lists is for a person. The brief template's standing rule names the tiers instead of conformance cases on a real java. verification/README.md says the slow tests are the proof tier plus the 63 retier: pending tests until they move, and its estimate table gives the proof tier's job. lib/README.md's Tests section gains Writing a test.
 
@@ -38,7 +38,7 @@ The brief is slightly out of date: decision 4 lets an agent run a proof test inl
 
 ### Test cost: the for-review list in Progress, and Status done
 
-change `qzuylnlmykvn` · [log `f2cfd07d855a`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/f2cfd07d855ac6f2f9a5b1cca33dcebcce0f831d91c2f8afaf440ab23c37125b.jsonl.gz)
+[`ec8f8364fef4`](https://github.com/pilifs/in-the-loop/commit/ec8f8364fef4ba7148d6861aff02065d34788605) · [log `f2cfd07d855a`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/f2cfd07d855ac6f2f9a5b1cca33dcebcce0f831d91c2f8afaf440ab23c37125b.jsonl.gz)
 
 Phase 3 step 9 of llm-dlc/loops/test-cost.md. The brief's Progress now lists what a person and the next test-cost loop should review, counted from lib/tests/costs.json without running any test. It covers the tiers with no past timing at all (Rust 2, Python 162, by file) and those that past runs bound only from above (Rust 228, Python 274). It gives the retier: pending list by file (63 Rust tests, ten of them proof tier only because a past run was slow) and the proxy: none yet list (the preparation benchmark). It ends with the findings from the tagging: conformance's proxy is itself retier: pending, three heap jobs may not have run JBMC though those tests qualify for the inline exception, three heap tests fail their jobs at about an hour, two jbmc.rs tests are tool tier only because of a shebang, there are slow unit binaries, the Python reading misses spawns inside the module under test, measure's inventory writes another row shape, and test_economics.py was already failing. Every criterion of Done when holds, so Status is done. Only the brief's Markdown changed, and no test reads it, so no test was run.
 
@@ -46,7 +46,7 @@ The brief is out of date in places, left as written outside Progress: decision 4
 
 ### Fixes after the test-cost loop: app_of for real-world examples without a file, Fable 5.2 pricing, the brief's stale passages
 
-change `zkuuukmrqwow` · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
+[`f0a37ec9be2e`](https://github.com/pilifs/in-the-loop/commit/f0a37ec9be2ef9e250e195587d7b4afe285c8201) · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
 
 examples/tools/build.py's app_of read example['subject']['file'], which the schema requires only of constructed examples. The real-world Spring Security examples 287 and 289-291 name only a system and symbol, so economics.recorded() raised KeyError 'file' and examples/tools/test_economics.py failed by default (4 errors), as it had since before the test-cost loop. app_of now returns None when the example names no file, as its docstring already said for an example on no known app; every caller handles None.
 
@@ -58,7 +58,7 @@ Verified: test_economics.py passes (11 tests), and so do test_alignment.py and t
 
 ### pricing.json back to its 2026-10-31 prices: a price change can't be carried to the stream sessions' metrics from here
 
-change `ysutlusoqrmm` · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
+[`69f93110a029`](https://github.com/pilifs/in-the-loop/commit/69f93110a02906e5010fac858d2f4b6e97eb96a7) · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
 
 The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and corrected claude-sonnet-5-5's cache read to $0.10. The commit's sync recomputed metrics.json for every session whose transcript is in this checkout's Claude project folder, but 17 sessions of the merged streams (alignment, cleanup-native, application-core-objects, example-targets-workflow and others) keep their transcripts in their own workspaces' folders. sync can't reach those, so their metrics.json no longer matched and check reported 17 errors. This restores the old prices, and the sessions this sync can reach are recomputed back to them. The price change waits on a person's decision on how to recompute the 17 (see the session summary). The app_of fix and the brief's updates stand.
 
@@ -66,7 +66,7 @@ Verified: sync.py check reports 0 errors.
 
 ### Allow list: Filip Stankovic approved bca79831
 
-change `zxsnysyqzqnp` · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
+[`3836ebb5a2f3`](https://github.com/pilifs/in-the-loop/commit/3836ebb5a2f3ddb3d0eb2d08a2b7f3f676de3a64) · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
 
 Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -74,7 +74,7 @@ bca79831  other-home-dir  /h…u: A made-up path, /home/u/.local/bin/tlc, in lib
 
 ### sync: metrics of sessions traced in another workspace follow the price list; Fable 5.2 priced, Sonnet 5.5 cache reads corrected
 
-change `ywqsvnpkvpkx` · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
+[`4bdaa5fbe824`](https://github.com/pilifs/in-the-loop/commit/4bdaa5fbe8247488783ad895741659b443b82b0b) · [log `e6a23ba68c54`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz)
 
 sync could recompute metrics.json only for sessions whose transcript is in this checkout's Claude project folder. The merged streams' sessions keep theirs in their own workspaces' folders, named after those paths, so a price change left their metrics.json stale and check failed on them (17 sessions, seen and reverted in the previous two commits). sync now ends its session loop with refresh_metrics: every session with a manifest but no transcript here gets its metrics.json recomputed from its stored log and manifest, exactly as check recomputes it. This happens once for each set of logs, recorded in the sync cache, whose fingerprint already covers pricing.json and the tools, so a price or metrics.py change recomputes them all. A session whose log isn't stored here is left as it is. Only metrics.json is written: summaries carry no costs.
 

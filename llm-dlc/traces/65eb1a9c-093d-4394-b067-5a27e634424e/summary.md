@@ -637,7 +637,7 @@ The brief's section The capability-gap packet ('Kinds stay apart') listed eight 
 
 ### test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests
 
-change `suovqrmsxsvv` · [log `cea8a817495d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz)
+[`e9ce8eec6351`](https://github.com/pilifs/in-the-loop/commit/e9ce8eec63516b899e96b0eb1a8c02071d566971) · [log `cea8a817495d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz)
 
 A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where
 they can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract
@@ -653,7 +653,7 @@ workspace.
 
 ### test-cost brief: the user's eight decisions settled
 
-change `urxxvmutpszv` · [log `cea8a817495d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz)
+[`31f2a32a8f9d`](https://github.com/pilifs/in-the-loop/commit/31f2a32a8f9deaa4ba3088c142b67193aafc8cd7) · [log `cea8a817495d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz)
 
 All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and
 the inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt
@@ -663,7 +663,7 @@ ready, to launch alone after example-targets is done.
 
 ### tool_time.py: where loops' time went, by category, loop and cargo test binary, from the redacted logs
 
-change `spvkptmntrss` · [log `202c83aae9aa`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/202c83aae9aa5206e9a139c0645701d6b91636763f97005d91e3f4ed3ff3df73.jsonl.gz)
+[`06f49b7c4535`](https://github.com/pilifs/in-the-loop/commit/06f49b7c4535ffb4d6d6342b769e974b11714bea) · [log `202c83aae9aa`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/202c83aae9aa5206e9a139c0645701d6b91636763f97005d91e3f4ed3ff3df73.jsonl.gz)
 
 Phase 1 step 1 of the test-cost brief (llm-dlc/loops/test-cost.md). llm-dlc/tools/tool_time.py turns the 2026-11-15 ad-hoc time analysis, whose scripts were not kept, into a tool Phase 5 runs again on the next loop. It finds loop sessions from the briefs' Loop settings and the loop summaries (a stream counts towards its loop), reads each session's redacted log (with --fetch, the published copy of one not stored here, checked against its sha256), and reports: active and model time (metrics.py's), blocked time per batch of parallel calls (counted once, given to the call that finished last, calls over two hours left out) by category, waits on commands started in the background, per-loop shares, cargo's compile and per-binary test timings, and full-suite, debug and release spreads. Markdown or --format json.
 

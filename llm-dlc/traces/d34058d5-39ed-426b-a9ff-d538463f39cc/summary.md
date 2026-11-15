@@ -817,7 +817,7 @@ Job 20261115-054311-example-307-replay-its-receipt-records-b reruns build.py 307
 
 ### test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests
 
-change `suovqrmsxsvv` · [log `da2022dbc1f6`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083.jsonl.gz)
+[`e9ce8eec6351`](https://github.com/pilifs/in-the-loop/commit/e9ce8eec63516b899e96b0eb1a8c02071d566971) · [log `da2022dbc1f6`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083.jsonl.gz)
 
 A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where
 they can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract
@@ -833,7 +833,7 @@ workspace.
 
 ### test-cost brief: the user's eight decisions settled
 
-change `urxxvmutpszv` · [log `da2022dbc1f6`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083.jsonl.gz)
+[`31f2a32a8f9d`](https://github.com/pilifs/in-the-loop/commit/31f2a32a8f9deaa4ba3088c142b67193aafc8cd7) · [log `da2022dbc1f6`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083.jsonl.gz)
 
 All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and
 the inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt
@@ -843,13 +843,13 @@ ready, to launch alone after example-targets is done.
 
 ### test-cost brief: ready to launch, before the stream conductor's steps 4-6
 
-change `qrlylnvuqtsq` · [log `f144a0ac8ce6`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f144a0ac8ce6c92b243f80a19a3e12a7c6eed1a03d22e3973ccc508dda7ff2b4.jsonl.gz)
+[`5600573824a0`](https://github.com/pilifs/in-the-loop/commit/5600573824a0b1441ec6475edb3ec5038c92473a) · [log `f144a0ac8ce6`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f144a0ac8ce6c92b243f80a19a3e12a7c6eed1a03d22e3973ccc508dda7ff2b4.jsonl.gz)
 
 Example-targets is done and pushed, and the user chose to run the test-cost loop next, ahead of the stream conductor's steps 4-6. The brief's two commits moved from the side workspace test-cost-plan onto main (that workspace is forgotten), its header and decision 8 say this loop runs first and that the conductor's unmerged steps 1-3 in workspace stream-conductor are not its to touch, the count of Python test files is brought up to date (24 to 28, from git ls-files), and its status is working. Verified that the Rust counts the brief quotes still hold (25 files, 384 tests, 12 ignored) and that the verification README lines it quotes are unchanged.
 
 ### tool_time.py: where loops' time went, by category, loop and cargo test binary, from the redacted logs
 
-change `spvkptmntrss` · [log `be3d99991e7e`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/be3d99991e7e42c59cb5f445ccc88486f5011a3ada1044ab51856d76450d85d1.jsonl.gz)
+[`06f49b7c4535`](https://github.com/pilifs/in-the-loop/commit/06f49b7c4535ffb4d6d6342b769e974b11714bea) · [log `be3d99991e7e`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/be3d99991e7e42c59cb5f445ccc88486f5011a3ada1044ab51856d76450d85d1.jsonl.gz)
 
 Phase 1 step 1 of the test-cost brief (llm-dlc/loops/test-cost.md). llm-dlc/tools/tool_time.py turns the 2026-11-15 ad-hoc time analysis, whose scripts were not kept, into a tool Phase 5 runs again on the next loop. It finds loop sessions from the briefs' Loop settings and the loop summaries (a stream counts towards its loop), reads each session's redacted log (with --fetch, the published copy of one not stored here, checked against its sha256), and reports: active and model time (metrics.py's), blocked time per batch of parallel calls (counted once, given to the call that finished last, calls over two hours left out) by category, waits on commands started in the background, per-loop shares, cargo's compile and per-binary test timings, and full-suite, debug and release spreads. Markdown or --format json.
 
@@ -859,25 +859,25 @@ The brief is out of date in places: its 'Where it starts from' totals came from 
 
 ### test-cost brief revised: no measuring run, tiers from past runs and estimates; the loop cut to tags, lint and guidance
 
-change `mvyptwznxmwn` · [log `750942543f01`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/750942543f015babb83bd8bf650fb00517be1d0e2d4e270fed436fa31bba84bc.jsonl.gz)
+[`d57cc583af49`](https://github.com/pilifs/in-the-loop/commit/d57cc583af493c66e71ecbb858538d35333a3c07) · [log `750942543f01`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/750942543f015babb83bd8bf650fb00517be1d0e2d4e270fed436fa31bba84bc.jsonl.gz)
 
 The user stopped the test-cost loop in its second cycle, as it was about to queue a measuring job that past results put at about 3 hours, and asked that nothing be re-run to measure, so that the stream conductor can follow soon. The brief now takes each test's tier from past sessions' timings, past pipeline results and what the test spawns, marking estimates as such; keeps the measuring tool as one to write but not run; and adds no #[ignore] to any test that runs by default today, listing those for the next loop as 'retier: pending'. The proxies, the retiering of the five slow files, the reuse of passed results and the JBMC cache move to a later test-cost loop (new decision 9). Phases are now: tools and inventory, tags and lint, guidance. The loop's uncommitted step-2 files (test_costs.py, install-nextest.sh, nextest.toml) were kept out of this commit and left in the working copy for the loop to finish.
 
 ### test_costs.py: the per-test cost measuring tool, written and tested but not run; cargo-nextest installed, hash-pinned
 
-change `kmqqxvxmyzqx` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
+[`31b55d7700d0`](https://github.com/pilifs/in-the-loop/commit/31b55d7700d0b1104755ed2753e5faa3e18eecb4) · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
 
 Phase 1 step 2 of the test-cost brief, as revised after the user stopped the run before its measuring job. lib/tools/test_costs.py measures what each test costs: a warm plain cargo test for the default run's wall time, then every Rust test under cargo-nextest, one process each (debug for default tests, release for ignored ones), and every Python test file test by test. For each test it records time, CPU, peak memory and the processes spawned (sampled from /proc), and writes lib/tests/costs.json with the tier each test measures into (unit: no subprocess, under 1 s; tool: under 10 s and 1 GB; proof: JBMC/TLC or over those). lib/.config/nextest.toml defines only a measure profile that runs each test under the tool's watch wrapper; plain cargo test and nextest's default profile are unaffected. lib/tools/install-nextest.sh installs cargo-nextest 0.9.151 from its github.com release, pinned to the sha256 that both the release's .sha256 asset and GitHub's asset digest give.
 
 ### test_test_costs.py: a made-up TLC path outside /home; the earlier one proposed for the allow list
 
-change `qnytyympotsn` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
+[`cb58848675ff`](https://github.com/pilifs/in-the-loop/commit/cb58848675ffac901bdd7012f00b9bd3868f9aed) · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
 
 The test of test_costs.tool_name used /home/u/.local/bin/tlc as a made-up TLC launcher path, which the redaction scan flags as another user's home directory (finding bca79831, other-home-dir, in this session's log). The test now uses /opt/tools/bin/tlc, and the finding is proposed for the allow list as a false positive, for the user to approve. Verified: python3 lib/tools/test_test_costs.py passes (12 tests).
 
 ### test_costs.py estimate: the cost inventory of every Rust and Python test, from past runs and what each test calls, running nothing
 
-change `qymzokkrlvns` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+[`cc1a9c2aba88`](https://github.com/pilifs/in-the-loop/commit/cc1a9c2aba8825569fee2c37e237c376659b038a) · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
 
 lib/tests/costs.json is now generated by `python3 lib/tools/test_costs.py estimate` (about 20 s, no test run). It lists the 642 Rust tests and 782 Python tests, one per line, each with a tier, what it calls, its cost and that cost's sources, and why. A new module, lib/tools/cost_inventory.py, does the reading:
 - The Rust tests come from lib/src and lib/tests with strings and comments blanked. The list matched `cargo test -- --list` exactly, a check run once that only lists. The Python tests come from ast.
@@ -894,13 +894,13 @@ Known gap, left to the next loop: measure's inventory still keys rows by nextest
 
 ### Rust test tiers: the tool_tier! helper, test_costs.py tag, and the twelve ignore reasons as cost:proof tags
 
-change `vlrntnkoowln` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
+[`30fa431bad37`](https://github.com/pilifs/in-the-loop/commit/30fa431bad37c8e5ee5a9ad1d2f9c5611a792570) · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
 
 Phase 2 step 4 of llm-dlc/loops/test-cost.md, first part. lib/src/test_tier.rs adds tool_tier!(), the first statement of a tool-tier test, and tool_tier!(pending) for a proof-tier test that still runs by default (retier: pending in lib/tests/costs.json). Both return at once under JVMCONTRACT_TEST_TIER=unit and do nothing without it; any other value than unit, tool or proof panics. A new subcommand, python3 lib/tools/test_costs.py tag FILE ..., gives each test the call its inventory row asks for, and takes it off unit-tier and ignored tests. A second run changes nothing. heap.rs (48 tool-tier tests), conformance.rs (6 tool, 3 pending) and preparation.rs (none) are tagged. Their twelve #[ignore] reasons now read 'cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST', with times from past jobs. The heap proxies are the native-engine tests that run the same cases. The conformance proxy is the own-checker corpus run, itself retier: pending. The benchmark says 'proxy: none yet'. The inventory was regenerated (644 Rust tests, with test_tier's two). A second regeneration was byte-identical.
 
 ### Rust test tiers: every tool-tier and retier-pending test calls tool_tier!, 305 more across 27 files
 
-change `tynlzrtkvlxt` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+[`ca37bc779056`](https://github.com/pilifs/in-the-loop/commit/ca37bc779056faeb2a9ef812e269a3ad247e0891) · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
 
 python3 lib/tools/test_costs.py tag, run over the 22 remaining files in lib/tests/ and the five in lib/src/ with tool-tier or retier-pending tests, added 245 tool_tier!() calls and 60 tool_tier!(pending) calls (crate::tool_tier!() in lib/src/). With the previous commit's 57, all 299 tool-tier tests and 63 retier-pending tests in lib/tests/costs.json now call the helper first. A second tag over all 30 files changes nothing. Under JVMCONTRACT_TEST_TIER=unit those tests return at once. Without the variable nothing changes, and no test runs less by default.
 
@@ -910,7 +910,7 @@ Verified: cargo build --tests is clean, apart from foundations.rs's three unused
 
 ### Python test tiers: the @cost decorator, test_costs.py tag for Python, and the 54 tool-tier tests tagged
 
-change `qqtnyrpvxyqu` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+[`e5fb413b8680`](https://github.com/pilifs/in-the-loop/commit/e5fb413b8680d98f62abd156761cc7cecd0750cd) · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
 
 lib/tools/cost_tier.py adds @cost("tool" | "pending" | "proof"), Python's counterpart of tool_tier!. Under TEST_COST=unit the tool and pending tests are skipped with a reason; proof is skipped unless TEST_COST=proof; unset, nothing that runs today is skipped; a misspelt value raises. The inventory's Python reading counted any mention of subprocess as a spawn. It now counts a call, so 117 tests that only patch subprocess away, refuse Popen or build a CompletedProcess for a mock moved from tool to unit (test_build.py 81, test_workflow.py 26, and others). Python is now 790 tests, 736 unit and 54 tool; Rust rows are unchanged. test_costs.py tag now decorates Python test methods as their rows ask and manages the import of cost. It tagged 54 tests in 12 files, and a second run over all 31 Python test files changes nothing. lib/README.md's Tests section describes the decorator.
 
@@ -920,7 +920,7 @@ The brief is out of date in one place: 'Where it starts from' counts 28 Python t
 
 ### Test tiers: one way to run each, test_costs.py run --tier default|unit|proof, documented in lib/README.md
 
-change `wykynwxqpyyq` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
+[`ef1b3f41f756`](https://github.com/pilifs/in-the-loop/commit/ef1b3f41f756542e0dcd48a9184d4d2651fedbce) · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
 
 Phase 2 step 6 of llm-dlc/loops/test-cost.md. python3 lib/tools/test_costs.py run runs cargo test in lib/ and then each Python test file lib/tests/costs.json lists, in its own process, with one line per file and the full output on failure. --tier default (what runs inline) sets JVMCONTRACT_TEST_TIER and TEST_COST to tool, which is the same as unset, so nothing is skipped that ran before. --tier unit sets them to unit. --tier proof runs cargo test --release -- --ignored and only the Python tests tagged @cost("proof"), of which there are none yet. --only, --test and --dry-run narrow a run.
 
@@ -932,7 +932,7 @@ Found, and recorded for review in the brief's Progress: examples/tools/test_econ
 
 ### Test tiers: the lint, test_costs.py lint, in the default run as tests/tiers.rs and tools/test_tier_lint.py
 
-change `sxutsywlupks` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+[`009ab4d56f2a`](https://github.com/pilifs/in-the-loop/commit/009ab4d56f2a4ac19be6fe8c898c42b84743ecf7) · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
 
 Phase 2 step 7 of llm-dlc/loops/test-cost.md. The lint checks four things against the sources and lib/tests/costs.json: every ignore reason is a cost:proof tag with a proxy that runs by default, or proxy: none yet for a test on the inventory's list; no test outside the proof tier calls JBMC or TLC, except the retier: pending tests; the inventory and the sources name the same tests, and what it records of each is current; and every tool_tier! or @cost tag is the one its row asks for. It runs in the default run twice, both at the unit tier. lib/tests/tiers.rs is in cargo test and checks what it can read without following a test into its helpers. lib/tools/test_tier_lint.py is in the Python run and checks all of it for both languages, with ten more tests of the lint on made-up sources. lib/README.md's Tests section says what each problem asks for.
 
@@ -942,7 +942,7 @@ Verified: tiers.rs, test_tier_lint.py, test_cost_inventory.py and test_test_cost
 
 ### pricing.json back to its 2026-10-31 prices: a price change can't be carried to the stream sessions' metrics from here
 
-change `ysutlusoqrmm` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+[`69f93110a029`](https://github.com/pilifs/in-the-loop/commit/69f93110a02906e5010fac858d2f4b6e97eb96a7) · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
 
 The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and corrected claude-sonnet-5-5's cache read to $0.10. The commit's sync recomputed metrics.json for every session whose transcript is in this checkout's Claude project folder, but 17 sessions of the merged streams (alignment, cleanup-native, application-core-objects, example-targets-workflow and others) keep their transcripts in their own workspaces' folders. sync can't reach those, so their metrics.json no longer matched and check reported 17 errors. This restores the old prices, and the sessions this sync can reach are recomputed back to them. The price change waits on a person's decision on how to recompute the 17 (see the session summary). The app_of fix and the brief's updates stand.
 
@@ -950,7 +950,7 @@ Verified: sync.py check reports 0 errors.
 
 ### Allow list: Filip Stankovic approved bca79831
 
-change `zxsnysyqzqnp` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+[`3836ebb5a2f3`](https://github.com/pilifs/in-the-loop/commit/3836ebb5a2f3ddb3d0eb2d08a2b7f3f676de3a64) · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
 
 Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
