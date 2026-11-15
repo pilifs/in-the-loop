@@ -18,7 +18,8 @@ packet(folder, example, target, task) is workflow.handoff()'s dict:
                 capability one only on a task that runs the verifier): kind, observed (true: a probe or attempt
                 produced it; false: predicted, a hypothesis until a probe reaches it), class (capability: a library limit;
                 scaffold: provenance, a build, the oracle or the replay, which leave the scaffold partial), summary,
-                and for an observed one with its packet file the brief's capability-gap packet (gap_packet())
+                the summary's `recorded` date and a later dated `note` where the sidecar gives them (the summary is
+                kept as written), and for an observed one with its packet file the brief's capability-gap packet (gap_packet())
   rules         what continuing may not change: the claim stays as it is; a narrower kernel is a separate task
 
 inventory(rows) groups the observed and predicted gaps of many targets by gap id (a gap packet's diagnostic ids, the
@@ -363,6 +364,9 @@ def gaps_of(folder, example, target, t, plan, found, receipts):
         gap = {"kind": b["kind"], "observed": bool(b["observed"]),
                "class": "capability" if b["kind"] in workflow.CAPABILITY_KINDS else "scaffold",
                "summary": b["summary"], "finding": b.get("finding"), "packet": None}
+        for k in ("recorded", "note"):  # the summary's date, and a later dated line (target.schema.json)
+            if b.get(k):
+                gap[k] = b[k]
         if b["observed"]:
             if b.get("packet") and b["packetPresent"] is False:
                 gap["evidence"] = f"missing: {b['packet']} is not in the folder, so it doesn't count as observed"
@@ -574,8 +578,10 @@ def inventory(rows):
                     g = groups.setdefault(gap_id, {"gap": gap_id, "kind": gap["kind"], "class": gap["class"],
                                                    "observed": False, "families": set(), "cases": set(),
                                                    "roles": set(), "obligations": [], "modules": set(),
-                                                   "closures": [], "findings": set()})
+                                                   "closures": [], "findings": set(), "recorded": set()})
                     g["observed"] = g["observed"] or counted
+                    if gap.get("recorded"):
+                        g["recorded"].add(gap["recorded"])
                     g["families"].add(identity["family"])
                     g["cases"].add(identity["case"])
                     g["roles"].add(identity["role"])
@@ -599,7 +605,8 @@ def inventory(rows):
                                                  for o in g["obligations"] if not o["observed"]}),
                     "negativeAndPositive": {"negative", "positive"} <= g["roles"],
                     "obligations": g["obligations"], "modules": sorted(g["modules"]),
-                    "closures": g["closures"], "findings": sorted(g["findings"])})
+                    "closures": g["closures"], "findings": sorted(g["findings"]),
+                    "recorded": sorted(g["recorded"])})
     out.sort(key=lambda g: (not g["observed"], -len(g["families"]), -g["blockedObligations"], g["gap"]))
     for rank, g in enumerate(out, 1):
         g["rank"] = rank
@@ -682,7 +689,9 @@ def inventory_markdown(value, folders):
         "## Predicted gaps, kept apart",
         "",
         "Each is a hypothesis from a static scan, the build files or the docs, until a probe or attempt reaches it. "
-        "None blocks a task's readiness, and none is ranked against the observed gaps.",
+        "None blocks a task's readiness, and none is ranked against the observed gaps. A prediction marked "
+        "\"(recorded DATE)\" is kept as it was written then; its blocker's dated `note` in the example's `target.json` "
+        "says what changed since, such as the observed blockers a later attempt met first.",
         "",
         "| Kind | Class | Obligations | Examples | Prediction |",
         "|---|---|---|---|---|",
@@ -690,8 +699,9 @@ def inventory_markdown(value, folders):
     for g in predicted:
         examples = sorted({o["example"] for o in g["obligations"]})
         summary = g["gap"].split(": ", 1)[1] if g["gap"].startswith(g["kind"] + ": ") else g["gap"]
+        dated = f"(recorded {', '.join(g['recorded'])}) " if g.get("recorded") else ""
         lines.append(f"| {g['kind']} | {g['class']} | {g['predictedObligations']} | "
-                     f"{', '.join(link(e) for e in examples)} | {cell(first_sentence(summary))} |")
+                     f"{', '.join(link(e) for e in examples)} | {dated}{cell(first_sentence(summary))} |")
     return "\n".join(lines) + "\n"
 
 

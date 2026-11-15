@@ -2099,6 +2099,32 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
   - **Next**: item 3, 285–287's prediction summaries keep their text, dated, with a line pointing to the observed
     blockers and the gap inventory.
+- 2026-11-15, **review item 3 done: 285–287's prediction summaries keep their text, dated, with a later dated line
+  pointing to the observed blockers and the gap inventory.**
+  - **Reproducer**: `test_gap_inventory.py`'s `DatedPredictionTest` (4 tests) failed on `wvulozul`. None of the ten
+    predicted blockers of 285–287 had a date or a note, their handoff gaps and the page's rows carried none, and the
+    READMEs' Predicted sections didn't say when they were written.
+  - **The change**:
+    - `target.schema.json`: a blocker may give `recorded` (the date its summary was written) and `note` (a later
+      line opening with its own date). `summary`'s description now says it is kept as written, since a predicted
+      group on the page is named by its kind and summary. Changing the text would rename the group.
+    - The ten predicted blockers of 285–287 have `recorded: 2026-11-14`, the negative stream's day. Seven of them say
+      "no verifier has run on this packet". Each `note` (2026-11-15) names the job, the finding (VF-027) and the gap
+      id where its task's attempt was refused first, with the packet `records/refusals/TASK.json` and
+      `examples/gap-inventory.md`. So no attempt reached the prediction, which stays a hypothesis.
+    - `workflow_handoff.py`: a handoff gap carries `recorded` and `note`, and the page's predicted rows open with
+      "(recorded DATE)". The page's text explains that marker.
+    - The READMEs' Predicted blockers sections give the date and what changed since, and link the observed blockers
+      and the page. Their stale **Next** is marked as that day's plan, done since. 285's interface-parameter
+      prediction for `fixed-security` is marked as observed since, because `target.json` replaced it on 2026-11-15.
+    - Each `example.json` has a note. `build.py --index-only` regenerated the router and the page, which still has
+      the same 5 observed gaps and 17 predicted groups.
+  - **No A8 rerun**: only blocker metadata, docs and the page changed. No plan, claim key, receipt or verdict changed
+    (`test_workflow_refusal.py` checks each blocked task's claim key, and A6 found no stale receipt).
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (258, four new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: item 4, a new gap kind for `two-dependency-closures` in `target.schema.json` (the verifier's single
+    `--classpath`, not input construction), with the gap reclassified in its packets and the inventory.
 - Status: working
 
 ## Loop settings

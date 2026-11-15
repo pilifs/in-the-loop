@@ -5,6 +5,7 @@ test, the predictions stay apart and unranked against them, and find.py --gap fi
 import contextlib
 import io
 import json
+import re
 import subprocess
 import sys
 import unittest
@@ -112,6 +113,67 @@ class GapInventoryTest(unittest.TestCase):
                 self.assertEqual(found(gap), examples)
         self.assertEqual(found("jdk-constructor"), ["105"])
         self.assertEqual(found("input-construction:string"), [], "a part matches only up to a colon")
+
+
+STALE = "Predicted, not observed (no verifier has run on this packet)"
+DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+class DatedPredictionTest(unittest.TestCase):
+    """Review item 3 of 2026-11-15: 285-287's prediction summaries, written by the negative stream on 2026-11-14 before
+    any verifier ran (seven of the ten say so), keep their text, dated, with a later dated line pointing to the
+    observed blockers and this page. A summary is also a predicted group's id on the page, so its text never changes."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = rows()
+        cls.stale = [(f, e, t, b) for f, e, t in cls.rows for b in t.get("handoff", {}).get("blockers", [])
+                     if not b["observed"] and e["id"] in ("285", "286", "287")]
+
+    def test_the_summaries_keep_their_text(self):
+        self.assertEqual(len(self.stale), 10)
+        self.assertEqual(sorted(e["id"] for _, e, _, b in self.stale if b["summary"].startswith(STALE)),
+                         ["285", "285", "286", "286", "286", "286", "287"])
+
+    def test_each_is_dated_and_points_to_its_observed_blockers_and_the_page(self):
+        for folder, example, target, b in self.stale:
+            with self.subTest(example=example["id"], task=b.get("task"), summary=b["summary"][len(STALE):][:50]):
+                self.assertRegex(b.get("recorded", ""), DATE, "the date the summary was written")
+                self.assertEqual(b["recorded"], "2026-11-14")
+                note = b.get("note", "")
+                date = note.split(":", 1)[0]
+                self.assertRegex(date, DATE, "the note opens with its own date")
+                self.assertGreater(date, b["recorded"])
+                self.assertIn("examples/gap-inventory.md", note)
+                observed = [o for o in target["handoff"]["blockers"] if o["observed"] and o.get("packet")
+                            and (b.get("task") is None or o.get("task") == b["task"])]
+                self.assertTrue(observed, "a later attempt of the task it covers was refused first")
+                for o in observed:
+                    self.assertIn(o["packet"], note, "names each observed blocker of the task it covers")
+                    self.assertTrue((folder / o["packet"]).is_file())
+
+    def test_the_handoff_and_the_page_carry_the_date(self):
+        page = PAGE.read_text()
+        for folder, example, target, b in self.stale:
+            with self.subTest(example=example["id"], task=b.get("task")):
+                tasks = [t for t in target["tasks"] if b.get("task") in (None, t["id"])]
+                gaps = [g for t in tasks
+                        for g in workflow_handoff.packet(folder, example, target, t["id"])["gaps"]
+                        if g["summary"] == b["summary"]]
+                self.assertTrue(gaps)
+                for g in gaps:
+                    self.assertEqual((g.get("recorded"), g.get("note")), (b["recorded"], b["note"]))
+                cut = workflow_handoff.cell(workflow_handoff.first_sentence(b["summary"]))
+                self.assertIn(f"(recorded {b['recorded']}) {cut}", page)
+
+    def test_the_readmes_predicted_sections_are_dated_and_point_to_the_page(self):
+        for folder in sorted({f for f, _, _, _ in self.stale}):
+            with self.subTest(folder=folder.name):
+                text = (folder / "README.md").read_text()
+                section = text.split("## Predicted blockers", 1)[1].split("\n## ", 1)[0]
+                self.assertIn("2026-11-14", section)
+                self.assertIn("gap-inventory.md", section)
+                self.assertIn("(#observed-blockers)", section)
 
 
 if __name__ == "__main__":

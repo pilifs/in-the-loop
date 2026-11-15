@@ -248,7 +248,9 @@
               "kind": { "description": "The capability-gap kinds of the brief, kept apart.", "enum": ["java-semantics", "input-construction", "oracle-ambiguity", "source-provenance", "build-or-dependency", "replay", "resources", "verifier-bug"] },
               "observed": { "description": "true: a probe or attempt produced it; false: predicted, a hypothesis until a probe reaches it.", "type": "boolean" },
               "task": { "description": "The task it blocks. Omitted: the whole target's, which applies to every task, a capability kind only to the tasks that run the verifier.", "$ref": "#/$defs/name" },
-              "summary": { "type": "string" },
+              "summary": { "description": "Kept as it was written, even when a later attempt changes the packet's state: a predicted group on examples/gap-inventory.md is named by its kind and summary.", "type": "string" },
+              "recorded": { "description": "The date the summary was written.", "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+              "note": { "description": "A later line, opening with its own date ('YYYY-MM-DD: ...'), that says what changed since the summary was written, such as the observed blockers an attempt met first, and leaves the summary as it was.", "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}: " },
               "packet": { "description": "The gap packet's file in the folder.", "$ref": "#/$defs/file" },
               "finding": { "description": "An existing finding id it reuses.", "type": "string", "pattern": "^VF-[0-9]{3}$" }
             }
