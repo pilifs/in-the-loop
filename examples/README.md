@@ -476,7 +476,7 @@ By hand:
 python3 examples/tools/build.py 002              # run one constructed example, rewrite its page and the router
 python3 examples/tools/build.py                  # run every constructed example: the Quorum ones take about ten minutes
 python3 examples/tools/build.py --render-only    # rewrite every page and the router from the results there, running nothing; says which are stale
-python3 examples/tools/build.py --index-only     # rewrite only the router
+python3 examples/tools/build.py --index-only     # rewrite only the router (with gap-inventory.md)
 python3 examples/tools/build.py --plan 124       # what a run would take, as JSON, running nothing
 python3 examples/tools/build.py --scan-gaps      # compile each B9/B11 example on a javac app and note the gaps of the tool's own checker its proof reaches, proving nothing
 ```
@@ -528,6 +528,7 @@ it (`target`: family, role, readiness, claim statuses, observed and predicted ga
 `--role`, `--readiness`, `--claim-status` and `--gap` filter on. [`gap-inventory.md`](gap-inventory.md) ranks the
 observed capability gaps across these targets, by distinct families and blocked obligations, each with its smallest
 reproducer, owner module and closure test, and keeps the predicted ones apart; `find.py --gap` takes its gap ids.
+`build.py --index-only` and `--render-only` rewrite it with the router.
 
 Before it reads a verdict, `build.py` decides how the verifier's run ended, and records it in `result.json` as
 `execution`: `completed`, `timed-out`, `killed`, `invalid-output` or `tool-error`, with the exit code and the

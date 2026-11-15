@@ -1,6 +1,6 @@
 # The v1 gap inventory of the example targets
 
-Generated from every example with a target sidecar by `python3 examples/tools/targets/workflow_handoff.py inventory --markdown`, offline, from the sidecars, their gap packets and the receipts in the tree. Don't edit it by hand: `test_gap_inventory.py` checks that it equals the rendering. The JSON form, without `--markdown`, has every field (`example-target-gap-inventory/v1`).
+Generated from every example with a target sidecar by `python3 examples/tools/targets/workflow_handoff.py inventory --markdown`, offline, from the sidecars, their gap packets and the receipts in the tree. `build.py --index-only` and `--render-only` rewrite it with the router. Don't edit it by hand: `test_gap_inventory.py` checks that it equals the rendering. The JSON form, without `--markdown`, has every field (`example-target-gap-inventory/v1`).
 
 Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (decision 11): every observed capability gap of the portfolio, ranked by observed first, then distinct families, then blocked obligations (example, task and claim), never by raw case counts. A rank is an engineering aid, not evidence. Each observed obligation's claim stays unresolved with its `expected` conclusion unchanged, and a gap closes only when that claim, rerun unchanged with the extended implementation, decides it. `find.py --gap GAP` finds the examples a gap blocks.
 

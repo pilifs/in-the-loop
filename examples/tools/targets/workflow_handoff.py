@@ -26,7 +26,8 @@ JDK suffix dropped, else the blocker's kind and summary), ranked by the distinct
 (case, task and claim) each blocks, never by raw case counts. A priority is an engineering aid, not evidence.
 
 Run as a script: `workflow_handoff.py handoff NNN TASK` prints one packet, `workflow_handoff.py inventory` the
-inventory of every example with a target sidecar, and `inventory --markdown` the page examples/gap-inventory.md.
+inventory of every example with a target sidecar, and `inventory --markdown` the page examples/gap-inventory.md,
+which build.py's render_index() also writes, so `build.py --index-only` and `--render-only` rewrite it with the router.
 """
 
 import hashlib
@@ -637,8 +638,9 @@ def inventory_markdown(value, folders):
         "# The v1 gap inventory of the example targets",
         "",
         "Generated from every example with a target sidecar by `python3 examples/tools/targets/workflow_handoff.py "
-        "inventory --markdown`, offline, from the sidecars, their gap packets and the receipts in the tree. Don't edit "
-        "it by hand: `test_gap_inventory.py` checks that it equals the rendering. The JSON form, without `--markdown`, "
+        "inventory --markdown`, offline, from the sidecars, their gap packets and the receipts in the tree. "
+        "`build.py --index-only` and `--render-only` rewrite it with the router. Don't edit it by hand: "
+        "`test_gap_inventory.py` checks that it equals the rendering. The JSON form, without `--markdown`, "
         f"has every field (`{value['schema']}`).",
         "",
         "Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (decision 11): every observed "

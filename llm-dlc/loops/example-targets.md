@@ -2080,6 +2080,25 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (253, one new),
     `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
   - **Next**: item 2, `build.py --index-only` (and `--render-only`) regenerate `examples/gap-inventory.md`.
+- 2026-11-15, **review item 2 done: `build.py --index-only` and `--render-only` rewrite the gap inventory with the
+  router.**
+  - **Reproducer**: `test_gap_inventory.py`'s `test_index_only_and_render_only_rewrite_the_page_with_the_router`
+    failed for both modes on `tzoqsuqm`: neither wrote `examples/gap-inventory.md`. The test captures every write, so
+    nothing in the tree changes when it runs.
+  - **The change**: `build.py`'s `render_index()` ends with the new `render_gap_inventory()`. It loads the sidecars of
+    the examples it was given and writes `workflow_handoff.inventory_markdown(inventory(rows))`, the same rendering as
+    `workflow_handoff.py inventory --markdown`. Every mode that rewrites the router now rewrites the page too, a
+    constructed run's included. The inventory reads only files in the example folders, so a job's export has what it
+    needs.
+  - **Docs**: `build.py`'s usage line, `render_index()`'s docstring, `workflow_handoff.py`'s docstring, the page's own
+    header, `examples/README.md` (the command list and the targets paragraph), and the test's hint for a stale page now
+    say this. The header changed, so the page changed by that one line; `inventory --markdown` gives the same bytes.
+  - **No A8 rerun**: the change adds one file write after the router's. It changes no verdict, receipt or plan, and
+    neither `without_jbmc.sh` nor a constructed run path.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (254, one new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: item 3, 285–287's prediction summaries keep their text, dated, with a line pointing to the observed
+    blockers and the gap inventory.
 - Status: working
 
 ## Loop settings

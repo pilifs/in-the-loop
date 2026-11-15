@@ -38,7 +38,8 @@ plain javac, verified by the Rust tool in lib/ (jvmcontract). The app is chosen 
 Usage: python3 examples/tools/build.py [ID ...]          run constructed examples (all of them by default)
        python3 examples/tools/build.py --render-only [ID ...]  rewrite their pages from result.json, running nothing
        python3 examples/tools/build.py --plan [ID ...]     print what each run would take (plan()), as JSON, running nothing
-       python3 examples/tools/build.py --index-only        the router: examples/README.md's tables and examples/index.json
+       python3 examples/tools/build.py --index-only        the router: examples/README.md's tables, examples/index.json
+                                                           and examples/gap-inventory.md
        python3 examples/tools/build.py --plan ID --task T  the plan of one task of a real-world example with a target sidecar
        python3 examples/tools/build.py ID --task T         one attempt at that task (examples/tools/targets/route.py)
 
@@ -4531,7 +4532,8 @@ def target_projection(folder, example):
 
 
 def render_index(folders):
-    """The router: the table of every example and the examples by tag in examples/README.md, and index.json."""
+    """The router: the table of every example and the examples by tag in examples/README.md, index.json, and the
+    target sidecars' gap inventory, examples/gap-inventory.md (render_gap_inventory())."""
     examples = []
     for folder in folders:
         ex = load_example(folder)
@@ -4607,6 +4609,19 @@ def render_index(folders):
         {"schema": "examples-index/v2", "description": "Every example, for finding the ones relevant to a task: "
          "examples/tools/find.py searches it, and examples/tags.json defines the tags.", "examples": index},
         indent=2, ensure_ascii=False) + "\n")
+    render_gap_inventory([(folder, ex) for folder, ex, _ in examples])
+
+
+def render_gap_inventory(examples):
+    """examples/gap-inventory.md, the v1 gap inventory of every example with a target sidecar
+    (targets/workflow_handoff.py's inventory() and inventory_markdown(), as `workflow_handoff.py inventory --markdown`
+    prints it), rewritten with the router so that it moves with the index. `examples` are (folder, example) pairs."""
+    from targets import workflow_handoff  # here, since it reads build.py's loader when run as a script
+    rows = [(folder, ex, target) for folder, ex in examples if ex.get("target")
+            for target in [sidecar.load(folder, ex)] if target is not None]
+    page = workflow_handoff.inventory_markdown(workflow_handoff.inventory(rows),
+                                               {ex["id"]: folder.name for folder, ex, _ in rows})
+    (EXAMPLES / "gap-inventory.md").write_text(page)
 
 
 if __name__ == "__main__":

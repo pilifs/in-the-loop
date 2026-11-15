@@ -2,11 +2,14 @@
 of the tree as it is, every observed gap is ranked with a reproducer that reruns it, an owner module and a closure
 test, the predictions stay apart and unranked against them, and find.py --gap finds a gap's examples by its id."""
 
+import contextlib
+import io
 import json
 import subprocess
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent.parent
@@ -45,8 +48,23 @@ class GapInventoryTest(unittest.TestCase):
     def test_the_committed_page_is_the_rendering_of_the_tree(self):
         folders = {e["id"]: f.name for f, e, _ in self.rows}
         self.assertEqual(PAGE.read_text(), workflow_handoff.inventory_markdown(self.value, folders),
-                         "regenerate it: python3 examples/tools/targets/workflow_handoff.py inventory --markdown "
-                         "> examples/gap-inventory.md")
+                         "regenerate it with the router: python3 examples/tools/build.py --index-only")
+
+    def test_index_only_and_render_only_rewrite_the_page_with_the_router(self):
+        """Review item 2 of 2026-11-15: the page moves with the index, so build.py's two modes that rewrite the router
+        rewrite it too. Every write is captured, so nothing in the tree changes."""
+        import build
+        wanted = workflow_handoff.inventory_markdown(self.value, {e["id"]: f.name for f, e, _ in self.rows})
+        page = build.EXAMPLES / "gap-inventory.md"
+        for argv in (["--index-only"], ["--render-only", "285"]):
+            with self.subTest(argv=argv):
+                written = {}
+                with mock.patch.object(Path, "write_text", autospec=True,
+                                       side_effect=lambda path, text, *a, **k: written.__setitem__(path, text)), \
+                        contextlib.redirect_stdout(io.StringIO()):
+                    build.main(argv)
+                self.assertIn(build.EXAMPLES / "index.json", written, "the router itself")
+                self.assertEqual(written.get(page), wanted)
 
     def test_the_observed_gaps_are_ranked_by_families_then_blocked_obligations(self):
         observed = [g for g in self.value["gaps"] if g["observed"]]
