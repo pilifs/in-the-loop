@@ -1,8 +1,9 @@
 # Brief: example targets, real-world changes as reproducible work packets
 
 **Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08; [Phase 0](#phase-0-interfaces-hooks-and-fixtures) was done on 2026-11-09; the four streams finished and were merged on
-2026-11-14; Phase 5's five steps were done on 2026-11-15, with gate A8's two jobs still to be read.** The state of each
-gate and packet is in [Progress](#progress)'s for-review entry (2026-11-15, Phase 5 step 5).
+2026-11-14; Phase 5's five steps were done on 2026-11-15, and gate A8's two jobs passed the same day (`qroonxrs`), so
+Tier A (A0–A8) passes; the user's ten review items followed, and the brief is done (`pkkzrrlm`).** The state of each
+gate and packet is in [Progress](#progress)'s for-review entry (2026-11-15, Phase 5 step 5) and the A8 entry after it.
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). It **scaffolds** external Java changes, Spring CVEs and
 independent upstream changes of the same kinds, as packets a later agent can execute, prove, refute or turn into an
@@ -444,7 +445,7 @@ fixtures and on existing receipts.
 
 ### Phase 5: after the merge (this brief's own loop)
 
-*Steps 1–5 done 2026-11-15*; gate A8 of step 3 waits on its two jobs (Progress).
+*Steps 1–5 done 2026-11-15*; gate A8 of step 3 passed on its two jobs the same day (Progress, `qroonxrs`).
 
 1. **The packets through the merged path**: each of the six deep packets prepared by runtime's code (jobs), its controls
    replayed in separate JVMs, its claim frozen and bound to the prepared artifacts, and its probe run, each result

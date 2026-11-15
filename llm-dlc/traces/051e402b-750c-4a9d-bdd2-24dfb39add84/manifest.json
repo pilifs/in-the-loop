@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T06:00:48.380Z",
-  "duration_seconds": 41728,
+  "ended": "2026-11-15T12:05:22.138Z",
+  "duration_seconds": 63602,
   "stats": {
-    "turns": 213,
-    "api_calls": 1749,
-    "tool_calls": 1794,
+    "turns": 219,
+    "api_calls": 1760,
+    "tool_calls": 1803,
     "tool_errors": 35,
-    "compactions": 39,
+    "compactions": 40,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3540,
-      "output_tokens": 1119427,
-      "cache_read_input_tokens": 230922921,
-      "cache_creation_input_tokens": 6198197
+      "input_tokens": 3562,
+      "output_tokens": 1126123,
+      "cache_read_input_tokens": 231794844,
+      "cache_creation_input_tokens": 6291100
     }
   },
   "tools": {
-    "Bash": 1531,
+    "Bash": 1540,
     "Read": 134,
     "Edit": 97,
     "Write": 10,
@@ -623,24 +623,38 @@
     {
       "index": 39,
       "started": "2026-11-15T05:53:05.811Z",
-      "ended": "2026-11-15T06:00:48.380Z",
-      "turns": 4,
-      "api_calls": 22,
+      "ended": "2026-11-15T06:01:21.317Z",
+      "turns": 5,
+      "api_calls": 26,
       "usage": {
-        "input_tokens": 44,
-        "output_tokens": 13590,
-        "cache_read_input_tokens": 2537028,
-        "cache_creation_input_tokens": 136079
+        "input_tokens": 52,
+        "output_tokens": 15204,
+        "cache_read_input_tokens": 3142878,
+        "cache_creation_input_tokens": 142840
       },
-      "peak_context_tokens": 149265
+      "peak_context_tokens": 156026
+    },
+    {
+      "index": 40,
+      "started": "2026-11-15T06:02:02.125Z",
+      "ended": "2026-11-15T12:05:22.138Z",
+      "turns": 5,
+      "api_calls": 7,
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 5082,
+        "cache_read_input_tokens": 266073,
+        "cache_creation_input_tokens": 86142
+      },
+      "peak_context_tokens": 67208
     }
   ],
   "log": {
-    "sha256": "679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa",
-    "bytes": 58822342,
-    "lines": 17959,
-    "gzip_bytes": 12703345,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa.jsonl.gz"
+    "sha256": "daaee24eeee0b92ded3193cf966c572daf9c510a26362f4d09eb3f21857cb04e",
+    "bytes": 59518986,
+    "lines": 18141,
+    "gzip_bytes": 12885796,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/daaee24eeee0b92ded3193cf966c572daf9c510a26362f4d09eb3f21857cb04e.jsonl.gz"
   },
   "subagents": [
     {
@@ -1323,6 +1337,14 @@
       "summary": "example-targets: 287's missing sensitivity control recorded, no mutant claim covers dropping the byte guard for ASCII passwords (review item 10); status done",
       "body": "Review item 10, the last of the user's ten review decisions of 2026-11-15. Example 287's char-count-guard mutant removes hashpw(byte[], String)'s 72-byte guard and guards the String entries by character count instead. Its only claim task, mutant-security, goes through matches, where an ASCII password's characters are its bytes, so it can be refuted only at the multibyte triggers. The dropped guard shows for ASCII only at the unguarded byte entry BCrypt.checkpw(byte[], String), fixed-guard's target, which mutant-replay catches concretely at bytes-73-prefix but no claim task covers. This is now recorded, with no new task, in 287's target.json handoff.next, a dated example.json note and a README paragraph. Each names the control that would close it (claims/overlong-bytes-rejected.json on revision mutant, expected refuted), predicted to stop at fixed-guard's observed string-parameter gap. The index is regenerated, and the gap inventory is unchanged.\n\nVerified: a new test_packets.py test checks that mutant-security is still the only claim task on the mutant, with neither fixed-guard's target nor its claim, and that the handoff, the note and the README name the control. Its text checks fail on the previous files. example-targets-integration.sh exits 0 (contract 16, targets suite 272, test_build.py 190, test_pipeline.py 34, build.py --plan). No job is pending. With Tier A passing, every portfolio row at its readiness, the gap inventory and the for-review list complete, and items 1-10 done, the brief's status is done.\n\nOut of date in the brief, outside Progress: its header still says gate A8's two jobs are to be read (they passed, qswsrqyw), and The capability-gap packet lists eight gap kinds where the schema now has nine (verifier-interface, item 4).",
       "log_sha256": "679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa"
+    },
+    {
+      "change_id": "opxwuqsrzxpkwxmplxonsrqpopztkxql",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets brief: the header and Phase 5 say gate A8's two jobs passed",
+      "body": "The brief's header still said gate A8's two jobs were to be read, and Phase 5's status line said A8 waited on them. Both jobs passed on 2026-11-15 (20261115-015944, 49 of 49 steps with JBMC absent; 20261115-020015, 28 of 28 constructed run paths), recorded in qroonxrs, so Tier A (A0-A8) passes and the brief is done (pkkzrrlm). The two lines now say so, at the user's request. Only those two lines changed; Progress already recorded the result. Still out of date, left for the user: The capability-gap packet section lists eight gap kinds, where the schema has nine since review item 4 (verifier-interface).",
+      "log_sha256": "daaee24eeee0b92ded3193cf966c572daf9c510a26362f4d09eb3f21857cb04e"
     }
   ],
   "logs": {
@@ -1666,6 +1688,12 @@
       "bytes": 39447605,
       "lines": 12346,
       "gzip_bytes": 8311061,
+      "url": null
+    },
+    "daaee24eeee0b92ded3193cf966c572daf9c510a26362f4d09eb3f21857cb04e": {
+      "bytes": 59518986,
+      "lines": 18141,
+      "gzip_bytes": 12885796,
       "url": null
     },
     "e53aa9cc3e1f61c4a30e75368b97277b997bbd712121efd69ce7d8eb73b6b96e": {

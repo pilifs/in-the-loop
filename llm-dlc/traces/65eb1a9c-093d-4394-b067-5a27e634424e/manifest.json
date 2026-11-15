@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "65eb1a9c-093d-4394-b067-5a27e634424e",
-  "status": "ended",
+  "status": "open",
   "title": "Feature loop run status",
   "first_prompt": "Give me a status report on the current feature loop run",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T17:31:02.694Z",
-  "ended": "2026-11-15T01:04:04.071Z",
-  "duration_seconds": 27181,
+  "ended": "2026-11-15T12:03:34.250Z",
+  "duration_seconds": 66752,
   "stats": {
-    "turns": 11,
-    "api_calls": 64,
-    "tool_calls": 58,
+    "turns": 14,
+    "api_calls": 72,
+    "tool_calls": 63,
     "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 151934,
+    "peak_context_tokens": 161225,
     "usage": {
-      "input_tokens": 142,
-      "output_tokens": 42027,
-      "cache_read_input_tokens": 6231261,
-      "cache_creation_input_tokens": 199827
+      "input_tokens": 164,
+      "output_tokens": 45584,
+      "cache_read_input_tokens": 7363408,
+      "cache_creation_input_tokens": 334123
     }
   },
   "tools": {
-    "Bash": 56,
+    "Bash": 61,
     "Monitor": 1,
     "Write": 1
   },
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-14T17:31:02.694Z",
-      "ended": "2026-11-15T01:04:04.071Z",
-      "turns": 11,
-      "api_calls": 64,
+      "ended": "2026-11-15T12:03:34.250Z",
+      "turns": 14,
+      "api_calls": 72,
       "usage": {
-        "input_tokens": 142,
-        "output_tokens": 42027,
-        "cache_read_input_tokens": 6231261,
-        "cache_creation_input_tokens": 199827
+        "input_tokens": 164,
+        "output_tokens": 45584,
+        "cache_read_input_tokens": 7363408,
+        "cache_creation_input_tokens": 334123
       },
-      "peak_context_tokens": 151934
+      "peak_context_tokens": 161225
     }
   ],
   "log": {
-    "sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5",
-    "bytes": 1386723,
-    "lines": 498,
-    "gzip_bytes": 253284,
-    "path": "llm-dlc/traces/65eb1a9c-093d-4394-b067-5a27e634424e/logs/eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5.jsonl.gz"
+    "sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b",
+    "bytes": 1470386,
+    "lines": 555,
+    "gzip_bytes": 265359,
+    "path": "llm-dlc/traces/65eb1a9c-093d-4394-b067-5a27e634424e/logs/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -446,6 +446,22 @@
       "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
     },
     {
+      "change_id": "kqpykqppqumtqrvyornwworzkwkvvpwu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted",
+      "body": "Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "zkqwwplutwpuzpypnnspkqmzltrwlqlz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 307's native attempts queued; the 23 VF-027 reruns read, all refused as predicted, and VF-027 closed (verification pending)",
+      "body": "The verification loop collected the 23 VF-027 reruns in kqpykqpp: each passed with example:task-refused-as-predicted, stopping at the refusal its gap packet records, under the claim key it records. 19 left an unresolved receipt in their example (the collect's message says 18 jobs had outputs applied); the four preservation reruns of 285, 286, 287 and 306 stop before the verifier and leave none. VF-027 moves to findings.md's closed entries by the second branch of its Closes when, as the user decided on 2026-11-15: each task is recorded as unprovable by this route (an observed blocker, its packet, readiness blocked, claim and expected unchanged) and each rerun's prediction matched. The collect had kept it open, reading Closes when as needing task-as-expected.\n\nThose receipts broke this loop's examples/tools/targets/test_acceptance.py on kqpykqpp (19 failures, 2 errors), whose rows assumed what held for the receipts of the time. A6 now allows an unresolved receipt only for a proof task whose observed gap packet records that very refusal (workflow_refusal.predictions), with the text in the receipt's problem, never as expected. A2 now allows a not-started JVM record that ran nothing for a proof task, never a replay: 287's vulnerable-guard and fixed-guard target BCrypt.checkpw(byte[], String), which their adapter doesn't call, so runtime ran no controls (adapterCallsTarget). Such a receipt doesn't say why its controls didn't start, since ingestion bundles neither the stream nor controls.json: for review, with the raw-streams item.\n\n307's native tasks are queued as ordinary attempts with pipeline.py submit --example 307 --task T, claim key 7eb077dac7a25751, unwind 513, maxArrayLength 80, 2 CPUs, 4 GiB, 30 minutes: 20261115-011448-example-307-preservation-phase-5-step-1 (expected established) and 20261115-011448-example-307-mutant-preservation-phase-5 (expected refuted). Their predicted refusals (nullable String parameters, String.getBytes) are stated as predictions. 307's handoff next, README state and a note now say its replays passed: a reproducible scaffold at the slice's scope. The brief's Progress records this, with Next: the v1 gap inventory, A8, the for-review list.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
       "change_id": "wtwuqnwzxsnyowqskkxloyzunyutnzrx",
       "commit_id": null,
       "immutable": false,
@@ -462,12 +478,84 @@
       "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
     },
     {
+      "change_id": "ovvoultportryproopplkqyuzvwmtxqs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028",
+      "body": "Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task <T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "tupmvorkvloswskyklmxsknxryxkkrrz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: Phase 5 step 4, the v1 gap inventory, published as examples/gap-inventory.md and through find.py --gap; VF-028 closed",
+      "body": "The v1 gap inventory (decision 11) is now a page, examples/gap-inventory.md, generated offline by workflow_handoff.py inventory --markdown from the 20 target sidecars, their gap packets and receipts; test_gap_inventory.py checks the committed page equals the rendering. It ranks the five observed capability gaps by distinct families, then blocked obligations: two-dependency-closures (3 families, 4 obligations), receiver-of-several-constructors (2, 8), string-parameter (2, 5), interface-parameter (1, 7) and the StringBuilder constructor under strict (1, 1), 25 blocked obligations in all. Each entry gives the obligations it blocks with their claim keys, the smallest reproducer (the fastest observed attempt, its packet, job, and the workflow_refusal.py check that reruns it), the missing semantics, owner modules and closure test. The 17 predicted groups are kept apart in their own table, unranked against the observed ones. inventory() now gives each group a rank and a reproducer; find.py --gap also takes a gap id or its part before a colon (the projection's JDK suffix dropped), so --gap input-construction:string-parameter finds 287, 306 and 307; examples/README.md links the page.\n\nVF-028's two reruns passed with task-refused-as-predicted (collected in ovvoultp, which closed VF-028); the entry is moved under findings.md's Decided and closed heading beside VF-027. Verified: example-targets-integration.sh exits 0 (contract 16, targets suite 247 with four new tests, test_build 190, test_pipeline 33, build.py --plan), and build.py --index-only gives no diff. For review, in the brief: 285-287's prediction summaries still say no verifier has run on the packet, kept as recorded; the page is regenerated by hand after a sidecar or packet change.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "uwuktzllopqqpmutpoxopmtpvwnwmxwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: A8's offline part checked, and its two jobs queued: the 42 target tasks with JBMC absent, and a constructed example per build.py run path (verification pending)",
+      "body": "Gate A8 of llm-dlc/loops/example-targets-acceptance.md requires three things: existing relevant examples keep their outcomes, the new native tasks run with JBMC absent, and the shared tests and acceptance jobs pass at the merged revision.\n\nWhat the collected jobs already show is now checked offline, in a new class A8 in examples/tools/targets/test_acceptance.py. Each of the 42 tasks of 105, 285-287 and 305-307 has a collected pipeline job step, and the latest one passed. The failures are 286's first replay, the 23 first attempts VF-027 recorded and 307's two VF-028 attempts, and each is superseded by a later pass of the same task. A rerun of a refusal passes only at its recorded refusal, so no failure is hidden. The legacy reports 106-109 stay non-executable, with no sidecar or result, and keep their historical labels; 105 keeps its label. lib/ is unchanged since 47358229, where application-core's final job ran the cargo suites and passed.\n\nWhat wasn't shown is queued. Neither job applies outputs back; the per-step log lines are the evidence.\n- 20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na runs all 42 tasks, plus one constructed example per native run path (144, 145, 149, 151, 161, 172, 190), each inside the new examples/tools/targets/without_jbmc.sh. That wrapper covers every jbmc with /dev/null in a private bwrap mount namespace, checks that none can be run or found, and refuses otherwise. test_without_jbmc.py has 3 tests for it.\n- 20261115-020015-gate-a8-one-constructed-example-per-buil reruns the fastest recorded example of each of build.py's 28 constructed run paths. Each is expected to give its recorded verdict, because the wave's build.py and result-schema changes reach every constructed example.\n\nFor review: these jobs run at this commit, not at the merge commit itself, so \"merged revision\" is read as the merged line. The 28 run paths are a sample, not every constructed example. JBMC is made unrunnable rather than uninstalled.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "mwsuuplnzqyqkuyszqzouqssuswysznw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: Phase 5 step 5, the for-review list; A0-A7 pass and A8 waits on its two jobs",
+      "body": "The brief's Progress gains the for-review list Phase 5 step 5 asks for, at uwuktzll.\n\nTier A: each gate's state, with its commits and job ids. A0-A7 pass on the merged line. A8's offline part passes. Its two jobs decide the rest: 20261115-015944 (the 42 packet tasks and 7 native run paths with JBMC absent) and 20261115-020015 (28 constructed run paths). At writing, 020015 had finished passed but wasn't collected, and 015944 was running.\n\nThe portfolio in counts:\n- 13 catalog-only entries;\n- the six deep targets, all reproducible scaffolds. 285-287 and 306 are on published original JARs. 305 and 307 are source slices byte-matched to Spring's published classes on one side, partial at the exact commits' original-bytecode scope;\n- all six attempted, with no claim of theirs closed;\n- 105 with 3 of its 4 claims closed (one established, two refuted at pow(-2, 31)).\n\nThe 28 claim tasks are 1 proved, 2 refuted, 21 unresolved and 4 not executed, with what each scope permits concluding. Also listed: the five observed gaps (25 obligations, examples/gap-inventory.md), the pending jobs, timebox deferrals (none), what is for the user (four allow-list proposals, the stream directories, a push), and the review items gathered across the run.\n\nThe status is now waiting on the two A8 jobs. When both are collected and pass, Tier A passes and the brief is done.\n\nOut of date in the brief, outside Progress: the Streams section's 4 GB per stream predates the 12G caps. Where it starts from is a recount at a7abc155, kept as recorded.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "pummuplwqvmrqpvlkxywpysxmqprpnvw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: Filip Stankovic approved 345f455a, 71c156ce, 7e48b0a7, f5f8f407",
+      "body": "Filip Stankovic approved 4 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n345f455a  long-token  If6…HG (53 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.\n71c156ce  long-token  If6…wA (49 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.\n7e48b0a7  public-ip  9.…8: Not an IP address: the Maven version of net.sourceforge.saxon:saxon in spring-security fb39d9c2's buildSrc/build.gradle (a public upstream file printed while inspecting example 307's build), and this session's mentions of that finding\nf5f8f407  long-token  If6…PO (53 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "pynmtoxmwzrmmluvtokovswktutxtrru",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: the brief brought up to date outside Progress",
+      "body": "At the user's request, after the loop stopped waiting on gate A8's two jobs, the parts of llm-dlc/loops/example-targets.md outside Progress that the for-review list called out of date were updated. The header now gives the dates of Phase 0, the merge and Phase 5. Where it starts from opens with the rows that changed since its launch baseline (the external-target seam, pinned dependencies, the 20 sidecars, the hosts the locks pin from, the observed gaps), and keeps the recount itself as recorded. The downloads paragraph names decision 1's current hosts (github.com, Central, repo.spring.io and the two Gradle hosts, maven.aliyun.com withdrawn) and says runtime's acquisition is merged. Streams gives the 12G loop caps and 6G integration scope that replaced 4 GB a stream, the forgotten workspaces and the example numbers used. Phases 1-4 and 5 carry done markers. Decision 3 records the extracted source slice as a third artifact route (305 and 307, by the user's decisions), and decision 8 its 2026-11-14 change. Checked: test_targets_contract.py passes all 16 tests inline, the hosts against runtime_maven.HOSTS and the packets' sources.lock.json files, and sync.py check reports 0 warnings now that the user approved the four allow-list proposals.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "zpsktlxztnspxwonpotvqooqnkyspoyl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: the user's decisions on the for-review list, nine items to do before done; the workflow brief's release-pair rule noted",
+      "body": "The user reviewed step 5's for-review list with the agent after the loop stopped. Every reading of a decision is accepted as read, including gate A8's four (the jobs run at the tip of the merged line, the 28-path sample of constructed examples, JBMC hidden with bwrap rather than uninstalled, 147/148 and the cargo suites not rerun), and the streams' packet notes stay notes. Ten items are decided, recorded as a numbered list in the brief's Progress: a blocked task's handoff names workflow_refusal.py; build.py --index-only regenerates the gap inventory; 285-287's prediction summaries get a pointer to the observed blockers; a new gap kind for two-dependency-closures; receipts bundle size-capped raw streams and say why controls didn't start; A7's four receipt and handoff observations fixed; 307's receipt records its published-class match; the 18-versus-19 collect count investigated; 287's missing single-byte sensitivity control recorded; and a dated note in example-targets-workflow.md that the release-pair rule changed at the merge (ykxtqwmt), done in this commit. The brief's status goes back to working. Nothing was run: this commit records decisions and edits two briefs.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
       "change_id": "qswsrqywvwortlwuvtnmqnkuzxzzxurn",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 2 jobs: gate A8's 42 target tasks with JBMC absent, and one constructed example per build.py run path, both passed",
       "body": "20261115-015944 (49 steps, 20m56s, peak 955 MiB): the 42 target tasks and 7 native constructed run paths behave as expected with JBMC absent, including the task refusals predicted. 20261115-020015 (28 steps, 3m37s, peak 1.3 GiB): each build.py run path keeps its recorded verdict at the merged revision. Collect applied no output files. Run with the one-loop budget (80G, 26 CPUs, 13 workers); the first runner was killed by the session's 10 minute background limit and the job re-ran from pending.",
       "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
+    },
+    {
+      "change_id": "qroonxrsrozvkvqnnozyspwqqqykluyy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: gate A8 passes on its two collected jobs, so Tier A passes on the merged line",
+      "body": "The verification loop collected gate A8's two jobs in qswsrqyw, both run at uwuktzll. 20261115-015944 passed all 49 steps: the 42 target tasks of 105, 285-287 and 305-307 (17 as expected through build.py, 25 refused as predicted through workflow_refusal.py) and seven native constructed examples, each step inside without_jbmc.sh, whose line 'JBMC absent' opens every log once, with no other mention of jbmc, so no hidden JBMC dependency showed. 20261115-020015 passed all 28 steps: one constructed example per build.py run path keeps its recorded verdict. With A8's offline part, every Tier A gate A0-A8 now passes, as the user's review of the A8 readings accepted. The brief's Progress records it. The status stays working: the user's ten review items come before done, and item 1 (a blocked task's handoff names workflow_refusal.py) is next. Checked: test_acceptance.py (15 tests) passes with the job collected.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "tzoqsuqmuztkspyvloomznvxwmlqwtoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: a blocked task's handoff next is its refusal check, with its gap id and closure test (review item 1)",
+      "body": "The handoff of each of the 25 tasks that VF-027 and VF-028 block used to recommend pipeline.py submit, an ordinary attempt that would end NOT AS EXPECTED; the four preservation tasks even said to reproduce the blocker as a receipt their refusal never writes. workflow_handoff.next_action now recommends python3 examples/tools/targets/workflow_refusal.py N T whenever an observed capability gap's packet states a refusal (read by workflow_refusal.predictions, as the check reads it), and its reason names the gap id ranked in examples/gap-inventory.md, the packet and finding, the unchanged claim key and the inventory's closure test. The ordinary attempt stays the handoff's second command, for when the refusal is gone. A gap without a stated refusal keeps the old recommendation.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
     },
     {
       "change_id": "wvulozulrrlusqquxpxtlolqtuxsrkxn",
@@ -478,12 +566,84 @@
       "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
     },
     {
+      "change_id": "uyxpswmpsrruppspptqmuumqnwpuzmyr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 285-287's prediction summaries keep their text, dated, with a note pointing to the observed blockers and the gap inventory (review item 3)",
+      "body": "The user's review item 3 of 2026-11-15. The ten predicted blockers of examples 285-287 were written by the negative stream on 2026-11-14, before any verifier ran, and seven say 'no verifier has run on this packet', which Phase 5's attempts made untrue. Their text is kept, since a predicted gap's summary is also its group's id on examples/gap-inventory.md. target.schema.json gains two optional blocker fields: recorded (the date the summary was written) and note (a later line opening with its own date). Each of the ten now has recorded 2026-11-14 and a 2026-11-15 note naming the job, finding (VF-027), gap id and refusal packet where its task's attempt was refused first, and pointing to the gap inventory. The handoff carries both fields, and the page's predicted rows open with '(recorded DATE)'. The READMEs' Predicted blockers sections are dated, link the observed blockers and the page, and mark their old Next as that day's plan, done since. 285's interface-parameter prediction, confirmed and replaced in target.json on 2026-11-15, is marked as observed in its README. Each example.json has a note, and the router and page are regenerated.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "lpmxuzzzyvqopnqsllroutrokwxyqtpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: two-dependency-closures gets a gap kind of its own, verifier-interface (review item 4)",
+      "body": "The four preservation tasks of 285, 286, 287 and 306 stop because jvmcontract's equivalence takes one --classpath for both sides, so a pair with two dependency closures can't be given to it as stated. Nothing about the inputs is missing, so the user's review moved the gap out of input-construction. target.schema.json's blocker kind gains verifier-interface, described as a task the verifier's command line can't express. It is a capability kind in workflow.CAPABILITY_KINDS, so the tasks stay blocked, and its owner in workflow_handoff.KIND_MODULES is lib/src/main.rs's command line. The four packets' diagnostic id is now verifier-interface:two-dependency-closures. Their sidecar blockers have the new kind and a dated note, with the summary kept, and each example.json has a note. build.py --index-only regenerated the index and examples/gap-inventory.md, where gap 1 keeps its rank, reproducer, owners and closure test. No claim key, refusal, expected conclusion or rerun check changed, so A8 needs no rerun.\n\nReproducer: test_gap_inventory.py's VerifierInterfaceKindTest (3 tests) and the updated pins failed on uyxpswmp (7 failures, 1 error). Verified: example-targets-integration.sh exits 0, with the contract (16), the targets suite (261), test_build.py (190), test_pipeline.py (33) and build.py --plan. find.py --gap verifier-interface finds 285, 286, 287 and 306.\n\nOut of date in the brief: its section on the capability-gap packet (llm-dlc/loops/example-targets.md, 'Kinds stay apart') lists eight kinds, but the schema now has nine.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "vmuvwopurzlqxywsqwpuutsopynyxyks",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: a target receipt keeps the attempt's raw streams and says why a stage didn't start (review item 5) (verification pending)",
+      "body": "The user's review item 5 of 2026-11-15. Ingestion now copies each control's and the verifier's stdout and stderr, and the runner's controls.json and verifier.json, into the receipt's records/, each cut to 512 KiB. records/streams.json gives every copy's source, whole size and sha256, and whether it was cut, or why nothing was kept. attempt.stages points at the copies, and a not-started stage gives its reason: for example 287's guard tasks, whose adapter doesn't call their target. To make this possible, ExecutionRecord gains three additive fields with defaults: the attempt's directory (a temporary path, kept out of the receipt), the runner's record file, and the not-started reason. runtime.run_controls and run_verifier set them. ingest's frozen signature is unchanged. result.schema.json allows the stage's optional reason, and old receipts stay valid. A new examples/tools/targets/receipt_streams.py lists what a receipt keeps, and exits 1 when a stream isn't bundled.\n\nReproducer: test_receipt_streams.py (5 tests), which runs the fixture's controls for real on JDK 21 and 25 and ingests them. It failed before the change and passes after. example-targets-integration.sh exits 0: the contract (16), the targets suite (266), test_build.py (190), test_pipeline.py (33) and build.py --plan. No A8 rerun is needed: verdict rules, without_jbmc.sh and the constructed run paths are unchanged.\n\nJobs: 20261115-050846-example-287-fixed-guard-its-receipt-bund (VF-027's rerun of 287 fixed-guard, then receipt_streams.py --reason on its new receipt) and 20261115-050856-example-105-fix-property-before-its-rece (105 fix-property-before, whose receipt then holds the JVM controls' streams that A5's lacked). Neither changes a claim, expectation or verdict.\n\nOut of date in the brief: The capability-gap packet still lists eight kinds; the schema has nine since review item 4.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "qkqrqyvqotypvtovtzkqqppwlpsqtosw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the review item 5 receipt jobs on examples 287 and 105",
+      "body": "Ran 20261115-050846 (example 287 fixed-guard receipt) and 20261115-050856 (example 105 fix-property-before receipt) on vm-1. Both passed: 287's controls were refused as predicted, 105 gave its expected verdict. Collected outputs (receipts with raw streams) applied to the working copy, examples index regenerated. No findings.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
       "change_id": "mmlyrukrvvvxpmzvonysowvrzxxptlwm",
       "commit_id": null,
       "immutable": false,
       "summary": "example-targets: a receipt fills a refuted property check's replay, names each witness's revision, records the frozen claim key, and the handoff lists the files a claim cites (review item 6)",
       "body": "The user's review item 6 (2026-11-15) fixes the four observations of gate A7's isolated session. (1) A refuted property check's receipt now gives evidence.replay: how its witnesses were run again, reproduced only when every refuted property's was, null when any states none (workflow_ingest.property_replay). (2) Each witness call gains 'revision', the plan's revision its classes are: jvmcontract calls a one-revision proof's classes 'after', whatever the revision (105's before, 287's fixed-release). 'classes' keeps the tool's label. (3) claim.target.claimKey records the frozen source-level key, the one a plan, a handoff, a refusal record and a job name, beside claim.id, the claim bound to the prepared artifacts. The result schema, the ingestion docstring and examples/README.md say to compare the key for the same claim and the id for the same artifacts. (4) The handoff's inputs list, with sha256, every file of the example's folder that the claim file names in its text (workflow_handoff.cited_by_claim), so 105's handoffs now list records/pow-gaps.json. result.schema.json gains the optional typedCall.revision and claim.target.claimKey. Old receipts stay valid.",
       "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
+    },
+    {
+      "change_id": "xsnuottlxuvpsyttwukottqwmrxttkvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: a source slice's receipt records its published-class match, so 307's says before's BCrypt.class is 5.2.0.M4's (review item 7) (verification pending)",
+      "body": "The user's review item 7 of 2026-11-15: 307's replay receipt labelled both revisions extracted-source slices, but the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made only by the preparation, which refuses a mismatch, and was not in the receipt. Ingestion (workflow_ingest.published_matches, called by claim_record) now copies each revision's recorded matches (source.slice.matched) into the claim's target.matched: the class entry, its sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the matches its plan's slice.matches declares is refused, so nothing is published. A revision without matches adds nothing, so 305's and every other route's claims are unchanged. result.schema.json gains the closed claim.target.matched; the ingestion docstring, examples/README.md and a note in 307's example.json say what it means (a class-by-class join to the published build, not an original-bytecode scope).\n\nReproducer: test_runtime_upstream.py's test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made failed before the change. It prepares a slice with a match on the local stand-ins, binds the claim, validates it against the schema, and checks that a preparation missing the match or recording another hash is refused. example-targets-integration.sh exits 0: the contract (16), the targets suite (271, one new), test_build.py (190), test_pipeline.py (33) and build.py --plan. A8 needs no rerun: verdict rules are unchanged and the field is additive.\n\nJob 20261115-054311-example-307-replay-its-receipt-records-b reruns build.py 307 --task replay unchanged and then exits 1 unless the new receipt's claim.target.matched lists exactly before's class (sha256 0b137406...) in M4's JAR (8871c1fe...). Its check was run on the kept receipt first and correctly reported the match as not recorded. Next is review item 8, the 18-versus-19 count of kqpykqpp's collect.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "wtkxwrzkppnspwsvuylvpmnwstmnqkux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the review item 7 receipt job on example 307",
+      "body": "Job 20261115-054311-example-307-replay-its-receipt-records-b passed (2 steps, 5.8s, peak 188 MiB; estimated 15m, 3 GiB): example 307's task replay ran and its new receipt records before's published-class match with Spring Security 5.2.0.M4. collect applied 14 output files (the receipt under examples/307-*/receipts/replay/) with no conflicts. Ran with one loop active (80G, 26 CPUs, 13 workers).",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "lttkryqntqovtuzuxvyxplknyvspqulr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: pipeline.py collect counted kqpykqpp's 19 applied jobs right, and now prints the totals itself (review item 8)",
+      "body": "Review item 8 asked whether pipeline.py collect miscounted when kqpykqpp's commit message said outputs were applied for 18 jobs, though 19 receipts arrived. It didn't. Each of the 23 results' collected.applied lists 4 files for 19 jobs and none for the four preservation jobs of 285, 286, 287 and 306, which declare no output. collect printed one line per job and no total, and the collecting agent's sum of those lines was off by one. So there was no pipeline bug to reproduce.\n\nTo make a repeat less likely, collect's suggested commit message now opens with totals taken from the same lists (collect_totals): outputs applied for N of the M jobs, how many declared or produced none, how many were kept because the job didn't pass, and how many had conflicts. The new test test_collect_counts_the_jobs_whose_outputs_it_applied_for_the_commit_message failed before the change. The run-verification skill's collect step says to quote the totals.\n\nAlso read: item 7's job 20261115-054311-example-307-replay-its-receipt-records-b passed (collected in wtkxwrzk). 307's new replay receipt records before's BCrypt.class 0b137406... in spring-security-crypto 5.2.0.M4 (8871c1fe...) under claim.target.matched.",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "pkkzrrlmyptqylksmszqxwtzwlroouns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 287's missing sensitivity control recorded, no mutant claim covers dropping the byte guard for ASCII passwords (review item 10); status done",
+      "body": "Review item 10, the last of the user's ten review decisions of 2026-11-15. Example 287's char-count-guard mutant removes hashpw(byte[], String)'s 72-byte guard and guards the String entries by character count instead. Its only claim task, mutant-security, goes through matches, where an ASCII password's characters are its bytes, so it can be refuted only at the multibyte triggers. The dropped guard shows for ASCII only at the unguarded byte entry BCrypt.checkpw(byte[], String), fixed-guard's target, which mutant-replay catches concretely at bytes-73-prefix but no claim task covers. This is now recorded, with no new task, in 287's target.json handoff.next, a dated example.json note and a README paragraph. Each names the control that would close it (claims/overlong-bytes-rejected.json on revision mutant, expected refuted), predicted to stop at fixed-guard's observed string-parameter gap. The index is regenerated, and the gap inventory is unchanged.\n\nVerified: a new test_packets.py test checks that mutant-security is still the only claim task on the mutant, with neither fixed-guard's target nor its claim, and that the handoff, the note and the README name the control. Its text checks fail on the previous files. example-targets-integration.sh exits 0 (contract 16, targets suite 272, test_build.py 190, test_pipeline.py 34, build.py --plan). No job is pending. With Tier A passing, every portfolio row at its readiness, the gap inventory and the for-review list complete, and items 1-10 done, the brief's status is done.\n\nOut of date in the brief, outside Progress: its header still says gate A8's two jobs are to be read (they passed, qswsrqyw), and The capability-gap packet lists eight gap kinds where the schema now has nine (verifier-interface, item 4).",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
+    },
+    {
+      "change_id": "opxwuqsrzxpkwxmplxonsrqpopztkxql",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets brief: the header and Phase 5 say gate A8's two jobs passed",
+      "body": "The brief's header still said gate A8's two jobs were to be read, and Phase 5's status line said A8 waited on them. Both jobs passed on 2026-11-15 (20261115-015944, 49 of 49 steps with JBMC absent; 20261115-020015, 28 of 28 constructed run paths), recorded in qroonxrs, so Tier A (A0-A8) passes and the brief is done (pkkzrrlm). The two lines now say so, at the user's request. Only those two lines changed; Progress already recorded the result. Still out of date, left for the user: The capability-gap packet section lists eight gap kinds, where the schema has nine since review item 4 (verifier-interface).",
+      "log_sha256": "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b"
     }
   ],
   "logs": {
@@ -515,6 +675,12 @@
       "bytes": 1207295,
       "lines": 400,
       "gzip_bytes": 229440,
+      "url": null
+    },
+    "cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b": {
+      "bytes": 1470386,
+      "lines": 555,
+      "gzip_bytes": 265359,
       "url": null
     },
     "d7c8b8e9c4a0ab1af50ffc0a47328875a3deccb866b9e08b7dd62227b34be53c": {
