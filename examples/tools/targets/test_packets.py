@@ -87,6 +87,25 @@ class PacketMutantTest(unittest.TestCase):
                 self.assertNotEqual(workflow.inputs_key(p), workflow.inputs_key(ref))
                 self.assertIn("mutant-replay", p.prerequisites)
 
+    def test_287s_missing_sensitivity_control_is_recorded_while_no_mutant_claim_covers_the_byte_entry(self):
+        # The user's review item 10 (2026-11-15): the char-count-guard mutant drops the byte guard, but its only claim
+        # task goes through matches, where ASCII characters are bytes. No task states fixed-guard's claim on the
+        # mutant, so that gap is recorded in the handoff, the notes and the README. A task that closes it makes this
+        # test fail: then update those records.
+        folder, example, target = packet("287")
+        guard = next(t for t in target["tasks"] if t["id"] == "fixed-guard")
+        on_mutant = [t for t in target["tasks"] if t.get("revision") == "mutant"
+                     or t.get("pair") == "mutation" and t["kind"] != "replay"]
+        self.assertEqual([t["id"] for t in on_mutant], ["mutant-security"])
+        self.assertNotEqual(on_mutant[0]["target"], guard["target"])
+        self.assertNotEqual(on_mutant[0]["claim"], guard["claim"])
+        for where, text in (("handoff.next", target["handoff"]["next"]), ("notes", example["notes"][-1]),
+                            ("README", (folder / "README.md").read_text())):
+            with self.subTest(where):
+                self.assertIn("missing sensitivity control", text.lower())
+                self.assertIn("ASCII passwords", text)
+                self.assertIn("overlong-bytes-rejected.json", text)
+
 
 class SimpleMatchMutantTest(unittest.TestCase):
     def test_the_simplematch_slice_keeps_its_mutant_in_its_sidecar(self):

@@ -2310,7 +2310,40 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     (190), `test_pipeline.py` (34, one new) and `build.py --plan`.
   - **Next**: item 10, 287's unguarded single-byte entry recorded in its notes and handoff as a missing sensitivity
     control. No mutant claim covers dropping the 72-byte guard for ASCII passwords. No new task.
-- Status: working
+- 2026-11-15, **review item 10 done: 287's missing sensitivity control recorded, with no new task. All ten review
+  items are done, so the status is `done`.**
+  - **What is recorded**: no mutant claim covers dropping the 72-byte guard for ASCII passwords.
+    - The `char-count-guard` mutant removes `hashpw(byte[], String)`'s byte guard, and guards the String entries by
+      character count instead. `mutant-security` goes through `matches`, where an ASCII password's characters are its
+      bytes, so the character guard still rejects 73 ASCII characters. That claim can be refuted only at the multibyte
+      triggers.
+    - For ASCII, the dropped guard shows only at the unguarded byte entry `BCrypt.checkpw(byte[], String)`, which is
+      `fixed-guard`'s target. `mutant-replay` catches it concretely at `bytes-73-prefix` (73 ASCII bytes authenticate
+      on the mutant). No claim task states `claims/overlong-bytes-rejected.json` on the mutant.
+    - The control would be that claim on revision `mutant`, expected `refuted`. It has `fixed-guard`'s target and claim,
+      so it is predicted to stop at `fixed-guard`'s observed `string-parameter` gap.
+  - **Where**: 287's `target.json` `handoff.next` (one added passage), a dated note in its `example.json`, and a
+    paragraph in its README's mutant section. The index is regenerated (the note); the gap inventory is unchanged, as
+    a missing control is no capability blocker.
+  - **Test**: `test_packets.py`'s `test_287s_missing_sensitivity_control_is_recorded_while_no_mutant_claim_covers_the_byte_entry`.
+    It checks that `mutant-security` is still the only claim task on the mutant and doesn't have `fixed-guard`'s
+    target or claim, and that the handoff, the last note and the README name the control. Its three text checks fail
+    on `lttkryqn`'s files. A task that adds the control fails it, so the records get updated with it.
+  - **A8**: no rerun. Only `handoff.next`'s prose, a note and the README changed; no plan, claim key, receipt or verdict.
+    New attempts of 287 get new claim ids from the sidecar's sha256, as item 6 recorded, with the frozen keys unchanged.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (272, one new),
+    `test_build.py` (190), `test_pipeline.py` (34) and `build.py --plan`.
+  - **`done`**, by Loop until:
+    - Tier A, A0–A8, passes on the merged line (A8 read in `qswsrqyw`'s entry above);
+    - every portfolio row has its stated readiness: the 13 catalog entries `catalogued`; the six deep packets and 105
+      `blocked` on observed gaps, with their replays `scaffolded` and 105's three closed tasks `executable`; 106–109
+      historical;
+    - the gap inventory (`examples/gap-inventory.md`, five observed gaps over 25 obligations) and the for-review list
+      (Phase 5 step 5's entry, with the user's decisions on it) are complete, and items 1–10 are done;
+    - no job of this brief is pending or uncollected.
+  - **For the user**: the stream workspaces' directories, `../in-the-loop-example-targets-*`, are yours to delete; and
+    a push, whenever you choose.
+- Status: done
 
 ## Loop settings
 

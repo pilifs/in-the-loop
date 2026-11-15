@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T05:52:02.079Z",
-  "duration_seconds": 41202,
+  "ended": "2026-11-15T06:00:48.380Z",
+  "duration_seconds": 41728,
   "stats": {
-    "turns": 208,
-    "api_calls": 1724,
-    "tool_calls": 1767,
-    "tool_errors": 33,
-    "compactions": 38,
+    "turns": 213,
+    "api_calls": 1749,
+    "tool_calls": 1794,
+    "tool_errors": 35,
+    "compactions": 39,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3490,
-      "output_tokens": 1104886,
-      "cache_read_input_tokens": 227939100,
-      "cache_creation_input_tokens": 6058029
+      "input_tokens": 3540,
+      "output_tokens": 1119427,
+      "cache_read_input_tokens": 230922921,
+      "cache_creation_input_tokens": 6198197
     }
   },
   "tools": {
-    "Bash": 1512,
-    "Read": 128,
-    "Edit": 95,
+    "Bash": 1531,
+    "Read": 134,
+    "Edit": 97,
     "Write": 10,
     "ToolSearch": 7,
     "AskUserQuestion": 6,
@@ -41,6 +41,7 @@
   },
   "files_touched": [
     "CLAUDE.md",
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/README.md",
     "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
     "examples/README.md",
     "examples/schema/target.schema.json",
@@ -608,24 +609,38 @@
     {
       "index": 38,
       "started": "2026-11-15T05:45:09.060Z",
-      "ended": "2026-11-15T05:52:02.079Z",
-      "turns": 4,
-      "api_calls": 21,
+      "ended": "2026-11-15T05:52:27.367Z",
+      "turns": 5,
+      "api_calls": 24,
       "usage": {
-        "input_tokens": 42,
-        "output_tokens": 9539,
-        "cache_read_input_tokens": 2440145,
-        "cache_creation_input_tokens": 134835
+        "input_tokens": 48,
+        "output_tokens": 10490,
+        "cache_read_input_tokens": 2886938,
+        "cache_creation_input_tokens": 138924
       },
-      "peak_context_tokens": 148021
+      "peak_context_tokens": 152110
+    },
+    {
+      "index": 39,
+      "started": "2026-11-15T05:53:05.811Z",
+      "ended": "2026-11-15T06:00:48.380Z",
+      "turns": 4,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 13590,
+        "cache_read_input_tokens": 2537028,
+        "cache_creation_input_tokens": 136079
+      },
+      "peak_context_tokens": 149265
     }
   ],
   "log": {
-    "sha256": "57b721e85d909d94932a0264820d43507fa814868607a9dd198ad7eaaa140b53",
-    "bytes": 57585932,
-    "lines": 17661,
-    "gzip_bytes": 12388163,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/57b721e85d909d94932a0264820d43507fa814868607a9dd198ad7eaaa140b53.jsonl.gz"
+    "sha256": "679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa",
+    "bytes": 58822342,
+    "lines": 17959,
+    "gzip_bytes": 12703345,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa.jsonl.gz"
   },
   "subagents": [
     {
@@ -1300,6 +1315,14 @@
       "summary": "example-targets: pipeline.py collect counted kqpykqpp's 19 applied jobs right, and now prints the totals itself (review item 8)",
       "body": "Review item 8 asked whether pipeline.py collect miscounted when kqpykqpp's commit message said outputs were applied for 18 jobs, though 19 receipts arrived. It didn't. Each of the 23 results' collected.applied lists 4 files for 19 jobs and none for the four preservation jobs of 285, 286, 287 and 306, which declare no output. collect printed one line per job and no total, and the collecting agent's sum of those lines was off by one. So there was no pipeline bug to reproduce.\n\nTo make a repeat less likely, collect's suggested commit message now opens with totals taken from the same lists (collect_totals): outputs applied for N of the M jobs, how many declared or produced none, how many were kept because the job didn't pass, and how many had conflicts. The new test test_collect_counts_the_jobs_whose_outputs_it_applied_for_the_commit_message failed before the change. The run-verification skill's collect step says to quote the totals.\n\nAlso read: item 7's job 20261115-054311-example-307-replay-its-receipt-records-b passed (collected in wtkxwrzk). 307's new replay receipt records before's BCrypt.class 0b137406... in spring-security-crypto 5.2.0.M4 (8871c1fe...) under claim.target.matched.",
       "log_sha256": "57b721e85d909d94932a0264820d43507fa814868607a9dd198ad7eaaa140b53"
+    },
+    {
+      "change_id": "pkkzrrlmyptqylksmszqxwtzwlroouns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 287's missing sensitivity control recorded, no mutant claim covers dropping the byte guard for ASCII passwords (review item 10); status done",
+      "body": "Review item 10, the last of the user's ten review decisions of 2026-11-15. Example 287's char-count-guard mutant removes hashpw(byte[], String)'s 72-byte guard and guards the String entries by character count instead. Its only claim task, mutant-security, goes through matches, where an ASCII password's characters are its bytes, so it can be refuted only at the multibyte triggers. The dropped guard shows for ASCII only at the unguarded byte entry BCrypt.checkpw(byte[], String), fixed-guard's target, which mutant-replay catches concretely at bytes-73-prefix but no claim task covers. This is now recorded, with no new task, in 287's target.json handoff.next, a dated example.json note and a README paragraph. Each names the control that would close it (claims/overlong-bytes-rejected.json on revision mutant, expected refuted), predicted to stop at fixed-guard's observed string-parameter gap. The index is regenerated, and the gap inventory is unchanged.\n\nVerified: a new test_packets.py test checks that mutant-security is still the only claim task on the mutant, with neither fixed-guard's target nor its claim, and that the handoff, the note and the README name the control. Its text checks fail on the previous files. example-targets-integration.sh exits 0 (contract 16, targets suite 272, test_build.py 190, test_pipeline.py 34, build.py --plan). No job is pending. With Tier A passing, every portfolio row at its readiness, the gap inventory and the for-review list complete, and items 1-10 done, the brief's status is done.\n\nOut of date in the brief, outside Progress: its header still says gate A8's two jobs are to be read (they passed, qswsrqyw), and The capability-gap packet lists eight gap kinds where the schema now has nine (verifier-interface, item 4).",
+      "log_sha256": "679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa"
     }
   ],
   "logs": {
@@ -1463,6 +1486,12 @@
       "bytes": 16592560,
       "lines": 5313,
       "gzip_bytes": 3484708,
+      "url": null
+    },
+    "679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa": {
+      "bytes": 58822342,
+      "lines": 17959,
+      "gzip_bytes": 12703345,
       "url": null
     },
     "68c0005ec80aa2ccd39644719c64fdad426e9df9830ed6d57f822cdc199f0737": {
