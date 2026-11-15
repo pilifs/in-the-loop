@@ -5,6 +5,13 @@
 # A cycle that leaves no new commit stops the loop, before compacting, so the
 # session keeps its full context for the person who has to look at why.
 #
+# A moonshot has no acceptance criteria to stop it, so one context window is its
+# measure: its session compacts itself at 600k tokens (FEATURE_LOOP_AUTOCOMPACT,
+# 100k to 1M, or auto for Claude Code's default), and a compaction during the
+# instruction with no commit since the cycle began, or since the last such
+# compaction, ends the turn there and stops the loop for a person to look at.
+# The session stays chained across cycles, so later ones build on earlier ones.
+#
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
 # that runs away is killed alone and cannot exhaust the machine.
 #
@@ -205,6 +212,9 @@ case "$PROMPT" in
 esac
 
 SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
+# Moonshots only: a brief has its own Loop until.
+AUTOCOMPACT=
+[[ -z "$BRIEF" ]] && AUTOCOMPACT=${FEATURE_LOOP_AUTOCOMPACT:-600k}
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
@@ -430,7 +440,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -440,13 +450,18 @@ trap 'note; note "Interrupted $(stamp) during cycle $cycle."; exit 130' INT TERM
 # `auto` is the mode this session has always run in. With -p nobody can answer a
 # prompt, so anything auto mode would ask about is denied rather than left hanging.
 # A second argument names a file that receives the raw event stream as well.
+# With LOOP_WATCH_PID set, claude's pid goes into that file, for show_progress to
+# end the turn when a compaction finds no commit (see loop-common.sh).
 run_claude() {
-  local session=(--resume "$SESSION_ID")
+  local session=(--resume "$SESSION_ID") compact=()
   [[ -n "$FRESH" ]] && session=(--session-id "$SESSION_ID")
+  [[ -n "$AUTOCOMPACT" ]] && compact=(--autocompact "$AUTOCOMPACT")
   FRESH=
-  claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" \
-    --permission-mode auto --output-format stream-json --verbose </dev/null |
-    tee ${2:+"$2"} | show_progress
+  (
+    [[ -n "${LOOP_WATCH_PID:-}" ]] && printf '%s\n' "$BASHPID" >"$LOOP_WATCH_PID"
+    exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" \
+      --permission-mode auto --output-format stream-json --verbose </dev/null
+  ) | tee ${2:+"$2"} | show_progress
 }
 
 # Print the text of the last result event in a stream-json file.
@@ -626,7 +641,18 @@ while :; do
   fi
   with_state standing
   [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop, ? or help"
+  if [[ -n "$AUTOCOMPACT" ]]; then
+    rm -f "$STATE.compacted"
+    export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted
+  fi
   run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
+  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK
+  if [[ -s "$STATE.compacted" ]]; then
+    compacted=$(<"$STATE.compacted")
+    log "cycle $cycle: $compacted, stopping; session $SESSION_ID needs attention"
+    note; note "Stopped $(stamp): cycle $cycle${item:+ (item $item)} $compacted; session $SESSION_ID needs attention."
+    exit 1
+  fi
 
   after=$(last_change) || exit 1
   if [[ "$after" == "$before" ]]; then
