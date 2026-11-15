@@ -7,6 +7,7 @@
     python3 lib/tools/test_costs.py measure --out DIR      # everything; writes DIR's raw files and lib/tests/costs.json
     python3 lib/tools/test_costs.py inventory DIR          # rewrite lib/tests/costs.json from DIR's raw files
     python3 lib/tools/test_costs.py estimate               # write lib/tests/costs.json from past runs, running nothing
+    python3 lib/tools/test_costs.py tag FILE ...           # give FILE's tests the tool_tier! call their tier asks for
     python3 lib/tools/test_costs.py watch -- CMD ...       # nextest's wrapper: run one test, record what it cost
     python3 lib/tools/test_costs.py python FILE --out F    # run one Python test file, recording each test
 
@@ -602,6 +603,28 @@ def measure(out, threads, source):
     return 0
 
 
+def tag(files, path=INVENTORY, root=ROOT):
+    """Make each test's first statement in FILES (Rust) the `tool_tier!` call its row in the inventory asks for:
+    `tool_tier!()` for the tool tier, `tool_tier!(pending)` for `retier: pending`, none for the unit tier and for
+    ignored tests. Returns {file: tests changed}."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import cost_inventory as ci
+    rows = {}
+    for r in json.loads(Path(path).read_text())["rust"]:
+        rows.setdefault(r["file"], {})[r["name"]] = r
+    out = {}
+    for f in files:
+        p = Path(f).resolve()
+        rel = str(p.relative_to(root))
+        if rel not in rows:
+            raise SystemExit(f"{rel}: no tests of it in {path}")
+        src, n = ci.tier_calls(p.read_text(), rel, rows[rel])
+        if n:
+            p.write_text(src)
+        out[rel] = n
+    return out
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     if argv[:1] == ["watch"]:
@@ -624,6 +647,9 @@ def main(argv=None):
     e.add_argument("--fetch", action="store_true", help="download published session logs not stored here")
     e.add_argument("--exclude", action="append", default=None, metavar="LOOP",
                    help="leave a loop's sessions out (default: test-cost, whose log changes with every commit)")
+    t = sub.add_parser("tag", help="give Rust test files' tests the tool_tier! call their tier asks for")
+    t.add_argument("files", nargs="+")
+    t.add_argument("--path", default=str(INVENTORY))
     py = sub.add_parser("python", help="run one Python test file, test by test")
     py.add_argument("file")
     py.add_argument("--out", required=True)
@@ -641,6 +667,10 @@ def main(argv=None):
             tiers = {t: sum(r["tier"] == t for r in rows) for t in TIERS}
             print(f"{key}: {len(rows)} tests, {tiers}, {sum('estimated' in r['cost'] for r in rows)} estimated, "
                   f"{sum(r.get('retier') == 'pending' for r in rows)} retier pending")
+        return 0
+    if a.command == "tag":
+        for f, n in tag(a.files, a.path).items():
+            print(f"{f}: {n} tests changed")
         return 0
     return run_python_file(a.file, a.out)
 

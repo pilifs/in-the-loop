@@ -141,6 +141,7 @@ fn both_ways(method: &str, expected: Verdict) -> Option<(u64, u64)> {
 
 #[test]
 fn paths_that_differ_in_a_reference_merge_and_a_write_through_it_is_seen_through_every_name() {
+    jvmcontract::tool_tier!();
     let Some((merged, unmerged)) = both_ways("swapsHold", Verdict::Verified) else { return };
     assert!(unmerged >= 1024, "unmerged, every combination of the ten choices is a path: {unmerged}");
     assert!(merged < 100, "merged, the choices are one path per join: {merged} paths");
@@ -149,6 +150,7 @@ fn paths_that_differ_in_a_reference_merge_and_a_write_through_it_is_seen_through
 
 #[test]
 fn a_read_through_a_reference_that_may_be_null_throws_where_it_is() {
+    jvmcontract::tool_tier!();
     let Some((merged, unmerged)) = both_ways("orNullHolds", Verdict::Verified) else { return };
     assert!(merged * 10 < unmerged, "merged {merged} paths, unmerged {unmerged}");
     both_ways("orNullNeverThrows", Verdict::Violation);
@@ -156,6 +158,7 @@ fn a_read_through_a_reference_that_may_be_null_throws_where_it_is() {
 
 #[test]
 fn instanceof_is_a_formula_over_the_choice_and_a_call_on_it_splits_the_path() {
+    jvmcontract::tool_tier!();
     both_ways("classesHold", Verdict::Verified);
     both_ways("classesOdd", Verdict::Violation);
 }
@@ -173,6 +176,7 @@ public class AliasCheck {
 /// interpreter cannot replay a witness).
 #[test]
 fn a_witness_with_one_array_twice_or_null_runs_on_the_jvm_as_it_is() {
+    jvmcontract::tool_tier!();
     use jvmcontract::classfile::Type;
     use jvmcontract::interp::Value;
     use jvmcontract::jbmc::Argument;
@@ -338,6 +342,7 @@ fn confirmed_on_the_jvm(o: &jvmcontract::equivalence::Outcome) {
 
 #[test]
 fn an_object_made_by_its_constructor_is_a_regression_input_and_the_domain_says_how_it_is_made() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("after", "total") else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let domain = o.domain.clone().unwrap();
@@ -348,6 +353,7 @@ fn an_object_made_by_its_constructor_is_a_regression_input_and_the_domain_says_h
 
 #[test]
 fn a_changed_result_over_an_object_input_is_refuted_with_a_construction_recipe() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("defect", "total") else { return };
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let c = o.counterexample.as_ref().expect("a counterexample");
@@ -358,6 +364,7 @@ fn a_changed_result_over_an_object_input_is_refuted_with_a_construction_recipe()
 
 #[test]
 fn a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("defect", "bump") else { return };
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let c = o.counterexample.as_ref().expect("a counterexample");
@@ -372,6 +379,7 @@ fn a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted() {
 
 #[test]
 fn a_difference_only_where_the_constructor_refuses_is_outside_the_claim() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("after", "checked") else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     // The headline names the domain too: never "on every input" alone over an object its constructor makes.
@@ -383,6 +391,7 @@ fn a_difference_only_where_the_constructor_refuses_is_outside_the_claim() {
 
 #[test]
 fn an_object_with_a_field_outside_the_supported_kinds_is_a_named_gap() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("after", "tagged") else { return };
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     let problem = o.problem.unwrap();
@@ -391,6 +400,7 @@ fn an_object_with_a_field_outside_the_supported_kinds_is_a_named_gap() {
 
 #[test]
 fn the_same_object_handed_back_is_compared_by_its_identity_relations_within_each_version() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("after", "withQuantity") else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let stated = o.stated.as_ref().unwrap();
@@ -400,6 +410,7 @@ fn the_same_object_handed_back_is_compared_by_its_identity_relations_within_each
 
 #[test]
 fn an_alias_turned_into_a_copy_with_the_same_values_is_refuted_by_its_identity_relation() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("defect", "withQuantity") else { return };
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let c = o.counterexample.as_ref().expect("a counterexample");
@@ -413,6 +424,7 @@ fn an_alias_turned_into_a_copy_with_the_same_values_is_refuted_by_its_identity_r
 
 #[test]
 fn a_result_of_a_class_made_by_its_constructor_is_compared_field_by_field() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("after", "doubled") else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let Some(d) = regression("defect", "doubled") else { return };
@@ -425,6 +437,7 @@ fn a_result_of_a_class_made_by_its_constructor_is_compared_field_by_field() {
 
 #[test]
 fn an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression("after", "filled") else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     assert_eq!(o.stated.as_ref().unwrap().observations.identities, vec!["result == a".to_string()]);
@@ -440,6 +453,7 @@ fn an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation()
 
 #[test]
 fn a_bug_only_when_two_parameters_are_one_object_is_outside_the_default_domain_and_refuted_inside_one_that_lets_them_be() {
+    jvmcontract::tool_tier!();
     // Two lines of their own: the buffered move is the same.
     let Some(apart) = regression("defect", "move") else { return };
     assert_eq!(apart.verdict, Verdict::Verified, "{}", apart.output);
@@ -466,6 +480,7 @@ fn a_bug_only_when_two_parameters_are_one_object_is_outside_the_default_domain_a
 
 #[test]
 fn a_dropped_null_check_is_refuted_with_a_null_object_where_the_domain_lets_it_be_null() {
+    jvmcontract::tool_tier!();
     let Some(apart) = regression("defect", "size") else { return };
     assert_eq!(apart.verdict, Verdict::Verified, "never null by default: {}", apart.output);
     let Some(o) = regression_over("defect", "size", &["l"], &[]) else { return };
@@ -482,6 +497,7 @@ fn a_dropped_null_check_is_refuted_with_a_null_object_where_the_domain_lets_it_b
 
 #[test]
 fn a_choice_of_null_or_one_object_is_refused_by_name_outside_object_parameters() {
+    jvmcontract::tool_tier!();
     let Some(o) = regression_over("after", "withQuantity", &[], &[("l", "quantity")]) else { return };
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.problem.as_deref().unwrap().contains("--may-alias quantity: quantity is a int, and in a regression check only an object parameter made by its constructor may be"), "{:?}", o.problem);
@@ -585,6 +601,7 @@ fn state_of(o: &jvmcontract::spec::Outcome, id: &str) -> jvmcontract::spec::Obse
 
 #[test]
 fn the_two_shapes_of_quote_are_related_by_the_correspondence_and_total_is_proved_over_them() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ObservationState, Verdict as V};
     let Some(r) = kernel_check("after", &kernel_claim("shop.Pricing#total", &[])) else { return };
     let o = r.expect("supported");
@@ -601,6 +618,7 @@ fn the_two_shapes_of_quote_are_related_by_the_correspondence_and_total_is_proved
 
 #[test]
 fn a_claim_whose_domain_lets_a_parameter_be_null_is_checked_over_null_too_and_a_field_path_is_not_yet() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::Verdict as V;
     let mut claim = kernel_claim("shop.Pricing#total", &[]);
     claim.domain.as_mut().expect("the kernel claim has a domain").nullable = vec!["q".into()];
@@ -620,6 +638,7 @@ fn a_claim_whose_domain_lets_a_parameter_be_null_is_checked_over_null_too_and_a_
 /// domain the check happens to make, and the kernel's total was verified under a claim about other inputs.
 #[test]
 fn a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_runs_as_the_constructor_domain() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{CanonicalClaim, Construction, Verdict as V};
     let total = || kernel_claim("shop.Pricing#total", &[]);
     // The golden claim's own constructors and classes are the check's: it is verified, as above.
@@ -654,6 +673,7 @@ fn a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_
 /// constructor domain.
 #[test]
 fn a_domain_made_by_a_construction_plan_is_checked_on_the_inputs_the_plan_makes() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::plans::{ConstructionPlan, Maker, Node, PlanBounds, PlanValue, Root};
     let Some(before) = kernel_builds().map(|r| r.join("before")) else { return };
     let quote = |descriptor: &str| ConstructionPlan {
@@ -677,6 +697,7 @@ fn a_domain_made_by_a_construction_plan_is_checked_on_the_inputs_the_plan_makes(
 
 #[test]
 fn an_offset_total_is_refuted_under_the_correspondence_by_a_recipe_of_the_new_shape() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ObservationState, Verdict as V};
     let Some(r) = kernel_check("offset", &kernel_claim("shop.Pricing#total", &[])) else { return };
     let o = r.expect("supported");
@@ -688,6 +709,7 @@ fn an_offset_total_is_refuted_under_the_correspondence_by_a_recipe_of_the_new_sh
 
 #[test]
 fn the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_be_made() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ObservationState, Verdict as V};
     let Some(root) = kernel_builds() else { return };
     // The fixture's copy is made for one item and then given the quantity, so it agrees with q in every field for
@@ -726,6 +748,7 @@ fn the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_
 
 #[test]
 fn a_witness_that_differs_only_where_the_claim_does_not_look_refutes_nothing() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ObservationState, Verdict as V};
     let mut claim = kernel_claim("shop.Pricing#withQuantity", &[]);
     claim.contract.required = vec!["result".into()];
@@ -740,6 +763,7 @@ fn a_witness_that_differs_only_where_the_claim_does_not_look_refutes_nothing() {
 
 #[test]
 fn what_the_correspondence_leaves_out_and_bounds_it_exceeds_are_never_proved() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::Verdict as V;
     let mut claim = kernel_claim("shop.Pricing#total", &[]);
     claim.correspondence.as_mut().unwrap().inputs.retain(|e| e.old == "old.q.quantity");
@@ -829,6 +853,7 @@ fn related_on(engine: jvmcontract::Engine, confirm: bool, root: &Path, after: &s
 
 #[test]
 fn a_result_that_became_a_value_object_is_related_by_the_correspondences_output_relation() {
+    jvmcontract::tool_tier!();
     let Some(root) = object_builds() else { return };
     let relation = correspondence(&[], Some("old.result == new.result.cents"));
     let o = related(root, "after", "objects.Kernel#price", relation.clone(), "price");
@@ -861,6 +886,7 @@ fn a_result_that_became_a_value_object_is_related_by_the_correspondences_output_
 
 #[test]
 fn an_object_result_of_another_shape_is_related_by_its_field_paths_and_identity_is_still_compared() {
+    jvmcontract::tool_tier!();
     let Some(root) = kernel_builds() else { return };
     let inputs = [("old.q.cents", "new.q.amount.cents"), ("old.q.quantity", "new.q.quantity")];
     let relation = "old.result.cents == new.result.amount.cents && old.result.quantity == new.result.quantity";
@@ -892,6 +918,7 @@ fn an_object_result_of_another_shape_is_related_by_its_field_paths_and_identity_
 
 #[test]
 fn a_required_observation_under_an_output_relation_is_unresolved_until_a_person_approves_the_change() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ApprovedChange, ObservationState, Verdict as V};
     // `true` relates any two totals: it would hide the offset defect, and the claim says it can't be the contract.
     let mut claim = kernel_claim("shop.Pricing#total", &[]);
@@ -918,6 +945,7 @@ fn a_required_observation_under_an_output_relation_is_unresolved_until_a_person_
 
 #[test]
 fn the_equivalence_command_takes_a_correspondence_file_in_the_irs_form() {
+    jvmcontract::tool_tier!();
     let Some(root) = kernel_builds() else { return };
     let golden = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations/golden/correspondence.json");
     let run = |file: &Path, after: &str| Command::new(env!("CARGO_BIN_EXE_jvmcontract")).arg("equivalence").arg("--before").arg(root.join("before")).arg("--after").arg(root.join(after)).args(["--target", "shop.Pricing#total", "--engine", "native", "--correspondence"]).arg(file).output().unwrap();
@@ -970,6 +998,7 @@ fn property_confirmed_on_the_jvm(o: &jvmcontract::property::Outcome) {
 
 #[test]
 fn a_property_reads_an_object_parameter_by_its_field_paths_before_and_after_the_call() {
+    jvmcontract::tool_tier!();
     let law = "l.quantity == \\old(l.quantity) + 1 && l.price.cents == \\old(l.price.cents)";
     let Some(o) = property_over("after", "bump", None, law, &[], &[]) else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -991,6 +1020,7 @@ fn a_property_reads_an_object_parameter_by_its_field_paths_before_and_after_the_
 
 #[test]
 fn a_property_compares_an_object_result_with_its_argument_by_identity_and_the_alias_to_copy_defect_fails_it() {
+    jvmcontract::tool_tier!();
     let law = "result == l && result.quantity == quantity && result.price == l.price";
     let Some(o) = property_over("after", "withQuantity", None, law, &[], &[]) else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -1005,6 +1035,7 @@ fn a_property_compares_an_object_result_with_its_argument_by_identity_and_the_al
 
 #[test]
 fn a_property_over_an_object_that_may_be_null_is_checked_on_null_too() {
+    jvmcontract::tool_tier!();
     let law = "result == (l == null ? 0 : l.quantity)";
     let Some(o) = property_over("after", "size", None, law, &["l"], &[]) else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -1027,6 +1058,7 @@ fn a_property_over_an_object_that_may_be_null_is_checked_on_null_too() {
 
 #[test]
 fn a_property_over_two_objects_that_may_be_one_is_refuted_with_one_object_where_the_bug_needs_it() {
+    jvmcontract::tool_tier!();
     let law = "from == to ? from.quantity == \\old(from.quantity) : from.quantity == \\old(from.quantity) - 1 && to.quantity == \\old(to.quantity) + 1";
     let Some(o) = property_over("after", "move", None, law, &[], &[("from", "to")]) else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -1043,6 +1075,7 @@ fn a_property_over_two_objects_that_may_be_one_is_refuted_with_one_object_where_
 
 #[test]
 fn a_property_wrong_only_where_the_constructor_refuses_holds_within_the_constructor_made_claim() {
+    jvmcontract::tool_tier!();
     let Some(o) = property_over("after", "checked", None, "result == l.price.cents * l.quantity", &[], &[]) else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     assert!(o.output.contains("on every input of constructor-made objects"), "{}", o.output);
@@ -1050,6 +1083,7 @@ fn a_property_wrong_only_where_the_constructor_refuses_holds_within_the_construc
 
 #[test]
 fn a_property_over_an_object_outside_the_supported_kinds_or_written_wrong_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let Some(o) = property_over("after", "tagged", None, "result == t.n", &[], &[]) else { return };
     assert_eq!(o.verdict, Verdict::Unverifiable);
     assert!(o.problem.as_deref().unwrap().contains("the field tag of objects.Tagged has type java.lang.Object"), "{:?}", o.problem);
@@ -1073,7 +1107,11 @@ fn a_property_over_an_object_outside_the_supported_kinds_or_written_wrong_is_ref
 /// verdict as the own checker's, each violation's witness run on a JVM. A pipeline job
 /// (`cargo test --release --test heap -- --ignored`).
 #[test]
-#[ignore = "runs JBMC on the object properties: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on 8 object properties, ~4 s in its one job; \
+    proxy: a_property_reads_an_object_parameter_by_its_field_paths_before_and_after_the_call, \
+    a_property_compares_an_object_result_with_its_argument_by_identity_and_the_alias_to_copy_defect_fails_it, \
+    a_property_over_an_object_that_may_be_null_is_checked_on_null_too, \
+    a_property_over_two_objects_that_may_be_one_is_refuted_with_one_object_where_the_bug_needs_it"]
 fn the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1109,7 +1147,9 @@ fn the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
 /// refutation's witness run on a JVM, since JBMC checks the same harness (the relation read through the results'
 /// fields in its bytecode). A pipeline job (`cargo test --release --test heap -- --ignored output_relations`).
 #[test]
-#[ignore = "runs JBMC on the output relations: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on 5 output relations, ~40 min, up to 60 min; \
+    proxy: a_result_that_became_a_value_object_is_related_by_the_correspondences_output_relation, \
+    an_object_result_of_another_shape_is_related_by_its_field_paths_and_identity_is_still_compared"]
 fn the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1265,6 +1305,7 @@ fn price_claim(subject: &str, c: jvmcontract::spec::Correspondence) -> jvmcontra
 
 #[test]
 fn a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_of_a_price() {
+    jvmcontract::tool_tier!();
     let Some(root) = price_builds() else { return };
     let o = related(root, "after", "prices.Prices#total", dollars_and_cents(), "total");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -1297,6 +1338,7 @@ fn a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_o
 
 #[test]
 fn an_offset_in_a_computed_equation_hides_a_changed_total_and_a_claim_that_anchors_the_input_refuses_it() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{Derivation, ObservationState, Verdict as V};
     let Some(root) = price_builds() else { return };
     // The model case: an equation one cent off makes the defect's totals agree. Stated by hand with no contract, it
@@ -1346,6 +1388,7 @@ fn rounded_up() -> jvmcontract::spec::Correspondence {
 
 #[test]
 fn an_output_relation_for_a_parameters_field_compares_it_as_the_call_leaves_it_in_place_of_the_equation() {
+    jvmcontract::tool_tier!();
     let Some(root) = price_builds() else { return };
     // Under the equation alone, rounding up is a change in the price as left.
     let o = related(root, "rounded", "prices.Prices#raise", dollars_and_cents(), "raise-equation");
@@ -1379,6 +1422,7 @@ fn an_output_relation_for_a_parameters_field_compares_it_as_the_call_leaves_it_i
 
 #[test]
 fn a_required_field_under_an_output_relation_is_unresolved_until_approved_and_then_changed_with_approval_or_refuted() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ApprovedChange, Derivation, Observation, ObservationState, Verdict as V};
     let Some(root) = price_builds() else { return };
     let claim_of = |c: jvmcontract::spec::Correspondence| {
@@ -1427,7 +1471,8 @@ fn a_required_field_under_an_output_relation_is_unresolved_until_approved_and_th
 /// own checker, each refutation's witness run on a JVM, since JBMC checks the same harness (the relation compared in
 /// its bytecode). A pipeline job (`cargo test --release --test heap -- --ignored field_relations`).
 #[test]
-#[ignore = "runs JBMC on the field relations: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on 4 field relations, ~4 min; \
+    proxy: an_output_relation_for_a_parameters_field_compares_it_as_the_call_leaves_it_in_place_of_the_equation"]
 fn the_field_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1452,7 +1497,8 @@ fn the_field_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
 /// each refutation's witness run on a JVM, since JBMC checks the same harness (the previous leaf computed in its
 /// bytecode). A pipeline job (`cargo test --release --test heap -- --ignored computed_equations`).
 #[test]
-#[ignore = "runs JBMC on the computed equations: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on 5 computed equations, ~38 min, up to 53 min; \
+    proxy: a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_of_a_price"]
 fn the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1547,6 +1593,7 @@ fn unit_price() -> jvmcontract::spec::Correspondence {
 
 #[test]
 fn an_equations_expression_over_the_objects_fields_and_a_primitive_parameter_makes_and_compares_the_previous_object() {
+    jvmcontract::tool_tier!();
     let Some(root) = line_builds() else { return };
     let o = related(root, "after", "lines.Lines#discounted", unit_price(), "discounted");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -1583,6 +1630,7 @@ fn an_equations_expression_over_the_objects_fields_and_a_primitive_parameter_mak
 
 #[test]
 fn a_claim_over_an_equation_that_reads_a_parameter_is_refused_where_the_contract_anchors_the_object_and_checked_where_a_person_stated_it() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{Derivation, ExternalInput, ObservationState, Verdict as V};
     let Some(root) = line_builds() else { return };
     let claim_of = |subject: &str, derivation: Derivation| {
@@ -1622,7 +1670,8 @@ fn a_claim_over_an_equation_that_reads_a_parameter_is_refused_where_the_contract
 /// from the parameter in its bytecode). A pipeline job (`cargo test --release --test heap -- --ignored
 /// parameter_reads`).
 #[test]
-#[ignore = "runs JBMC on the equations that read a parameter: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on the equations that read a parameter, ~42 min, up to 61 min; \
+    proxy: an_equations_expression_over_the_objects_fields_and_a_primitive_parameter_makes_and_compares_the_previous_object"]
 fn the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1729,6 +1778,7 @@ fn order_price() -> jvmcontract::spec::Correspondence {
 
 #[test]
 fn an_equations_expression_over_another_object_parameters_fields_makes_and_compares_the_previous_object() {
+    jvmcontract::tool_tier!();
     let Some(root) = order_builds() else { return };
     let o = related(root, "after", "orders.Orders#discounted", order_price(), "discounted");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -1771,6 +1821,7 @@ fn an_equations_expression_over_another_object_parameters_fields_makes_and_compa
 
 #[test]
 fn a_claim_over_an_equation_that_reads_another_object_is_checked_where_a_person_stated_it() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{Derivation, ExternalInput, ObservationState, Verdict as V};
     let Some(root) = order_builds() else { return };
     let claim_of = |subject: &str, derivation: Derivation| {
@@ -1799,7 +1850,8 @@ fn a_claim_over_an_equation_that_reads_another_object_is_checked_where_a_person_
 /// checker, each refutation's witness run on a JVM, since JBMC checks the same harness. A pipeline job (`cargo test
 /// --release --test heap -- --ignored the_other_object_reads`).
 #[test]
-#[ignore = "runs JBMC on the equations that read another object: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on the equations that read another object, ~41 min, up to 61 min; \
+    proxy: an_equations_expression_over_another_object_parameters_fields_makes_and_compares_the_previous_object"]
 fn the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1835,6 +1887,7 @@ const ALWAYS_A_COPY: &str = "old.result == old.q && new.result != new.q";
 
 #[test]
 fn an_output_relation_for_an_identity_relation_compares_it_in_place_of_holds_before_iff_it_holds_now() {
+    jvmcontract::tool_tier!();
     let Some(root) = kernel_builds() else { return };
     let target = "shop.Pricing#withQuantity";
     // Without the relation, the copy is the alias-to-copy defect, told apart by result == q alone.
@@ -1877,6 +1930,7 @@ fn an_output_relation_for_an_identity_relation_compares_it_in_place_of_holds_bef
 
 #[test]
 fn a_required_identity_relation_under_an_output_relation_is_unresolved_until_approved_and_then_changed_with_approval_or_refuted() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ApprovedChange, ObservationState, Verdict as V};
     let claim_with = |approved: bool| {
         let mut claim = kernel_claim("shop.Pricing#withQuantity", &[identity_result_q()]);
@@ -1911,7 +1965,8 @@ fn a_required_identity_relation_under_an_output_relation_is_unresolved_until_app
 }
 
 #[test]
-#[ignore = "runs JBMC on the identity relations: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on the identity relations, ~5 s in its one job; \
+    proxy: an_output_relation_for_an_identity_relation_compares_it_in_place_of_holds_before_iff_it_holds_now"]
 fn the_identity_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -1945,6 +2000,7 @@ fn quantity_relation(holds: &str) -> jvmcontract::spec::Correspondence {
 
 #[test]
 fn an_output_relation_for_a_field_of_a_parameter_of_the_same_shape_compares_it_in_place_of_equality() {
+    jvmcontract::tool_tier!();
     let Some(root) = object_builds() else { return };
     let target = "objects.Kernel#bump";
     // `+= 2` in place of `+= 1`, refuted without a relation, is verified under one saying the new version adds one more.
@@ -2007,6 +2063,7 @@ fn bump_claim(c: jvmcontract::spec::Correspondence) -> jvmcontract::spec::Canoni
 
 #[test]
 fn a_required_field_of_a_parameter_of_the_same_shape_under_an_output_relation_is_unresolved_until_approved() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ApprovedChange, ObservationState, Verdict as V};
     let Some(root) = object_builds() else { return };
     let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)).expect("supported");
@@ -2038,7 +2095,8 @@ fn a_required_field_of_a_parameter_of_the_same_shape_under_an_output_relation_is
 /// same verdicts as on the own checker, each refutation's witness run on a JVM, since JBMC checks the same harness.
 /// A pipeline job (`cargo test --release --test heap -- --ignored same_shape_relations`).
 #[test]
-#[ignore = "runs JBMC on the same-shape field relations: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on the same-shape field relations, ~3 s in its one job; \
+    proxy: an_output_relation_for_a_field_of_a_parameter_of_the_same_shape_compares_it_in_place_of_equality"]
 fn the_same_shape_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;
@@ -2071,6 +2129,7 @@ fn raised_relation(holds: &str) -> jvmcontract::spec::Correspondence {
 
 #[test]
 fn a_result_relation_reads_the_previous_versions_primitive_parameters_and_its_objects_as_the_call_left_them() {
+    jvmcontract::tool_tier!();
     let Some(root) = price_builds() else { return };
     let o = related(root, "after", "prices.Prices#raised", raised_relation(RAISED), "raised");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -2106,6 +2165,7 @@ fn a_result_relation_reads_the_previous_versions_primitive_parameters_and_its_ob
 
 #[test]
 fn a_required_result_under_a_relation_that_reads_the_previous_version_is_unresolved_until_approved() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{ApprovedChange, Derivation, ObservationState, Verdict as V};
     let Some(root) = price_builds() else { return };
     let mut claim = price_claim("prices.Prices#raised", raised_relation(RAISED));
@@ -2128,7 +2188,9 @@ fn a_required_result_under_a_relation_that_reads_the_previous_version_is_unresol
 /// same verdicts as on the own checker, each refutation's witness run on a JVM, since JBMC checks the same harness.
 /// A pipeline job (`cargo test --release --test heap -- --ignored previous_parameter_reads`).
 #[test]
-#[ignore = "runs JBMC on the result relations over the previous version's parameters: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto --confirm on the result relations over the previous version's parameters, \
+    ~2 min; \
+    proxy: a_result_relation_reads_the_previous_versions_primitive_parameters_and_its_objects_as_the_call_left_them"]
 fn the_previous_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     if Command::new("jbmc").arg("--version").output().is_err() {
         return;

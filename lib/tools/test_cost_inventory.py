@@ -300,5 +300,49 @@ class Estimating(unittest.TestCase):
         self.assertIn('\n  {"file": "x/test_a.py", "name": "A.test_c", "tier": "unit"}\n', text)
 
 
+class Tagging(unittest.TestCase):
+    SRC = textwrap.dedent("""\
+        #[test]
+        fn spawns_javac() {
+            let x = 1;
+        }
+
+        #[test]
+        fn was_tool_now_unit() {
+            jvmcontract::tool_tier!();
+            let x = 1;
+        }
+
+        #[test]
+        #[ignore = "cost:proof: JBMC, ~1 min; proxy: spawns_javac"]
+        fn ignored() {
+            let x = 1;
+        }
+
+        #[test]
+        fn pending() {
+            jvmcontract::tool_tier!();
+            let x = "fn spawns_javac() {";
+        }
+        """)
+    ROWS = {"spawns_javac": {"tier": "tool"}, "was_tool_now_unit": {"tier": "unit"},
+            "ignored": {"tier": "proof", "ignored": "cost:proof: JBMC"},
+            "pending": {"tier": "proof", "retier": "pending"}}
+
+    def test_each_test_gets_the_call_its_tier_asks_for_once(self):
+        out, n = ci.tier_calls(self.SRC, "lib/tests/a.rs", self.ROWS)
+        self.assertEqual(n, 3)
+        self.assertIn("fn spawns_javac() {\n    jvmcontract::tool_tier!();\n    let x = 1;\n}", out)
+        self.assertIn("fn was_tool_now_unit() {\n    let x = 1;\n}", out)
+        self.assertIn("fn ignored() {\n    let x = 1;\n}", out)
+        self.assertIn('fn pending() {\n    jvmcontract::tool_tier!(pending);\n    let x = "fn spawns_javac() {";', out)
+        self.assertEqual(ci.tier_calls(out, "lib/tests/a.rs", self.ROWS), (out, 0))
+
+    def test_a_unit_test_module_calls_it_through_the_crate(self):
+        src = "#[cfg(test)]\nmod tests {\n    #[test]\n    fn t() {\n        run();\n    }\n}\n"
+        out, n = ci.tier_calls(src, "lib/src/bmc/sat.rs", {"bmc::sat::tests::t": {"tier": "tool"}})
+        self.assertEqual((n, out), (1, src.replace("fn t() {\n", "fn t() {\n        crate::tool_tier!();\n")))
+
+
 if __name__ == "__main__":
     unittest.main()

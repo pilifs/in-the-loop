@@ -79,6 +79,7 @@ pub mod statement;
 pub mod observations;
 pub mod reach;
 pub mod store;
+pub mod test_tier;
 pub mod tla;
 pub mod trusted;
 pub mod verifier;

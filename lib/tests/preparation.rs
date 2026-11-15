@@ -246,7 +246,8 @@ fn process(after: &Path, cache: &Path) -> (f64, Vec<(String, String)>) {
 }
 
 #[test]
-#[ignore = "a benchmark: run as a queued job (R3)"]
+#[ignore = "cost:proof: a benchmark: javac, java and the binary on the preparation fixture, stage by stage, ~50 s, \
+    up to 64 s; proxy: none yet"]
 fn where_a_compare_runs_time_goes_stage_by_stage() {
     if builds("preparation").is_none() {
         return;

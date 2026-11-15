@@ -253,6 +253,46 @@ def rust_tests(root: Path = ROOT) -> list[dict]:
     return out
 
 
+# --- the tier helper in the tests ----------------------------------------------------------------------------------
+
+TOOL_TIER = re.compile(r"[ \t]*\b(?:jvmcontract|crate)::tool_tier!\((pending)?\);[ \t]*\n?")
+
+
+def wanted_tier_call(row: dict | None) -> str | None:
+    """The `tool_tier!` call a test's inventory row asks for: `pending` for `retier: pending`, empty for the tool tier,
+    None for a unit-tier or ignored test (and one the inventory doesn't list)."""
+    if row is None or row["tier"] == "unit" or row.get("ignored") is not None:
+        return None
+    return "pending" if row.get("retier") == "pending" else ""
+
+
+def tier_calls(src: str, rel: str, rows: dict) -> tuple[str, int]:
+    """SRC with each test's first statement the `tool_tier!` call its row in ROWS ({name: row}) asks for, and no
+    other: (new source, tests changed). REL is the file's path from the repository root."""
+    prefix = _module_prefix(Path(rel)) if rel.startswith("lib/src/") else ()
+    krate = "crate" if rel.startswith("lib/src/") else "jvmcontract"
+    edits, changed = [], 0  # edits: (start, end, text), applied from the end
+    for it in rust_items(src, prefix):
+        if not it.get("test"):
+            continue
+        want = wanted_tier_call(rows.get(it["name"]))
+        open_, close = it["body"]
+        body = src[open_ + 1:close - 1]
+        have = [(m.start() + open_ + 1, m.end() + open_ + 1, m[1] or "") for m in TOOL_TIER.finditer(body)]
+        first = re.match(r"[ \t]*\n?", body).end() + open_ + 1
+        if want is None and not have or have and len(have) == 1 and have[0][0] == first and have[0][2] == want:
+            continue
+        line = src.rfind("\n", 0, it["start"]) + 1
+        indent = re.match(r"[ \t]*", src[line:]).group() + "    "
+        changed += 1
+        edits += [(a, b, "") for a, b, _ in have]
+        if want is not None:
+            edits.append((open_ + 1, open_ + 1, f"\n{indent}{krate}::tool_tier!({want});"))
+    for a, b, text in sorted(edits, key=lambda e: (e[0], e[1]), reverse=True):
+        src = src[:a] + text + src[b:]
+    return src, changed
+
+
 # --- reading Python -----------------------------------------------------------------------------------------------
 
 PY_CALLS = [

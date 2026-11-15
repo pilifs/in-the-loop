@@ -364,6 +364,26 @@ Settled by the user on 2026-11-15:
   name as `estimate` does. Make it write the same shape before it replaces the estimates. Next: Phase 2 step 4, the
   Rust tags (the twelve `#[ignore]` reasons as `cost:proof:` and the `JVMCONTRACT_TEST_TIER` helper in the tool-tier
   and `retier: pending` tests).
+- 2026-11-15, Phase 2 step 4, part 1: the mechanism, and the three files with ignored tests tagged.
+  - **The helper.** `lib/src/test_tier.rs` defines `tool_tier!()`, the first statement of a tool-tier test, and
+    `tool_tier!(pending)` for a `retier: pending` one. Both return at once under `JVMCONTRACT_TEST_TIER=unit` and do
+    nothing without it. A value other than `unit`, `tool` or `proof` panics, so a misspelt tier can't run everything.
+  - **Tagging.** `python3 lib/tools/test_costs.py tag FILE ...` gives each test the call its row in `costs.json` asks
+    for, and takes it off a unit-tier or ignored test. A second run changes nothing. `test_cost_inventory.py` tests it
+    (13 tests now).
+  - **The twelve ignore reasons** are now `cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST`, with times from the
+    inventory's past jobs. Each heap test's proxy is the native-engine test or tests above it, which run the same
+    cases. Both conformance tests' proxy is `the_corpus_agrees_with_the_jvm_on_the_tools_own_checker`, itself
+    `retier: pending` (11 s alone, up to 158 s). The preparation benchmark says `proxy: none yet`.
+  - **The calls added:** `heap.rs` 48 tool-tier tests; `conformance.rs` 6 tool-tier tests and 3 pending; none in
+    `preparation.rs`, whose other tests are unit tier.
+  - **For review.** Three heap proof tests took only 3 to 5 s in their one past job: `object_properties`,
+    `identity_relations` and `same_shape_relations`. Their check `Command::new("jbmc")…is_err()` returns silently when
+    JBMC is missing, so those jobs may not have run JBMC. Their tags say "in its one job".
+
+  The inventory was regenerated (644 Rust tests, adding `test_tier`'s two unit tests). A second regeneration was
+  byte-identical. Next: Phase 2 step 4, part 2: run `tag` over the remaining files with tool-tier or pending tests
+  (the other 22 files in `lib/tests/` and five in `lib/src/`).
 - Status: working
 
 ## Loop settings

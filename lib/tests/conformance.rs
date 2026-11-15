@@ -768,6 +768,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
 /// JVM reproduces; under assume it gives `Verified` for a refuted claim only when it names the gap it assumed.
 #[test]
 fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
+    jvmcontract::tool_tier!(pending);
     let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false, Contracts::None), (Engine::Native, GapMode::Assume, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::File), (Engine::Native, GapMode::Advised, false, Contracts::Library)], true) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
@@ -789,6 +790,7 @@ const ON_THE_MODELS: &[&str] = &["enumState", "enumValues", "enumSwitch", "enumB
 /// the outcomes they give on the JDK's own classes.
 #[test]
 fn the_models_only_jbmc_runs_agree_with_the_jvm() {
+    jvmcontract::tool_tier!();
     let Some(compiled) = compile() else { return };
     let own: std::collections::BTreeSet<String> = jvmcontract::models::MODELS.iter().filter(|m| m.jbmc_only).map(|m| m.name.to_string()).collect();
     assert!(own.contains("java/lang/Enum") && own.contains("java/util/List"), "{own:?}");
@@ -871,7 +873,8 @@ fn the_benchmark_takes_its_first_group_from_this_corpus() {
 /// JBMC and `--engine auto` under strict, on the same corpus: a pipeline job, since it runs JBMC once or more per
 /// claim (`cargo test --release --test conformance -- --ignored`).
 #[test]
-#[ignore = "runs JBMC on every claim: a pipeline job"]
+#[ignore = "cost:proof: JBMC and auto on every claim of the corpus, each verdict against a JVM, ~11 min, up to 17 min; \
+    proxy: the_corpus_agrees_with_the_jvm_on_the_tools_own_checker"]
 fn the_corpus_agrees_with_the_jvm_under_jbmc_and_auto() {
     if !has("jbmc") {
         return;
@@ -885,6 +888,7 @@ fn the_corpus_agrees_with_the_jvm_under_jbmc_and_auto() {
 /// it as no verdict rather than as a run that wrote no harness. With the own checker alone it is decided.
 #[test]
 fn a_domain_jbmc_is_not_given_is_refused_by_name() {
+    jvmcontract::tool_tier!(pending);
     let Some(compiled) = compile() else { return };
     let corpus = corpus();
     let mut seen = 0;
@@ -908,7 +912,8 @@ fn a_domain_jbmc_is_not_given_is_refused_by_name() {
 /// assumes ran, so a claim a throwing one refutes is a disagreement, and a claim that assumed a JDK call is not
 /// sent to JBMC. A JBMC confirmation of a claim the JVM refutes fails, as does a disagreement over one it does not.
 #[test]
-#[ignore = "runs JBMC on every claim the own checker proves: a pipeline job"]
+#[ignore = "cost:proof: auto --confirm on every claim of the corpus, JBMC proving again what the own checker proves, \
+    ~20 min; proxy: the_corpus_agrees_with_the_jvm_on_the_tools_own_checker"]
 fn the_corpus_agrees_with_the_jvm_under_auto_confirm() {
     if !has("jbmc") {
         return;
@@ -951,6 +956,7 @@ fn staged_jbmc(name: &str) -> PathBuf {
 /// the full range is shrunk as any other. JBMC is a stand-in script answering stage by stage.
 #[test]
 fn jbmcs_staging_policy_picks_the_stages_it_runs_and_their_budgets() {
+    jvmcontract::tool_tier!();
     use jvmcontract::deadline::Staging;
     let Some(compiled) = compile() else { return };
     let jbmc = staged_jbmc("staging");
@@ -1103,6 +1109,7 @@ fn refuted_by_jbmc(class: &str, descriptor: &str, input: i32) -> Answer {
 /// corpus in the ignored test.
 #[test]
 fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
+    jvmcontract::tool_tier!();
     let Some(compiled) = compile() else { return };
     let jbmc = fake_jbmc("confirm");
     let dir = jbmc.parent().unwrap().to_path_buf();
@@ -1194,6 +1201,7 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
 /// (`confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker`).
 #[test]
 fn confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict() {
+    jvmcontract::tool_tier!();
     let Some(compiled) = compile() else { return };
     let jbmc = fake_jbmc("confirm-defect");
     let dir = jbmc.parent().unwrap().to_path_buf();
@@ -1245,6 +1253,7 @@ fn confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict() {
 /// on the interval stages, or on every run.
 #[test]
 fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
+    jvmcontract::tool_tier!(pending);
     let Some(compiled) = compile() else { return };
     let dir = target_tmp().join("fake-jbmc-stages");
     let _ = std::fs::remove_dir_all(&dir);
@@ -1366,6 +1375,7 @@ fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
 /// domain, observations, assumptions or models say so in that part and no other.
 #[test]
 fn the_statement_says_what_a_verdict_is_about() {
+    jvmcontract::tool_tier!();
     use jvmcontract::statement::{AssumptionKind, Basis, ParameterKind, Statement};
     let Some(compiled) = compile() else { return };
     let prove = |name: &str, method: &str, assert: &str, set: &dyn Fn(&mut property::Options)| {
@@ -1472,6 +1482,7 @@ fn the_statement_says_what_a_verdict_is_about() {
 /// built through its constructor carries the caveat that the constructors' agreement is another statement.
 #[test]
 fn vacuity_is_a_status_of_a_verified_statement() {
+    jvmcontract::tool_tier!();
     use jvmcontract::statement::{AssumptionKind, VacuityBasis, VacuityStatus};
     let Some(compiled) = compile() else { return };
     let prove = |name: &str, assume: Option<&str>| {

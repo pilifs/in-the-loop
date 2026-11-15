@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (ended) |
+| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (open) |
 | When | 2026-11-14 15:11 UTC to 2026-11-15 13:01 UTC (1309 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.321 |
@@ -874,6 +874,12 @@ Phase 1 step 2 of the test-cost brief, as revised after the user stopped the run
 change `qnytyympotsn` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
 
 The test of test_costs.tool_name used /home/u/.local/bin/tlc as a made-up TLC launcher path, which the redaction scan flags as another user's home directory (finding bca79831, other-home-dir, in this session's log). The test now uses /opt/tools/bin/tlc, and the finding is proposed for the allow list as a false positive, for the user to approve. Verified: python3 lib/tools/test_test_costs.py passes (12 tests).
+
+### Rust test tiers: the tool_tier! helper, test_costs.py tag, and the twelve ignore reasons as cost:proof tags
+
+change `vlrntnkoowln` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
+
+Phase 2 step 4 of llm-dlc/loops/test-cost.md, first part. lib/src/test_tier.rs adds tool_tier!(), the first statement of a tool-tier test, and tool_tier!(pending) for a proof-tier test that still runs by default (retier: pending in lib/tests/costs.json). Both return at once under JVMCONTRACT_TEST_TIER=unit and do nothing without it; any other value than unit, tool or proof panics. A new subcommand, python3 lib/tools/test_costs.py tag FILE ..., gives each test the call its inventory row asks for, and takes it off unit-tier and ignored tests. A second run changes nothing. heap.rs (48 tool-tier tests), conformance.rs (6 tool, 3 pending) and preparation.rs (none) are tagged. Their twelve #[ignore] reasons now read 'cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST', with times from past jobs. The heap proxies are the native-engine tests that run the same cases. The conformance proxy is the own-checker corpus run, itself retier: pending. The benchmark says 'proxy: none yet'. The inventory was regenerated (644 Rust tests, with test_tier's two). A second regeneration was byte-identical.
 
 ## Conversation
 
