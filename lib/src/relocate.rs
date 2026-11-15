@@ -29,6 +29,75 @@ pub fn directory(input: &Path, output: &Path, prefix: &str) -> Result<BTreeSet<S
     Ok(own)
 }
 
+/// As [`directory`], where the previous version has a dependency closure of its own (`closure`: its libraries, in
+/// class path order, as [`crate::classpath::ClassPath::application_bytes`] reads them): every class of the closure
+/// that the classes under `input` name, directly or through the closure's classes they name in turn, is copied and
+/// renamed with them. So the previous version runs on its own libraries (`before/io/micrometer/…/Tag`) beside the
+/// new version on its own, in one program, and a class the two closures hold differently is each version's own.
+/// A class is named wherever a constant pool entry holds its name: as a class, or inside a descriptor or a generic
+/// signature, so a type only passed through is copied too. A JDK class is in no closure, and is both versions'.
+///
+/// `absent` are the classes the new version has that the previous version's build and closure do not: a name of
+/// theirs in a copied class is renamed too, to a class that does not exist, so the previous version finds no such
+/// class, as on its own class path, and never the new version's.
+pub fn with_closure(input: &Path, closure: &crate::classpath::ClassPath, absent: &BTreeSet<String>, output: &Path, prefix: &str) -> Result<BTreeSet<String>, Error> {
+    let mut files = Vec::new();
+    collect(input, input, &mut files)?;
+    let library: BTreeSet<String> = closure.application_class_names()?.into_iter().collect();
+    let mut classes: Vec<(String, Vec<u8>)> = Vec::new();
+    let mut own: BTreeSet<String> = BTreeSet::new();
+    for (name, path) in files {
+        own.insert(name.clone());
+        classes.push((name, std::fs::read(path)?));
+    }
+    // The closure's classes reached so far, each read once: `classes[at..]` are still to be looked into.
+    let mut at = 0;
+    while at < classes.len() {
+        let named = named_among(&classes[at].1, &library)?;
+        at += 1;
+        for name in named {
+            if own.contains(&name) {
+                continue;
+            }
+            if let Some(bytes) = closure.application_bytes(&name)? {
+                own.insert(name.clone());
+                classes.push((name, bytes));
+            }
+        }
+    }
+    let renamed: BTreeSet<String> = own.union(absent).cloned().collect();
+    for (name, bytes) in &classes {
+        let target = output.join(prefix).join(format!("{name}.class"));
+        if let Some(parent) = target.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        std::fs::write(&target, class_file(bytes, &renamed, prefix)?)?;
+    }
+    Ok(own)
+}
+
+/// The classes among `known` that a class file's constant pool names: an entry that is one's name, or holds it as
+/// `L<name>;` or `L<name><` in a descriptor or a signature, which are the places [`rename`] renames.
+fn named_among(bytes: &[u8], known: &BTreeSet<String>) -> Result<BTreeSet<String>, Error> {
+    let mut out = BTreeSet::new();
+    for text in pool(bytes)?.utf8.into_iter().flatten() {
+        if known.contains(&text) {
+            out.insert(text);
+            continue;
+        }
+        let mut rest = text.as_str();
+        while let Some(start) = rest.find('L') {
+            rest = &rest[start + 1..];
+            let end = rest.find([';', '<']).unwrap_or(rest.len());
+            if known.contains(&rest[..end]) {
+                out.insert(rest[..end].to_string());
+                rest = &rest[end..];
+            }
+        }
+    }
+    Ok(out)
+}
+
 fn collect(root: &Path, dir: &Path, out: &mut Vec<(String, std::path::PathBuf)>) -> Result<(), Error> {
     for entry in std::fs::read_dir(dir)? {
         let path = entry?.path();
@@ -241,6 +310,44 @@ pub fn rename(s: &str, own: &BTreeSet<String>, prefix: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A previous version with a closure of its own takes with it the closure's classes it names, in a class entry,
+    /// a descriptor or a signature, and those they name in turn; a class it doesn't reach stays behind, and a name
+    /// only the new version has is renamed to a class that isn't there.
+    #[test]
+    fn a_closure_of_its_own_is_relocated_as_far_as_the_build_names_it() {
+        use crate::classfile::writer::{ClassWriter, FieldWriter, MethodWriter};
+        use crate::classfile::ClassFile;
+        let root = crate::tla::tempfile_path("jvmcontract-relocate-closure");
+        let class = |dir: &str, name: &str, fields: &[&str], methods: &[&str]| {
+            let mut w = ClassWriter::new(name);
+            w.access = flags::PUBLIC | flags::ABSTRACT;
+            w.fields = fields.iter().enumerate().map(|(i, d)| FieldWriter { access: flags::PUBLIC, name: format!("f{i}"), descriptor: d.to_string() }).collect();
+            w.methods = methods.iter().enumerate().map(|(i, d)| MethodWriter { access: flags::PUBLIC | flags::ABSTRACT, name: format!("m{i}"), descriptor: d.to_string(), code: None }).collect();
+            let path = root.join(dir).join(format!("{name}.class"));
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(path, w.to_bytes()).unwrap();
+        };
+        class("build", "app/Tags", &["Llib/Money;"], &["(Llib/Request;)[Llib/Tag;", "()Lnext/Verb;"]);
+        class("closure", "lib/Money", &[], &[]);
+        class("closure", "lib/Request", &[], &["()Llib/Session;"]);
+        class("closure", "lib/Session", &[], &[]);
+        class("closure", "lib/Tag", &[], &[]);
+        class("closure", "lib/Unused", &[], &[]);
+        let mut closure = crate::classpath::ClassPath::new();
+        closure.add(&root.join("closure")).unwrap();
+        let absent: BTreeSet<String> = ["next/Verb".to_string()].into();
+        let own = with_closure(&root.join("build"), &closure, &absent, &root.join("out"), "before").unwrap();
+        assert_eq!(own.iter().map(String::as_str).collect::<Vec<_>>(), ["app/Tags", "lib/Money", "lib/Request", "lib/Session", "lib/Tag"]);
+        assert!(!root.join("out/before/lib/Unused.class").exists() && !root.join("out/before/next/Verb.class").exists());
+        let tags = ClassFile::parse(&std::fs::read(root.join("out/before/app/Tags.class")).unwrap()).unwrap();
+        assert_eq!(tags.name, "before/app/Tags");
+        assert_eq!(tags.fields[0].descriptor, "Lbefore/lib/Money;");
+        assert_eq!(tags.methods.iter().map(|m| m.descriptor.as_str()).collect::<Vec<_>>(), ["(Lbefore/lib/Request;)[Lbefore/lib/Tag;", "()Lbefore/next/Verb;"]);
+        let request = ClassFile::parse(&std::fs::read(root.join("out/before/lib/Request.class")).unwrap()).unwrap();
+        assert_eq!(request.methods[0].descriptor, "()Lbefore/lib/Session;");
+        std::fs::remove_dir_all(&root).ok();
+    }
 
     #[test]
     fn an_opened_class_is_public_with_its_fields_constructors_and_static_methods_and_nothing_else_changes() {

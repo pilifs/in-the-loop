@@ -62,6 +62,36 @@ pub fn accessors(cp: &ClassPath, interface: &str) -> Result<Vec<(String, Type)>,
     Ok(out)
 }
 
+/// The abstract methods of `interface` that are no accessor, each as `name(descriptor)`: what reading an object
+/// through its accessors leaves unread. A method an interface nearer to `interface` declares (a default that
+/// implements its parent's abstract method) is that one's.
+pub fn unread(cp: &ClassPath, interface: &str) -> Result<Vec<String>, Error> {
+    let mut out = Vec::new();
+    let mut declared: Vec<(String, String)> = Vec::new();
+    let mut seen = Vec::new();
+    let mut waiting = std::collections::VecDeque::from([interface.to_string()]);
+    while let Some(name) = waiting.pop_front() {
+        if seen.contains(&name) {
+            continue;
+        }
+        seen.push(name.clone());
+        let Some(cf) = cp.application(&name)? else { continue };
+        for m in cf.methods.iter().filter(|m| !m.is_static()) {
+            let key = (m.name.clone(), m.descriptor.clone());
+            if declared.contains(&key) {
+                continue;
+            }
+            declared.push(key);
+            let d = m.parsed_descriptor()?;
+            if m.is_abstract() && !(d.params.is_empty() && is_value(&d.ret)) {
+                out.push(format!("{}({}){}", m.name, d.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", "), if d.ret == Type::Void { String::new() } else { format!(": {}", d.ret.java_name()) }));
+            }
+        }
+        waiting.extend(cf.interfaces.iter().cloned());
+    }
+    Ok(out)
+}
+
 /// An interface's object as the checks read it: each accessor a pseudo-field named `getKey()`
 /// ([`crate::harness::expr::accessor_name`]), a value or a String.
 pub fn fields(cp: &ClassPath, interface: &str) -> Result<Fields, Error> {
@@ -201,6 +231,13 @@ mod tests {
         // a floating-point result, or a body.
         let found = accessors(&cp, "web/Request").unwrap();
         assert_eq!(found.iter().map(|(n, t)| format!("{n}:{}", t.descriptor())).collect::<Vec<_>>(), ["getMethod:Ljava/lang/String;", "getName:Ljava/lang/String;", "isSecure:Z", "getLength:J", "getPort:I"]);
+        // What reading it through its accessors leaves unread: each other abstract method, and none of an
+        // interface whose abstract methods a nearer one gives a body (`Tag`'s `compareTo`).
+        assert_eq!(unread(&cp, "web/Request").unwrap(), ["getHeader(java.lang.String): java.lang.String", "getSession(): java.lang.Object", "getRatio(): double"]);
+        interface(&dir, "web/Ordered", &[], &[("rank", "(Ljava/lang/Object;)I", true)]);
+        interface(&dir, "web/Tag", &["web/Ordered"], &[("getKey", "()Ljava/lang/String;", true), ("rank", "(Ljava/lang/Object;)I", false)]);
+        assert_eq!(unread(&cp, "web/Tag").unwrap(), Vec::<String>::new());
+        assert_eq!(unread(&cp, "web/Ordered").unwrap(), ["rank(java.lang.Object): int"]);
         // The implementation answers the accessors the target may call, and no other method.
         let called: std::collections::BTreeSet<(String, String)> = [("getPort", "()I"), ("getMethod", "()Ljava/lang/String;"), ("getHeader", "(Ljava/lang/String;)Ljava/lang/String;"), ("isSecure", "()Z"), ("getLength", "()J"), ("getName", "()I")].iter().map(|(n, d)| (n.to_string(), d.to_string())).collect();
         let given = Given::of(&cp, "web/Request", &called).unwrap();

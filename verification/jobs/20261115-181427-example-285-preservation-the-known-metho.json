@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-181427-example-285-preservation-the-known-metho",
+  "title": "Example 285 preservation: the known method labels preserved between 2.7.17 and 2.7.18, each release on its own closure, expected established",
+  "description": "The frozen claim claims/known-method-labels-preserved.json on the release pair as the task states it: jvmcontract's regression check (own checker, strict gaps) of WebMvcTags#method between Spring Boot 2.7.17 and 2.7.18, outside the declared change (a non-null request whose method is none of the eight known names), with --nullable request. Until this change the task was not executed: the two releases' dependency closures have other bytes (micrometer 1.9.16 and 1.9.17, Spring Framework 5.3.30 and 5.3.31), and the route refused the pair because jvmcontract's equivalence took one class path for both (verifier-interface:two-dependency-closures, VF-027). Now the route passes the previous release's dependencies as --before-classpath, and jvmcontract relocates the previous release's build together with the classes of its closure it names, so each release runs on its own pinned closure in one program; both are given an implementation of HttpServletRequest answering getMethod() with the same String of up to 8 code units; the two Tag results, objects of two classes, are compared through Tag's accessors getKey() and getValue(), Strings by content; and the declared change is read of the given request as Java reads it. This run is the gap packet's closure test: the unchanged claim on the same artifacts. Inline on the cached JARs the claim was proved in 0.1 s (0.8 s wall), and with no change declared it was refuted on getMethod()=\"\" (2.7.17 labels the raw method, 2.7.18 UNKNOWN), run on a JVM.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "target:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/relocate.rs",
+      "lib/src/equivalence.rs",
+      "examples/tools/targets/runtime.py"
+    ],
+    "examples": [
+      "285"
+    ]
+  },
+  "expected": "example 285 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-15T18:14:27+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "10m",
+    "notes": "the three security tasks of this example took 2 to 6 s and 0.25 GB each as jobs once the lib tree was built; this one relocates 1,593 classes of the 2.7.17 closure (9 MB) and proves in 0.1 s; the rest is acquisition, the control runs and the release build of lib/ if its tree isn't cached"
+  },
+  "steps": [
+    {
+      "name": "example 285 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 285 --task preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation"
+  ]
+}

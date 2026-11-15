@@ -323,8 +323,9 @@ SCAFFOLD = ("provenanceLocked", "artifactsPrepared", "oracleValidated", "claimFr
 SUMMARIES = ("catalogued", "partial", "scaffolded", "executable", "blocked")
 # An observed blocker of these kinds stops the proof on a sound scaffold (the task is blocked); one of the others
 # (provenance, a build, the oracle, the replay) leaves the scaffold itself partial. verifier-interface is the
-# verifier's command line refusing a task it can't express (one --classpath for two dependency closures): the scaffold
-# is sound, so it blocks the task as the other capability kinds do.
+# verifier's command line refusing a task it can't express (until 2026-11-15, one --classpath for two dependency
+# closures, which --before-classpath now takes): the scaffold is sound, so it blocks the task as the other capability
+# kinds do.
 CAPABILITY_KINDS = ("java-semantics", "input-construction", "verifier-interface", "verifier-bug", "resources")
 CONFIDENT = ("checked-upstream", "reproduced")
 RECEIPTS = "receipts"

@@ -529,6 +529,12 @@ struct EquivalenceArgs {
     /// Further class path entries (PATH-separated or repeatable).
     #[arg(long = "classpath")]
     classpath: Vec<String>,
+    /// The previous version's own dependency closure, where it is not the new version's (a release pair, each
+    /// built against its own libraries): separated like the system class path, repeatable. The previous version
+    /// then runs on these, relocated with its build, and --classpath is the new version's alone. Without it, both
+    /// versions run on --classpath. Checked by the tool's own checker (--engine native or auto).
+    #[arg(long = "before-classpath", value_name = "PATH")]
+    before_classpath: Vec<String>,
     /// A working directory for the harness, relocated classes and JBMC logs (a temporary one by default).
     #[arg(long)]
     work: Option<PathBuf>,
@@ -837,6 +843,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let mut options = equivalence::Options::new(&args.before, &args.after, &args.target);
             options.unchanged_unless = args.unchanged_unless;
             options.classpath = args.classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect();
+            if !args.before_classpath.is_empty() {
+                options.before_classpath = Some(args.before_classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect());
+            }
             options.work = args.work;
             options.report = args.report;
             options.sources = args.sources;

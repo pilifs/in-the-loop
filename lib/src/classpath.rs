@@ -229,6 +229,17 @@ impl ClassPath {
         Ok(names)
     }
 
+    /// An application class's file as its first entry holds it, unparsed, or none: for a copy of it
+    /// ([`crate::relocate::with_closure`]).
+    pub fn application_bytes(&self, name: &str) -> Result<Option<Vec<u8>>, Error> {
+        for entry in &self.entries {
+            if let Some(bytes) = entry.read(name)? {
+                return Ok(Some(bytes));
+            }
+        }
+        Ok(None)
+    }
+
     /// Every application class, parsed, keyed by name. Classes found in an earlier entry shadow later ones.
     pub fn application_classes(&self) -> Result<BTreeMap<String, Rc<ClassFile>>, Error> {
         let mut out = BTreeMap::new();

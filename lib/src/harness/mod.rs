@@ -558,6 +558,12 @@ impl RecordType {
         RecordType { class: class.to_string(), components, params, inner, dependencies, fields: Some(fields), corresponds: None, given: None }
     }
 
+    /// What of the object the two versions may leave different, compared after the calls: its fields, or nothing
+    /// for a given implementation, whose fields are final and read by its accessors alone.
+    pub fn observed(&self) -> Option<&Fields> {
+        self.fields.as_ref().filter(|_| self.given.is_none())
+    }
+
     /// The class the object is passed as: its own, or the interface it is a given implementation of.
     pub fn declared(&self) -> &str {
         self.given.as_deref().unwrap_or(&self.class)
@@ -908,6 +914,11 @@ pub struct Layout {
     /// made and before the target, in order, each in both versions on the same symbolic arguments. Empty for a
     /// constructor-only domain.
     pub setup: Vec<Setup>,
+    /// Where the previous version has a dependency closure of its own: the classes relocated under `before/` with
+    /// its build, libraries among them, which its descriptor names so ([`Layout::before_descriptor`]). Empty where
+    /// both versions run on one class path: only the previous build is relocated then, and its records and results
+    /// are known as such.
+    pub relocated: std::collections::BTreeSet<String>,
 }
 
 /// One call of a setup sequence: a void instance method of the receiver's class, called on the receiver in both
@@ -988,7 +999,7 @@ pub fn alias_groups(pairs: &[(String, String)], order: &[String]) -> Vec<Vec<Str
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new(), relocated: Default::default() }
     }
 
     /// Lets the object parameters `nullable` be null and those of each group of `groups` be one object (step H2):
@@ -1304,7 +1315,7 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new(), relocated: Default::default() }
     }
 
     /// Appends the setup call `method` of `descriptor` (O3), whose arguments are the new flat parameters `args`,
@@ -1362,7 +1373,9 @@ impl Layout {
     pub fn before_descriptor_with(&self, params: &[Type], ret: &Type, also: &[Option<RecordType>]) -> String {
         let relocated = |t: &Type| match t {
             Type::Object(name) => {
-                let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name))
+                // A given implementation is passed as the interface the previous version has: its own copy, or both's.
+                let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name || b.given.as_ref().is_some_and(|g| g.strip_prefix("before/") == Some(name))))
+                    || self.relocated.contains(name)
                     || self.result.1.as_ref().is_some_and(|previous| previous.class == *name)
                     || self.result_fields.1.as_ref().is_some_and(|previous| previous.class == *name)
                     || also.iter().flatten().any(|r| r.class == *name);
@@ -2140,14 +2153,43 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     let b = ea + 1;
     let eb = b + if is_void { 0 } else { ret.slots() };
     let index = eb + 1;
-    let scope = match unchanged_unless {
-        Some(src) => Some(expr::parse_in(src, params, None, index)?),
-        None => None,
-    };
     // Each record among the receiver and the arguments, built in both versions: the new one's object, then the
     // previous one's.
     let objects = index + 1;
     let object_slots = |i: usize| (objects + 2 * i as u16, objects + 2 * i as u16 + 1);
+    // The declared change is over the flat parameters; where a parameter is given an implementation of its
+    // interface ([`crate::given`]), over that object too, the new version's, as the method reads it:
+    // `request != null && !request.getMethod().equals("GET")`.
+    let scope = match unchanged_unless {
+        Some(src) => {
+            let given: Vec<(Param, Fields)> = records
+                .iter()
+                .enumerate()
+                .filter_map(|(i, slot)| match slot {
+                    Slot::Record { name, record, .. } if record.given.is_some() => record.fields.clone().map(|f| (Param { name: name.clone(), ty: Type::Object(record.class.clone()), slot: object_slots(i).0 }, f)),
+                    _ => None,
+                })
+                .collect();
+            let visible: Vec<Param> = params.iter().cloned().chain(given.iter().map(|(p, _)| p.clone())).collect();
+            let read: Vec<(String, Fields)> = given.into_iter().map(|(p, f)| (p.name, f)).collect();
+            let scope = expr::parse_over_objects(src, &visible, None, index, None, &read)?;
+            if scope.ty() != expr::Ty::Boolean {
+                return Err(Error::new("the expression must be boolean"));
+            }
+            // Read once the objects are made, so before any constructor could reject the input in one version
+            // only: with a given implementation alone, none can.
+            if scope.reads_objects() {
+                if let Some(other) = records.iter().find_map(|s| match s {
+                    Slot::Record { name, record, .. } if record.given.is_none() => Some(name),
+                    _ => None,
+                }) {
+                    return Err(Error::new(format!("--unchanged-unless reads an object the check gives an implementation of ({}), and {other} is an object or a record made by its constructor: the declared change would be decided after a constructor could reject the input, which is not supported yet", read.iter().map(|(n, _)| n.as_str()).collect::<Vec<_>>().join(", "))));
+                }
+            }
+            Some(scope)
+        }
+        None => None,
+    };
     // Each list parameter's list in each version, the new one's then the previous one's, then the elements one is
     // made of, picked.
     let lists = layout.lists();
@@ -2193,8 +2235,9 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     code.max_locals = arg_slots;
     code.max_stack = 16 + 4 * arg_slots;
 
-    // The scope: return early on the inputs the developer meant to change.
-    if let Some(scope) = &scope {
+    // The scope: return early on the inputs the developer meant to change. One that reads an object is decided
+    // once the objects are made, below.
+    if let Some(scope) = scope.as_ref().filter(|s| !s.reads_objects()) {
         let proceed = code.label();
         expr::emit(scope, &mut code, &mut writer.pool);
         code.if_zero(Cond::Eq, proceed);
@@ -2396,6 +2439,26 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             code.bind(outside);
             code.return_(None);
             code.bind(inside);
+        }
+    }
+
+    // A scope that reads an object: decided on the new version's, as made. An input on which the expression throws
+    // (a path through a null object) is not one it holds of, so not among those the change is meant for, and the
+    // versions are compared on it.
+    if let Some(scope) = scope.as_ref().filter(|s| s.reads_objects()) {
+        let (start, end, handler, proceed) = (code.label(), code.label(), code.label(), code.label());
+        code.bind(start);
+        expr::emit(scope, &mut code, &mut writer.pool);
+        code.bind(end);
+        code.if_zero(Cond::Eq, proceed);
+        code.return_(None);
+        code.bind(handler);
+        code.op(0x57); // pop the exception
+        code.bind(proceed);
+        // Each class the harness tells apart has a handler, as for a call (JBMC matches by the exception's own).
+        for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
+            let catch_type = writer.pool.class(exception);
+            code.handler(start, end, handler, Some(catch_type));
         }
     }
 
@@ -2759,7 +2822,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     let mut scratch = code.max_locals.max(index + 1);
     for (i, slot) in records.iter().enumerate() {
         let Slot::Record { name, record, before: Some(previous), .. } = slot else { continue };
-        let (Some(fields), Some(old_fields)) = (&record.fields, &previous.fields) else { continue };
+        let (Some(fields), Some(old_fields)) = (record.observed(), previous.observed()) else { continue };
         let (new_local, old_local) = object_slots(i);
         // A parameter its choice made null is null in both versions, and has no fields to compare.
         let compared = code.label();
@@ -2897,7 +2960,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     code.max_locals = code.max_locals.max(index + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
-    let source = source(class_internal, method, layout, ret, unchanged_unless, before);
+    let source = source(class_internal, method, layout, ret, unchanged_unless, scope.as_ref().is_some_and(Expr::reads_objects), before);
     Ok(Harness { bytes: writer.to_bytes(), probe: Vec::new(), source, scope, params: params.to_vec(), before_args, relation })
 }
 
@@ -3254,9 +3317,11 @@ fn compare_arrays(code: &mut CodeBuilder, x: u16, y: u16, element: &Type, bound:
 
 /// The statement as Java source, for readers. A record's components are parameters named `this_component` or
 /// `other_component`, and the record is built from them in both versions.
-pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, unchanged_unless: Option<&str>, before: Option<&BeforeMethod>) -> String {
+pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, unchanged_unless: Option<&str>, scope_reads_objects: bool, before: Option<&BeforeMethod>) -> String {
     let class = class_internal.replace('/', ".");
-    let params: Vec<Param> = layout.params.iter().map(|p| Param { name: p.name.replace('.', "_"), ty: p.ty.clone(), slot: p.slot }).collect();
+    // A leaf by its path: `q.amount.cents` as `q_amount_cents`, a given implementation's `request.getMethod()` as
+    // `request_getMethod`.
+    let params: Vec<Param> = layout.params.iter().map(|p| Param { name: p.name.replace('.', "_").replace("()", ""), ty: p.ty.clone(), slot: p.slot }).collect();
     let params = params.as_slice();
     let param_list = params.iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
     let is_array = |p: &Param| matches!(p.ty, Type::Array(_));
@@ -3317,7 +3382,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     s.push_str("/** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */\n");
     s.push_str(&format!("public final class {CLASS} {{\n"));
     s.push_str(&format!("    public static void {METHOD}({param_list}) {{\n"));
-    if let Some(scope) = unchanged_unless {
+    if let Some(scope) = unchanged_unless.filter(|_| !scope_reads_objects) {
         s.push_str(&format!("        if ({scope}) {{ return; }} // the inputs the developer meant to change\n"));
     }
     for p in params.iter().filter(|p| is_array(p)) {
@@ -3405,6 +3470,14 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                 }
             }
         }
+    }
+    if let Some(scope) = unchanged_unless.filter(|_| scope_reads_objects) {
+        s.push_str("        // The inputs the developer meant to change, read of the new version's objects; an input on which the expression throws is not among them.\n");
+        let named: Vec<String> = records.iter().filter_map(|slot| match slot {
+            Slot::Record { name, record, .. } if record.given.is_some() => Some(format!("{} {name} = {name}_after;", record.declared().replace('/', "."))),
+            _ => None,
+        }).collect();
+        s.push_str(&format!("        {{ {} try {{ if ({scope}) {{ return; }} }} catch (Throwable t) {{ }} }}\n", named.join(" ")));
     }
     if !mapping.is_empty() {
         s.push_str("        // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.\n");
@@ -3503,7 +3576,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     // Each object made by its constructor, as both versions leave it.
     for slot in &records {
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
-            let compared = match (&record.fields, &previous.fields, &previous.corresponds) {
+            let compared = match (record.observed(), previous.observed(), &previous.corresponds) {
                 (Some(_), Some(_), Some(c)) => {
                     let (old, new) = (format!("{name}_before"), format!("{name}_after"));
                     let mut compared = equations_source(&old, &new, &c.compared_equations());
@@ -3711,7 +3784,7 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() };
+    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new(), relocated: Default::default() };
     generate_property_over(class_internal, method, &layout, ret, assume, assertion, signals, max_array_length)
 }
 
@@ -4319,7 +4392,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new(), relocated: Default::default() }
     }
 
     /// A plan's node at two roots (O2): the later root is the earlier one's object, with no flag, in both versions and
@@ -4513,6 +4586,12 @@ mod tests {
         let layout = Layout::new(Some((batch.clone(), None)), &names, &[Type::Int], &[None], (None, None));
         assert!(!layout.before_receiver());
         assert_eq!(layout.before_descriptor(&[Type::Long, Type::Int, Type::Int], &Type::Long), "(JII)J");
+        // With a dependency closure of its own, the previous version's library types are under `before/` too.
+        let mut relocated = layout.clone();
+        relocated.relocated = ["lib/Tag".to_string()].into();
+        let (tag, other) = (Type::Object("lib/Tag".into()), Type::Object("lib/Other".into()));
+        assert_eq!(relocated.before_descriptor(&[tag.clone(), other.clone()], &tag), "(Lbefore/lib/Tag;Llib/Other;)Lbefore/lib/Tag;");
+        assert_eq!(layout.before_descriptor(&[tag.clone(), other], &tag), "(Llib/Tag;Llib/Other;)Llib/Tag;");
         let previous = BeforeMethod {
             owner: "net/example/BatchCommit".into(),
             method: "offsetToCommit".into(),

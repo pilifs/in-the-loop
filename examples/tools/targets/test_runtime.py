@@ -1322,6 +1322,34 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(set(record.identities["probe"]), {"before", "after"})
         self.assertEqual(set(record.identities["commits"]), {"before", "after"})
 
+    def test_a_pair_of_two_dependency_closures_gives_the_previous_revision_its_own(self):
+        """A release pair, each revision against its own libraries (example 285's: micrometer 1.9.16 and 1.9.17):
+        --classpath is the new revision's and --before-classpath the previous one's, in class path order. With one
+        closure of the same bytes, both run on --classpath, as before; a previous revision with no dependency is
+        given the empty path, never the new revision's."""
+        import types
+        plan = verifier_plan(self.folder, kind="equivalence", revisions=("before", "after"), **{"assert": None})
+
+        def side(revision, dependencies):
+            arts = [types.SimpleNamespace(path=f"{revision}.jar", role="original", sha256=revision)]
+            arts += [types.SimpleNamespace(path=f"lib/{name}.jar", role="dependency", sha256=name) for name in dependencies]
+            prepared = types.SimpleNamespace(source={"target": {"loadedFrom": f"{revision}.jar"}})
+            return (None, prepared, arts)
+
+        def flags(before, after, flag):
+            argv = runtime._verifier_argv(plan, "jvmcontract", {"before": side("before", before), "after": side("after", after)}, "verifier")
+            return [argv[i + 1] for i, a in enumerate(argv) if a == flag]
+
+        self.assertEqual(flags(["meter-1", "web-1"], ["meter-2", "web-2"], "--before-classpath"),
+                         ["prepare/before/lib/meter-1.jar", "prepare/before/lib/web-1.jar"])
+        self.assertEqual(flags(["meter-1", "web-1"], ["meter-2", "web-2"], "--classpath"),
+                         ["prepare/after/lib/meter-2.jar", "prepare/after/lib/web-2.jar"])
+        self.assertEqual(flags(["meter-1"], ["meter-1"], "--before-classpath"), [], "one closure, by the same bytes")
+        self.assertEqual(flags(["meter-1"], ["meter-1"], "--classpath"), ["prepare/after/lib/meter-1.jar"])
+        self.assertEqual(flags(["web-1", "meter-1"], ["meter-1", "web-1"], "--before-classpath"),
+                         ["prepare/before/lib/web-1.jar", "prepare/before/lib/meter-1.jar"], "another order is another closure")
+        self.assertEqual(flags([], ["meter-2"], "--before-classpath"), [""])
+
     def test_a_one_sided_stale_or_failed_preparation_is_a_not_started_record_and_runs_nothing(self):
         pair = verifier_plan(self.folder, kind="equivalence", revisions=("before", "after"))
         _, one_sided = self.verify(pair, prepare=("after",))

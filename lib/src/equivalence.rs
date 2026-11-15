@@ -37,6 +37,7 @@
 //! took one as a parameter (the components it took gathered into a record), is related to its previous version
 //! by [`Options::before_arguments`] over the components, `this.component` or `parameter.component`.
 
+use std::collections::BTreeSet;
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
@@ -111,6 +112,11 @@ pub struct Options {
     /// Whether callees unchanged in both versions are taken as one function in both ([`crate::shared`]), and a
     /// target identical in both versions is verified without a proof. On by default.
     pub shared_callees: bool,
+    /// The previous version's own dependency closure (`--before-classpath`), where it is not the new version's:
+    /// a release pair, each built against its own libraries. The previous version then runs on these, relocated
+    /// with its build ([`crate::relocate::with_closure`]), and [`Options::classpath`] is the new version's alone.
+    /// Without it, both versions run on [`Options::classpath`].
+    pub before_classpath: Option<Vec<PathBuf>>,
     /// The previous version's method, `pkg.Class#method`, when it is not the target's: renamed or moved.
     pub before_target: Option<String>,
     /// The previous version's arguments as expressions over the new parameters, separated by commas, when its
@@ -152,6 +158,11 @@ pub struct Options {
 }
 
 impl Options {
+    /// The libraries the previous version runs on: its own closure, or the one class path of both.
+    pub fn before_entries(&self) -> &[PathBuf] {
+        self.before_classpath.as_deref().unwrap_or(&self.classpath)
+    }
+
     pub fn new(before: &Path, after: &Path, target: &str) -> Options {
         Options {
             before: before.to_path_buf(),
@@ -181,6 +192,7 @@ impl Options {
             max_trust: None,
             confirm: false,
             shared_callees: true,
+            before_classpath: None,
             before_target: None,
             before_arguments: None,
             results_agree_when: None,
@@ -487,30 +499,20 @@ pub(crate) fn confirmation_line(c: &Confirmation) -> String {
 /// that a declared subclass is told from its declared superclass, with `java/lang/Exception` among them to catch
 /// a checked exception neither declares. A declared unchecked class is caught by the listed ones already, and left
 /// out. With none declared, none: the harness is as it was.
-fn declared_checked(options: &Options, versions: [(&crate::classfile::ClassFile, &crate::classfile::Method); 2]) -> Result<Vec<harness::Checked>, Error> {
-    let with_jdk = |dir: &Path| -> Result<ClassPath, Error> {
-        let mut cp = ClassPath::new();
-        cp.add(dir)?;
-        for entry in &options.classpath {
-            if entry.exists() {
-                cp.add(entry)?;
-            }
-        }
-        Ok(cp.with_default_jdk())
-    };
-    // Only the previous version's own build is relocated under `before/`, not the class path's.
-    let mut relocated = ClassPath::new();
-    relocated.add(&options.before)?;
+fn declared_checked(options: &Options, relocated: &BTreeSet<String>, versions: [(&crate::classfile::ClassFile, &crate::classfile::Method); 2]) -> Result<Vec<harness::Checked>, Error> {
+    let with_jdk = |dir: &Path, classpath: &[PathBuf]| -> Result<ClassPath, Error> { Ok(version_classpath(dir, classpath)?.with_default_jdk()) };
+    // `relocated`: the previous version's own build is under `before/`, and of the class path only a closure of
+    // its own ([`Options::before_classpath`]).
     let mut found: Vec<(usize, harness::Checked)> = Vec::new();
-    for ((class, method), build) in versions.into_iter().zip([&options.before, &options.after]) {
-        let cp = with_jdk(build)?;
+    for ((class, method), (build, classpath)) in versions.into_iter().zip([(&options.before, options.before_entries()), (&options.after, options.classpath.as_slice())]) {
+        let cp = with_jdk(build, classpath)?;
         for name in method.declared_exceptions(&class.pool)? {
             let supers = cp.superclasses(&name);
             let unchecked = |c: &str| c == "java/lang/RuntimeException" || c == "java/lang/Error";
             if unchecked(&name) || supers.iter().any(|s| unchecked(s)) || found.iter().any(|(_, c)| c.class == name) {
                 continue;
             }
-            let application = relocated.application(&name)?.is_some();
+            let application = relocated.contains(&name);
             found.push((supers.len(), harness::Checked { class: name, application }));
         }
     }
@@ -518,11 +520,23 @@ fn declared_checked(options: &Options, versions: [(&crate::classfile::ClassFile,
         return Ok(Vec::new());
     }
     if !found.iter().any(|(_, c)| c.class == "java/lang/Exception") {
-        let depth = with_jdk(&options.after)?.superclasses("java/lang/Exception").len();
+        let depth = with_jdk(&options.after, &options.classpath)?.superclasses("java/lang/Exception").len();
         found.push((depth, harness::Checked { class: "java/lang/Exception".into(), application: false }));
     }
     found.sort_by(|a, b| b.0.cmp(&a.0).then(a.1.class.cmp(&b.1.class)));
     Ok(found.into_iter().map(|(_, c)| c).collect())
+}
+
+/// One version's class path: its build, then its libraries, those that exist.
+fn version_classpath(build: &Path, classpath: &[PathBuf]) -> Result<ClassPath, Error> {
+    let mut cp = ClassPath::new();
+    cp.add(build)?;
+    for entry in classpath {
+        if entry.exists() {
+            cp.add(entry)?;
+        }
+    }
+    Ok(cp)
 }
 
 /// For a String or List parameter, the values stream's refusal (`values::adapter`), to add to the check's: empty
@@ -1016,17 +1030,25 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let planned = |cp: &ClassPath, version: &crate::spec::plans::ConstructionPlan, name: &str| crate::construction::root(cp, version, name).map_err(|u| u.what);
 
     // 1. Both versions in one program: the old one relocated into the package "before".
+    // With a dependency closure of its own, the previous version's libraries go with it, those it can name.
     let before_dir = work.join("before-classes");
-    crate::relocate::directory(&options.before, &before_dir, "before")?;
+    let before_cp = version_classpath(&options.before, options.before_entries())?;
+    let after_cp = version_classpath(&options.after, &options.classpath)?;
+    let relocated = match &options.before_classpath {
+        Some(closure) => {
+            let mut libraries = ClassPath::new();
+            for entry in closure.iter().filter(|e| e.exists()) {
+                libraries.add(entry)?;
+            }
+            // A class only the new version has is not the previous version's to find.
+            let has: BTreeSet<String> = before_cp.application_class_names()?.into_iter().collect();
+            let absent: BTreeSet<String> = after_cp.application_class_names()?.into_iter().filter(|n| !has.contains(n)).collect();
+            crate::relocate::with_closure(&options.before, &libraries, &absent, &before_dir, "before")?
+        }
+        None => crate::relocate::directory(&options.before, &before_dir, "before")?,
+    };
 
     // 2. The method, from the new version.
-    let mut after_cp = ClassPath::new();
-    after_cp.add(&options.after)?;
-    for entry in &options.classpath {
-        if entry.exists() {
-            after_cp.add(entry)?;
-        }
-    }
     let Some(class) = after_cp.application(&class_internal)? else {
         return refuse(&mut out, 1, format!("class not found: {}", class_internal.replace('/', ".")));
     };
@@ -1072,6 +1094,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // Under a plan, the list is its adapted root (`construction::Rooted::List`), bounded by its own domain.
     let mut list_elements: Vec<Option<harness::RecordType>> = vec![None; names.len()];
     let mut list_bounds: Vec<u32> = vec![options.max_array_length; names.len()];
+    // The implementations given to the parameters of an interface type, the new version's.
+    let mut given: Vec<crate::given::Given> = Vec::new();
     for (i, (name, t)) in names.iter().zip(&descriptor.params).enumerate() {
         if crate::values::is_list(t) {
             let rooted = match plan {
@@ -1121,6 +1145,36 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             records.push(None);
             continue;
         }
+        // A parameter of an application interface, as in a property check ([`crate::given`]): an implementation
+        // that answers the accessors either version may call on it, each with one value, which both versions are
+        // given an object of, made from the same values.
+        let interface = match t {
+            Type::Object(i) if plan.is_none() && after_cp.application(i)?.is_some_and(|c| c.is_interface()) => Some(i),
+            _ => None,
+        };
+        if let Some(interface) = interface {
+            if options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() || options.correspondence.as_ref().is_some_and(|c| !c.inputs.is_empty() || !c.outputs.is_empty()) {
+                return refuse(&mut out, line, format!("parameter {name} is of the interface {}: an interface parameter with --before-target, --before-arguments, --results-agree-when or a correspondence is not supported yet; both versions are given an implementation of the same accessor values", t.java_name()));
+            }
+            let calls = |build: &Path, classpath: &[PathBuf]| -> Result<BTreeSet<(String, String)>, Error> {
+                let cp = version_classpath(build, classpath)?.with_default_jdk();
+                let roots = crate::bmc::gaps::roots(&cp, std::slice::from_ref(&options.target))?;
+                crate::bmc::gaps::calls_on_given(&cp, &roots, interface)
+            };
+            let mut called = calls(&options.after, &options.classpath)?;
+            match calls(&options.before, options.before_entries()) {
+                Ok(previous) => called.extend(previous),
+                Err(e) => return refuse(&mut out, line, format!("in the previous version, {e}")),
+            }
+            let g = crate::given::Given::of(&after_cp, interface, &called)?;
+            let previous = crate::given::accessors(&before_cp, interface)?;
+            if let Some((accessor, _)) = g.accessors.iter().find(|a| !previous.contains(a)) {
+                return refuse(&mut out, line, format!("parameter {name} is of the interface {}, whose accessor {accessor}() the previous version's {} doesn't have: both versions are given an implementation of the same accessors", t.java_name(), t.java_name()));
+            }
+            records.push(Some(g.record(&after_cp)?));
+            given.push(g);
+            continue;
+        }
         let record = match plan {
             Some(p) => match planned(&after_cp, &p.after, name) {
                 Ok(Some(crate::construction::Rooted::Object(r))) if Type::Object(r.class.clone()) == *t => Some(r),
@@ -1162,6 +1216,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let bound = list_elements.iter().zip(&list_bounds).filter(|(e, _)| e.is_some()).map(|(_, b)| *b).max().unwrap_or(options.max_array_length);
         return refuse(&mut out, line, format!("{method_name} takes a java.util.List, which the tool's own checker takes under the stated bound of {bound} elements (--engine native or auto); JBMC runs the list models its own way (VF-023), so --engine jbmc wouldn't check the same claim"));
     }
+    // An interface's given implementation is the own checker's alone, as in a property check, and so is a previous
+    // version on a closure of its own: JBMC has been run over neither.
+    if (!given.is_empty() || options.before_classpath.is_some()) && (options.engine == crate::Engine::Jbmc || options.confirm) {
+        let what = if given.is_empty() { "has a previous version with a dependency closure of its own (--before-classpath)".to_string() } else { format!("{method_name} takes an interface the check gives an implementation of") };
+        return refuse(&mut out, line, format!("{what}, which only the tool's own checker is given (--engine native or auto, without --confirm)"));
+    }
     let mut checker_parameters = crate::bmc::Parameters::default();
     if let Some(a) = &strings {
         checker_parameters.max_string_length = Some(a.domain().max_length);
@@ -1192,13 +1252,6 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let plain = options.before_target.is_none() && options.before_arguments.is_none() && results_agree_when.is_none();
     let (before_class_internal, before_method_name) = crate::verifier::parse_target(&before_target).ok_or_else(|| Error::new("--before-target must be <class>#<method>"))?;
-    let mut before_cp = ClassPath::new();
-    before_cp.add(&options.before)?;
-    for entry in &options.classpath {
-        if entry.exists() {
-            before_cp.add(entry)?;
-        }
-    }
     let Some(before_class) = before_cp.application(&before_class_internal)? else {
         return refuse(&mut out, line, format!("class not found in the previous version: {}", before_class_internal.replace('/', ".")));
     };
@@ -1309,6 +1362,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 Ok(_) => return refuse(&mut out, line, format!("the previous version's plan doesn't make {name} an object")),
                 Err(gap) => return refuse(&mut out, line, format!("in the previous version, {gap}")),
             },
+            // A given implementation: the previous version's of the same accessors, a class of its own under
+            // `before/` that implements the interface as that version has it, its own copy or the one of both.
+            Some(r) if r.given.is_some() => {
+                let interface = r.declared().to_string();
+                let mut b = r.clone();
+                b.given = Some(if relocated.contains(&interface) { format!("before/{interface}") } else { interface });
+                Some((r.clone(), Some(b)))
+            }
             Some(r) if components_passed => Some((r.clone(), None)),
             // The previous version's class outside the objects made by their constructor says why (O2's side
             // effects among them), not only that it isn't a record.
@@ -1395,7 +1456,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     // A result of an application class other than a record of primitive components (step H3 of
     // `llm-dlc/loops/foundations-heap.md`): compared by its fields, as an object parameter is, and followed for the
-    // identity relations. An enum, an interface or an abstract class is compared as before.
+    // identity relations. An interface the previous version has its own copy of (its build's, or its closure's) is
+    // compared through its accessors ([`crate::given::fields`]), a String by content: the two versions' results are
+    // objects of two classes, which `equals` says nothing about. An enum, an abstract class or an interface of both
+    // versions is compared as before.
     let mut result_equations = None;
     let result_fields = if result.0.is_some() || result.1.is_some() {
         (None, None)
@@ -1404,6 +1468,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let Type::Object(name) = t else { return Ok(None) };
             match cp.application(name)? {
                 Some(cf) if !cf.is_enum() && !cf.is_interface() && !cf.is_abstract() => Ok(Some(fields_of(cp, name, &mut Vec::new())?)),
+                Some(cf) if cf.is_interface() && relocated.contains(name) => {
+                    let java = name.replace('/', ".");
+                    let read = crate::given::fields(cp, name)?;
+                    Ok(Some(match crate::given::unread(cp, name)?.first() {
+                        Some(other) => Err(format!("{java} is an interface each version has its own copy of, so two results are compared through its accessors, and its abstract method {other} is none: what it answers would not be compared")),
+                        None if read.fields.is_empty() => Err(format!("{java} is an interface each version has its own copy of, so two results are compared through its accessors, and it has none")),
+                        None => Ok(read),
+                    }))
+                }
                 _ => Ok(None),
             }
         };
@@ -1453,6 +1526,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let mut layout = harness::Layout::with_lists(before_receiver, &names, &descriptor.params, &both_records, &list_params, result);
     layout.result_fields = result_fields;
+    if options.before_classpath.is_some() {
+        layout.relocated = relocated.clone();
+    }
+    // The given implementations, on every class path the two versions' classes are: the new version's, and the
+    // previous version's under `before/`, which implements the interface as that version has it.
+    for g in &given {
+        g.write_to(&before_dir)?;
+        let interface = if relocated.contains(&g.interface) { format!("before/{}", g.interface) } else { g.interface.clone() };
+        g.before("before", &interface).write_to(&before_dir)?;
+    }
     // A list's elements are compared by their fields after the call, and picked alike in both versions. An object
     // result followed into its fields is compared with each of the list's objects for identity too (the planned
     // claim's `identity:result==lines[0]`, `harness::Root::Element`); one that isn't followed (an interface, an
@@ -1461,7 +1544,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, format!("{method_name} takes a list and returns a {}, which this check doesn't follow into its fields: whether the result is one of the list's elements is an identity it couldn't observe, so it is not compared alone", descriptor.ret.java_name()));
     }
     layout.result_equations = result_equations;
-    layout.checked = declared_checked(options, [(&before_class, &before_method), (&class, &method)])?;
+    layout.checked = declared_checked(options, &relocated, [(&before_class, &before_method), (&class, &method)])?;
     // The plan's setup sequence (O3): the same calls in both versions, on the same symbolic arguments.
     if let Some(p) = plan.filter(|p| !p.after.setup.is_empty()) {
         let calls = match (crate::construction::setup_calls(&after_cp, &p.after, &class_internal), crate::construction::setup_calls(&before_cp, &p.before, &before_class_internal)) {
@@ -1627,22 +1710,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
 
     // 4. What the two versions share: a target identical in both, with everything it reaches, needs no proof; a
     // callee unchanged in both is one function in both.
-    let with_jdk = |dir: &Path| -> Result<ClassPath, Error> {
-        let mut cp = ClassPath::new();
-        cp.add(dir)?;
-        for entry in &options.classpath {
-            if entry.exists() {
-                cp.add(entry)?;
-            }
-        }
-        Ok(cp.with_default_jdk())
-    };
-    let shared_after_cp = with_jdk(&options.after)?;
-    let shared_before_cp = with_jdk(&options.before)?;
+    let shared_after_cp = version_classpath(&options.after, &options.classpath)?.with_default_jdk();
+    let shared_before_cp = version_classpath(&options.before, options.before_entries())?.with_default_jdk();
     // A changed pure helper is shared too once its own proof shows its two versions agree on every input
     // ([`crate::proof_cache::Helpers`]): under `--cache` and `--engine native`, proved first or found in the cache.
     let mut helpers = crate::proof_cache::Helpers::new(options, &work);
-    let mut plan = if options.shared_callees {
+    // Between two closures nothing is shared: each version runs on its own libraries, whatever their bytecode.
+    let mut plan = if options.shared_callees && options.before_classpath.is_none() {
         shared::plan_with(&shared_before_cp, &shared_after_cp, &MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &MemberRef::new(&class_internal, &method_name, &method.descriptor), plain, &mut |c| helpers.prove(c))
     } else {
         shared::Plan::default()
@@ -2448,7 +2522,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 replay = Some(Replay { by: "jvm".into(), reproduced: true });
             }
             let _ = writeln!(out, "  ({how})");
-            if let Some(scope) = &harness.scope {
+            // A scope that reads an object is the harness's alone to decide, which the replay ran.
+            if let Some(scope) = harness.scope.as_ref().filter(|s| !s.reads_objects()) {
                 let (locals, arrays) = locals_of(params, &arguments);
                 if let Ok(Value::Int(1)) = harness::expr::eval_with(scope, &locals, &arrays) {
                     let _ = writeln!(out, "  (note: the interpreter evaluates the scope expression as true on this input, which the harness should have skipped; check the expression)");

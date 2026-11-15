@@ -1604,14 +1604,14 @@ def _verifier_argv(plan, exe, sides, work):
         argv += [x for t in claim.get("throws") or [] for x in ("--throws", t)]
     else:
         before, after = plan.revisions
-        if [a.sha256 for a in deps[before]] != [a.sha256 for a in deps[after]]:
-            raise Refused("classpath", "before and after have different dependency closures, and jvmcontract's "
-                                      "equivalence takes one classpath for both",
-                          needs="one dependency closure both revisions use, by the same bytes",
-                          next="state the pair's shared dependencies, or check each revision as a property task")
         argv = [exe, "equivalence", "--before", f"{work}/{CLASSES}/{before}", "--after", f"{work}/{CLASSES}/{after}",
                 "--target", target]
         argv += [x for a in deps[after] for x in ("--classpath", rel(after, a))]
+        # A pair whose revisions have dependency closures of other bytes (a release pair, each against its own
+        # libraries): the previous revision runs on its own, in class path order. One with none is given the empty
+        # path, which names no entry.
+        if [a.sha256 for a in deps[before]] != [a.sha256 for a in deps[after]]:
+            argv += [x for a in deps[before] for x in ("--before-classpath", rel(before, a))] or ["--before-classpath", ""]
         if claim.get("allowedChange"):
             argv += ["--unchanged-unless", claim["allowedChange"]]
     argv += [x for n in claim.get("nullable") or [] for x in ("--nullable", n)]
@@ -1692,8 +1692,9 @@ def run_verifier(plan, prepared, workdir):
     preparation, or no JDK gives a not-started record; a kill or a timeout gives no observations; output that isn't
     the --json outcome gives none either. The exit code is raw: ingestion decides what the outcome means. Unsupported
     when the task kind, engine or gap mode isn't one this runs, the claim needs what no route gives (models,
-    bounds with no option) or names a file that changed since it was frozen, an equivalence pair's dependency closures
-    differ (jvmcontract takes one classpath for both), jvmcontract isn't built, or the work directory isn't ours. The
+    bounds with no option) or names a file that changed since it was frozen, jvmcontract isn't built, or the work
+    directory isn't ours. An equivalence pair whose dependency closures differ gives the previous revision its own
+    (--before-classpath), where it was refused before 2026-11-15 (VF-027's two-dependency-closures). The
     record is also written to workdir/verifier.json, which the record names (`record`, beside the attempt's
     `directory` and, when it didn't start, its `reason`), so ingestion can bundle it with the streams."""
     stop = lambda why, stage="verifier", **kw: Unsupported("run-verifier", RUNTIME, why, stage=stage, **kw)

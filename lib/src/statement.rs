@@ -471,7 +471,10 @@ pub fn checker_assumptions(last: Option<&JbmcResult>) -> Vec<Assumption> {
 pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, before_arguments: Option<&str>) -> Vec<Assumption> {
     let mut out = Vec::new();
     if let Some(s) = unchanged_unless {
-        out.push(Assumption { kind: AssumptionKind::IntendedInputs, text: format!("!({s}): the input is not among those the change is meant for"), basis: Basis::Stated, id: None });
+        // Over a given implementation the expression is read of the object, as Java reads it, and may throw.
+        let given = layout.records().iter().any(|slot| matches!(slot, Slot::Record { record, .. } if record.given.is_some()));
+        let thrown = if given { "; an input on which the expression throws (a call on a null object) is not among them either, and the versions are compared on it" } else { "" };
+        out.push(Assumption { kind: AssumptionKind::IntendedInputs, text: format!("!({s}): the input is not among those the change is meant for{thrown}"), basis: Basis::Stated, id: None });
     }
     // A list's objects are made alike, so one assumption says it for all of them.
     let list_objects: Vec<&Slot> = layout.lists().into_iter().flat_map(|l| if let Slot::List { elements, .. } = l { elements.iter().collect() } else { Vec::new() }).collect();
@@ -498,6 +501,13 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
                     basis: Basis::Harness,
                     id: None,
                 });
+                continue;
+            }
+        }
+        // A given implementation is the same in both versions, and its constructor rejects nothing.
+        if let Slot::Record { name, record, .. } = slot {
+            if record.given.is_some() {
+                out.push(given_assumption(name, record, "both versions are given one of the same values, and an", "statement"));
                 continue;
             }
         }
@@ -538,6 +548,25 @@ fn slot_first(slot: &Slot) -> Option<&Slot> {
     }
 }
 
+/// What a result over a parameter given an implementation of its interface ([`crate::given`]) is about, and no
+/// other implementation: `rest` continues after the accessors' behaviour, and `claim` is what the others are outside.
+fn given_assumption(name: &str, record: &crate::harness::RecordType, rest: &str, claim: &str) -> Assumption {
+    Assumption {
+        kind: AssumptionKind::Environment,
+        text: format!(
+            "{name} is an implementation of {} the check gives: {}; {rest} implementation that answers a call another way (a value that changes between calls, an exception) is outside the {claim}",
+            record.declared().replace('/', "."),
+            match record.params.as_slice() {
+                [] => "it answers none of the interface's abstract methods".to_string(),
+                [(one, _)] => format!("{one}() returns one value, the same on every call, and throws nothing, and it answers no other abstract method"),
+                accessors => format!("{} each return one value, the same on every call, and throw nothing, and it answers no other abstract method", accessors.iter().map(|(a, _)| format!("{a}()")).collect::<Vec<_>>().join(", ")),
+            }
+        ),
+        basis: Basis::Harness,
+        id: None,
+    }
+}
+
 /// A property's assumptions from how its harness makes its inputs (step H2 of `llm-dlc/loops/foundations-heap.md`):
 /// each object parameter made by its constructor, which skips an input it rejects; and each parameter of an
 /// interface type given an implementation ([`crate::given`]), which the property is about and no other.
@@ -546,20 +575,7 @@ pub fn property_assumptions(layout: &Layout) -> Vec<Assumption> {
         .records()
         .iter()
         .filter_map(|slot| match slot {
-            Slot::Record { name, record, .. } if record.given.is_some() => Some(Assumption {
-                kind: AssumptionKind::Environment,
-                text: format!(
-                    "{name} is an implementation of {} the check gives: {}; an implementation that answers a call another way (a value that changes between calls, an exception) is outside the property",
-                    record.declared().replace('/', "."),
-                    match record.params.as_slice() {
-                        [] => "it answers none of the interface's abstract methods".to_string(),
-                        [(one, _)] => format!("{one}() returns one value, the same on every call, and throws nothing, and it answers no other abstract method"),
-                        accessors => format!("{} each return one value, the same on every call, and throw nothing, and it answers no other abstract method", accessors.iter().map(|(a, _)| format!("{a}()")).collect::<Vec<_>>().join(", ")),
-                    }
-                ),
-                basis: Basis::Harness,
-                id: None,
-            }),
+            Slot::Record { name, record, .. } if record.given.is_some() => Some(given_assumption(name, record, "an", "property")),
             Slot::Record { name, record, .. } => Some(Assumption {
                 kind: AssumptionKind::Constructible,
                 text: format!("the constructor {} accepts the arguments of {name}: an input it rejects is skipped, so the property is about the objects it makes", record.describe()),
@@ -584,7 +600,9 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
         }
         (None, None, Type::Object(_)) if layout.result_fields.0.is_some() => {
             let fields = layout.result_fields.0.as_ref().expect("checked");
-            format!("the result, a {} compared field by field ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), fields.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))
+            // An interface's object is read through its accessors (`crate::given::fields`), whatever its class.
+            let how = if fields.fields.iter().any(|(n, _)| n.ends_with("()")) { "through its accessors, whatever class each version's object is of" } else { "field by field" };
+            format!("the result, a {} compared {how} ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), fields.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))
         }
         (None, None, Type::Void) => "nothing: the method returns no value".into(),
         (None, None, Type::Array(_)) => "the result, an array compared element by element".into(),
@@ -637,7 +655,7 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
                 }
                 text
             }),
-            Slot::Record { name, record, before: Some(_), .. } => record.fields.as_ref().map(|f| format!("{name}: {}", f.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))),
+            Slot::Record { name, record, before: Some(_), .. } => record.observed().map(|f| format!("{name}: {}", f.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))),
             _ => None,
         })
         .collect();
