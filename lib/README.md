@@ -20,6 +20,32 @@ It started as a port of the Java proof of concept in [`examples/tools/contracts`
 Every verdict is one of three. *Verified*: the code behaves exactly as its contract says, for every input. *Violation*: behaviour changed and the developer did not say so, with a concrete witness. *Unverifiable*: the tool refuses to give a verdict, because "we could not check" must never read as "fine".
 Every verdict can be written as SARIF for GitHub code scanning and SonarQube.
 
+## Layout
+
+```
+lib/
+  README.md            this page: what is verified, how each verdict is proved, the commands, the library API, the tests
+  Cargo.toml           the crate `jvmcontract`: a library (src/lib.rs) and the command line of the same name (src/main.rs)
+  src/                 one module per contract kind and per step of a proof, and these folders:
+    classfile/         the class-file reader (JVMS chapter 4, up to the Java 25 format)
+    interp/            the interpreter that derives behavioural contracts without a JVM
+    harness/           the statement of a proof as a generated class file: old and new on the same symbolic arguments
+    bmc/               the tool's own bounded model checker, over a bundled SAT solver (#the-tools-own-checker)
+    spec/              the shared IR the proof steps meet at (#the-foundations-ir)
+    alignment/         which new method corresponds to each old one, and how their arguments map
+    reuse/             proofs reused across a change: summaries and their checks
+  models/              the tool's models of JDK classes, in Java, with their contracts (models/README.md)
+  tests/               integration tests over Java fixtures compiled at test time (fixtures/), the conformance corpus,
+                       and costs.json, every test's cost tier (#tests)
+  tools/               the test runner by cost tier and its lint: test_costs.py, cost_tier.py
+  benchmark/           the corpus both engines are measured on, and its results (benchmark/README.md)
+  solvers/             the comparison of solvers for the own checker (solvers/README.md)
+```
+
+The examples that exercise each contract kind are found by approach in the
+[examples router](../examples/README.md#find-an-example). How the verifier is run on a user's change is in
+[`llm-dlc/runtime.md`](../llm-dlc/runtime.md).
+
 ## Install
 
 ```bash

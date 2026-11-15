@@ -5,6 +5,10 @@ Every change is published together with the LLM session that made it.
 For each commit you can read the message, a summary of the session, and the full transcript.
 
 The formal verification work itself is in [`examples/`](../examples/README.md). This folder is about how it was made.
+It also holds what [`/prove-java-change`](runtime.md) runs on apart from the verifier: the two modes of a checkout,
+the proof loop, and the release and contribution tools.
+
+## Layout
 
 ```
 llm-dlc/

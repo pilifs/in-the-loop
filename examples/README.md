@@ -459,10 +459,13 @@ examples/
   apps/quorum/             Quorum, with its TLA+ models in spec/
   apps/crosscut/           Crosscut, with its TLA+ models in spec/
   apps/mica/               Mica, with its TLA+ model in spec/
+  apps/shop/               Shop: a pricing kernel behind one Spring route, for whole-build comparisons
+  apps/deliveries/         Deliveries: a Spring route in front of a Crosscut kernel, for checks at an entry point
   tools/build.py           the generator: runs the constructed examples, writes their pages and the router
   tools/find.py            the search over index.json
   tools/alignment.py       the ground truth alignment inference is scored against (alignment/), checked against the examples
   tools/contracts/         the Java verifier for B8, B9 and B10, used by Box Office
+  tools/targets/           real-world examples with a target.json sidecar: pinned sources, preparation, tasks, receipts
   tools/tla/               the generator of a model's state machine from a B8 contract, and the TLA+ standard modules
   setup/                   the toolchain installer for Ubuntu and WSL2
 ```

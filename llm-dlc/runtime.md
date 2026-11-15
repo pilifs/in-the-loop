@@ -47,6 +47,25 @@ step 3 on the examples named, with traces as for any loop here, and reports as i
 is then `/in-the-loop:prove-java-change`. The plugin carries only the skill's folder: the skill, its bootstrap and
 its pin.
 
+## Where things are
+
+| Path | What it is |
+|---|---|
+| [`plugins/in-the-loop/skills/prove-java-change/`](../plugins/in-the-loop/skills/prove-java-change/SKILL.md) | The skill (`SKILL.md`), its [bootstrap](#the-checkout-on-a-users-machine) (`bootstrap.py`) and the pin of [its release](#releases) (`release.json`) |
+| [`plugins/in-the-loop/.claude-plugin/plugin.json`](../plugins/in-the-loop/.claude-plugin/plugin.json), [`.claude-plugin/marketplace.json`](../.claude-plugin/marketplace.json) | The plugin's manifest and the marketplace entry that installs it |
+| `.claude/skills/prove-java-change` | A link to the skill's folder, which makes it a project skill in this repository |
+| [`tools/mode.py`](tools/mode.py) | Which [mode](#runtime-mode-and-prove-java-change) a checkout is in; `sync.py` asks it |
+| [`tools/doctor.py`](tools/doctor.py) | [Whether the machine is enough](#is-the-machine-enough), and a budget for it |
+| [`tools/prove-loop.sh`](tools/prove-loop.sh), [`tools/feature-loop.sh`](tools/feature-loop.sh) | [The proof loop](#the-proof-loop), and the loop under it |
+| [`tools/conductor.py`](tools/conductor.py) | [The conductor's](#the-conductor) side of that loop |
+| [`tools/contribute.py`](tools/contribute.py) | [What can go upstream](#contributing-back), and a check of a prepared pull request |
+| [`tools/release.py`](tools/release.py) | [Cutting a release](#releases) |
+| `.in-the-loop-runtime.json` (not committed) | The marker of a runtime checkout, written by the bootstrap |
+| `llm-dlc/loop-summaries/prove-change/` (not committed) | The state of a proof loop's run, beside the run's record |
+
+Step 2 of the skill stands on the [examples](../examples/README.md#add-an-example), the proofs run through the
+[verification pipeline](../verification/README.md), and the verifier is [`lib/`](../lib/README.md).
+
 ## Procedure for agents in a runtime checkout
 
 It replaces [`README.md`'s procedure](README.md#procedure-for-agents) and the trace rules of `CLAUDE.md`. Everything

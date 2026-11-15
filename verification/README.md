@@ -32,6 +32,9 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 
 | Path | What it is | Written by |
 |---|---|---|
+| [`README.md`](README.md) | this page: the lifecycle, [submitting a job](#for-agents-making-changes-submitting-a-job), [managing the pipeline](#for-the-agent-managing-the-pipeline), [reading results](#reading-results), [the runner's resources](#running-resources-isolation-configuration), [other backends](#backends-other-machines-and-the-cloud) | |
+| [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
+| [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
 | [`schema/result.schema.json`](schema/result.schema.json) | the result format | |
 | `jobs/ID.json` | one job, committed with the change it verifies | the submitting agent, with `submit` |
