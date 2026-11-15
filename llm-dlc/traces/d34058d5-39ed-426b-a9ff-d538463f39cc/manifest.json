@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "d34058d5-39ed-426b-a9ff-d538463f39cc",
-  "status": "ended",
+  "status": "open",
   "title": "Recent sessions summary",
   "first_prompt": "Provide a summary of recent sessions -- it has been a week since I have worked with you, and would like to start where we left off",
   "client": {
@@ -91,11 +91,11 @@
     }
   ],
   "log": {
-    "sha256": "065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688",
-    "bytes": 5763043,
-    "lines": 2071,
-    "gzip_bytes": 1029112,
-    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz"
+    "sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b",
+    "bytes": 5766927,
+    "lines": 2075,
+    "gzip_bytes": 1029862,
+    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -981,11 +981,19 @@
     },
     {
       "change_id": "uklpttstmurwwyklyyksnsnrylwrxkzm",
-      "commit_id": null,
+      "commit_id": "26110c84323d538dfcdde7d31a72d45b5ae37ea2",
       "immutable": false,
       "summary": "feature-loop.sh: moonshots, and templated moonshots that take one item of a list per cycle, starting with prove-examples (285-300)",
       "body": "The one-line named instructions of the repo's first days (features, tla, spring, relational) are now called moonshots, apart from briefs and their streams. A templated moonshot puts the next item of its list into its template each cycle: prove-examples gives examples 285 to 300 in turn to \"Formally prove example {} as elegantly and efficiently as possible\", in a session of its own fixed in the script (a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31) on claude-fable-5-2 at high effort, which the first run creates and later runs resume. An item is done once an earlier run's record in llm-dlc/loop-summaries lists a commit for it ('- cycle N, item X, ...'), so a run starts at the first item without one, runs at most as many cycles as items are left, and ends when the list does. pricing.json gains claude-fable-5-2 at its list price (8/40 per MTok, cache read 0.20).\n\nVerified with a stub claude in a throwaway jj repo: the first turn created the session with --session-id on claude-fable-5-2 at high effort and every later turn resumed it; a 3-cycle run took 285-287; a run whose cycle made no commit stopped and left 288; the next run took 288-289; with every item recorded the loop exits 0 without calling claude.",
       "log_sha256": "065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688"
+    },
+    {
+      "change_id": "xuyzoxtqyvmvosmkzwlyxukrnsqsmtlx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
     }
   ],
   "logs": {
@@ -1024,6 +1032,12 @@
       "lines": 920,
       "gzip_bytes": 401822,
       "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/31fd64c56716b465955a1ffc6d81f3c404b282cbef000f24b4c1b5f7d88f82b9.jsonl.gz"
+    },
+    "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b": {
+      "bytes": 5766927,
+      "lines": 2075,
+      "gzip_bytes": 1029862,
+      "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b.jsonl.gz"
     },
     "36c490253cc731c90209918fdaa8d151460e4886d0a8ba9a23f1c233d9005233": {
       "bytes": 2580403,
