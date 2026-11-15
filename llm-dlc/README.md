@@ -20,6 +20,8 @@ llm-dlc/
   session-notes/<session-id>.md     optional hand-written note, shown at the top of that session's summary
   traces/README.md                  every session added up: tokens, tools, commits, logs (generated)
   traces/metrics.json               every session added up as data, for charts (generated)
+  traces/loops.md                   every loop added up: time, tokens and cost by category, loop, run, cycle and item (generated)
+  traces/loops.json                 the same as data, with every cycle and the verification jobs it submitted (generated)
   traces/<session-id>/
     summary.md                      what was asked, what was done, what was committed (generated)
     manifest.json                   detailed metadata: stats, models, tokens, commits, logs (generated)
@@ -37,6 +39,8 @@ llm-dlc/
   tools/tool_time.py                where loops' time went: blocked time by what the agent ran, by loop and by cargo test
                                     binary, from the redacted logs (`--fetch` for published ones not stored here);
                                     test_tool_time.py tests it
+  tools/loop_stats.py               adds up the loops from the metrics tables, the run records and the verification jobs;
+                                    test_loop_stats.py tests it
   tools/streams_status.py           the state and status bar of run-streams.sh; test_streams_status.py tests it
   loops/                            briefs for feature-loop.sh: markdown instructions a loop works through
   loops/brief-template.md           the skeleton of a brief and the standing rules every brief starts with, the timebox included
@@ -120,6 +124,8 @@ A session's last words cannot be in the log that a push from inside it publishes
 
 Each run keeps a record in `llm-dlc/loop-summaries/`: the instruction, a line for each commit as it lands, so it survives a restart, and how the run ended. The folder is gitignored, because a record holds local paths. `sync.py` publishes each record instead as a copy redacted by the transcripts' rules, at `llm-dlc/traces/<session-id>/runs/<record>.md` beside the session its header names, and lists the runs in that session's `summary.md` (start, end, cycles, how it ended). A record still being written is published as it stands and again as it grows, since a run that is killed never writes its end. `check` scans the copies as it scans an unpublished log. Only the default workspace publishes them: `run-streams.sh` copies a stream's records into it from the stream's workspace, at its start, after each of the stream's runs and before the merge (`llm-dlc/tools/run_records.py`, which replaces a copy only with the record it is a start of). When the cycles run out, the loop asks the session for one more turn that only reports: a summary of the run's commits, the verification jobs still pending or failed, and the `sync.py check` warnings to judge before pushing. That summary goes at the end of the record.
 
+**Loop statistics.** [`traces/loops.md`](traces/loops.md) adds up every loop, and [`traces/loops.json`](traces/loops.json) holds the same rows as data: moonshots, briefs with their streams, and the verification loop, each by loop, run and cycle, with time, tokens, cost at list price, commits, and the verification jobs each cycle submitted with what they came to. A templated moonshot also gets a row per item: how many cycles took it, what they cost, its commit, and whether its proof passed. `sync.py` writes both on every commit from files in the repo (the sessions' `metrics.json`, the published run records, `verification/jobs/` and `verification/results/`), with [`tools/loop_stats.py`](tools/loop_stats.py), and `check` fails when either is out of date. A record tells which of its session's prompts were the run's, so a record's times are UTC, like a transcript's. The loops with no published record (every run before 2026-11-06: the first four moonshots, `sync-performance`, `build-orchestration` and `sound-verdicts`) are read from their sessions' prompts instead, and marked so. [`specification.md`](specification.md#metrics) defines the tables.
+
 A brief can carry its own instructions for when to stop under a `## Loop until` heading, which the loop uses when the command line gives none; a brief with neither runs until the session decides it is done. The loop resumes the session that has always run it, with Fable at high effort. A brief can name its own session, model, effort and memory cap under a `## Loop settings` heading (`- session: ID`, `- model: ID`, `- effort: LEVEL`, `- memory: SIZE`), and `FEATURE_LOOP_SESSION`, `FEATURE_LOOP_MODEL`, `FEATURE_LOOP_EFFORT` and `FEATURE_LOOP_MEMORY_MAX` override both. `FEATURE_LOOP_SESSION=new` starts a fresh session that the run's cycles share, and a session id with no transcript yet, such as one opened in Claude Code but never sent a message, is created by the loop's first turn.
 
 It runs in a systemd scope capped at 3.5 GB (a brief's `- memory:` or `FEATURE_LOOP_MEMORY_MAX` changes that), so a proof that exhausts memory is killed alone and the session sees it fail. The scope is named after the loop, `feature-loop-NAME.scope` (`feature-loop-engine-priorities-jbmc.scope` for the brief `engine-priorities-jbmc.md`), so different loops can run at once. A loop won't start if less memory than its cap is available, or if its own scope is still active.
@@ -157,7 +163,7 @@ A run that leaves work behind, such as jobs it resubmitted, is followed by anoth
 
 ## Sessions
 
-Newest first. Each row links to the session summary. The [traces overview](traces/README.md) adds them all up.
+Newest first. Each row links to the session summary. The [traces overview](traces/README.md) adds them all up, and [loop statistics](traces/loops.md) adds up the loops.
 
 <!-- index:begin (generated by llm-dlc/tools/sync.py) -->
 | Started | Session | Prompts | Commits | Status |

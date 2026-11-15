@@ -104,6 +104,10 @@ python3 llm-dlc/tools/sync.py commit -m "Add example 146: a follower that trunca
 
 Then carry on with the next thing. Don't wait for the result, and don't run the job yourself to see.
 
+A job records the session that submitted it (the one Claude Code runs `submit` in, unless `--session` names another).
+The loop statistics (`llm-dlc/traces/loops.md`) use that, or failing it the job's name in the commit message, to tie a
+job and its result to the loop cycle that submitted it.
+
 **What makes a good job.** The result is read later, in a batch, by someone who did not see your session, so:
 
 - `--title` says what is verified, in one line. `--description` says what the change was, what the job checks, and

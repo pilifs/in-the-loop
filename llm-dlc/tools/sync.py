@@ -10,6 +10,8 @@ Layout (llm-dlc/specification.md has the full spec, llm-dlc/README.md the proced
   llm-dlc/traces/<session-id>/metrics.json           checked in: per-call tables for charts (metrics.py)
   llm-dlc/traces/<session-id>/runs/<record>.md       checked in: a feature-loop.sh run of the session, redacted
   llm-dlc/traces/metrics.json                        checked in: those tables added up over all sessions
+  llm-dlc/traces/loops.json, loops.md                checked in: the loops added up by category, loop, run, cycle
+                                                     and item, as data and as a page (loop_stats.py)
   llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
 
 Public URL of a log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
@@ -36,7 +38,8 @@ Commands:
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
                                 each -m is one paragraph, as in git; then runs `check` on the result,
                                 counting its notes, and fails if it finds an error
-  sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json and
+  sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json,
+                                traces/loops.json, traces/loops.md and
                                 README.md's index table from the session files, which settles their conflicts;
                                 lists any other conflict and exits 1 if one is left
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
@@ -110,6 +113,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
+import loop_stats  # llm-dlc/tools/loop_stats.py
 import metrics  # llm-dlc/tools/metrics.py
 import redaction_rules  # llm-dlc/tools/redaction_rules.py
 import redactor  # llm-dlc/tools/redactor.py: what decides a cached result
@@ -1106,13 +1110,81 @@ def session_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
     return metrics.dumps(metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string))
 
 
-def render_rollup(manifests: dict[str, dict] | None = None) -> str:
-    """llm-dlc/traces/metrics.json: a function of the session metrics files, like the overview."""
+def metrics_files(manifests: dict[str, dict] | None = None) -> list[tuple[dict, dict]]:
+    """(manifest, metrics.json) of every session that has both, oldest first: what the files over all
+    sessions are made from. Read once for the lot of them."""
     manifests = all_manifests() if manifests is None else manifests
     found = [(m, json.loads(metrics_path(sid).read_text())) for sid, m in manifests.items()
              if m.get("schema") == SCHEMA and metrics_path(sid).exists()]
     found.sort(key=lambda pair: pair[0].get("started") or "")
+    return found
+
+
+def render_rollup(manifests: dict[str, dict] | None = None, found: list[tuple[dict, dict]] | None = None) -> str:
+    """llm-dlc/traces/metrics.json: a function of the session metrics files, like the overview."""
+    found = metrics_files(manifests) if found is None else found
     return metrics.dumps(metrics.rollup(found, json.loads(PRICING.read_text())))
+
+
+# The loops added up (loop_stats.py): which prompts of which session were a loop's, by the published
+# run records, and what the verification jobs a cycle submitted came to. Paths by function, not by
+# constant, so that a test that points TRACES and REPO elsewhere points these there too.
+
+def loops_data_path() -> Path:
+    return TRACES / "loops.json"
+
+
+def loops_page_path() -> Path:
+    return TRACES / "loops.md"
+
+
+def verification_jobs() -> list[dict]:
+    """Each verification job (verification/jobs/ID.json) with what its result, if it has one, says
+    it took (verification/results/ID/result.json), as loop_stats reads them. A file that is not
+    JSON, or not a job, is left out: the pipeline's own `validate` is what reports it."""
+    out, root = [], REPO / "verification"
+    for path in sorted((root / "jobs").glob("*.json")):
+        try:
+            job = json.loads(path.read_text())
+            submitted, links = job.get("submitted") or {}, job.get("links") or {}
+            row = {"id": job["id"], "at": submitted.get("at"), "session": submitted.get("session"),
+                   "supersedes": job.get("supersedes"), "examples": links.get("examples") or []}
+            result = root / "results" / job["id"] / "result.json"
+            if result.exists():
+                r = json.loads(result.read_text())
+                usage = r.get("usage") or {}
+                row.update(status=r.get("status"), wall_seconds=usage.get("wallSeconds") or r.get("wallSeconds"),
+                           cpu_seconds=usage.get("cpuSeconds"), peak_memory_bytes=usage.get("peakMemoryBytes"))
+        except (ValueError, KeyError, TypeError, AttributeError, OSError):
+            continue
+        out.append(row)
+    return out
+
+
+def render_loops(manifests: dict[str, dict] | None = None, found: list[tuple[dict, dict]] | None = None) -> tuple[str, str]:
+    """(llm-dlc/traces/loops.json, llm-dlc/traces/loops.md): a function of the session metrics files,
+    the manifests, the published run records and the verification jobs, so a sync rewrites them
+    identically and `check` can tell when they are stale."""
+    found = metrics_files(manifests) if found is None else found
+    records = [(copy.stem, copy.read_text(errors="replace")) for m, _ in found for copy in run_copies(m["session_id"])]
+    try:
+        doc = loop_stats.loops(found, records, verification_jobs(), json.loads(PRICING.read_text()))
+        return metrics.dumps(doc), loop_stats.page(doc)
+    except Exception as e:  # noqa: BLE001: statistics must never stop a commit, least of all a loop's own
+        # Whatever a record, a session file or a job holds that loop_stats cannot read, the commit
+        # under way goes on: the two files say what failed, and `check` warns until it is fixed.
+        failed = loop_stats.failure(f"{type(e).__name__}: {e}")
+        return metrics.dumps(failed), loop_stats.page(failed)
+
+
+def loops_warnings() -> list[str]:
+    """For `check`: the loop statistics on disk are a report of a failure, not statistics."""
+    try:
+        error = json.loads(loops_data_path().read_text()).get("error")
+    except (OSError, ValueError):
+        return []  # missing or unreadable is check_global_files' error
+    return [f"{loops_data_path().relative_to(REPO)}: the loop statistics could not be computed ({error}); "
+            "the commits are unaffected, and llm-dlc/tools/loop_stats.py needs a fix"] if error else []
 
 
 def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCache | None = None,
@@ -1188,7 +1260,11 @@ def write_index() -> None:
         if 0 <= start < end:
             write_if_changed(CHANGES_README, readme[:start + len(INDEX_BEGIN)] + "\n" + "\n".join(table) + "\n" + readme[end:])
     write_if_changed(TRACES_README, render_traces_readme(manifests))
-    write_if_changed(METRICS_ROLLUP, render_rollup(manifests))
+    found = metrics_files(manifests)
+    write_if_changed(METRICS_ROLLUP, render_rollup(found=found))
+    data, page = render_loops(found=found)
+    write_if_changed(loops_data_path(), data)
+    write_if_changed(loops_page_path(), page)
 
 
 def _table(header: list[str], rows: list[list]) -> str:
@@ -3217,7 +3293,7 @@ def git_blob_id(data: bytes, length: int) -> str:
 
 def checked_files(manifests: dict[str, dict]) -> dict[str, Path]:
     """The tracked files that `check` reads and scans, by repo path: what a push may publish."""
-    paths = [INDEX, TRACES_README, METRICS_ROLLUP, REVIEWED, ALLOWLIST]
+    paths = [INDEX, TRACES_README, METRICS_ROLLUP, loops_data_path(), loops_page_path(), REVIEWED, ALLOWLIST]
     for sid in manifests:
         paths += [manifest_path(sid), summary_path(sid), metrics_path(sid), notes_path(sid), *run_copies(sid)]
     return {str(p.relative_to(REPO)): p for p in paths if p.exists()}
@@ -3423,9 +3499,10 @@ def conflicted_paths() -> list[str]:
 
 
 def cmd_regenerate(args: list[str]) -> int:
-    """After a merge: rewrite the four files generated from the per-session files (index.json,
-    traces/README.md, traces/metrics.json, and README.md's index table), whether or not they
-    conflict. Two lines that each committed a session conflict in all four, and a clean textual
+    """After a merge: rewrite the files generated from the per-session files (index.json,
+    traces/README.md, traces/metrics.json, traces/loops.json, traces/loops.md, and README.md's
+    index table), whether or not they conflict. Two lines that each committed a session conflict in
+    the first four, and in the loops' two when either ran a loop, and a clean textual
     merge of them can still be wrong; every input (a session's manifest and metrics.json) is in a
     directory of its own, so it merges cleanly and regenerating is always the right resolution.
     A conflict anywhere else is left for a person or an agent and listed, and so is one in
@@ -3434,7 +3511,7 @@ def cmd_regenerate(args: list[str]) -> int:
     if args:
         print("usage: sync.py regenerate", file=sys.stderr)
         return 2
-    rollups = {INDEX, TRACES_README, METRICS_ROLLUP}
+    rollups = {INDEX, TRACES_README, METRICS_ROLLUP, loops_data_path(), loops_page_path()}
     conflicted = conflicted_paths()
     inputs = [p for p in conflicted if (REPO / p).resolve() not in rollups and (REPO / p).resolve() != CHANGES_README
               and (REPO / p).resolve().is_relative_to(TRACES)]
@@ -3510,8 +3587,13 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
         errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
     if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme(manifests):
         errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
-    if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup(manifests):
+    found = metrics_files(manifests)
+    if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup(found=found):
         errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
+    for path, text in zip((loops_data_path(), loops_page_path()), render_loops(found=found)):
+        if not path.exists() or path.read_text() != text:
+            errors.append(f"{path.relative_to(REPO)} does not match the session metrics, the run records and "
+                          "the verification jobs (run sync)")
     for listed in (REVIEWED, ALLOWLIST):
         if listed.exists() and (leaks := redact.leaks(listed.read_text())):
             errors.append(f"unredacted {leaks} in {listed.relative_to(REPO)}")
@@ -3544,6 +3626,7 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     notes += found_notes
     with perf.phase("global files"):
         errors += check_global_files(manifests, redact)
+        warnings += loops_warnings()
     with perf.phase("run records"):
         notes += run_notes(redact)
     if unsent := hook_unsent(older_than=HOOK_GRACE):

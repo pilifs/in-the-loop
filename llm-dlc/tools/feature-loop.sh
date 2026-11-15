@@ -87,6 +87,10 @@
 # Each run keeps a log in llm-dlc/loop-summaries/ (gitignored, never pushed): a
 # line per commit as it lands, so it survives a restart, and when the cycles run
 # out the session's own summary of the run, written for the person reading it.
+# Its times are UTC, whatever the machine's zone: sync.py publishes the record
+# redacted and reads from it which of the session's prompts were this run's, for
+# the loop statistics (llm-dlc/traces/loops.md: time, tokens and cost by loop,
+# run, cycle and item), and the session's transcript keeps its times in UTC.
 #
 # Exits 0 when the cycles run out or the session decides to stop, 1 when a cycle
 # made no commit, the session's decision was unclear, a stop left the brief's
@@ -271,7 +275,9 @@ contain "$@"
 # The run's record: what it was asked, a line per commit, and how it ended.
 SUMMARIES=llm-dlc/loop-summaries
 mkdir -p "$SUMMARIES" || exit 1
-SUMMARY=$SUMMARIES/$(date +%F-%H%M%S)-$PROMPT.md
+# The record's clock: UTC, as in the transcripts that loop_stats.py reads it against.
+stamp() { date -u '+%F %T'; }
+SUMMARY=$SUMMARIES/$(date -u +%F-%H%M%S)-$PROMPT.md
 
 # A templated moonshot: the items no earlier run of it has committed, in order.
 # A run takes one per cycle, so it runs at most that many cycles.
@@ -319,7 +325,7 @@ fi
 {
   echo "# Feature loop: $PROMPT"
   echo
-  echo "Started $(date '+%F %T %Z'), ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, $MODEL at $EFFORT effort, after change $START."
+  echo "Started $(stamp) UTC, ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, $MODEL at $EFFORT effort, after change $START."
   echo
   echo "> $INSTRUCTION"
   echo
@@ -429,7 +435,7 @@ cleanup() {
   log "session: $SESSION_ID"
 }
 trap cleanup EXIT
-trap 'note; note "Interrupted $(date "+%F %T") during cycle $cycle."; exit 130' INT TERM
+trap 'note; note "Interrupted $(stamp) during cycle $cycle."; exit 130' INT TERM
 
 # `auto` is the mode this session has always run in. With -p nobody can answer a
 # prompt, so anything auto mode would ask about is denied rather than left hanging.
@@ -582,7 +588,7 @@ fork_session() {
   note
 }
 if [[ -n "$FRESH" && -n "$FORK_FROM" ]]; then
-  fork_session || { note "Stopped $(date '+%F %T'): the fork of session $FORK_FROM failed."; exit 1; }
+  fork_session || { note "Stopped $(stamp): the fork of session $FORK_FROM failed."; exit 1; }
 fi
 
 if [[ -n "$reader" ]]; then
@@ -597,7 +603,7 @@ while :; do
   before=$(last_change) || exit 1
   if [[ -n "$BRIEF" && "$(brief_hash)" != "$BRIEF_HASH" ]]; then
     log "the brief $BRIEF changed during the run, stopping before cycle $cycle"
-    note; note "Stopped $(date '+%F %T'): the brief changed before cycle $cycle; restart the loop to work from the new one."
+    note; note "Stopped $(stamp): the brief changed before cycle $cycle; restart the loop to work from the new one."
     exit 1
   fi
 
@@ -608,7 +614,7 @@ while :; do
       cycle=$(( cycle - 1 ))
       log "no items left: stopping after cycle $cycle"
       summarize
-      note; note "Ended $(date '+%F %T') after $cycle cycle(s): no items left."
+      note; note "Ended $(stamp) after $cycle cycle(s): no items left."
       log "record of the run: $SUMMARY"
       exit 0
     fi
@@ -625,11 +631,11 @@ while :; do
   after=$(last_change) || exit 1
   if [[ "$after" == "$before" ]]; then
     log "cycle $cycle: no commit, stopping; session $SESSION_ID needs attention"
-    note; note "Stopped $(date '+%F %T'): cycle $cycle made no commit; session $SESSION_ID needs attention."
+    note; note "Stopped $(stamp): cycle $cycle${item:+ (item $item)} made no commit; session $SESSION_ID needs attention."
     exit 1
   fi
   log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
-  note "- cycle $cycle, ${item:+item $item, }$(date '+%F %T'), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+  note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
 
   decision=continue
   # The last cycle of a count ends the loop anyway, so there is nothing to decide.
@@ -639,7 +645,7 @@ while :; do
   fi
   if [[ "$decision" == unclear ]]; then
     log "cycle $cycle: no clear decision, stopping; session $SESSION_ID needs attention"
-    note; note "Stopped $(date '+%F %T'): after cycle $cycle the session gave no clear LOOP: continue or LOOP: stop; session $SESSION_ID needs attention."
+    note; note "Stopped $(stamp): after cycle $cycle the session gave no clear LOOP: continue or LOOP: stop; session $SESSION_ID needs attention."
     exit 1
   fi
   closed=ok
@@ -653,14 +659,14 @@ while :; do
     log "the session decided to stop: stopping after cycle $cycle"
     summarize
     if [[ "$closed" == failed ]]; then
-      note; note "Stopped $(date '+%F %T') after $cycle cycle(s): the session decided to stop, but the brief's status still says $(brief_status); session $SESSION_ID needs attention."
+      note; note "Stopped $(stamp) after $cycle cycle(s): the session decided to stop, but the brief's status still says $(brief_status); session $SESSION_ID needs attention."
       log "record of the run: $SUMMARY"
       exit 1
     fi
     if has_status; then
-      note; note "Ended $(date '+%F %T') after $cycle cycle(s): the session decided to stop; the brief says $(brief_status)."
+      note; note "Ended $(stamp) after $cycle cycle(s): the session decided to stop; the brief says $(brief_status)."
     else
-      note; note "Ended $(date '+%F %T') after $cycle cycle(s): the session decided the work was done."
+      note; note "Ended $(stamp) after $cycle cycle(s): the session decided the work was done."
     fi
     log "record of the run: $SUMMARY"
     exit 0
@@ -668,7 +674,7 @@ while :; do
   if [[ "$remaining" == 0 ]]; then
     log "no cycles left: stopping after cycle $cycle"
     summarize
-    note; note "Ended $(date '+%F %T') after $cycle cycle(s)."
+    note; note "Ended $(stamp) after $cycle cycle(s)."
     log "record of the run: $SUMMARY"
     exit 0
   fi

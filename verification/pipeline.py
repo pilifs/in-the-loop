@@ -1701,8 +1701,10 @@ def cmd_submit(args):
             sys.exit(f"--link {link!r}: use KIND:VALUE, such as example:104 or path:lib/src/tla.rs")
         links.setdefault(key + "s" if not key.endswith("s") else key, []).append(value)
     job["submitted"] = {**job.get("submitted", {}), "at": iso(at)}
-    if args.session:
-        job["submitted"]["session"] = args.session
+    # Without --session, the session Claude Code says is running this command: the loop statistics
+    # (llm-dlc/tools/loop_stats.py) tie a job to the loop cycle that submitted it by this id.
+    if session := args.session or os.environ.get("CLAUDE_CODE_SESSION_ID"):
+        job["submitted"]["session"] = session
     if args.by:
         job["submitted"]["by"] = args.by
     if args.revision:
@@ -1896,7 +1898,7 @@ def main(argv=None):
     p.add_argument("--requires", action="append", help="java javac jbmc tlc cargo jvmcontract gradle maven, or any command; repeatable")
     p.add_argument("--priority", type=int, help="higher runs first (default 0)")
     p.add_argument("--revision", help="run at this commit instead of the one that commits the job file")
-    p.add_argument("--session", help="the submitting session's id")
+    p.add_argument("--session", help="the submitting session's id (default: the Claude Code session running this, if any)")
     p.add_argument("--by", help="who submitted it: an agent or a person")
     p.add_argument("--stop-on-failure", choices=["yes", "no"], help="skip later steps after a failure (default yes)")
     p.add_argument("--from-file", help="start from this JSON file")
