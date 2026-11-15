@@ -181,7 +181,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](traces/eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/summary.md) | 35 | 7 | ended |
 | 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](traces/70d4b729-3b1f-41d1-a89c-03fd78a71818/summary.md) | 30 | 6 | ended |
 | 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](traces/ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | 30 | 7 | ended |
-| 2026-11-14 15:11 UTC | [Recent sessions summary](traces/d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 20 | 95 | ended |
+| 2026-11-14 15:11 UTC | [Recent sessions summary](traces/d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | 21 | 97 | open |
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | 1 | 7 | ended |
 | 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | 1 | 2 | ended |
 | 2026-11-08 18:04 UTC | [5797b2b5-cc8e-4306-969d-6366320e1840](traces/5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | 1 | 2 | ended |

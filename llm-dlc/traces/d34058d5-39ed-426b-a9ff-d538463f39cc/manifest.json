@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "d34058d5-39ed-426b-a9ff-d538463f39cc",
-  "status": "ended",
+  "status": "open",
   "title": "Recent sessions summary",
   "first_prompt": "Provide a summary of recent sessions -- it has been a week since I have worked with you, and would like to start where we left off",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T15:11:22.420Z",
-  "ended": "2026-11-15T01:18:58.376Z",
-  "duration_seconds": 36456,
+  "ended": "2026-11-15T12:20:38.643Z",
+  "duration_seconds": 76156,
   "stats": {
-    "turns": 20,
-    "api_calls": 195,
-    "tool_calls": 190,
+    "turns": 21,
+    "api_calls": 205,
+    "tool_calls": 202,
     "tool_errors": 2,
     "compactions": 2,
     "peak_context_tokens": 267671,
     "usage": {
-      "input_tokens": 418,
-      "output_tokens": 201044,
-      "cache_read_input_tokens": 28512564,
-      "cache_creation_input_tokens": 472518
+      "input_tokens": 438,
+      "output_tokens": 208647,
+      "cache_read_input_tokens": 29087203,
+      "cache_creation_input_tokens": 521088
     }
   },
   "tools": {
-    "Bash": 169,
+    "Bash": 181,
     "Edit": 7,
     "Write": 6,
     "AskUserQuestion": 4,
@@ -77,24 +77,24 @@
     {
       "index": 2,
       "started": "2026-11-15T01:18:58.203Z",
-      "ended": "2026-11-15T01:18:58.376Z",
-      "turns": 1,
-      "api_calls": 0,
+      "ended": "2026-11-15T12:20:38.643Z",
+      "turns": 2,
+      "api_calls": 10,
       "usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 0
+        "input_tokens": 20,
+        "output_tokens": 7603,
+        "cache_read_input_tokens": 574639,
+        "cache_creation_input_tokens": 48570
       },
-      "peak_context_tokens": 0
+      "peak_context_tokens": 76179
     }
   ],
   "log": {
-    "sha256": "2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986",
-    "bytes": 4268624,
-    "lines": 1553,
-    "gzip_bytes": 736762,
-    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz"
+    "sha256": "da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083",
+    "bytes": 4807284,
+    "lines": 1676,
+    "gzip_bytes": 863033,
+    "path": "llm-dlc/traces/d34058d5-39ed-426b-a9ff-d538463f39cc/logs/da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -857,6 +857,22 @@
       "summary": "example-targets: a source slice's receipt records its published-class match, so 307's says before's BCrypt.class is 5.2.0.M4's (review item 7) (verification pending)",
       "body": "The user's review item 7 of 2026-11-15: 307's replay receipt labelled both revisions extracted-source slices, but the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made only by the preparation, which refuses a mismatch, and was not in the receipt. Ingestion (workflow_ingest.published_matches, called by claim_record) now copies each revision's recorded matches (source.slice.matched) into the claim's target.matched: the class entry, its sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the matches its plan's slice.matches declares is refused, so nothing is published. A revision without matches adds nothing, so 305's and every other route's claims are unchanged. result.schema.json gains the closed claim.target.matched; the ingestion docstring, examples/README.md and a note in 307's example.json say what it means (a class-by-class join to the published build, not an original-bytecode scope).\n\nReproducer: test_runtime_upstream.py's test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made failed before the change. It prepares a slice with a match on the local stand-ins, binds the claim, validates it against the schema, and checks that a preparation missing the match or recording another hash is refused. example-targets-integration.sh exits 0: the contract (16), the targets suite (271, one new), test_build.py (190), test_pipeline.py (33) and build.py --plan. A8 needs no rerun: verdict rules are unchanged and the field is additive.\n\nJob 20261115-054311-example-307-replay-its-receipt-records-b reruns build.py 307 --task replay unchanged and then exits 1 unless the new receipt's claim.target.matched lists exactly before's class (sha256 0b137406...) in M4's JAR (8871c1fe...). Its check was run on the kept receipt first and correctly reported the match as not recorded. Next is review item 8, the 18-versus-19 count of kqpykqpp's collect.",
       "log_sha256": "2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986"
+    },
+    {
+      "change_id": "suovqrmsxsvvmmvmrwqyutmtrypnlzlt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief drafted: cost tiers for tests, cheap by default, expensive once, proxies beside expensive tests",
+      "body": "A new brief, llm-dlc/loops/test-cost.md, from the user's request that agents neither run nor write expensive tests where\nthey can avoid it, and run them at most once for their inputs. It rests on a measurement of 27 sessions in 9 jvmcontract\nloops (2026-10-31 to 11-14): of 112h of active agent time, 45.5h was blocked on tools, and cargo test (17.8h, plus 5.7h\nwaiting on background runs) was the largest part; about 90% of it was running tests, not compiling, mostly in five test\nfiles that call JBMC, javac or the binary end to end. The plan: measure each test as a job, tier every test (unit, tool,\nproof), skip the proof tier by default and run it as a job only for changed inputs, put a cheap proxy (record and replay\nof JBMC's answer) beside each proof-tier test, lint the tags, and write the guidance into CLAUDE.md and the brief\ntemplate. Eight decisions are proposed for the user; the loop launches after example-targets is done.\n\nDrafted in the workspace test-cost-plan, from krnmkrsm, so as not to disturb the example-targets loop in the default\nworkspace.",
+      "log_sha256": "da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083"
+    },
+    {
+      "change_id": "urxxvmutpszvxmvtyrzrxlmqtsnyokko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test-cost brief: the user's eight decisions settled",
+      "body": "All as proposed except decision 4: a single proof-tier test may run inline, once, when the change targets it directly and\nthe inventory measures it under a minute; everything else proof-tier is queued. cargo-nextest comes from its prebuilt\ngithub.com release, hash-pinned. The JBMC answer cache is allowed with exact keys and labelled sources. Python is tagged\nnow with the same tiers, and gets proxies only where the measurement shows a file worth one; Rust first. The brief is\nready, to launch alone after example-targets is done.",
+      "log_sha256": "da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083"
     }
   ],
   "logs": {
@@ -961,6 +977,12 @@
       "lines": 475,
       "gzip_bytes": 281562,
       "url": "https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/d401a43af68ceb9600b2f536d107981b60518f423becfa548cfcb8c494d25e76.jsonl.gz"
+    },
+    "da2022dbc1f6ebdd8af91105cd7ab19727c9021c92b73898645551466b560083": {
+      "bytes": 4807284,
+      "lines": 1676,
+      "gzip_bytes": 863033,
+      "url": null
     },
     "ec41901b2caad786b75e70bd8f759df7fb4b78ecede8a21ff65c9dee031834fa": {
       "bytes": 3468733,

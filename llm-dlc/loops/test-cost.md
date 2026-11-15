@@ -1,7 +1,7 @@
 # Brief: test cost: cheap by default, expensive once
 
 **Status of the brief**: drafted 2026-11-15 from the user's request and a measurement of the loops' time; the
-[decisions](#decisions) are proposed, for the user to settle before launch.
+[decisions](#decisions) settled by the user the same day.
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh), run alone in the default workspace once example-targets
 is done: `llm-dlc/tools/feature-loop.sh llm-dlc/loops/test-cost.md`.
@@ -24,7 +24,8 @@ the same thing. Where an expensive test is needed, a cheap proxy beside it gives
   - **unit**: in process, with no subprocess and nothing outside the repo. The default for a new test.
   - **tool**: spawns `javac`, `java`, the `jvmcontract` binary or a stand-in script; seconds. Runs inline.
   - **proof**: spawns JBMC, TLC or a solver on more than a toy, or goes over the tool tier's time or memory. Never runs
-    in a plain `cargo test` or a Python test run. It runs as a pipeline job.
+    in a plain `cargo test` or a Python test run. It runs as a pipeline job, with one narrow inline exception
+    ([decision 4](#decisions)).
 
   Benchmarks stay as they are: queued (`preparation.rs:249`, `lib/benchmark/run.py`).
 - **The default run is cheap.** `cargo test` in `lib/` and each Python suite run only the unit and tool tiers, within a
@@ -144,9 +145,10 @@ of its own:
 1. **The time analysis as a tool:** `llm-dlc/tools/tool_time.py`, which reads the redacted logs and reports blocked time
    by category, by loop and by test binary, as [Where it starts from](#where-it-starts-from) does. Parallel calls are
    counted once, and calls over two hours are left out. It is tested on made-up logs, and is used again in Phase 5.
-2. **Per-test cost, as a job:** the whole Rust suite with the ignored tests, and each Python suite (`unittest
-   --durations`). It records each test's time and the tools it spawns. With nextest ([decision 3](#decisions)) the
-   times come from its JUnit output; without it, from a timed run per test binary.
+2. **Per-test cost, as a job:** first install cargo-nextest ([decision 3](#decisions)): its prebuilt release binary
+   from github.com, hash-pinned, under `~/.cargo/bin`. Then the job runs the whole Rust suite with the ignored tests
+   under nextest, taking each test's time from its JUnit output, and each Python suite with `unittest --durations`. It
+   records each test's time and the tools it spawns.
 3. **The inventory:** a generated `lib/tests/costs.json` (and one per Python suite, or one shared file), with each test's
    measured time and the tier it measures into. It is written by the job's outputs, never by hand, and shows which tests
    are mis-tiered today.
@@ -159,8 +161,10 @@ of its own:
    - The tool tier is skipped under `JVMCONTRACT_TEST_TIER=unit`, through a helper each tool-tier test calls first, so
      a quick unit-only run exists.
    - The twelve existing ignore reasons are rewritten to the new form.
-5. **Python tiers:** one `@cost("tool" | "proof")` decorator in a shared helper. The proof tier is skipped unless
-   `TEST_COST=proof`, and the tool tier is skipped under `TEST_COST=unit`.
+5. **Python tiers** ([decision 7](#decisions)): one `@cost("tool" | "proof")` decorator in a shared helper. The proof
+   tier is skipped unless `TEST_COST=proof`, and the tool tier is skipped under `TEST_COST=unit`. Every Python test the
+   inventory puts above the unit tier is tagged. Python gets no proxies or retiering in Phase 4 unless the measurement
+   shows a file worth one (`test_performance.py` and `targets/test_runtime.py` are the likely ones).
 6. **One way to run each tier**, documented in `lib/README.md` and in CLAUDE.md: the default run, the unit-only run, and
    the proof tier as a job. The job is a `pipeline.py submit` recipe (or a `--tests proof` option) that runs the given
    proof-tier tests at the commit.
@@ -179,8 +183,9 @@ of its own:
    unchanged". The inputs are the test file, its fixtures, `lib/src/`, `lib/Cargo.lock`, and the version of the tool it
    spawns. They are coarse at first; finer only if measurement shows the coarse set reruns too much. This builds on
    `verification/results/`, with no new store.
-9. **The JBMC answer cache**, only as [decision 5](#decisions) settles. It is keyed exactly by class bytes, harness,
-   options and JBMC version, and every reused answer says which run it came from.
+9. **The JBMC answer cache** ([decision 5](#decisions)): keyed exactly by class bytes, harness, options and JBMC
+   version, and every reused answer says which run it came from. Proxies and tool-tier runs may reuse any exact hit. A
+   job that claims a verdict runs JBMC fresh, unless the hit comes from a pipeline result with the identical key.
 
 ### Phase 4: proxies, and retiering the slow files
 
@@ -191,8 +196,8 @@ of its own:
 11. **The five slow files, one per cycle:** `conformance.rs`, `observations.rs`, `alignment.rs`, `application_core.rs`,
     then `integration.rs`, which may take two cycles. For each, its tests are split into proof-tier tests and proxies, and
     its proof tier is queued in the same commit.
-12. **The rest of the inventory:** every test the measuring job puts over its tier. Then the measuring job runs again,
-    showing the default run inside its budget.
+12. **The rest of the inventory:** every Rust test the measuring job puts over its tier, and a Python file only where
+    step 5 found one worth it. Then the measuring job runs again, showing the default run inside its budget.
 
 ### Phase 5: guidance, and the next run measured
 
@@ -229,7 +234,7 @@ of its own:
 
 ## Decisions
 
-Proposed on 2026-11-15, for the user to settle:
+Settled by the user on 2026-11-15:
 
 1. **Tiers and thresholds:**
    - **unit**: no subprocess, under 1s.
@@ -238,36 +243,44 @@ Proposed on 2026-11-15, for the user to settle:
 
    Benchmarks stay queued as they are.
 2. **The Rust mechanism:**
-   - The proof tier is `#[ignore = "cost:proof: …"]`. It works with plain `cargo test` and with nextest, and needs no
-     feature flags.
-   - The tool tier is skipped under `JVMCONTRACT_TEST_TIER=unit`.
+   - The proof tier is `#[ignore = "cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST"]`. It works with plain `cargo test`
+     and with nextest, and needs no feature flags.
+   - The tool tier is skipped under `JVMCONTRACT_TEST_TIER=unit`, through a helper the test calls first.
 
-   The alternative, Cargo features per tier, recompiles the crate for each tier and is easy to forget.
-3. **cargo-nextest:** install it (its prebuilt binary from github.com, hash-pinned, or `cargo install` from crates.io).
-   It gives per-test times, runs tests in parallel across test files, and selects tests by name and binary.
-   Recommended. Without it, step 2 measures per binary and the default run stays sequential across files.
-4. **Where the proof tier runs:** only as pipeline jobs, never inline, and once per finished change, for the tests whose
-   inputs it touched. The only exception would be the agent's own proxy failing in a way it cannot read; then it queues
-   the one proof test with `--priority 10` rather than running it.
-5. **The JBMC answer cache:**
-   - Recommended: allowed for proxies and tool-tier runs, keyed exactly.
-   - A job that claims a verdict runs JBMC fresh, unless the reused answer comes from a pipeline result with the
-     identical key, and says so.
-   - Alternative: no cache, with step 8 alone.
+   Not Cargo features, which recompile per tier, and not one file per tier.
+3. **cargo-nextest is installed** from its prebuilt release binary on github.com (an allowed host), hash-pinned.
+4. **Where the proof tier runs:**
+   - As pipeline jobs, once per finished change, for the tests whose inputs it touched.
+   - **One inline exception**: an agent may run a single proof-tier test inline, once, when its change targets that test
+     directly and the inventory measures it under a minute.
+   - Anything else proof-tier is queued. CLAUDE.md's rule on queuing proofs gets this exception, stated as narrowly.
+5. **The JBMC answer cache is allowed, and labelled.**
+   - Exact keys only, and every reused answer names its source run.
+   - Proxies and tool-tier runs may reuse any hit. A job that claims a verdict reuses only a hit from a pipeline result
+     with the identical key, and says so; otherwise it runs JBMC fresh.
 6. **Proxies:**
    - Required for every new proof-tier test.
-   - Existing proof-tier tests get one in Phase 4 if they are in the five slow files. The others are listed for later.
-7. **Python is in scope**, with the same tiers.
-8. **Launch:** alone, in the default workspace, after example-targets is done. Model `claude-opus-5-5` at high effort,
-   12G. Not beside conductor steps 4–6, which also edit the brief template and the
-   integration check `run-streams.sh` runs; one after the other, in either order.
+   - Existing proof-tier tests get one in Phase 4 if they are in the five slow files (`conformance.rs`,
+     `observations.rs`, `integration.rs`, `alignment.rs`, `application_core.rs`). The others are listed for later.
+7. **Python: tagged now, Rust first.**
+   - The same tiers and decorator, with the lint covering Python.
+   - Proxies and retiering go to Rust. A Python file gets one only where the measurement shows it is worth it.
+   - The case for including Python: its tests took 3.3h in the measurement, 1.1h direct and 2.2h inside example-targets'
+     integration checks, which run nothing else. That is about 27% of that loop's active time.
+8. **Launch:**
+   - Alone, in the default workspace, after example-targets is done.
+   - Model `claude-opus-5-5` at high effort, 12G.
+   - Not beside conductor steps 4–6, which also edit the brief template and the integration check `run-streams.sh`
+     runs; one after the other, in either order.
 
 ## Progress
 
 - 2026-11-15, drafted from the user's request ("we should not be running expensive tests where we can avoid it, and
   frankly probably not more than once in many cases … they should also be discouraged from writing expensive tests when
   unnecessary, or at minimum, provide the option to run proxy tests that are much cheaper") and the measurement above.
-- Status: draft: decisions to settle; launch after example-targets is done
+- 2026-11-15, the user settled the eight decisions: as proposed, except decision 4, which allows one narrow inline
+  exception. For decision 7, the user asked first for the case for including Python.
+- Status: ready: launch after example-targets is done (set `working` at launch)
 
 ## Loop settings
 
