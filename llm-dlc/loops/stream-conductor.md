@@ -220,6 +220,46 @@ merge is itself a logged decision (cheap or costly by the test above).
 - Tell the verification runner when the number of running loops changes, so it can move to a larger budget row in
   `pipeline.local.toml`.
 
+### 7. A moonshot conductor: judging a compaction from outside the loop
+
+Added 2026-11-15 at the user's request, for later, after the streams' steps.
+
+A moonshot (a one-line instruction, or one item of a list, repeated by `feature-loop.sh`) has no acceptance criteria, so
+nothing says when an item should stop. The user wants its session chained across cycles, so later cycles build on what
+earlier ones learned, and the moonshot's input kept to the one line: no added rules, since that would spoil the experiment.
+Not finishing an item is fine as long as the work is productive: another pass can come back to it.
+
+The mechanical rule comes first, `uzporttn` (workspace `moonshot`, not yet on the default line on 2026-11-15):
+- every moonshot turn passes `--autocompact 600k`;
+- an automatic compaction with no commit since the cycle began, or since the last compaction, ends the turn and stops the
+  loop for the user.
+
+A compaction is the natural point to judge, but a rule can't tell the two cases apart:
+- the work is hard and still going well;
+- the session is stuck and needs a person.
+
+The moonshot conductor makes that judgment and acts on it:
+- **From outside the loop.** It is a separate session, so the moonshot is not distracted and its input stays the one line.
+  That is the conductor's job for streams too.
+- **On the compaction event.** It reads what the session did since the cycle began or the last compaction:
+  - the transcript;
+  - the commits and the working copy's diff;
+  - test runs, and jobs submitted or failed;
+  - whether the same failure or file keeps coming back.
+- **It acts, by Design 3** (act where recovery is cheap, the user reviews afterwards):
+  - **let the turn go on**, the default when the work is moving;
+  - **stop the loop**, with a decision queued for the user saying why, when the session is stuck;
+  - possibly other actions for the implementer to propose, such as ending the item at its last good commit so the loop
+    moves to the next item.
+  Each judgment goes into the decision record with its basis, as every other decision does.
+- **The mechanical rule stays** as the fallback when the conductor isn't running or can't decide. The conductor's
+  verdict replaces the rule's stop, not the event that triggers it. `show_progress` in `loop-common.sh` already sees the
+  `compact_boundary` event and holds claude's pid, so it is where the hand-off goes.
+
+The run that prompted this: `prove-examples` (examples 285–300), started 2026-11-15 16:13 UTC. Cycle 1 compacted at
+477k tokens, committed `lvvpsuxl` 80 minutes in, and went on in the same turn to the next part of the item. The user let
+it run because its progress was good. That is the judgment this conductor should be able to make on its own.
+
 ### How it runs
 
 The conductor is a `feature-loop.sh` loop in the default workspace (`NAME-conductor`), started by `run-streams.sh` in
@@ -252,6 +292,11 @@ place of today's `integrate()` bash loop.
    - integration checks that ran versus stopped;
    - decisions made during the run versus queued;
    - decisions the user overturned, with the rework each cost.
+
+7. **The moonshot conductor** ([Design 7](#7-a-moonshot-conductor-judging-a-compaction-from-outside-the-loop)), after
+   step 6, when these streams are picked up again: the compaction hand-off from `show_progress`, the judgment session,
+   its actions, and its decision records. Measured on the next moonshot run: the stops it avoided, and the stops it made
+   that the user agreed with.
 
 Each step is one commit with its tests. Steps 1–3 are useful before the conductor session exists: a session can write
 decisions and inbox items by hand, as was done on 2026-11-14.
@@ -406,6 +451,8 @@ The next parallel run uses the conductor:
       BRIEF`, or abandon them. Otherwise `prune_workspaces.py` (rule 2) won't delete `NAME-integration`. This is for
       step 4 or 5 to settle.
     - The first real run of the line, the conductor and the inboxes is step 6's.
+- 2026-11-15: Design 7 and plan step 7 added at the user's request: a moonshot conductor that judges a compaction from
+  outside the moonshot loop. It is for later and doesn't change steps 4–6.
 - Status: blocked: steps 1–3 done; step 4 waits for example-targets to be done and this branch merged
 
 ## Loop settings
