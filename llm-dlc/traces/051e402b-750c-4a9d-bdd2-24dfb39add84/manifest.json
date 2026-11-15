@@ -12,30 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T01:15:23.220Z",
-  "duration_seconds": 24603,
+  "ended": "2026-11-15T01:30:45.092Z",
+  "duration_seconds": 25525,
   "stats": {
     "turns": 138,
-    "api_calls": 1118,
-    "tool_calls": 1146,
+    "api_calls": 1144,
+    "tool_calls": 1172,
     "tool_errors": 22,
     "compactions": 25,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2266,
-      "output_tokens": 754390,
-      "cache_read_input_tokens": 143262368,
-      "cache_creation_input_tokens": 3732956
+      "input_tokens": 2320,
+      "output_tokens": 768529,
+      "cache_read_input_tokens": 147489259,
+      "cache_creation_input_tokens": 3773696
     }
   },
   "tools": {
-    "Bash": 987,
-    "Read": 74,
-    "Edit": 70,
+    "Bash": 1010,
+    "Read": 75,
+    "Edit": 71,
     "Agent": 5,
     "Write": 5,
+    "ToolSearch": 3,
     "AskUserQuestion": 2,
-    "ToolSearch": 2,
     "WebFetch": 1
   },
   "files_touched": [
@@ -415,24 +415,24 @@
     {
       "index": 25,
       "started": "2026-11-15T01:13:13.919Z",
-      "ended": "2026-11-15T01:15:23.220Z",
+      "ended": "2026-11-15T01:30:45.092Z",
       "turns": 4,
-      "api_calls": 19,
+      "api_calls": 45,
       "usage": {
-        "input_tokens": 38,
-        "output_tokens": 9203,
-        "cache_read_input_tokens": 1930259,
-        "cache_creation_input_tokens": 126714
+        "input_tokens": 92,
+        "output_tokens": 23342,
+        "cache_read_input_tokens": 6157150,
+        "cache_creation_input_tokens": 167454
       },
-      "peak_context_tokens": 139900
+      "peak_context_tokens": 180640
     }
   ],
   "log": {
-    "sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a",
-    "bytes": 36522412,
-    "lines": 11533,
-    "gzip_bytes": 7635621,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a.jsonl.gz"
+    "sha256": "fd2e69af9eb3b552b1856f29d0c5b62bb8d4796a21d5dc7d99f8aaf8f0942a84",
+    "bytes": 37053426,
+    "lines": 11754,
+    "gzip_bytes": 7716467,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/fd2e69af9eb3b552b1856f29d0c5b62bb8d4796a21d5dc7d99f8aaf8f0942a84.jsonl.gz"
   },
   "subagents": [
     {
@@ -925,20 +925,20 @@
       "log_sha256": "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02"
     },
     {
-      "change_id": "rxwxlwxxxxnmyvnyylqowmruxtozpwwo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a"
-    },
-    {
       "change_id": "kqpykqppqumtqrvyornwworzkwkvvpwu",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted",
       "body": "Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>",
       "log_sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a"
+    },
+    {
+      "change_id": "zkqwwplutwpuzpypnnspkqmzltrwlqlz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 307's native attempts queued; the 23 VF-027 reruns read, all refused as predicted, and VF-027 closed (verification pending)",
+      "body": "The verification loop collected the 23 VF-027 reruns in kqpykqpp: each passed with example:task-refused-as-predicted, stopping at the refusal its gap packet records, under the claim key it records. 19 left an unresolved receipt in their example (the collect's message says 18 jobs had outputs applied); the four preservation reruns of 285, 286, 287 and 306 stop before the verifier and leave none. VF-027 moves to findings.md's closed entries by the second branch of its Closes when, as the user decided on 2026-11-15: each task is recorded as unprovable by this route (an observed blocker, its packet, readiness blocked, claim and expected unchanged) and each rerun's prediction matched. The collect had kept it open, reading Closes when as needing task-as-expected.\n\nThose receipts broke this loop's examples/tools/targets/test_acceptance.py on kqpykqpp (19 failures, 2 errors), whose rows assumed what held for the receipts of the time. A6 now allows an unresolved receipt only for a proof task whose observed gap packet records that very refusal (workflow_refusal.predictions), with the text in the receipt's problem, never as expected. A2 now allows a not-started JVM record that ran nothing for a proof task, never a replay: 287's vulnerable-guard and fixed-guard target BCrypt.checkpw(byte[], String), which their adapter doesn't call, so runtime ran no controls (adapterCallsTarget). Such a receipt doesn't say why its controls didn't start, since ingestion bundles neither the stream nor controls.json: for review, with the raw-streams item.\n\n307's native tasks are queued as ordinary attempts with pipeline.py submit --example 307 --task T, claim key 7eb077dac7a25751, unwind 513, maxArrayLength 80, 2 CPUs, 4 GiB, 30 minutes: 20261115-011448-example-307-preservation-phase-5-step-1 (expected established) and 20261115-011448-example-307-mutant-preservation-phase-5 (expected refuted). Their predicted refusals (nullable String parameters, String.getBytes) are stated as predictions. 307's handoff next, README state and a note now say its replays passed: a reproducible scaffold at the slice's scope. The brief's Progress records this, with Next: the v1 gap inventory, A8, the for-review list.",
+      "log_sha256": "fd2e69af9eb3b552b1856f29d0c5b62bb8d4796a21d5dc7d99f8aaf8f0942a84"
     }
   ],
   "logs": {
@@ -1192,6 +1192,12 @@
       "bytes": 20338180,
       "lines": 6665,
       "gzip_bytes": 4220017,
+      "url": null
+    },
+    "fd2e69af9eb3b552b1856f29d0c5b62bb8d4796a21d5dc7d99f8aaf8f0942a84": {
+      "bytes": 37053426,
+      "lines": 11754,
+      "gzip_bytes": 7716467,
       "url": null
     },
     "fda79ced1b3cbdeb54a971385b9dd964e2db55a609362943dc4999ac96af305b": {

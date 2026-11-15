@@ -15,6 +15,8 @@ reads files, imports the route's modules, and runs nothing.
       receipts; a replay concludes nothing; a proof is native, not vacuous, and a refutation carries its witness (an
       equivalence's with its interpreter replay; a property check's replay is stated only in its proof text);
       execution, conclusion, expectation, scope and replay are separate fields; each is its task's current receipt.
+      An unresolved receipt is allowed only at the refusal an observed gap packet recorded for its task, and is never
+      as expected; a proof task's controls may be not-started (its adapter doesn't call its target), a replay's never.
 """
 
 import contextlib
@@ -33,7 +35,7 @@ EXAMPLES = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
 import build  # noqa: E402
 import result_format  # noqa: E402
-from targets import interfaces, sidecar, workflow, workflow_discovery  # noqa: E402
+from targets import interfaces, sidecar, workflow, workflow_discovery, workflow_refusal  # noqa: E402
 from targets.interfaces import Unsupported  # noqa: E402
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -197,9 +199,21 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
             t = doc["claim"]["target"]
             records = json.loads((directory / "records/execution.json").read_text())["records"]
             jvms = [r for r in records if r["kind"] == "jvm-control"]
+            kind = next(x for x in target["tasks"] if x["id"] == task)["kind"]
             with self.subTest(str(directory.relative_to(EXAMPLES))):
-                self.assertTrue(jvms, "every receipt here ran its concrete controls")
+                self.assertTrue(jvms, "every receipt records its concrete controls")
+                started = [r for r in jvms if r["status"] != "not-started"]
                 for r in jvms:
+                    if r["status"] == "not-started":
+                        # A proof task whose adapter doesn't call its target runs no controls (runtime's
+                        # _check_classpath, adapterCallsTarget), as 287's guard tasks on BCrypt.checkpw(byte[],
+                        # String): the record says nothing ran. A replay's controls are its evidence, so it always ran.
+                        self.assertNotEqual(kind, "replay", "a replay's controls are its evidence")
+                        self.assertEqual((r["argv"], r["observations"], set(r["identities"])),
+                                         ([], None, {"feature"}), "a not-started record ran nothing")
+                if not started:
+                    continue
+                for r in started:
                     ids = r["identities"]
                     self.assertEqual(ids["commit"], run_identity(target, r["revision"]))
                     self.assertTrue(ids["commit"].startswith(t["revisions"][r["revision"]]) or
@@ -211,7 +225,7 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
                     self.assertEqual([(c["role"], c["sha256"]) for c in ids["classpath"]], claimed)
                     self.assertEqual(ids["inputs"]["oracleSha256"], t["files"][ids["inputs"]["oracle"]])
                     self.assertEqual(ids["replay"], "original-jvm")
-                features = {(r["revision"], r["identities"]["jdkFeature"]) for r in jvms}
+                features = {(r["revision"], r["identities"]["jdkFeature"]) for r in started}
                 self.assertEqual(features, {(rev, f) for rev in t["revisions"] for f in ("21", "25")},
                                  "each revision on JDK 21 and 25 (decision 3)")
 
@@ -290,6 +304,16 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
             c, e = doc["conclusion"], doc["evidence"]
             with self.subTest(str(directory.relative_to(EXAMPLES)), kind=kind):
                 self.assertEqual(doc["attempt"]["execution"]["status"], "completed")
+                if c["status"] == "unresolved":
+                    # A refusal is never a verdict and never as expected: only a proof task whose observed gap packet
+                    # recorded this very refusal may leave one (VF-027's reruns, workflow_refusal.py's check).
+                    self.assertNotEqual(kind, "replay")
+                    self.assertEqual(c["expectation"], "no")
+                    [p] = workflow_refusal.predictions(folder, target, task)
+                    self.assertEqual(p["stage"], "verifier")
+                    self.assertIn(p["text"], e["problem"])
+                    self.assertEqual(doc["attempt"]["engine"], "native")
+                    continue
                 self.assertEqual(c["expectation"], "yes")
                 if kind == "replay":
                     self.assertIsNone(c["status"], "a replay decides no claim")

@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-011448-example-307-mutant-preservation-phase-5",
+  "title": "example 307 mutant-preservation (Phase 5 step 1): BCrypt.hashpw(String,String), after slice against the us-ascii mutant, native strict, expected refuted",
+  "description": "The job runs python3 examples/tools/build.py 307 --task mutant-preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 307 is Spring Security fe9e4549 (BCrypt.hashpw encodes the password with StandardCharsets.UTF_8 in place of the charset name \"UTF-8\"), the independent positive of CVE-2025-22228's family. It is prepared by the source-slice route the user chose on 2026-11-15: each commit's BCrypt.java compiled alone by JDK 8 with -g -source 1.8 -target 1.8 -encoding UTF-8, labelled extracted-source-slice; before's preparation compares its BCrypt.class byte for byte with Spring Security 5.2.0.M4's published one (fetched from repo.spring.io/milestone by sha256) and fails on a difference. Its replay and mutant-replay passed (20261115-003616, 20261115-003617). Workflow plans the task from target.json; runtime prepares after and the constructed us-ascii mutant (us-ascii.patch applied to the after BCrypt.java, a constructed mutation, never a real CVE), runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; with claims/hashpw-preservation.json (source-level claim key 7eb077dac7a25751, preservation, bounds unwind 513, maxArrayLength 80): for every password that is null or a String of at most 80 UTF-16 code units and every salt among seven fixed strings (null among them), both revisions return the same String or throw the same exception class, on one JDK. Workflow ingests every record into one format-2 receipt under receipts/mutant-preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. This loop predicts, without having observed it, a refusal before any verdict: the nullable String parameters (lib/README.md: a String parameter of a regression check is never null), or the UTF-16 to UTF-8 conversion String.getBytes, which a static gap scan refused (records/hashpw-gaps.json). A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is recorded as an observed gap for the v1 gap inventory, as VF-027's were, with the claim and its expectation left unchanged. No proof of this task has been attempted before.",
+  "kind": "example",
+  "capabilities": [
+    "target:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json"
+    ],
+    "examples": [
+      "307"
+    ]
+  },
+  "expected": "example 307 task mutant-preservation gives its expected conclusion, refuted, with a witness at a non-ASCII password: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+  "submitted": {
+    "at": "2026-11-15T01:14:48+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "no dependency JARs (BCrypt needs only the JDK); one pinned fetch of the 5.2.0.M4 reference JAR for before (cached by sha256), the slice compile with JDK 8, two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached. The replays took about 6 s. A refusal ends in seconds; if the checker accepts the domain, unwind 513 over the cipher's 1024-word key schedule could run long, so the timeout is generous"
+  },
+  "steps": [
+    {
+      "name": "example 307 task mutant-preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 307 --task mutant-preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation"
+  ]
+}

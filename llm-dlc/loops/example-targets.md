@@ -1613,6 +1613,40 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     - step 5, the for-review list.
 
     Read the 23 reruns when they are collected.
+- 2026-11-15, **307's native attempts queued; the 23 VF-027 reruns read, all refused as predicted, and VF-027
+  closed.**
+  - **The reruns** (collected in `kqpykqpp`): all 23 passed with `example:task-refused-as-predicted`, in 2 s to 4
+    min each. Each stopped at its packet's refusal, under the claim key the packet records. 19 left an `unresolved`
+    receipt in their example. The four `preservation` reruns of 285, 286, 287 and 306 stop before the verifier and
+    leave none. (The collect's message counts 18 jobs with outputs applied, but 19 receipts are in the tree.)
+  - **VF-027 closed** in `verification/findings.md`. The collect had kept it open, reading "Closes when" as needing
+    `task-as-expected`. The user's decision closes it by that line's second branch: each task is recorded as
+    unprovable by this route, and each rerun's prediction matched. The status line says so.
+  - **A defect in this loop's acceptance test.** The applied receipts broke `test_acceptance.py` on `kqpykqpp`, with
+    19 failures and 2 errors. Both rows assumed what held for the receipts of the time:
+    - A6 required every receipt to be as expected with a verdict. It now allows an `unresolved` receipt only for a
+      proof task whose observed gap packet records this very refusal (`workflow_refusal.predictions`), with the
+      problem text in the receipt, and never as expected.
+    - A2 required every receipt to have run its controls. 287's `vulnerable-guard` and `fixed-guard` target
+      `BCrypt.checkpw(byte[], String)`, which their adapter doesn't call, so runtime ran no controls for them
+      (`adapterCallsTarget`). A `not-started` record that ran nothing is now allowed for a proof task, never for a
+      replay.
+  - **For review**: such a receipt doesn't say why its controls didn't start. The reason goes to the stream and to
+    `controls.json`, and ingestion bundles neither. This is the same gap as "receipts lack raw streams".
+  - **307's native tasks**, queued as ordinary attempts with `pipeline.py submit --example 307 --task T`:
+    - `20261115-011448-example-307-preservation-phase-5-step-1`, expected `established`;
+    - `20261115-011448-example-307-mutant-preservation-phase-5`, expected `refuted`.
+
+    Both are under claim key `7eb077dac7a25751`, with unwind 513 and maxArrayLength 80. Each has 2 CPUs, 4 GiB,
+    30 minutes and a 2-hour timeout. The predicted refusals (the nullable String parameters; `String.getBytes`) are
+    stated as predictions. 307's `next`, README state and a note now say its replays passed: a reproducible scaffold
+    at the slice's scope.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (243),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: step 4, the v1 gap inventory, from `workflow_handoff.py inventory`: the five observed gaps, ranked, each
+    with its reproducer, owner module and closure test, and the predictions kept apart. Then A8, then step 5, the
+    for-review list. Read 307's two jobs when they are collected: a refusal becomes an observed gap of the
+    inventory, as VF-027's did.
 - Status: working
 
 ## Loop settings

@@ -2,10 +2,12 @@
 
 [← All examples](../README.md)
 
-**State: a partial scaffold, on the source slice.** It is source-locked, its claim is frozen, and its oracle, driver,
-probes and mutant are written. Its route is the extracted-source slice, the user's choice of 2026-11-15 (below). Its
-replay and mutant-replay are queued as jobs; until they pass, nothing is prepared or replayed by the pipeline, and no
-proof has run, so there is no verdict. The work manifest is [`target.json`](target.json); what was checked upstream,
+**State: a reproducible scaffold, on the source slice.** It is source-locked and its claim is frozen. Its route is the
+extracted-source slice, the user's choice of 2026-11-15 (below). Its replay (job `20261115-003616`) and mutant-replay
+(`20261115-003617`) passed: before's class equals Spring Security 5.2.0.M4's published `BCrypt.class` byte for byte,
+both slices hold the oracle on JDK 21 and 25, and the us-ascii mutant fails at the non-ASCII probes only. Its native
+attempts, `preservation` and `mutant-preservation`, are queued as jobs (`20261115-011448-…`); no proof has run yet, so
+there is no verdict. The work manifest is [`target.json`](target.json); what was checked upstream,
 and how, is in [`sources.lock.json`](sources.lock.json).
 
 ## The change
