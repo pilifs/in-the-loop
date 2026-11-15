@@ -1,0 +1,154 @@
+{
+  "$comment": "An observed capability gap (VF-027, the user's decision of 2026-11-15: recorded, not restated). The fields are the brief's capability-gap packet (examples/tools/targets/workflow_handoff.py, PACKET_FIELDS); refusal and claimKey are what workflow_refusal.py checks a rerun against.",
+  "schema": "example-target-refusal/v1",
+  "finding": "VF-027",
+  "task": "finite-outcome-after",
+  "claimKey": "46b0bb5f1f51a112",
+  "refusal": {
+    "stage": "verifier",
+    "text": "parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a property check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is"
+  },
+  "observed": {
+    "job": "20261114-234213-example-305-finite-outcome-after-phase-5",
+    "result": "verification/results/20261114-234213-example-305-finite-outcome-after-phase-5/result.json",
+    "log": "verification/results/20261114-234213-example-305-finite-outcome-after-phase-5/logs/1-example-305-task-finite-outcom.log",
+    "logSha256": "8601234458ca21225cf21a566bb0dc6c4eccc57fafe1d143ae65bc17d7b5792f",
+    "receipt": "verification/results/20261114-234213-example-305-finite-outcome-after-phase-5/outputs/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-after/20261114T235020Z-8be84a0e/result.json",
+    "receiptSha256": "8c857b1fd35a6ec8877b17bbd035e86d1c7793d44277686c7fcf8cf66339ca07",
+    "verifierOutput": "verification/results/20261114-234213-example-305-finite-outcome-after-phase-5/outputs/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-after/20261114T235020Z-8be84a0e/records/verifier-output.txt",
+    "verifierOutputSha256": "966ed3f7c045469822bd505f553c09bf00336bfc1153f10a1a9371895a2d3d3a",
+    "attempt": "20261114T235020Z-8be84a0e",
+    "claimId": "fbce1dd498768789",
+    "status": "unresolved",
+    "execution": "completed",
+    "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+    "seconds": 0.2
+  },
+  "verifier": {
+    "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+    "commit": "72a1337a1529b690365c0f01a69325bb46035216",
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS"
+  },
+  "command": [
+    "jvmcontract",
+    "prove",
+    "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
+    "--classes",
+    "prepare/after/slice/after.jar",
+    "--classpath",
+    "prepare/after/lib/org.springframework/spring-web-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/after/lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/after/lib/org.springframework/spring-core-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/after/lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/after/lib/io.micrometer/micrometer-core-1.2.0.jar",
+    "--classpath",
+    "prepare/after/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
+    "--assert",
+    "result != null && result.getKey().equals(\"outcome\") && (result.getValue().equals(\"INFORMATIONAL\") || result.getValue().equals(\"SUCCESS\") || result.getValue().equals(\"REDIRECTION\") || result.getValue().equals(\"CLIENT_ERROR\") || result.getValue().equals(\"SERVER_ERROR\") || result.getValue().equals(\"UNKNOWN\"))",
+    "--nullable",
+    "response",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "artifacts": [
+    {
+      "revision": "after",
+      "path": "slice/after.jar",
+      "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0",
+      "role": "original"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
+      "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
+      "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
+      "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
+      "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
+      "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
+      "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
+      "role": "dependency"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "input-construction:interface-parameter",
+      "kind": "interface",
+      "call": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "sites": [],
+      "approximation": null,
+      "message": "parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a property check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after",
+    "attempt": "python3 examples/tools/build.py 305 --task finite-outcome-after",
+    "job": "20261114-234213-example-305-finite-outcome-after-phase-5",
+    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+    "revision": "after",
+    "note": "the task as stated, on its prepared artifacts and frozen claim: no wrapper, narrower subject or simpler signature"
+  },
+  "semantics": "A parameter of a library interface type (javax.servlet.http.HttpServletResponse, WebMvcTags#outcome's response, whose getStatus() it reads as an int): the checker makes an object input only of a concrete class, by its constructor or a construction plan, and dispatches invokeinterface only to application methods. Needed: an input of the interface whose methods the target calls return values from the claim's domain (a symbolic implementation, or an environment model of those calls, lib/src/environment.rs), the same in the interpreter's witness replay, and a witness the JVM driver can rebuild as the packet's test carrier does.",
+  "why": "the claim (46b0bb5f1f51a112) is about org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag; as stated; the verifier refuses it before any proof (the parameter's type is a library interface), so the claim stays unresolved, its expected conclusion (established) unchanged, and the refusal is no verdict",
+  "module": {
+    "likely": [
+      "lib/src/construction.rs",
+      "lib/src/environment.rs"
+    ],
+    "note": null
+  },
+  "strategies": [
+    {
+      "by": "job 20261114-234213-example-305-finite-outcome-after-phase-5",
+      "outcome": "unresolved"
+    },
+    {
+      "by": "not tried, by the user's decision of 2026-11-15",
+      "what": "restating the task over a wrapper, a narrower subject or a simpler signature; extending jvmcontract or the route in this loop"
+    }
+  ]
+}

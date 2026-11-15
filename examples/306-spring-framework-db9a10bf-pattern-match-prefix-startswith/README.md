@@ -52,3 +52,20 @@ At least one true and one false case must reach the changed prefix branch (`("ab
 
 A hand replay with the pinned JARs on JDK 21 and 25 (a note, in `example.json`) found both releases agreeing with the
 oracle and with each other on every probe, and the mutant failing on six.
+
+## Observed blockers
+
+Every proof task's first attempt (Phase 5, 2026-11-14) stopped before any proof, at a capability gap of the checker or
+the route (VF-027). As the user decided on 2026-11-15, each is recorded as an observed gap, not restated: the claims and
+their expected conclusions are unchanged, the claims stay unresolved, and each task's readiness is blocked. Each packet
+cites its job and receipt and gives the refusal, the semantics needed, the likely owner module and the closure check.
+
+| Task | Refused at | Observed by job | Packet |
+|---|---|---|---|
+| `mutant-preservation` | a `String` parameter the check doesn't take | `20261114-234214-example-306-mutant-preservation-phase-5` | [`records/refusals/mutant-preservation.json`](records/refusals/mutant-preservation.json) |
+| `preservation` | before and after with different dependency closures, where jvmcontract's equivalence takes one classpath | `20261114-234213-example-306-preservation-phase-5-step-1` | [`records/refusals/preservation.json`](records/refusals/preservation.json) |
+
+`python3 examples/tools/targets/workflow_refusal.py 306 TASK` reruns a task and passes only while its recorded refusal
+recurs under the same claim key; a verdict or another refusal fails it. Those reruns are queued (2 jobs,
+`20261115-005928-example-306-mutant-preservation-vf-027-r` to
+`20261115-005928-example-306-preservation-vf-027-rerun-st`).

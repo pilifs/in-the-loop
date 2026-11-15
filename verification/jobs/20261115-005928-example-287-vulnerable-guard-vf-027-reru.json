@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-005928-example-287-vulnerable-guard-vf-027-reru",
+  "title": "example 287 vulnerable-guard (VF-027 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+  "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task vulnerable-guard of example 287 is resubmitted unchanged in its claim (key da7512fb3d0a6e45, expected refuted, native, strict), predicting the refusal job 20261114-234213-example-287-vulnerable-guard-phase-5-ste observed: a String parameter the check doesn't take. The step runs examples/tools/targets/workflow_refusal.py 287 vulnerable-guard, which runs python3 examples/tools/build.py 287 --task vulnerable-guard once (its output indented) and exits 0 only when the claim key is still da7512fb3d0a6e45, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/vulnerable-guard.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove",
+    "target:predicted-refusal"
+  ],
+  "links": {
+    "paths": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/target.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/overlong-bytes-rejected.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/vulnerable-guard.json",
+      "examples/tools/targets/workflow_refusal.py"
+    ],
+    "examples": [
+      "287"
+    ]
+  },
+  "expected": "workflow_refusal.py prints 'refused as predicted' for example 287 task vulnerable-guard and exits 0: the attempt stops at the recorded refusal (a String parameter the check doesn't take) under claim da7512fb3d0a6e45; the claim stays unresolved, which is no verdict",
+  "submitted": {
+    "at": "2026-11-15T00:59:28+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "the same preparation and controls as the observed run 20261114-234213-example-287-vulnerable-guard-phase-5-ste, which reached the refusal in 3 s; the estimate is that job's"
+  },
+  "steps": [
+    {
+      "name": "example 287 task vulnerable-guard: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-guard",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard"
+  ]
+}

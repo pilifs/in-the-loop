@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "65eb1a9c-093d-4394-b067-5a27e634424e",
-  "status": "ended",
+  "status": "open",
   "title": "Feature loop run status",
   "first_prompt": "Give me a status report on the current feature loop run",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T17:31:02.694Z",
-  "ended": "2026-11-15T00:19:17.855Z",
-  "duration_seconds": 24495,
+  "ended": "2026-11-15T01:04:04.071Z",
+  "duration_seconds": 27181,
   "stats": {
-    "turns": 9,
-    "api_calls": 59,
-    "tool_calls": 55,
+    "turns": 11,
+    "api_calls": 64,
+    "tool_calls": 58,
     "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 142848,
+    "peak_context_tokens": 151934,
     "usage": {
-      "input_tokens": 128,
-      "output_tokens": 38312,
-      "cache_read_input_tokens": 5499449,
-      "cache_creation_input_tokens": 192342
+      "input_tokens": 142,
+      "output_tokens": 42027,
+      "cache_read_input_tokens": 6231261,
+      "cache_creation_input_tokens": 199827
     }
   },
   "tools": {
-    "Bash": 53,
+    "Bash": 56,
     "Monitor": 1,
     "Write": 1
   },
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-14T17:31:02.694Z",
-      "ended": "2026-11-15T00:19:17.855Z",
-      "turns": 9,
-      "api_calls": 59,
+      "ended": "2026-11-15T01:04:04.071Z",
+      "turns": 11,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 38312,
-        "cache_read_input_tokens": 5499449,
-        "cache_creation_input_tokens": 192342
+        "input_tokens": 142,
+        "output_tokens": 42027,
+        "cache_read_input_tokens": 6231261,
+        "cache_creation_input_tokens": 199827
       },
-      "peak_context_tokens": 142848
+      "peak_context_tokens": 151934
     }
   ],
   "log": {
-    "sha256": "4da1cb56f97d62caaaf24f0416ffc755b71822e21f37a16c66544e24d5f705ef",
-    "bytes": 1313814,
-    "lines": 461,
-    "gzip_bytes": 243223,
-    "path": "llm-dlc/traces/65eb1a9c-093d-4394-b067-5a27e634424e/logs/4da1cb56f97d62caaaf24f0416ffc755b71822e21f37a16c66544e24d5f705ef.jsonl.gz"
+    "sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5",
+    "bytes": 1386723,
+    "lines": 498,
+    "gzip_bytes": 253284,
+    "path": "llm-dlc/traces/65eb1a9c-093d-4394-b067-5a27e634424e/logs/eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -420,6 +420,30 @@
       "summary": "example-targets: maven.aliyun.com withdrawn from the download hosts; A7 passes on its isolated session's job",
       "body": "The user withdrew decision 1's second extension on 2026-11-15, once P3 (307) took the source slice: no route needs Alibaba Cloud's mirror of Spring's plugin repository. runtime_maven.HOSTS and HOST_NAMES are back to Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. The PATH_PREFIXES mechanism held only the mirror, so it went too, and allowed() is the plain host check again. The docstrings of runtime_maven.py, runtime.py and runtime_upstream.py say so. 307's sources.lock.json keeps the mirror's hashes as a record of the lookups; nothing fetches them.\n\nReproducer: test_runtime.py's mirror test, now test_the_aliyun_mirror_withdrawn_is_refused_like_any_unlisted_host, failed on the parent. It checks that the host is gone from HOSTS and the refusal text, that four mirror URLs (the pinned spring-build-conventions plugin, and the public, jcenter and gradle-plugin repositories) are refused by allowed(), as redirects and by check_item, and that the other hosts stay allowed.\n\nA7 (agent continuation) passes: the isolated session's job 20261114-235737-example-105-task-fix-property-before-the, collected in olumqtlx, came back task-as-expected, with the earlier attempt's claim id and refuted with the witness pow(-2, 31). Both attempts are kept.",
       "log_sha256": "4da1cb56f97d62caaaf24f0416ffc755b71822e21f37a16c66544e24d5f705ef"
+    },
+    {
+      "change_id": "pulkwwwvssqmwlkpktpyqplumyzqmkwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 307 on the source slice, before's BCrypt.class checked against 5.2.0.M4's in every preparation; its replay and mutant-replay queued (verification pending)",
+      "body": "The user chose the extracted-source slice for P3 (example 307, Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) on 2026-11-15, because the commits' own Gradle builds can't resolve their buildscript from the allowed hosts. The decision asks that before's compiled class be checked byte for byte against Spring Security 5.2.0.M4's published BCrypt.class, with a mismatch recorded as a blocker. The source-slice route had no such check, so it gained one: preparation.slice.matches names, per compiled revision, the published classes the slice must reproduce. Each match gives the class entry, its sha256 in the published JAR, and the JAR pinned by sha256. Changes are in target.schema.json, sidecar.py, the workflow planner (a mutant's base inherits no match) and runtime.py (_slice_matches at lock and _match_published at preparation). The preparation fetches the JAR into reference/, off the classpath, checks the entry's recorded sha256, and compares bytes with what javac wrote. A difference fails the preparation at build with a blocker. 305 names no match, so its plans, claim keys and receipts are unchanged.\n\n307's sidecar now uses the source-slice route: BCrypt.java alone at both commits, compiled by JDK 8 with -g -source 1.8 -target 1.8 -encoding UTF-8, with no dependency JARs. before matches BCrypt.class 0b137406... in spring-security-crypto 5.2.0.M4 (8871c1fe...). Its build blocker, handoff next, replay note, README and a new example.json note were rewritten and no longer offer options (a) and (b). The index was regenerated. Two jobs are queued: 20261115-003616-example-307-replay-p3-source-slice-route (before's class equals M4's, and both slices hold the oracle on JDK 21 and 25) and 20261115-003617-example-307-mutant-replay-p3-source-slic (after holds, and the US-ASCII mutant fails at the non-ASCII probes only). 307's native tasks wait for the replay and for VF-027's resubmission mechanism.",
+      "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
+    },
+    {
+      "change_id": "vzlqyvunwtwqsuwkwowquxsslmvywpvn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass",
+      "body": "Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.",
+      "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
+    },
+    {
+      "change_id": "srxlxttrlxmvwoknnxmknzqyyrsuqxmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)",
+      "body": "As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.<init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.\n\nbuild.py exits 1 both for a refusal and for an unexpected verdict, so the new examples/tools/targets/workflow_refusal.py ID TASK runs it once and passes only when the task plans under the recorded claim key, build.py exits 1, and the attempt gives either one new unresolved receipt with the recorded problem or, at the route's stage, no receipt and the recorded not-executed reason. A verdict, another refusal, a changed claim or a closed gap prints NOT AS PREDICTED. pipeline.py has signals for both lines. 307's two source-slice replays, collected in vzlqyvun, pass, so 307 is a reproducible scaffold at the slice's scope. Its receipt doesn't carry the byte match with 5.2.0.M4 (the preparation would have refused a mismatch), which goes on the for-review list. test_acceptance.py's A2 test, which still expected 307 to have no receipts, is updated.\n\nVerified: test_workflow_refusal.py (the judgement, the predictions, the check on 285 and 286, and the 23 packets against their job records and the inventory) and test_pipeline.py's new signal test. Both fail on vzlqyvun by construction. llm-dlc/tools/example-targets-integration.sh exits 0: the contract (16), the targets suite (243), test_build.py (190), test_pipeline.py (33) and build.py --plan.\n\nQueued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20261115-005926-example-105-confined-change-vf-027-rerun to 20261115-005928-example-306-preservation-vf-027-rerun-st (verification/jobs/20261115-00592*). When they pass, VF-027 closes as its Closes-when allows.",
+      "log_sha256": "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5"
     }
   ],
   "logs": {
@@ -481,6 +505,12 @@
       "bytes": 631574,
       "lines": 168,
       "gzip_bytes": 139246,
+      "url": null
+    },
+    "eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5": {
+      "bytes": 1386723,
+      "lines": 498,
+      "gzip_bytes": 253284,
       "url": null
     }
   },

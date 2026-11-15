@@ -167,7 +167,8 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
 
     def test_the_packets_have_receipts(self):
         self.assertGreaterEqual(len(self.receipts), 14)
-        self.assertEqual({f.name[:3] for f, _, _, _ in self.receipts}, set(PACKETS) - {"307"})
+        # 307's replays came back on the source slice on 2026-11-15, so every packet has receipts now.
+        self.assertEqual({f.name[:3] for f, _, _, _ in self.receipts}, set(PACKETS))
 
     def test_each_receipt_names_its_commits_jdks_and_ordered_classpath(self):
         for folder, task, directory, doc in self.receipts:

@@ -1,0 +1,105 @@
+{
+  "$comment": "An observed capability gap (VF-027, the user's decision of 2026-11-15: recorded, not restated). The fields are the brief's capability-gap packet (examples/tools/targets/workflow_handoff.py, PACKET_FIELDS); refusal and claimKey are what workflow_refusal.py checks a rerun against.",
+  "schema": "example-target-refusal/v1",
+  "finding": "VF-027",
+  "task": "preservation",
+  "claimKey": "51d7f1127b4df870",
+  "refusal": {
+    "stage": "run-verifier",
+    "text": "before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both"
+  },
+  "observed": {
+    "job": "20261114-234213-example-306-preservation-phase-5-step-1",
+    "result": "verification/results/20261114-234213-example-306-preservation-phase-5-step-1/result.json",
+    "log": "verification/results/20261114-234213-example-306-preservation-phase-5-step-1/logs/1-example-306-task-preservation.log",
+    "logSha256": "2718ad3e106f18c148f355220c5b573c0140b2fd8775da5991e43c04ec1d3e73",
+    "receipt": null,
+    "status": "not-executed",
+    "line": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both)"
+  },
+  "verifier": {
+    "jvmcontract": null,
+    "commit": null,
+    "note": "not run: the route refused the pair before building the verifier's command"
+  },
+  "command": [
+    "python3",
+    "examples/tools/build.py",
+    "306",
+    "--task",
+    "preservation"
+  ],
+  "artifacts": [
+    {
+      "revision": "release-before",
+      "commit": "83c6d100950221189d5d6001d3b2e806213f3a98",
+      "route": "published-artifact",
+      "published": [
+        {
+          "coordinates": "org.springframework:spring-core:5.3.6",
+          "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.6/spring-core-5.3.6.jar",
+          "sha256": "7d789153c82b2225f640261b2644fb60decafc6d5c01b9386f3e4e978231f46c"
+        },
+        {
+          "coordinates": "org.springframework:spring-jcl:5.3.6",
+          "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.6/spring-jcl-5.3.6.jar",
+          "sha256": "9d56d08d322314793842355b79f860adad3688c6035ef9eded63fd9a0d29c489"
+        }
+      ]
+    },
+    {
+      "revision": "release-after",
+      "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
+      "route": "published-artifact",
+      "published": [
+        {
+          "coordinates": "org.springframework:spring-core:5.3.7",
+          "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
+          "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
+        },
+        {
+          "coordinates": "org.springframework:spring-jcl:5.3.7",
+          "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
+          "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
+        }
+      ]
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "input-construction:two-dependency-closures",
+      "kind": "closures",
+      "call": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+      "sites": [],
+      "approximation": null,
+      "message": "before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+    "attempt": "python3 examples/tools/build.py 306 --task preservation",
+    "job": "20261114-234213-example-306-preservation-phase-5-step-1",
+    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
+    "revision": null,
+    "note": "the task as stated, on its prepared artifacts and frozen claim: no wrapper, narrower subject or simpler signature"
+  },
+  "semantics": "Before and after with different pinned dependency closures (Spring Framework 27bfcbbc's and db9a10bf's pinned closures): jvmcontract's equivalence takes one --classpath for both sides, so the route refuses the pair before running it (examples/tools/targets/runtime.py, run_verifier). Needed: an equivalence whose two sides each load their own closure (two class paths, or class loaders), the library classes of each side compared only through the observations the claim names.",
+  "why": "the claim (51d7f1127b4df870) is about org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z as stated; the verifier refuses it before any proof (before and after have different dependency closures, and jvmcontract's equivalence takes one classpath for both), so the claim stays unresolved, its expected conclusion (established) unchanged, and the refusal is no verdict",
+  "module": {
+    "likely": [
+      "lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs",
+      "examples/tools/targets/runtime.py (the refusal)"
+    ],
+    "note": null
+  },
+  "strategies": [
+    {
+      "by": "job 20261114-234213-example-306-preservation-phase-5-step-1",
+      "outcome": "not-executed"
+    },
+    {
+      "by": "not tried, by the user's decision of 2026-11-15",
+      "what": "restating the task over a wrapper, a narrower subject or a simpler signature; extending jvmcontract or the route in this loop"
+    }
+  ]
+}

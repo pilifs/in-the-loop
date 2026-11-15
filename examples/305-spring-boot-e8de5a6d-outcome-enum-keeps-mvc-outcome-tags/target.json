@@ -321,11 +321,38 @@
       },
       {
         "kind": "input-construction",
-        "observed": false,
-        "summary": "Predicted from lib/README.md: the parameter is javax.servlet's HttpServletResponse, a library interface, and the checker dispatches invokeinterface only to application methods and passes an interface-typed dependency null (refused if reached). The claims' domain is a null response or one whose getStatus() returns any int (claims/outcome-preservation.json); an attempt that can only take the null response is that refusal, and the claim stays unresolved, never re-read as the null-only domain. The finite-outcome property also reads the result through micrometer's Tag interface (getKey, getValue). The replay's carrier covers the int domain concretely."
+        "observed": true,
+        "task": "finite-outcome-before",
+        "summary": "Observed by job 20261114-234213-example-305-finite-outcome-before-phase (VF-027): the parameter's type is a library interface (javax.servlet.http.HttpServletResponse, WebMvcTags#outcome's response, whose getStatus() it reads as an int). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 305 finite-outcome-before.",
+        "packet": "records/refusals/finite-outcome-before.json",
+        "finding": "VF-027"
+      },
+      {
+        "kind": "input-construction",
+        "observed": true,
+        "task": "finite-outcome-after",
+        "summary": "Observed by job 20261114-234213-example-305-finite-outcome-after-phase-5 (VF-027): the parameter's type is a library interface (javax.servlet.http.HttpServletResponse, WebMvcTags#outcome's response, whose getStatus() it reads as an int). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 305 finite-outcome-after.",
+        "packet": "records/refusals/finite-outcome-after.json",
+        "finding": "VF-027"
+      },
+      {
+        "kind": "input-construction",
+        "observed": true,
+        "task": "preservation",
+        "summary": "Observed by job 20261114-234213-example-305-preservation-phase-5-step-1 (VF-027): the parameter's type is a library interface (javax.servlet.http.HttpServletResponse, WebMvcTags#outcome's response, whose getStatus() it reads as an int). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 305 preservation.",
+        "packet": "records/refusals/preservation.json",
+        "finding": "VF-027"
+      },
+      {
+        "kind": "input-construction",
+        "observed": true,
+        "task": "mutant-preservation",
+        "summary": "Observed by job 20261114-234213-example-305-mutant-preservation-phase-5 (VF-027): the parameter's type is a library interface (javax.servlet.http.HttpServletResponse, WebMvcTags#outcome's response, whose getStatus() it reads as an int). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 305 mutant-preservation.",
+        "packet": "records/refusals/mutant-preservation.json",
+        "finding": "VF-027"
       }
     ],
-    "next": "The slice's three replays passed (2026-11-14; receipts/replay, receipts/m6-replay, receipts/mutant-replay): both slices hold the oracle on JDK 21 and 25, the after slice and M6's published JAR show the same observations, and the mutant fails at 200 alone. The packet is a reproducible scaffold at the slice's scope. Next: the native attempts (preservation, finite-outcome-before, finite-outcome-after, mutant-preservation), each a queued job, their predicted refusals recorded as observed or withdrawn; a proof about the slice's classes reaches the commits' own builds only through the recorded correspondence, which exists for after (M6) and not for before."
+    "next": "The slice's three replays passed (receipts/replay, receipts/m6-replay, receipts/mutant-replay): a reproducible scaffold at the slice's scope. Every proof task (preservation, finite-outcome-before, finite-outcome-after, mutant-preservation) is blocked by an observed capability gap: the library-interface parameter, WebMvcTags#outcome's HttpServletResponse. A proof about the slice's classes would reach the commits' own builds only through the recorded correspondence, which exists for after (M6) and not for before. Recorded, not restated (VF-027, the user's decision of 2026-11-15): each blocked task's packet is records/refusals/TASK.json (its job, receipt, refusal, semantics needed, owner module and closure), its claim stays unresolved and its expected conclusion unchanged. Each blocked task's rerun, python3 examples/tools/targets/workflow_refusal.py 305 TASK, passes only while the recorded refusal recurs under the same claim key; queued as jobs 20261115-005928-example-305-finite-outcome-after-vf-027, 20261115-005928-example-305-finite-outcome-before-vf-027, 20261115-005928-example-305-mutant-preservation-vf-027-r, 20261115-005928-example-305-preservation-vf-027-rerun-st. When a gap's closure lands, the task's ordinary attempt runs, python3 examples/tools/build.py 305 --task TASK (queued), its claim unchanged; a narrower kernel or wrapper would be a separate task with its own claim."
   },
   "controls": [
     {

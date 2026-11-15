@@ -101,6 +101,9 @@ SIGNALS = [
     ("example", "unexpected", r"^(\d{3})-\S+: (\w+) \((EXPECTED[^)]*)\)"),
     ("example", "task-as-expected", r"^(\d{3})-\S+: task (\S+): (\w+) \([\w-]+; as expected\)"),
     ("example", "task-unexpected", r"^(\d{3})-\S+: task (\S+): (\w+) \([\w-]+; NOT AS EXPECTED \((.*)\)\), receipt "),
+    # examples/tools/targets/workflow_refusal.py: a rerun of a task an observed gap blocks, at its recorded refusal or not.
+    ("example", "task-refused-as-predicted", r"^(\d{3})-\S+: task (\S+): refused as predicted \(([^;]+); ([\w-]+); "),
+    ("example", "task-not-as-predicted", r"^(\d{3})-\S+: task (\S+): NOT AS PREDICTED: (.*)"),
     ("example", "differ", r"^Verdicts differ from expectations: (.*)"),
     ("example", "not-executed", r"^(\d{3})-\S+: not-executed \((.*)\)$"),
     ("cargo", "tests", r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed"),

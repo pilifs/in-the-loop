@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-005927-example-286-preservation-vf-027-rerun-st",
+  "title": "example 286 preservation (VF-027 rerun): stops at its recorded refusal, two dependency closures for one equivalence classpath",
+  "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task preservation of example 286 is resubmitted unchanged in its claim (key 93e54e75b16748cd, expected established, native, strict), predicting the refusal job 20261114-234212-example-286-preservation-phase-5-step-1 observed: two dependency closures for one equivalence classpath. The step runs examples/tools/targets/workflow_refusal.py 286 preservation, which runs python3 examples/tools/build.py 286 --task preservation once (its output indented) and exits 0 only when the claim key is still 93e54e75b16748cd, build.py exits 1, and the attempt gives no receipt, the route's not-executed line naming the recorded refusal, the text recorded in examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/records/refusals/preservation.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+  "kind": "example",
+  "capabilities": [
+    "target:equivalence",
+    "target:predicted-refusal"
+  ],
+  "links": {
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/target.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/permitted-fields-preserved.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/records/refusals/preservation.json",
+      "examples/tools/targets/workflow_refusal.py"
+    ],
+    "examples": [
+      "286"
+    ]
+  },
+  "expected": "workflow_refusal.py prints 'refused as predicted' for example 286 task preservation and exits 0: the attempt stops at the recorded refusal (two dependency closures for one equivalence classpath) under claim 93e54e75b16748cd; the claim stays unresolved, which is no verdict",
+  "submitted": {
+    "at": "2026-11-15T00:59:27+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "the same preparation and controls as the observed run 20261114-234212-example-286-preservation-phase-5-step-1, which reached the refusal in 6 s; the estimate is that job's"
+  },
+  "steps": [
+    {
+      "name": "example 286 task preservation: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 286 preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

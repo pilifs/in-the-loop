@@ -561,6 +561,23 @@ class SignalsTest(unittest.TestCase):
                           ["287", "task replay: unsupported: prepare (example-targets-runtime): revision fixed-release "
                                   "is failed, not artifacts-ready"]])
 
+    def test_a_predicted_refusals_verdict_line_is_a_signal_and_build_pys_indented_lines_are_not(self):
+        # examples/tools/targets/workflow_refusal.py indents build.py's output, so its NOT AS EXPECTED line (the
+        # refusal it predicts) is no task-unexpected signal; its own line is the step's verdict.
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "step.log"
+            log.write_text(
+                "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task "
+                "vulnerable-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/v/a1/result.json\n"
+                "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-security: refused "
+                "as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded "
+                "refusal, receipt receipts/v/a1\n"
+                "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task preservation: NOT AS PREDICTED: "
+                "build.py exited 0, not 1 (VF-027; run-verifier; records/refusals/preservation.json)\n")
+            signals, counts, _ = pipeline.scan_signals(log)
+        self.assertEqual(counts, {"example:task-refused-as-predicted": 1, "example:task-not-as-predicted": 1})
+        self.assertEqual([s["groups"] for s in signals][0], ["286", "vulnerable-security", "VF-027", "verifier"])
+
 
 class MissingToolsTest(unittest.TestCase):
     def test_maven_is_the_install_runtime_builds_with_not_an_executable_named_maven(self):

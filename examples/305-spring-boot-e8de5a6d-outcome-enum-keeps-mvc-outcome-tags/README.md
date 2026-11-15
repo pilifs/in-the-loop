@@ -110,3 +110,22 @@ reaches it.
   that depends on it, against the negative's request method `String`, an unbounded sequence that needs a length bound
   and String semantics. So this positive's arithmetic is the easy part, and what stops it is the surrounding structure
   (initializers, a library interface, a library value class), the structure the two families share.
+
+## Observed blockers
+
+Every proof task's first attempt (Phase 5, 2026-11-14) stopped before any proof, at a capability gap of the checker or
+the route (VF-027). As the user decided on 2026-11-15, each is recorded as an observed gap, not restated: the claims and
+their expected conclusions are unchanged, the claims stay unresolved, and each task's readiness is blocked. Each packet
+cites its job and receipt and gives the refusal, the semantics needed, the likely owner module and the closure check.
+
+| Task | Refused at | Observed by job | Packet |
+|---|---|---|---|
+| `finite-outcome-after` | a library-interface parameter | `20261114-234213-example-305-finite-outcome-after-phase-5` | [`records/refusals/finite-outcome-after.json`](records/refusals/finite-outcome-after.json) |
+| `finite-outcome-before` | a library-interface parameter | `20261114-234213-example-305-finite-outcome-before-phase` | [`records/refusals/finite-outcome-before.json`](records/refusals/finite-outcome-before.json) |
+| `mutant-preservation` | a library-interface parameter | `20261114-234213-example-305-mutant-preservation-phase-5` | [`records/refusals/mutant-preservation.json`](records/refusals/mutant-preservation.json) |
+| `preservation` | a library-interface parameter | `20261114-234213-example-305-preservation-phase-5-step-1` | [`records/refusals/preservation.json`](records/refusals/preservation.json) |
+
+`python3 examples/tools/targets/workflow_refusal.py 305 TASK` reruns a task and passes only while its recorded refusal
+recurs under the same claim key; a verdict or another refusal fails it. Those reruns are queued (4 jobs,
+`20261115-005928-example-305-finite-outcome-after-vf-027` to
+`20261115-005928-example-305-preservation-vf-027-rerun-st`).

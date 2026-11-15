@@ -1537,6 +1537,82 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     (`--expected` and `--expect-exit`, and the `task-as-expected` signal). Queue 307's native tasks the same way once
     its replay passes. Then the gap inventory, A8 and the for-review list. Read 307's two replays when they are
     collected.
+- 2026-11-15, **VF-027 recorded as the user decided: 23 observed gaps, every one of those tasks `blocked`, and 23
+  reruns queued, each predicting its recorded refusal.** Also, 307's replays are read.
+  - **307's replays passed** (collected in `vzlqyvun`): `20261115-003616` (replay) and `20261115-003617`
+    (mutant-replay), about 6 s each.
+    - Both slices hold the oracle on JDK 21 and 25. The US-ASCII mutant fails at the non-ASCII probes only.
+    - Before's preparation ran `_match_published`, which refuses a slice whose class differs from 5.2.0.M4's
+      (tested), so before's `BCrypt.class` equals M4's. The receipt doesn't record the match, though: the
+      preparation's `source.slice.matched` isn't carried into it. That goes on the for-review list.
+    - 307 is a reproducible scaffold at the slice's scope.
+  - **Reproducers**. Both fail on `vzlqyvun` by construction, since there was no module and no packet there:
+    - `test_workflow_refusal.py`. Its `Vf027PacketsTest` checks the following for each of the 23 tasks:
+      - one prediction, under the claim key the task plans with now;
+      - the cited log, verifier output and receipt, by sha256 and content;
+      - readiness `blocked`;
+      - its `expected` still `established` or `refuted`.
+
+      It also checks that the inventory ranks exactly the five causes, with 23 blocked obligations.
+    - `test_pipeline.py`'s new signal test.
+  - **Each task's packet**, `records/refusals/TASK.json` in its example. These are the brief's capability-gap fields:
+    - the job, its log, its receipt and verifier output (in `verification/results/`, with sha256s), the attempt and
+      the bound claim id;
+    - the verifier (jvmcontract `7462d0c9…`, built at `72a1337a`, lib tree `9aba16ef…`);
+    - the command and the artifacts;
+    - the refusal (`stage`, `text`) and the `claimKey`;
+    - the semantics needed, why, the owner module and the strategies.
+
+    The handoff derives the closure check.
+  - **The five causes**, each one gap id in `workflow_handoff.py inventory`. All 23 claim keys are the ones the jobs
+    ran under:
+    1. `input-construction:interface-parameter`: 285 ×3 and 305 ×4, one family. Owners: `lib/src/construction.rs`
+       and `environment.rs`.
+    2. `input-construction:receiver-of-several-constructors`: 286 ×5 and 287 ×3, two families. jvmcontract's `prove
+       --plan` can name one of several constructors, but the route passes no plan and a claim has no field for one.
+       So the first owner is `runtime.run_verifier` and the claim format, then `construction.rs` for the String
+       arrays a plan can't make.
+    3. `input-construction:string-parameter`: 287's two guard tasks, and 306 `mutant-preservation`'s nullable
+       pattern. Owner: `lib/src/values.rs`.
+    4. `input-construction:two-dependency-closures`: the `preservation` of 285, 286, 287 and 306, not executed.
+       Owners: equivalence's single `--classpath` (`lib/src/main.rs`, `equivalence.rs`) and the refusal at
+       `runtime.py`'s `run_verifier`. Recorded as `input-construction`, for want of a closer kind among the
+       schema's eight. That choice is for review.
+    5. `jdk-constructor:java.lang.StringBuilder.<init>()V`: 105 `confined-change`. Owner: `lib/src/models.rs`. It
+       groups with the prediction in `records/pow-gaps.json`.
+  - **Sidecars**: each task has an observed blocker naming its job, with finding `VF-027`.
+    - Two predictions this run confirmed are replaced by observed blockers: 285 `fixed-security`'s interface
+      parameter, and 305's target-wide one. The other predictions stay, since no attempt reached them.
+    - `handoff.next` of 285, 286, 287, 305, 306 and 105 is rewritten. Those texts still described the pre-replay
+      steps.
+    - There's a new note in each `example.json`.
+    - The READMEs of 285, 286, 287, 305 and 306 have an "Observed blockers" table. For 285–287 it replaces "no
+      verifier has run on this packet". 105's README is historical and unchanged.
+    - The index is regenerated: these six targets read `blocked`.
+  - **The new check, `examples/tools/targets/workflow_refusal.py ID TASK`**:
+    - `build.py`'s exit 1 can't tell a refusal from a verdict the task doesn't expect, so this step runs it once
+      (output indented) and judges the outcome.
+    - It passes only when the task plans under the recorded `claimKey` and `build.py` exits 1. It then needs either
+      exactly one new receipt that completed `unresolved` with the recorded problem, or, at the route's stage, no
+      receipt and the recorded not-executed reason.
+    - Anything else prints `NOT AS PREDICTED`: a verdict, another refusal, a kill, a changed claim, or a closed gap.
+    - `pipeline.py` gets two signals for its lines, `task-refused-as-predicted` and `task-not-as-predicted`.
+  - **Queued**: 23 reruns, `20261115-005926-example-105-confined-change-vf-027-rerun` to
+    `20261115-005928-example-306-preservation-vf-027-rerun-st`. Each is
+    `workflow_refusal.py N T`, with its first job's requirements and estimate. The four `preservation` jobs declare
+    no output. They close VF-027 when they pass, as its "Closes when" allows, and settle those jobs for A8.
+  - **Fixed alongside**: `test_acceptance.py`'s A2 test still expected 307 to have no receipts.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (243),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: queue 307's `preservation` and `mutant-preservation`, its native attempts, now that its replays have
+    passed. They have no observed refusal, so they go as ordinary attempts, and whatever stops them is recorded as
+    above. Then:
+    - step 4, the v1 gap inventory, from `workflow_handoff.py inventory`: five observed gaps, and the predictions
+      apart;
+    - A8;
+    - step 5, the for-review list.
+
+    Read the 23 reruns when they are collected.
 - Status: working
 
 ## Loop settings

@@ -1,0 +1,112 @@
+{
+  "$comment": "An observed capability gap (VF-027, the user's decision of 2026-11-15: recorded, not restated). The fields are the brief's capability-gap packet (examples/tools/targets/workflow_handoff.py, PACKET_FIELDS); refusal and claimKey are what workflow_refusal.py checks a rerun against.",
+  "schema": "example-target-refusal/v1",
+  "finding": "VF-027",
+  "task": "confined-change",
+  "claimKey": "6bef0dff1140dc6d",
+  "refusal": {
+    "stage": "verifier",
+    "text": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5 (java.lang.StringBuilder.<init>() at before.org.apache.commons.numbers.core.ArithmeticUtils.pow:282). With --gaps assume it assumes instead that java.lang.StringBuilder.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption"
+  },
+  "observed": {
+    "job": "20261114-234214-example-105-confined-change-phase-5-step",
+    "result": "verification/results/20261114-234214-example-105-confined-change-phase-5-step/result.json",
+    "log": "verification/results/20261114-234214-example-105-confined-change-phase-5-step/logs/1-example-105-task-confined-chan.log",
+    "logSha256": "b946d038f35a696b05d6542b5b7ab7205347e1bd2a40e0206b4b185303a47fed",
+    "receipt": "verification/results/20261114-234214-example-105-confined-change-phase-5-step/outputs/examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261114T235510Z-4e50a5b2/result.json",
+    "receiptSha256": "bf2aa7dbd2ec8763dc7550e846eabbc97e6ba3e1be5f63ab3fabcb451b55e4b4",
+    "verifierOutput": "verification/results/20261114-234214-example-105-confined-change-phase-5-step/outputs/examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261114T235510Z-4e50a5b2/records/verifier-output.txt",
+    "verifierOutputSha256": "d89008f765da4df1524893ef2a8f3082a900d05c8cf758fd6f27dcd08445c03b",
+    "attempt": "20261114T235510Z-4e50a5b2",
+    "claimId": "59b4738b4fc7c6dd",
+    "status": "unresolved",
+    "execution": "completed",
+    "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+    "seconds": 217.6
+  },
+  "verifier": {
+    "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+    "commit": "72a1337a1529b690365c0f01a69325bb46035216",
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS"
+  },
+  "command": [
+    "jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/before",
+    "--after",
+    "verifier/classes/after",
+    "--target",
+    "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+    "--unchanged-unless",
+    "k == -2 && e == 31",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "artifacts": [
+    {
+      "revision": "after",
+      "path": "built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "sha256": "103dfca4c06862e6269a123940e73baeccac58ce75e71af60adacd9d69f014b7",
+      "role": "original"
+    },
+    {
+      "revision": "before",
+      "path": "built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "sha256": "e3a1b00d529d504cf8fdff8c3fb2d2150df154c98687b204aac49a35d33f9bcc",
+      "role": "original"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+      "kind": "stringbuilder",
+      "call": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "sites": [],
+      "approximation": null,
+      "message": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5 (java.lang.StringBuilder.<init>() at before.org.apache.commons.numbers.core.ArithmeticUtils.pow:282). With --gaps assume it assumes instead that java.lang.StringBuilder.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+    "attempt": "python3 examples/tools/build.py 105 --task confined-change",
+    "job": "20261114-234214-example-105-confined-change-phase-5-step",
+    "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+    "revision": null,
+    "note": "the task as stated, on its prepared artifacts and frozen claim: no wrapper, narrower subject or simpler signature"
+  },
+  "semantics": "java.lang.StringBuilder.<init>() on before's exception path (ArithmeticUtils.pow:282, before's exception message): under --gaps strict the checker refuses a JDK constructor it approximates. Needed: a model of StringBuilder (the constructor, append and toString the message is built with) in lib/src/models.rs, used by the checker and the interpreter alike, so that strict accepts it.",
+  "why": "the claim (6bef0dff1140dc6d) is about org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I as stated; the verifier refuses it before any proof (strict refuses the JDK constructor StringBuilder.<init>() on before's exception path), so the claim stays unresolved, its expected conclusion (established) unchanged, and the refusal is no verdict",
+  "module": {
+    "likely": [
+      "lib/src/models.rs"
+    ],
+    "note": null
+  },
+  "strategies": [
+    {
+      "by": "job 20261114-234214-example-105-confined-change-phase-5-step",
+      "outcome": "unresolved"
+    },
+    {
+      "by": "not tried, by the user's decision of 2026-11-15",
+      "what": "restating the task over a wrapper, a narrower subject or a simpler signature; extending jvmcontract or the route in this loop"
+    }
+  ]
+}

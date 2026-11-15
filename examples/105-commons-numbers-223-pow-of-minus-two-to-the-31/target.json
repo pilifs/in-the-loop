@@ -94,11 +94,21 @@
   "handoff": {
     "blockers": [
       {
-        "kind": "java-semantics", "observed": false, "task": "confined-change",
+        "kind": "java-semantics",
+        "observed": false,
+        "task": "confined-change",
         "summary": "Predicted from a static scan, not from an attempt: jvmcontract gaps on pow(int,int) at both revisions (and in the published 1.3 JAR) lists four gaps, all at line 282, the e < 0 branch's message: StringBuilder.<init>(), append(String) twice, append(int) and toString(). The own checker approximates them, and under --gaps strict the paths reaching them end with no verdict; with no violation on another path, the confined-change attempt has none. The selected property never reaches them (its assume excludes e < 0). Scanned by hand with a binary one lib/src commit old (records/pow-gaps.json, a note).",
         "packet": "records/pow-gaps.json"
+      },
+      {
+        "kind": "java-semantics",
+        "observed": true,
+        "task": "confined-change",
+        "summary": "Observed by job 20261114-234214-example-105-confined-change-phase-5-step (VF-027): strict refuses the JDK constructor StringBuilder.<init>() on before's exception path (ArithmeticUtils.pow:282, before's exception message). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 105 confined-change.",
+        "packet": "records/refusals/confined-change.json",
+        "finding": "VF-027"
       }
     ],
-    "next": "Runtime's upstream-build preparation of before and after (the Maven argv above, JDK 11, Central only), then the replay task (the driver on each JAR, on JDK 21 and 25, read by controls/oracle.py: python3 -I controls/oracle.py check before BEFORE.out after AFTER.out), then fix-property and fix-property-before through python3 verification/pipeline.py submit --example 105 --task fix-property (and --task fix-property-before): gate A5. regression and confined-change after them, as diagnostics."
+    "next": "Replay passed; gate A5's fix-property (established) and fix-property-before (refuted, witness pow(-2, 31)) have their receipts, and regression is refuted as expected (receipts/). confined-change is blocked by an observed capability gap: strict refuses java.lang.StringBuilder.<init>() on before's exception path (ArithmeticUtils.pow:282); its other predicted gaps (records/pow-gaps.json) stay predictions, not reached. Recorded, not restated (VF-027, the user's decision of 2026-11-15): each blocked task's packet is records/refusals/TASK.json (its job, receipt, refusal, semantics needed, owner module and closure), its claim stays unresolved and its expected conclusion unchanged. Each blocked task's rerun, python3 examples/tools/targets/workflow_refusal.py 105 TASK, passes only while the recorded refusal recurs under the same claim key; queued as jobs 20261115-005926-example-105-confined-change-vf-027-rerun. When a gap's closure lands, the task's ordinary attempt runs, python3 examples/tools/build.py 105 --task TASK (queued), its claim unchanged; a narrower kernel or wrapper would be a separate task with its own claim."
   }
 }

@@ -4365,7 +4365,8 @@
         "The selected A5 obligation is claims/pow-minus-two.json: for k == -2 and 0 <= e <= 31, pow(int,int) returns (-2)^e. Native strict, expected established on after and refuted on before at (-2, 31), the witness the replay reproduces. It reaches no gap: jvmcontract gaps lists only the StringBuilder calls of the e < 0 message (records/pow-gaps.json), which its assume excludes. The report's confined-change row is predicted refused under strict for exactly those gaps.",
         "Hand replay on 2026-11-14 (a note, not evidence): ArithmeticUtils.java of each commit compiled alone with JDK 11's javac --release 8, plus Central's 1.3 JAR, each with the driver (driver.jar sha256 315ecf00…) in its own JVM on JDK 21 and 25, over the 75 probes. controls/oracle.py: after meets the Javadoc's contract on all 75; before and 1.3 give byte-identical output and deviate at (-2, 31) alone (ArithmeticException); the property holds on all 32 points at after and fails at e = 31 alone at before. Checked with the wrong revision's output and a truncated file, the oracle fails, as it should.",
         "Tag (2026-11-14, example-targets Phase 5): external-target, as every example with a sidecar is, so find.py --tag external-target reaches the calibration with the packets.",
-        "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run; problems() reads the Javadoc's contract (rules 1-3) without the declared deviations, which are what the exact fix's pair expects of before (it violates, at (-2)^31) and after (it holds); the probes file's constant is now PROBES_FILE, so the runner never takes the path for a PROBES list. The CLI (`argv`, `check`, the pair comparison) is unchanged."
+        "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run; problems() reads the Javadoc's contract (rules 1-3) without the declared deviations, which are what the exact fix's pair expects of before (it violates, at (-2)^31) and after (it holds); the probes file's constant is now PROBES_FILE, so the runner never takes the path for a PROBES list. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
+        "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): Replay passed; gate A5's fix-property (established) and fix-property-before (refuted, witness pow(-2, 31)) have their receipts, and regression is refuted as expected (receipts/). confined-change is blocked by an observed capability gap: strict refuses java.lang.StringBuilder.<init>() on before's exception path (ArithmeticUtils.pow:282); its other predicted gaps (records/pow-gaps.json) stay predictions, not reached. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 105 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005926-example-105-confined-change-vf-027-rerun."
       ],
       "source": "https://github.com/apache/commons-numbers/pull/223",
       "target": {
@@ -4379,13 +4380,13 @@
           "regression",
           "confined-change"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
           "fix-property": "executable",
           "fix-property-before": "executable",
           "regression": "executable",
-          "confined-change": "scaffolded"
+          "confined-change": "blocked"
         },
         "expected": {
           "replay": null,
@@ -4436,8 +4437,12 @@
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "java-semantics"
+        ],
+        "gapIds": [
+          "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [
           "java-semantics"
@@ -7180,7 +7185,8 @@
         "Registry note: Boot 3.x mitigation also updates Spring Framework for the related observation vulnerability. This benchmark deliberately chooses the Boot 2.7 implementation.",
         "Revisions checked against upstream on 2026-11-14: the release tags resolved to commits, the fix commit and its parent read from github.com, the fix an ancestor of v2.7.18 and not of v2.7.17; on the same day WebMvcTags.java's blobs read at all four revisions (sources.lock.json).",
         "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/raw-method-fallback.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `fixed-release`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-security`, fixed-security's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `fixed-release`, which no task prepared.",
-        "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run, and check()'s dict would have been read as problems, so a fixed release would have counted as violating. The CLI (`argv`, `check`, the pair comparison) is unchanged."
+        "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run, and check()'s dict would have been read as problems, so a fixed release would have counted as violating. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
+        "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): Replay and mutant-replay passed (receipts/replay, receipts/mutant-replay). Every proof task is blocked by an observed capability gap: vulnerable-security, fixed-security and mutant-security stop at the library-interface parameter (WebMvcTags#method's HttpServletRequest); preservation is not executed, since before and after have different dependency closures and jvmcontract's equivalence takes one classpath for both. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 285 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005926-example-285-fixed-security-vf-027-rerun, 20261115-005926-example-285-mutant-security-vf-027-rerun, 20261115-005926-example-285-preservation-vf-027-rerun-st, 20261115-005926-example-285-vulnerable-security-vf-027-r."
       ],
       "source": "https://github.com/spring-projects/spring-boot/commit/5490e73922b37a7f0bdde43eb318cb1038b45d60",
       "target": {
@@ -7195,14 +7201,14 @@
           "mutant-replay",
           "mutant-security"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
-          "vulnerable-security": "scaffolded",
-          "fixed-security": "scaffolded",
-          "preservation": "scaffolded",
+          "vulnerable-security": "blocked",
+          "fixed-security": "blocked",
+          "preservation": "blocked",
           "mutant-replay": "scaffolded",
-          "mutant-security": "scaffolded"
+          "mutant-security": "blocked"
         },
         "expected": {
           "replay": null,
@@ -7238,11 +7244,15 @@
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "input-construction"
+        ],
+        "gapIds": [
+          "input-construction:interface-parameter",
+          "input-construction:two-dependency-closures"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [
-          "input-construction",
           "java-semantics"
         ],
         "historical": {
@@ -7298,7 +7308,8 @@
         "Imported on 2026-11-14 from the archived registry (rank 2, priority P0); its capability notes are from verifier 4c279ba6 and stale. The blockers in target.json are predictions until the capability probe reaches them.",
         "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/pattern-side-unnormalized.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `fixed-release`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-security`, fixed-security's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `fixed-release`, which no task prepared.",
         "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run, and check()'s dict would have been read as problems, so a fixed release would have counted as violating. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
-        "First replay job (VF-026, 2026-11-14): 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 failed to prepare at runtime's adapter check, not on 5.3.18's JARs: ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a reference owned by the subclass, and the check counted only references owned by an original class. Runtime now resolves such a reference up the superclass chain, as the JVM does; the adapter is unchanged. Resubmitted as 20261114-223812-example-286-replay-gate-a3-cve-2022-2296."
+        "First replay job (VF-026, 2026-11-14): 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 failed to prepare at runtime's adapter check, not on 5.3.18's JARs: ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a reference owned by the subclass, and the check counted only references owned by an original class. Runtime now resolves such a reference up the superclass chain, as the JVM does; the adapter is unchanged. Resubmitted as 20261114-223812-example-286-replay-gate-a3-cve-2022-2296.",
+        "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): Replay and mutant-replay passed (receipts/replay, receipts/mutant-replay; gate A3). Every proof task is blocked by an observed capability gap: the four security and protected-state tasks and mutant-security stop at DataBinder's receiver (two constructors; the route passes no construction plan, which jvmcontract's prove could take); preservation is not executed, since before and after have different dependency closures. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 286 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005926-example-286-fixed-protected-state-mutati, 20261115-005927-example-286-fixed-security-vf-027-rerun, 20261115-005927-example-286-mutant-security-vf-027-rerun, 20261115-005927-example-286-preservation-vf-027-rerun-st, 20261115-005927-example-286-vulnerable-protected-state-m, 20261115-005927-example-286-vulnerable-security-vf-027-r."
       ],
       "source": "https://github.com/spring-projects/spring-framework/commit/a7cf19cec5ebd270f97a194d749e2d5701ad2ab7",
       "target": {
@@ -7315,16 +7326,16 @@
           "mutant-replay",
           "mutant-security"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
-          "vulnerable-security": "scaffolded",
-          "fixed-security": "scaffolded",
-          "preservation": "scaffolded",
-          "vulnerable-protected-state-mutation": "scaffolded",
-          "fixed-protected-state-mutation": "scaffolded",
+          "vulnerable-security": "blocked",
+          "fixed-security": "blocked",
+          "preservation": "blocked",
+          "vulnerable-protected-state-mutation": "blocked",
+          "fixed-protected-state-mutation": "blocked",
           "mutant-replay": "scaffolded",
-          "mutant-security": "scaffolded"
+          "mutant-security": "blocked"
         },
         "expected": {
           "replay": null,
@@ -7364,8 +7375,13 @@
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "input-construction"
+        ],
+        "gapIds": [
+          "input-construction:receiver-of-several-constructors",
+          "input-construction:two-dependency-closures"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [
           "input-construction",
@@ -7428,7 +7444,8 @@
         "Proof boundary (research): input-length and rejection only; never a proof of bcrypt's security, of DaoAuthenticationProvider or of timing. Only the specified IllegalArgumentException counts as the rejection.",
         "The claim fails on 6.3.9 by design. The repair c1aa99fd (CVE-2025-22234, example 300) allows matching overlong candidates again, and 6.3.9's outcomes on all 33 probes are 6.3.7's (run by hand, a note in 300). Never run this claim against 6.3.9 as a fixed revision.",
         "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/char-count-guard.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `fixed-release`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-security`, fixed-security's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `fixed-release`, which no task prepared.",
-        "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run, and check()'s dict would have been read as problems, so a fixed release would have counted as violating. The CLI (`argv`, `check`, the pair comparison) is unchanged."
+        "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run, and check()'s dict would have been read as problems, so a fixed release would have counted as violating. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
+        "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): Replay and mutant-replay passed (receipts/replay, receipts/mutant-replay). Every proof task is blocked by an observed capability gap: the three security tasks stop at BCryptPasswordEncoder's receiver (seven constructors, no construction plan), the two guard tasks at checkpw's String parameter in a property check, and preservation is not executed, since before and after have different dependency closures. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 287 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005927-example-287-fixed-guard-vf-027-rerun-sto, 20261115-005927-example-287-fixed-security-vf-027-rerun, 20261115-005927-example-287-mutant-security-vf-027-rerun, 20261115-005928-example-287-preservation-vf-027-rerun-st, 20261115-005928-example-287-vulnerable-guard-vf-027-reru, 20261115-005928-example-287-vulnerable-security-vf-027-r."
       ],
       "source": "https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
       "target": {
@@ -7445,16 +7462,16 @@
           "mutant-replay",
           "mutant-security"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
-          "vulnerable-security": "scaffolded",
-          "fixed-security": "scaffolded",
-          "preservation": "scaffolded",
-          "vulnerable-guard": "scaffolded",
-          "fixed-guard": "scaffolded",
+          "vulnerable-security": "blocked",
+          "fixed-security": "blocked",
+          "preservation": "blocked",
+          "vulnerable-guard": "blocked",
+          "fixed-guard": "blocked",
           "mutant-replay": "scaffolded",
-          "mutant-security": "scaffolded"
+          "mutant-security": "blocked"
         },
         "expected": {
           "replay": null,
@@ -7494,8 +7511,14 @@
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "input-construction"
+        ],
+        "gapIds": [
+          "input-construction:receiver-of-several-constructors",
+          "input-construction:string-parameter",
+          "input-construction:two-dependency-closures"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [
           "input-construction",
@@ -8491,7 +8514,8 @@
         "Companions and tags (2026-11-14, example-targets Phase 5): target.json's identity names 285, this family's CVE packet, as its companion, as 285 names this one; the example is tagged external-target, as every example with a sidecar is, and metrics, its family's domain tag.",
         "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
         "Source-slice route (2026-11-14, example-targets Phase 5, the user's decision on P1): the exact commits' builds stay irreproducible (SNAPSHOT pins), so target.json's route is source-slice. Each commit's WebMvcTags.java (and after's Outcome.java) is compiled alone by JDK 8 with -g -parameters -source 1.8 -target 1.8 -encoding UTF-8 against Framework 5.2.0.RC2's spring-web, spring-webmvc, spring-core and spring-jcl (repo.spring.io/milestone), micrometer-core 1.2.0 and javax.servlet-api 4.0.1, each pinned by sha256 (sources.lock.json's sliceDependencies). spring-webmvc and spring-core are beyond the three JARs the decision named: WebMvcTags imports HandlerMapping and StringUtils. A hand compile (a note) gave after's two classes byte-identical to Boot 2.2.0.M6's published spring-boot-actuator JAR (fb75cbbc carries after's two files), so the revision release-m6 is that JAR, and the task m6-replay replays it beside the after slice in a correspondence pair: both sides must show the same observations on JDK 21 and 25. Every receipt of a slice is labelled extracted-source-slice. Before has no published counterpart. repo.spring.io serves the larger JARs by a 302 to its storage host, which runtime_maven.py now follows from repo.spring.io only.",
-        "Slice replays (2026-11-14, example-targets Phase 5): the three jobs passed, each on JDK 21 and 25. replay: before and after slices both hold the oracle (receipt 20261114T232950Z-89be94d5). m6-replay: the after slice and Boot 2.2.0.M6's published JAR give the same observations and no problem (20261114T232949Z-d7367f92), so the slice behaves like Spring's own build of after. mutant-replay: after holds and the status-200 mutant fails at 200 alone (20261114T232951Z-3c5edba8). Each receipt's claim.target.scopes labels the slices extracted-source-slice, M6 original-bytecode and the mutant constructed-mutation-of-a-slice. The index's readiness is now scaffolded."
+        "Slice replays (2026-11-14, example-targets Phase 5): the three jobs passed, each on JDK 21 and 25. replay: before and after slices both hold the oracle (receipt 20261114T232950Z-89be94d5). m6-replay: the after slice and Boot 2.2.0.M6's published JAR give the same observations and no problem (20261114T232949Z-d7367f92), so the slice behaves like Spring's own build of after. mutant-replay: after holds and the status-200 mutant fails at 200 alone (20261114T232951Z-3c5edba8). Each receipt's claim.target.scopes labels the slices extracted-source-slice, M6 original-bytecode and the mutant constructed-mutation-of-a-slice. The index's readiness is now scaffolded.",
+        "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): The slice's three replays passed (receipts/replay, receipts/m6-replay, receipts/mutant-replay): a reproducible scaffold at the slice's scope. Every proof task (preservation, finite-outcome-before, finite-outcome-after, mutant-preservation) is blocked by an observed capability gap: the library-interface parameter, WebMvcTags#outcome's HttpServletResponse. A proof about the slice's classes would reach the commits' own builds only through the recorded correspondence, which exists for after (M6) and not for before. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 305 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005928-example-305-finite-outcome-after-vf-027, 20261115-005928-example-305-finite-outcome-before-vf-027, 20261115-005928-example-305-mutant-preservation-vf-027-r, 20261115-005928-example-305-preservation-vf-027-rerun-st."
       ],
       "source": "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
       "target": {
@@ -8507,15 +8531,15 @@
           "mutant-replay",
           "mutant-preservation"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
           "m6-replay": "scaffolded",
-          "preservation": "scaffolded",
-          "finite-outcome-before": "scaffolded",
-          "finite-outcome-after": "scaffolded",
+          "preservation": "blocked",
+          "finite-outcome-before": "blocked",
+          "finite-outcome-after": "blocked",
           "mutant-replay": "scaffolded",
-          "mutant-preservation": "scaffolded"
+          "mutant-preservation": "blocked"
         },
         "expected": {
           "replay": null,
@@ -8560,12 +8584,15 @@
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "input-construction"
+        ],
+        "gapIds": [
+          "input-construction:interface-parameter"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [
           "build-or-dependency",
-          "input-construction",
           "java-semantics"
         ],
         "historical": {
@@ -8622,7 +8649,8 @@
         "Mutation control as a revision (2026-11-14, example-targets Phase 5): controls/drop-prefix.patch is declared in target.json as workflow W1's constructed revision `mutant` (base `release-after`, the patch's sha256 locked), the after of the `mutation` pair. It has two tasks of its own: `mutant-replay`, the concrete controls on that pair, where the base must hold and the mutant fail the oracle, and `mutant-preservation`, preservation's claim on the mutant, expected refuted. Its claim is bound to the mutant's artifact (runtime's identity `mutant:<base commit>+<patch sha256>`), never to a release's. It used to be only a `controls` entry on `release-after`, which no task prepared.",
         "Companions and tags (2026-11-14, example-targets Phase 5): target.json's identity names 286, this family's CVE packet, as its companion, as 286 names this one; the example is tagged external-target, as every example with a sidecar is, and data-binding, its family's domain tag. It was tagged request-binding, a defect tag for a handler parameter that can't bind, which PatternMatchUtils.simpleMatch is not; data-binding is the domain of DataBinder's field checks, which call it.",
         "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
-        "Replay expectation (2026-11-14, example-targets Phase 5 step 1): `replay` runs the `release` pair, 5.3.6 → 5.3.7. workflow_ingest used to read every release pair as a fix (the before release violates the oracle, the after one holds), so a replay in which both releases agree with the Javadoc statement, as the hand replay found, would have been recorded as not what the task expects. A release pair's sides now follow the case's role: a positive case's both hold, a negative case's vulnerable release violates (test_packets.py's ReplayExpectationTest). The sidecar is unchanged."
+        "Replay expectation (2026-11-14, example-targets Phase 5 step 1): `replay` runs the `release` pair, 5.3.6 → 5.3.7. workflow_ingest used to read every release pair as a fix (the before release violates the oracle, the after one holds), so a replay in which both releases agree with the Javadoc statement, as the hand replay found, would have been recorded as not what the task expects. A release pair's sides now follow the case's role: a positive case's both hold, a negative case's vulnerable release violates (test_packets.py's ReplayExpectationTest). The sidecar is unchanged.",
+        "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): Replay and mutant-replay passed (receipts/replay, receipts/mutant-replay). Both proof tasks are blocked by observed capability gaps: preservation is not executed, since the two releases' spring-core closures differ and jvmcontract's equivalence takes one classpath for both; mutant-preservation (the same claim) stops at the nullable String pattern in a regression check. preservation's predicted refusals (the String methods of records/simple-match-gaps.json, and the nullable String) stay predictions, not reached. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 306 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005928-example-306-mutant-preservation-vf-027-r, 20261115-005928-example-306-preservation-vf-027-rerun-st."
       ],
       "source": "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
       "target": {
@@ -8635,12 +8663,12 @@
           "mutant-replay",
           "mutant-preservation"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
-          "preservation": "scaffolded",
+          "preservation": "blocked",
           "mutant-replay": "scaffolded",
-          "mutant-preservation": "scaffolded"
+          "mutant-preservation": "blocked"
         },
         "expected": {
           "replay": null,
@@ -8672,8 +8700,13 @@
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "input-construction"
+        ],
+        "gapIds": [
+          "input-construction:string-parameter",
+          "input-construction:two-dependency-closures"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [
           "input-construction",

@@ -1,0 +1,197 @@
+{
+  "$comment": "An observed capability gap (VF-027, the user's decision of 2026-11-15: recorded, not restated). The fields are the brief's capability-gap packet (examples/tools/targets/workflow_handoff.py, PACKET_FIELDS); refusal and claimKey are what workflow_refusal.py checks a rerun against.",
+  "schema": "example-target-refusal/v1",
+  "finding": "VF-027",
+  "task": "mutant-preservation",
+  "claimKey": "98f4a389c1ccd7ff",
+  "refusal": {
+    "stage": "verifier",
+    "text": "parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is"
+  },
+  "observed": {
+    "job": "20261114-234213-example-305-mutant-preservation-phase-5",
+    "result": "verification/results/20261114-234213-example-305-mutant-preservation-phase-5/result.json",
+    "log": "verification/results/20261114-234213-example-305-mutant-preservation-phase-5/logs/1-example-305-task-mutant-preser.log",
+    "logSha256": "1c954f20e02a3b2b7b8df356c4c2d15bce32180ada3a8de49c997c3982f11529",
+    "receipt": "verification/results/20261114-234213-example-305-mutant-preservation-phase-5/outputs/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/result.json",
+    "receiptSha256": "0adcde205bf02b580f18bb03b16cfa0b2fe15d018e515a3af6955511284493dd",
+    "verifierOutput": "verification/results/20261114-234213-example-305-mutant-preservation-phase-5/outputs/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/mutant-preservation/20261114T235029Z-a41a1601/records/verifier-output.txt",
+    "verifierOutputSha256": "6867e320e32baef09b9115492d291b585f9ac9256e24419cd386d30363682d2e",
+    "attempt": "20261114T235029Z-a41a1601",
+    "claimId": "919176b1260a3778",
+    "status": "unresolved",
+    "execution": "completed",
+    "sourceCommit": "72a1337a1529b690365c0f01a69325bb46035216",
+    "seconds": 0.5
+  },
+  "verifier": {
+    "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+    "commit": "72a1337a1529b690365c0f01a69325bb46035216",
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS"
+  },
+  "command": [
+    "jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/after",
+    "--after",
+    "verifier/classes/mutant",
+    "--target",
+    "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
+    "--classpath",
+    "prepare/mutant/lib/org.springframework/spring-web-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/mutant/lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/mutant/lib/org.springframework/spring-core-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/mutant/lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
+    "--classpath",
+    "prepare/mutant/lib/io.micrometer/micrometer-core-1.2.0.jar",
+    "--classpath",
+    "prepare/mutant/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
+    "--nullable",
+    "response",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "artifacts": [
+    {
+      "revision": "after",
+      "path": "slice/after.jar",
+      "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0",
+      "role": "original"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
+      "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
+      "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
+      "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
+      "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
+      "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
+      "role": "dependency"
+    },
+    {
+      "revision": "after",
+      "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
+      "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
+      "role": "dependency"
+    },
+    {
+      "revision": "mutant",
+      "path": "slice/mutant.jar",
+      "sha256": "2a01716381fdeeeb2ccd8168ab39dc64667f7b6a290e6e99b14cf5eae39b1070",
+      "role": "original"
+    },
+    {
+      "revision": "mutant",
+      "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
+      "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
+      "role": "dependency"
+    },
+    {
+      "revision": "mutant",
+      "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
+      "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
+      "role": "dependency"
+    },
+    {
+      "revision": "mutant",
+      "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
+      "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
+      "role": "dependency"
+    },
+    {
+      "revision": "mutant",
+      "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
+      "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
+      "role": "dependency"
+    },
+    {
+      "revision": "mutant",
+      "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
+      "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
+      "role": "dependency"
+    },
+    {
+      "revision": "mutant",
+      "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
+      "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
+      "role": "dependency"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "input-construction:interface-parameter",
+      "kind": "interface",
+      "call": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+      "sites": [],
+      "approximation": null,
+      "message": "parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 305 mutant-preservation",
+    "attempt": "python3 examples/tools/build.py 305 --task mutant-preservation",
+    "job": "20261114-234213-example-305-mutant-preservation-phase-5",
+    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
+    "revision": null,
+    "note": "the task as stated, on its prepared artifacts and frozen claim: no wrapper, narrower subject or simpler signature"
+  },
+  "semantics": "A parameter of a library interface type (javax.servlet.http.HttpServletResponse, WebMvcTags#outcome's response, whose getStatus() it reads as an int): the checker makes an object input only of a concrete class, by its constructor or a construction plan, and dispatches invokeinterface only to application methods. Needed: an input of the interface whose methods the target calls return values from the claim's domain (a symbolic implementation, or an environment model of those calls, lib/src/environment.rs), the same in the interpreter's witness replay, and a witness the JVM driver can rebuild as the packet's test carrier does.",
+  "why": "the claim (98f4a389c1ccd7ff) is about org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag; as stated; the verifier refuses it before any proof (the parameter's type is a library interface), so the claim stays unresolved, its expected conclusion (refuted) unchanged, and the refusal is no verdict",
+  "module": {
+    "likely": [
+      "lib/src/construction.rs",
+      "lib/src/environment.rs"
+    ],
+    "note": null
+  },
+  "strategies": [
+    {
+      "by": "job 20261114-234213-example-305-mutant-preservation-phase-5",
+      "outcome": "unresolved"
+    },
+    {
+      "by": "not tried, by the user's decision of 2026-11-15",
+      "what": "restating the task over a wrapper, a narrower subject or a simpler signature; extending jvmcontract or the route in this loop"
+    }
+  ]
+}

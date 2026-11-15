@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T00:46:34.288Z",
-  "duration_seconds": 22874,
+  "ended": "2026-11-15T01:10:14.749Z",
+  "duration_seconds": 24294,
   "stats": {
-    "turns": 129,
-    "api_calls": 1007,
-    "tool_calls": 1031,
-    "tool_errors": 20,
-    "compactions": 23,
+    "turns": 133,
+    "api_calls": 1089,
+    "tool_calls": 1118,
+    "tool_errors": 22,
+    "compactions": 24,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2044,
-      "output_tokens": 672675,
-      "cache_read_input_tokens": 125469054,
-      "cache_creation_input_tokens": 3371115
+      "input_tokens": 2208,
+      "output_tokens": 741125,
+      "cache_read_input_tokens": 138909169,
+      "cache_creation_input_tokens": 3596830
     }
   },
   "tools": {
-    "Bash": 884,
-    "Read": 69,
-    "Edit": 65,
+    "Bash": 963,
+    "Edit": 70,
+    "Read": 70,
     "Agent": 5,
-    "Write": 3,
+    "Write": 5,
     "AskUserQuestion": 2,
     "ToolSearch": 2,
     "WebFetch": 1
@@ -52,8 +52,10 @@
     "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_runtime.py",
     "examples/tools/targets/test_workflow.py",
+    "examples/tools/targets/test_workflow_refusal.py",
     "examples/tools/targets/workflow.py",
     "examples/tools/targets/workflow_handoff.py",
+    "examples/tools/targets/workflow_refusal.py",
     "llm-dlc/loops/example-targets.md",
     "verification/pipeline.py",
     "verification/test_pipeline.py",
@@ -395,14 +397,28 @@
         "cache_creation_input_tokens": 190842
       },
       "peak_context_tokens": 204028
+    },
+    {
+      "index": 24,
+      "started": "2026-11-15T00:47:34.082Z",
+      "ended": "2026-11-15T01:10:14.749Z",
+      "turns": 4,
+      "api_calls": 82,
+      "usage": {
+        "input_tokens": 164,
+        "output_tokens": 68450,
+        "cache_read_input_tokens": 13440115,
+        "cache_creation_input_tokens": 225715
+      },
+      "peak_context_tokens": 238901
     }
   ],
   "log": {
-    "sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a",
-    "bytes": 33228430,
-    "lines": 10480,
-    "gzip_bytes": 6997667,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a.jsonl.gz"
+    "sha256": "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02",
+    "bytes": 35263391,
+    "lines": 11214,
+    "gzip_bytes": 7333549,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02.jsonl.gz"
   },
   "subagents": [
     {
@@ -879,20 +895,20 @@
       "log_sha256": "a9c3ba46907163df7fed1d17c0bdb8ddb42a3ea877d12fce9ff3e781fff21ed7"
     },
     {
-      "change_id": "vntrxswnuorrwuoqwnqmuvtrrkvwvqxq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a"
-    },
-    {
       "change_id": "vzlqyvunwtwqsuwkwowquxsslmvywpvn",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass",
       "body": "Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.",
       "log_sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a"
+    },
+    {
+      "change_id": "srxlxttrlxmvwoknnxmknzqyyrsuqxmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)",
+      "body": "As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.<init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.\n\nbuild.py exits 1 both for a refusal and for an unexpected verdict, so the new examples/tools/targets/workflow_refusal.py ID TASK runs it once and passes only when the task plans under the recorded claim key, build.py exits 1, and the attempt gives either one new unresolved receipt with the recorded problem or, at the route's stage, no receipt and the recorded not-executed reason. A verdict, another refusal, a changed claim or a closed gap prints NOT AS PREDICTED. pipeline.py has signals for both lines. 307's two source-slice replays, collected in vzlqyvun, pass, so 307 is a reproducible scaffold at the slice's scope. Its receipt doesn't carry the byte match with 5.2.0.M4 (the preparation would have refused a mismatch), which goes on the for-review list. test_acceptance.py's A2 test, which still expected 307 to have no receipts, is updated.\n\nVerified: test_workflow_refusal.py (the judgement, the predictions, the check on 285 and 286, and the 23 packets against their job records and the inventory) and test_pipeline.py's new signal test. Both fail on vzlqyvun by construction. llm-dlc/tools/example-targets-integration.sh exits 0: the contract (16), the targets suite (243), test_build.py (190), test_pipeline.py (33) and build.py --plan.\n\nQueued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20261115-005926-example-105-confined-change-vf-027-rerun to 20261115-005928-example-306-preservation-vf-027-rerun-st (verification/jobs/20261115-00592*). When they pass, VF-027 closes as its Closes-when allows.",
+      "log_sha256": "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02"
     }
   ],
   "logs": {
@@ -942,6 +958,12 @@
       "bytes": 256222,
       "lines": 43,
       "gzip_bytes": 71301,
+      "url": null
+    },
+    "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02": {
+      "bytes": 35263391,
+      "lines": 11214,
+      "gzip_bytes": 7333549,
       "url": null
     },
     "317af522321d27f364f68ede4467147297fdc8398fd47b2e2353e1d078646183": {
