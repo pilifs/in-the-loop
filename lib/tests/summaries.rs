@@ -100,6 +100,7 @@ fn twice() -> MemberRef {
 
 #[test]
 fn the_same_sources_compiled_twice_give_the_same_closure() {
+    jvmcontract::tool_tier!();
     let (Some(a), Some(b)) = (base("same-a", &[]), base("same-b", &[])) else { return };
     let none = Configuration::none();
     let (x, y) = (closure_of(&a, &total(), &none), closure_of(&b, &total(), &none));
@@ -112,6 +113,7 @@ fn the_same_sources_compiled_twice_give_the_same_closure() {
 
 #[test]
 fn a_changed_callee_body_names_the_callee() {
+    jvmcontract::tool_tier!();
     let changed = PRICING.replace("gross / RATE", "gross / RATE + 0 * gross");
     let (Some(a), Some(b)) = (base("callee-a", &[]), base("callee-b", &[("k/Pricing.java", &changed)])) else { return };
     assert_eq!(changes(&a, &b, &total()), vec![PartChange::Changed { part: "method k/Pricing.discount(J)J".into() }]);
@@ -119,6 +121,7 @@ fn a_changed_callee_body_names_the_callee() {
 
 #[test]
 fn an_unrelated_change_leaves_the_closure_alone() {
+    jvmcontract::tool_tier!();
     let other = OTHER.replace("return 1", "return 2");
     let (Some(a), Some(b)) = (base("unrelated-a", &[]), base("unrelated-b", &[("k/Other.java", &other)])) else { return };
     assert!(changes(&a, &b, &total()).is_empty());
@@ -127,6 +130,7 @@ fn an_unrelated_change_leaves_the_closure_alone() {
 
 #[test]
 fn a_constant_field_changes_the_class_part() {
+    jvmcontract::tool_tier!();
     let rate = PRICING.replace("RATE = 10", "RATE = 20");
     let (Some(a), Some(b)) = (base("constant-a", &[]), base("constant-b", &[("k/Pricing.java", &rate)])) else { return };
     let got = changes(&a, &b, &total());
@@ -136,6 +140,7 @@ fn a_constant_field_changes_the_class_part() {
 
 #[test]
 fn a_new_class_that_adds_a_dispatch_target_changes_the_closure_with_no_body_changed() {
+    jvmcontract::tool_tier!();
     let circle = r#"package k;
 public class Circle extends Shape {
     final long r;
@@ -152,6 +157,7 @@ public class Circle extends Shape {
 
 #[test]
 fn a_new_subclass_that_overrides_nothing_leaves_the_dispatch_alone() {
+    jvmcontract::tool_tier!();
     let big = r#"package k;
 public class BigSquare extends Square {
     public BigSquare(long side) { super(side); }
@@ -163,6 +169,7 @@ public class BigSquare extends Square {
 
 #[test]
 fn a_changed_superclass_changes_the_class_part() {
+    jvmcontract::tool_tier!();
     let middle = r#"package k;
 public abstract class Middle extends Shape {}
 "#;
@@ -202,6 +209,7 @@ fn quote() -> MemberRef {
 
 #[test]
 fn a_framework_annotation_the_claim_uses_changes_the_closure() {
+    jvmcontract::tool_tier!();
     let moved = CONTROLLER.replace("\"/quotes\"", "\"/quote\"");
     let (Some(a), Some(b)) = (spring("annotation-a", CONTROLLER), spring("annotation-b", &moved)) else { return };
     assert_eq!(changes(&a, &b, &quote()), vec![PartChange::Changed { part: "method k/Controller.quote(J)J".into() }]);
@@ -209,6 +217,7 @@ fn a_framework_annotation_the_claim_uses_changes_the_closure() {
 
 #[test]
 fn configuration_is_part_of_a_closure_that_touches_spring_and_of_no_other() {
+    jvmcontract::tool_tier!();
     let Some(a) = spring("configuration", CONTROLLER) else { return };
     let one = Configuration::of(&[("application.properties", b"shop.rate=10\n")]);
     let two = Configuration::of(&[("application.properties", b"shop.rate=20\n")]);
@@ -221,6 +230,7 @@ fn configuration_is_part_of_a_closure_that_touches_spring_and_of_no_other() {
 
 #[test]
 fn a_target_the_build_does_not_have_is_named_missing() {
+    jvmcontract::tool_tier!();
     let Some(a) = base("missing", &[]) else { return };
     let c = closure_of(&a, &MemberRef::new("k/Pricing", "gone", "()V"), &Configuration::none());
     assert_eq!(c.parts.keys().collect::<Vec<_>>(), ["missing k/Pricing.gone()V"]);
@@ -231,6 +241,7 @@ fn a_target_the_build_does_not_have_is_named_missing() {
 /// fingerprint that prints a dynamic constant by its bootstrap index alone sees two equal bodies.
 #[test]
 fn a_changed_enum_case_in_a_pattern_switch_is_a_changed_body() {
+    jvmcontract::tool_tier!();
     let color = "package k;\npublic enum Color { RED, GREEN, BLUE }\n";
     let switch = r#"package k;
 public final class Paint {
@@ -478,6 +489,7 @@ fn version_digests(a: &Path, b: &Path, roots: &[MemberRef]) -> (String, String) 
 
 #[test]
 fn the_code_changes_that_no_body_shows_change_the_claim() {
+    jvmcontract::tool_tier!();
     // A new dispatch target, with no method body changed.
     let circle = "package k;\npublic class Circle extends Shape { public long area() { return 3; } }\n";
     let (Some(a), Some(b)) = (base("claim-dispatch-a", &[]), base("claim-dispatch-b", &[("k/Circle.java", circle)])) else { return };
@@ -498,6 +510,7 @@ fn the_code_changes_that_no_body_shows_change_the_claim() {
 
 #[test]
 fn a_framework_annotation_or_configuration_value_changes_the_claim() {
+    jvmcontract::tool_tier!();
     let moved = CONTROLLER.replace("\"/quotes\"", "\"/quote\"");
     let (Some(a), Some(b)) = (spring("claim-annotation-a", CONTROLLER), spring("claim-annotation-b", &moved)) else { return };
     let none = Configuration::none();
@@ -648,6 +661,7 @@ fn exact_key(outcome: &equivalence::Outcome) -> Option<ClaimKey> {
 
 #[test]
 fn a_rerun_of_the_same_claim_is_an_exact_hit() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (fee("fee-hit-before", FEE), fee("fee-hit-after", FEE_SUMMED)) else { return };
     let dir = empty_cache("hit");
     let cold = check(&before, &after, &dir, "hit-cold", |_| {});
@@ -682,6 +696,7 @@ fn a_rerun_of_the_same_claim_is_an_exact_hit() {
 
 #[test]
 fn a_changed_version_or_setting_is_a_miss() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after), Some(other)) = (fee("fee-miss-before", FEE), fee("fee-miss-after", FEE_SUMMED), fee("fee-miss-other", FEE_SHIFTED)) else { return };
     let dir = empty_cache("miss-claim");
     let cold = check(&before, &after, &dir, "miss-cold", |_| {});
@@ -704,6 +719,7 @@ fn a_changed_version_or_setting_is_a_miss() {
 
 #[test]
 fn a_refuted_hit_replays_its_witness_first() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (fee("fee-refuted-before", FEE), fee("fee-refuted-after", FEE_WRONG)) else { return };
     let dir = empty_cache("refuted");
     let cold = check(&before, &after, &dir, "refuted-cold", |_| {});
@@ -750,6 +766,7 @@ fn a_stored_witness_reads_back_as_the_arguments_it_was() {
 
 #[test]
 fn the_cache_is_used_with_the_own_checker_only() {
+    jvmcontract::tool_tier!(pending);
     let (Some(before), Some(after)) = (fee("fee-auto-before", FEE), fee("fee-auto-after", FEE_SUMMED)) else { return };
     let dir = empty_cache("auto");
     // Under auto the own checker decides this one, so JBMC never runs; the claim is still one JBMC may decide.
@@ -788,6 +805,7 @@ fn parts(c: &ClaimImpact) -> Vec<String> {
 
 #[test]
 fn the_impact_report_names_the_claims_a_change_invalidates_and_the_parts_that_changed() {
+    jvmcontract::tool_tier!();
     let changed = PRICING.replace("gross / RATE", "gross / RATE + 0 * gross");
     let (Some(a), Some(b)) = (base("impact-a", &[]), base("impact-b", &[("k/Pricing.java", &changed)])) else { return };
     let claims = [Claim::new("k.Pricing#total"), Claim::new("k.Pricing#discount"), Claim::new("k.Other#one"), Claim::new("k.Shape#twice")];
@@ -802,6 +820,7 @@ fn the_impact_report_names_the_claims_a_change_invalidates_and_the_parts_that_ch
 
 #[test]
 fn a_renamed_target_a_target_gone_and_one_not_in_the_first_build() {
+    jvmcontract::tool_tier!();
     let renamed = PRICING.replace("long total(", "long net(");
     let (Some(a), Some(b)) = (base("impact-rename-a", &[]), base("impact-rename-b", &[("k/Pricing.java", &renamed)])) else { return };
     let mut moved = Claim::new("k.Pricing#net");
@@ -816,6 +835,7 @@ fn a_renamed_target_a_target_gone_and_one_not_in_the_first_build() {
 
 #[test]
 fn a_record_input_s_constructor_is_part_of_the_claim_s_code() {
+    jvmcontract::tool_tier!();
     let checked = MONEY.replace("cents < 0", "cents < -1");
     let (Some(a), Some(b)) = (base("impact-record-a", &[("k/Money.java", MONEY), ("k/Till.java", TILL)]), base("impact-record-b", &[("k/Money.java", &checked), ("k/Till.java", TILL)])) else { return };
     let add = MemberRef::new("k/Till", "add", "(Lk/Money;Lk/Money;)J");
@@ -906,6 +926,7 @@ fn callee_assumptions(outcome: &equivalence::Outcome) -> Vec<(String, Basis, Opt
 
 #[test]
 fn a_changed_helper_proved_once_is_one_function_in_each_of_its_callers() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (split("split-before", SPLIT), split("split-refactored", SPLIT_REFACTORED)) else { return };
     let dir = empty_cache("split");
     let first = check_target(&before, &after, &dir, "split-per-seat", "h.Split#perSeat");
@@ -968,6 +989,7 @@ fn stored_keys(dir: &Path) -> BTreeSet<String> {
 
 #[test]
 fn a_caller_s_key_is_the_same_whichever_run_proved_its_helper() {
+    jvmcontract::tool_tier!();
     // The same classes built in other directories, and checked a second later into another cache: the run the
     // helper's proof came from (its time, its directories) is provenance, not part of any claim.
     let (Some(before), Some(after)) = (split("split-before-portable", SPLIT), split("split-refactored-portable", SPLIT_REFACTORED)) else { return };
@@ -986,6 +1008,7 @@ fn a_caller_s_key_is_the_same_whichever_run_proved_its_helper() {
 
 #[test]
 fn a_wrong_helper_change_is_not_shared_and_its_caller_s_check_finds_it() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(wrong)) = (split("split-before-2", SPLIT), split("split-rounded-up", SPLIT_ROUNDED_UP)) else { return };
     let dir = empty_cache("split-wrong");
     let outcome = check_target(&before, &wrong, &dir, "split-wrong-per-seat", "h.Split#perSeat");
@@ -999,6 +1022,7 @@ fn a_wrong_helper_change_is_not_shared_and_its_caller_s_check_finds_it() {
 
 #[test]
 fn a_helper_that_differs_only_where_its_caller_never_calls_it_is_proved_as_written() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(capped)) = (split("split-before-3", SPLIT), split("split-capped", SPLIT_CAPPED)) else { return };
     let dir = empty_cache("split-capped");
     let outcome = check_target(&before, &capped, &dir, "split-capped-per-row", "h.Split#perRow");
@@ -1030,6 +1054,7 @@ public class Odd {
 
 #[test]
 fn only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (compile("odd-before", &[("h/Odd.java", ODD_HELPERS)]), compile("odd-after", &[("h/Odd.java", ODD_HELPERS_CHANGED)])) else { return };
     let (b, a) = (cp(&before), cp(&after));
     let target = MemberRef::new("h/Odd", "use", "(JID)J");
@@ -1069,6 +1094,7 @@ public class Mutual {
 
 #[test]
 fn a_helper_s_proof_never_rests_on_the_proof_it_is_used_in() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (compile("mutual-before", &[("h/Mutual.java", MUTUAL)]), compile("mutual-after", &[("h/Mutual.java", MUTUAL_REWRITTEN)])) else { return };
     let dir = empty_cache("mutual");
     let outcome = check_target(&before, &after, &dir, "mutual-f", "h.Mutual#f");
@@ -1132,6 +1158,7 @@ fn shares_callee(name: &str) -> shared::Callee {
 /// on any others, or when it is given none.
 #[test]
 fn the_replay_stub_gives_the_stub_s_answers_again_and_is_the_callee_elsewhere() {
+    jvmcontract::tool_tier!();
     use jvmcontract::interp::{Machine, Value as V};
     let Some(classes) = pair("replay-stub", PAIR) else { return };
     let callees = [shares_callee("third"), shares_callee("twice")];
@@ -1156,6 +1183,7 @@ fn the_replay_stub_gives_the_stub_s_answers_again_and_is_the_callee_elsewhere() 
 /// division bit-blasted.
 #[test]
 fn only_the_callee_a_spurious_counterexample_rests_on_is_computed_as_written() {
+    jvmcontract::tool_tier!(pending);
     if !has_jbmc() {
         return;
     }
@@ -1177,6 +1205,7 @@ fn only_the_callee_a_spurious_counterexample_rests_on_is_computed_as_written() {
 /// reported reproduces as written.
 #[test]
 fn a_real_regression_is_still_found_through_the_refinement() {
+    jvmcontract::tool_tier!(pending);
     if !has_jbmc() {
         return;
     }

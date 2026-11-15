@@ -109,6 +109,7 @@ fn problem(dir: &Path, target: &str) -> String {
 
 #[test]
 fn a_pure_finite_method_gets_a_complete_contract() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let c = contract(dir, "fixtures.TrafficLight#step");
     // Light: 3 + null; Command: Next, Hold(false), Hold(true), null.
@@ -127,6 +128,7 @@ fn a_pure_finite_method_gets_a_complete_contract() {
 
 #[test]
 fn impure_or_unbounded_methods_are_refused_with_the_reason() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     assert!(problem(dir, "fixtures.TrafficLight#counting").contains("writes static field"));
     assert!(problem(dir, "fixtures.TrafficLight#night").contains("java.lang.System.nanoTime, which is not known to be pure"));
@@ -138,6 +140,7 @@ fn impure_or_unbounded_methods_are_refused_with_the_reason() {
 
 #[test]
 fn an_overloaded_method_is_named_by_its_parameter_types() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let p = problem(dir, "fixtures.Overloads#pick");
     assert!(p.contains("found 2: pick(boolean), pick(fixtures.TrafficLight$Light); name one as pick(boolean)"), "{p}");
@@ -153,6 +156,7 @@ fn an_overloaded_method_is_named_by_its_parameter_types() {
 
 #[test]
 fn the_interpreter_models_strings_records_switches_lambdas_and_exceptions() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let c = contract(dir, "fixtures.Features#quote");
     assert_eq!(c.cases.len(), 7); // 3 tiers × 2 rush + null
@@ -193,6 +197,7 @@ fn the_interpreter_models_strings_records_switches_lambdas_and_exceptions() {
 
 #[test]
 fn an_instance_method_of_an_enum_takes_the_receiver_as_its_domain() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let c = contract(dir, "fixtures.Features$Tier#discount");
     assert_eq!(c.domain.as_deref(), Some("this: Tier (3) = 3 cases"));
@@ -201,6 +206,7 @@ fn an_instance_method_of_an_enum_takes_the_receiver_as_its_domain() {
 
 #[test]
 fn the_effect_monitor_catches_writes_the_static_analysis_misses() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let p = problem(dir, "fixtures.Features#impure");
     assert!(p.contains("not pure: the method writes an array element of an object that existed before the call"), "{p}");
@@ -208,6 +214,7 @@ fn the_effect_monitor_catches_writes_the_static_analysis_misses() {
 
 #[test]
 fn unbounded_recursion_is_refused_not_run_forever() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let p = problem(dir, "fixtures.Features#loops");
     assert!(p.contains("did not finish"), "{p}");
@@ -215,6 +222,7 @@ fn unbounded_recursion_is_refused_not_run_forever() {
 
 #[test]
 fn capability_contracts_list_each_entry_point_with_its_call_site() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let report = capabilities::analyse(&[dir.to_path_buf()]).unwrap();
     let entries = report.entries();
@@ -234,6 +242,7 @@ fn capability_contracts_list_each_entry_point_with_its_call_site() {
 
 #[test]
 fn update_then_verify_passes_and_detects_drift_with_sarif() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let contracts = target_tmp().join("contracts-flow");
     let _ = std::fs::remove_dir_all(&contracts);
@@ -311,6 +320,7 @@ fn equivalence_run(before: &Path, after: &Path, scope: Option<&str>, name: &str)
 
 #[test]
 fn relocation_renames_the_class_and_its_references() {
+    jvmcontract::tool_tier!();
     let Some(before) = compile_pricing("relocate", PRICING_BEFORE) else { return };
     let out = target_tmp().join("relocated");
     let _ = std::fs::remove_dir_all(&out);
@@ -330,6 +340,7 @@ fn relocation_renames_the_class_and_its_references() {
 
 #[test]
 fn a_rounding_refactor_is_refuted_with_a_replayed_counterexample() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -361,6 +372,7 @@ fn a_rounding_refactor_is_refuted_with_a_replayed_counterexample() {
 
 #[test]
 fn a_change_confined_to_its_declared_inputs_is_proved_and_refuted_without_the_declaration() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -408,6 +420,7 @@ fn shares_run(before: &Path, after: &Path, name: &str) -> equivalence::Outcome {
 /// in both versions, the helper costs nothing, and the proof is about how the two versions use it.
 #[test]
 fn a_callee_unchanged_in_both_versions_is_one_function_in_the_proof() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -425,6 +438,7 @@ fn a_callee_unchanged_in_both_versions_is_one_function_in_the_proof() {
 /// The stub throws what the callee can throw, so a catch around the call in one version only is still a difference.
 #[test]
 fn a_catch_around_a_shared_callee_is_still_a_difference() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -442,6 +456,7 @@ fn a_catch_around_a_shared_callee_is_still_a_difference() {
 /// run again with the callee as written.
 #[test]
 fn a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecode() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -461,6 +476,7 @@ fn a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecod
 /// unrelated results, a counterexample that never reproduces, and a second run.
 #[test]
 fn a_small_callee_is_computed_as_written_rather_than_shared() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -478,6 +494,7 @@ fn a_small_callee_is_computed_as_written_rather_than_shared() {
 /// Needs no JBMC: the two versions' bytecode is compared, and nothing differs.
 #[test]
 fn a_target_identical_in_both_versions_needs_no_proof() {
+    jvmcontract::tool_tier!(pending);
     let (Some(before), Some(after)) = (compile_shares("same-a", SHARES_BEFORE), compile_shares("same-b", SHARES_BEFORE)) else { return };
     let outcome = shares_run(&before, &after, "shares-identical");
     assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
@@ -591,6 +608,7 @@ const EXPIRY_SCOPE: &str = "!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos 
 /// takes the place of equality: a boolean that became a remaining time is expired exactly when none is left.
 #[test]
 fn a_boolean_that_became_a_remaining_time_is_proved_under_the_stated_relation() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -610,6 +628,7 @@ fn a_boolean_that_became_a_remaining_time_is_proved_under_the_stated_relation() 
 
 #[test]
 fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_the_relation() {
+    jvmcontract::tool_tier!();
     if !has("jbmc") {
         return;
     }
@@ -649,6 +668,7 @@ fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_th
 
 #[test]
 fn results_of_two_types_need_a_relation() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -662,6 +682,7 @@ fn results_of_two_types_need_a_relation() {
 /// are given as expressions over the new parameters, and the proof is of new(x) against old(f(x)).
 #[test]
 fn a_method_whose_parameters_were_reordered_is_proved_against_the_previous_order() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -677,6 +698,7 @@ fn a_method_whose_parameters_were_reordered_is_proved_against_the_previous_order
 
 #[test]
 fn a_method_moved_and_renamed_is_proved_against_its_previous_name() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -692,6 +714,7 @@ fn a_method_moved_and_renamed_is_proved_against_its_previous_name() {
 /// arguments computed from them.
 #[test]
 fn a_rewrite_under_a_reordering_that_changes_a_tie_is_found() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -707,6 +730,7 @@ fn a_rewrite_under_a_reordering_that_changes_a_tie_is_found() {
 
 #[test]
 fn the_previous_versions_parameters_must_be_mapped_when_they_differ() {
+    jvmcontract::tool_tier!(pending);
     let (Some(before), Some(after)) = (compile_writers("before-d", "Writers", WRITERS_BEFORE), compile_writers("unmapped", "Writers", WRITERS_REORDERED)) else { return };
     let outcome = writers_run(&before, &after, "fixtures.Writers#winner", None, None, "writers-unmapped");
     assert_eq!(outcome.verdict, Verdict::Unverifiable, "{}", outcome.output);
@@ -753,6 +777,7 @@ fn buffers_run(before: &Path, after: &Path, scope: Option<&str>, name: &str) -> 
 
 #[test]
 fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
+    jvmcontract::tool_tier!(pending);
     // Comparing the result and the array each version leaves needs no JBMC: the harness class, run in the
     // interpreter, throws AssertionError exactly on the inputs where the versions differ.
     let shorter = BUFFERS_BEFORE.replace("int[] r = new int[Math.max(0, Math.min(n, a.length))];", "int[] r = new int[Math.max(0, Math.min(n, a.length) - 1)];");
@@ -827,6 +852,7 @@ fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
 /// Strings are its own model, it is refused by name, never checked as another claim.
 #[test]
 fn a_string_parameter_is_refused_under_jbmc() {
+    jvmcontract::tool_tier!(pending);
     let with_string = PRICING_BEFORE.replace("long priceCents, int seats", "String code, int seats").replace("priceCents < 0 || ", "").replace("Math.multiplyExact(priceCents, seats)", "seats");
     let Some(classes) = compile_pricing("string", &with_string) else { return };
     let outcome = equivalence_run(&classes, &classes, None, "string");
@@ -867,6 +893,7 @@ fn prove_throws(target: &str, assume: Option<&str>, assert: Option<&str>, throws
 
 #[test]
 fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
+    jvmcontract::tool_tier!(pending);
     // In int arithmetic `2 * result` overflows near Integer.MAX_VALUE, and the prover says so; the property is
     // stated in long arithmetic.
     let Some(overflow) = prove("fixtures.Laws#majority", Some("n > 0"), Some("2 * result > n"), "majority-overflow") else { return };
@@ -902,6 +929,7 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
 
 #[test]
 fn old_reads_an_array_as_the_call_received_it() {
+    jvmcontract::tool_tier!(pending);
     // A reversal: every element after the call is the mirrored element before it.
     let Some(reversed) = prove_throws("fixtures.InPlace#reverse", None, Some("\\forall int i; 0 <= i && i < a.length; a[i] == \\old(a[a.length - 1 - i])"), &[], "reverse", 6, true) else { return };
     assert_eq!(reversed.verdict, Verdict::Verified, "{}", reversed.output);
@@ -936,6 +964,7 @@ fn old_reads_an_array_as_the_call_received_it() {
 
 #[test]
 fn throws_clauses_prove_the_exceptional_path() {
+    jvmcontract::tool_tier!(pending);
     // The exception on n <= 0 is declared, so the whole domain is covered: no assumption.
     let Some(declared) = prove_throws("fixtures.Laws#majority", None, Some("2L * result > n && result <= n"), &["IllegalArgumentException when n <= 0"], "majority-declared", 8, true) else { return };
     assert_eq!(declared.verdict, Verdict::Verified, "{}", declared.output);
@@ -994,6 +1023,7 @@ fn throws_clauses_prove_the_exceptional_path() {
 
 #[test]
 fn arrays_are_quantified_over_and_witnessed() {
+    jvmcontract::tool_tier!(pending);
     // Binary search is correct on every sorted array up to the bound: the key's index, or -1 when absent.
     let sorted = "(\\forall int i; 0 < i && i < sorted.length; sorted[i - 1] < sorted[i])";
     let correct = "(result == -1 && (\\forall int i; 0 <= i && i < sorted.length; sorted[i] != key)) || (result >= 0 && result < sorted.length && sorted[result] == key)";
@@ -1037,6 +1067,7 @@ fn arrays_are_quantified_over_and_witnessed() {
 
 #[test]
 fn generalized_quantifiers_fold_and_counterexamples_shrink() {
+    jvmcontract::tool_tier!(pending);
     // The deepest point of a stack is the largest prefix sum, the empty prefix included: \max over \sum.
     let depth = "result == (\\max int k; 0 <= k && k <= deltas.length; (\\sum int i; 0 <= i && i < k; deltas[i]))";
     let Some(deepest) = prove("fixtures.Search#maxDepth", None, Some(depth), "max-depth") else { return };
@@ -1075,6 +1106,7 @@ fn generalized_quantifiers_fold_and_counterexamples_shrink() {
 
 #[test]
 fn a_law_may_call_the_method_and_a_boolean_method_is_its_own_property() {
+    jvmcontract::tool_tier!(pending);
     let Some(law) = prove("fixtures.Laws#maxOf", None, Some("result == maxOf(b, a) && result >= a && result >= b && maxOf(result, a) == result"), "max-law") else { return };
     assert_eq!(law.verdict, Verdict::Verified, "{}", law.output);
     assert!(std::fs::read_to_string(law.statement.unwrap()).unwrap().contains("result == fixtures.Laws.maxOf(b, a)"));
@@ -1104,6 +1136,7 @@ fn boxoffice_domain() -> Option<PathBuf> {
 
 #[test]
 fn reproduces_the_contract_the_java_tool_committed_for_box_office() {
+    jvmcontract::tool_tier!();
     let Some(dir) = boxoffice_domain() else { return };
     let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
     let expected = Contract::read(&committed).unwrap();
@@ -1137,6 +1170,7 @@ fn generates_the_tla_operator_the_python_generator_wrote() {
 
 #[test]
 fn tlc_checks_the_box_office_model() {
+    jvmcontract::tool_tier!(pending);
     let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/spec");
     if !spec.exists() {
         eprintln!("not inside the repository; skipping");
@@ -1166,6 +1200,7 @@ fn tlc_checks_the_box_office_model() {
 
 #[test]
 fn tlc_checks_temporal_properties_and_names_the_violated_one() {
+    jvmcontract::tool_tier!(pending);
     let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/quorum/spec");
     if !spec.exists() {
         eprintln!("not inside the repository; skipping");
@@ -1216,6 +1251,7 @@ fn tlc_checks_temporal_properties_and_names_the_violated_one() {
 
 #[test]
 fn draws_the_state_machine_of_a_contract() {
+    jvmcontract::tool_tier!();
     let Some(dir) = fixtures() else { return };
     let c = contract(dir, "fixtures.TrafficLight#step");
     // TrafficLight#step returns the next light directly, not a record: no `next` field, so it is not a machine.
@@ -1232,6 +1268,7 @@ fn draws_the_state_machine_of_a_contract() {
 
 #[test]
 fn the_interpreter_runs_the_models_where_the_jdk_is_modelled() {
+    jvmcontract::tool_tier!();
     use jvmcontract::interp::{Fault, Machine, Value};
     let Some(classes) = fixtures() else { return };
     let mut cp = ClassPath::new();
@@ -1272,6 +1309,7 @@ fn the_interpreter_runs_the_models_where_the_jdk_is_modelled() {
 
 #[test]
 fn proofs_over_modelled_jdk_classes_are_decided_by_the_models() {
+    jvmcontract::tool_tier!(pending);
     // Models.<clinit> reads StandardCharsets.UTF_8, so every proof here also needs the charset models under JBMC.
     // Character.digit comes from the model: the property holds by the JDK's table, and the witness against the
     // stricter claim is a Unicode digit, which the interpreter replays on the same model.
@@ -1324,6 +1362,7 @@ fn prove_engine(target: &str, assume: Option<&str>, assert: Option<&str>, throws
 /// read too, and held to this reading, until every recorded JBMC example had been read both ways alike.)
 #[test]
 fn the_json_reading_of_jbmc_gives_each_verdict_and_ending() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
@@ -1361,6 +1400,7 @@ fn the_json_reading_of_jbmc_gives_each_verdict_and_ending() {
 
 #[test]
 fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::Engine;
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
@@ -1466,6 +1506,7 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
 
 #[test]
 fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply() {
+    jvmcontract::tool_tier!();
     let Some(dir) = spring_fixtures() else { return };
     let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring");
     let mut cp = ClassPath::new();
@@ -1787,6 +1828,7 @@ public final class BatchCommit {
 /// components: the record is built in the new version only, and the previous version gets the components.
 #[test]
 fn a_static_method_that_became_a_records_method_is_related_by_the_components() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -1813,6 +1855,7 @@ fn a_static_method_that_became_a_records_method_is_related_by_the_components() {
 /// the previous version throws where the new one commits past the batch.
 #[test]
 fn a_check_lost_in_the_move_to_a_record_is_found_on_the_components() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -1892,6 +1935,7 @@ public final class Windows {
 /// new components, with a constructor call first among the expressions of --before-arguments.
 #[test]
 fn a_record_that_gained_a_component_is_related_by_building_the_previous_record() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -1917,6 +1961,7 @@ fn a_record_that_gained_a_component_is_related_by_building_the_previous_record()
 /// new parameters; a bound that moved with it is found.
 #[test]
 fn a_records_method_made_static_is_related_by_building_its_receiver() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -1950,6 +1995,7 @@ fn a_records_method_made_static_is_related_by_building_its_receiver() {
 /// record in both versions, skips what a constructor rejects, and calls the method on it.
 #[test]
 fn a_method_of_a_record_is_proved_on_its_components() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -1972,6 +2018,7 @@ fn a_method_of_a_record_is_proved_on_its_components() {
 /// The loop replaced by a shift: the shift wraps at 64 and overflows before that, which the components show.
 #[test]
 fn a_shift_that_overflows_is_found_on_the_records_components() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -1998,6 +2045,7 @@ fn a_shift_that_overflows_is_found_on_the_records_components() {
 /// A record result is compared component by component, in the fields of the record of each version.
 #[test]
 fn a_record_result_is_compared_component_by_component() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -2040,6 +2088,7 @@ public final class Bucket {
 /// both, `previous.c` and `result.c`; a result that became a record, to the value it was.
 #[test]
 fn a_record_result_of_other_components_is_related_by_a_relation_over_them() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -2079,6 +2128,7 @@ fn a_record_result_of_other_components_is_related_by_a_relation_over_them() {
 /// builds the receiver through it: a constructor that clamps the cap changes what the method returns.
 #[test]
 fn a_record_whose_constructor_changed_is_not_identical() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -2138,6 +2188,7 @@ public class Gaps {
 /// compared by reference (step 1c), which the engine implements, as none either.
 #[test]
 fn the_gap_scan_names_what_the_own_checker_approximates() {
+    jvmcontract::tool_tier!();
     let dir = target_tmp().join("gaps-src");
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -2217,6 +2268,7 @@ public class Shapes {
 /// last step, enums; an enum whose initializer is outside the fragment (a `double` field) stays a gap, its shape named.
 #[test]
 fn the_gap_scan_gives_each_class_initializer_a_shape() {
+    jvmcontract::tool_tier!();
     let dir = target_tmp().join("shapes-src");
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -2272,6 +2324,7 @@ fn the_gap_scan_gives_each_class_initializer_a_shape() {
 /// Under `--gaps assume` the approximation is kept, and the verdict names each gap it assumed.
 #[test]
 fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
     use jvmcontract::Engine;
     let dir = target_tmp().join("gaps-engine-src");
@@ -2394,6 +2447,7 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
 /// goes to the agent.
 #[test]
 fn jbmc_own_approximations_are_gaps_in_the_same_modes() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
     use jvmcontract::Engine;
     if !has("jbmc") {
@@ -2522,6 +2576,7 @@ fn jbmc_own_approximations_are_gaps_in_the_same_modes() {
 /// assertion admits. What no contract closes under JBMC (a monitor it drops) is refused as under strict.
 #[test]
 fn jbmc_applies_the_contracts_for_its_gaps() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
     use jvmcontract::Engine;
     if !has("jbmc") || !has("java") {
@@ -2707,6 +2762,7 @@ fn jbmc_applies_the_contracts_for_its_gaps() {
 /// with what a contract for it must state and a template; a proof that reaches none is strict.
 #[test]
 fn advised_stops_before_solving_with_each_gap_and_what_its_contract_states() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::advice::Part;
     use jvmcontract::bmc::gaps::GapMode;
     use jvmcontract::Engine;
@@ -2830,6 +2886,7 @@ public class Contracted {
 /// when there are more than N, so their gaps go back to the agent.
 #[test]
 fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
     use jvmcontract::gap_contracts::Evidence;
     use jvmcontract::Engine;
@@ -2971,6 +3028,7 @@ fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted
 /// with the reason and its gap stays open; an input outside a contract's `assume:` meets the gap.
 #[test]
 fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
     use jvmcontract::Engine;
     let dir = target_tmp().join("contracts-src");
@@ -3235,6 +3293,7 @@ public class OnTheJvm {
 /// The contracts are the library's.
 #[test]
 fn a_witness_through_contracts_is_run_on_a_jvm() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::GapMode;
     use jvmcontract::Engine;
     let dir = target_tmp().join("on-the-jvm-src");
@@ -3363,6 +3422,7 @@ public class Identity {
 /// `--engine auto` handed to JBMC, which runs initializers.
 #[test]
 fn identity_and_initialization_agree_with_the_jvm() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
     use jvmcontract::Engine;
     let dir = target_tmp().join("identity-src");
@@ -3445,6 +3505,7 @@ fn identity_and_initialization_agree_with_the_jvm() {
 /// `--details` writes the statement and the time under the verdict, from the same data as `--json`.
 #[test]
 fn details_print_the_statement_and_where_the_time_went() {
+    jvmcontract::tool_tier!();
     let Some(classes) = fixtures() else { return };
     let work = target_tmp().join("details");
     let _ = std::fs::remove_dir_all(&work);
@@ -3465,6 +3526,7 @@ fn details_print_the_statement_and_where_the_time_went() {
 /// A `--jbmc` path relative to the current directory is found, though JBMC runs in the work directory.
 #[test]
 fn a_relative_jbmc_path_is_found_from_the_current_directory() {
+    jvmcontract::tool_tier!(pending);
     if !has("jbmc") {
         return;
     }
@@ -3489,6 +3551,7 @@ fn a_relative_jbmc_path_is_found_from_the_current_directory() {
 /// the same contracts at the same calls and proves the statement again, where it used to be not asked. Real JBMC.
 #[test]
 fn confirm_applies_the_own_checkers_contracts_for_jbmc() {
+    jvmcontract::tool_tier!(pending);
     use jvmcontract::bmc::gaps::GapMode;
     use jvmcontract::equivalence::Confirmed;
     use jvmcontract::Engine;
@@ -3600,6 +3663,7 @@ fn digits_run(before: &Path, after: &Path, name: &str) -> equivalence::Outcome {
 
 #[test]
 fn a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found() {
+    jvmcontract::tool_tier!();
     let Some(before) = compile_digits("before", DIGITS_BEFORE) else { return };
     // The same digits, by subtraction: verified, the checked exception compared by class.
     let rewritten = DIGITS_BEFORE

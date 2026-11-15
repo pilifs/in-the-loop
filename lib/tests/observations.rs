@@ -81,6 +81,7 @@ fn find<'a>(specs: &'a [EntryPointSpec], id: &str) -> &'a EntryPointSpec {
 
 #[test]
 fn a_route_observes_its_response_status_and_event() {
+    jvmcontract::tool_tier!();
     if !has_javac() {
         return;
     }
@@ -117,6 +118,7 @@ fn a_route_observes_its_response_status_and_event() {
 
 #[test]
 fn what_the_analysis_cannot_see_stays_in_the_spec() {
+    jvmcontract::tool_tier!();
     if !has_javac() {
         return;
     }
@@ -130,6 +132,7 @@ fn what_the_analysis_cannot_see_stays_in_the_spec() {
 
 #[test]
 fn the_specs_are_the_same_for_the_refactor_and_say_where_the_defects_differ() {
+    jvmcontract::tool_tier!();
     if !has_javac() {
         return;
     }
@@ -154,6 +157,7 @@ fn the_specs_are_the_same_for_the_refactor_and_say_where_the_defects_differ() {
 
 #[test]
 fn the_command_prints_the_specs_as_text_and_json() {
+    jvmcontract::tool_tier!();
     if !has_javac() {
         return;
     }
@@ -183,6 +187,7 @@ fn changes(obligations: &[Obligation], entry: &str) -> Vec<(String, Change)> {
 
 #[test]
 fn two_builds_of_the_joint_example_compare_into_accounted_obligations() {
+    jvmcontract::tool_tier!();
     if !has_javac() {
         return;
     }
@@ -219,6 +224,7 @@ fn quotes() -> Option<EntryPointSpec> {
 
 #[test]
 fn a_renamed_handler_or_path_variable_is_the_same_entry_point() {
+    jvmcontract::tool_tier!();
     let Some(old) = quotes() else { return };
     let mut new = old.clone();
     new.handler = "shop.QuotesController#price".into();
@@ -237,6 +243,7 @@ fn a_renamed_handler_or_path_variable_is_the_same_entry_point() {
 
 #[test]
 fn a_changed_shape_is_changed_not_preserved() {
+    jvmcontract::tool_tier!();
     let Some(old) = quotes() else { return };
     let effect = format!("effect:{SEND}");
     let check = |new: EntryPointSpec, observation: &str, change: Change, says: &str| {
@@ -311,6 +318,7 @@ fn a_changed_shape_is_changed_not_preserved() {
 
 #[test]
 fn entry_points_a_key_does_not_tell_apart_are_unresolved() {
+    jvmcontract::tool_tier!();
     let Some(old) = quotes() else { return };
     // Two schedules with the same timing, before and after, and neither handler kept: which is which is a question.
     let schedule = |handler: &str| {
@@ -336,6 +344,7 @@ fn entry_points_a_key_does_not_tell_apart_are_unresolved() {
 
 #[test]
 fn the_command_compares_against_an_earlier_builds_specs() {
+    jvmcontract::tool_tier!();
     if !has_javac() {
         return;
     }
@@ -447,6 +456,7 @@ fn boxoffice_specs(module: &str) -> Option<(String, Vec<EntryPointSpec>)> {
 
 #[test]
 fn every_box_office_entry_point_has_a_spec_that_matches_its_golden_text() {
+    jvmcontract::tool_tier!();
     for (module, ids) in MODULES {
         let Some((text, specs)) = boxoffice_specs(module) else { return };
         assert_eq!(specs.iter().map(|s| s.id.as_str()).collect::<Vec<_>>(), ids, "{module}");
@@ -475,6 +485,7 @@ fn every_box_office_entry_point_has_a_spec_that_matches_its_golden_text() {
 
 #[test]
 fn box_office_specs_say_what_its_source_does() {
+    jvmcontract::tool_tier!();
     let Some((_, ticketing)) = boxoffice_specs("ticketing-service") else { return };
     // POST /orders: the order and its payment command go into one transaction, through the outbox of the sibling
     // module `messaging`, which the walk follows; the statuses are ApiErrors' mappings and a 500 for the guard.
@@ -621,6 +632,7 @@ fn has(lines: &[String], text: &str) -> bool {
 
 #[test]
 fn box_office_examples_compare_as_their_boundary_diffs_say() {
+    jvmcontract::tool_tier!(pending);
     let Some(base) = patched_specs("base", None) else { return };
     // The base as this test builds it is the base as the command analyses it.
     for (module, _) in MODULES {

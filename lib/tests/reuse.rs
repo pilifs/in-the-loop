@@ -117,6 +117,7 @@ const REUSED: &str = "reused from the proof cache";
 
 #[test]
 fn a_verified_property_is_stored_then_reused_exactly_with_its_statement() {
+    jvmcontract::tool_tier!();
     let classes = quote("after");
     let cache = fresh("verified-cache");
     let o = options(&classes, "quotes.QuoteService#units", "quantities.length > 0 || result == 0", &cache, "verified-cold");
@@ -140,6 +141,7 @@ fn a_verified_property_is_stored_then_reused_exactly_with_its_statement() {
 
 #[test]
 fn a_refuted_property_is_reused_only_once_its_witness_fails_the_harness_again() {
+    jvmcontract::tool_tier!();
     let classes = quote("after");
     let cache = fresh("refuted-cache");
     let o = options(&classes, "quotes.QuoteService#units", "result >= 0", &cache, "refuted-cold");
@@ -173,6 +175,7 @@ fn a_refuted_property_is_reused_only_once_its_witness_fails_the_harness_again() 
 
 #[test]
 fn an_unresolved_result_is_never_stored() {
+    jvmcontract::tool_tier!();
     let classes = quote("after");
     let cache = fresh("unresolved-cache");
     let refused = property::run(&options(&classes, "quotes.QuoteService#units", "result >", &cache, "unresolved")).unwrap();
@@ -182,6 +185,7 @@ fn an_unresolved_result_is_never_stored() {
 
 #[test]
 fn every_part_of_a_property_claim_that_can_change_its_verdict_changes_its_key() {
+    jvmcontract::tool_tier!();
     let classes = quote("after");
     let cache = tmp("keys-cache");
     let base = options(&classes, "quotes.QuoteService#units", "result >= 0", &cache, "keys");
@@ -222,6 +226,7 @@ fn every_part_of_a_property_claim_that_can_change_its_verdict_changes_its_key() 
 
 #[test]
 fn a_construction_plans_history_is_part_of_the_claim() {
+    jvmcontract::tool_tier!();
     let golden = |name: &str| -> jvmcontract::construction::Plans {
         let claim: Value = serde_json::from_str(&std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("tests/fixtures/application-core/golden/{name}.json"))).unwrap()).unwrap();
         serde_json::from_value(serde_json::json!({ "before": claim["domain"]["made_by"]["before"], "after": claim["domain"]["made_by"]["after"] })).unwrap()
@@ -241,6 +246,7 @@ fn a_construction_plans_history_is_part_of_the_claim() {
 /// constructor that changes what it admits invalidates the stored proof, though the method's body is the same.
 #[test]
 fn a_changed_constructor_of_an_input_invalidates_the_stored_proof() {
+    jvmcontract::tool_tier!();
     let clamped = compile_text("box-clamped", &[("k/Box.java", "package k; public class Box { final int v; public Box(int v) { this.v = v < 0 ? 0 : v; } }"), ("k/Use.java", "package k; public class Use { static int get(Box b) { return b.v; } }")]);
     let open = compile_text("box-open", &[("k/Box.java", "package k; public class Box { final int v; public Box(int v) { this.v = v; } }"), ("k/Use.java", "package k; public class Use { static int get(Box b) { return b.v; } }")]);
     let cache = fresh("box-cache");
@@ -255,6 +261,7 @@ fn a_changed_constructor_of_an_input_invalidates_the_stored_proof() {
 /// claims of one target, in one cache, are two keys.
 #[test]
 fn property_and_regression_claims_of_one_target_never_share_a_key() {
+    jvmcontract::tool_tier!();
     let (before, after) = (quote("before"), quote("after"));
     let cache = fresh("kinds-cache");
     let mut regression = jvmcontract::equivalence::Options::new(&before, &after, "quotes.QuoteService#units");
@@ -460,6 +467,7 @@ fn regression(before: &Path, after: &Path, cache: &Path, run: &str) -> jvmcontra
 /// closure was rooted at `Wrap`'s constructor alone, so both reused `verified`.
 #[test]
 fn an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim() {
+    jvmcontract::tool_tier!();
     let before = wrapped("inner-before", "v", "w.in.v + w.k");
     let same = wrapped("inner-same", "v", "w.k + w.in.v");
     let cache = fresh("inner-cache");
@@ -524,6 +532,7 @@ fn counter_plan(setup: bool) -> jvmcontract::construction::Plans {
 /// another claim too. A result that can't be stored says so in the outcome's output.
 #[test]
 fn a_planned_property_is_cached_and_an_edit_of_its_setup_method_alone_is_proved_again() {
+    jvmcontract::tool_tier!();
     let classes = compile_text("planned-counter", &[("counters/Counter.java", COUNTER)]);
     let edited = compile_text("planned-counter-edited", &[("counters/Counter.java", &COUNTER.replace("count += n * step;", "count += n == 4 ? n * step + 1 : n * step;"))]);
     let cache = fresh("planned-cache");

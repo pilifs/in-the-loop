@@ -71,6 +71,7 @@ fn options(before: &Path, after: &Path, target: &str, work: &str) -> equivalence
 /// and typed in the shared witness form. The statement states the value domain, its bound and the String model.
 #[test]
 fn a_string_parameter_is_proved_and_its_defect_refuted_on_a_witness_replayed_on_a_jvm() {
+    jvmcontract::tool_tier!();
     let proved = equivalence::run(&options(&codes("before"), &codes("after"), "quotes.Codes#vip", "vip-after")).unwrap();
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
     assert!(proved.output.contains("code: String of ≤ 8 code units, not null"), "{}", proved.output);
@@ -103,6 +104,7 @@ fn jvm_release() -> String {
 /// holds, is the witness `after`'s new branch needs, rendered by its escape, and the JVM's harness fails on it too.
 #[test]
 fn a_witness_with_an_isolated_surrogate_replays_on_the_jvm_unit_for_unit() {
+    jvmcontract::tool_tier!();
     let root = strings();
     let o = equivalence::run(&options(&root.join("before"), &root.join("after"), "s.Text#lone", "lone")).unwrap();
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
@@ -119,6 +121,7 @@ fn a_witness_with_an_isolated_surrogate_replays_on_the_jvm_unit_for_unit() {
 /// read one; and a String result, which the harness compares with `Objects.equals`, a gap the own checker refuses.
 #[test]
 fn a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
+    jvmcontract::tool_tier!(pending);
     let mut jbmc = options(&codes("before"), &codes("after"), "quotes.Codes#vip", "vip-jbmc");
     jbmc.engine = Engine::Jbmc;
     let o = equivalence::run(&jbmc).unwrap();
@@ -154,6 +157,7 @@ fn a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() 
 /// another key, proved again.
 #[test]
 fn a_string_parameters_cached_evidence_moves_with_its_bound() {
+    jvmcontract::tool_tier!();
     let root = strings();
     let cache = tmp("cache");
     let run = |bound: u32, work: &str| {
@@ -212,6 +216,7 @@ fn basket_options(build: &str, target: &str, work: &str) -> equivalence::Options
 /// the value domain, its bound and the list model.
 #[test]
 fn a_list_parameter_is_proved_and_its_defects_refuted_on_witnesses_of_one_object_twice() {
+    jvmcontract::tool_tier!();
     let proved = equivalence::run(&basket_options("after", "basket.Basket#total", "total-after")).unwrap();
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
     assert!(proved.output.contains("lines: an immutable List.of of ≤ 3 elements, not null, each a Line made by its constructor"), "{}", proved.output);
@@ -273,6 +278,7 @@ fn kernel_options(after: &str, target: &str, work: &str) -> equivalence::Options
 /// (an `Object`), whose identity with them couldn't be observed.
 #[test]
 fn a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
+    jvmcontract::tool_tier!(pending);
     let mut jbmc = basket_options("after", "basket.Basket#total", "total-jbmc");
     jbmc.engine = Engine::Jbmc;
     let o = equivalence::run(&jbmc).unwrap();
@@ -308,6 +314,7 @@ fn a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
 /// among the claim's roots.
 #[test]
 fn a_list_parameters_cached_evidence_moves_with_its_bound_and_its_elements_constructor() {
+    jvmcontract::tool_tier!();
     let cache = tmp("list-cache");
     let run = |after: &str, bound: u32, work: &str| {
         let mut o = kernel_options(after, "l.Kernels#count", work);
@@ -360,6 +367,7 @@ fn list_domain(plan: &mut jvmcontract::spec::plans::ConstructionPlan) -> &mut jv
 /// a JVM. A kernel returning the element class without a plan is proved with the same identities stated.
 #[test]
 fn a_planned_list_root_has_its_own_bound_and_the_results_identity_with_its_elements_is_observed() {
+    jvmcontract::tool_tier!();
     let claim = basket_claim("basket-first-claim");
     let bounds = &claim.domain.as_ref().unwrap().bounds;
     assert_eq!((bounds.before.allocations, bounds.after.allocations), (2, 2), "the user's bound");
@@ -398,6 +406,7 @@ fn a_planned_list_root_has_its_own_bound_and_the_results_identity_with_its_eleme
 /// class than the parameter's.
 #[test]
 fn a_planned_list_roots_unsupported_forms_are_refused_by_name() {
+    jvmcontract::tool_tier!();
     let refused = |what: &str, change: &dyn Fn(&mut jvmcontract::spec::CanonicalClaim), words: &str| {
         let mut claim = basket_claim("basket-total-claim");
         change(&mut claim);
@@ -426,6 +435,7 @@ fn a_planned_list_roots_unsupported_forms_are_refused_by_name() {
 /// is another key.
 #[test]
 fn a_planned_list_claims_cached_evidence_moves_with_the_lists_bound() {
+    jvmcontract::tool_tier!();
     let cache = tmp("planned-list-cache");
     let run = |claim: &jvmcontract::spec::CanonicalClaim| {
         let mut reused = jvmcontract::spec::heap::Reused::default();

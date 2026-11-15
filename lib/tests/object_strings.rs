@@ -76,6 +76,7 @@ fn regression(name: &str, before: &Path, after: &Path, target: &str) -> equivale
 /// it changes, the witness making the request with its String (`new Request("V", 0)`) and run on a JVM.
 #[test]
 fn a_string_inside_an_object_is_a_leaf_and_a_string_field_is_compared_by_content() {
+    jvmcontract::tool_tier!();
     let before = desk("before", BEFORE);
     let after = desk("after", "    public int score(Request r) { return r.code.length() > 0 && r.code.charAt(0) == 'V' ? r.count * 2 : r.count; }\n    public boolean local(Request r) { return region.equals(r.code); }\n    public Request bumped(Request r) { return new Request(r.code + \"\", r.count + 1); }\n    public void note(Request r) { last = \"\" + r.code; }\n");
     for target in ["strs.Desk#score", "strs.Desk#local", "strs.Desk#bumped", "strs.Desk#note"] {
@@ -110,6 +111,7 @@ fn a_string_inside_an_object_is_a_leaf_and_a_string_field_is_compared_by_content
 /// the check bounds every String, and named by its path.
 #[test]
 fn a_string_inside_an_object_outside_the_regression_check_is_refused_by_name() {
+    jvmcontract::tool_tier!(pending);
     let before = desk("boundary-before", BEFORE);
     let mut p = property::Options::new(&[before.clone()], "strs.Desk#score");
     p.engine = jvmcontract::Engine::Native;
@@ -167,6 +169,7 @@ fn a_string_inside_an_object_outside_the_regression_check_is_refused_by_name() {
 /// bound it is another claim, proved again; and an edit of the constructor that takes the String is another claim.
 #[test]
 fn a_cached_proof_over_a_string_inside_an_object_is_tied_to_its_bound_and_its_constructor() {
+    jvmcontract::tool_tier!();
     let cache = tmp("cache");
     let _ = std::fs::remove_dir_all(&cache);
     let before = desk("cache-before", BEFORE);

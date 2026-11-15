@@ -63,6 +63,7 @@ fn entry<'r>(report: &'r MethodReport, before: &str) -> &'r alignment::MethodMat
 
 #[test]
 fn a_renamed_method_with_the_same_body_leads() {
+    jvmcontract::tool_tier!();
     let Some(report) = align(
         "renamed",
         &[("A.java", "public class A { static int f(int x) { return x * 3 + 1; } static int keep(int y) { return y; } }")],
@@ -80,6 +81,7 @@ fn a_renamed_method_with_the_same_body_leads() {
 
 #[test]
 fn a_method_moved_to_a_new_class_leads_and_its_callers_say_so() {
+    jvmcontract::tool_tier!();
     let Some(report) = align(
         "moved",
         &[
@@ -106,6 +108,7 @@ fn a_method_moved_to_a_new_class_leads_and_its_callers_say_so() {
 
 #[test]
 fn two_equally_good_candidates_are_a_question() {
+    jvmcontract::tool_tier!();
     let Some(report) = align(
         "ambiguous",
         &[("A.java", "public class A { static int f(int x) { return x + 1; } }")],
@@ -127,6 +130,7 @@ fn two_equally_good_candidates_are_a_question() {
 
 #[test]
 fn a_lone_weak_candidate_is_a_question_too() {
+    jvmcontract::tool_tier!();
     // Only the parameters tie them: the body and the result type both changed, and nothing calls either.
     let Some(report) = align(
         "weak",
@@ -143,6 +147,7 @@ fn a_lone_weak_candidate_is_a_question_too() {
 
 #[test]
 fn an_overloaded_name_is_written_with_its_parameter_types() {
+    jvmcontract::tool_tier!();
     let Some(report) = align(
         "overloads",
         &[("A.java", "public class A { static int f(int x) { return x; } static int f(long x) { return (int) x; } }")],
@@ -166,6 +171,7 @@ fn kernel(test: &str, version: &str) -> Option<PathBuf> {
 
 #[test]
 fn the_kernel_keeps_its_methods_and_its_constructor_takes_the_value_object() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (kernel("methods", "before"), kernel("methods", "after")) else { return };
     let report = alignment::methods(&Build::load(&before).unwrap(), &Build::load(&after).unwrap());
     for kept in ["shop.Pricing#total", "shop.Pricing#discount"] {
@@ -184,6 +190,7 @@ fn the_kernel_keeps_its_methods_and_its_constructor_takes_the_value_object() {
 
 #[test]
 fn the_command_writes_hints_and_keeps_what_a_person_approved() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (kernel("command", "before"), kernel("command", "after")) else { return };
     let path = scratch("hints").join("hints.json");
     let approved = Hint {
@@ -232,6 +239,7 @@ fn expressions(m: &Mapping) -> Vec<&str> {
 
 #[test]
 fn the_offset_mapping_is_never_proposed_for_an_anchored_input() {
+    jvmcontract::tool_tier!();
     // The main brief's case: `price(c)` returns `c`, then `c + 1`. `before.c = after.c + 1` would make the results
     // agree; the input is anchored, so its mapping is `c` and nothing else, and the pair needs no hint.
     let before = [("A.java", "public class A { static long price(long c) { return c; } }")];
@@ -255,6 +263,7 @@ fn the_offset_mapping_is_never_proposed_for_an_anchored_input() {
 
 #[test]
 fn a_stated_derivation_is_used_as_a_person_stated_it() {
+    jvmcontract::tool_tier!();
     let Some(a) = aligned(
         "stated",
         &[("A.java", "public class A { static long price(long c) { return c; } }")],
@@ -276,6 +285,7 @@ fn a_stated_derivation_is_used_as_a_person_stated_it() {
 
 #[test]
 fn reordered_parameters_keep_their_names() {
+    jvmcontract::tool_tier!();
     let Some(a) = aligned(
         "reordered",
         &[("A.java", "public class A { static long f(long a, int b) { return a * b; } }")],
@@ -297,6 +307,7 @@ fn reordered_parameters_keep_their_names() {
 
 #[test]
 fn parameters_gathered_into_a_record_are_its_components() {
+    jvmcontract::tool_tier!();
     // Introduce parameter object, as in example 128: the start and size become a record, the method moves into it.
     let Some(a) = aligned(
         "gathered",
@@ -317,6 +328,7 @@ fn parameters_gathered_into_a_record_are_its_components() {
 
 #[test]
 fn a_record_that_gained_a_component_is_built_from_the_old_ones_and_the_new_one_left_free() {
+    jvmcontract::tool_tier!();
     // As in example 130: the receiver gained a component the old version has no counterpart for.
     let Some(a) = aligned(
         "gained",
@@ -335,6 +347,7 @@ fn a_record_that_gained_a_component_is_built_from_the_old_ones_and_the_new_one_l
 
 #[test]
 fn two_inputs_only_their_type_ties_are_a_question() {
+    jvmcontract::tool_tier!();
     let Some(a) = aligned(
         "untied",
         &[("C.java", "public class C { static long span(long x, long y) { return y - x; } }")],
@@ -359,6 +372,7 @@ fn two_inputs_only_their_type_ties_are_a_question() {
 
 #[test]
 fn the_result_relations_come_from_the_catalogue() {
+    jvmcontract::tool_tier!();
     let Some(a) = aligned(
         "results",
         &[
@@ -419,6 +433,7 @@ fn correspondences<'h>(hints: &'h Hints, subject: &str) -> Vec<&'h Correspondenc
 
 #[test]
 fn the_kernel_s_quote_is_related_field_by_field_from_its_constructors() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (kernel("fields", "before"), kernel("fields", "after")) else { return };
     let (b, a) = (Build::load(&before).unwrap(), Build::load(&after).unwrap());
     let contract = kernel_contract();
@@ -441,6 +456,7 @@ fn the_kernel_s_quote_is_related_field_by_field_from_its_constructors() {
 
 #[test]
 fn a_renamed_field_is_related_by_its_constructor_and_a_new_one_left_free() {
+    jvmcontract::tool_tier!();
     let before = [("P.java", "final class P { long cents; int n; P(long cents, int n) { this.cents = cents; this.n = n; } static long f(P p) { return p.cents * p.n; } }")];
     let after = [(
         "P.java",
@@ -456,6 +472,7 @@ fn a_renamed_field_is_related_by_its_constructor_and_a_new_one_left_free() {
 
 #[test]
 fn a_value_object_the_constructor_makes_is_related_inside_it() {
+    jvmcontract::tool_tier!();
     let before = [("Q.java", "final class Q { long cents; Q(long cents) { this.cents = cents; } static long f(Q q) { return q.cents; } }")];
     let wrapped = [
         ("M.java", "record M(long cents) {}"),
@@ -483,6 +500,7 @@ fn a_value_object_the_constructor_makes_is_related_inside_it() {
 
 #[test]
 fn a_field_whose_own_class_changed_shape_is_related_through_that_class() {
+    jvmcontract::tool_tier!();
     // `Q` keeps its fields; the `L` it holds changed. The shape compared is deep, so `Q` changed with it.
     let before = [
         ("L.java", "final class L { long cents; L(long cents) { this.cents = cents; } }"),
@@ -523,6 +541,7 @@ fn a_field_whose_own_class_changed_shape_is_related_through_that_class() {
 
 #[test]
 fn a_result_whose_class_changed_shape_is_compared_field_by_field() {
+    jvmcontract::tool_tier!();
     let before = [("Q.java", "final class Q { long cents; int quantity; Q(long cents, int quantity) { this.cents = cents; this.quantity = quantity; } static Q make(long cents, int quantity) { return new Q(cents, quantity); } }")];
     let after = [
         ("M.java", "record M(long cents) {}"),
@@ -567,6 +586,7 @@ fn a_result_whose_class_changed_shape_is_compared_field_by_field() {
 
 #[test]
 fn code_that_did_not_change_over_a_class_that_did_is_mapped_through_the_class() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (kernel("reshaped", "before"), kernel("reshaped", "after")) else { return };
     let a = alignment::align(&Build::load(&before).unwrap(), &Build::load(&after).unwrap(), Some(&kernel_contract()));
     let change = |s: &str| a.methods.methods.iter().find(|m| m.before == s).map(|m| (m.change, m.leading().map(|c| c.after.clone())));
@@ -610,6 +630,7 @@ fn expressions_of(choices: &[alignment::mappings::Choice]) -> Vec<&str> {
 
 #[test]
 fn a_constructor_that_shifts_what_it_stores_or_stores_a_constant_is_never_related() {
+    jvmcontract::tool_tier!();
     let before = [("Q.java", "final class Q { long cents; Q(long cents) { this.cents = cents; } static long f(Q q) { return q.cents; } }")];
     // The field-level offset: the stored value is shifted, so `old.q.cents == new.q.cents` would hide it, and
     // `old.q.cents == new.q.cents - 1` is never proposed.
@@ -639,6 +660,7 @@ fn a_constructor_that_shifts_what_it_stores_or_stores_a_constant_is_never_relate
 
 #[test]
 fn a_method_moved_into_the_value_object_takes_it_in_place_of_the_old_object() {
+    jvmcontract::tool_tier!();
     let (Some(before), Some(after)) = (kernel("moved", "before"), kernel("moved", "after")) else { return };
     let a = alignment::align(&Build::load(&before).unwrap(), &Build::load(&after).unwrap(), Some(&kernel_contract()));
     let cents = mapping(&a, "shop.Quote#cents");
@@ -656,6 +678,7 @@ fn a_method_moved_into_the_value_object_takes_it_in_place_of_the_old_object() {
 
 #[test]
 fn a_moved_method_that_reads_what_the_value_object_does_not_keep_is_not_related() {
+    jvmcontract::tool_tier!();
     let before = [("Q.java", "final class Q { long cents; int n; Q(long cents, int n) { this.cents = cents; this.n = n; } long cents() { return n > 0 ? cents : 0; } }")];
     let after = [
         ("M.java", "record M(long cents) {}"),
@@ -689,6 +712,7 @@ fn proof<'a>(alignment: &'a Alignment, before: &str) -> &'a MappingProof {
 
 #[test]
 fn the_offset_defect_is_refuted_and_no_mapping_hides_it() {
+    jvmcontract::tool_tier!();
     let before = [("A.java", "public class A { static long price(long c) { return c; } }")];
     let after = [("A.java", "public class A { static long price(long c) { return c + 1; } }")];
     let Some(a) = proved("prove-offset", &before, &after, None) else { return };
@@ -702,6 +726,7 @@ fn the_offset_defect_is_refuted_and_no_mapping_hides_it() {
 
 #[test]
 fn of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds() {
+    jvmcontract::tool_tier!();
     let Some(a) = proved(
         "prove-untied",
         &[("C.java", "public class C { static long span(long x, long y) { return y - x; } }")],
@@ -725,6 +750,7 @@ fn of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds() {
 
 #[test]
 fn mappings_a_proof_cannot_tell_apart_are_one_candidate() {
+    jvmcontract::tool_tier!();
     // A sum: the components in either order give the same result, so both mappings are proved, and the contract
     // can't tell them apart.
     let Some(a) = proved(
@@ -751,6 +777,7 @@ fn mappings_a_proof_cannot_tell_apart_are_one_candidate() {
 
 #[test]
 fn proved_relations_with_the_same_inputs_are_one_candidate_told_apart_by_a_result_no_input_gives() {
+    jvmcontract::tool_tier!();
     // The new result is 0 or 1: `result > 0` and `result != 0` both hold. With the same inputs, the old version gives
     // the same observations under either, so they are one candidate; what tells them apart is -1, which no input gives.
     let Some(a) = proved(
@@ -788,6 +815,7 @@ fn proved_relations_with_the_same_inputs_are_one_candidate_told_apart_by_a_resul
 
 #[test]
 fn proved_relations_with_different_inputs_stay_a_question_with_an_input_that_separates_them() {
+    jvmcontract::tool_tier!();
     let Some(a) = aligned(
         "settle-apart",
         &[("C.java", "public class C { static boolean above(long x, long y) { return x > y; } }")],
@@ -820,6 +848,7 @@ fn proved_relations_with_different_inputs_stay_a_question_with_an_input_that_sep
 
 #[test]
 fn the_outcome_rules_count_no_vacuous_proof_and_name_a_person_s_decision() {
+    jvmcontract::tool_tier!();
     let Some(a) = aligned(
         "settle",
         &[("A.java", "public class A { static boolean expired(long left) { return left <= 0; } }")],
@@ -865,6 +894,7 @@ fn bare_kernel(test: &str, version: &str) -> Option<PathBuf> {
 
 #[test]
 fn a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_free() {
+    jvmcontract::tool_tier!();
     let (Some(b), Some(a)) = (bare_kernel("lone", "before"), bare_kernel("lone", "after")) else { return };
     let aligned = alignment::align(&Build::load(&b).unwrap(), &Build::load(&a).unwrap(), None);
     let total = mapping(&aligned, "shop.Pricing#total");
@@ -899,6 +929,7 @@ fn a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_fre
 
 #[test]
 fn approving_sets_the_intent_only_and_a_file_whose_decisions_are_approved_asks_nothing() {
+    jvmcontract::tool_tier!();
     let (Some(b), Some(a)) = (bare_kernel("approve", "before"), bare_kernel("approve", "after")) else { return };
     let path = scratch("approve-hints").join("hints.json");
     let run = |args: &[&str]| Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(args).output().unwrap();
@@ -946,6 +977,7 @@ fn approving_sets_the_intent_only_and_a_file_whose_decisions_are_approved_asks_n
 
 #[test]
 fn an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale() {
+    jvmcontract::tool_tier!(pending);
     if !has_javac() {
         return;
     }
@@ -999,6 +1031,7 @@ fn an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_ke
 
 #[test]
 fn an_approved_relation_a_proof_refutes_is_listed_with_its_counterexample() {
+    jvmcontract::tool_tier!();
     let Some(a) = proved(
         "approve-refuted",
         &[("C.java", "public class C { static long span(long x, long y) { return y - x; } }")],

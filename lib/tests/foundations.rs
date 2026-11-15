@@ -141,6 +141,7 @@ fn heap_part(report: &mut Report) {
 /// `discount(long gross, int quantity)` rather than checked under an input the method doesn't have.
 #[test]
 fn a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused() {
+    jvmcontract::tool_tier!();
     if builds().is_none() {
         return;
     }
@@ -173,6 +174,7 @@ fn a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused() {
 /// under a bound of 0.
 #[test]
 fn the_allocation_bound_is_checked_against_what_the_code_makes() {
+    jvmcontract::tool_tier!();
     if builds().is_none() {
         return;
     }
@@ -373,6 +375,7 @@ fn summaries_part(report: &mut Report) {
 
 #[test]
 fn the_integration_contract() {
+    jvmcontract::tool_tier!();
     if builds().is_none() {
         return;
     }

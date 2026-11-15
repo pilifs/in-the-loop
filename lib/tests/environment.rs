@@ -166,6 +166,7 @@ fn state(c: &Checked, id: &str) -> ObservationState {
 
 #[test]
 fn a_handler_that_uses_a_modelled_rate_proves_its_rewrite() {
+    jvmcontract::tool_tier!();
     let after = "        long rate = rates.rate(code);\n        long total = quantity * rate;\n        if (total <= 0) return total;\n        kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let Some(c) = check("rewrite", BEFORE, after, &query(1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
@@ -177,6 +178,7 @@ fn a_handler_that_uses_a_modelled_rate_proves_its_rewrite() {
 
 #[test]
 fn a_wrong_query_key_is_refuted_under_the_environment_that_shows_it() {
+    jvmcontract::tool_tier!();
     let wrong = "        long total = rates.rate(code + 1) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let Some(c) = check("wrong-key", BEFORE, wrong, &query(1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -190,6 +192,7 @@ fn a_wrong_query_key_is_refuted_under_the_environment_that_shows_it() {
 
 #[test]
 fn an_ignored_result_is_refuted() {
+    jvmcontract::tool_tier!();
     let ignored = "        rates.rate(code);\n        long total = 100L * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let Some(c) = check("ignored", BEFORE, ignored, &query(1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -198,6 +201,7 @@ fn an_ignored_result_is_refuted() {
 
 #[test]
 fn an_event_sent_on_the_wrong_branch_of_a_rate_is_refuted_in_the_trace() {
+    jvmcontract::tool_tier!();
     let branch = "        long total = rates.rate(code) * quantity;\n        if (total >= 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let Some(c) = check("wrong-branch", BEFORE, branch, &query(1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -207,6 +211,7 @@ fn an_event_sent_on_the_wrong_branch_of_a_rate_is_refuted_in_the_trace() {
 /// Different keys asked for in the other order get their own answers: not coupled by the call's position.
 #[test]
 fn keys_asked_for_in_another_order_get_their_own_answers() {
+    jvmcontract::tool_tier!();
     let before = "        return rates.rate(code) - rates.rate(quantity);";
     let swapped = "        long b = rates.rate(quantity);\n        long a = rates.rate(code);\n        return a - b;";
     let Some(c) = check("swapped", before, swapped, &query(2)) else { return };
@@ -220,6 +225,7 @@ fn keys_asked_for_in_another_order_get_their_own_answers() {
 /// Equal keys get equal answers, in one build and across the two.
 #[test]
 fn repeated_reads_of_one_key_are_functionally_consistent() {
+    jvmcontract::tool_tier!();
     let before = "        return rates.rate(code) * 2;";
     let twice = "        return rates.rate(code) + rates.rate(code);";
     let Some(c) = check("twice", before, twice, &query(2)) else { return };
@@ -229,6 +235,7 @@ fn repeated_reads_of_one_key_are_functionally_consistent() {
 /// One more call than the model's bound leaves the result unresolved, never a proof on a shorter trace.
 #[test]
 fn a_call_past_the_models_bound_is_unresolved() {
+    jvmcontract::tool_tier!();
     let before = "        return rates.rate(code) * 2;";
     let twice = "        return rates.rate(code) + rates.rate(code);";
     let Some(c) = check("past-bound", before, twice, &query(1)) else { return };
@@ -241,6 +248,7 @@ fn a_call_past_the_models_bound_is_unresolved() {
 /// else (its tag is no mark of its own).
 #[test]
 fn the_old_builds_unresolved_mark_says_only_what_happened_in_it() {
+    jvmcontract::tool_tier!();
     let twice = "        return rates.rate(code) + rates.rate(code);";
     let once = "        return rates.rate(code) * 2;";
     let Some(c) = check("past-bound-old", twice, once, &query(1)) else { return };
@@ -254,6 +262,7 @@ fn the_old_builds_unresolved_mark_says_only_what_happened_in_it() {
 /// anything. Declared without one, its used result is refused by name.
 #[test]
 fn without_a_model_a_used_result_is_never_proved() {
+    jvmcontract::tool_tier!();
     let Some(b) = build("unmodelled-before", BEFORE) else { return };
     let s = spec(&b);
     let plain = effects::claim_for(&s, None, ClaimBounds { unwind: 8, max_array_length: 4 });
@@ -271,6 +280,7 @@ fn without_a_model_a_used_result_is_never_proved() {
 /// JVM again, and another bound, coupling, modelled failure or failure class is a miss under another key.
 #[test]
 fn the_environment_model_is_in_the_claim_key_of_the_cached_proof() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::cache::Reuse;
     let after = "        long rate = rates.rate(code);\n        long total = quantity * rate;\n        if (total <= 0) return total;\n        kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let wrong = "        long total = rates.rate(code + 1) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
@@ -314,6 +324,7 @@ fn the_environment_model_is_in_the_claim_key_of_the_cached_proof() {
 /// `effects --environment FILE`: the declared model replaces the spec's call, and the command checks under it.
 #[test]
 fn the_command_checks_under_a_declared_environment() {
+    jvmcontract::tool_tier!();
     let wrong = "        long total = rates.rate(code + 1) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let (Some(b), Some(w)) = (build("command-before", BEFORE), build("command-wrong", wrong)) else { return };
     let file = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("environment-rates.json");
@@ -333,6 +344,7 @@ fn the_command_checks_under_a_declared_environment() {
 /// wrong key is refuted: the choices are coupled by key and occurrence, never by position.
 #[test]
 fn a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key() {
+    jvmcontract::tool_tier!();
     let after = "        long rate = rates.rate(code);\n        long total = quantity * rate;\n        if (total <= 0) return total;\n        kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let Some(c) = check("choice-rewrite", BEFORE, after, &choice(1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
@@ -364,6 +376,7 @@ fn a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key() {
 /// same two reads taken in the other order are refuted too.
 #[test]
 fn under_a_per_call_choice_a_second_read_of_a_key_is_its_own_answer() {
+    jvmcontract::tool_tier!();
     let once = "        return rates.rate(code) * 2;";
     let twice = "        return rates.rate(code) + rates.rate(code);";
     let Some(c) = check("choice-twice", once, twice, &choice(2)) else { return };
@@ -406,6 +419,7 @@ const CATCHING: &str = "        long rate;\n        try {\n            rate = ra
 /// event dropped or sent on the wrong topic, are each refuted under the environment that fails, and replayed.
 #[test]
 fn a_newly_missing_catch_of_a_modelled_failure_is_refuted_and_replayed() {
+    jvmcontract::tool_tier!();
     let io = failing(query(1), &["java.io.IOException"]);
     let rewrite = "        try {\n            long total = (long) quantity * rates.rate(code);\n            if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n            return total;\n        } catch (java.io.IOException failure) {\n            kafka.send(\"failures\", new PriceEvent(code, 0));\n            return -1;\n        }";
     let Some(c) = check_failing("io-rewrite", CATCHING, rewrite, &io) else { return };
@@ -442,6 +456,7 @@ fn a_newly_missing_catch_of_a_modelled_failure_is_refuted_and_replayed() {
 /// change nothing and its removal proves: the declared coupling decides.
 #[test]
 fn a_dropped_retry_is_refuted_under_a_per_call_choice_and_proves_under_a_query() {
+    jvmcontract::tool_tier!();
     let retry = "        long rate;\n        try {\n            rate = rates.rate(code);\n        } catch (RateUnavailable e) {\n            rate = rates.rate(code);\n        }\n        return rate * quantity;";
     let looped = "        long rate;\n        for (int attempt = 0; ; attempt++) {\n            try {\n                rate = rates.rate(code);\n                break;\n            } catch (RateUnavailable e) {\n                if (attempt == 1) throw e;\n            }\n        }\n        return quantity * rate;";
     let unavailable = |call: ModeledCall| failing(call, &["rates.RateUnavailable"]);
@@ -466,6 +481,7 @@ fn a_dropped_retry_is_refuted_under_a_per_call_choice_and_proves_under_a_query()
 /// on, is refused by name, and so is a failure its stub can't make without arguments.
 #[test]
 fn reading_more_of_a_modelled_failure_than_its_class_is_refused() {
+    jvmcontract::tool_tier!();
     let io = failing(query(1), &["java.io.IOException"]);
     let cases = [
         ("io-message", "return e.getMessage() == null ? -1 : -2;", "reads its message (java.io.IOException.getMessage)"),
@@ -487,6 +503,7 @@ fn reading_more_of_a_modelled_failure_than_its_class_is_refused() {
 /// report as an environment assumption, and the entry point is checked under it.
 #[test]
 fn compare_counts_a_declared_environment_as_a_persons_decision() {
+    jvmcontract::tool_tier!();
     let wrong = "        long total = rates.rate(code + 1) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
     let (Some(b), Some(w)) = (build("compare-before", BEFORE), build("compare-wrong", wrong)) else { return };
     let options = |after: &Path, environment: Vec<ModeledCall>| jvmcontract::compare::Options {

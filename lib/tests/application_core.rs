@@ -180,6 +180,7 @@ fn the_frozen_claims_are_the_shared_types() {
 /// Every build of every family compiles, and the expectations name each one under every claim and regression.
 #[test]
 fn every_build_compiles_and_every_case_has_its_verdict() {
+    jvmcontract::tool_tier!();
     for family in ["quote", "throttle", "basket"] {
         let mut names: Vec<String> = std::fs::read_dir(builds().join(family)).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().into_owned()).filter(|n| n != "before").collect();
         names.sort();
@@ -196,6 +197,7 @@ fn every_build_compiles_and_every_case_has_its_verdict() {
 /// constructors are the check's, is verified. Permanent: no stream of this wave builds these.
 #[test]
 fn g0_an_unsupported_domain_policy_is_refused_before_any_verdict() {
+    jvmcontract::tool_tier!();
     let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations");
     let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-g0");
     let _ = std::fs::remove_dir_all(&root);
@@ -230,6 +232,7 @@ fn g0_an_unsupported_domain_policy_is_refused_before_any_verdict() {
 /// its constructor, verified, and `one-short`'s defect replayed.
 #[test]
 fn o1_an_ordinary_receiver_in_the_regression_and_property_checks() {
+    jvmcontract::tool_tier!();
     regressions("throttle", "throttle.Throttle#allows", &["objects"]);
     let mut options = property::Options::new(&[build("throttle", "after")], "throttle.Throttle#allows");
     options.engine = jvmcontract::Engine::Native;
@@ -246,6 +249,7 @@ fn o1_an_ordinary_receiver_in_the_regression_and_property_checks() {
 /// code and quantities array, and `alias-to-copy`'s copy is refuted on identity alone.
 #[test]
 fn o2_an_array_valued_constructor_faithful_to_identity() {
+    jvmcontract::tool_tier!();
     // The service's dependencies are passed null, and the request's String code is a leaf of its construction
     // compared by content, since Phase 5 (application-core.md's Progress): no refusal is accepted.
     // `checked-claim` bounds each version's allocations at 3, the user's decision of 2026-11-08 (the frozen 1 counted
@@ -259,6 +263,7 @@ fn o2_an_array_valued_constructor_faithful_to_identity() {
 /// that domain; under one setup call, it is refuted with the whole history replayed.
 #[test]
 fn o3_a_defect_only_a_history_reaches() {
+    jvmcontract::tool_tier!();
     claims("throttle", "throttle-constructed-claim", &[Part::Objects], spec::heap::check);
     claims("throttle", "throttle-setup-claim", &[Part::Objects], spec::heap::check);
 }
@@ -267,6 +272,7 @@ fn o3_a_defect_only_a_history_reaches() {
 /// a shorter prefix refuted on a replayed witness.
 #[test]
 fn v1_a_symbolic_string_crosses_the_proof_boundary() {
+    jvmcontract::tool_tier!();
     // Wired at the merge (Phase 5 step 1): no stream's refusal is accepted any more.
     regressions("quote", "quotes.Codes#vip", &[]);
 }
@@ -274,6 +280,7 @@ fn v1_a_symbolic_string_crosses_the_proof_boundary() {
 /// V2: a bounded immutable list as input: order, duplicates and identity kept.
 #[test]
 fn v2_a_bounded_supported_list_as_input() {
+    jvmcontract::tool_tier!(pending);
     // The list parameter is wired at the merge (Phase 5 step 1): no stream's refusal is accepted any more for the
     // plain checks, under the frozen claims' list bound of 3 (`basket-*-claim.json`'s `max_length`).
     regressions_within("basket", "basket.Basket#total", &[], Some(3));
@@ -292,18 +299,21 @@ fn v2_a_bounded_supported_list_as_input() {
 /// returns, or its checked `RateUnavailable`. Wired at the merge (Phase 5 step 1): no stream's refusal is accepted.
 #[test]
 fn e1_a_consumed_return_value_and_a_declared_failure() {
+    jvmcontract::tool_tier!(pending);
     claims("quote", "quote-claim", &[], jvmcontract::environment::check);
 }
 
 /// E2: a nullable returned DTO, made by the shared construction plan. Wired at the merge: no refusal is accepted.
 #[test]
 fn e2_a_nullable_returned_dto() {
+    jvmcontract::tool_tier!(pending);
     claims("quote", "offer-claim", &[], jvmcontract::environment::check);
 }
 
 /// R1: the native property cache: a verified property, then its exact reuse, under `prove --cache`.
 #[test]
 fn r1_the_native_property_cache() {
+    jvmcontract::tool_tier!(pending);
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-r1-cache");
     let _ = std::fs::remove_dir_all(&cache);
     for run in ["cold", "rerun"] {
@@ -324,6 +334,7 @@ fn r1_the_native_property_cache() {
 /// `helper-extra-field`'s extra read refuted. Its reuse in a changed caller is J1's, at the merge.
 #[test]
 fn r2_a_heap_reading_helper_on_its_own() {
+    jvmcontract::tool_tier!();
     // The receiver's three dependencies are passed null since the merge, `fee` never reaching them: no refusal.
     regressions("quote", "quotes.QuoteService#fee", &[]);
 }

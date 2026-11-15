@@ -736,6 +736,7 @@ mod tests {
 
     #[test]
     fn cadicals_version_is_read_from_its_signature_in_a_binary() {
+        crate::tool_tier!();
         // As JBMC 6.11.0's executable holds it, among CaDiCaL's source file names.
         let binary = b"\x7fELF\x02\x01cadical-src/src/solver.cpp\0xcadical-9.9\0cadical-3.0.0\0cadical-src/src/external.cpp\0";
         assert_eq!(cadical_signature(binary), Some("3.0.0".into()));
@@ -747,6 +748,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn jbmcs_solver_is_recorded_with_its_version_and_the_options_every_run_passes() {
+        crate::tool_tier!();
         let dir = tempfile::tempdir().unwrap();
         let path = |name: &str| dir.path().join(name).to_string_lossy().into_owned();
         std::fs::write(dir.path().join("with"), b"\x7fELF\x02\x01\0cadical-3.0.0\0").unwrap();
@@ -998,6 +1000,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn a_run_that_dies_gives_no_verdict_whatever_it_printed() {
+        crate::tool_tier!();
         let dir = tempfile::tempdir().unwrap();
         let proved = "$PROVED";
 
@@ -1021,6 +1024,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn a_run_is_limited_and_goes_first_when_memory_runs_out() {
+        crate::tool_tier!();
         let dir = tempfile::tempdir().unwrap();
         let r = stand_in(dir.path(), "probe", "ulimit -v; cat /proc/self/oom_score_adj; $PROVED");
         assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
@@ -1032,6 +1036,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn a_jbmc_without_the_solver_asked_for_is_run_again_with_its_own() {
+        crate::tool_tier!();
         let dir = tempfile::tempdir().unwrap();
         let body = "for a in \"$@\"; do [ \"$a\" = --sat-solver ] && { echo \"unknown solver 'cadical'\"; exit 1; }; done; $PROVED";
         let r = stand_in(dir.path(), "minisat-only", body);

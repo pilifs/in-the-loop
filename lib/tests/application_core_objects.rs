@@ -92,6 +92,7 @@ fn counter(name: &str, edit: impl Fn(&str) -> String) -> PathBuf {
 /// refuted on the receiver's field alone (a void method).
 #[test]
 fn o1_a_receivers_mutation_is_compared_and_replayed_on_a_jvm() {
+    jvmcontract::tool_tier!();
     let before = counter("counter-before", |s| s.to_string());
     let after = counter("counter-after", |s| s.replace("count += n * step;", "for (int i = 0; i < n; i++) { count += step; }"));
     let o = regression("add-after", &before, &after, "counters.Counter#add");
@@ -113,6 +114,7 @@ fn o1_a_receivers_mutation_is_compared_and_replayed_on_a_jvm() {
 /// a copy, is refuted on `result == this` alone, the copy's fields being the same.
 #[test]
 fn o1_a_receiver_returned_as_a_copy_is_refuted_on_identity() {
+    jvmcontract::tool_tier!();
     let before = counter("self-before", |s| s.to_string());
     let copy = counter("self-copy", |s| s.replace("        return this;\n", "        Counter c = new Counter(step);\n        c.count = count;\n        return c;\n"));
     let o = regression("self-copy", &before, &copy, "counters.Counter#self");
@@ -128,6 +130,7 @@ fn o1_a_receiver_returned_as_a_copy_is_refuted_on_identity() {
 /// as `this.f`: a property of `count` right after construction is proved, and a false one refuted with a witness.
 #[test]
 fn o1_a_property_over_an_ordinary_receiver() {
+    jvmcontract::tool_tier!();
     let classes = counter("property", |s| s.to_string());
     let o = prove("count-zero", &classes, "counters.Counter#count", None, "result == 0");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -144,6 +147,7 @@ fn o1_a_property_over_an_ordinary_receiver() {
 /// constructors, a choice no plain check makes.
 #[test]
 fn o1_a_receiver_outside_the_construction_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let dependency = compile("dependency", &[
         ("deps/Clock.java", "package deps;\npublic interface Clock { long now(); }\n"),
         ("deps/Timer.java", "package deps;\npublic class Timer {\n    private final long start;\n    private final Clock clock;\n    public Timer(long start, Clock clock) { this.start = start; this.clock = clock; }\n    public long since(long t) { return t - start; }\n    public long elapsed() { return clock.now() - start; }\n}\n"),
@@ -186,6 +190,7 @@ fn o1_a_receiver_outside_the_construction_is_refused_by_name() {
 /// its own that the cache doesn't answer.
 #[test]
 fn o1_a_receivers_constructor_is_part_of_the_cached_claim() {
+    jvmcontract::tool_tier!();
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-cache");
     let _ = std::fs::remove_dir_all(&cache);
     let before = counter("cache-before", |s| s.to_string());
@@ -218,6 +223,7 @@ fn o1_a_receivers_constructor_is_part_of_the_cached_claim() {
 /// refuted. It reused the stored proof before the reuse stream's fix (`qssovxor`).
 #[test]
 fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
+    jvmcontract::tool_tier!();
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-cache-inner");
     let _ = std::fs::remove_dir_all(&cache);
     let inner = |v: &str| format!("package boxes;\npublic class Inner {{\n    final int v;\n    public Inner(int v) {{ this.v = {v}; }}\n}}\n");
@@ -250,6 +256,7 @@ fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
 /// (`harness::Layout::construction_roots`, in `proof_cache::Regression::claim`).
 #[test]
 fn o2_a_setup_methods_edit_alone_is_another_claim_never_reused() {
+    jvmcontract::tool_tier!();
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-cache-setup");
     let _ = std::fs::remove_dir_all(&cache);
     let before = counter("roots-before", |s| s.to_string());
@@ -327,6 +334,7 @@ fn throttle_claim(name: &str) -> jvmcontract::spec::CanonicalClaim {
 /// both.
 #[test]
 fn o3_a_defect_only_a_history_reaches_is_refuted_with_the_whole_history_replayed() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{heap, ObservationState, Verdict as Claimed};
     let before = throttle("before");
     let constructed = throttle_claim("throttle-constructed-claim");
@@ -410,6 +418,7 @@ public class Window {
 /// names a constructor the class doesn't have is refused with the ones it has.
 #[test]
 fn o1_a_plan_selects_one_of_several_constructors_by_descriptor() {
+    jvmcontract::tool_tier!();
     let before = compile("window-before", &[("windows/Window.java", WINDOW)]);
     let after = compile("window-after", &[("windows/Window.java", &WINDOW.replace("return lo <= x && x <= hi;", "return !(x < lo || x > hi);"))]);
     let defect = compile("window-defect", &[("windows/Window.java", &WINDOW.replace("return lo <= x && x <= hi;", "return lo <= x && x < hi;"))]);
@@ -443,6 +452,7 @@ fn o1_a_plan_selects_one_of_several_constructors_by_descriptor() {
 /// in the new version, and `count` after `add(5)` is refuted, the history replayed on a JVM.
 #[test]
 fn o3_an_input_one_versions_setup_rejects_is_a_difference() {
+    jvmcontract::tool_tier!();
     let before = counter("setup-before", |s| s.to_string());
     let wider = counter("setup-wider", |s| s.replace("n > 4", "n > 5"));
     let plan = counter_plan(&[ADD]);
@@ -473,6 +483,7 @@ fn o3_an_input_one_versions_setup_rejects_is_a_difference() {
 /// and not after `add`, refuted with the history in the witness; a history whose call throws is outside the property.
 #[test]
 fn o3_a_property_over_the_states_a_setup_call_reaches() {
+    jvmcontract::tool_tier!();
     let classes = counter("setup-property", |s| s.to_string());
     let with = |plan: &str, name: &str, assume: Option<&str>, assert: &str| {
         let mut options = property::Options::new(&[classes.clone()], "counters.Counter#count");
@@ -556,6 +567,7 @@ fn bounded(name: &str, before: &Path, after: &Path, target: &str, plan: Option<j
 /// JVM; a property over it is proved and a false one refuted.
 #[test]
 fn o1_a_receiver_of_a_primitive_array_constructor_needs_no_adapter() {
+    jvmcontract::tool_tier!();
     let before = buffer("buffer-before", |s| s.to_string());
     let after = buffer("buffer-after", |s| s.replace("for (int i = 0; i < data.length; i++) {\n            sum += data[i];\n        }", "for (int v : data) {\n            sum += v;\n        }"));
     let o = bounded("buffer-total", &before, &after, "buffers.Buffer#total", None);
@@ -587,6 +599,7 @@ fn o1_a_receiver_of_a_primitive_array_constructor_needs_no_adapter() {
 /// though the receivers' fields agree. Refuted on that alone, and replayed on a JVM.
 #[test]
 fn o2_an_array_defensively_copied_before_but_leaked_after_is_refuted() {
+    jvmcontract::tool_tier!();
     let before = buffer("leak-before", |s| s.to_string());
     let leaked = buffer("leak-after", |s| s.replace("this.data = data.clone();", "this.data = data;"));
     let o = bounded("leak-bump", &before, &leaked, "buffers.Buffer#bump", None);
@@ -603,6 +616,7 @@ fn o2_an_array_defensively_copied_before_but_leaked_after_is_refuted() {
 /// check's, and a null or a doubly used array is refused by name until it is built.
 #[test]
 fn o1_a_plans_array_leaf_is_the_constructors_argument() {
+    jvmcontract::tool_tier!();
     let before = buffer("plan-buffer-before", |s| s.to_string());
     let defect = buffer("plan-buffer-defect", |s| s.replace("sum += data[i];", "sum += i == 2 ? 0 : data[i];"));
     let plan = |array: &str| format!(r#"{{"nodes": [{{"id": 0, "class": "buffers.Buffer", "maker": {{"kind": "constructor", "descriptor": "([I)V"}}, "args": [{array}]}}],
@@ -674,6 +688,7 @@ fn cell_plan(b: &str) -> String {
 /// the harness rebuilds it, so the difference reproduces there.
 #[test]
 fn o2_two_parameters_that_were_one_object_becoming_distinct_is_refuted() {
+    jvmcontract::tool_tier!();
     let before = cells("cells-before", |s| s.to_string());
     let distinct = cells("cells-distinct", |s| s.replace("return x + b.v;", "return x + x;"));
     let own = cell_plan(r#"{"kind": "node", "id": 1}"#);
@@ -706,6 +721,7 @@ fn o2_two_parameters_that_were_one_object_becoming_distinct_is_refuted() {
 /// plan makes `a` and `b` one node, and refuted on identity where they are two objects.
 #[test]
 fn o2_a_plans_shared_node_is_one_object_in_the_identity_relations() {
+    jvmcontract::tool_tier!();
     let before = cells("pick-before", |s| s.to_string());
     let other = cells("pick-other", |s| s.replace("        return a;\n", "        return b;\n"));
     let one = cell_plan(r#"{"kind": "node", "id": 0}"#);
@@ -723,6 +739,7 @@ fn o2_a_plans_shared_node_is_one_object_in_the_identity_relations() {
 /// plan lets `a` be null, replayed, and verified where it doesn't.
 #[test]
 fn o2_a_plans_nullable_root_is_a_choice_of_null() {
+    jvmcontract::tool_tier!();
     let before = cells("value-before", |s| s.to_string());
     let unchecked = cells("value-unchecked", |s| s.replace("return a == null ? 0 : a.v;", "return a.v;"));
     let plan = |a: &str| format!(r#"{{"nodes": [{{"id": 0, "class": "cells.Cell", "maker": {{"kind": "constructor", "descriptor": "(I)V"}}, "args": [{{"kind": "leaf", "path": "a.v", "type": "int"}}]}}],
@@ -742,6 +759,7 @@ fn o2_a_plans_nullable_root_is_a_choice_of_null() {
 /// holds over one node and is refuted over two.
 #[test]
 fn o2_a_property_over_a_plans_shared_node() {
+    jvmcontract::tool_tier!();
     let classes = cells("cells-property", |s| s.to_string());
     let with = |plan: &str, name: &str| {
         let mut options = property::Options::new(&[classes.clone()], "cells.Ops#twice");
@@ -770,6 +788,7 @@ fn o2_a_property_over_a_plans_shared_node() {
 /// still made, and its check verified.
 #[test]
 fn o2_a_constructors_side_effect_outside_its_object_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let counted = |s: &str| s.replace("    private int count;\n", "    private int count;\n    static int made;\n").replace("        this.step = step;\n", "        this.step = step;\n        made++;\n");
     let plain = counter("effect-plain", |s| s.to_string());
     let effect = counter("effect-static", counted);
@@ -825,6 +844,7 @@ fn o2_a_constructors_side_effect_outside_its_object_is_refused_by_name() {
 /// never verified.
 #[test]
 fn o2_a_narrower_new_constructor_under_an_anchored_domain_is_never_silently_intersected() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::{heap, ObservationState, Verdict as Claimed};
     use jvmcontract::statement::AssumptionKind;
     let before = counter("narrower-before", |s| s.to_string());
@@ -887,6 +907,7 @@ fn o2_a_narrower_new_constructor_under_an_anchored_domain_is_never_silently_inte
 /// a counterexample too, of the other difference.
 #[test]
 fn o2_a_shrunk_witness_reproduces_the_same_failure() {
+    jvmcontract::tool_tier!();
     let before = counter("same-failure-before", |s| s.to_string());
     let after = counter("same-failure-after", |s| s.replace("if (step < 1) {", "if (step < 2) {").replace("count += n * step;", "count += step >= 3 ? n * step + n : n * step;"));
     let run = |name: &str, shrink: bool| {
@@ -964,6 +985,7 @@ const SAME: &str = "String a = \"x\".formatted(); if (ch == 1655 && a.toString()
 /// outcomes and their difference; none where the versions agree there. The same holds for a property's witness.
 #[test]
 fn o2_a_replay_that_cannot_run_one_version_is_no_reproduction() {
+    jvmcontract::tool_tier!();
     let run = |name: &str, after: &Path| {
         let before = digits("unreplayed-before", "");
         let mut options = equivalence::Options::new(&before, after, "digits.Digits#value");

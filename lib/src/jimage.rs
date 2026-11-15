@@ -280,6 +280,7 @@ mod tests {
 
     #[test]
     fn reads_classes_from_the_local_jdk() {
+        crate::tool_tier!();
         let Some(home) = JImage::find_java_home() else {
             eprintln!("no JDK found; skipping");
             return;
@@ -308,6 +309,7 @@ mod tests {
 
     #[test]
     fn images_opened_on_the_same_index_share_its_classes_and_another_index_gets_its_own() {
+        crate::tool_tier!();
         let Some(home) = JImage::find_java_home() else {
             eprintln!("no JDK found; skipping");
             return;

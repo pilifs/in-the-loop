@@ -78,6 +78,7 @@ fn prove(name: &str, classes: &Path, target: &str, assume: Option<&str>, assert:
 /// the same receiver.
 #[test]
 fn a_target_that_never_reaches_its_dependencies_is_checked_with_each_null() {
+    jvmcontract::tool_tier!();
     let before = timer("before", "return t - start;", "");
     let after = timer("after", "long d = t;\n        d -= start;\n        return d;", "");
     let o = regression("rewrite", &before, &after, "deps.Timer#since");
@@ -105,6 +106,7 @@ fn a_target_that_never_reaches_its_dependencies_is_checked_with_each_null() {
 /// no object a run could have; so is a dependency that is no interface, and a plan whose dependency is misnamed.
 #[test]
 fn a_target_that_reaches_a_dependency_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let before = timer("boundary-before", "return t - start;", "");
     let calls = timer("calls", "return clock.now() - start;", "");
     let o = regression("calls", &before, &calls, "deps.Timer#since");
@@ -166,6 +168,7 @@ fn a_target_that_reaches_a_dependency_is_refused_by_name() {
 /// which stores the clock, is another claim, proved again.
 #[test]
 fn a_cached_proof_over_a_null_dependency_is_never_reused_once_the_target_reaches_it() {
+    jvmcontract::tool_tier!();
     let cache = tmp("cache");
     let _ = std::fs::remove_dir_all(&cache);
     let before = timer("cache-before", "return t - start;", "");

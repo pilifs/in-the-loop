@@ -309,6 +309,7 @@ fn regression_family(row: &str, family: &str, target: &str, bound: Option<u32>) 
 /// `fee` as a plain regression are apart, below.
 #[test]
 fn j1_the_quote_family_composes_the_four_streams() {
+    jvmcontract::tool_tier!(pending);
     claim_family("J1 (E1)", "quote", "quote-claim", Check::Planned);
     claim_family("J1 (E2)", "quote", "offer-claim", Check::Planned);
     regression_family("J1 (V1)", "quote", "quotes.Codes#vip", None);
@@ -379,6 +380,7 @@ fn j1_the_quote_family_composes_the_four_streams() {
 /// so part of the job after its first (`20261108-180246-…`): its own job.
 #[test]
 fn j1_r2_a_receiver_with_dependencies() {
+    jvmcontract::tool_tier!();
     regression_family("J1 (R2)", "quote", "quotes.QuoteService#fee", None);
 }
 
@@ -396,6 +398,7 @@ fn j1_r2_a_receiver_with_dependencies() {
 /// JVM, and `after` is still verified.
 #[test]
 fn j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string() {
+    jvmcontract::tool_tier!();
     claim_family("J1 (O2)", "quote", "checked-claim", Check::Heap);
 
     let claim = golden("checked-claim");
@@ -417,6 +420,7 @@ fn j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string() {
 /// another key under each. `allows` also reaches its verdicts as a plain regression and as a property.
 #[test]
 fn h_the_throttle_family() {
+    jvmcontract::tool_tier!();
     let constructed = claim_family("H (O3)", "throttle", "throttle-constructed-claim", Check::Heap);
     let setup = claim_family("H (O3)", "throttle", "throttle-setup-claim", Check::Heap);
     for ((name, a), (_, b)) in constructed.iter().zip(&setup) {
@@ -450,6 +454,7 @@ fn h_the_throttle_family() {
 /// and refuted on its identity. A smaller list bound is another claim, checked again.
 #[test]
 fn l_the_basket_family() {
+    jvmcontract::tool_tier!();
     claim_family("L (V2)", "basket", "basket-total-claim", Check::Heap);
     claim_family("L (V2)", "basket", "basket-clear-claim", Check::Heap);
     claim_family("L (V2)", "basket", "basket-first-claim", Check::Heap);
@@ -481,6 +486,7 @@ fn l_the_basket_family() {
 /// still refuted and replayed, and a property is still proved.
 #[test]
 fn j2_the_native_claims_without_jbmc() {
+    jvmcontract::tool_tier!(pending);
     assert!(Command::new(NO_JBMC).arg("--version").output().is_err(), "{NO_JBMC} is no JBMC");
     let auto = |family: &str, name: &str, target: &str, bound: Option<u32>, confirm: bool, work: &str| {
         let mut o = regression_options(family, name, target, None, work);

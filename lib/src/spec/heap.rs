@@ -1059,6 +1059,7 @@ mod tests {
     /// [`allocations`] over a small build: what each kind of code makes in one call, and where no number bounds it.
     #[test]
     fn the_allocations_of_one_call_are_counted_through_calls_and_unbounded_in_a_loop_or_a_recursion() {
+        crate::tool_tier!();
         let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
         if !javac {
             assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "javac not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");

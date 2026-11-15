@@ -42,6 +42,7 @@ fn verdict_of(r: &Report, subject: &str) -> (Verdict, Option<String>) {
 
 #[test]
 fn the_joint_example_passes_every_row() {
+    jvmcontract::tool_tier!(pending);
     if builds("foundations-compare").is_none() {
         return;
     }

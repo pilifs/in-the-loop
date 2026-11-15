@@ -165,6 +165,7 @@ fn state(c: &Checked, id: &str) -> ObservationState {
 /// response that is a fresh `Offer` or null; the claim says how the response is made and what its identity is.
 #[test]
 fn a_handler_that_reads_a_nullable_dto_response_proves_its_rewrite() {
+    jvmcontract::tool_tier!();
     let after = "        Offer offer = offers.find(code);\n        if (offer != null) {\n            long units = quantity;\n            return units >= offer.minimumUnits ? units * offer.unitCents : 0;\n        }\n        return -1;";
     let Some(c) = check("rewrite", BEFORE, after, &finding(true, Identity::Fresh, 1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
@@ -178,6 +179,7 @@ fn a_handler_that_reads_a_nullable_dto_response_proves_its_rewrite() {
 /// JVM replays it under the stubs.
 #[test]
 fn a_changed_null_branch_is_refuted_on_a_null_response_and_replayed() {
+    jvmcontract::tool_tier!();
     let wrong = "        Offer offer = offers.find(code);\n        if (offer == null) return 0;\n        if (quantity < offer.minimumUnits) return 0;\n        return offer.unitCents * quantity;";
     let Some(c) = check("null-branch", BEFORE, wrong, &finding(true, Identity::Fresh, 1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -194,6 +196,7 @@ fn a_changed_null_branch_is_refuted_on_a_null_response_and_replayed() {
 /// A field: a rewrite that takes the minimum as exclusive is refuted on an offer made from the witness's leaves.
 #[test]
 fn a_wrong_field_test_is_refuted_on_a_made_response_and_replayed() {
+    jvmcontract::tool_tier!();
     let wrong = "        Offer offer = offers.find(code);\n        if (offer == null) return -1;\n        if (quantity <= offer.minimumUnits) return 0;\n        return offer.unitCents * quantity;";
     let Some(c) = check("field", BEFORE, wrong, &finding(true, Identity::Fresh, 1)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -209,6 +212,7 @@ fn a_wrong_field_test_is_refuted_on_a_made_response_and_replayed() {
 /// under the first and is refuted, replayed, under the second.
 #[test]
 fn whether_two_responses_are_one_object_is_the_models_identity_policy() {
+    jvmcontract::tool_tier!();
     let compares = "        Offer a = offers.find(code);\n        Offer b = offers.find(code);\n        return a == b ? 1 : 0;";
     let assumes = "        offers.find(code);\n        offers.find(code);\n        return 1;";
     let Some(c) = check("identity", compares, assumes, &finding(true, Identity::Stable, 2)) else { return };
@@ -225,6 +229,7 @@ fn whether_two_responses_are_one_object_is_the_models_identity_policy() {
 /// unresolved there, never an exception of the dependency's.
 #[test]
 fn a_response_its_constructor_rejects_leaves_the_log_unresolved() {
+    jvmcontract::tool_tier!();
     let checked = OFFER.replace("        this.unitCents = unitCents;", "        if (minimumUnits < 0) throw new IllegalArgumentException();\n        this.unitCents = unitCents;");
     let catching = "        try {\n            Offer offer = offers.find(code);\n            return offer == null ? -1 : offer.minimumUnits;\n        } catch (IllegalArgumentException e) {\n            return -2;\n        }";
     let (Some(b), Some(a)) = (build_with("rejecting-before", catching, &checked), build_with("rejecting", catching, &checked)) else { return };
@@ -238,6 +243,7 @@ fn a_response_its_constructor_rejects_leaves_the_log_unresolved() {
 /// What the model isn't is refused by name: a DTO is data its dependency gives, not an object with behaviour.
 #[test]
 fn a_dto_response_beyond_data_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let model = finding(true, Identity::Fresh, 1);
     let refusal = |name: &str, body: &str, offer: &str| -> Option<Unsupported> {
         let b = build_with(&format!("{name}-before"), BEFORE, offer)?;
@@ -268,6 +274,7 @@ fn a_dto_response_beyond_data_is_refused_by_name() {
 /// unchanged rerun is an exact hit, a refutation replayed again.
 #[test]
 fn a_dto_responses_plan_and_identity_are_in_the_claim_key() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::cache::Reuse;
     let after = "        Offer offer = offers.find(code);\n        if (offer != null) {\n            long units = quantity;\n            return units >= offer.minimumUnits ? units * offer.unitCents : 0;\n        }\n        return -1;";
     let wrong = "        Offer offer = offers.find(code);\n        if (offer == null) return 0;\n        if (quantity < offer.minimumUnits) return 0;\n        return offer.unitCents * quantity;";

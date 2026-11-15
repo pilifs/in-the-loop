@@ -64,6 +64,7 @@ fn outcome(r: &Report) -> &Outcome {
 /// as it is, and the effort report counts it as a person's domain restriction.
 #[test]
 fn a_subjects_declared_domain_is_its_kernel_claims_domain() {
+    jvmcontract::tool_tier!();
     let before = throttle("claim", "before");
     let (setup, constructed) = (domain("throttle-setup-claim"), domain("throttle-constructed-claim"));
 
@@ -104,6 +105,7 @@ fn a_subjects_declared_domain_is_its_kernel_claims_domain() {
 /// share one stored proof, each result stating its own domain.
 #[test]
 fn a_declared_domain_is_part_of_the_cached_claim() {
+    jvmcontract::tool_tier!();
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("compare-domains-cache");
     let _ = std::fs::remove_dir_all(&cache);
     let before = throttle("cache", "before");
@@ -140,6 +142,7 @@ fn a_declared_domain_is_part_of_the_cached_claim() {
 /// None is read as another domain.
 #[test]
 fn a_domain_compare_cannot_read_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let before = throttle("refusals", "before");
     let after = throttle("refusals", "after-setup");
     let setup = domain("throttle-setup-claim");

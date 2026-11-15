@@ -58,6 +58,7 @@ fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> effects::Checke
 /// the wrong branch on the effect, its code snapshotted by content: each replayed on a JVM.
 #[test]
 fn a_string_keyed_rate_and_an_events_code_are_refuted_and_replayed_by_content() {
+    jvmcontract::tool_tier!();
     let claim = golden("quote-claim");
     let before = build("key-before", "before", &[]);
     let key = build("key-std-key", "after", &[("QuoteService.java", "rates.rate(code)", "rates.rate(\"STD\")")]);
@@ -84,6 +85,7 @@ fn a_string_keyed_rate_and_an_events_code_are_refuted_and_replayed_by_content() 
 /// snapshot: the result is unresolved, naming the bound, never verified on a coupled default or a cut String.
 #[test]
 fn a_key_or_payload_string_past_the_bound_leaves_the_result_unresolved() {
+    jvmcontract::tool_tier!();
     let claim = golden("quote-claim");
     let before = build("bound-before", "before", &[]);
     let long_key = build("bound-long-key", "after", &[("QuoteService.java", "rates.rate(code)", "rates.rate(\"PREMIUM\")")]);
@@ -101,6 +103,7 @@ fn a_key_or_payload_string_past_the_bound_leaves_the_result_unresolved() {
 /// proof; a domain bound the code exceeds leaves the result unresolved.
 #[test]
 fn what_the_planned_check_does_not_make_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let claim = golden("quote-claim");
     let before = build("refused-before", "before", &[]);
     let after = build("refused-after", "after", &[]);
@@ -162,6 +165,7 @@ fn what_the_planned_check_does_not_make_is_refused_by_name() {
 /// and array bound, nor when its DTO response may no longer be null: each is another key.
 #[test]
 fn a_planned_effect_claims_proof_is_reused_exactly_and_not_under_another_claim() {
+    jvmcontract::tool_tier!();
     let claim = golden("offer-claim");
     let before = build("cache-before", "before", &[]);
     let after = build("cache-after", "after", &[]);

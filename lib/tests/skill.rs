@@ -69,6 +69,7 @@ fn code(text: &str) -> Vec<String> {
 
 #[test]
 fn every_jvmcontract_command_the_skill_names_is_one_the_cli_accepts() {
+    jvmcontract::tool_tier!();
     let commands = commands();
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../plugins/jvmcontract");
     let files = ["skills/verify-bytecode/SKILL.md", "skills/verify-bytecode/reference.md", "skills/verify-bytecode/report-template.md", "README.md"];

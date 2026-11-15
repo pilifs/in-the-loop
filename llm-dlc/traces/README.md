@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 108, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-15 13:42 UTC |
-| Prompts | 2,477 |
-| Model calls | 23,391 |
-| Tool calls | 24,398 (426 failed) |
-| Compactions | 383 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-15 13:58 UTC |
+| Prompts | 2,484 |
+| Model calls | 23,418 |
+| Tool calls | 24,422 (426 failed) |
+| Compactions | 384 |
 | Subagents | 17 |
-| Tokens written | 23,384,714 |
-| Tokens read | 3,583,552,325 (97.8% from cache) |
-| Commits with a trace | 721 |
-| Log snapshots | 922 (2167.2 MB gzipped, 908 uploaded) |
+| Tokens written | 23,395,062 |
+| Tokens read | 3,585,551,817 (97.8% from cache) |
+| Commits with a trace | 722 |
+| Log snapshots | 923 (2168.3 MB gzipped, 908 uploaded) |
 
 ## Sessions
 
@@ -110,7 +110,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 18:04 UTC | [5797b2b5-cc8e-4306-969d-6366320e1840](5797b2b5-cc8e-4306-969d-6366320e1840/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 7 | 7 | 1 | 0 | 37,107 | 2 |
 | 2026-11-08 19:00 UTC | [2d3839f7-ca39-4a27-8dc9-a77b4cd776f8](2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 8 | 7 | 1 | 0 | 36,075 | 2 |
 | 2026-11-08 19:54 UTC | [50cf0225-8012-4dbb-beb4-05ddf8f97f8d](50cf0225-8012-4dbb-beb4-05ddf8f97f8d/summary.md) | ended | 13 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 37,319 | 7 |
-| 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | open | 21 h 49 min | `claude-opus-5-5` | 25 | 230 | 223 | 3 | 2 | 267,671 | 103 |
+| 2026-11-14 15:11 UTC | [Recent sessions summary](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) | ended | 21 h 49 min | `claude-opus-5-5` | 25 | 230 | 223 | 3 | 2 | 267,671 | 103 |
 | 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](ddf78f27-05e0-438a-81be-8e7620b07bb7/summary.md) | ended | 1 h 2 min | `claude-opus-5-5` | 30 | 255 | 259 | 9 | 6 | 223,433 | 7 |
 | 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](70d4b729-3b1f-41d1-a89c-03fd78a71818/summary.md) | ended | 1 h 22 min | `claude-opus-5-5` | 30 | 296 | 301 | 9 | 6 | 259,463 | 6 |
 | 2026-11-14 15:26 UTC | [Application-core feature streams exiting early](eaff7dd7-6d26-4a35-811f-cb8e08f4ee79/summary.md) | ended | 1 h 10 min | `claude-opus-5-5` | 35 | 249 | 246 | 2 | 7 | 226,325 | 7 |
@@ -134,7 +134,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 02:06 UTC | [5341c50c-7a2a-449a-af31-94af17c66fbe](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | ended | 32 min | `claude-sonnet-5-5` | 1 | 14 | 13 | 1 | 0 | 46,366 | 6 |
 | 2026-11-15 05:14 UTC | [d171101b-61c0-427e-9bfc-9ecd379dfd60](d171101b-61c0-427e-9bfc-9ecd379dfd60/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 1 | 5 | 5 | 0 | 0 | 39,504 | 2 |
 | 2026-11-15 05:45 UTC | [8f6a10f0-126a-4dc8-8126-3348577606af](8f6a10f0-126a-4dc8-8126-3348577606af/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 1 | 7 | 6 | 1 | 0 | 38,336 | 2 |
-| 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | open | 1 h 18 min | `claude-opus-5-5` | 18 | 186 | 196 | 1 | 3 | 182,553 | 6 |
+| 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | open | 1 h 35 min | `claude-opus-5-5` | 25 | 213 | 220 | 1 | 4 | 182,553 | 7 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -251,18 +251,18 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | 2,686 | 28 | 33,140 | 461,414 | 93.3% | 184 |
 | [`d171101b`](d171101b-61c0-427e-9bfc-9ecd379dfd60/summary.md) | 1,384 | 10 | 28,132 | 141,896 | 83.4% | 123 |
 | [`8f6a10f0`](8f6a10f0-126a-4dc8-8126-3348577606af/summary.md) | 1,505 | 14 | 25,110 | 207,297 | 89.2% | 154 |
-| [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 201,947 | 372 | 566,005 | 19,700,851 | 97.2% | 100 |
+| [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 212,295 | 432 | 638,141 | 21,628,147 | 97.1% | 105 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 21,374 | 87.6% | 108 |
+| `Bash` | 21,395 | 87.6% | 108 |
 | `Read` | 1,178 | 4.8% | 47 |
-| `Edit` | 910 | 3.7% | 47 |
+| `Edit` | 911 | 3.7% | 47 |
 | `Write` | 532 | 2.2% | 43 |
-| `ToolSearch` | 134 | 0.5% | 35 |
-| `Monitor` | 107 | 0.4% | 42 |
+| `ToolSearch` | 135 | 0.6% | 35 |
+| `Monitor` | 108 | 0.4% | 43 |
 | `AskUserQuestion` | 46 | 0.2% | 13 |
 | `TaskStop` | 34 | 0.1% | 14 |
 | `WebFetch` | 28 | 0.1% | 8 |
@@ -1001,6 +1001,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 719 | [`b3f16338`](https://github.com/pilifs/in-the-loop/commit/b3f163386a3663ef32f55dcf984fca4f455710f8) | run-streams status bar: a loop's spend is what its sessions' running totals rose by, not their sum | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede.jsonl.gz)) |
 | 720 | [`fbd1fa86`](https://github.com/pilifs/in-the-loop/commit/fbd1fa86f69d0f4ba94d7e1c3c16702cd8f9d42d) | Record session traces | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b.jsonl.gz)) |
 | 721 | change `qymzokkr` | test_costs.py estimate: the cost inventory of every Rust and Python test, from past runs and what each test calls, running nothing | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) ([log](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/4c7e85a330a38efae5a99aa9d3e0eabcf0f4fce5a53d7ea3d48b36e173a8e3c5.jsonl.gz)) |
+| 722 | change `tynlzrtk` | Rust test tiers: every tool-tier and retier-pending test calls tool_tier!, 305 more across 27 files | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) ([log](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/95b9d81d481304eade04c6a872f46a5d0dec6b686376b7c12c59318194ffea2f.jsonl.gz)) |
 
 ## Logs
 
@@ -1115,7 +1116,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | 5 | 5 | 0.4 MB | [`3ec50b10b547`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/3ec50b10b5473d98790e66c5eb6363f98efb5d92f2373109e29559509981b295.jsonl.gz) |
 | [`d171101b`](d171101b-61c0-427e-9bfc-9ecd379dfd60/summary.md) | 2 | 2 | 0.2 MB | [`dd7e1b601263`](https://terminalvalue.net/raw-traces/d171101b-61c0-427e-9bfc-9ecd379dfd60/dd7e1b601263164e922e1b6d9f0bb336bb9085a643398fec24dff7ccd028722d.jsonl.gz) |
 | [`8f6a10f0`](8f6a10f0-126a-4dc8-8126-3348577606af/summary.md) | 2 | 2 | 0.2 MB | [`93aca53f21dd`](https://terminalvalue.net/raw-traces/8f6a10f0-126a-4dc8-8126-3348577606af/93aca53f21dd5f4a0e52ffb7b103be2aef5e975d786ecad6128094ea1ff79afe.jsonl.gz) |
-| [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 6 | 0 | 2.9 MB | `4c9e5667359c`, not uploaded |
+| [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 7 | 0 | 4.0 MB | `95b9d81d4813`, not uploaded |
 
 ## Session notes
 

@@ -164,6 +164,7 @@ mod tests {
     /// differently does not fail it.
     #[test]
     fn the_embedded_class_files_match_their_sources() {
+        crate::tool_tier!();
         let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
         if !javac {
             assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "javac not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");

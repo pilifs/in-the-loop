@@ -104,6 +104,7 @@ fn read_names(fp: &footprint::Footprint) -> Vec<&str> {
 
 #[test]
 fn the_quote_helpers_footprint_is_its_fee_policy_and_the_defects_extra_read_is_found() {
+    jvmcontract::tool_tier!();
     for build in ["before", "after"] {
         let fp = footprint::footprint(&class_path(&quote(build)), &fee()).unwrap();
         assert_eq!(read_names(&fp), ["feeCents"], "{build}");
@@ -166,6 +167,7 @@ fn probe() -> PathBuf {
 /// escaping reference, an array) and the rest of what the footprint's proof rests on.
 #[test]
 fn each_kind_of_helper_outside_the_category_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let cp = class_path(&probe());
     let ok = footprint::footprint(&cp, &MemberRef::new("h/Probe", "ok", "(I)J")).unwrap();
     assert_eq!(read_names(&ok), ["count", "floor", "rate"]);
@@ -211,6 +213,7 @@ fn each_kind_of_helper_outside_the_category_is_refused_by_name() {
 /// This is tested, not proved: the proof is the footprint's, in `reuse::footprint`'s documentation.
 #[test]
 fn a_lifted_helper_agrees_with_the_helper_on_the_jvm() {
+    jvmcontract::tool_tier!();
     let classes = probe();
     let cp = class_path(&classes);
     let ok = footprint::footprint(&cp, &MemberRef::new("h/Probe", "ok", "(I)J")).unwrap();
@@ -291,6 +294,7 @@ fn fresh(name: &str) -> PathBuf {
 /// same key. The defect whose helper also reads the floor has none: lifted over both fields, its versions differ.
 #[test]
 fn a_helpers_summary_rests_on_its_own_proof_and_a_helper_reading_an_extra_field_has_none() {
+    jvmcontract::tool_tier!();
     let cache = fresh("summary-cache");
     let o = options(&quote("before"), &quote("after"), &cache, "summary-cold");
     let summary = reuse::summarize(&o, &fee(), &tmp("summary-cold")).unwrap();
@@ -319,6 +323,7 @@ fn a_helpers_summary_rests_on_its_own_proof_and_a_helper_reading_an_extra_field_
 /// reads can't be related without a representation adapter, which nothing establishes, so there is no summary.
 #[test]
 fn a_helper_whose_versions_read_fields_of_different_layouts_has_no_summary() {
+    jvmcontract::tool_tier!();
     let before = compile_text("layout-before", &[("l/L.java", "package l; public class L { long a; public L(long a) { this.a = a; } long f(int n) { return a + n; } static long g(L x, int n) { return x.f(n); } }")]);
     let after = compile_text("layout-after", &[("l/L.java", "package l; public class L { long b; public L(long b) { this.b = b; } long f(int n) { return b + n; } static long g(L x, int n) { return x.f(n); } }")]);
     let cache = fresh("layout-cache");
@@ -434,6 +439,7 @@ fn carried(text: &str) -> Summary {
 /// rerun of the caller is an exact hit of its own claim.
 #[test]
 fn a_changed_callers_proof_reuses_the_helpers_summary_at_each_call() {
+    jvmcontract::tool_tier!();
     let cache = fresh("caller-cache");
     let summary = reuse::summarize(&options(&tariff("before"), &tariff("after"), &cache, "caller-helper"), &tariff_fee(), &tmp("caller-helper")).unwrap();
     assert_eq!(summary.reads, ["this.feeCents", "arg0"]);
@@ -475,6 +481,7 @@ fn a_changed_callers_proof_reuses_the_helpers_summary_at_each_call() {
 /// two may be one tariff (and only then). Each witness replays.
 #[test]
 fn a_caller_that_reads_the_receiver_before_its_mutation_or_through_an_alias_is_refuted() {
+    jvmcontract::tool_tier!();
     let cache = fresh("stale-cache");
     let twice = bill("stale", "twice", &cache, "stale-twice");
     assert!(reproduced(&twice), "{}", twice.output);
@@ -494,6 +501,7 @@ fn a_caller_that_reads_the_receiver_before_its_mutation_or_through_an_alias_is_r
 /// its caller keeps its body in both versions and is refuted on the floor it now reads, with a replayed witness.
 #[test]
 fn a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted() {
+    jvmcontract::tool_tier!();
     let cache = fresh("extra-cache");
     let total = bill("extra", "total", &cache, "extra-total");
     assert!(total.output.contains("Tariff.fee, changed, keeps its body in both versions") && total.output.contains("its two versions differ"), "{}", total.output);
@@ -531,6 +539,7 @@ public class Bill {
 /// constructor-made tariff is verified, as the constructor domain makes it, and the second call is refuted, replayed.
 #[test]
 fn a_summary_over_constructor_made_receivers_is_not_offered_where_a_later_call_breaks_its_precondition() {
+    jvmcontract::tool_tier!();
     let before = compile_text("clamped-before", &[("p/Tariff.java", CLAMPED_BEFORE), ("p/Bill.java", CLAMPED_BILL)]);
     let after = compile_text("clamped-after", &[("p/Tariff.java", CLAMPED_AFTER), ("p/Bill.java", CLAMPED_BILL)]);
     let cache = fresh("clamped-cache");
@@ -554,6 +563,7 @@ fn a_summary_over_constructor_made_receivers_is_not_offered_where_a_later_call_b
 /// a harness runs them ([`jvmcontract::relocate::opened`]).
 #[test]
 fn a_callers_classes_with_the_summary_applied_agree_with_the_versions_as_written_on_the_jvm() {
+    jvmcontract::tool_tier!();
     let cache = fresh("jvm-cache");
     let total = bill("after", "twice", &cache, "jvm-twice");
     assert_eq!(total.verdict, jvmcontract::Verdict::Verified, "{}", total.output);
@@ -635,6 +645,7 @@ fn java_class_files(dir: &Path) -> Vec<PathBuf> {
 /// gives, the `ArrayIndexOutOfBoundsException` of a read out of bounds included. Tested, not proved.
 #[test]
 fn an_array_helper_lifted_agrees_with_the_helper_on_the_jvm_out_of_bounds_included() {
+    jvmcontract::tool_tier!();
     let classes = probe();
     let cp = class_path(&classes);
     let indexed = footprint::footprint(&cp, &MemberRef::new("h/Probe", "indexed", "(I)J")).unwrap();
@@ -793,6 +804,7 @@ fn rated(after: &str, target: &str, cache: &Path, run: &str) -> jvmcontract::equ
 /// array longer than the bound, or on none, is outside the summary's domain, and keeps the helper's body there.
 #[test]
 fn a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact() {
+    jvmcontract::tool_tier!();
     let cache = fresh("rates-cache");
     let o = options(&rates("before"), &rates("after"), &cache, "rates-helper");
     let before = footprint::footprint(&class_path(&rates("before")), &rates_fee()).unwrap();
@@ -824,6 +836,7 @@ fn a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is
 /// there, the summary would have hidden the defect.
 #[test]
 fn an_array_summary_is_not_applied_past_its_bound_and_an_extra_read_has_none() {
+    jvmcontract::tool_tier!();
     let cache = fresh("rates-defects-cache");
     let extra = rated("extra", "total", &cache, "rates-extra-total");
     assert!(extra.output.contains("Rates.fee, changed, keeps its body in both versions") && extra.output.contains("its two versions differ"), "{}", extra.output);
@@ -847,6 +860,7 @@ fn an_array_summary_is_not_applied_past_its_bound_and_an_extra_read_has_none() {
 /// capped helper, over arrays up to 10 elements and none. Tested, not proved.
 #[test]
 fn an_array_summarys_adapters_agree_with_the_versions_as_written_on_the_jvm() {
+    jvmcontract::tool_tier!();
     let cache = fresh("rates-jvm-cache");
     let wide = rated("capped", "wide", &cache, "rates-jvm-wide");
     assert_eq!(summaries_used(&wide).len(), 1, "{}", wide.output);

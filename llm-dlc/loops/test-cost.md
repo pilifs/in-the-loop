@@ -384,6 +384,27 @@ Settled by the user on 2026-11-15:
   The inventory was regenerated (644 Rust tests, adding `test_tier`'s two unit tests). A second regeneration was
   byte-identical. Next: Phase 2 step 4, part 2: run `tag` over the remaining files with tool-tier or pending tests
   (the other 22 files in `lib/tests/` and five in `lib/src/`).
+- 2026-11-15, Phase 2 step 4, part 2: every tool-tier and `retier: pending` test now calls the helper.
+  - **`tag` over the other 27 files** added 305 calls: 245 `tool_tier!()` and 60 `tool_tier!(pending)`. They are in
+    22 files in `lib/tests/` and five in `lib/src/` (`crate::tool_tier!()`: `jbmc.rs` 5, `jbmc_gaps.rs` 7,
+    `jimage.rs` 2, `models.rs` 1, `spec/heap.rs` 1). The largest are `integration.rs` (19 tool, 45 pending),
+    `alignment.rs` (32 and 1) and `summaries.rs` (26 and 3). With part 1's 57, all 299 tool-tier tests and 63 pending
+    tests call it. A second `tag` over all 30 files changes nothing.
+  - **The inventory.** Its Rust rows are unchanged. It now also lists the two `Tagging` Python tests, which part 1's
+    commit had left out because they were written after its last `estimate` (Python: 784 tests, 613 unit).
+  - **Verified.** `JVMCONTRACT_TEST_TIER=unit cargo test` passes in 27 s, against 11 min for the default run. The
+    default `cargo test` was run once before committing (see the commit message).
+  - **For review.**
+    - Two binaries are still slow under the unit-only run, though the inventory puts every test they ran in the unit
+      tier. The library's 244 unit tests take 16 s (44 s on one thread), and `summaries.rs`'s 11 unit tests take 9 s.
+      Some of those tests are over the unit tier's 1 s. They weren't timed one by one, since that would be a
+      measuring run; `measure` will name them.
+    - Two `lib/src/jbmc.rs` tests are tool tier only because their text holds a shebang, so they are probably unit:
+      `cadicals_version_is_read_from_its_signature_in_a_binary` and
+      `jbmcs_solver_is_recorded_with_its_version_and_the_options_every_run_passes`. The tag costs nothing: both still
+      run by default.
+
+  Next: Phase 2 step 5, the Python `@cost` decorator and the tags in the Python tests.
 - Status: working
 
 ## Loop settings

@@ -64,6 +64,7 @@ fn options(before: &Path, after: &Path, work: &str, cache: Option<&Path>) -> equ
 /// relocated: copied as text, its literal would have become `"\uFFFD"` there too.
 #[test]
 fn a_literals_isolated_surrogate_is_its_own_code_unit_for_the_checker_the_interpreter_and_the_jvm() {
+    jvmcontract::tool_tier!();
     let proved = equivalence::run(&options(&build("before"), &build("constant"), "constant", None)).unwrap();
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
 
@@ -81,6 +82,7 @@ fn a_literals_isolated_surrogate_is_its_own_code_unit_for_the_checker_the_interp
 /// and refuted.
 #[test]
 fn a_cached_proof_is_never_reused_for_a_literal_that_differs_only_in_its_surrogate() {
+    jvmcontract::tool_tier!();
     let cache = tmp("cache");
     let stored = equivalence::run(&options(&build("before"), &build("rewrite"), "cold", Some(&cache))).unwrap();
     assert_eq!(stored.verdict, Verdict::Verified, "{}", stored.output);

@@ -108,6 +108,7 @@ fn state(c: &Checked, id: &str) -> ObservationState {
 
 #[test]
 fn the_refactor_preserves_the_response_status_and_event_trace() {
+    jvmcontract::tool_tier!();
     let Some(after) = build("after") else { return };
     let c = check(&after, &claim());
     assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
@@ -124,6 +125,7 @@ fn the_refactor_preserves_the_response_status_and_event_trace() {
 
 #[test]
 fn a_dropped_event_is_refuted_by_a_witness_replayed_on_the_jvm() {
+    jvmcontract::tool_tier!();
     let Some(dropped) = build("dropped-effect") else { return };
     let c = check(&dropped, &claim());
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -142,6 +144,7 @@ fn a_dropped_event_is_refuted_by_a_witness_replayed_on_the_jvm() {
 
 #[test]
 fn a_duplicated_event_is_refuted_in_exact_order() {
+    jvmcontract::tool_tier!();
     let Some(duplicated) = build("duplicated-effect") else { return };
     let c = check(&duplicated, &claim());
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -156,6 +159,7 @@ fn a_duplicated_event_is_refuted_in_exact_order() {
 
 #[test]
 fn a_changed_total_is_refuted_in_the_response_and_the_event() {
+    jvmcontract::tool_tier!();
     let Some(offset) = build("offset") else { return };
     let c = check(&offset, &claim());
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
@@ -169,6 +173,7 @@ fn a_changed_total_is_refuted_in_the_response_and_the_event() {
 
 #[test]
 fn a_trace_past_its_bound_is_unresolved_not_shorter() {
+    jvmcontract::tool_tier!();
     let Some(duplicated) = build("duplicated-effect") else { return };
     let mut claim = claim();
     claim.environment.as_mut().unwrap().trace_bound = 1;
@@ -205,6 +210,7 @@ fn exact(c: &Checked) -> Option<&ClaimKey> {
 /// to the handler's code is a miss. A stored refutation is a hit too, with its witness replayed on a JVM again.
 #[test]
 fn an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged() {
+    jvmcontract::tool_tier!();
     let Some(after) = build("after") else { return };
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("effects-cache");
     let _ = std::fs::remove_dir_all(&cache);
@@ -269,6 +275,7 @@ fn an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged() {
 
 #[test]
 fn what_the_analysis_cannot_see_is_unresolved() {
+    jvmcontract::tool_tier!();
     let Some(after) = build("after") else { return };
     let before = build("before").unwrap();
     let mut claim = claim();
@@ -307,6 +314,7 @@ public class QuotesController {
 /// returns an object (a String key is encoded since the merge's E1 and E2 rows).
 #[test]
 fn a_model_the_check_does_not_encode_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::plans::{CallModel, Coupling, ModelledResult, Returned};
     let Some(after) = build("after") else { return };
     let before = build("before").unwrap();
@@ -320,6 +328,7 @@ fn a_model_the_check_does_not_encode_is_refused_by_name() {
 
 #[test]
 fn a_handler_that_uses_a_modeled_calls_result_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let Some(uses) = build_with("uses-the-result", Some(USES_THE_RESULT)) else { return };
     let before = build("before").unwrap();
     let err = effects::check(&claim(), &quotes(&before, "POST /quotes"), &quotes(&uses, "POST /quotes"), &before, &uses).unwrap_err();
@@ -344,6 +353,7 @@ fn controller(fields: &str, parameters: &str, extra: &str) -> String {
 /// trace was unresolved either way.
 #[test]
 fn a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit() {
+    jvmcontract::tool_tier!();
     let send = |topic: &str| controller("", "", &format!("        if (total > 0) kafka.send(\"{topic}\", new QuoteEvent(total, quantity));\n"));
     let Some(high) = build_with("topic-high", Some(&send("q\\uDBFF"))) else { return };
     let Some(again) = build_with("topic-high-again", Some(&send("q\\uDBFF"))) else { return };
@@ -362,6 +372,7 @@ fn a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit() {
 
 #[test]
 fn a_null_dependency_called_through_a_supertype_leaves_the_result_unresolved_where_reached() {
+    jvmcontract::tool_tier!();
     // javac names `kafka.hashCode()` `Object.hashCode`, which no stub can tell from any other call: the null
     // dependency throws, and the NullPointerException marks the log.
     let source = controller("", "", "        if (quantity == 3 && kafka.hashCode() == 0) return -1;\n        if (total > 0) kafka.send(\"quotes\", new QuoteEvent(total, quantity));\n");
@@ -374,6 +385,7 @@ fn a_null_dependency_called_through_a_supertype_leaves_the_result_unresolved_whe
 
 #[test]
 fn a_handler_given_an_application_object_is_refused_by_name() {
+    jvmcontract::tool_tier!();
     let source = controller("    private final Quote seed;\n", ", Quote seed", "        if (total > 0) kafka.send(\"quotes\", new QuoteEvent(total, quantity));\n").replace("this.kafka = kafka;", "this.kafka = kafka;\n        this.seed = seed;");
     let Some(given) = build_with("given-a-quote", Some(&source)) else { return };
     let before = build("before").unwrap();
@@ -383,6 +395,7 @@ fn a_handler_given_an_application_object_is_refused_by_name() {
 
 #[test]
 fn the_effect_log_plan_names_its_stubs_and_assumptions() {
+    jvmcontract::tool_tier!();
     let Some(after) = build("after") else { return };
     let plan = observe::effect_log(&quotes(&after, "POST /quotes")).unwrap();
     assert_eq!(plan.environment.order, OrderPolicy::Exact);
@@ -395,6 +408,7 @@ fn the_effect_log_plan_names_its_stubs_and_assumptions() {
 
 #[test]
 fn the_claim_a_spec_makes_is_the_joint_examples_claim() {
+    jvmcontract::tool_tier!();
     let Some(before) = build("before") else { return };
     let golden = claim();
     let made = effects::claim_for(&quotes(&before, "POST /quotes"), None, golden.bounds.clone());
@@ -416,6 +430,7 @@ fn effects_command(before: &Path, after: &Path, args: &[&str]) -> (i32, String, 
 
 #[test]
 fn the_command_checks_every_entry_point_of_two_builds() {
+    jvmcontract::tool_tier!();
     let Some(after) = build("after") else { return };
     let before = build("before").unwrap();
     let (code, text, err) = effects_command(&before, &after, &[]);
@@ -438,6 +453,7 @@ fn the_command_checks_every_entry_point_of_two_builds() {
 
 #[test]
 fn the_command_reports_a_refutation_with_both_builds_attempts() {
+    jvmcontract::tool_tier!();
     let Some(duplicated) = build("duplicated-effect") else { return };
     let before = build("before").unwrap();
     let (code, text, err) = effects_command(&before, &duplicated, &["--entry", "POST /quotes"]);
@@ -458,6 +474,7 @@ fn the_command_reports_a_refutation_with_both_builds_attempts() {
 
 #[test]
 fn the_command_reports_what_the_narrow_case_refuses_and_checks_the_rest() {
+    jvmcontract::tool_tier!();
     let Some(uses) = build_with("uses-the-result", Some(USES_THE_RESULT)) else { return };
     let before = build("before").unwrap();
     let (code, text, err) = effects_command(&before, &uses, &[]);
@@ -503,6 +520,7 @@ const TWO_CLASSES: &str = "        if (quantity >= 10) kafka.send(\"quotes\", ne
 
 #[test]
 fn payloads_of_two_classes_through_one_call_are_snapshotted_each_through_its_own_class() {
+    jvmcontract::tool_tier!();
     let Some(old) = build_with("two-classes", Some(&two_classes(TWO_CLASSES))) else { return };
     let reordered = "        if (quantity < 10) {\n            kafka.send(\"quotes\", new Single(total));\n            return total;\n        }\n        kafka.send(\"quotes\", new Bulk(total, quantity));\n";
     let new = build_with("two-classes-reordered", Some(&two_classes(reordered))).unwrap();
@@ -523,6 +541,7 @@ fn payloads_of_two_classes_through_one_call_are_snapshotted_each_through_its_own
 
 #[test]
 fn the_command_writes_a_sarif_finding_per_refuted_entry_point_anchored_at_its_handler() {
+    jvmcontract::tool_tier!();
     let Some(duplicated) = build("duplicated-effect") else { return };
     let before = build("before").unwrap();
     let report = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("effects-report");

@@ -151,6 +151,7 @@ const SMILE: (i32, i32) = (0xD83D, 0xDE00);
 /// String as Rust UTF-8 text and lost every isolated surrogate to U+FFFD.
 #[test]
 fn the_interpreters_strings_keep_every_code_unit() {
+    jvmcontract::tool_tier!();
     conforms(&[
         case(S, "unit", &[HIGH]),
         case(S, "unit", &[LOW]),
@@ -364,6 +365,7 @@ fn units(text: &str) -> Vec<u16> {
 /// with a code that starts "VI" and not "VIP", replayed. Before, a String parameter was outside the fragment.
 #[test]
 fn the_own_checker_proves_the_codes_rewrite_and_refutes_a_dropped_prefix_character() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     verified(&cp, "vipRewritten", bounded(5));
     let [Arg::Str(code)] = &refuted(&cp, "vipShortened", bounded(5))[..] else { panic!("one String") };
@@ -374,6 +376,7 @@ fn the_own_checker_proves_the_codes_rewrite_and_refutes_a_dropped_prefix_charact
 /// character is two units, so a defect that takes it for one is refuted with the pair.
 #[test]
 fn a_strings_content_is_any_code_units_and_a_supplementary_character_is_two() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     let [Arg::Str(lone)] = &refuted(&cp, "noLoneSurrogate", bounded(3))[..] else { panic!() };
     assert!(lone.len() == 1 && (0xD800..=0xDBFF).contains(&lone[0]), "{lone:?}");
@@ -388,6 +391,7 @@ fn a_strings_content_is_any_code_units_and_a_supplementary_character_is_two() {
 /// object, and one object (under a domain that lets the two be one) is equal to itself.
 #[test]
 fn equality_is_content_and_identity_is_apart_from_it() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     verified(&cp, "equalsByUnits", bounded(3));
     let [Arg::Str(a), Arg::Str(b)] = &refuted(&cp, "equalIsIdentical", bounded(3))[..] else { panic!("two Strings of their own") };
@@ -404,6 +408,7 @@ fn equality_is_content_and_identity_is_apart_from_it() {
 /// that lets it be null.
 #[test]
 fn the_modelled_methods_throw_as_the_jdks_do() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     verified(&cp, "charAtBounds", bounded(3));
     verified(&cp, "startsWithNull", bounded(3));
@@ -418,6 +423,7 @@ fn the_modelled_methods_throw_as_the_jdks_do() {
 /// no String parameter at all without one.
 #[test]
 fn a_string_parameters_bound_is_explicit_and_every_length_up_to_it_is_an_input() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     verified(&cp, "atMostFour", bounded(4));
     let [Arg::Str(five)] = &refuted(&cp, "atMostFour", bounded(5))[..] else { panic!() };
@@ -430,6 +436,7 @@ fn a_string_parameters_bound_is_explicit_and_every_length_up_to_it_is_an_input()
 /// converted (numeric formatting, outside the model) is the gap it was.
 #[test]
 fn a_concatenation_has_its_parts_content_up_to_a_named_cap() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     verified(&cp, "concatenated", bounded(4));
     verified(&cp, "joined", bounded(3));
@@ -445,6 +452,7 @@ fn a_concatenation_has_its_parts_content_up_to_a_named_cap() {
 /// calls it reproduces, and any other String method a check reaches still is one.
 #[test]
 fn the_gap_scan_counts_the_modelled_string_methods_and_no_others() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     let scan = |target: &str| bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &[format!("values.Checks#{target}")]).unwrap()).unwrap();
     let vip = scan("vipShortened");
@@ -502,6 +510,7 @@ fn list_verified(cp: &ClassPath, method: &str) {
 /// own checker ran none of the list models (`List.of` was the gap `jdk-static-method`), so no check reached a list.
 #[test]
 fn the_own_checker_runs_the_immutable_list_models_and_keeps_order_duplicates_and_aliases() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     for method in ["totalRewritten", "firstRewritten", "clearRewritten"] {
         list_verified(&cp, method);
@@ -527,6 +536,7 @@ fn the_own_checker_runs_the_immutable_list_models_and_keeps_order_duplicates_and
 /// under both search orders, never stored.
 #[test]
 fn an_array_cell_holds_a_symbolic_reference_of_its_element_type() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     list_verified(&cp, "cellKeepsTheReference");
     let first = list_refuted(&cp, "cellHoldsTheFirst");
@@ -546,6 +556,7 @@ fn an_array_cell_holds_a_symbolic_reference_of_its_element_type() {
 /// list. `copyOf` of another implementation (an `ArrayList`) is refused by name, never taken for one of these.
 #[test]
 fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     for method in ["sizeAndIteration", "getOutOfRange", "ofRejectsNull", "changesAreRefused", "copyOfIsTheList", "oneEmptyList"] {
         list_verified(&cp, method);
@@ -700,6 +711,7 @@ fn adapted_refuted(cp: &ClassPath, classes: &str, check: &AdaptedCheck) -> (Witn
 /// list), and nothing read a list out of a witness or rebuilt one.
 #[test]
 fn the_list_adapter_makes_reads_and_rebuilds_lists_that_keep_order_duplicates_and_identity() {
+    jvmcontract::tool_tier!();
     let (Some(fixtures), Some(adapted)) = (compiled(), adapted_lists()) else { return };
     let mut cp = ClassPath::new();
     cp.add(fixtures).unwrap();
@@ -892,6 +904,7 @@ fn sampled_checks(fixtures: &Path, cp: &ClassPath, cases: &[Case], jvm: &[String
 /// (`values::string_model`, `values::list_model`), saying nothing of an operation's inputs or exceptions.
 #[test]
 fn every_modelled_operation_has_a_record_its_boundary_cases_hold_on_the_jvm_the_interpreter_and_the_checker() {
+    jvmcontract::tool_tier!();
     use jvmcontract::spec::plans::EvidenceLevel;
     use jvmcontract::values::{Family, OPERATIONS};
     // The records' own consistency: each samples methods that have cases, each case's method is one record's,
@@ -994,6 +1007,7 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
 /// models implement, so `contains`, `indexOf`, `equals`, `hashCode`, `addAll`, `sort` and the array form were proved.
 #[test]
 fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     let class = cp.application(OUTSIDE).unwrap().expect("the checks");
     let lines: Vec<String> = OUTSIDE_THE_MODELS
@@ -1109,6 +1123,7 @@ fn sweep_lists(lengths: &[u32]) {
 /// ([`an_array_cell_holds_a_symbolic_reference_of_its_element_type`]), 10 lines take 908 paths and about 12 s.
 #[test]
 fn a_tiny_sweep_over_the_string_and_list_bounds() {
+    jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     // `equalsByUnits` loops over a String's units itself, so its loop needs an unwinding bound past the String's:
     // a bound of the check apart from the String's, and under the default (16) a longer String is the named
@@ -1274,6 +1289,7 @@ fn stand_in_jbmc(dir: &Path) -> PathBuf {
 /// here, answering with the refutation the real one gives (`n=1`) over a program that reaches the stub.
 #[test]
 fn confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict() {
+    jvmcontract::tool_tier!();
     let Some(classes) = compiled() else { return };
     let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("values-confirm-stub");
     let jbmc = stand_in_jbmc(&dir);

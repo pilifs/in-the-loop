@@ -1665,6 +1665,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     /// reaches it; their neighbours, which JBMC runs as the JVM does, are not.
     #[test]
     fn the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm() {
+        crate::tool_tier!();
         let Some((_dir, cp)) = defect_fixture() else { return };
         let defects = |method: &str, descriptor: &str| -> Vec<(String, String)> {
             let found = find(&calling(method, descriptor), "H", method, &cp, None, None).unwrap();
@@ -1717,6 +1718,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     /// member named through its own class, and a `new`, which the JVM initializes as JBMC does, are not.
     #[test]
     fn the_preflight_names_an_initializer_jbmc_runs_where_the_jvm_does_not() {
+        crate::tool_tier!();
         let Some((_dir, cp)) = defect_fixture() else { return };
         let defects = |method: &str, descriptor: &str, bci: u32, wrapper: &str| -> Vec<Defect> { find(&initializing(method, descriptor, bci, wrapper), "H", method, &cp, None, None).unwrap().defects };
         let kinds = |d: Vec<Defect>| -> Vec<(String, String)> { d.iter().map(|d| (d.kind.to_string(), d.site.clone())).collect() };
@@ -1772,6 +1774,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     /// named, nor is the harness's own `catch (Throwable)`.
     #[test]
     fn the_preflight_names_a_class_initializer_that_throws_where_a_handler_tells_jbmc_from_the_jvm() {
+        crate::tool_tier!();
         let Some((_dir, cp)) = defect_fixture() else { return };
         let defects = |harness: &str, method: &str, class: &str, callees: &[&str]| -> Vec<Defect> {
             find(&initializer_throwing(harness, method, class, callees), harness, method, &cp, None, None).unwrap().defects.into_iter().filter(|d| d.kind == "throwing-initializer").collect()
@@ -1804,6 +1807,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     /// handlers count only where it tells exceptions apart: without a `throws` clause, any exception fails it alike.
     #[test]
     fn the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings() {
+        crate::tool_tier!();
         let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
         let mut cp = ClassPath::new().with_models(false).with_default_jdk();
         if !javac || !cp.has_jdk() {
@@ -1907,6 +1911,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     /// nothing of, it enters them. Neither run solves anything.
     #[test]
     fn a_stub_on_no_path_the_proof_takes_is_no_gap() {
+        crate::tool_tier!();
         let Some((dir, _cp)) = defect_fixture() else { return };
         if !crate::jbmc::available("jbmc") {
             assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
@@ -1949,6 +1954,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     /// and none of its three reads, each through the class that declares it, is one. Nothing is solved.
     #[test]
     fn the_preflight_reads_jbmc_listing_by_instruction_index() {
+        crate::tool_tier!();
         let Some((dir, _cp)) = defect_fixture() else { return };
         if !crate::jbmc::available("jbmc") {
             assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
@@ -2159,6 +2165,7 @@ VERIFICATION SUCCESSFUL
     /// cut the path to the second, and the solver shows the third unreached.
     #[test]
     fn a_stub_behind_a_condition_only_the_solver_decides_is_no_gap() {
+        crate::tool_tier!();
         let Some((dir, _cp)) = defect_fixture() else { return };
         if !crate::jbmc::available("jbmc") {
             assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
