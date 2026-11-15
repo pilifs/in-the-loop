@@ -117,9 +117,9 @@ example-targets). Each batch of parallel tool calls is counted once, as the time
   | engine-priorities, application-core, example-targets | 0.3h or less, with the verification loop beside the streams |
 
 What exists already:
-- **The suites:** 25 test files in `lib/tests/` with 384 `#[test]`s, and 258 unit tests in `lib/src/`. Python has 28
-  `test_*.py` files across `examples/tools/` (and `targets/`), `llm-dlc/tools/`, `verification/`, `lib/benchmark/` and
-  `lib/solvers/`.
+- **The suites,** when the loop began: 25 test files in `lib/tests/` with 384 `#[test]`s, and 258 unit tests in
+  `lib/src/`. Python had 28 `test_*.py` files across `examples/tools/` (and `targets/`), `llm-dlc/tools/`, `verification/`, `lib/benchmark/` and
+  `lib/solvers/`. At the end `lib/tests/costs.json` lists 646 Rust tests and 833 Python tests in 31 files.
 - **Twelve ignored tests** with a reason, of which eleven say they "run JBMC …: a pipeline job" and one is a benchmark.
   They are in `heap.rs` (9), `conformance.rs` (2) and `preparation.rs` (1).
 - **What runs regardless:** most JBMC calls in `integration.rs` (about 100 mentions) and the other slow files are not
@@ -257,7 +257,8 @@ Settled by the user on 2026-11-15:
 4. **Where the proof tier runs:**
    - As pipeline jobs, once per finished change, for the tests whose inputs it touched.
    - **One inline exception**: an agent may run a single proof-tier test inline, once, when its change targets that test
-     directly and the inventory measures it under a minute.
+     directly and its row in the inventory records a past run of that test alone under a minute (`"kind": "run
+     alone"`; the inventory measures nothing until `measure` runs).
    - Anything else proof-tier is queued. CLAUDE.md's rule on queuing proofs gets this exception, stated as narrowly.
 5. **The JBMC answer cache is allowed, and labelled.**
    - Exact keys only, and every reused answer names its source run.
@@ -265,7 +266,7 @@ Settled by the user on 2026-11-15:
      with the identical key, and says so; otherwise it runs JBMC fresh.
 6. **Proxies:**
    - Required for every new proof-tier test.
-   - Existing proof-tier tests get one in Phase 4 if they are in the five slow files (`conformance.rs`,
+   - Existing proof-tier tests get one in the next test-cost loop (decision 9) if they are in the five slow files (`conformance.rs`,
      `observations.rs`, `integration.rs`, `alignment.rs`, `application_core.rs`). The others are listed for later.
 7. **Python: tagged now, Rust first.**
    - The same tiers and decorator, with the lint covering Python.

@@ -580,8 +580,11 @@ def tag_links(tags, base="../README.md"):
 
 
 def app_of(example):
-    """Which subject application the example changes: 'boxoffice' or a javac app, by its subject file; None if none."""
-    file = example["subject"]["file"]
+    """Which subject application the example changes: 'boxoffice' or a javac app, by its subject file; None if none,
+    or if the example names no file (a real-world one may give only the system and symbol)."""
+    file = example["subject"].get("file")
+    if not file:
+        return None
     for app, config in TOOL_APPS.items():
         if file.startswith(config["root"] + "/"):
             return app
