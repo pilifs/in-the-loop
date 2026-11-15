@@ -11,7 +11,7 @@ The repo has two parts:
 
 ## [`examples/`](examples/README.md): formal verification
 
-**Start here.** 109 examples in one folder, each a code change run through a formal verifier, with the verdict, the witness and why it matters: 104 constructed over four subject systems written for this repository, with the code before and after, the counterexamples and a comparison with the existing tests, and 5 pull requests and commits to published libraries verified from their bytecode with `/verify-bytecode`. The examples are a router: each is tagged by domain, defect and technique, and `examples/tools/find.py` finds the ones closest to a task.
+**Start here.** 109 examples in one folder, each a code change run through a formal verifier, with the verdict, the witness and why it matters: 104 constructed over four subject systems written for this repository, with the code before and after, the counterexamples and a comparison with the existing tests, and 5 pull requests and commits to published libraries verified from their bytecode with `jvmcontract`. The examples are a router: each is tagged by domain, defect and technique, and `examples/tools/find.py` finds the ones closest to a task.
 
 | Path | Content |
 |---|---|
@@ -36,18 +36,6 @@ It reproduces the contracts the Java tool committed for Box Office, which its te
 | [`lib/README.md`](lib/README.md) | What it verifies, how each verdict is proved, the commands, and the library API |
 | [`lib/src/`](lib/src) | The crate: a class-file reader, the JDK image reader, the interpreter, and one module per contract kind |
 | [`lib/tests/`](lib/tests) | Integration tests over Java fixtures compiled at test time, and against the committed Box Office contracts |
-
-## [`plugins/`](plugins/jvmcontract/README.md): the verifier as Claude Code skills
-
-`/verify-bytecode <pull request>`, a Claude Code skill that compiles a Java pull request before and after, runs `jvmcontract` over the bytecode, and reports what was proved, what was refuted (with the input) and what it could not check; and `/add-tla-model`, which adds a TLA+ model to a Java project around its decision kernel, derived from the bytecode, and checks the user's invariants with TLC. One-command install, as personal skills or as a plugin from this repository's marketplace.
-
-| Path | Content |
-|---|---|
-| [`plugins/jvmcontract/README.md`](plugins/jvmcontract/README.md) | Install, what each skill proves, and libraries to try them on |
-| [`plugins/jvmcontract/skills/verify-bytecode/`](plugins/jvmcontract/skills/verify-bytecode/SKILL.md) | `/verify-bytecode`: verify a pull request. The procedure, the tool reference for the agent, the report template, and the fetch and build scripts |
-| [`plugins/jvmcontract/skills/add-tla-model/`](plugins/jvmcontract/skills/add-tla-model/SKILL.md) | `/add-tla-model`: add a TLA+ model to a Java project and check custom invariants with TLC. The procedure, the TLA+ reference for the agent, the `check.sh` and README templates, and the scripts that find classes and install TLC |
-| [`plugins/jvmcontract/install.sh`](plugins/jvmcontract/install.sh) | The installer behind `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh \| bash` |
-| [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | The marketplace, for `claude plugin install jvmcontract --marketplace pilifs/in-the-loop` |
 
 ## [`verification/`](verification/README.md): the verification pipeline
 

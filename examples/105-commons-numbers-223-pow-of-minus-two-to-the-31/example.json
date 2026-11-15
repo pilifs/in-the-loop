@@ -24,7 +24,7 @@
   "approach": {
     "id": "B9",
     "name": "Regression verification",
-    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "tool": "lib",
     "also": [
       "B11"
     ]
@@ -49,6 +49,6 @@
     "Runner interface (2026-11-14, example-targets Phase 5 step 1, request 9): controls/oracle.py also defines driver_args(), the driver's whole argument vector (the same as `oracle.py argv`), and problems(lines), one revision's driver lines in, [(probe, problem)] out, where the independent statement disagrees; an exception is a replay that can't be judged, never a violation. runtime.run_controls passes driver_args() and keeps every line the driver prints, its preparation copies the probes file with the oracle, and workflow_ingest reads each revision with problems() against what its pair's kind expects (examples/tools/targets/runtime.py's docstring). Before this, the merged runner looked for a PROBES list and ingestion called check(lines), so the controls could not have run; problems() reads the Javadoc's contract (rules 1-3) without the declared deviations, which are what the exact fix's pair expects of before (it violates, at (-2)^31) and after (it holds); the probes file's constant is now PROBES_FILE, so the runner never takes the path for a PROBES list. The CLI (`argv`, `check`, the pair comparison) is unchanged.",
     "VF-027 recorded (2026-11-15, example-targets Phase 5, the user's decision): Replay passed; gate A5's fix-property (established) and fix-property-before (refuted, witness pow(-2, 31)) have their receipts, and regression is refuted as expected (receipts/). confined-change is blocked by an observed capability gap: strict refuses java.lang.StringBuilder.<init>() on before's exception path (ArithmeticUtils.pow:282); its other predicted gaps (records/pow-gaps.json) stay predictions, not reached. Each blocked task has an observed blocker in target.json (finding VF-027) and a packet, records/refusals/TASK.json, citing the job that observed it and its receipt (in verification/results/), with the refusal text, the semantics needed, the likely owner module and the closure check; task readiness is blocked. No task is restated over a wrapper or a simpler signature, no expected conclusion changed, and jvmcontract isn't extended in this wave. The reruns predicting each refusal (examples/tools/targets/workflow_refusal.py 105 TASK, which fails on a verdict or any other refusal) are queued as jobs 20261115-005926-example-105-confined-change-vf-027-rerun."
   ],
-  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md.",
+  "provenance": "A real change to a published library, verified from its compiled bytecode with jvmcontract, through the /verify-bytecode skill of the time (removed 2026-11-15); the report is this folder's README.md.",
   "target": "target.json"
 }

@@ -973,8 +973,10 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     advice, writes contracts, runs again, reports the evidence levels, and offers a contract worth keeping to the
     library (`gap-contracts --record`). After it, the candidate: run a witness found through contracts on a JVM, so
     that 148's off-by-one becomes a violation.
-- **3e, the agent's side: the skill's loop (2026-11-06).**
-  - The `verify-bytecode` skill ([`SKILL.md`](../../plugins/jvmcontract/skills/verify-bytecode/SKILL.md)) runs
+- **3e, the agent's side: the skill's loop (2026-11-06).** The skill, its plugin (`plugins/jvmcontract`) and the
+  test below were removed on 2026-11-15, when `/prove-java-change` replaced them; the files this entry names are
+  in the repository's history.
+  - The `verify-bytecode` skill (`SKILL.md`) runs
     every regression and property proof with `$GAPS`, which is `--engine auto --gaps advised --max-trust 0`
     (open questions 6 and 7).
   - **A new step, 4a, "Close the gaps with contracts".** A proof that ends `gaps-need-contracts` has decided
@@ -989,14 +991,14 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - stops after three rounds on one gap, or at once on a trusted contract under `--max-trust 0`, and reports the
       gap as open.
   - A violation that goes through contracts and that the tool could not replay is reported as unconfirmed.
-  - **The report** ([`report-template.md`](../../plugins/jvmcontract/skills/verify-bytecode/report-template.md))
+  - **The report** (`report-template.md`)
     gains a section, "Contracts for JDK calls". It gives each contract with its level (proved, tested or trusted),
     the contracts refuted on the way and how they were corrected, and the gaps left open. A table row shows
     `relying on 3 contracts for JDK calls: 1 proved, 2 tested`.
   - **Offering contracts to the library.** A contract the agent wrote that was proved or tested, and that the
     library lacks, goes into `$WORK/library/<class>.contracts`. It is checked with `gap-contracts --dir ... --record`,
     and the report offers it for `lib/models/contracts/` by a pull request, which the skill never opens itself.
-  - [`reference.md`](../../plugins/jvmcontract/skills/verify-bytecode/reference.md) gains:
+  - `reference.md` gains:
     - `--max-trust`, `--no-contract-library` and `gap-contracts`;
     - the library's contents, and the precedence of the agent's contracts;
     - that `prove --json` is a list.
@@ -1012,7 +1014,7 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - A `BitSet(int)` contract offered in a project directory: `gap-contracts --dir` exits 1 with no record, 0
       after `--record`, and 0 again on its record.
     - With no JBMC, a floating-point proof under auto ends `jbmc is not installed`, as the preflight now says.
-  - **A new test, [`lib/tests/skill.rs`](../../lib/tests/skill.rs).** Every `jvmcontract` command that the skill's
+  - **A new test, `lib/tests/skill.rs`.** Every `jvmcontract` command that the skill's
     files name in code, and every option on it, including `$GAPS` on both proof commands, must be one the CLI's
     `--help` lists. It checks 57 options. A misspelt `--max-trust` in `$GAPS`, or `--work`, fails it. All Rust tests
     pass.
