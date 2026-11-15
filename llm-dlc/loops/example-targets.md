@@ -224,8 +224,10 @@ path; why the missing semantics affects this claim; the inputs, exceptions, stat
 needs; the likely owner module, related cases and existing findings; the acceptance check that would close it; and the
 strategies tried with the next bounded action.
 
-Kinds stay apart: missing Java semantics, input construction, oracle ambiguity, source provenance, build or dependency
-failure, replay failure, timeout or resource exhaustion, and a suspected verifier bug. Reuse existing gap ids where they
+Kinds stay apart: missing Java semantics, input construction, a verifier interface that can't express the task as
+stated (added 2026-11-15 by the user's review item 4, for equivalence's single `--classpath`), oracle ambiguity, source
+provenance, build or dependency failure, replay failure, timeout or resource exhaustion, and a suspected verifier bug.
+These are the nine `kind` values of `examples/schema/target.schema.json`'s blockers. Reuse existing gap ids where they
 fit: the corpus adds routing context, not a rival taxonomy. A gap shared by a CVE and its positive companion is
 especially informative. Rank by distinct families and blocked obligations, not raw case counts; a priority is an
 engineering aid, not evidence.

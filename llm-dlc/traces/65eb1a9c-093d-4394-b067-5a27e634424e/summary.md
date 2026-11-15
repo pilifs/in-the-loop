@@ -629,6 +629,12 @@ change `opxwuqsrzxpk` · [log `cea8a817495d`](https://terminalvalue.net/raw-trac
 
 The brief's header still said gate A8's two jobs were to be read, and Phase 5's status line said A8 waited on them. Both jobs passed on 2026-11-15 (20261115-015944, 49 of 49 steps with JBMC absent; 20261115-020015, 28 of 28 constructed run paths), recorded in qroonxrs, so Tier A (A0-A8) passes and the brief is done (pkkzrrlm). The two lines now say so, at the user's request. Only those two lines changed; Progress already recorded the result. Still out of date, left for the user: The capability-gap packet section lists eight gap kinds, where the schema has nine since review item 4 (verifier-interface).
 
+### example-targets brief: the capability-gap packet lists nine kinds, with verifier-interface
+
+change `lwynnpsxrsmr` · [log `cea8a817495d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz)
+
+The brief's section The capability-gap packet ('Kinds stay apart') listed eight gap kinds. Since the user's review item 4 (lpmxuzzz, 2026-11-15) examples/schema/target.schema.json has nine: verifier-interface, a task the verifier's command line can't express as stated (equivalence's single --classpath for a pair with two dependency closures, the gap of 285, 286, 287 and 306's preservation tasks). The passage now lists it in the schema's order, dated, and says the list is the schema's blocker kind enum. Done at the user's request; only that paragraph changed, and no test reads it. The brief has no other known stale passage.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/cea8a817495d34aea0a618efddc567926e44fd5433347589429b6d1e3b92795b.jsonl.gz) has every step in between: reasoning, tool calls and their results.
