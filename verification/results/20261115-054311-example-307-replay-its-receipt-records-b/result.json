@@ -1,0 +1,344 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-054311-example-307-replay-its-receipt-records-b",
+  "title": "example 307 replay: its receipt records before's published-class match with Spring Security 5.2.0.M4 (review item 7)",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 5.8s, peak 187.5 MiB (estimated 15m00s, 3.0 GiB); 14 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-054311-example-307-replay-its-receipt-records-b.json",
+    "sha256": "da8c8ae8569201ed0d80f924b3df082b00cb13b082b4a3e67f4d6490cf4432d2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-054311-example-307-replay-its-receipt-records-b",
+      "title": "example 307 replay: its receipt records before's published-class match with Spring Security 5.2.0.M4 (review item 7)",
+      "description": "The user's review item 7 of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): a source slice's receipt now records, in claim.target.matched, each class its preparation found byte-identical with a published JAR the sidecar names (preparation.slice.matches), taken from the preparation's source.slice.matched. Before this, 307's replay receipt showed only that both revisions are extracted-source slices; the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made by the preparation (which refuses a mismatch) but not recorded in the receipt. Step 1 reruns task replay of example 307 unchanged (build.py 307 --task replay: the source-slice route, each commit's BCrypt.java compiled with javac 8 -g -source 1.8 -target 1.8 -encoding UTF-8, the oracle on JDK 21 and 25, both slices expected to hold), adding a receipt beside the one kept. Step 2 reads the new receipt offline and exits 1 unless claim.target.matched lists exactly before's org/springframework/security/crypto/bcrypt/BCrypt.class, sha256 0b137406..., in spring-security-crypto 5.2.0.M4's JAR, sha256 8871c1fe..., and nothing for after (which has no published counterpart). No claim, expectation or verdict changes.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "307"
+        ],
+        "paths": [
+          "examples/tools/targets/workflow_ingest.py"
+        ]
+      },
+      "expected": "Step 1 prints 'as expected' and exits 0: both slices hold the oracle on JDK 21 and 25; step 2 prints 'slice match recorded'",
+      "submitted": {
+        "at": "2026-11-15T05:43:11+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "the same task as job 20261115-003616-example-307-replay-p3-source-slice-route, which passed in about 6 s; step 2 is offline"
+      },
+      "steps": [
+        {
+          "name": "example 307 task replay",
+          "run": "python3 examples/tools/build.py 307 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "the new receipt records before's published-class match",
+          "run": "python3 -c 'import glob, json, sys; path = sorted(glob.glob(\"examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/*/result.json\"))[-1]; matched = json.load(open(path))[\"claim\"][\"target\"].get(\"matched\") or {}; print(path); print(json.dumps(matched, indent=1)); before = matched.get(\"before\") or [{}]; ok = len(before) == 1 and before[0].get(\"class\") == \"org/springframework/security/crypto/bcrypt/BCrypt.class\" and before[0].get(\"sha256\") == \"0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb\" and before[0].get(\"jar\", {}).get(\"sha256\") == \"8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774\" and set(matched) == {\"before\"}; print(\"slice match recorded\" if ok else \"SLICE MATCH NOT RECORDED\"); sys.exit(0 if ok else 1)'",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay"
+      ]
+    }
+  },
+  "sourceCommit": "6a78ceeae91ae30e554bd8926e50485f04227f7b",
+  "startedAt": "2026-11-15T05:45:35+00:00",
+  "finishedAt": "2026-11-15T05:45:42+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 967043,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "the same task as job 20261115-003616-example-307-replay-p3-source-slice-route, which passed in about 6 s; step 2 is offline"
+  },
+  "usage": {
+    "peakMemoryBytes": 196624384,
+    "wallSeconds": 5.8,
+    "cpuSeconds": 5.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 307 task replay",
+      "run": "python3 examples/tools/build.py 307 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 5.611,
+      "cpuSeconds": 5.609,
+      "cpuThrottledSeconds": 0.338,
+      "peakMemoryBytes": 196624384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-307-task-replay.log",
+        "lines": 2,
+        "bytes": 259,
+        "sha256": "ba1d6645568cfe1cd178aaa480312108cec40b0603155cb0cf64a20b4b2c4cd2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task replay: none (completed; as expected), receipt receipts/replay/20261115T054542Z-39427a96/result.json",
+          "groups": [
+            "307",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task replay (target route)",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task replay: none (completed; as expected), receipt receipts/replay/20261115T054542Z-39427a96/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the new receipt records before's published-class match",
+      "run": "python3 -c 'import glob, json, sys; path = sorted(glob.glob(\"examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/*/result.json\"))[-1]; matched = json.load(open(path))[\"claim\"][\"target\"].get(\"matched\") or {}; print(path); print(json.dumps(matched, indent=1)); before = matched.get(\"before\") or [{}]; ok = len(before) == 1 and before[0].get(\"class\") == \"org/springframework/security/crypto/bcrypt/BCrypt.class\" and before[0].get(\"sha256\") == \"0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb\" and before[0].get(\"jar\", {}).get(\"sha256\") == \"8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774\" and set(matched) == {\"before\"}; print(\"slice match recorded\" if ok else \"SLICE MATCH NOT RECORDED\"); sys.exit(0 if ok else 1)'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.018,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5754880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-new-receipt-records-before.log",
+        "lines": 15,
+        "bytes": 647,
+        "sha256": "41903ab1f061ce93b0d17e85e7960d9002d4e27c6d260401ae8b7bc6e1c887f8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/result.json",
+        "{",
+        " \"before\": [",
+        "  {",
+        "   \"class\": \"org/springframework/security/crypto/bcrypt/BCrypt.class\",",
+        "   \"sha256\": \"0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb\",",
+        "   \"jar\": {",
+        "    \"coordinates\": \"org.springframework.security:spring-security-crypto:5.2.0.M4\",",
+        "    \"url\": \"https://repo.spring.io/milestone/org/springframework/security/spring-security-crypto/5.2.0.M4/spring-security-crypto-5.2.0.M4.jar\",",
+        "    \"sha256\": \"8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774\"",
+        "   }",
+        "  }",
+        " ]",
+        "}",
+        "slice match recorded"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/plan.json",
+      "change": "added",
+      "bytes": 8209,
+      "sha256": "ff577faa0281d7b6211e2d3d55ef1e2409c24c40d47a006a68df03270c8970a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk21.stdout",
+      "change": "added",
+      "bytes": 21245,
+      "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk25.stdout",
+      "change": "added",
+      "bytes": 21245,
+      "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk21.stdout",
+      "change": "added",
+      "bytes": 21245,
+      "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk25.stdout",
+      "change": "added",
+      "bytes": 21245,
+      "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/controls.json",
+      "change": "added",
+      "bytes": 176954,
+      "sha256": "84007517454e9d7abbbf384689c18e93284482b59158281c302506acab2a2b11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/execution.json",
+      "change": "added",
+      "bytes": 175580,
+      "sha256": "f61b3241253a2d7eef27078fe712c5c8f1d3444fab5803ece63b83977d68e0d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/streams.json",
+      "change": "added",
+      "bytes": 3111,
+      "sha256": "a5d1145279d31e63b544449eefb7ce6ac16fb2ca983f857e63d7643de4f05d52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/summary.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "5b6e7c5995543bbf17511fd393bb174df55d6bd1bcf0c8524b1a173fbd7e9207",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/result.json",
+      "change": "added",
+      "bytes": 9686,
+      "sha256": "1aa4ae4059784a4379adbfb1536d428c7a4331d194d295fe2274108f03279e98",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T05:46:00+00:00",
+    "applied": [
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/plan.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk21.stderr",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk21.stdout",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk25.stderr",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-after-jdk25.stdout",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk21.stderr",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk21.stdout",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk25.stderr",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/control-before-jdk25.stdout",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/controls.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/execution.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/streams.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/records/summary.txt",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay/20261115T054542Z-39427a96/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

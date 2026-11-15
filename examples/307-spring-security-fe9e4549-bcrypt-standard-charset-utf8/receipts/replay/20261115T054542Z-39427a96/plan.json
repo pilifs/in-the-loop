@@ -1,0 +1,276 @@
+{
+  "plan": {
+    "example": "307",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "before",
+      "after"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "hashpw-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe"
+        },
+        {
+          "id": "hashpw-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p307/HashpwDriver.java",
+          "sha256": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c"
+        },
+        {
+          "id": "hashpw-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+        }
+      ],
+      "key": "d5c5f71d58aff8d8"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "before",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "commit": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "published": [],
+        "slice": {
+          "files": [
+            "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ],
+          "matches": [
+            {
+              "class": "org/springframework/security/crypto/bcrypt/BCrypt.class",
+              "sha256": "0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb",
+              "jar": {
+                "coordinates": "org.springframework.security:spring-security-crypto:5.2.0.M4",
+                "url": "https://repo.spring.io/milestone/org/springframework/security/spring-security-crypto/5.2.0.M4/spring-security-crypto-5.2.0.M4.jar",
+                "sha256": "8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774"
+              }
+            }
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "parent": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "published": [],
+        "slice": {
+          "files": [
+            "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-054311-example-307-replay-its-receipt-records-b/examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8",
+    "network": true
+  },
+  "inputs": {
+    "example": "307",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "before",
+      "after"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "hashpw-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe"
+        },
+        {
+          "id": "hashpw-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p307/HashpwDriver.java",
+          "sha256": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c"
+        },
+        {
+          "id": "hashpw-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+        }
+      ],
+      "key": "d5c5f71d58aff8d8"
+    },
+    "artifacts": [
+      {
+        "revision": "before",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "commit": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "published": [],
+        "slice": {
+          "files": [
+            "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ],
+          "matches": [
+            {
+              "class": "org/springframework/security/crypto/bcrypt/BCrypt.class",
+              "sha256": "0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb",
+              "jar": {
+                "coordinates": "org.springframework.security:spring-security-crypto:5.2.0.M4",
+                "url": "https://repo.spring.io/milestone/org/springframework/security/spring-security-crypto/5.2.0.M4/spring-security-crypto-5.2.0.M4.jar",
+                "sha256": "8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774"
+              }
+            }
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "parent": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "published": [],
+        "slice": {
+          "files": [
+            "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "610bf6d9eb1e572293d8ff30f8b8c40730c01b8786db669ba386fcb0efdeb5ac"
+}

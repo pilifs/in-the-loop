@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T05:43:52.991Z",
-  "duration_seconds": 40712,
+  "ended": "2026-11-15T05:46:05.731Z",
+  "duration_seconds": 40845,
   "stats": {
-    "turns": 203,
-    "api_calls": 1700,
-    "tool_calls": 1742,
+    "turns": 208,
+    "api_calls": 1714,
+    "tool_calls": 1755,
     "tool_errors": 33,
-    "compactions": 37,
+    "compactions": 38,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3442,
-      "output_tokens": 1094010,
-      "cache_read_input_tokens": 224929854,
-      "cache_creation_input_tokens": 5918615
+      "input_tokens": 3470,
+      "output_tokens": 1098672,
+      "cache_read_input_tokens": 226531693,
+      "cache_creation_input_tokens": 6042338
     }
   },
   "tools": {
-    "Bash": 1492,
-    "Read": 124,
+    "Bash": 1501,
+    "Read": 128,
     "Edit": 94,
     "Write": 10,
     "ToolSearch": 7,
@@ -594,24 +594,38 @@
     {
       "index": 37,
       "started": "2026-11-15T05:33:40.799Z",
-      "ended": "2026-11-15T05:43:52.991Z",
-      "turns": 4,
-      "api_calls": 44,
+      "ended": "2026-11-15T05:44:21.735Z",
+      "turns": 5,
+      "api_calls": 47,
       "usage": {
-        "input_tokens": 88,
-        "output_tokens": 24610,
-        "cache_read_input_tokens": 6627175,
-        "cache_creation_input_tokens": 175537
+        "input_tokens": 94,
+        "output_tokens": 25947,
+        "cache_read_input_tokens": 7196276,
+        "cache_creation_input_tokens": 180116
       },
-      "peak_context_tokens": 188723
+      "peak_context_tokens": 193302
+    },
+    {
+      "index": 38,
+      "started": "2026-11-15T05:45:09.060Z",
+      "ended": "2026-11-15T05:46:05.731Z",
+      "turns": 4,
+      "api_calls": 11,
+      "usage": {
+        "input_tokens": 22,
+        "output_tokens": 3325,
+        "cache_read_input_tokens": 1032738,
+        "cache_creation_input_tokens": 119144
+      },
+      "peak_context_tokens": 132330
     }
   ],
   "log": {
-    "sha256": "51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11",
-    "bytes": 56458263,
-    "lines": 17375,
-    "gzip_bytes": 12103000,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11.jsonl.gz"
+    "sha256": "b88530b44cf357e35982c16a6022ccc89ed584ab432b0a0c301e78eceb8c9f59",
+    "bytes": 57436476,
+    "lines": 17578,
+    "gzip_bytes": 12371227,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/b88530b44cf357e35982c16a6022ccc89ed584ab432b0a0c301e78eceb8c9f59.jsonl.gz"
   },
   "subagents": [
     {
@@ -1270,6 +1284,14 @@
       "summary": "example-targets: a source slice's receipt records its published-class match, so 307's says before's BCrypt.class is 5.2.0.M4's (review item 7) (verification pending)",
       "body": "The user's review item 7 of 2026-11-15: 307's replay receipt labelled both revisions extracted-source slices, but the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made only by the preparation, which refuses a mismatch, and was not in the receipt. Ingestion (workflow_ingest.published_matches, called by claim_record) now copies each revision's recorded matches (source.slice.matched) into the claim's target.matched: the class entry, its sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the matches its plan's slice.matches declares is refused, so nothing is published. A revision without matches adds nothing, so 305's and every other route's claims are unchanged. result.schema.json gains the closed claim.target.matched; the ingestion docstring, examples/README.md and a note in 307's example.json say what it means (a class-by-class join to the published build, not an original-bytecode scope).\n\nReproducer: test_runtime_upstream.py's test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made failed before the change. It prepares a slice with a match on the local stand-ins, binds the claim, validates it against the schema, and checks that a preparation missing the match or recording another hash is refused. example-targets-integration.sh exits 0: the contract (16), the targets suite (271, one new), test_build.py (190), test_pipeline.py (33) and build.py --plan. A8 needs no rerun: verdict rules are unchanged and the field is additive.\n\nJob 20261115-054311-example-307-replay-its-receipt-records-b reruns build.py 307 --task replay unchanged and then exits 1 unless the new receipt's claim.target.matched lists exactly before's class (sha256 0b137406...) in M4's JAR (8871c1fe...). Its check was run on the kept receipt first and correctly reported the match as not recorded. Next is review item 8, the 18-versus-19 count of kqpykqpp's collect.",
       "log_sha256": "51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11"
+    },
+    {
+      "change_id": "wtkxwrzkppnspwsvuylvpmnwstmnqkux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the review item 7 receipt job on example 307",
+      "body": "Job 20261115-054311-example-307-replay-its-receipt-records-b passed (2 steps, 5.8s, peak 188 MiB; estimated 15m, 3 GiB): example 307's task replay ran and its new receipt records before's published-class match with Spring Security 5.2.0.M4. collect applied 14 output files (the receipt under examples/307-*/receipts/replay/) with no conflicts. Ran with one loop active (80G, 26 CPUs, 13 workers).",
+      "log_sha256": "b88530b44cf357e35982c16a6022ccc89ed584ab432b0a0c301e78eceb8c9f59"
     }
   ],
   "logs": {
@@ -1529,6 +1551,12 @@
       "bytes": 33119273,
       "lines": 10423,
       "gzip_bytes": 6975382,
+      "url": null
+    },
+    "b88530b44cf357e35982c16a6022ccc89ed584ab432b0a0c301e78eceb8c9f59": {
+      "bytes": 57436476,
+      "lines": 17578,
+      "gzip_bytes": 12371227,
       "url": null
     },
     "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832": {

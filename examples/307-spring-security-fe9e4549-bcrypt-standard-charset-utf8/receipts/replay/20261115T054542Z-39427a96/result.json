@@ -1,0 +1,303 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "1868af0a4ac8a2c2",
+    "format": 1,
+    "example": "307",
+    "statement": {
+      "approach": "target",
+      "task": "replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "revisions": [
+        "before",
+        "after"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay",
+        "kind": "replay",
+        "relation": "preservation",
+        "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "hashpw-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe"
+          },
+          {
+            "id": "hashpw-driver",
+            "kind": "driver",
+            "path": "replay/driver/inloop/p307/HashpwDriver.java",
+            "sha256": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c"
+          },
+          {
+            "id": "hashpw-probes",
+            "kind": "probe",
+            "path": "replay/probes.json",
+            "sha256": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+          }
+        ],
+        "key": "d5c5f71d58aff8d8"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay",
+      "sidecar": "39c94fc2e405dce9898ec97d4b74c15aafc7c2301e5925e1333730f9ea415874",
+      "revisions": {
+        "before": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "after": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1"
+      },
+      "dependencies": [
+        {
+          "revision": "before",
+          "position": 0,
+          "role": "driver",
+          "sha256": "6054ccd33418933918abee34260cfd9ff962edeabaaf62c48ced53d168aeb8e1"
+        },
+        {
+          "revision": "before",
+          "position": 1,
+          "role": "original",
+          "sha256": "ea4dfaa12104f474f2a4acd257e734960c41512238ded5f4342a636a660d89ea"
+        },
+        {
+          "revision": "after",
+          "position": 0,
+          "role": "driver",
+          "sha256": "6054ccd33418933918abee34260cfd9ff962edeabaaf62c48ced53d168aeb8e1"
+        },
+        {
+          "revision": "after",
+          "position": 1,
+          "role": "original",
+          "sha256": "f6aec1cedaa7c15ff8be5d3db154771e234738559abd662045c043f6196ef09c"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe",
+        "replay/driver/inloop/p307/HashpwDriver.java": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c",
+        "replay/probes.json": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+      },
+      "claimKey": "d5c5f71d58aff8d8",
+      "scopes": {
+        "before": "extracted-source-slice",
+        "after": "extracted-source-slice"
+      },
+      "matched": {
+        "before": [
+          {
+            "class": "org/springframework/security/crypto/bcrypt/BCrypt.class",
+            "sha256": "0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb",
+            "jar": {
+              "coordinates": "org.springframework.security:spring-security-crypto:5.2.0.M4",
+              "url": "https://repo.spring.io/milestone/org/springframework/security/spring-security-crypto/5.2.0.M4/spring-security-crypto-5.2.0.M4.jar",
+              "sha256": "8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261115T054542Z-39427a96",
+    "claim": "1868af0a4ac8a2c2",
+    "startedAt": "2026-11-15T05:45:42+00:00",
+    "seconds": 0.7,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "10382f5f06f192620dbd304dfdd3b222d6c87abfd9d9fe8ebf9fe434915ee5ac",
+        "files": 1
+      },
+      "after": {
+        "sha256": "bda667f1c514b6a14d1e3c6dd8048589d9ab7b69a55a8cf5cb5fe8afb4cfbd84",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261115-054311-example-307-replay-its-receipt-records-b",
+      "sourceCommit": "6a78ceeae91ae30e554bd8926e50485f04227f7b",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-054311-example-307-replay-its-receipt-records-b"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control before on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "records/control-before-jdk21.stdout",
+        "stderr": "records/control-before-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control before on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "records/control-before-jdk25.stdout",
+        "stderr": "records/control-before-jdk25.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "records/control-after-jdk21.stdout",
+        "stderr": "records/control-after-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "records/control-after-jdk25.stdout",
+        "stderr": "records/control-after-jdk25.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "1868af0a4ac8a2c2",
+    "attempt": "20261115T054542Z-39427a96",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: before holds the oracle; after holds the oracle, on every JDK named: as the positive pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 15,
+      "code": "\"before\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"after\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 4 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "f61b3241253a2d7eef27078fe712c5c8f1d3444fab5803ece63b83977d68e0d6",
+        "bytes": 175580
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "5b6e7c5995543bbf17511fd393bb174df55d6bd1bcf0c8524b1a173fbd7e9207",
+        "bytes": 481
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a5d1145279d31e63b544449eefb7ce6ac16fb2ca983f857e63d7643de4f05d52",
+        "bytes": 3111
+      },
+      {
+        "path": "records/control-before-jdk21.stdout",
+        "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+        "bytes": 21245
+      },
+      {
+        "path": "records/control-before-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "84007517454e9d7abbbf384689c18e93284482b59158281c302506acab2a2b11",
+        "bytes": 176954
+      },
+      {
+        "path": "records/control-before-jdk25.stdout",
+        "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+        "bytes": 21245
+      },
+      {
+        "path": "records/control-before-jdk25.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/control-after-jdk21.stdout",
+        "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+        "bytes": 21245
+      },
+      {
+        "path": "records/control-after-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/control-after-jdk25.stdout",
+        "sha256": "febff0ec2078cd5367c15b794234528ae10b6a750e5608db51d55ec4dcc06a45",
+        "bytes": 21245
+      },
+      {
+        "path": "records/control-after-jdk25.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ]
+  }
+}
