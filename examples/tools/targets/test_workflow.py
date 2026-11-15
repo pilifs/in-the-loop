@@ -652,7 +652,13 @@ class IngestTest(Fixture):
         self.assertEqual(document["claim"]["inputs"]["dependencies"], "pinned in target.dependencies")
         where = self.folder / receipt.path
         self.assertEqual(json.loads((where.parent / "plan.json").read_text())["key"], workflow.inputs_key(self.planned("replay")))
-        self.assertEqual(sorted(a["path"] for a in document["bundle"]["artifacts"]), ["records/execution.json", "records/summary.txt"])
+        self.assertEqual(sorted(a["path"] for a in document["bundle"]["artifacts"]),
+                         ["records/execution.json", "records/streams.json", "records/summary.txt"])
+        # Recorded controls name no attempt directory, so no stream is bundled, and streams.json says why for each
+        # (test_receipt_streams.py has the runs that do).
+        streams = json.loads((self.folder / receipt.path).parent.joinpath("records/streams.json").read_text())["streams"]
+        self.assertEqual({(s["kept"], s["why"]) for s in streams}, {(None, workflow_ingest.NO_DIRECTORY)})
+        self.assertEqual(len(streams), 2 * len(document["attempt"]["stages"]))
 
     def test_the_fixture_revisions_identity_is_its_git_tree(self):
         from targets import workflow_ingest

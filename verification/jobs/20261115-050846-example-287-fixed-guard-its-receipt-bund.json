@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-050846-example-287-fixed-guard-its-receipt-bund",
+  "title": "example 287 fixed-guard: its receipt bundles the raw streams and says why its controls didn't start (review item 5)",
+  "description": "The user's review item 5 of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): ingestion now copies each record's stdout and stderr and the runner's controls.json and verifier.json into the receipt's records/, each cut to 512 KiB, with records/streams.json giving every one's source, whole size and sha256, and a not-started stage gives its reason. Task fixed-guard of example 287 is the case the item names: its adapter doesn't call its target BCrypt.checkpw(byte[], String), so runtime runs no controls for it, and its receipts so far didn't say why. Step 1 is VF-027's unchanged rerun (workflow_refusal.py 287 fixed-guard: claim 2fc462942f0992af, native, strict, expected established, refused as predicted at the String parameter), which leaves one unresolved receipt. Step 2 reads that receipt offline with examples/tools/targets/receipt_streams.py and exits 1 unless every stage's stdout and stderr, records/controls.json and records/verifier.json are in its bundle and each not-started control stage's reason names the adapter not calling the target. No claim, expectation or verdict changes.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove",
+    "target:predicted-refusal"
+  ],
+  "links": {
+    "examples": [
+      "287"
+    ],
+    "paths": [
+      "examples/tools/targets/workflow_ingest.py",
+      "examples/tools/targets/receipt_streams.py",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/fixed-guard.json"
+    ]
+  },
+  "expected": "Step 1 prints 'refused as predicted' and exits 0 (the claim stays unresolved under key 2fc462942f0992af); step 2 prints 'receipt streams bundled', with each jvm-control stage not-started and its reason saying the adapter doesn't call the task's target",
+  "submitted": {
+    "at": "2026-11-15T05:08:46+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "15m",
+    "notes": "the same preparation as VF-027's rerun 20261115-005927-example-287-fixed-guard-vf-027-rerun-sto, which took seconds; step 2 is offline"
+  },
+  "steps": [
+    {
+      "name": "example 287 task fixed-guard: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+      "cwd": "."
+    },
+    {
+      "name": "the new receipt keeps its raw streams and the controls' reason",
+      "run": "python3 examples/tools/targets/receipt_streams.py examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72 fixed-guard --reason \"doesn't call the task's target\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard"
+  ]
+}

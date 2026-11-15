@@ -2150,6 +2150,61 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: item 5. Receipts bundle the raw streams: ingestion copies the JVM and verifier stdout/stderr and
     `controls.json` into the receipt's `records/`, hashed and capped in size, and a `not-started` controls record says
     why (287's guard tasks).
+- 2026-11-15, **review item 5 done: a target receipt keeps the attempt's raw streams, and a stage that didn't start
+  says why.** Two jobs show it on real packets (verification pending).
+  - **Reproducer**: `examples/tools/targets/test_receipt_streams.py` (5 tests) failed on `lpmxuzzz`, 4 of them with
+    errors. It runs the fixture's controls for real on JDK 21 and 25 and ingests them, and it does the same for a proof
+    task whose adapter doesn't call its target, the case of 287's guard tasks. No receipt kept a stream or
+    `controls.json`, and nothing in a receipt said why a control didn't start.
+  - **The interface** (`interfaces.py`, additive with defaults, as its docstring allows; `test_interfaces.py` pins the
+    order): `ExecutionRecord` gains three fields.
+    - `directory`: the attempt's directory, which the stream paths are relative to. This is what request 7 found
+      missing. It is a temporary path, so it never enters a receipt.
+    - `record`: the runner's record file, `controls/controls.json` or `verifier/verifier.json`.
+    - `reason`: why a not-started record didn't start.
+
+    `ingest`'s frozen signature is unchanged. `runtime.run_controls` and `run_verifier` set all three on every record.
+    For a not-started process, the reason is the one already written to its stderr.
+  - **Ingestion** (`workflow_ingest.py`):
+    - it copies each record's stdout and stderr, and each runner record once, into `records/` under its own name;
+    - each copy is cut to its first `STREAM_CAP` bytes (512 KiB, under jj's 1 MiB snapshot limit);
+    - `records/streams.json` lists every copy with its stage and stream, its path in the attempt, its whole size and
+      sha256, and whether it was cut. Where nothing could be kept, it says why: a record naming no directory, a
+      missing file, or a path outside the directory;
+    - `attempt.stages` points at the copies, and a not-started stage gives its `reason`. The reason also reaches the
+      receipt's `execution.reason`, and `records/execution.json` keeps it, without the directory.
+
+    `result.schema.json` allows the stage's optional `reason`, and its descriptions of `stages` and of the bundle's
+    `records/` say what a target receipt keeps. Old receipts stay valid: the targets suite's A6 checks all of them.
+    `examples/README.md`'s targets paragraph says what a receipt's `records/` keeps.
+  - **A check for jobs and readers**: `examples/tools/targets/receipt_streams.py RECEIPT` (or `FOLDER TASK` for the
+    latest receipt) lists what a receipt keeps. It exits 1 when a stage's stream or a runner record isn't bundled, and
+    with `--reason TEXT` when a not-started stage's reason doesn't say that. Two of the five tests cover it.
+  - **Fixed alongside**: `test_workflow.py`'s replay-ingestion test pinned the bundle to two files. Its recorded
+    controls name no directory, so the bundle now also has `streams.json`, saying so for each stream.
+  - **Queued**, each running the task unchanged and then `receipt_streams.py` on its new receipt:
+    - `20261115-050846-example-287-fixed-guard-its-receipt-bund`: VF-027's rerun (`workflow_refusal.py 287
+      fixed-guard`, refused as predicted under `2fc462942f0992af`). Then the check, with `--reason "doesn't call the
+      task's target"`, the case the item names. 2 CPUs, 4 GiB, 15 minutes;
+    - `20261115-050856-example-105-fix-property-before-its-rece`: `build.py 105 --task fix-property-before`, refuted
+      at `pow(-2, 31)` under `8a4071f6a417d239`. Its receipt then holds the JVM controls' streams, which A5's receipts
+      lacked. 2 CPUs, 3 GiB, 15 minutes.
+
+    Each adds a receipt beside the ones kept, and no claim, expectation or verdict changes.
+  - **A8**: no rerun. Ingestion's verdict rules are unchanged; only the bundle and the not-started reason text are new.
+    Neither `without_jbmc.sh` nor a constructed run path is touched. The two jobs above exercise the new bundle on
+    real packets.
+  - **Not bundled**: the capability probe's streams (`jvmcontract gaps`, `verifier/probe-*.stdout`). They are no
+    record's streams, and the gaps they list are already in the verifier record's `identities.probe`.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (266, five new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`. `pipeline.py validate` finds no problem.
+  - **Next**: item 6, A7's four observations:
+    - a property check's `evidence.replay` filled;
+    - a one-revision witness names its revision, not `after`;
+    - the receipt records both `claim.id` and the frozen claim key, and says which is compared;
+    - the handoff lists the files a claim cites.
+
+    Read the two jobs above when they are collected.
 - Status: working
 
 ## Loop settings

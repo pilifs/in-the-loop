@@ -38,7 +38,7 @@ FIELDS = {
     interfaces.PreparedTarget: ["example", "task", "revision", "commit", "stage", "source", "artifacts", "classpath",
                                 "toolchain", "failedStage", "diagnostic", "logs", "workdir", "blocker"],
     interfaces.ExecutionRecord: ["kind", "revision", "argv", "status", "exitCode", "seconds", "stdout", "stderr",
-                                 "identities", "observations", "control"],
+                                 "identities", "observations", "control", "directory", "record", "reason"],
     interfaces.Receipt: ["path", "claim", "attempt", "status", "execution"],
 }
 

@@ -5,7 +5,16 @@ the prepared artifacts, published as one format-2 receipt. workflow.ingest() is 
 
 The receipt goes to out/<attempt>/result.json, beside it plan.json (workflow.plan_record(): what readiness tells a
 current receipt from a stale one by) and the evidence under records/, listed with their sha256s in the bundle. Earlier
-attempts are never touched. Nothing is published before build.py's check_result() passes: the flat view against
+attempts are never touched.
+
+The evidence keeps the raw streams (the user's review item 5, 2026-11-15): each record's stdout and stderr and the
+runner's record it names (controls/controls.json, verifier/verifier.json), read from the attempt's directory the
+record names (ExecutionRecord.directory, a temporary path that never enters the receipt), are copied into records/
+under their own names, each cut to its first STREAM_CAP bytes. records/streams.json lists every one: its stage and
+stream, its path in the attempt, its whole size and sha256, what was kept and whether it was cut, or why nothing was
+(a record naming no directory, a missing file, a path outside the directory). attempt.stages then points at the
+copies, and a not-started stage gives its `reason` (a proof task's controls whose adapter doesn't call the target,
+287's guard tasks, for one). Nothing is published before build.py's check_result() passes: the flat view against
 result.schema.json, the round trip through format 2, the stored document against stored-result.schema.json, and the
 bundle against the files.
 
@@ -50,6 +59,11 @@ from targets.interfaces import WORKFLOW, Receipt, Unsupported
 EXECUTION = "execution.json"  # the raw records, with what the oracle read in each
 SUMMARY = "summary.txt"  # a replay's console output: one line per record
 VERIFIER_OUTPUT = "verifier-output.txt"  # the verifier's console output, from its outcome
+STREAMS = "streams.json"  # what each bundled stream and runner record is, its whole size and sha256, and why one isn't kept
+# The bytes of one raw stream or runner record a receipt keeps: the first STREAM_CAP, with the whole one's size and
+# sha256 in records/streams.json. Under jj's 1 MiB snapshot limit (VF-020), so a collected receipt is committed whole.
+STREAM_CAP = 512 * 1024
+NO_DIRECTORY = "the record names no attempt directory, so its streams can't be found"
 ORACLE_TIMEOUT = 60
 # What each kind of pair says the controls of its two revisions show: `violates` the oracle, or `holds`.
 SIDES = {"exact-fix": ("violates", "holds"), "introduction": ("holds", "violates"),
@@ -298,7 +312,7 @@ def record_problem(record, bound):
     if record.status == "timed-out":
         return "timed-out", f"{where}: the JVM did not finish in time"
     if record.status != "exited":
-        return "tool-error", f"{where}: the JVM did not start ({record.status})"
+        return "tool-error", f"{where}: the JVM did not start ({record.status})" + (f": {record.reason}" if record.reason else "")
     if record.exitCode != 0:
         return "tool-error", f"{where}: the driver exited with code {record.exitCode}"
     if record.observations is None:
@@ -357,12 +371,12 @@ def replay_outcome(plan, target, bound, records, oracle):
     for r in records:
         if r.kind != "jvm-control" or r.revision not in bound:
             problems.append(("invalid-output", f"a {r.kind} record of revision {r.revision} is not this replay's"))
-            entries.append({**r.as_dict(), "read": "not this replay's"})
+            entries.append({**entry_of(r), "read": "not this replay's"})
             continue
         problem = record_problem(r, bound)
         if problem:
             problems.append(problem)
-            entries.append({**r.as_dict(), "read": problem[1]})
+            entries.append({**entry_of(r), "read": problem[1]})
         else:
             usable.append(r)
             entries.append(None)
@@ -371,7 +385,7 @@ def replay_outcome(plan, target, bound, records, oracle):
     observed = {}  # revision -> {feature: the observations, as JSON lines}
     for r, verdict in zip(usable, read):
         i = next(i for i, e in enumerate(entries) if e is None)
-        entries[i] = {**r.as_dict(), "oracle": verdict}
+        entries[i] = {**entry_of(r), "oracle": verdict}
         feature = jdk_feature(r.identities.get("jdk")) or r.identities.get("jdk") or "?"
         if "error" in verdict:
             problems.append(("invalid-output", f"revision {r.revision} on JDK {feature}: {verdict['error']}"))
@@ -455,7 +469,8 @@ def verifier_outcome(plan, bound, records):
     if v.status in ("timed-out", "not-started"):
         execution = ({"status": "timed-out", "exitCode": None, "reason": f"the verifier did not finish in {v.seconds} s"}
                      if v.status == "timed-out" else
-                     {"status": "tool-error", "exitCode": None, "reason": "the verifier did not start"})
+                     {"status": "tool-error", "exitCode": None,
+                      "reason": "the verifier did not start" + (f": {v.reason}" if v.reason else "")})
     elif v.status == "killed" or v.exitCode is None:
         execution = {"status": "killed", "exitCode": v.exitCode, "reason": "the verifier was killed"}
     else:
@@ -500,7 +515,7 @@ def verifier_outcome(plan, bound, records):
     fields.update({"verdict": verdict, "verdictLabel": label, "execution": execution, "expectation": expectation})
     if fields["problem"] is None and execution["status"] != "completed":
         fields["problem"] = execution["reason"]
-    return fields, [{**r.as_dict()} for r in records], output
+    return fields, [entry_of(r) for r in records], output
 
 
 def excerpt(target_path, revision):
@@ -517,10 +532,69 @@ def bytecode(p):
     return {"sha256": workflow.canonical_digest(originals), "files": len(originals)} if originals else None
 
 
-def stage_of(r):
+def stage_name(r):
     feature = jdk_feature(r.identities.get("jdk"))
-    return {"name": f"{r.kind} {r.revision or 'pair'}" + (f" on JDK {feature}" if feature else ""), "status": r.status,
-            "exitCode": r.exitCode, "seconds": float(r.seconds or 0), "stdout": r.stdout, "stderr": r.stderr}
+    return f"{r.kind} {r.revision or 'pair'}" + (f" on JDK {feature}" if feature else "")
+
+
+def stage_of(r, kept=None):
+    """The attempt's stage for record `r`: its streams' bundled copies (`kept`, by stream) where there are any, else
+    the paths relative to the attempt's directory, and a not-started record's reason."""
+    kept = kept or {}
+    stage = {"name": stage_name(r), "status": r.status, "exitCode": r.exitCode, "seconds": float(r.seconds or 0),
+             "stdout": kept.get("stdout", r.stdout), "stderr": kept.get("stderr", r.stderr)}
+    if r.status == "not-started" and r.reason:
+        stage["reason"] = r.reason
+    return stage
+
+
+def entry_of(r):
+    """A record as records/execution.json keeps it: everything but the attempt's temporary directory."""
+    entry = r.as_dict()
+    entry.pop("directory", None)
+    return entry
+
+
+def raw_streams(records):
+    """The raw files of the attempt the records name, for the bundle: ({name: bytes}, streams.json's entries, and per
+    record {stream: its copy's path in the receipt}). Each file is read from the record's directory, never outside it,
+    and cut to STREAM_CAP bytes; a record naming no directory, or a file that can't be read, keeps its path and says
+    why in its entry."""
+    taken = {EXECUTION, SUMMARY, VERIFIER_OUTPUT, STREAMS}
+    files, entries, kept, seen = {}, [], [], {}
+
+    def copy(r, stream, source, stage):
+        entry = {"stage": stage, "stream": stream, "source": source, "kept": None}
+        if not r.directory:
+            entries.append({**entry, "why": NO_DIRECTORY})
+            return None
+        base = Path(r.directory).resolve()
+        path = (base / source).resolve()
+        if not path.is_relative_to(base):
+            entries.append({**entry, "why": f"{source} is outside the attempt's directory"})
+            return None
+        try:
+            data = path.read_bytes()
+        except OSError as e:
+            entries.append({**entry, "why": f"{source} can't be read: {(e.strerror or str(e)).lower()}"})
+            return None
+        safe = re.sub(r"[^A-Za-z0-9._-]", "-", Path(source).name).lstrip("._-") or stream
+        name = safe if safe not in taken else re.sub(r"[^A-Za-z0-9._-]", "-", Path(source).parent.name) + "-" + safe
+        n = 2
+        while name in taken:
+            name, n = f"{n}-{safe}", n + 1
+        taken.add(name)
+        files[name] = data[:STREAM_CAP]
+        entries.append({**entry, "kept": f"records/{name}", "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                        "keptBytes": len(files[name]), "truncated": len(data) > STREAM_CAP})
+        return f"records/{name}"
+
+    for r in records:
+        stage = stage_name(r)
+        kept.append({k: v for k in ("stdout", "stderr") if (v := copy(r, k, getattr(r, k), stage))})
+        if r.record and (r.directory, r.record) not in seen:
+            seen[(r.directory, r.record)] = copy(r, "record", r.record, None)
+    return files, entries, kept
 
 
 def write_bundle(directory, files):
@@ -529,7 +603,10 @@ def write_bundle(directory, files):
     artifacts = []
     for name, text in files.items():
         path = directory / "records" / name
-        path.write_text(text)
+        if isinstance(text, bytes):
+            path.write_bytes(text)
+        else:
+            path.write_text(text)
         artifacts.append({"path": f"records/{name}", "sha256": build.file_digest(path), "bytes": path.stat().st_size})
     return {"artifacts": artifacts}
 
@@ -570,8 +647,11 @@ def publish(plan, prepared, records, out):
     staging = out / f".{attempt_id}.publishing"
     staging.mkdir()
     try:
+        streams, listed, kept = raw_streams(records)
         bundle = write_bundle(staging, {EXECUTION: json.dumps({"task": plan.task, "records": entries}, indent=2,
-                                                              ensure_ascii=False) + "\n", output: text})
+                                                              ensure_ascii=False) + "\n", output: text,
+                                        STREAMS: json.dumps({"cap": STREAM_CAP, "streams": listed}, indent=2,
+                                                            ensure_ascii=False) + "\n", **streams})
         job = {"jobId": os.environ.get("VERIFY_JOB_ID"), "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"),
                "workdir": os.environ.get("VERIFY_WORKDIR")}
         names = list(plan.revisions)
@@ -585,7 +665,7 @@ def publish(plan, prepared, records, out):
                    "bytecode": {"before": bytecode(bound[names[0]][1]) if len(names) > 1 else None,
                                 "after": bytecode(bound[names[-1]][1])},
                    "pipeline": job if any(job.values()) else None, "execution": fields["execution"],
-                   "stages": [stage_of(r) for r in records], "workspace": None}
+                   "stages": [stage_of(r, k) for r, k in zip(records, kept)], "workspace": None}
         if not replay:
             bounds = plan.claim.get("bounds") or {}
             attempt["exploration"] = {"unwind": bounds.get("unwind"), "maxArrayLength": bounds.get("maxArrayLength"),

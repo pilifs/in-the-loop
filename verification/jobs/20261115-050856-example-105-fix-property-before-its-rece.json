@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-050856-example-105-fix-property-before-its-rece",
+  "title": "example 105 fix-property-before: its receipt bundles the JVM controls' and the verifier's raw streams (review item 5)",
+  "description": "The user's review item 5 of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): ingestion now copies each record's stdout and stderr and the runner's controls.json and verifier.json into the receipt's records/, each cut to 512 KiB, with records/streams.json giving every one's source, whole size and sha256. The for-review list found that gate A5's receipts didn't hold what the JVM controls observed, so the JVM side of the witness was the job's, not the receipt's. Step 1 reruns task fix-property-before of example 105 unchanged (build.py 105 --task fix-property-before: claim 8a4071f6a417d239, upstream Maven build on JDK 11, native, strict, expected refuted with the witness pow(-2, 31)), adding a third receipt beside the two kept. Step 2 reads the new receipt offline with examples/tools/targets/receipt_streams.py and exits 1 unless every stage's stdout and stderr (the controls on JDK 21 and 25, and the verifier), records/controls.json and records/verifier.json are in its bundle. No claim, expectation or verdict changes.",
+  "kind": "example",
+  "capabilities": [
+    "target:prove"
+  ],
+  "links": {
+    "examples": [
+      "105"
+    ],
+    "paths": [
+      "examples/tools/targets/workflow_ingest.py",
+      "examples/tools/targets/receipt_streams.py"
+    ]
+  },
+  "expected": "Step 1 prints 'as expected' and exits 0: refuted under key 8a4071f6a417d239 with the witness pow(-2, 31), replayed; step 2 prints 'receipt streams bundled', the control stages exited with their stdout bundled",
+  "submitted": {
+    "at": "2026-11-15T05:08:56+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "maven",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "the same task as gate A7's job 20261114-235737-example-105-task-fix-property-before-the, which passed in 31 s; step 2 is offline"
+  },
+  "steps": [
+    {
+      "name": "example 105 task fix-property-before (prove)",
+      "run": "python3 examples/tools/build.py 105 --task fix-property-before",
+      "cwd": "."
+    },
+    {
+      "name": "the new receipt keeps its raw streams",
+      "run": "python3 examples/tools/targets/receipt_streams.py examples/105-commons-numbers-223-pow-of-minus-two-to-the-31 fix-property-before",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before"
+  ]
+}

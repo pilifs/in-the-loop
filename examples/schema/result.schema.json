@@ -1329,11 +1329,12 @@
         },
         "execution": { "$ref": "#/properties/execution" },
         "stages": {
-          "description": "Every command the attempt ran, in order: its name, how it ended (`exited`, `killed` by a signal, `timed-out`, or `not-started`), the exit code, the seconds, and where its stdout and stderr were streamed, relative to the attempt's directory (not published: kept with the workspace). Absent before stage logs were kept.",
+          "description": "Every command the attempt ran, in order: its name, how it ended (`exited`, `killed` by a signal, `timed-out`, or `not-started`), the exit code, the seconds, and where its stdout and stderr were streamed, relative to the attempt's directory (not published: kept with the workspace). A target task's receipt names instead the copies it bundles under records/ where it has them (records/streams.json gives each one's source, whole size and sha256, and whether it was cut), and a not-started stage's `reason` says why it didn't start. Absent before stage logs were kept.",
           "type": "array",
           "items": { "type": "object", "required": ["name", "status", "exitCode", "seconds", "stdout", "stderr"], "additionalProperties": false,
             "properties": { "name": { "type": "string" }, "status": { "enum": ["exited", "killed", "timed-out", "not-started"] },
-              "exitCode": { "type": ["integer", "null"] }, "seconds": { "type": "number" }, "stdout": { "type": "string" }, "stderr": { "type": "string" } } }
+              "exitCode": { "type": ["integer", "null"] }, "seconds": { "type": "number" }, "stdout": { "type": "string" }, "stderr": { "type": "string" },
+              "reason": { "description": "Why a not-started stage didn't start (a target task's receipt; since 2026-11-15).", "type": "string" } } }
         },
         "workspace": {
           "description": "Where the attempt's directory was kept, relative to the pipeline job's work directory (VERIFY_WORKDIR): its patched copy with the harnesses and the tools' work directories, its stage logs and stages.jsonl, and its evidence. The pipeline keeps the work directory of a job that does not pass. Null outside the pipeline, where nothing is kept.",
@@ -1374,7 +1375,7 @@
       "additionalProperties": false,
       "properties": {
         "artifacts": { "type": "array", "items": { "type": "object", "required": ["path", "sha256", "bytes"], "additionalProperties": false,
-          "properties": { "path": { "description": "Relative to the result's directory. A target task's receipt may also keep its raw execution records under records/ (controlled names, no subdirectory).", "type": "string", "pattern": "^(result\\.sarif|verifier-output\\.txt|statement(-\\d+)?\\.java|records/[A-Za-z0-9][A-Za-z0-9._-]*)$" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "bytes": { "type": "integer", "minimum": 0 } } } }
+          "properties": { "path": { "description": "Relative to the result's directory. A target task's receipt may also keep its raw execution records under records/ (controlled names, no subdirectory): execution.json, its summary, and since 2026-11-15 each stage's raw stdout and stderr and the runner's records (controls.json, verifier.json), cut to a fixed size and listed in streams.json.", "type": "string", "pattern": "^(result\\.sarif|verifier-output\\.txt|statement(-\\d+)?\\.java|records/[A-Za-z0-9][A-Za-z0-9._-]*)$" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "bytes": { "type": "integer", "minimum": 0 } } } }
       }
     },
     "sarif": {

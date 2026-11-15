@@ -129,6 +129,10 @@ class ExecutionRecord:
     identities: Mapping  # the JDK, tool and artifact identities it ran with
     observations: Optional[Tuple[Mapping, ...]] = None
     control: Optional[str] = None  # the control's id in target.json, for a jvm-control
+    # Added in Phase 5 (the user's review item 5, 2026-11-15), so that ingestion can bundle the raw streams:
+    directory: Optional[str] = None  # the attempt's directory, absolute, which stdout, stderr and record are relative to. A temporary path, so never in a receipt
+    record: Optional[str] = None  # the runner's record of this run (controls/controls.json, verifier/verifier.json), relative to directory
+    reason: Optional[str] = None  # why a not-started record didn't start; None for a process that ran
 
     def as_dict(self):
         return to_dict(self)

@@ -1312,6 +1312,15 @@ def _run_one(argv, cwd, out, err, timeout, env=None):
     return ("exited" if proc.returncode >= 0 else "killed"), proc.returncode, round(time.monotonic() - started, 3)
 
 
+def _not_started(status, err):
+    """Why a process _run_one couldn't start didn't (the line it wrote to its stderr), or None for one that ran."""
+    if status != "not-started":
+        return None
+    lines = Path(err).read_text(errors="replace").splitlines() if Path(err).is_file() else []
+    said = next((line for line in lines if line.startswith("runtime: not started: ")), None)
+    return said.removeprefix("runtime: not started: ") if said else "the process could not be started"
+
+
 def _control(plan, revision, prepared, feature, workdir, attempt):
     """One revision's driver on one JDK, in its own JVM: an ExecutionRecord, and its log entry."""
     name = f"control-{revision}-jdk{feature}"
@@ -1352,7 +1361,8 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
         return interfaces.ExecutionRecord(
             kind="jvm-control", revision=revision, argv=argv, status="not-started", exitCode=None, seconds=0.0,
             stdout=rel(out), stderr=rel(err), identities=identities, observations=None,
-            control=(prepared.source.get("driver") or {}).get("control") if prepared else None), log
+            control=(prepared.source.get("driver") or {}).get("control") if prepared else None,
+            directory=str(attempt), record=rel(workdir / CONTROLS), reason=e.diagnostic), log
     status, code, seconds = _run_one(argv, where, out, err, CONTROL_TIMEOUT)
     observations, problem = (None, f"the JVM {status}" + (f" (signal {-code})" if status == "killed" else "")) \
         if status != "exited" else _observations(out.read_text(errors="replace"), inputs, convention)
@@ -1360,7 +1370,8 @@ def _control(plan, revision, prepared, feature, workdir, attempt):
     return interfaces.ExecutionRecord(
         kind="jvm-control", revision=revision, argv=argv, status=status, exitCode=code, seconds=seconds,
         stdout=rel(out), stderr=rel(err), identities=identities, observations=observations,
-        control=driver.get("control")), log
+        control=driver.get("control"), directory=str(attempt), record=rel(workdir / CONTROLS),
+        reason=_not_started(status, err)), log
 
 
 def _jdks(plan, revision, prepared):
@@ -1378,7 +1389,9 @@ def run_controls(plan, prepared, workdir):
     artifacts-ready, bytes that changed since preparation, a missing JDK or one too old for the classes gives a
     not-started record, never a skipped one; a kill, a timeout, or output that can't be read gives a record with no
     observations. Nothing here applies the oracle or decides a claim. Unsupported only when the work directory is not
-    ours. The records are also written to workdir/controls.json, with why each that has no observations has none."""
+    ours. The records are also written to workdir/controls.json, with why each that has no observations has none. Each
+    record names the attempt's directory (workdir's parent, which its stream paths are relative to), that file as its
+    `record`, and for a not-started one its `reason`, so ingestion can bundle them into the receipt."""
     try:
         workdir = _workdir(workdir, CONTROLS)
     except Refused as e:
@@ -1681,7 +1694,8 @@ def run_verifier(plan, prepared, workdir):
     when the task kind, engine or gap mode isn't one this runs, the claim needs what no route gives (models,
     bounds with no option) or names a file that changed since it was frozen, an equivalence pair's dependency closures
     differ (jvmcontract takes one classpath for both), jvmcontract isn't built, or the work directory isn't ours. The
-    record is also written to workdir/verifier.json."""
+    record is also written to workdir/verifier.json, which the record names (`record`, beside the attempt's
+    `directory` and, when it didn't start, its `reason`), so ingestion can bundle it with the streams."""
     stop = lambda why, stage="verifier", **kw: Unsupported("run-verifier", RUNTIME, why, stage=stage, **kw)
     if plan.kind not in VERIFIER_KINDS:
         return stop(f"a {plan.kind} task runs no verifier here (it runs {', '.join(VERIFIER_KINDS)})", "plan")
@@ -1738,7 +1752,8 @@ def run_verifier(plan, prepared, workdir):
         err.write_text(f"runtime: not started: {e.diagnostic}\n")
         record = interfaces.ExecutionRecord(kind="verifier", revision=revision, argv=argv, status="not-started",
                                             exitCode=None, seconds=0.0, stdout=rel(out), stderr=rel(err),
-                                            identities=identities, observations=None)
+                                            identities=identities, observations=None, directory=str(attempt),
+                                            record=rel(workdir / VERIFIER), reason=e.diagnostic)
         (workdir / VERIFIER).write_text(json.dumps({"task": plan.task, "record": record.as_dict(),
                                                     "log": {"problem": e.diagnostic}}, indent=2) + "\n")
         return record
@@ -1747,7 +1762,8 @@ def run_verifier(plan, prepared, workdir):
         if status != "exited" else _outcomes(out.read_text(errors="replace"), VERIFIER_KINDS[plan.kind])
     record = interfaces.ExecutionRecord(kind="verifier", revision=revision, argv=argv, status=status, exitCode=code,
                                         seconds=seconds, stdout=rel(out), stderr=rel(err), identities=identities,
-                                        observations=observations)
+                                        observations=observations, directory=str(attempt),
+                                        record=rel(workdir / VERIFIER), reason=_not_started(status, err))
     log = {"cwd": str(attempt), **({"problem": problem} if problem else {})}
     (workdir / VERIFIER).write_text(json.dumps({"task": plan.task, "record": record.as_dict(), "log": log}, indent=2,
                                                ensure_ascii=False) + "\n")

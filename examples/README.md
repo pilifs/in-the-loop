@@ -523,7 +523,9 @@ controls and the verifier, and ingest one receipt per task and attempt. An attem
 implemented prints `not-executed (task T: unsupported: INTERFACE (OWNER): why)` and exits 1. One that gives a
 receipt exits 0 only when the receipt's `matchesExpected` is true: ingestion compares a proof's conclusion with
 the task's `expected`, and a replay, which decides no claim, compares each revision's controls with what its pair's
-kind expects. Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
+kind expects. The receipt's `records/` keeps the attempt's raw evidence: each control's and the verifier's stdout
+and stderr and the runner's `controls.json` and `verifier.json`, each cut to 512 KiB, with `streams.json` giving every
+one's whole size and sha256; a stage that didn't start says why. Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
 it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
 `--role`, `--readiness`, `--claim-status` and `--gap` filter on. [`gap-inventory.md`](gap-inventory.md) ranks the
 observed capability gaps across these targets, by distinct families and blocked obligations, each with its smallest
