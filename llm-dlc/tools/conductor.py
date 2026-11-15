@@ -4,11 +4,12 @@
 
 A moonshot has no acceptance criteria, so nothing but its context window measures it. feature-loop.sh compacts a
 moonshot's session at a fixed size, and an automatic compaction with no commit since the cycle began, or since the
-last one, is the point where the work is either hard and going well or stuck. The loop can't tell which. With a
-conductor directory (LOOP_CONDUCTOR, which prove-loop.sh sets) it asks instead of stopping: it appends the event
-to DIR/events.jsonl, lets the turn go on, and waits for a verdict until the event's deadline. A verdict of
-`continue` lets the turn run to the next compaction; `stop`, or no verdict in time, ends the turn and the loop as
-the mechanical rule alone would have. The conductor never talks to the loop's session, whose instruction stays the
+last one, is the point where the work is either hard and going well or stuck. The loop can't tell which: by itself
+it only logs the compaction, and a rule that stopped there stopped good work (FEATURE_LOOP_STOP_ON_COMPACT=1 still
+turns it on). With a conductor directory (LOOP_CONDUCTOR, which prove-loop.sh sets) it asks: it appends the event
+to DIR/events.jsonl, lets the turn go on, and waits for a verdict until the event's deadline. `stop` ends the turn
+and the loop. `continue` lets the turn run to the next compaction, and so does no verdict in time, noted in the
+run's record, unless the rule is on. The conductor never talks to the loop's session, whose instruction stays the
 one line.
 
     conductor.py wait DIR [--timeout SECONDS]
@@ -129,7 +130,7 @@ def cmd_decide(directory: Path, n: int, verdict: str, reason: str) -> int:
     tmp = verdict_path(directory, n).with_suffix(".tmp")
     tmp.write_text(json.dumps({"verdict": verdict, "reason": " ".join(reason.split()), "time": now()}) + "\n")
     os.replace(tmp, verdict_path(directory, n))
-    print(f"event {n}: {verdict}" + (" (after its deadline: the loop had already stopped by its own rule)" if late else ""))
+    print(f"event {n}: {verdict}" + (" (after its deadline: the loop was no longer waiting for it)" if late else ""))
     return 0
 
 

@@ -13,11 +13,14 @@ import json, os, signal, subprocess, sys, threading, time
 def say(text):
     print(time.strftime("[%F %T]"), text, flush=True)
 
-# feature-loop.sh sets these during a moonshot instruction: a compaction with no
-# commit since LOOP_WATCH_BASE (the change at @- when the cycle began, then at the
-# last compaction) ends the turn, and LOOP_WATCH_MARK says why. With LOOP_CONDUCTOR
-# (a directory, see llm-dlc/tools/conductor.py) it is put to the conductor first.
+# feature-loop.sh sets these during a moonshot instruction it watches: a compaction
+# with no commit since LOOP_WATCH_BASE (the change at @- when the cycle began, then
+# at the last compaction) is put to the conductor when there is one (LOOP_CONDUCTOR,
+# a directory, see llm-dlc/tools/conductor.py). The turn ends, with LOOP_WATCH_MARK
+# saying why, on a stop from the conductor, or by rule where LOOP_WATCH_STOP is set and
+# no conductor answers. Otherwise the compaction is only logged.
 base = os.environ.get("LOOP_WATCH_BASE")
+stop_rule = bool(os.environ.get("LOOP_WATCH_STOP"))
 conductor_dir = os.environ.get("LOOP_CONDUCTOR")
 conductor_wait = int(os.environ.get("FEATURE_LOOP_CONDUCTOR_WAIT") or 900)
 over = threading.Event()  # the turn has ended by itself
@@ -65,8 +68,9 @@ def keep(text):
             f.write(text + "\n")
 
 def ask_conductor(at, tokens, since):
-    # A session outside the loop judges; the turn goes on while it does. Its stop, or its
-    # silence until the deadline, ends the turn as the rule alone would have.
+    # A session outside the loop judges; the turn goes on while it does. Its stop ends the
+    # turn. Its silence until the deadline leaves the turn running, as in a loop with no
+    # conductor, unless the rule is on.
     sys.path.insert(0, "llm-dlc/tools")
     import conductor
     from pathlib import Path
@@ -104,8 +108,12 @@ def ask_conductor(at, tokens, since):
             conductor.append_event(directory, type="withdrawn", event=asked["n"],
                                    note="the turn ended by itself before a verdict came: nothing to judge")
             say("the turn ended before the conductor answered event %s" % asked["n"])
-        else:
+        elif stop_rule:
             end_turn("compacted with no commit%s, and no verdict came from the conductor in %s s" % (at, conductor_wait))
+        else:
+            say("no verdict from the conductor in %s s: the turn goes on, as in a loop without one" % conductor_wait)
+            keep("compacted with no commit%s; no verdict came from the conductor in %s s, and the turn went on" % (at, conductor_wait))
+            base = since
 
     global waiter
     waiter = threading.Thread(target=wait, daemon=True)
@@ -133,7 +141,10 @@ def compacted(e):
                 return
             except Exception as err:
                 say("the conductor could not be asked (%s)" % err)
-        end_turn("compacted with no commit%s" % at)
+        if stop_rule:
+            end_turn("compacted with no commit%s" % at)
+        else:
+            base = now
 
 def event(e):
     if e.get("type") == "assistant":

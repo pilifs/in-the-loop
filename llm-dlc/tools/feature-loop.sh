@@ -5,16 +5,20 @@
 # A cycle that leaves no new commit stops the loop, before compacting, so the
 # session keeps its full context for the person who has to look at why.
 #
-# A moonshot has no acceptance criteria to stop it, so one context window is its
-# measure: its session compacts itself at 600k tokens (FEATURE_LOOP_AUTOCOMPACT,
-# 100k to 1M, or auto for Claude Code's default), and a compaction during the
-# instruction with no commit since the cycle began, or since the last such
-# compaction, ends the turn there and stops the loop for a person to look at.
+# A moonshot's session compacts itself at 600k tokens (FEATURE_LOOP_AUTOCOMPACT,
+# 100k to 1M, or auto for Claude Code's default), and each compaction is logged.
 # The session stays chained across cycles, so later ones build on earlier ones.
-# With LOOP_CONDUCTOR naming a directory, that compaction is put to a conductor
-# first (llm-dlc/tools/conductor.py): the turn goes on while a session outside
-# the loop judges whether the work is moving, for FEATURE_LOOP_CONDUCTOR_WAIT
-# seconds (900), and only its stop, or its silence, ends the turn.
+# A moonshot has no acceptance criteria, and a compaction during the instruction
+# with no commit since the cycle began, or since the last such compaction, is
+# where the work is either hard and going well or stuck. A compaction alone
+# doesn't say which, so by default nothing happens there and a person watching
+# the loop judges. Two settings change that:
+#   LOOP_CONDUCTOR=DIR  puts that compaction to a conductor, a session outside
+#     the loop (llm-dlc/tools/conductor.py; prove-loop.sh sets it): the turn goes
+#     on while it judges, for FEATURE_LOOP_CONDUCTOR_WAIT seconds (900). Its stop
+#     ends the turn and the loop; its continue, or its silence, lets the turn run.
+#   FEATURE_LOOP_STOP_ON_COMPACT=1  ends the turn there and stops the loop for a
+#     person to look at; with a conductor, when the conductor gives no verdict.
 #
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
 # that runs away is killed alone and cannot exhaust the machine. On a machine
@@ -237,6 +241,11 @@ SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
 # Moonshots only: a brief has its own Loop until.
 AUTOCOMPACT=
 [[ -z "$BRIEF" ]] && AUTOCOMPACT=${FEATURE_LOOP_AUTOCOMPACT:-600k}
+# A compaction with no commit: stop by rule (opt-in), ask a conductor, or, with neither, only log it.
+STOP_ON_COMPACT=
+[[ -n "$AUTOCOMPACT" && "${FEATURE_LOOP_STOP_ON_COMPACT:-}" == 1 ]] && STOP_ON_COMPACT=1
+WATCH_COMPACT=$STOP_ON_COMPACT
+[[ -n "$AUTOCOMPACT" && -n "${LOOP_CONDUCTOR:-}" ]] && WATCH_COMPACT=1
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
@@ -668,14 +677,15 @@ while :; do
   fi
   with_state standing
   [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop, ? or help"
-  if [[ -n "$AUTOCOMPACT" ]]; then
+  if [[ -n "$WATCH_COMPACT" ]]; then
     rm -f "$STATE.compacted" "$STATE.notes"
     export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted LOOP_WATCH_NOTES=$STATE.notes
+    export LOOP_WATCH_STOP=$STOP_ON_COMPACT
     export LOOP_WATCH_CYCLE=$cycle LOOP_WATCH_ITEM=$item LOOP_WATCH_SESSION=$SESSION_ID
     export LOOP_WATCH_TRANSCRIPT="$(project_dir "$ROOT")/$SESSION_ID.jsonl"
   fi
   run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
-  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
+  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_STOP LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")
     log "cycle $cycle: $compacted, stopping; session $SESSION_ID needs attention"

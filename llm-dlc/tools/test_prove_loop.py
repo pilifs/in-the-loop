@@ -53,7 +53,7 @@ elif prompt.startswith("Formally prove example"):
         commit()
     elif mode == "compact":
         emit({"type": "system", "subtype": "compact_boundary", "compact_metadata": {"trigger": "auto", "pre_tokens": 600000}})
-        until = time.time() + 20
+        until = time.time() + float(os.environ.get("STANDIN_WAIT", 20))
         while time.time() < until and not Path(os.environ["STANDIN_GO"]).exists():
             time.sleep(0.1)
         if Path(os.environ["STANDIN_GO"]).exists():
@@ -91,7 +91,8 @@ class ProveLoopTest(unittest.TestCase):
                     "STANDIN_LOG": str(self.log), "STANDIN_GO": str(self.go), "FEATURE_LOOP_UNCAPPED": "1",
                     "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
         for name in ("FEATURE_LOOP_SESSION", "FEATURE_LOOP_ITEMS", "FEATURE_LOOP_MODEL", "FEATURE_LOOP_EFFORT",
-                     "FEATURE_LOOP_AUTOCOMPACT", "FEATURE_LOOP_MEMORY_MAX", "LOOP_CONDUCTOR", "IN_THE_LOOP_MODE"):
+                     "FEATURE_LOOP_AUTOCOMPACT", "FEATURE_LOOP_MEMORY_MAX", "FEATURE_LOOP_STOP_ON_COMPACT",
+                     "FEATURE_LOOP_CONDUCTOR_WAIT", "LOOP_CONDUCTOR", "IN_THE_LOOP_MODE"):
             self.env.pop(name, None)
         subprocess.run(["jj", "--quiet", "git", "init", str(self.root)], env=self.env, check=True, capture_output=True)
         subprocess.run(["jj", "--quiet", "describe", "-m", "The made-up checkout"], cwd=self.root, env=self.env, check=True)
@@ -188,10 +189,48 @@ class ProveLoopTest(unittest.TestCase):
         self.assertEqual((ended["type"], ended["status"]), ("ended", 1))
 
     @cost("tool")
-    def test_without_a_verdict_in_time_the_rule_stops_the_loop(self):
+    def test_without_a_verdict_in_time_the_turn_goes_on(self):
+        def later():  # the stand-in commits once the question's deadline is behind it
+            until = time.time() + 60
+            while time.time() < until:
+                asked = [e for e in conductor.read_events(self.run_dir) if e.get("needsVerdict")]
+                if asked and time.time() > asked[0]["deadline"] + 1.5:
+                    self.go.write_text("go\n")
+                    return
+                time.sleep(0.1)
+        thread = threading.Thread(target=later, daemon=True)
+        thread.start()
         r = self.loop("901", mode="compact", FEATURE_LOOP_CONDUCTOR_WAIT="1")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("  - compacted with no commit at 600000 tokens; no verdict came from the conductor in 1 s, and the "
+                      "turn went on", self.record())
+
+    @cost("tool")
+    def test_without_a_verdict_in_time_the_rule_stops_the_loop_where_it_is_on(self):
+        r = self.loop("901", mode="compact", FEATURE_LOOP_CONDUCTOR_WAIT="1", FEATURE_LOOP_STOP_ON_COMPACT="1")
         self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
         self.assertIn("compacted with no commit at 600000 tokens, and no verdict came from the conductor in 1 s", self.record())
+
+    def moonshot(self, **env):
+        """feature-loop.sh by itself: no conductor."""
+        return subprocess.run([str(self.root / "llm-dlc/tools/feature-loop.sh"), "prove-change"], cwd=self.root,
+                              env={**self.env, "FEATURE_LOOP_ITEMS": "901", "STANDIN_MODE": "compact", "STANDIN_WAIT": "1", **env},
+                              capture_output=True, text=True, timeout=120)
+
+    @cost("tool")
+    def test_with_no_conductor_a_compaction_with_no_commit_is_only_logged(self):
+        r = self.moonshot()
+        self.assertIn("compacted (auto) at 600000 tokens", r.stdout)
+        record = self.record()
+        self.assertIn("cycle 1 (item 901) made no commit", record)  # the turn ran to its own end, a second later
+        self.assertNotIn("compacted with no commit", record)
+
+    @cost("tool")
+    def test_with_no_conductor_the_rule_stops_the_loop_only_where_it_is_on(self):
+        r = self.moonshot(FEATURE_LOOP_STOP_ON_COMPACT="1", STANDIN_WAIT="20")
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("cycle 1 (item 901) compacted with no commit at 600000 tokens; session", self.record())
 
     @cost("tool")
     def test_a_turn_that_ends_by_itself_takes_its_question_back(self):

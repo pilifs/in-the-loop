@@ -136,9 +136,10 @@ Fable 5.2 at high effort, the instruction and nothing else. It works the same in
 
 A moonshot has no acceptance criteria, so its context window is its measure: the session compacts itself at 600k
 tokens, and a compaction with no commit since the cycle began, or since the last compaction, is where the work is
-either hard and going well or stuck. A rule can't tell which. A loop by itself stops there; this one asks first. It
-appends the event to `events.jsonl`, lets the turn go on, and waits fifteen minutes (`FEATURE_LOOP_CONDUCTOR_WAIT`,
-in seconds) for a verdict:
+either hard and going well or stuck. A rule can't tell which: a loop by itself only logs the compaction, since a rule
+that stopped there stopped good work (`FEATURE_LOOP_STOP_ON_COMPACT=1` still turns it on). This loop asks. It appends
+the event to `events.jsonl`, lets the turn go on, and waits fifteen minutes (`FEATURE_LOOP_CONDUCTOR_WAIT`, in
+seconds) for a verdict:
 
 ```bash
 python3 llm-dlc/tools/conductor.py wait llm-dlc/loop-summaries/prove-change      # blocks until there is something to judge
@@ -151,7 +152,9 @@ loop's transcript, which the event names, the commits and the working copy's dif
 failure or file keeps coming back. Then it answers and waits again.
 
 - `continue` lets the turn run to its next compaction, where the question is asked again if there is still no commit.
-- `stop`, or no answer in time, ends the turn and the loop, as the rule alone would have.
+- `stop` ends the turn and the loop.
+- No answer in time leaves the turn running, as in a loop without a conductor, and the record says so. A conductor
+  that has gone away must not stop good work. With `FEATURE_LOOP_STOP_ON_COMPACT=1`, silence stops the loop too.
 - Lean towards `continue` while the work is moving. An example left unfinished is fine, since a later run can return
   to it, and a stop costs a person's attention.
 
