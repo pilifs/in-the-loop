@@ -14,11 +14,12 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
-from targets import interfaces, runtime, sidecar, workflow, workflow_ingest  # noqa: E402
+from targets import interfaces, runtime, runtime_maven, sidecar, workflow, workflow_ingest  # noqa: E402
 
 # Each packet: the mutant's base, its patch, the task whose claim the mutant is meant to fail, and the mutant's own
 # claim task. A CVE packet's mutant fails the fixed release's security property; a positive's fails its preservation
@@ -233,6 +234,34 @@ class SliceRouteTest(unittest.TestCase):
             self.assertEqual(runtime.lock(m6 if r != "before" else replay, r).stage, "source-locked", r)
         self.assertEqual(runtime.lock(workflow.plan_task(folder, example, target, "mutant-replay"), "mutant").stage,
                          "source-locked")
+
+    def test_307s_slices_need_only_the_jdk_and_before_must_match_5_2_0_m4s_published_class(self):
+        """307 on the source slice (the user's choice of 2026-11-15): each commit's BCrypt.java alone, by JDK 8 with
+        -g -source 1.8 -target 1.8 -encoding UTF-8, and before's BCrypt.class compared byte for byte with Spring
+        Security 5.2.0.M4's published one in every preparation of before. The mutant inherits no match."""
+        folder, example, target = packet("307")
+        self.assertNotIn("build", target["preparation"])
+        replay = workflow.plan_task(folder, example, target, "replay")
+        self.assertEqual([(a["revision"], a["route"], a["published"]) for a in replay.artifacts],
+                         [("before", "source-slice", []), ("after", "source-slice", [])])
+        self.assertEqual(replay.artifacts[0]["slice"]["flags"], ["-g", "-source", "1.8", "-target", "1.8",
+                                                                 "-encoding", "UTF-8"])
+        match, = replay.artifacts[0]["slice"]["matches"]
+        lock = json.loads((Path(folder) / "sources.lock.json").read_text())
+        m4 = next(c for c in lock["correspondence"] if c["release"] == "5.2.0.M4")["published"]
+        self.assertEqual((match["class"], match["sha256"], match["jar"]["sha256"], match["jar"]["url"]),
+                         ("org/springframework/security/crypto/bcrypt/BCrypt.class",
+                          m4["entries"]["org/springframework/security/crypto/bcrypt/BCrypt.class"], m4["sha256"],
+                          m4["url"]))
+        self.assertNotIn("matches", replay.artifacts[1]["slice"], "after has no published counterpart")
+        mutant_plan = workflow.plan_task(folder, example, target, "mutant-replay")
+        self.assertNotIn("matches", mutant_plan.artifacts[1]["mutant"]["base"]["slice"])
+        with mock.patch.object(runtime_maven, "FETCH", side_effect=AssertionError("a lock fetched")):
+            for p, r in ((replay, "before"), (replay, "after"), (mutant_plan, "mutant")):
+                self.assertEqual(runtime.lock(p, r).stage, "source-locked", r)
+            self.assertEqual(runtime.lock(replay, "before").source["slice"]["matches"][0]["jar"]["role"], "reference")
+        for task in ("preservation", "mutant-preservation"):
+            self.assertTrue(workflow.plan_task(folder, example, target, task).network, task)
 
     def test_a_slice_receipts_claim_names_each_revisions_scope_and_other_routes_are_unchanged(self):
         def scopes(number, task):

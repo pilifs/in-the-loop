@@ -21,7 +21,9 @@ its recorded recipe with its own tool and JDK, through runtime_upstream.py: Mave
 blocker) and `source-slice` (the exact commit fetched from github.com, and only the slice's named files compiled, by
 the slice's recorded JDK and javac flags, against its recorded JARs: an extracted source slice, labelled
 `extracted-source-slice`, never the commit's own build; a revision of its sidecar may instead be a published release
-of the same sources, prepared as published and compared with a slice in a correspondence pair). The adapter and
+of the same sources, prepared as published and compared with a slice in a correspondence pair; and a slice revision
+may name published classes it must reproduce byte for byte, `slice.matches`, each fetched by its JAR's sha256 and
+compared with what javac wrote, a difference failing the preparation). The adapter and
 driver are compiled separately, with the fixture recipe's --release and JAR date, on every route.
 
 On the classpath a preparation refuses: a class held by more than one entry (an adapter or driver shadowing the
@@ -366,19 +368,48 @@ def _lock_slice(plan, revision, entry, folder):
         raise Refused.blocked(b) from None
     if len({i["coordinates"] for i in items}) != len(items):
         raise Refused("lock", f"revision {revision}: a JAR is listed twice on the slice's classpath")
+    matches = _slice_matches(revision, recipe.get("matches"))
     source = {
         "route": "source-slice", "repository": repository, "revision": revision,
         "provenance": "an extracted source slice: the named files of the exact commit, fetched from github.com, compiled "
                       "alone by the recorded JDK and flags against the recorded JARs; never the commit's own build, "
                       "and a narrower scope than it",
         "history": {"commit": commit, **({"parent": parent} if parent else {})},
-        "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), "scope": SCOPES["extracted-source-slice"]},
+        "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), **({"matches": matches} if matches else {}),
+                  "scope": SCOPES["extracted-source-slice"]},
         "published": items,
         **_controls_source(folder, entry),
         "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
                                           "the slice is compiled by its own recorded JDK and flags", **_fixture_recipe()},
     }
     return commit, source
+
+
+SLICE_CLASS = re.compile(r"^[A-Za-z_][A-Za-z0-9_$]*(/[A-Za-z_][A-Za-z0-9_$]*)*\.class$")
+
+
+def _slice_matches(revision, matches):
+    """A slice's published classes to reproduce (`slice.matches`, the revision's own), checked offline: each a class
+    entry name, the sha256 that entry has in the published JAR, and that JAR as a lock item. None when it names none."""
+    if matches is None:
+        return None
+    if not isinstance(matches, list) or not matches or not all(isinstance(m, dict) for m in matches):
+        raise Refused("lock", f"revision {revision}: the slice's matches are not a non-empty list of entries")
+    out = []
+    for m in matches:
+        cls, digest = m.get("class"), m.get("sha256")
+        if not isinstance(cls, str) or not SLICE_CLASS.match(cls):
+            raise Refused("lock", f"revision {revision}: {cls!r} is not a class entry name (a/b/C.class)")
+        if not isinstance(digest, str) or not runtime_maven.SHA256.match(digest):
+            raise Refused("lock", f"revision {revision}: {cls} names no published sha256 to match")
+        try:
+            jar = runtime_maven.check_item(m.get("jar"), "reference")
+        except runtime_maven.Blocked as b:
+            raise Refused.blocked(b) from None
+        out.append({"class": cls, "sha256": digest, "jar": jar})
+    if len({m["class"] for m in out}) != len(out):
+        raise Refused("lock", f"revision {revision}: a class is matched twice")
+    return out
 
 
 LOCKS = {"fixture": _lock_fixture, "published-artifact": _lock_published, "upstream-build": _lock_upstream,
@@ -1079,6 +1110,7 @@ def _prepare_slice(plan, revision, locked, workdir):
         if missing:
             raise Refused("build", f"the slice's files give no class {', '.join(missing)}: a file's name or package "
                                    f"doesn't match the class it declares")
+        matched = _match_published(recipe.get("matches") or [], made, workdir, plan, cache, log, build)
         name = f"slice/{revision}.jar"
         (workdir / "slice").mkdir(exist_ok=True)
         what = (f"constructed: the slice of {source['history']['commit']} ({', '.join(recipe['files'])}) after the patch "
@@ -1090,12 +1122,60 @@ def _prepare_slice(plan, revision, locked, workdir):
         identity = runtime_jdk.identity(jdk)
         toolchain["slice"] = {"jdk": identity, "javac": argv, "flags": list(recipe["flags"]),
                               "classes": {n: sha256(c) for n, c in made.items()}}
-        source["slice"] = {**recipe, "compiled": compiled, "jar": name}
+        source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {})}
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *acquired])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
+
+
+def _match_published(matches, made, workdir, plan, cache, log, build):
+    """Each published class the slice must reproduce (`slice.matches`): its JAR acquired by its recorded sha256 into
+    `reference/` (never on the classpath), the class entry read and checked against its recorded sha256, then compared
+    with the class javac wrote, byte for byte. A difference fails the preparation: the slice doesn't reproduce the
+    published build, and is not used anyway. The records of the matched classes."""
+    import zipfile
+    out = []
+    for m in matches:
+        name, coords = m["class"][:-len(".class")], m["jar"]["coordinates"]
+        if name not in made:
+            raise Refused("build", f"the slice gives no class {name}, which slice.matches compares with {coords}'s",
+                          next="correct slice.matches or slice.files in target.json")
+        path = workdir / "reference" / Path(_jar_path(coords)).name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            log += runtime_maven.acquire(m["jar"], path, cache, network=plan.network)
+        except runtime_maven.Blocked as b:
+            raise Refused.blocked(b) from None
+        finally:
+            (workdir / "logs/acquire.log").parent.mkdir(exist_ok=True)
+            (workdir / "logs/acquire.log").write_text("\n".join(log) + "\n")
+            if "logs/acquire.log" not in build.logs:
+                build.logs.append("logs/acquire.log")
+        with zipfile.ZipFile(path) as z:
+            try:
+                published = z.read(m["class"])
+            except KeyError:
+                raise Refused("acquire", f"{coords} (sha256 {m['jar']['sha256']}) has no entry {m['class']}",
+                              next="correct slice.matches in target.json") from None
+        found = hashlib.sha256(published).hexdigest()
+        if found != m["sha256"]:
+            raise Refused("acquire", f"{coords}'s {m['class']} has sha256 {found}, not the recorded {m['sha256']}",
+                          needs="the published class the lock records",
+                          next="find out which bytes are right; a lock is never updated to match")
+        ours = made[name].read_bytes()
+        mine = hashlib.sha256(ours).hexdigest()
+        if ours != published:
+            raise Refused("build", f"the slice's {m['class']} (sha256 {mine}, {len(ours)} bytes) is not {coords}'s "
+                                   f"(sha256 {found}, {len(published)} bytes): the slice doesn't reproduce the "
+                                   f"published build of the same sources",
+                          needs="a slice recipe (JDK and javac flags) that gives the published class's bytes",
+                          next=f"compare the two classes with javap -v -p; never change the recorded hashes to match")
+        out.append({"class": m["class"], "sha256": found, "jar": {k: m["jar"][k] for k in ("coordinates", "url",
+                                                                                          "sha256")},
+                    "identical": True})
+    return out
 
 
 PREPARES = {"fixture": _prepare_fixture, "published-artifact": _prepare_published, "upstream-build": _prepare_upstream,

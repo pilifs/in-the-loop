@@ -224,6 +224,16 @@ class SidecarTest(unittest.TestCase):
         unlisted = self.with_reference(self.with_slice())
         unlisted["preparation"]["artifacts"].pop()
         self.refused(unlisted, "lists no JAR for it")
+        match = {"class": "fixture/Gate.class", "sha256": "a" * 64,
+                 "jar": {"coordinates": "g.x:gate:1.0", "url": "https://repo.spring.io/milestone/g/x/gate/1.0/gate-1.0.jar",
+                         "sha256": "b" * 64}}
+        sidecar.check(self.with_slice(matches={"vulnerable": [match]}), self.folder)
+        self.refused(self.with_reference(self.with_slice(matches={"release": [match]})),
+                     "slice.matches names revision release, whose slice.files it doesn't compile")
+        self.refused(self.with_slice(matches={"vulnerable": [{**match, "class": "Gate.java"}]}), "does not match")
+        self.refused(self.with_slice(matches={"vulnerable": [{**match, "jar": {**match["jar"],
+                                                                               "url": "https://example.org/g.jar"}}]}),
+                     "does not match")
         elsewhere = self.with_reference(edited(p=lambda t: t.update(preparation={"route": "published-artifact",
                                                                                  "artifacts": []})))
         self.refused(elsewhere, "a revision's own route is only for the source-slice route's published references")

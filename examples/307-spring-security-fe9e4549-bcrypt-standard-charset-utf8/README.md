@@ -2,10 +2,11 @@
 
 [← All examples](../README.md)
 
-**State: a partial scaffold.** It is source-locked, its claim is frozen, and its oracle, driver, probes and mutant are
-written. It is not prepared: its build route needs the user's decision (below). No pipeline replay or proof has run, so
-there is no verdict. The work manifest is [`target.json`](target.json); what was checked upstream, and how, is in
-[`sources.lock.json`](sources.lock.json).
+**State: a partial scaffold, on the source slice.** It is source-locked, its claim is frozen, and its oracle, driver,
+probes and mutant are written. Its route is the extracted-source slice, the user's choice of 2026-11-15 (below). Its
+replay and mutant-replay are queued as jobs; until they pass, nothing is prepared or replayed by the pipeline, and no
+proof has run, so there is no verdict. The work manifest is [`target.json`](target.json); what was checked upstream,
+and how, is in [`sources.lock.json`](sources.lock.json).
 
 ## The change
 
@@ -42,23 +43,23 @@ full claim stays unresolved beside a separate local conversion lemma, and no cip
 ## Preparation
 
 No Maven Central artifact carries either side's exact `BCrypt.java` (before's is 5.2.0.M4's, a milestone; 5.2.0.RELEASE
-differs from after's by an unused import and a `final`). The user chose the upstream Gradle build on 2026-11-14, with
-Spring's four build plugins from Alibaba Cloud's mirror of Spring's plugin repository (`maven.aliyun.com`). Lookups
-on 2026-11-14 (HEAD requests and pinned fetches, in [`sources.lock.json`](sources.lock.json)'s `buildRoute`) found
-that this isn't enough:
-- the four plugins are on the mirror, and their sha256s are recorded, as is the 5.5.1 distribution's (Gradle's
-  published checksum);
-- plugins.gradle.org serves every plugin it hosts (gretty, the JFrog build-info plugin, and four others) by a redirect
-  to `plugins-artifacts.gradle.org`, which the download policy doesn't follow;
-- at least two of the buildscript's second-level dependencies, `gretty-core` 2.2.0 and `build-info-extractor` 2.11.3,
-  were published only to JCenter. JCenter now redirects to Maven Central, which lacks them. Only maven.aliyun.com's
-  JCenter mirror serves them, outside the user's decision.
+differs from after's by an unused import and a `final`), and the commits' own Gradle builds can't resolve their
+buildscript from the allowed hosts. Lookups on 2026-11-14 (HEAD requests and pinned fetches, kept as a record in
+[`sources.lock.json`](sources.lock.json)'s `buildRoute`) found that plugins.gradle.org serves its plugins by a redirect
+to `plugins-artifacts.gradle.org`, that at least two second-level dependencies were published only to JCenter, and that
+Spring's build plugin is on no anonymous allowed repository. The user decided on 2026-11-15 that those hosts and
+maven.aliyun.com's mirrors stay disallowed.
 
-So the build is predicted to fail at its buildscript, before compiling anything, and runtime's Gradle route wasn't
-built. The handoff in `target.json` gives the user two options: allow the portal's content host and the JCenter
-mirror for the build, or take the extracted-source slice. The slice compiles each commit's `BCrypt.java` alone with
-javac 8 and `-g`. Compiled that way by hand, before's class is byte-identical to the `BCrypt.class` in Spring
-Security 5.2.0.M4's published JAR (sha256 `0b137406…`, `sources.lock.json`).
+**The route: the extracted-source slice** (`preparation.slice` in `target.json`, the route 305 uses). Each commit's
+`BCrypt.java` is compiled alone by javac 8 with `-g -source 1.8 -target 1.8 -encoding UTF-8`; BCrypt needs only the JDK,
+so the slice has no dependency JARs. Every receipt labels the classes `extracted-source-slice`: a narrower scope than
+the commits' own builds, whose blocker stays in the handoff for them.
+
+**The check against Spring's own build.** Every preparation of `before` fetches Spring Security 5.2.0.M4's published
+`spring-security-crypto` JAR from repo.spring.io/milestone by its sha256 (`8871c1fe…`) and compares its `BCrypt.class`
+(sha256 `0b137406…`) with the slice's, byte for byte (`slice.matches`). A difference fails the preparation, recorded as
+a blocker, and the slice is not used. A hand compile on 2026-11-14 (a note) gave the identical bytes. `after` has no
+published counterpart, so its slice rests on the same recipe; the mutant is after's slice with the patch applied.
 
 ## The packet
 

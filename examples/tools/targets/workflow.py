@@ -113,8 +113,9 @@ def artifact_sources(folder, target, revisions):
     base's published artifacts come with it: the mutant itself is built (patched sources against them), never
     fetched.
 
-    On the source-slice route a compiled revision's entry carries `slice` (its files, the JDK and javac flags) and its
-    `published` JARs (what the slice is compiled against and run with); a mutant's base carries both. A revision with
+    On the source-slice route a compiled revision's entry carries `slice` (its files, the JDK and javac flags, and the
+    published classes it must reproduce byte for byte, `matches`, where the sidecar names any) and its `published` JARs
+    (what the slice is compiled against and run with); a mutant's base carries both, without `matches`. A revision with
     a route of its own (a published reference of the slice) is planned on that route."""
     prep = target.get("preparation")
     if prep is None:
@@ -160,6 +161,9 @@ def artifact_sources(folder, target, revisions):
                 if not files:
                     return f"revision {source}: the source-slice route names no files for it"
                 where["slice"] = {"files": list(files), "jdk": recipe["jdk"], "flags": list(recipe["flags"])}
+                matches = (recipe.get("matches") or {}).get(source) if source == name else None
+                if matches:
+                    where["slice"]["matches"] = [dict(m) for m in matches]
         if route == "upstream-build":
             if "build" not in prep:
                 return "the upstream-build route names no build (tool, argv, jdk)"

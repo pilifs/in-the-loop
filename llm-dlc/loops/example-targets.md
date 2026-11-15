@@ -1485,6 +1485,58 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     which still offer options (a) and (b). Then queue its replay, `mutant-replay` and claim tasks. After that comes
     VF-027 as the user decided: observed gaps, `blocked` readiness, and resubmissions predicting the refusals. Then
     the gap inventory, A8 and the for-review list.
+- 2026-11-15, **307 on the source slice, with before's class checked against 5.2.0.M4's in every preparation; its
+  replay and mutant-replay queued** (the user's choice (b)).
+  - **Reproducers**. Both fail on `vwrqwqqy`'s code by construction. That was not rerun there:
+    - `test_runtime_upstream.py`'s `test_a_slice_class_is_checked_byte_for_byte_against_its_published_reference`. The
+      slice route had no way to compare a compiled class with a published one, so a slice whose class differed from
+      its reference prepared anyway;
+    - `test_packets.py`'s `test_307s_slices_need_only_the_jdk_and_before_must_match_5_2_0_m4s_published_class`. 307
+      was still on the upstream-build route.
+  - **The route's new field, `preparation.slice.matches`**: per revision the slice compiles, the published classes
+    it must reproduce byte for byte. Each gives the class entry, its sha256 in the published JAR, and the JAR as a
+    lock item.
+    - Schema: the JAR comes from Central or repo.spring.io. `sidecar.py` refuses a match for a revision the slice
+      doesn't compile.
+    - The planner passes a revision's own matches. A mutant's base gets none, since the mutant's bytes differ by
+      design.
+    - Runtime: `_lock_slice` checks the matches offline, the JAR with role `reference`. `_prepare_slice` then runs
+      `_match_published`:
+      - it fetches the JAR by its sha256 into `reference/`, off the classpath and outside the artifacts;
+      - it checks the entry against its recorded sha256;
+      - it compares the entry with the class javac wrote.
+
+      A difference is a `build` failure with a blocker ("the slice doesn't reproduce the published build"), and so is
+      a missing class. A JAR without the entry, or an entry with other bytes, fails at `acquire`. The matched classes
+      are recorded in `source.slice.matched`.
+    - 305 has no matches, so its plans, claim keys and receipts are unchanged.
+  - **307's sidecar**: the route is now `source-slice`, compiling `crypto/.../bcrypt/BCrypt.java` at both commits
+    with JDK 8 and `-g -source 1.8 -target 1.8 -encoding UTF-8`. There are no dependency JARs, since BCrypt needs only
+    the JDK. `before` has one match, `BCrypt.class` `0b137406…` in spring-security-crypto 5.2.0.M4 (`8871c1fe…`),
+    the hashes of `sources.lock.json`.
+    - The build-or-dependency blocker is rewritten. The user's choice, and the disallowed hosts, are stated. The
+      blocker stays for the commits' own builds, which no task claims, as 305's does.
+    - `next`, the replay task's note, the README (state and preparation) and a new `example.json` note no longer
+      offer options (a) and (b). The index is regenerated.
+    - `sources.lock.json` keeps the `buildRoute` lookups as a record.
+  - **Checked offline**: `build.py --plan 307` is executable for all four tasks. Each revision, the mutant included,
+    locks with no fetch.
+  - **Queued**, each `build.py 307 --task T` with 2 CPUs, 3 GiB and 20 minutes:
+    - `20261115-003616-example-307-replay-p3-source-slice-route`. Before's class must equal M4's, and both slices
+      must hold the oracle on JDK 21 and 25;
+    - `20261115-003617-example-307-mutant-replay-p3-source-slic`. After must hold, and the US-ASCII mutant must fail
+      at the non-ASCII probes only.
+  - **Not queued yet: 307's native tasks** (`preservation`, `mutant-preservation`). The handoff queues them after the
+    replay. They go with VF-027's resubmissions, which need a job expectation for a predicted refusal. Their predicted
+    refusals (`String.getBytes`, a null String) haven't been observed.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (236, two new tests,
+    and new cases in `test_sidecar.py`), `test_build.py` (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Next**: VF-027 as the user decided. Each of the 23 tasks gets its observed gap as an observed blocker, citing
+    its job and receipt, and the readiness `blocked`. Note it in the examples' notes. Resubmit each job unchanged in
+    its claim, with an expectation that predicts the observed refusal. First find how a job states that expectation
+    (`--expected` and `--expect-exit`, and the `task-as-expected` signal). Queue 307's native tasks the same way once
+    its replay passes. Then the gap inventory, A8 and the for-review list. Read 307's two replays when they are
+    collected.
 - Status: working
 
 ## Loop settings

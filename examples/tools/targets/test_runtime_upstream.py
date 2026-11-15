@@ -655,6 +655,63 @@ class SliceRouteTest(UpstreamCase):
         self.assertEqual(stray.failedStage, "build", stray.diagnostic)
         self.assertIn("fixture/Stray", stray.diagnostic)
 
+    def test_a_slice_class_is_checked_byte_for_byte_against_its_published_reference(self):
+        """slice.matches (307's check of before against Spring Security 5.2.0.M4, the user's decision of 2026-11-15):
+        the published JAR is fetched by its sha256 into reference/, off the classpath; a class that differs, a JAR
+        without the entry, an entry whose bytes aren't the recorded ones, or a class the slice doesn't give, each fail
+        the preparation."""
+        import hashlib
+        fixture = Path(base.manifest()["dir"])
+
+        def published(jar_name, coords, cls_bytes, entry="fixture/Gate.class"):
+            path = self.dir / jar_name
+            with zipfile.ZipFile(path, "w") as z:
+                z.writestr(entry, cls_bytes)
+            return self.central.publish(coords, path)
+
+        same = runtime.runtime_jar.read_class(fixture / "after.jar", "fixture/Gate")
+        other = runtime.runtime_jar.read_class(fixture / "mutant.jar", "fixture/Gate")
+        self.assertNotEqual(same, other)
+        good = published("gate-pub.jar", "fixture.example:gate:1.0", same)
+        match = {"class": "fixture/Gate.class", "sha256": hashlib.sha256(same).hexdigest(), "jar": good}
+        entry = self.entry()
+        entry["slice"]["matches"] = [match]
+        locked = runtime.lock(self.plan_of([entry]), "after")
+        self.assertEqual(locked.stage, "source-locked", locked.diagnostic)
+        self.assertEqual(locked.source["slice"]["matches"][0]["jar"]["role"], "reference")
+        prepared = runtime.prepare(self.plan_of([entry]), "after", self.work / "same")
+        self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
+        self.assertEqual(prepared.source["slice"]["matched"],
+                         [{"class": "fixture/Gate.class", "sha256": match["sha256"], "identical": True,
+                           "jar": {k: good[k] for k in ("coordinates", "url", "sha256")}}])
+        self.assertTrue((self.work / "same/reference/gate-1.0.jar").is_file())
+        self.assertNotIn("reference/gate-1.0.jar", prepared.classpath)
+        self.assertNotIn(good["sha256"], [a.sha256 for a in prepared.artifacts], "the reference is no artifact of it")
+
+        bad = published("gate-bad.jar", "fixture.example:gate:2.0", other)
+        empty = published("gate-empty.jar", "fixture.example:gate:3.0", same, entry="fixture/Other.class")
+        for name, m, stage, says in (
+                ("differs", {"class": "fixture/Gate.class", "sha256": hashlib.sha256(other).hexdigest(), "jar": bad},
+                 "build", "doesn't reproduce the published build"),
+                ("no entry", {**match, "jar": empty}, "acquire", "has no entry fixture/Gate.class"),
+                ("wrong hash", {**match, "sha256": "0" * 64}, "acquire", "not the recorded"),
+                ("no class", {**match, "class": "fixture/Nope.class"}, "build", "gives no class fixture/Nope")):
+            with self.subTest(name):
+                e = self.entry()
+                e["slice"]["matches"] = [m]
+                refused = runtime.prepare(self.plan_of([e]), "after", self.work / name.replace(" ", "-"))
+                self.assertEqual(refused.failedStage, stage, refused.diagnostic)
+                self.assertIn(says, refused.diagnostic)
+                self.assertIsNotNone(refused.blocker)
+        for change, says in (([{"class": "Gate.java", "sha256": match["sha256"], "jar": good}], "not a class entry"),
+                             ([{"class": "fixture/Gate.class", "jar": good}], "no published sha256"),
+                             ([], "not a non-empty list"),
+                             ([match, match], "matched twice")):
+            with self.subTest(change=change):
+                e = self.entry()
+                e["slice"]["matches"] = change
+                self.assertIn(says, runtime.lock(self.plan_of([e]), "after").diagnostic)
+
     def test_a_slice_mutant_is_its_base_commit_patched_then_compiled_as_the_base(self):
         prepared = runtime.prepare(self.plan_of([self.mutant_entry()]), "mutant", self.work / "mutant")
         self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)

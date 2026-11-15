@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-003616-example-307-replay-p3-source-slice-route",
+  "title": "example 307 replay (P3, source-slice route): BCrypt.hashpw before and after fe9e4549, before's class checked against 5.2.0.M4's published one",
+  "description": "The job runs python3 examples/tools/build.py 307 --task replay, the target route of llm-dlc/loops/example-targets.md, on the source-slice route the user chose for P3 (example 307, Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) on 2026-11-15, since the commits' own Gradle builds can't resolve their buildscript from the allowed hosts. Each commit is fetched from github.com at depth 1 or 2 and only crypto/.../bcrypt/BCrypt.java is compiled, by Temurin 8's javac with -g -source 1.8 -target 1.8 -encoding UTF-8; BCrypt needs only the JDK, so the slice has no dependency JARs. New in this job: before's preparation fetches Spring Security 5.2.0.M4's published spring-security-crypto JAR from repo.spring.io/milestone by its sha256 (8871c1fe...) and compares its BCrypt.class (sha256 0b137406...) with the slice's byte for byte (target.json preparation.slice.matches, runtime._match_published); a difference fails the preparation as a blocker, never a slice used anyway. A hand compile on 2026-11-14 (a note) gave identical bytes. The driver (HashpwDriver: 45 probes, three fixed salts from upstream's BCryptTests and four invalid ones, passwords from empty to 73 UTF-8 bytes, surrogates and null) runs in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, read by the packet's independent oracle (controls/oracle.py problems(), which encodes UTF-8 itself and has no cipher), labelled extracted-source-slice in claim.target.scopes. A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true. This task: the positive pair, before (fb39d9c2) and after (fe9e4549); both must hold the oracle on every probe, and before's preparation must find its BCrypt.class identical to 5.2.0.M4's.",
+  "kind": "example",
+  "capabilities": [
+    "target:replay",
+    "target:source-slice"
+  ],
+  "links": {
+    "examples": [
+      "307"
+    ]
+  },
+  "expected": "build.py prints '307-...: task replay: none (completed; as expected)' and exits 0: before's slice BCrypt.class is byte-identical to 5.2.0.M4's (prepared.json's slice.matched, identical: true), and before and after both hold the oracle on JDK 21 and 25; a receipt under examples/307-*/receipts/replay/ whose claim.target.scopes says extracted-source-slice for both",
+  "submitted": {
+    "at": "2026-11-15T00:36:16+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m"
+  },
+  "steps": [
+    {
+      "name": "example 307 task replay (replay)",
+      "run": "python3 examples/tools/build.py 307 --task replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/replay"
+  ]
+}

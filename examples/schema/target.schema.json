@@ -149,7 +149,37 @@
               "additionalProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[A-Za-z0-9_][A-Za-z0-9_./-]*\\.java$", "maxLength": 300 } }
             },
             "jdk": { "description": "The JDK whose javac compiles the slice.", "$ref": "#/$defs/jdk" },
-            "flags": { "description": "javac's flags, in order, from -g, -g:none, -g:{source,lines,vars}, -parameters, -source N, -target N, --release N and -encoding NAME only (runtime checks them).", "type": "array", "items": { "type": "string", "minLength": 1 } }
+            "flags": { "description": "javac's flags, in order, from -g, -g:none, -g:{source,lines,vars}, -parameters, -source N, -target N, --release N and -encoding NAME only (runtime checks them).", "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "matches": {
+              "description": "Per revision name (one the slice compiles), published classes its compiled slice must reproduce byte for byte: the class, its sha256 as an entry of the published JAR, and that JAR, fetched by its own sha256 when the revision is prepared. A mismatch fails the preparation (a blocker); the slice is never used anyway. A mutant inherits none of its base's.",
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { "$ref": "#/$defs/name" },
+              "additionalProperties": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["class", "sha256", "jar"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "class": { "description": "The class's entry name in the JAR, as javac writes it under the slice's output directory.", "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_$]*(/[A-Za-z_][A-Za-z0-9_$]*)*\\.class$" },
+                    "sha256": { "description": "The published class entry's sha256.", "$ref": "#/$defs/sha256" },
+                    "jar": {
+                      "description": "The published JAR that carries the class.",
+                      "type": "object",
+                      "required": ["coordinates", "url", "sha256"],
+                      "additionalProperties": false,
+                      "properties": {
+                        "coordinates": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[0-9][A-Za-z0-9_.-]*$" },
+                        "url": { "type": "string", "pattern": "^https://(repo\\.maven\\.apache\\.org/maven2|repo\\.spring\\.io)/" },
+                        "sha256": { "$ref": "#/$defs/sha256" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "jdks": { "description": "The JDKs the concrete controls run on, each a separate identity (21 and 25 wherever the artifacts run on them).", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/jdk" } },

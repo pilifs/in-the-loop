@@ -53,15 +53,39 @@
     ]
   },
   "preparation": {
-    "route": "upstream-build",
-    "build": {
-      "tool": "gradle-wrapper",
-      "argv": [
-        "./gradlew",
-        "--no-daemon",
-        ":spring-security-crypto:jar"
+    "route": "source-slice",
+    "slice": {
+      "files": {
+        "before": [
+          "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+        ],
+        "after": [
+          "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+        ]
+      },
+      "jdk": "8",
+      "flags": [
+        "-g",
+        "-source",
+        "1.8",
+        "-target",
+        "1.8",
+        "-encoding",
+        "UTF-8"
       ],
-      "jdk": "8"
+      "matches": {
+        "before": [
+          {
+            "class": "org/springframework/security/crypto/bcrypt/BCrypt.class",
+            "sha256": "0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb",
+            "jar": {
+              "coordinates": "org.springframework.security:spring-security-crypto:5.2.0.M4",
+              "url": "https://repo.spring.io/milestone/org/springframework/security/spring-security-crypto/5.2.0.M4/spring-security-crypto-5.2.0.M4.jar",
+              "sha256": "8871c1fea172909fb84e5e83fe9a05882f2e78c1b290dbb52932016c6d2ba774"
+            }
+          }
+        ]
+      }
     },
     "jdks": [
       "21",
@@ -76,7 +100,7 @@
       "pair": "positive",
       "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
       "notes": [
-        "Concrete controls only: each revision's original BCrypt class in its own JVM, on JDK 21 and 25, over replay/probes.json's 45 probes: three valid salts from upstream's BCryptTests (the 'abc' test vector's cost-6 salt, its stored hash, and the '$2$05$' salt), never a random one, with passwords empty, ASCII, BMP non-ASCII, supplementary, 71, 72 and 73 UTF-8 bytes (in ASCII and in 2-, 3- and 4-byte characters, and with a character straddling byte 72), isolated and reversed surrogates, and null; and four invalid salts from the same tests. Observed: the returned String, or the exception's class. controls/oracle.py checks each side's lines against its statement and the two sides against each other."
+        "Concrete controls only: each revision's BCrypt class, compiled from its commit's BCrypt.java by the slice's recipe (before's checked byte for byte against Spring Security 5.2.0.M4's published class), in its own JVM, on JDK 21 and 25, over replay/probes.json's 45 probes: three valid salts from upstream's BCryptTests (the 'abc' test vector's cost-6 salt, its stored hash, and the '$2$05$' salt), never a random one, with passwords empty, ASCII, BMP non-ASCII, supplementary, 71, 72 and 73 UTF-8 bytes (in ASCII and in 2-, 3- and 4-byte characters, and with a character straddling byte 72), isolated and reversed surrogates, and null; and four invalid salts from the same tests. Observed: the returned String, or the exception's class. controls/oracle.py checks each side's lines against its statement and the two sides against each other."
       ]
     },
     {
@@ -129,7 +153,7 @@
       {
         "kind": "build-or-dependency",
         "observed": false,
-        "summary": "Predicted from the build files and from HEAD requests to the repositories on 2026-11-14, not from a build. The buildscript's classpath is io.spring.gradle:spring-build-conventions:0.0.23.RELEASE, the Boot 2.2.0.M3 Gradle plugin and nohttp-gradle 0.0.2.RELEASE, with their transitive closure, and Gradle resolves all of it before compiling anything. Decision 1's two extensions (the user, 2026-11-14) allow services.gradle.org, plugins.gradle.org, repo.spring.io and maven.aliyun.com/repository/spring-plugin/ for P3's four Spring plugins (spring-build-conventions, docbook-reference-plugin 0.3.1, propdeps-plugin 0.0.10.RELEASE and spring-io-plugin 0.0.8.RELEASE, each on the mirror, sha1 agreeing, sha256 in sources.lock.json). The rest of the closure is still not reachable. (1) plugins.gradle.org serves every plugin it hosts (gretty 2.2.0, build-info-extractor-gradle 4.7.5, gradle-versions-plugin 0.17.0, asciidoctor-gradle-plugin 1.5.8.1, gradle-ssh-plugin 2.9.0, nohttp-gradle) by a 303 redirect to plugins-artifacts.gradle.org, a host runtime_maven.py neither allows nor follows. (2) At least two second-level dependencies were published only to JCenter, which now redirects to Maven Central, where they 404: org.gretty:gretty-core:2.2.0 (gretty's) and org.jfrog.buildinfo:build-info-extractor:2.11.3 (build-info-extractor-gradle's). They answer 404 on repo.spring.io/milestone and the spring-plugin mirror, and 401 on repo.spring.io's plugins-release and libs-release. They answer 200 on maven.aliyun.com's jcenter, public and gradle-plugin repositories, which the user's decision doesn't cover. The closure wasn't enumerated further, so more such modules may exist. So the upstream build is predicted to fail at its buildscript, and runtime's Gradle route (runtime_upstream.py) wasn't built. Its pins (the 5.5.1 distribution's sha256 from gradle.org's checksum page, and the four plugins) are in sources.lock.json for when it is. The alternative is the extracted-source slice: each commit's BCrypt.java, which needs only the JDK, compiled alone. A hand compile of before's by javac 1.8.0_512 with -g -source 1.8 -target 1.8 gives a BCrypt.class byte-identical to Spring Security 5.2.0.M4's published one (sources.lock.json)."
+        "summary": "Predicted from the build files and from HEAD requests to the repositories on 2026-11-14, not from a build: the exact commits' own Gradle builds can't resolve their buildscript from the allowed hosts. plugins.gradle.org serves the plugins it hosts (gretty 2.2.0, build-info-extractor-gradle 4.7.5 and four others) by a 303 redirect to plugins-artifacts.gradle.org, which is not allowed, and at least two second-level dependencies (org.gretty:gretty-core:2.2.0, org.jfrog.buildinfo:build-info-extractor:2.11.3) were published only to JCenter, now gone; spring-build-conventions 0.0.23.RELEASE is on no anonymous allowed repository. The user's choice (2026-11-15): the narrower source-slice route instead, each commit's BCrypt.java compiled alone by JDK 8 with -g -source 1.8 -target 1.8 -encoding UTF-8 (BCrypt needs only the JDK), labelled extracted-source-slice in every receipt. Every preparation of before fetches Spring Security 5.2.0.M4's published spring-security-crypto JAR from repo.spring.io/milestone by its sha256 and compares its BCrypt.class with the slice's byte for byte (preparation.slice.matches); a difference fails the preparation, recorded as a blocker. A hand compile on 2026-11-14 (a note) gave the identical bytes. After has no published counterpart. plugins-artifacts.gradle.org and maven.aliyun.com are not allowed (the user, 2026-11-15); sources.lock.json's buildRoute keeps the lookups as a record, and nothing fetches them. The blocker stays for the exact commits' builds, which no task here claims."
       },
       {
         "kind": "java-semantics",
@@ -143,7 +167,7 @@
         "summary": "Predicted from lib/README.md: the checker takes a String parameter of a regression check as bounded UTF-16 with content, never null, but the claim's domain has a null password (NullPointerException) and a null salt (claims/hashpw-preservation.json); an attempt that can't take them is that refusal, and the claim stays unresolved, never re-read as the non-null domain. The salt domain is seven fixed strings, stated as an assume expression with String.equals."
       }
     ],
-    "next": "The build route needs the user's decision (the build-or-dependency blocker). (a) The upstream Gradle build, if plugins.gradle.org's content host plugins-artifacts.gradle.org may be followed as a redirect, and maven.aliyun.com's JCenter mirror may serve the buildscript's JCenter-only modules (gretty-core 2.2.0 and build-info-extractor 2.11.3 at least), each file hashed. Runtime's Gradle route is then built and queued as a job, with before's BCrypt.class compared with 5.2.0.M4's. (b) The extracted-source slice: each commit's BCrypt.java compiled alone by javac 8 with -g, the flags the hand compile matched 5.2.0.M4's published class with. Before's class is checked against that published class byte for byte, and the slice is labelled as its own scope. It reuses the slice route 305 gets. Then runtime's preparation of both revisions, the replay task (the driver on each revision's crypto classes in its own JVM, on JDK 21 and 25, read by controls/oracle.py), and the mutant: us-ascii.patch applied to after's BCrypt.java and its class compiled into a copy of after's artifact, replayed against the same oracle (it must fail on non-ASCII passwords and only there). The native attempt is queued only after the replay, and its predicted refusals recorded as observed or withdrawn. A conversion lemma bound to the unchanged callee's bytecode is a separate, narrower claim if it is wanted."
+    "next": "On the source slice (the user's choice of 2026-11-15): replay and mutant-replay are queued as jobs (see example.json's notes). Each prepares its revisions by the slice route; before's preparation checks its BCrypt.class against 5.2.0.M4's published one byte for byte, and a mismatch is a blocker. The replay runs the driver on each revision's slice JAR in its own JVM on JDK 21 and 25, read by controls/oracle.py: both hold. The mutant-replay runs after against the mutant (us-ascii.patch applied to after's BCrypt.java, compiled by the same recipe): after holds and the mutant fails at the non-ASCII probes. Once both pass, the packet is a reproducible scaffold at the slice's scope. Then the native attempts, preservation and mutant-preservation, each a queued job; the predicted refusals (the java-semantics and input-construction blockers) are recorded as observed or withdrawn, and the claim stays unresolved if refused. A conversion lemma bound to the unchanged callee's bytecode is a separate, narrower claim if it is wanted."
   },
   "controls": [
     {

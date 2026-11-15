@@ -249,7 +249,9 @@ def slice_problems(target):
     for name in sorted(compiled - files):
         problems.append(f"revision {name} is compiled by the slice, and slice.files names no files for it")
     problems += slice_flag_problems(recipe["flags"])
-    listed = {a["revision"] for a in prep.get("artifacts", [])}
+    for name in sorted(set(recipe.get("matches") or {}) - files):
+        problems.append(f"slice.matches names revision {name}, whose slice.files it doesn't compile")
+    listed ={a["revision"] for a in prep.get("artifacts", [])}
     bases = {r["mutant"]["base"] for r in revisions.values() if "mutant" in r}
     for name in sorted(own):
         if "commit" not in revisions[name]:
