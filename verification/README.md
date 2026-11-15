@@ -56,9 +56,18 @@ result is collected here, in the runner's workspace, and reaches that branch whe
 
 Submit a job for anything that runs a prover or a model checker, or that takes more than a minute or more than 1 GB:
 `build.py` on a B9, B11 or D1 example, an app's `verify.sh`, `jvmcontract prove`, `equivalence` or `tlc`, the
-integration tests in `lib/` that call JBMC and TLC, a real-world example's proof. Keep doing inline what is quick and
-what you need in order to go on: compiling, unit tests, `cargo test` without the slow tests, `jvmcontract tla` (which
-only generates), a TLC run over a few hundred states while you write a model.
+proof tier of the tests in `lib/` and the Python suites, a real-world example's proof. Keep doing inline what is quick
+and what you need in order to go on: compiling, the default test run (`python3 lib/tools/test_costs.py run`, the unit
+and tool tiers), `jvmcontract tla` (which only generates), a TLC run over a few hundred states while you write a model.
+
+The slow tests are the proof tier: the ignored Rust tests, tagged `cost:proof:`, and the Python tests tagged
+`@cost("proof", ...)`, each with its cost in `lib/tests/costs.json` (see [`lib/README.md`](../lib/README.md#tests)).
+`lib/README.md` gives the `submit` command for the whole tier; a job for one change runs only the proof tests whose
+inputs it touched. CLAUDE.md allows one exception inline: a single proof-tier test, once, when the change targets it
+directly and its row records a past run of it alone under a minute. The slow tests also include, until they move, the
+63 Rust tests marked `retier: pending` in the inventory: proof tier by what they call or took, but still in the default
+run until the next test-cost loop moves them behind proxies. They are a large part of why a default `cargo test` takes about
+11 minutes. While iterating, run the tests of what you changed, not them, unless the change targets one.
 
 A demo example, by id, fills in the step, the outputs, the requirements and the approach. The requirements are the
 tools `build.py`'s plan of the run says it calls (`python3 examples/tools/build.py --plan ID` shows them), optional ones
@@ -131,7 +140,8 @@ result says so. Measured here: examples 052 (B11) and 076 (D1) each peaked at ab
 | a JBMC proof over arrays or strings | 1 | 3G | 10m to 30m; it may run out at the 3 GB a proof gets by default |
 | D1 example, up to about 100,000 states | 2 | 1G | 1m |
 | D1 example, about a million states, or liveness | 2 | 2G to 3G | 10m to 30m |
-| `cargo test --release` in `lib/` with JBMC and TLC | 2 | 2G | 5m to 10m |
+| the proof tier, `test_costs.py run --tier proof` (see `lib/README.md`) | 4 | 8G | 1h30m |
+| one proof-tier test, by its row in `lib/tests/costs.json` | 1 | 2G | its recorded time: heap's up to about an hour |
 | a jvmcontract build, when `lib/` changed | counted by the runner, not by you | | |
 
 A job that asks for more memory than a runner allows (4 GB a job here) is deferred, not run: it waits for a bigger

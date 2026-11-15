@@ -506,6 +506,25 @@ Settled by the user on 2026-11-15:
 
   Next: Phase 3 step 8, the guidance in CLAUDE.md, the brief template and `verification/README.md`, then the rest
   of `lib/README.md`'s Tests section.
+- 2026-11-15, Phase 3 step 8 done: the guidance.
+  - **CLAUDE.md** has a Tests section: the three tiers; the default run (`test_costs.py run`) is what runs inline; the
+    proof tier is a job for the tests a change touched; write the cheapest test, and give a new proof-tier test its
+    tag, reason and proxy; `estimate`, `tag` and the lint after adding tests; the two lists are for a person. The
+    Verification jobs rule now names the proof tier and points at the exception.
+  - **Decision 4's exception**, stated narrowly: one proof-tier test, once, when the change targets it directly and its
+    row in `costs.json` records a past run of it alone under a minute (`"kind": "run alone"`, not `estimated`). The
+    inventory measures nothing yet, so "measures it" is read as that. Four ignored tests qualify today: three heap
+    tests whose one job took 3 to 5 s (step 4 doubts those jobs ran JBMC) and the preparation benchmark (49 s).
+  - **`brief-template.md`'s standing rule** runs the default test run, the unit and tool tiers, inline, instead of
+    "conformance cases on a real `java`", and the proof tier as a job.
+  - **`verification/README.md`**: the slow tests are the proof tier, plus the 63 `retier: pending` tests until they
+    move. Its table of estimates replaces "`cargo test --release` with JBMC and TLC, 5 to 10 min" with the proof tier's
+    job (4 CPUs, 8G, 1.5 h) and one proof test by its row.
+  - **`lib/README.md`'s Tests section** gains "Writing a test" (the cheapest test, stand-in scripts for JBMC, a new proof
+    test's three things, the lists) and the inline exception under the proof tier.
+  - **Verified.** Only Markdown changed, and no test reads these files, so no test was run.
+
+  Next: Phase 3 step 9, the for-review list, then Status `done`.
 - Status: working
 
 ## Loop settings

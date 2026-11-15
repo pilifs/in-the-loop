@@ -17,8 +17,11 @@ Put these under the brief's `## How to work through it`, adjusted to its own wor
 
 - **One step per cycle**, committed on its own with `sync.py commit`.
 - **Check each claim against the code first**, including the brief's own and its inputs'.
-- **Proofs, model checks and benchmark runs are queued, never run inline** (CLAUDE.md, Verification jobs). Compiling,
-  unit tests and conformance cases on a real `java` run inline.
+- **Proofs, model checks and benchmark runs are queued, never run inline** (CLAUDE.md, Verification jobs and Tests).
+  Compiling and the default test run, the unit and tool tiers (`python3 lib/tools/test_costs.py run`), run inline:
+  the tests of what changed while iterating, the whole default run once before committing. The proof tier runs as a
+  job, for the tests whose inputs the change touched, with CLAUDE.md's one narrow inline exception. A new test is the
+  cheapest that shows the behaviour, and a new proof-tier test has a tag, a reason and a proxy.
 - **Recorded results are evidence, not inputs to edit.** A new measurement is a new job.
 - **Nothing gets weaker**: no verdict, check or test is relaxed to make a step pass.
 - **Docs move with the behaviour.**

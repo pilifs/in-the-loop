@@ -17,11 +17,22 @@ This repo publishes every LLM session alongside the code it produced. Follow the
 
 ## Verification jobs
 
-Don't run proofs and model checks inline: JBMC, TLC, `build.py` on a B9, B11 or D1 example, an app's `verify.sh`, or anything that takes more than a minute or 1 GB. Queue them, as described in [`verification/README.md`](verification/README.md):
+Don't run proofs and model checks inline: JBMC, TLC, `build.py` on a B9, B11 or D1 example, an app's `verify.sh`, or anything that takes more than a minute or 1 GB, the proof tier of the tests included (one narrow exception, under [Tests](#tests)). Queue them, as described in [`verification/README.md`](verification/README.md):
 
 - Describe the work with `python3 verification/pipeline.py submit` (`--example ID` for a demo example), with a title, a description for a reader who did not see the session, the capabilities it exercises, and a rough estimate of CPUs, memory and duration.
-- Commit the job with the change, with `(verification pending)` at the end of the summary line and the job id in a paragraph, then carry on. Compiling and unit tests still run inline.
+- Commit the job with the change, with `(verification pending)` at the end of the summary line and the job id in a paragraph, then carry on. Compiling and the default test run still run inline.
 - The pipeline is run by the agent managing it (`/run-verification`), not by the agent that submits. Results come back in `verification/results/`; read them with `python3 verification/pipeline.py report`.
+
+## Tests
+
+Every test, Rust and Python, has a cost tier, listed in `lib/tests/costs.json` (see [`lib/README.md`](lib/README.md#tests)): **unit** (in process, no subprocess, under 1 s), **tool** (spawns `javac`, `java`, the binary or a stand-in script; under 10 s and 1 GB) and **proof** (JBMC, TLC, or over the tool tier's limits).
+
+- The default run is what you run inline: `python3 lib/tools/test_costs.py run`, the unit and tool tiers. While iterating, run only the tests of what you changed, and the default run once before committing.
+- The proof tier (ignored Rust tests, Python tests tagged `@cost("proof", ...)`) runs as a job, for the tests whose inputs your change touched, never inline. One exception: you may run a single proof-tier test inline, once, when your change targets that test directly and its row in `costs.json` has a past run of it alone under a minute (`"kind": "run alone"`, not `estimated`).
+- The tests marked `retier: pending` are proof tier but still run by default, as tool tier, until the next test-cost loop moves them to the proof tier behind proxies.
+- Write the cheapest test that shows the behaviour: unit before tool, tool before proof, a stand-in script for JBMC where it shows the same thing. A new proof-tier test gets its tag (`#[ignore = "cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST"]`, or `@cost("proof", "WHAT IT RUNS, ~TIME; proxy: Class.test")`), with the reason a cheaper test can't show it, and a proxy that runs by default.
+- After adding or renaming tests, run `python3 lib/tools/test_costs.py estimate`, then `tag FILE`; the lint (`test_costs.py lint`, in the default run) says what is out of step.
+- Adding a test to the `retier: pending` or `proxy: none yet` lists (`estimate --list`) is for a person to decide: don't do it yourself, ask.
 
 ## Examples
 

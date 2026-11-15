@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T12:23:38.409Z",
-  "ended": "2026-11-15T15:06:40.538Z",
-  "duration_seconds": 9782,
+  "ended": "2026-11-15T15:09:40.669Z",
+  "duration_seconds": 9962,
   "stats": {
-    "turns": 43,
-    "api_calls": 377,
-    "tool_calls": 380,
+    "turns": 49,
+    "api_calls": 393,
+    "tool_calls": 394,
     "tool_errors": 8,
-    "compactions": 7,
-    "peak_context_tokens": 185191,
+    "compactions": 8,
+    "peak_context_tokens": 190640,
     "usage": {
-      "input_tokens": 766,
-      "output_tokens": 357109,
-      "cache_read_input_tokens": 39312296,
-      "cache_creation_input_tokens": 1066275
+      "input_tokens": 798,
+      "output_tokens": 367028,
+      "cache_read_input_tokens": 40569671,
+      "cache_creation_input_tokens": 1138745
     }
   },
   "tools": {
-    "Bash": 340,
+    "Bash": 352,
+    "Read": 12,
     "Write": 12,
     "Edit": 11,
-    "Read": 10,
     "ToolSearch": 4,
     "Monitor": 3
   },
@@ -153,24 +153,38 @@
     {
       "index": 7,
       "started": "2026-11-15T14:35:53.017Z",
-      "ended": "2026-11-15T15:06:40.538Z",
-      "turns": 6,
-      "api_calls": 67,
+      "ended": "2026-11-15T15:07:08.603Z",
+      "turns": 8,
+      "api_calls": 69,
       "usage": {
-        "input_tokens": 140,
-        "output_tokens": 69179,
-        "cache_read_input_tokens": 8334292,
-        "cache_creation_input_tokens": 172005
+        "input_tokens": 144,
+        "output_tokens": 70147,
+        "cache_read_input_tokens": 8706527,
+        "cache_creation_input_tokens": 177454
       },
-      "peak_context_tokens": 185191
+      "peak_context_tokens": 190640
+    },
+    {
+      "index": 8,
+      "started": "2026-11-15T15:07:58.440Z",
+      "ended": "2026-11-15T15:09:40.669Z",
+      "turns": 4,
+      "api_calls": 14,
+      "usage": {
+        "input_tokens": 28,
+        "output_tokens": 8951,
+        "cache_read_input_tokens": 885140,
+        "cache_creation_input_tokens": 67021
+      },
+      "peak_context_tokens": 80207
     }
   ],
   "log": {
-    "sha256": "262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc",
-    "bytes": 10362413,
-    "lines": 3612,
-    "gzip_bytes": 1848630,
-    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc.jsonl.gz"
+    "sha256": "638a5559b4ef35a8adaf58954abf5c1f1611b8eecfae0844aaf7ecdbfdd75f59",
+    "bytes": 11174763,
+    "lines": 3812,
+    "gzip_bytes": 2045525,
+    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/638a5559b4ef35a8adaf58954abf5c1f1611b8eecfae0844aaf7ecdbfdd75f59.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -253,6 +267,14 @@
       "summary": "Test tiers: the lint, test_costs.py lint, in the default run as tests/tiers.rs and tools/test_tier_lint.py",
       "body": "Phase 2 step 7 of llm-dlc/loops/test-cost.md. The lint checks four things against the sources and lib/tests/costs.json: every ignore reason is a cost:proof tag with a proxy that runs by default, or proxy: none yet for a test on the inventory's list; no test outside the proof tier calls JBMC or TLC, except the retier: pending tests; the inventory and the sources name the same tests, and what it records of each is current; and every tool_tier! or @cost tag is the one its row asks for. It runs in the default run twice, both at the unit tier. lib/tests/tiers.rs is in cargo test and checks what it can read without following a test into its helpers. lib/tools/test_tier_lint.py is in the Python run and checks all of it for both languages, with ten more tests of the lint on made-up sources. lib/README.md's Tests section says what each problem asks for.\n\nJoining the retier: pending or proxy: none yet list is now for a person: estimate keeps the tests already listed. A new JBMC or TLC test that runs by default, or a new proxy: none yet, gets an unlisted row, which the lint refuses until a person runs estimate --list FILE::NAME. A Python proof tag now carries its reason, @cost(\"proof\", \"...; proxy: Class.test\"), and the lint refuses an unconditional @unittest.skip. The Python listing now follows a TestCase base imported from another file of the repository. That lists the 27 tests of examples/tools/targets/test_runtime_upstream.py the inventory had missed, 15 of them now @cost(\"tool\"). The Rust listing went from 13 s to 0.9 s, with the same result for every test.\n\nVerified: tiers.rs, test_tier_lint.py, test_cost_inventory.py and test_test_costs.py pass by default and under the unit tier. test_runtime_upstream.py passes under unit, with 15 tests skipped. The default run (test_costs.py run) was run once: cargo test 634 passed, 0 failed, 12 ignored; Python 32 of 33 files passed. The failing file is examples/tools/test_economics.py, which was already failing before this loop (KeyError 'file' in build.app_of on examples 287 and 289-291; recorded in Progress last cycle). No job is needed: nothing that runs by default was skipped or ignored.",
       "log_sha256": "262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc"
+    },
+    {
+      "change_id": "xnxwypkxqyuuqypokknxvxytlqwsuvop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Test tiers: the guidance, in CLAUDE.md, the brief template, verification/README.md and lib/README.md",
+      "body": "Phase 3 step 8 of llm-dlc/loops/test-cost.md. CLAUDE.md gets a Tests section: the unit, tool and proof tiers; the default run (python3 lib/tools/test_costs.py run) is what runs inline; the proof tier runs as a job for the tests a change touched, with decision 4's one exception stated narrowly; write the cheapest test that shows the behaviour, and give a new proof-tier test a tag, a reason and a proxy; adding a test to the retier: pending or proxy: none yet lists is for a person. The brief template's standing rule names the tiers instead of conformance cases on a real java. verification/README.md says the slow tests are the proof tier plus the 63 retier: pending tests until they move, and its estimate table gives the proof tier's job. lib/README.md's Tests section gains Writing a test.\n\nThe brief is slightly out of date: decision 4 lets an agent run a proof test inline when the inventory measures it under a minute, but the inventory measures nothing yet. The guidance reads it as a row recording a past run of that test alone under a minute (kind: run alone, not estimated). Only Markdown changed, and no test reads these files, so no test was run.",
+      "log_sha256": "638a5559b4ef35a8adaf58954abf5c1f1611b8eecfae0844aaf7ecdbfdd75f59"
     }
   ],
   "logs": {
@@ -296,6 +318,12 @@
       "bytes": 2411369,
       "lines": 783,
       "gzip_bytes": 423925,
+      "url": null
+    },
+    "638a5559b4ef35a8adaf58954abf5c1f1611b8eecfae0844aaf7ecdbfdd75f59": {
+      "bytes": 11174763,
+      "lines": 3812,
+      "gzip_bytes": 2045525,
       "url": null
     },
     "8e3ea3aea327048a1f6f0dcc8f43963a9ae51201f7278447ed456fa7430b6bcf": {
