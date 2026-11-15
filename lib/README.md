@@ -640,4 +640,8 @@ python3 verification/pipeline.py submit --kind library \
   --estimate-notes "heap's nine ignored tests 2 to 25 min each, conformance's two about 23 min each; one test per binary at a time"
 ```
 
-`python3 lib/tools/test_costs.py inventory DIR` rewrites `tests/costs.json` from such a run's raw files, and `python3 lib/tools/test_test_costs.py` tests the tool on made-up inputs in about a second.
+Until such a run, `tests/costs.json` is an estimate written by `python3 lib/tools/test_costs.py estimate`, which runs no test and takes about 20 s. It lists every Rust and Python test with its tier. The tier is the higher of two readings:
+- what the test calls, read from its source and the helpers of its file. JBMC or TLC makes it proof; javac, java, the binary, a stand-in script or another process make it tool.
+- what past runs took. This comes from the cargo and Python test output kept in past sessions' redacted logs (read through `llm-dlc/tools/tool_time.py`) and from past jobs' logs in `verification/results/`.
+
+Each test's cost names its sources. One marked `estimated` says why no past run settles its tier. One marked `retier: pending` is proof tier but runs by default. [`tools/cost_inventory.py`](tools/cost_inventory.py) does the reading. To regenerate the file, run `estimate` again; never edit it by hand. `python3 lib/tools/test_costs.py inventory DIR` rewrites `tests/costs.json` from a `measure` run's raw files. `python3 lib/tools/test_test_costs.py` and `python3 lib/tools/test_cost_inventory.py` test both tools on made-up inputs in about a second.

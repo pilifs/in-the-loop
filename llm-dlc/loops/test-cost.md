@@ -328,6 +328,42 @@ Settled by the user on 2026-11-15:
   command and the 3-hour estimate. The command was checked with `submit --dry-run`, and no job was written. Next:
   Phase 1 step 3, an `estimate` subcommand that writes `lib/tests/costs.json` and the Python inventory from past logs,
   past results and what each test calls.
+- 2026-11-15, Phase 1 step 3 done: `python3 lib/tools/test_costs.py estimate` writes `lib/tests/costs.json` in about
+  20 s and runs no test. One file holds both inventories, `rust` (642 tests) and `python` (782), one test per line.
+  - **Listing.** `lib/tools/cost_inventory.py` lists the Rust tests from the sources, with strings and comments
+    blanked. The list matches `cargo test -- --list` exactly; that check was run once, listing only. It lists the
+    Python tests with `ast`.
+  - **What a test calls.** Read from the test's body and the helpers of its file it calls, transitively:
+    - JBMC: `Engine::Jbmc` or `Auto`, `equivalence::run` or `property::run` without the native engine,
+      `has_jbmc()`, `missing("JBMC")`;
+    - TLC: `run_tlc`, `tlc_command`;
+    - tool: javac, java, the binary, a stand-in script (which also cancels a JBMC match), `Command::new`.
+  - **What a test cost.** From the cargo output kept in 22 redacted session logs (this loop's own are left out, since
+    its log changes with every commit) and from 52 past jobs' logs:
+    - a section that ran one test gives its time ("run alone");
+    - one that ran several bounds each of them ("at most");
+    - "running for over 60 seconds" bounds it from below.
+
+    Python's come from runs of one file or one test.
+  - **Tier.** The higher of what the test calls and what it took alone. Each cost names its sources (`job:ID` or
+    `log:` plus the start of the log's sha256, given in full under `sources.logs`). A tier no past run settles is
+    marked `estimated`, with the reason.
+  - **Rust: 268 unit, 299 tool, 75 proof.** The proof tests are the 12 ignored and 63 `retier: pending`: integration.rs
+    45, application_core.rs 4, conformance.rs 3, summaries.rs 3, application_core_joint.rs 2, value_parameters.rs 2,
+    and one each in alignment.rs, compare.rs, object_strings.rs and observations.rs. Of the 63, 11 are proof tier only
+    because a past run took over 10 s. 226 Rust tiers are estimates:
+    - 206 unit tests (186 in `lib/src`) and 18 tool tests, whose binary's runs bound them only above their tier's
+      limit;
+    - 2 that call JBMC but took under 1 s, so they may stop before it runs: integration.rs
+      `a_string_parameter_is_refused_under_jbmc` and object_strings.rs's one.
+  - **Python: 611 unit, 171 tool, 0 proof.** 394 Python tiers are estimates: 138 tests no past run names, and 256
+    that past runs bound only above their tier's limit.
+
+  `test_cost_inventory.py` (11 tests, unit tier) tests it on made-up sources, cargo output, Python runs and a job log.
+  For the next loop: `measure`'s `inventory` still writes its rows keyed by nextest's binary id, not by file and test
+  name as `estimate` does. Make it write the same shape before it replaces the estimates. Next: Phase 2 step 4, the
+  Rust tags (the twelve `#[ignore]` reasons as `cost:proof:` and the `JVMCONTRACT_TEST_TIER` helper in the tool-tier
+  and `retier: pending` tests).
 - Status: working
 
 ## Loop settings

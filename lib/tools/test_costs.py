@@ -6,6 +6,7 @@
 
     python3 lib/tools/test_costs.py measure --out DIR      # everything; writes DIR's raw files and lib/tests/costs.json
     python3 lib/tools/test_costs.py inventory DIR          # rewrite lib/tests/costs.json from DIR's raw files
+    python3 lib/tools/test_costs.py estimate               # write lib/tests/costs.json from past runs, running nothing
     python3 lib/tools/test_costs.py watch -- CMD ...       # nextest's wrapper: run one test, record what it cost
     python3 lib/tools/test_costs.py python FILE --out F    # run one Python test file, recording each test
 
@@ -406,6 +407,129 @@ def write_inventory(raw, source, path=INVENTORY):
     return doc
 
 
+# --- estimate: the inventory from past runs and what each test calls --------------------------------------------
+
+TIERS = ("unit", "tool", "proof")
+PROOF_CALLS = {"jbmc": "JBMC", "tlc": "TLC"}
+
+
+def _by_time(seconds):
+    return "proof" if seconds >= TOOL_S else "tool" if seconds >= UNIT_S else "unit"
+
+
+def _source_text(sources):
+    return ", ".join(sources) if sources else "no past run"
+
+
+def estimate_tier(calls, cost, ignore=None):
+    """A test's tier from what it calls (cost_inventory's `calls`) and what past runs say (its `cost`): the higher of
+    the two. Returns the tier, why (what decided it, besides the cost), and, when no past run settles it, why it is
+    an estimate."""
+    proof = [PROOF_CALLS[c] for c in calls if c in PROOF_CALLS]
+    spawns = [c for c in calls if c not in PROOF_CALLS]
+    static = "proof" if proof else "tool" if spawns else "unit"
+    why = ["calls " + " and ".join(proof) if proof else "spawns " + ", ".join(spawns) if spawns
+           else "nothing outside the process"]
+    s, kind = cost["seconds"], cost["kind"]
+    timed = _by_time(s) if kind == "run alone" else "proof" if kind == "over 60 s" else None
+    tier = max(static, timed or "unit", "proof" if ignore is not None else "unit", key=TIERS.index)
+    if timed and TIERS.index(timed) > TIERS.index(static):
+        why.append(f"over the {static} tier's {UNIT_S if static == 'unit' else TOOL_S:g} s")
+    elif ignore is not None and static != "proof" and timed != "proof":
+        why.append("ignored as expensive")
+    if static == "proof" and s is not None and s < UNIT_S and kind in ("run alone", "at most"):
+        return tier, "; ".join(why), (f"took {'' if kind == 'run alone' else 'at most '}{s:g} s, too quick for "
+                                      f"{' or '.join(proof)}: it may stop before running it")
+    if static == "proof" or timed is not None:
+        return tier, "; ".join(why), None
+    if kind == "at most" and s < (UNIT_S if tier == "unit" else TOOL_S):
+        return tier, "; ".join(why), None
+    if kind == "estimated":
+        return tier, "; ".join(why), "no past run names it: the tier is from what it calls"
+    return tier, "; ".join(why), f"past runs bound it only at {s:g} s: the tier is from what it calls"
+
+
+def _row(key, test, cost, ignore=None):
+    tier_, why, estimated = estimate_tier(test["calls"], cost, ignore)
+    row = {**key, "tier": tier_, "calls": test["calls"], "cost": {**cost, "estimated": estimated} if estimated else cost,
+           "why": why}
+    if ignore is not None:
+        row["ignored"] = ignore
+    return row
+
+
+def estimate(root=ROOT, fetch=False, exclude=("test-cost",)):
+    """costs.json's content, from the tests' sources, past sessions' logs and past jobs: nothing is run."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import cost_inventory as ci
+    rust_tests = ci.rust_tests(root)
+    py_tests = ci.python_tests(root)
+    cargo, py_runs, missing = ci.session_evidence(root, fetch, exclude)
+    jobs = ci.job_evidence(root)
+    rust_ev = ci.rust_evidence(rust_tests, cargo + jobs)
+    py_ev = ci.python_evidence(py_tests, py_runs)
+    rust = []
+    for t in rust_tests:
+        row = _row({"file": t["file"], "name": t["name"]}, t, ci.cost(rust_ev[(t["binary"], t["name"])]), t["ignore"])
+        if row["tier"] == "proof" and t["ignore"] is None:
+            row["retier"] = "pending"
+        rust.append(row)
+    python = []
+    for t in py_tests:
+        row = _row({"file": t["file"], "name": t["name"]}, t, ci.cost(py_ev[(t["file"], t["name"])]))
+        if row["tier"] == "proof":
+            row["retier"] = "pending"
+        python.append(row)
+
+    def counts(rows, key):
+        out = {}
+        for r in rows:
+            c = out.setdefault(r[key], {"unit": 0, "tool": 0, "proof": 0, "estimated": 0, "retier pending": 0})
+            c[r["tier"]] += 1
+            c["estimated"] += "estimated" in r["cost"]
+            c["retier pending"] += r.get("retier") == "pending"
+        return out
+
+    used = sorted({src for r in rust + python for src in r["cost"]["sources"] if src.startswith("log:")})
+    short = {src: src[:4 + 16] for src in used}
+    if len(set(short.values())) < len(short):
+        short = {src: src for src in used}
+    for r in rust + python:
+        r["cost"]["sources"] = [short.get(src, src) for src in r["cost"]["sources"]]
+    return {
+        "generated": "by `python3 lib/tools/test_costs.py estimate`, from what each test calls and past runs; regenerate, "
+                     "never edit by hand. A test's tier is the higher of what it calls (JBMC or TLC: proof; javac, "
+                     "java, the jvmcontract binary, a stand-in script or another process: tool; nothing: unit) and "
+                     "what a past run took (cost.kind `run alone` or `over 60 s`). `at most` is a bound from runs "
+                     "with other tests. A source is a past job (`job:ID`) or a session's redacted log (`log:` and the "
+                     "start of its sha256, in full under sources.logs); `estimated` says why no past run settles the tier. `retier: pending` marks "
+                     "a proof-tier test that runs by default, for the next loop. A later `measure` run replaces it.",
+        "thresholds": {"unit": f"no subprocess, under {UNIT_S:g} s", "tool": f"under {TOOL_S:g} s and {TOOL_MB} MB",
+                       "proof": "JBMC, TLC, or over the tool tier's limits"},
+        "sources": {"read": {"session_logs": len({e["source"] for e in cargo + py_runs}),
+                             "jobs": len({e["source"] for e in jobs}),
+                             "sessions_without_a_log_here": len(missing), "left_out_loops": list(exclude)},
+                    "logs": {short[src]: src for src in used}},
+        "summary": {"rust": counts(rust, "file"), "python": counts(python, "file")},
+        "rust": rust,
+        "python": python,
+    }
+
+
+def dumps(doc):
+    """The inventory as JSON with one test per line, so that a regeneration's diff shows the tests that changed."""
+    head = {k: v for k, v in doc.items() if k not in ("rust", "python", "summary")}
+    text = json.dumps(head, indent=1)[:-2] + ',\n "summary": {'
+    for i, key in enumerate(("rust", "python")):
+        rows = ",\n".join(f"   {json.dumps(f)}: {json.dumps(c)}" for f, c in doc["summary"][key].items())
+        text += f'{"," if i else ""}\n  "{key}": {{\n{rows}\n  }}'
+    text += "\n }"
+    for key in ("rust", "python"):
+        rows = ",\n".join("  " + json.dumps(r, separators=(", ", ": ")) for r in doc[key])
+        text += f',\n "{key}": [\n{rows}\n ]'
+    return text + "\n}\n"
+
+
 # --- measure: the job's step ---------------------------------------------------------------------------------------
 
 def _run(cmd, log, env=None, cwd=LIB):
@@ -495,6 +619,11 @@ def main(argv=None):
     i.add_argument("raw")
     i.add_argument("--source", default="a run of `measure`")
     i.add_argument("--path", default=str(INVENTORY))
+    e = sub.add_parser("estimate", help="write the inventory from past runs and what each test calls, running nothing")
+    e.add_argument("--path", default=str(INVENTORY))
+    e.add_argument("--fetch", action="store_true", help="download published session logs not stored here")
+    e.add_argument("--exclude", action="append", default=None, metavar="LOOP",
+                   help="leave a loop's sessions out (default: test-cost, whose log changes with every commit)")
     py = sub.add_parser("python", help="run one Python test file, test by test")
     py.add_argument("file")
     py.add_argument("--out", required=True)
@@ -503,6 +632,15 @@ def main(argv=None):
         return measure(a.out, a.test_threads, a.source)
     if a.command == "inventory":
         write_inventory(a.raw, a.source, a.path)
+        return 0
+    if a.command == "estimate":
+        doc = estimate(ROOT, a.fetch, tuple(a.exclude) if a.exclude is not None else ("test-cost",))
+        Path(a.path).write_text(dumps(doc))
+        for key in ("rust", "python"):
+            rows = doc[key]
+            tiers = {t: sum(r["tier"] == t for r in rows) for t in TIERS}
+            print(f"{key}: {len(rows)} tests, {tiers}, {sum('estimated' in r['cost'] for r in rows)} estimated, "
+                  f"{sum(r.get('retier') == 'pending' for r in rows)} retier pending")
         return 0
     return run_python_file(a.file, a.out)
 
