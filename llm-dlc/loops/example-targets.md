@@ -2288,6 +2288,28 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`. `pipeline.py validate` finds no problem.
   - **Next**: item 8, the 18-versus-19 count of `kqpykqpp`'s collect: find whether `pipeline.py collect` miscounts,
     and fix it with a reproducer if so. Read the job above when it is collected.
+- 2026-11-15, **review item 8 done: `pipeline.py collect` counted right; the 18 was the collecting agent's sum. Item
+  7's job passed.**
+  - **What was found**: `kqpykqpp` applied outputs for 19 jobs. Its diff has 19 receipts and 19 `changes.diff` files,
+    and each result's `collected.applied` lists 4 files for those 19 and none for the four `preservation` jobs of 285,
+    286, 287 and 306, which declare no output. `collect` records those lists and prints one line per job ("Applied 4
+    output(s)."), with no total. The message's "Outputs applied for 18 jobs; the four preservation jobs produce none"
+    is the agent's own sum of those lines (23 − 4 is 19). So there was no pipeline bug to reproduce.
+  - **Made harder to repeat**: `collect`'s suggested message now opens with totals from the same lists
+    (`collect_totals`): outputs applied for N of the M jobs, how many declared or produced none, how many were kept
+    under `outputs/` because the job didn't pass, and how many had conflicts. `test_pipeline.py`'s
+    `test_collect_counts_the_jobs_whose_outputs_it_applied_for_the_commit_message` failed before the change: three
+    jobs, one applying, one with no output, one failing. The run-verification skill's collect step says to quote the
+    totals.
+  - **Item 7's job** (collected in `wtkxwrzk`): `20261115-054311-example-307-replay-its-receipt-records-b` passed, with
+    `task-as-expected` and "slice match recorded". The new receipt `receipts/replay/20261115T054542Z-39427a96`
+    has `claim.target.matched` listing before's `BCrypt.class` `0b137406…` in spring-security-crypto 5.2.0.M4
+    (`8871c1fe…`). So the M4 match is now in 307's receipt, not only in its preparation.
+  - **A8**: no rerun. Only `collect`'s printed message changed. No result, receipt or verdict did.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (271), `test_build.py`
+    (190), `test_pipeline.py` (34, one new) and `build.py --plan`.
+  - **Next**: item 10, 287's unguarded single-byte entry recorded in its notes and handoff as a missing sensitivity
+    control. No mutant claim covers dropping the 72-byte guard for ASCII passwords. No new task.
 - Status: working
 
 ## Loop settings

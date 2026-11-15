@@ -376,6 +376,22 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(r["collected"]["conflicts"], ["o.txt"])
         self.assertTrue(any("rerun the job" in a for a in r["attention"]))
 
+    def test_collect_counts_the_jobs_whose_outputs_it_applied_for_the_commit_message(self):
+        # kqpykqpp's commit message said 18 jobs had outputs applied where 19 had: collect printed one line per job
+        # and the agent added them up. collect now gives the totals itself, from the same lists it records.
+        (self.repo.dir / "o.txt").write_text("before\n")
+        applies = self.repo.submit("Apply one", "--output", "a.txt", "--run", "echo a > a.txt")
+        nothing = self.repo.submit("Declare none", "--run", "true")
+        fails = self.repo.submit("Fail one", "--output", "o.txt", "--run", "echo after > o.txt; exit 3")
+        self.repo.commit("jobs")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        out = self.repo.pipeline("collect").stdout
+        self.assertEqual([len(self.repo.result(j)["collected"]["applied"]) for j in (applies, nothing, fails)], [1, 0, 0])
+        message = out.split("For the commit message")[1]
+        self.assertIn("Record verification results for 3 job(s)", message)
+        self.assertIn("Outputs applied for 1 of the 3 job(s); 1 declared or produced none; "
+                      "1 kept under outputs/, not applied (the job didn't pass)", message)
+
     def test_a_long_log_is_cut_to_its_head_and_tail(self):
         self.repo.close()
         self.repo = Repo(log_max_bytes="4K")

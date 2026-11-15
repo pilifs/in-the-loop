@@ -35,8 +35,9 @@ commands by hand to see: the runner is how they run, under limits.
 
 3. **Collect.** When the run finishes, `python3 verification/pipeline.py collect`. It moves results into
    `verification/results/`, applies the outputs of jobs that passed to the working copy unless a file changed since
-   the job's commit, regenerates the examples table, and prints a commit message. If a hook after collecting fails,
-   say so with its output.
+   the job's commit, regenerates the examples table, and prints a commit message. Its totals count the jobs whose
+   outputs it applied, the ones with none, and the ones kept or in conflict: quote those numbers rather than adding
+   up the per-job lines. If a hook after collecting fails, say so with its output.
 
 4. **Triage.** `python3 verification/pipeline.py report` (Markdown, for you and the user) or `--format json` (to
    go through many). For each result that needs attention, decide which of these it is, from its `attention`,

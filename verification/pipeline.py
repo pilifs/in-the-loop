@@ -1387,6 +1387,7 @@ def cmd_collect(args):
         print("nothing to collect")
         return 0
     applied_any, lines = False, []
+    tally = {"applied": 0, "none": 0, "kept": 0, "conflicts": 0}
     for job_id in ids:
         src = state / job_id
         result = json.loads((src / "result.json").read_text())
@@ -1432,6 +1433,10 @@ def cmd_collect(args):
         write_json(dest / "result.json", result)
         shutil.rmtree(src)
         applied_any = applied_any or bool(applied)
+        tally["applied"] += bool(applied)
+        tally["none"] += not result["outputs"]
+        tally["kept"] += bool(result["outputs"]) and not apply
+        tally["conflicts"] += bool(conflicts)
         lines.append(f"{job_id}: {result['summary']}" + (f" Applied {len(applied)} output(s)." if applied else "") +
                      (f" {len(conflicts)} output(s) not applied: changed since the job's commit." if conflicts else ""))
         print(f"{job_id}: {result['status']}: applied {len(applied)}, conflicts {len(conflicts)}, kept {len(kept)}")
@@ -1444,8 +1449,21 @@ def cmd_collect(args):
                 print((proc.stdout + proc.stderr)[-2000:])
     print("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
     print(f"  Record verification results for {len(ids)} job(s)")
-    print("  " + " ".join(lines))
+    print("  " + collect_totals(tally, len(ids)) + " " + " ".join(lines))
     return 0
+
+
+def collect_totals(tally, jobs):
+    """The counts a collect's commit message states, from the lists each result's `collected` records, so that no
+    one adds up the per-job lines by hand (kqpykqpp's message said 18 jobs had outputs applied where 19 had)."""
+    parts = [f"Outputs applied for {tally['applied']} of the {jobs} job(s)"]
+    if tally["none"]:
+        parts.append(f"{tally['none']} declared or produced none")
+    if tally["kept"]:
+        parts.append(f"{tally['kept']} kept under outputs/, not applied (the job didn't pass)")
+    if tally["conflicts"]:
+        parts.append(f"{tally['conflicts']} with outputs not applied because they changed since the job's commit")
+    return "; ".join(parts) + "."
 
 
 def write_index():
