@@ -176,6 +176,30 @@ class Vf027PacketsTest(unittest.TestCase):
                     self.assertIn(t.get("expected"), ("established", "refuted"), "the expectation is unchanged")
         self.assertEqual(count, 25)
 
+    def test_each_blocked_tasks_handoff_next_is_its_refusal_check_with_its_gap_id_and_closure_test(self):
+        """Item 1 of the user's review of 2026-11-15: an ordinary attempt (pipeline.py submit) at a task an observed
+        refusal blocks ends NOT AS EXPECTED, so the handoff's next is the check that reruns the refusal, naming the
+        gap id of the inventory and its closure test."""
+        count = 0
+        for number, tasks in ((n, ts) for _, rows in OBSERVED for n, ts in rows.items()):
+            folder, example, target = load(number)
+            for task in tasks:
+                with self.subTest(example=number, task=task):
+                    count += 1
+                    value = workflow_handoff.packet(folder, example, target, task)
+                    self.assertEqual(value["next"],
+                                     f"python3 examples/tools/targets/workflow_refusal.py {number} {task}")
+                    [p] = workflow_refusal.predictions(folder, target, task)
+                    [gap] = [g for g in value["gaps"] if (g.get("packet") or {}).get("file") == p["packet"]]
+                    [gap_id] = workflow_handoff.gap_ids(gap)
+                    reason = value["nextReason"]
+                    self.assertIn(gap_id, reason)
+                    self.assertIn("examples/gap-inventory.md", reason)
+                    self.assertIn(gap["packet"]["closure"]["check"], reason)
+                    self.assertIn(value["plan"]["claim"]["key"], reason)
+                    self.assertNotIn("pipeline.py submit", value["next"])
+        self.assertEqual(count, 25)
+
     def test_the_inventory_ranks_the_five_observed_causes(self):
         rows = [load(n) for n in (*VF027, *VF028)]
         observed = {g["gap"]: g for g in workflow_handoff.inventory(rows)["gaps"] if g["observed"]}

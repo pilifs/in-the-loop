@@ -2057,6 +2057,29 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Not `done` yet**: the user's ten review items (the entry above) come first; item 9 is done.
   - **Next**: item 1, a blocked task's handoff `next` names `workflow_refusal.py N T` and its gap id with the
     inventory's closure test.
+- 2026-11-15, **review item 1 done: a blocked task's handoff `next` is its refusal check.**
+  - **Reproducer**: `test_workflow_refusal.py`'s
+    `test_each_blocked_tasks_handoff_next_is_its_refusal_check_with_its_gap_id_and_closure_test` failed for all 25
+    tasks VF-027 and VF-028 block. Their `next` was `pipeline.py submit --example N --task T`, which would end NOT AS
+    EXPECTED. The four `preservation` tasks of 285, 286, 287 and 306 even said to "reproduce the blocker as this task's
+    own receipt", though their refusal leaves none.
+  - **The change** (`workflow_handoff.py`): when a task's observed capability gap has a packet stating a `refusal`
+    (`workflow_refusal.predictions`, the same reading the check makes), `next` is
+    `python3 examples/tools/targets/workflow_refusal.py N T`. `nextReason` names:
+    - the gap id, ranked in `examples/gap-inventory.md`;
+    - the packet and finding;
+    - the unchanged claim key and the refusal's stage;
+    - the inventory's closure test.
+
+    The ordinary attempt stays `commands[1]`, for when the check fails because the refusal is gone. An observed gap
+    without a refusal (the fixture's recorded gap scan) keeps the old `next`, and so does a malformed packet, which the
+    check itself reports. The inventory's rerun check uses the same `refusal_command`.
+  - **Unchanged**: the index and the gap-inventory page (`build.py --index-only` and `inventory --markdown` give no
+    diff); the sidecars' `handoff.next` texts already named `workflow_refusal.py`. No A8 rerun is needed: the handoff is
+    offline and no job runs it.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (253, one new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: item 2, `build.py --index-only` (and `--render-only`) regenerate `examples/gap-inventory.md`.
 - Status: working
 
 ## Loop settings

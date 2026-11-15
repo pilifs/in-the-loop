@@ -11,7 +11,9 @@ packet(folder, example, target, task) is workflow.handoff()'s dict:
   commands      the exact commands: the offline plan, then the attempt (a replay runs inline, a proof is queued)
   receipts      the current receipts of the task's claim and inputs (stale and unreadable ones apart)
   prerequisites each prerequisite task, satisfied or not, and nextPrerequisite, the first that isn't
-  next          one recommended action, an exact command, and nextReason, why it is the one
+  next          one recommended action, an exact command, and nextReason, why it is the one; for a task an observed
+                refusal blocks (a gap packet stating `refusal`), the check that reruns it (workflow_refusal.py N T),
+                with the gap id and the inventory's closure test in nextReason
   gaps          each blocker the sidecar records for the task, or for the whole target (one naming no task; a
                 capability one only on a task that runs the verifier): kind, observed (true: a probe or attempt
                 produced it; false: predicted, a hypothesis until a probe reaches it), class (capability: a library limit;
@@ -37,7 +39,7 @@ from pathlib import Path
 if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # examples/tools, for `targets` and build.py
 
-from targets import workflow  # noqa: E402
+from targets import workflow, workflow_refusal  # noqa: E402
 from targets.interfaces import Unsupported  # noqa: E402
 
 SCHEMA = "example-target-handoff/v1"
@@ -125,6 +127,11 @@ def submit_command(example, t, key=None):
                    "unresolved result stays unresolved.")
     return (f"{PIPELINE} submit --example {example['id']} --task {t['id']} --title {shlex.quote(title)} "
             f"--description {shlex.quote(description)}")
+
+
+def refusal_command(example, task):
+    """The check that reruns a task an observed refusal blocks, unchanged, and passes only at the recorded refusal."""
+    return f"python3 examples/tools/targets/workflow_refusal.py {example['id']} {task}"
 
 
 def attempt_command(example, t, key=None):
@@ -399,6 +406,18 @@ def prerequisite_order(target, task_id, seen=None):
     return seen
 
 
+def refusal_gaps(folder, target, t, capability):
+    """The task's observed capability gaps whose packet states a refusal workflow_refusal.py checks, each with its
+    prediction. A malformed packet predicts nothing here: workflow_refusal.py reports it when run."""
+    try:
+        found = workflow_refusal.predictions(folder, target, t["id"])
+    except (workflow_refusal.PredictionError, workflow.ClaimError, OSError, ValueError):
+        return []
+    by_packet = {p["packet"]: p for p in found}
+    return [(g, by_packet[g["packet"]["file"]]) for g in capability
+            if g.get("packet") and g["packet"].get("file") in by_packet]
+
+
 def next_action(folder, example, target, t, plan, prerequisites, gaps, receipts, recorded):
     """One recommended action, an exact command, and why it is the one."""
     key = None if isinstance(plan, Unsupported) else plan.claim.get("key")
@@ -416,6 +435,19 @@ def next_action(folder, example, target, t, plan, prerequisites, gaps, receipts,
                 f"an observed {scaffold[0]['kind']} blocker leaves the scaffold partial ({scaffold[0]['summary']}): "
                 "rerun the attempt once its preparation or replay is fixed, the claim unchanged")
     capability = [g for g in evidenced if g["class"] == "capability"]
+    refused = refusal_gaps(folder, target, t, capability)
+    if refused:
+        gap, prediction = refused[0]
+        ids = ", ".join(gap_ids(gap)) or f"{gap['kind']}: {gap['summary']}"
+        closure = (gap["packet"].get("closure") or {}).get("check") or "the gap packet's closure"
+        return (refusal_command(example, t["id"]),
+                f"blocked by the observed gap {ids} (ranked in examples/gap-inventory.md; packet "
+                f"{prediction['packet']}, finding {prediction['finding'] or 'none'}). An ordinary attempt "
+                f"({PIPELINE} submit) would end NOT AS EXPECTED: this check reruns the task, claim {key} unchanged, "
+                f"and passes only while it stops at the recorded {prediction['stage']} refusal. The gap closes by the "
+                f"inventory's closure test: {closure}. When this check fails because the refusal is gone, queue the "
+                "ordinary attempt (commands[1]); until then the claim stays unresolved, its expected outcome "
+                "unchanged, and a narrower kernel is a separate task")
     done = [r for r in receipts if r["execution"] == "completed"]
     if capability and not receipts:
         return (attempt_command(example, t, key),
@@ -503,7 +535,7 @@ def observed_run(folder, example, t, packet_):
            "semantics": packet_.get("semantics") if isinstance(packet_.get("semantics"), str) else None,
            "closure": (packet_.get("closure") or {}).get("check")}
     if isinstance(document.get("refusal"), dict):
-        out["check"] = f"python3 examples/tools/targets/workflow_refusal.py {example['id']} {t['id']}"
+        out["check"] = refusal_command(example, t["id"])
     return out
 
 
