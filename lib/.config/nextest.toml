@@ -1,0 +1,21 @@
+# cargo-nextest's configuration for lib/ (lib/tools/install-nextest.sh installs it). Only the `measure` profile is
+# set here, for lib/tools/test_costs.py's measuring run, which is queued as a pipeline job, never run inline: see
+# lib/README.md's Tests section. `cargo test` and nextest's default profile don't read any of it.
+
+# Wrapper scripts are experimental in nextest 0.9.151, and only a repository's own config may enable them.
+experimental = ["wrapper-scripts"]
+
+# Runs each test under test_costs.py's `watch`, which records its CPU time, peak memory and the processes it spawned
+# into $TEST_COSTS_DIR. `measure` sets that variable; without it the wrapper only runs the test.
+[scripts.wrapper.test-costs]
+command = { command-line = "tools/test_costs.py watch --", relative-to = "workspace-root" }
+
+[profile.measure]
+fail-fast = false
+
+[[profile.measure.scripts]]
+filter = "all()"
+run-wrapper = "test-costs"
+
+[profile.measure.junit]
+path = "junit.xml"

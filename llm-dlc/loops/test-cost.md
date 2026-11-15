@@ -314,6 +314,20 @@ Settled by the user on 2026-11-15:
   tags, the lint and the guidance. Cycle 2 had installed cargo-nextest 0.9.151 and left `lib/tools/test_costs.py`,
   `lib/tools/install-nextest.sh` and `lib/.config/nextest.toml` uncommitted. Next: Phase 1 step 2 as revised, finishing
   those files without running `measure`.
+- 2026-11-15, Phase 1 step 2 done, and `measure` never run. What it adds:
+  - `lib/tools/install-nextest.sh`, which installs cargo-nextest 0.9.151 for x86_64 Linux. The hash it is pinned to
+    matches both the release's `.sha256` and GitHub's asset digest.
+  - `lib/tools/test_costs.py`, with `measure`, `inventory`, `watch` (nextest's wrapper: wall and CPU time, peak memory
+    from wait4, and spawned processes sampled from `/proc`, named by `argv[0]`) and `python` (one file, test by test).
+  - `lib/.config/nextest.toml`, whose `measure` profile alone runs the wrapper, from `lib/tools/`.
+
+  `test_test_costs.py` tests it on made-up inputs in 0.6s: JUnit, cargo output, the wrapper's records, the inventory,
+  the per-binary groups, and module resolution. It also watches `sh -c "sleep 0.2"` and a made-up Python test file.
+  One unit test was run through the `measure` profile, to check the wrapper's path. It recorded `skill.rs`'s one test
+  spawning `jvmcontract` three times, so that test is tool tier. `lib/README.md`'s Tests section now has the submit
+  command and the 3-hour estimate. The command was checked with `submit --dry-run`, and no job was written. Next:
+  Phase 1 step 3, an `estimate` subcommand that writes `lib/tests/costs.json` and the Python inventory from past logs,
+  past results and what each test calls.
 - Status: working
 
 ## Loop settings

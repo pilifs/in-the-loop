@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""Tests for test_costs.py, on made-up inputs; `measure` itself is never run here.
+Run: python3 lib/tools/test_test_costs.py"""
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import tomllib
+import unittest
+from pathlib import Path
+
+import test_costs as tc
+
+HERE = Path(__file__).resolve().parent
+
+JUNIT_DEBUG = """<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="4">
+  <testsuite name="jvmcontract" tests="1">
+    <testcase name="spec::tests::parses" classname="jvmcontract" time="0.012"/>
+  </testsuite>
+  <testsuite name="jvmcontract::conformance" tests="3">
+    <testcase name="the_runner_compiles" classname="jvmcontract::conformance" time="4.500"/>
+    <testcase name="the_corpus_agrees" classname="jvmcontract::conformance" time="61.000">
+      <failure type="test failure">assertion failed</failure>
+    </testcase>
+    <testcase name="a_slow_pure_test" classname="jvmcontract::conformance" time="2.000"/>
+  </testsuite>
+</testsuites>
+"""
+
+JUNIT_RELEASE = """<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1">
+  <testsuite name="jvmcontract::heap" tests="1">
+    <testcase name="the_object_properties_under_jbmc" classname="jvmcontract::heap" time="120.000"/>
+  </testsuite>
+</testsuites>
+"""
+
+CARGO_TEST = """\
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+     Running unittests src/lib.rs (target/debug/deps/jvmcontract-0123456789abcdef)
+test result: ok. 258 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.00s
+     Running tests/conformance.rs (target/debug/deps/conformance-0123456789abcdef)
+test result: FAILED. 10 passed; 1 failed; 2 ignored; 0 measured; 0 filtered out; finished in 60.50s
+   Doc-tests jvmcontract
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+"""
+
+
+def watched(binary, name, attempt=1, **extra):
+    return {"binary": binary, "name": name, "profile": "measure", "attempt": str(attempt), "wall_s": 1.0,
+            "cpu_s": 0.5, "max_rss_mb": 50.0, "tree_peak_mb": 40.0, "spawned": {}, "exit": 0, **extra}
+
+
+class Names(unittest.TestCase):
+    def test_tool_names(self):
+        jdk = "/opt/jdk/bin"
+        cases = [
+            (("/usr/bin/jbmc", ["jbmc", "Foo.class"]), "jbmc"),
+            ((f"{jdk}/javac", ["javac", "-d", "out", "A.java"]), "javac"),
+            ((f"{jdk}/java", ["java", "-cp", "out", "Runner"]), "java"),
+            ((f"{jdk}/java", ["java", "-cp", "/x/tla2tools.jar", "tlc2.TLC", "M"]), "tlc"),
+            (("/usr/bin/bash", ["bash", "/home/u/.local/bin/tlc", "M.tla"]), "tlc"),
+            (("/usr/bin/dash", ["sh", "/tmp/t/jbmc-stand-in", "--version"]), "sh jbmc-stand-in"),
+            (("/usr/bin/python3.14", ["python3", "-I", "fake_jbmc.py"]), "python3 fake_jbmc.py"),
+            (("/repo/lib/target/debug/jvmcontract", ["jvmcontract", "prove"]), "jvmcontract"),
+            (("/usr/bin/gnusleep", ["sleep", "1"]), "sleep"),
+            (("/usr/bin/jbmc", []), "jbmc"),
+            ((None, []), "?"),
+        ]
+        for (exe, argv), name in cases:
+            self.assertEqual(tc.tool_name(exe, argv), name, argv)
+
+
+class Tiers(unittest.TestCase):
+    def test_tiers_by_tool_time_and_memory(self):
+        self.assertEqual(tc.tier(0.2, 30, {}), ("unit", "in process, under 1 s"))
+        self.assertEqual(tc.tier(1.5, 30, {})[0], "tool")
+        self.assertEqual(tc.tier(0.5, 30, {"javac": 1}), ("tool", "spawns javac"))
+        self.assertEqual(tc.tier(0.5, 30, {"jbmc": 2, "javac": 1}), ("proof", "spawns jbmc"))
+        self.assertEqual(tc.tier(3.0, 30, {"tlc": 1})[0], "proof")
+        self.assertEqual(tc.tier(10.0, 30, {"javac": 1}), ("proof", "10.0 s, over the tool tier's 10 s"))
+        self.assertEqual(tc.tier(2.0, 1500, {"java": 1}), ("proof", "1500 MB, over the tool tier's 1024 MB"))
+
+
+class Parsing(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_junit(self):
+        (self.dir / "j.xml").write_text(JUNIT_DEBUG)
+        cases = tc.read_junit(self.dir / "j.xml", "debug")
+        self.assertEqual(cases[("jvmcontract::conformance", "the_corpus_agrees")],
+                         {"time_s": 61.0, "status": "failed", "profile": "debug"})
+        self.assertEqual(cases[("jvmcontract", "spec::tests::parses")]["status"], "passed")
+        self.assertEqual(tc.read_junit(self.dir / "missing.xml", "debug"), {})
+
+    def test_watch_records_keep_the_last_attempt(self):
+        w = self.dir / "watch"
+        w.mkdir()
+        (w / "1.json").write_text(json.dumps(watched("b", "t", attempt=2, cpu_s=9.0)))
+        (w / "2.json").write_text(json.dumps(watched("b", "t", attempt=1)))
+        (w / "3.json").write_text(json.dumps(watched("b", "u")))
+        records = tc.read_watch(w)
+        self.assertEqual(records[("b", "t")]["cpu_s"], 9.0)
+        self.assertEqual(set(records), {("b", "t"), ("b", "u")})
+        self.assertEqual(tc.read_watch(self.dir / "none"), {})
+
+    def test_cargo_test_output(self):
+        (self.dir / "c.log").write_text(CARGO_TEST)
+        self.assertEqual(tc.read_cargo_test(self.dir / "c.log"), [
+            {"binary": "src/lib.rs", "passed": 258, "failed": 0, "ignored": 0, "time_s": 3.0},
+            {"binary": "tests/conformance.rs", "passed": 10, "failed": 1, "ignored": 2, "time_s": 60.5},
+            {"binary": "doc-tests jvmcontract", "passed": 0, "failed": 0, "ignored": 0, "time_s": 0.1}])
+
+    def test_group_config_puts_each_binary_alone(self):
+        tc._group_config(self.dir / "g.toml", ["jvmcontract", "jvmcontract::bin/jvmcontract", "jvmcontract::heap"])
+        doc = tomllib.loads((self.dir / "g.toml").read_text())
+        self.assertEqual(doc["test-groups"], {"jvmcontract": {"max-threads": 1},
+                                              "jvmcontract--bin-jvmcontract": {"max-threads": 1},
+                                              "jvmcontract--heap": {"max-threads": 1}})
+        self.assertEqual(doc["profile"]["measure"]["overrides"][2],
+                         {"filter": "binary_id(=jvmcontract::heap)", "test-group": "jvmcontract--heap"})
+
+    def test_inventory_from_raw_files(self):
+        raw = self.dir / "raw"
+        (raw / "watch").mkdir(parents=True)
+        (raw / "junit-debug.xml").write_text(JUNIT_DEBUG)
+        (raw / "junit-release.xml").write_text(JUNIT_RELEASE)
+        records = [watched("jvmcontract", "spec::tests::parses", wall_s=0.01, max_rss_mb=20.0, tree_peak_mb=20.0),
+                   watched("jvmcontract::conformance", "the_runner_compiles", spawned={"javac": 1, "java": 3}),
+                   watched("jvmcontract::conformance", "the_corpus_agrees", spawned={"jbmc": 12}),
+                   watched("jvmcontract::heap", "the_object_properties_under_jbmc", max_rss_mb=1300.0,
+                           spawned={"jbmc": 4})]
+        for i, r in enumerate(records):
+            (raw / "watch" / f"{i}.json").write_text(json.dumps(r))
+        (raw / "python.jsonl").write_text("".join(json.dumps(r) + "\n" for r in [
+            {"file": "a/test_a.py", "name": "test_a.T.test_fast", "wall_s": 0.01, "cpu_s": 0.01, "tree_peak_mb": 0,
+             "spawned": {}, "status": "passed"},
+            {"file": "a/test_a.py", "name": "test_a.T.test_build", "wall_s": 3.0, "cpu_s": 2.0, "tree_peak_mb": 200,
+             "spawned": {"javac": 2}, "status": "passed"},
+            {"file": "a/test_a.py", "name": "test_a.T.test_skip", "wall_s": 0.0, "status": "skipped"},
+            {"file": "b/test_b.py", "name": None, "status": "failed", "error": "ImportError: x"}]))
+        (raw / "run.json").write_text(json.dumps({"cpus": 8, "default_cargo_test": {"wall_s": 70.0}}))
+        path = self.dir / "costs.json"
+        doc = tc.write_inventory(raw, "job 20000101-000000-x", path)
+        self.assertEqual(json.loads(path.read_text()), doc)
+        rust = {(r["binary"], r["name"]): r for r in doc["rust"]}
+        self.assertEqual(rust[("jvmcontract", "spec::tests::parses")]["tier"], "unit")
+        self.assertEqual(rust[("jvmcontract::conformance", "the_runner_compiles")]["why"], "spawns java, javac")
+        self.assertEqual(rust[("jvmcontract::conformance", "the_corpus_agrees")]["tier"], "proof")
+        slow = rust[("jvmcontract::conformance", "a_slow_pure_test")]
+        self.assertEqual((slow["tier"], slow["cpu_s"], slow["peak_mb"]), ("tool", None, None))
+        heap = rust[("jvmcontract::heap", "the_object_properties_under_jbmc")]
+        self.assertEqual((heap["declared"], heap["profile"], heap["peak_mb"], heap["source"]),
+                         ("ignored", "release", 1300.0, "job 20000101-000000-x"))
+        summary = doc["summary"]["rust"]
+        self.assertEqual((summary["tests"], summary["failed"], summary["default_proof_tier"],
+                          summary["ignored_below_proof"]), (5, 1, 1, 0))
+        self.assertEqual(summary["by_declared"]["default"], {"unit": 1, "tool": 2, "proof": 1})
+        python = {r["name"]: r for r in doc["python"]}
+        self.assertEqual(python["test_a.T.test_build"]["tier"], "tool")
+        self.assertEqual(python["test_a.T.test_skip"]["tier"], None)
+        self.assertEqual(python[None]["why"], "the file failed to load")
+        self.assertEqual(doc["summary"]["python"]["by_file"]["a/test_a.py"], {"unit": 1, "tool": 1, "not measured": 1})
+        self.assertEqual(doc["default_cargo_test"], {"wall_s": 70.0})
+
+
+class Files(unittest.TestCase):
+    def test_module_for_a_file_in_a_package(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pkg = Path(tmp) / "tools" / "targets"
+            pkg.mkdir(parents=True)
+            (pkg / "__init__.py").write_text("")
+            (pkg / "test_x.py").write_text("")
+            (Path(tmp) / "tools" / "test_y.py").write_text("")
+            top, here, module = tc._module_for(pkg / "test_x.py")
+            self.assertEqual((top, here, module), (pkg.parent.resolve(), pkg.resolve(), "targets.test_x"))
+            self.assertEqual(tc._module_for(Path(tmp) / "tools" / "test_y.py")[2], "test_y")
+
+    def test_python_test_files_leave_out_examples_and_build_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for rel in ["examples/tools/test_build.py", "examples/052-x/test_inner.py", "lib/target/test_gen.py",
+                        "verification/test_pipeline.py", "verification/helper.py", ".jj/test_no.py"]:
+                (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                (root / rel).write_text("")
+            found = [str(p.relative_to(root)) for p in tc.python_test_files(root)]
+            self.assertEqual(found, ["examples/tools/test_build.py", "verification/test_pipeline.py"])
+
+
+class Watching(unittest.TestCase):
+    """The process sampling, on made-up commands of well under a second."""
+
+    def test_watch_records_a_spawned_process_and_passes_the_exit_on(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env = {**os.environ, "TEST_COSTS_DIR": tmp, "NEXTEST_BINARY_ID": "demo::bin", "NEXTEST_TEST_NAME": "t"}
+            code = subprocess.run([sys.executable, str(HERE / "test_costs.py"), "watch", "--", "sh", "-c",
+                                   "sleep 0.2; exit 3"], env=env).returncode
+            self.assertEqual(code, 3)
+            [record] = [json.loads(p.read_text()) for p in Path(tmp).glob("*.json")]
+            self.assertEqual((record["binary"], record["name"], record["exit"]), ("demo::bin", "t", 3))
+            self.assertEqual(record["spawned"], {"sleep": 1})
+            self.assertGreaterEqual(record["wall_s"], 0.2)
+            self.assertGreater(record["max_rss_mb"], 0)
+
+    def test_watch_without_a_directory_only_runs_the_command(self):
+        env = {k: v for k, v in os.environ.items() if k != "TEST_COSTS_DIR"}
+        self.assertEqual(subprocess.run([sys.executable, str(HERE / "test_costs.py"), "watch", "true"],
+                                        env=env).returncode, 0)
+
+    def test_python_file_test_by_test(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / "test_demo.py"
+            f.write_text(
+                "import subprocess, unittest\n"
+                "class T(unittest.TestCase):\n"
+                "    def test_spawns(self):\n"
+                "        subprocess.run(['sleep', '0.2'], check=True)\n"
+                "    def test_fails(self):\n"
+                "        self.fail('made up')\n"
+                "    @unittest.skip('made up')\n"
+                "    def test_skipped(self):\n"
+                "        pass\n")
+            out = Path(tmp) / "out.jsonl"
+            code = subprocess.run([sys.executable, str(HERE / "test_costs.py"), "python", str(f), "--out", str(out)],
+                                  capture_output=True).returncode
+            self.assertEqual(code, 1)
+            records = {r["name"]: r for r in map(json.loads, out.read_text().splitlines())}
+            self.assertEqual({n: r["status"] for n, r in records.items()},
+                             {"test_demo.T.test_spawns": "passed", "test_demo.T.test_fails": "failed",
+                              "test_demo.T.test_skipped": "skipped"})
+            spawns = records["test_demo.T.test_spawns"]
+            self.assertEqual(spawns["spawned"], {"sleep": 1})
+            self.assertGreaterEqual(spawns["wall_s"], 0.2)
+            self.assertEqual(records["test_demo.T.test_fails"]["spawned"], {})
+
+
+if __name__ == "__main__":
+    unittest.main()
