@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "bd59e87b-a013-4704-9c5c-cdab7fe9dd65",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-15T01:41:39.838Z",
+  "ended": "2026-11-15T01:42:37.978Z",
+  "duration_seconds": 58,
+  "stats": {
+    "turns": 1,
+    "api_calls": 9,
+    "tool_calls": 9,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 42899,
+    "usage": {
+      "input_tokens": 18,
+      "output_tokens": 1957,
+      "cache_read_input_tokens": 289917,
+      "cache_creation_input_tokens": 29673
+    }
+  },
+  "tools": {
+    "Bash": 8,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-15T01:41:39.838Z",
+      "ended": "2026-11-15T01:42:37.978Z",
+      "turns": 1,
+      "api_calls": 9,
+      "usage": {
+        "input_tokens": 18,
+        "output_tokens": 1957,
+        "cache_read_input_tokens": 289917,
+        "cache_creation_input_tokens": 29673
+      },
+      "peak_context_tokens": 42899
+    }
+  ],
+  "log": {
+    "sha256": "ba69158c77e2f776ad8df4cb65e37945256ad997e3e2e35b0e2d5f1ff96b68e0",
+    "bytes": 360957,
+    "lines": 81,
+    "gzip_bytes": 83329,
+    "path": "llm-dlc/traces/bd59e87b-a013-4704-9c5c-cdab7fe9dd65/logs/ba69158c77e2f776ad8df4cb65e37945256ad997e3e2e35b0e2d5f1ff96b68e0.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ovvoultportryproopplkqyuzvwmtxqs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028",
+      "body": "Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task <T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.",
+      "log_sha256": "ba69158c77e2f776ad8df4cb65e37945256ad997e3e2e35b0e2d5f1ff96b68e0"
+    }
+  ],
+  "logs": {
+    "ba69158c77e2f776ad8df4cb65e37945256ad997e3e2e35b0e2d5f1ff96b68e0": {
+      "bytes": 360957,
+      "lines": 81,
+      "gzip_bytes": 83329,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

@@ -1,0 +1,221 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-013518-example-307-mutant-preservation-vf-028-r",
+  "title": "example 307 mutant-preservation (VF-028 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.8s, peak 219.7 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-013518-example-307-mutant-preservation-vf-028-r.json",
+    "sha256": "fb2b3a9da0d5bef113353f0854192aecc98590739e966d5f6889bb91b2f153c2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-013518-example-307-mutant-preservation-vf-028-r",
+      "title": "example 307 mutant-preservation (VF-028 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+      "description": "VF-028's closing rerun, recorded as VF-027's were by the user's decision of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task mutant-preservation of example 307 is resubmitted unchanged in its claim (key 7eb077dac7a25751, expected refuted, native, strict), predicting the refusal job 20261115-011448-example-307-mutant-preservation-phase-5 observed: a String parameter the check doesn't take. The step runs examples/tools/targets/workflow_refusal.py 307 mutant-preservation, which runs python3 examples/tools/build.py 307 --task mutant-preservation once (its output indented) and exits 0 only when the claim key is still 7eb077dac7a25751, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/records/refusals/mutant-preservation.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/records/refusals/mutant-preservation.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "307"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 307 task mutant-preservation and exits 0: the attempt stops at the recorded refusal (a String parameter the check doesn't take) under claim 7eb077dac7a25751; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T01:35:18+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the same preparation and controls as the observed run 20261115-011448-example-307-mutant-preservation-phase-5, which reached the refusal in 7 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 307 task mutant-preservation: the recorded refusal (VF-028)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 307 mutant-preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation"
+      ]
+    }
+  },
+  "sourceCommit": "45fd8612b5d1b3aff558c7a9a1c0506fe1128d8f",
+  "startedAt": "2026-11-15T01:42:03+00:00",
+  "finishedAt": "2026-11-15T01:42:10+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3793081,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the same preparation and controls as the observed run 20261115-011448-example-307-mutant-preservation-phase-5, which reached the refusal in 7 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 230408192,
+    "wallSeconds": 5.8,
+    "cpuSeconds": 5.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 307 task mutant-preservation: the recorded refusal (VF-028)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 307 mutant-preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.813,
+      "cpuSeconds": 5.854,
+      "cpuThrottledSeconds": 0.369,
+      "peakMemoryBytes": 230408192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-307-task-mutant-preser.log",
+        "lines": 3,
+        "bytes": 612,
+        "sha256": "08ddfc3fa81c11bb31d4374bf37492890c3688ad4210c16229bf2f0b5b09c9d3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: refused as predicted (VF-028; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T014209Z-f3d54c53",
+          "groups": [
+            "307",
+            "mutant-preservation",
+            "VF-028",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task mutant-preservation (target route)",
+        "  build.py | 307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T014209Z-f3d54c53/result.json",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: refused as predicted (VF-028; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T014209Z-f3d54c53"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/plan.json",
+      "change": "added",
+      "bytes": 18369,
+      "sha256": "b9929ae249fd52ad5d0cb8081a0181e757562ecdef4fdbeb133dbf389a475f75",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/records/execution.json",
+      "change": "added",
+      "bytes": 195872,
+      "sha256": "3a860d3ecadfac0ac3b93d9519d30462d609444d1c2e44b8220d3c378cf25f28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 280,
+      "sha256": "6cdc8e9b7edce63267a21b3c376a4268333064972ea79683399d4cff064c047f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/result.json",
+      "change": "added",
+      "bytes": 13676,
+      "sha256": "4da0e4cddda17f2fdc271f7e66ca32e575e47703eb79e5117e839ef9a1d2af92",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:42:24+00:00",
+    "applied": [
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/plan.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/records/execution.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/records/verifier-output.txt",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T014209Z-f3d54c53/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

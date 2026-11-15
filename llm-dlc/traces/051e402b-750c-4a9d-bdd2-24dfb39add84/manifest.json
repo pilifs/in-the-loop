@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T01:40:31.009Z",
-  "duration_seconds": 26111,
+  "ended": "2026-11-15T01:42:37.135Z",
+  "duration_seconds": 26237,
   "stats": {
-    "turns": 143,
-    "api_calls": 1187,
-    "tool_calls": 1217,
-    "tool_errors": 22,
-    "compactions": 26,
+    "turns": 148,
+    "api_calls": 1198,
+    "tool_calls": 1229,
+    "tool_errors": 23,
+    "compactions": 27,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2408,
-      "output_tokens": 787575,
-      "cache_read_input_tokens": 153158951,
-      "cache_creation_input_tokens": 3928006
+      "input_tokens": 2430,
+      "output_tokens": 790849,
+      "cache_read_input_tokens": 154285635,
+      "cache_creation_input_tokens": 4029719
     }
   },
   "tools": {
-    "Bash": 1048,
-    "Read": 79,
+    "Bash": 1054,
+    "Read": 85,
     "Edit": 73,
     "Agent": 5,
     "Write": 5,
@@ -430,24 +430,38 @@
     {
       "index": 26,
       "started": "2026-11-15T01:32:33.196Z",
-      "ended": "2026-11-15T01:40:31.009Z",
-      "turns": 4,
-      "api_calls": 37,
+      "ended": "2026-11-15T01:41:30.652Z",
+      "turns": 5,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 76,
-        "output_tokens": 16745,
-        "cache_read_input_tokens": 4571676,
-        "cache_creation_input_tokens": 147579
+        "input_tokens": 86,
+        "output_tokens": 18784,
+        "cache_read_input_tokens": 5385009,
+        "cache_creation_input_tokens": 153582
       },
-      "peak_context_tokens": 160765
+      "peak_context_tokens": 166768
+    },
+    {
+      "index": 27,
+      "started": "2026-11-15T01:42:14.308Z",
+      "ended": "2026-11-15T01:42:37.135Z",
+      "turns": 4,
+      "api_calls": 6,
+      "usage": {
+        "input_tokens": 12,
+        "output_tokens": 1235,
+        "cache_read_input_tokens": 313351,
+        "cache_creation_input_tokens": 95710
+      },
+      "peak_context_tokens": 108896
     }
   ],
   "log": {
-    "sha256": "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3",
-    "bytes": 38533408,
-    "lines": 12185,
-    "gzip_bytes": 8045678,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3.jsonl.gz"
+    "sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550",
+    "bytes": 39447605,
+    "lines": 12346,
+    "gzip_bytes": 8311061,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550.jsonl.gz"
   },
   "subagents": [
     {
@@ -970,6 +984,22 @@
       "summary": "example-targets: 307's native attempts refused at the nullable String password (VF-028), recorded as VF-027's were; two reruns predicting the refusal queued (verification pending)",
       "body": "Example 307's two native strict proof jobs (20261115-011448-example-307-preservation-phase-5-step-1 and -mutant-preservation-phase-5, collected in wtwuqnwz) both stopped before any proof at --nullable password: the checker takes a String parameter of a regression check only as non-null bounded UTF-16, and the frozen claim's domain has a null password. This is VF-027's third cause (input-construction:string-parameter). As the user decided on 2026-11-15 for VF-027, the refusal is recorded, not restated: each task gets an observed gap packet under examples/307-.../records/refusals/ (citing its job, log, receipt and verifier output by sha256, and claim key 7eb077dac7a25751) and an observed blocker with finding VF-028, replacing the target-wide input-construction prediction. Both tasks now read blocked; the claim and its expected conclusions are unchanged. 307's handoff next, README, a note and the index say so, and VF-028's status records it.\n\nQueued, each running workflow_refusal.py 307 TASK, which passes only if the same refusal recurs under the same claim key: 20261115-013518-example-307-preservation-vf-028-rerun-st and 20261115-013518-example-307-mutant-preservation-vf-028-r. VF-028 closes when both pass.",
       "log_sha256": "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3"
+    },
+    {
+      "change_id": "qnnzopqqmmtkxmlnwpxlopqytvvvksrm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550"
+    },
+    {
+      "change_id": "ovvoultportryproopplkqyuzvwmtxqs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028",
+      "body": "Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task <T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.",
+      "log_sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550"
     }
   ],
   "logs": {
@@ -1199,6 +1229,12 @@
       "bytes": 9022890,
       "lines": 2842,
       "gzip_bytes": 1924437,
+      "url": null
+    },
+    "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550": {
+      "bytes": 39447605,
+      "lines": 12346,
+      "gzip_bytes": 8311061,
       "url": null
     },
     "e53aa9cc3e1f61c4a30e75368b97277b997bbd712121efd69ce7d8eb73b6b96e": {

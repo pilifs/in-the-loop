@@ -787,6 +787,12 @@ Example 307's two native strict proof jobs (20261115-011448-example-307-preserva
 
 Queued, each running workflow_refusal.py 307 TASK, which passes only if the same refusal recurs under the same claim key: 20261115-013518-example-307-preservation-vf-028-rerun-st and 20261115-013518-example-307-mutant-preservation-vf-028-r. VF-028 closes when both pass.
 
+### Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028
+
+change `ovvoultportr` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+
+Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task &lt;T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz) has every step in between: reasoning, tool calls and their results.
