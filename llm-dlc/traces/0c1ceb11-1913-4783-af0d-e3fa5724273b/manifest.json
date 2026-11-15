@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "0c1ceb11-1913-4783-af0d-e3fa5724273b",
-  "status": "ended",
+  "status": "open",
   "title": "Moonshot loop stats backfill",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T14:52:36.407Z",
-  "ended": "2026-11-15T15:23:08.417Z",
-  "duration_seconds": 1832,
+  "ended": "2026-11-15T15:53:03.997Z",
+  "duration_seconds": 3628,
   "stats": {
-    "turns": 7,
-    "api_calls": 68,
-    "tool_calls": 72,
+    "turns": 8,
+    "api_calls": 79,
+    "tool_calls": 82,
     "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 337566,
+    "peak_context_tokens": 366319,
     "usage": {
-      "input_tokens": 138,
-      "output_tokens": 128987,
-      "cache_read_input_tokens": 15496145,
-      "cache_creation_input_tokens": 311607
+      "input_tokens": 162,
+      "output_tokens": 147525,
+      "cache_read_input_tokens": 19385856,
+      "cache_creation_input_tokens": 337398
     }
   },
   "tools": {
-    "Bash": 68,
+    "Bash": 78,
     "Read": 2,
     "Write": 2
   },
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-15T14:52:36.407Z",
-      "ended": "2026-11-15T15:23:08.417Z",
-      "turns": 7,
-      "api_calls": 68,
+      "ended": "2026-11-15T15:53:03.997Z",
+      "turns": 8,
+      "api_calls": 79,
       "usage": {
-        "input_tokens": 138,
-        "output_tokens": 128987,
-        "cache_read_input_tokens": 15496145,
-        "cache_creation_input_tokens": 311607
+        "input_tokens": 162,
+        "output_tokens": 147525,
+        "cache_read_input_tokens": 19385856,
+        "cache_creation_input_tokens": 337398
       },
-      "peak_context_tokens": 337566
+      "peak_context_tokens": 366319
     }
   ],
   "log": {
-    "sha256": "862a9a2cab54dd4f33a37e15959a43d3a09afc377c5f960d6723cca157b732f9",
-    "bytes": 2149304,
-    "lines": 573,
-    "gzip_bytes": 420941,
-    "path": "llm-dlc/traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/logs/862a9a2cab54dd4f33a37e15959a43d3a09afc377c5f960d6723cca157b732f9.jsonl.gz"
+    "sha256": "e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10",
+    "bytes": 2311284,
+    "lines": 651,
+    "gzip_bytes": 443816,
+    "path": "llm-dlc/traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/logs/e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -85,19 +85,51 @@
       "summary": "Test cost: the for-review list in Progress, and Status done",
       "body": "Phase 3 step 9 of llm-dlc/loops/test-cost.md. The brief's Progress now lists what a person and the next test-cost loop should review, counted from lib/tests/costs.json without running any test. It covers the tiers with no past timing at all (Rust 2, Python 162, by file) and those that past runs bound only from above (Rust 228, Python 274). It gives the retier: pending list by file (63 Rust tests, ten of them proof tier only because a past run was slow) and the proxy: none yet list (the preparation benchmark). It ends with the findings from the tagging: conformance's proxy is itself retier: pending, three heap jobs may not have run JBMC though those tests qualify for the inline exception, three heap tests fail their jobs at about an hour, two jbmc.rs tests are tool tier only because of a shebang, there are slow unit binaries, the Python reading misses spawns inside the module under test, measure's inventory writes another row shape, and test_economics.py was already failing. Every criterion of Done when holds, so Status is done. Only the brief's Markdown changed, and no test reads it, so no test was run.\n\nThe brief is out of date in places, left as written outside Progress: decision 4 says the inline exception applies when 'the inventory measures it under a minute', but the inventory measures nothing yet, so the guidance reads that as a past run of the test alone (kind 'run alone'). Decision 6 gives the slow files' proxies to 'Phase 4', a phase of the first draft that decision 9 deferred to the next loop. The Direction's lint 'in the default run' is in place, but 'Where it starts from' still counts 384 integration tests and 258 unit tests, against 646 Rust tests now.",
       "log_sha256": "f2cfd07d855ac6f2f9a5b1cca33dcebcce0f831d91c2f8afaf440ab23c37125b"
+    },
+    {
+      "change_id": "zkuuukmrqwowrqslnytvwrqsqsqrpton",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Fixes after the test-cost loop: app_of for real-world examples without a file, Fable 5.2 pricing, the brief's stale passages",
+      "body": "examples/tools/build.py's app_of read example['subject']['file'], which the schema requires only of constructed examples. The real-world Spring Security examples 287 and 289-291 name only a system and symbol, so economics.recorded() raised KeyError 'file' and examples/tools/test_economics.py failed by default (4 errors), as it had since before the test-cost loop. app_of now returns None when the example names no file, as its docstring already said for an example on no known app; every caller handles None.\n\nllm-dlc/pricing.json gains claude-fable-5-2 at the API list price, $8 input and $40 output per million tokens, $0.20 cache reads, and cache writes at the file's 1.25x and 2x input ($10 and $16), so session 0c1ceb11's 31 Fable 5.2 calls stop counting as $0. claude-sonnet-5-5's cache read is corrected from $0.20 to its list price of $0.10. as_of moves to 2026-11-15. Every metrics.json is recomputed on the next sync.\n\nllm-dlc/loops/test-cost.md, outside Progress: 'Where it starts from' now says its counts were the loop's start and gives the end's (646 Rust, 833 Python in 31 files); decision 4's inline exception reads as the guidance does, a past run of the test alone under a minute; decision 6's proxies go to the next test-cost loop instead of a Phase 4 that no longer exists.\n\nVerified: test_economics.py passes (11 tests), and so do test_alignment.py and test_metrics.py, the other callers and readers. The default Python run (test_costs.py run --only python) passed 32 of 32 files, and test_costs.py lint agrees. No Rust changed, so cargo test was not rerun.",
+      "log_sha256": "e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10"
+    },
+    {
+      "change_id": "ysutlusoqrmmzrlsmrxxyvtwrqpllutn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "pricing.json back to its 2026-10-31 prices: a price change can't be carried to the stream sessions' metrics from here",
+      "body": "The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and corrected claude-sonnet-5-5's cache read to $0.10. The commit's sync recomputed metrics.json for every session whose transcript is in this checkout's Claude project folder, but 17 sessions of the merged streams (alignment, cleanup-native, application-core-objects, example-targets-workflow and others) keep their transcripts in their own workspaces' folders. sync can't reach those, so their metrics.json no longer matched and check reported 17 errors. This restores the old prices, and the sessions this sync can reach are recomputed back to them. The price change waits on a person's decision on how to recompute the 17 (see the session summary). The app_of fix and the brief's updates stand.\n\nVerified: sync.py check reports 0 errors.",
+      "log_sha256": "e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10"
+    },
+    {
+      "change_id": "zxsnysyqzqnpkzssyqykonvkmkyyszmw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: Filip Stankovic approved bca79831",
+      "body": "Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\nbca79831  other-home-dir  /h…u: A made-up path, /home/u/.local/bin/tlc, in lib/tools/test_test_costs.py's test of test_costs.tool_name (a TLC launcher script run by bash); not a real home directory. The test now uses /opt/tools/bin/tlc.",
+      "log_sha256": "e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10"
+    },
+    {
+      "change_id": "ywqsvnpkvpkxknxxklwmpsqqtozztuzu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "sync: metrics of sessions traced in another workspace follow the price list; Fable 5.2 priced, Sonnet 5.5 cache reads corrected",
+      "body": "sync could recompute metrics.json only for sessions whose transcript is in this checkout's Claude project folder. The merged streams' sessions keep theirs in their own workspaces' folders, named after those paths, so a price change left their metrics.json stale and check failed on them (17 sessions, seen and reverted in the previous two commits). sync now ends its session loop with refresh_metrics: every session with a manifest but no transcript here gets its metrics.json recomputed from its stored log and manifest, exactly as check recomputes it. This happens once for each set of logs, recorded in the sync cache, whose fingerprint already covers pricing.json and the tools, so a price or metrics.py change recomputes them all. A session whose log isn't stored here is left as it is. Only metrics.json is written: summaries carry no costs.\n\nWith that, llm-dlc/pricing.json gets the change it waited for: claude-fable-5-2 at $8 input and $40 output per million tokens, $0.20 cache reads, and $10 and $16 cache writes (the file's 1.25x and 2x), and claude-sonnet-5-5's cache read at its list $0.10 instead of $0.20. as_of is 2026-11-15. Session 0c1ceb11's Fable 5.2 calls no longer count as $0.\n\nVerified: a new unit test, Checks.test_metrics_of_a_session_traced_in_another_workspace_follow_the_prices, covers recomputing, not re-reading the same logs, recomputing under new prices, skipping a session whose transcript is here, and leaving one whose log is missing. Sync.test_global_files_are_rebuilt_once now stubs the new step, which would otherwise read the real traces folder, and checks that it is passed the local transcripts. test_performance.py passes (104 tests). The default Python run passed 31 of 32 files before that stub, and test_performance.py passed after it. The inventory was regenerated and the lint agrees. No Rust changed.",
+      "log_sha256": "e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10"
     }
   ],
   "logs": {
-    "862a9a2cab54dd4f33a37e15959a43d3a09afc377c5f960d6723cca157b732f9": {
-      "bytes": 2149304,
-      "lines": 573,
-      "gzip_bytes": 420941,
-      "url": null
-    },
     "c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8": {
       "bytes": 1236840,
       "lines": 272,
       "gzip_bytes": 273946,
+      "url": null
+    },
+    "e6a23ba68c54189c958bb87943b440b55be3806470b5164489f35098bf26ac10": {
+      "bytes": 2311284,
+      "lines": 651,
+      "gzip_bytes": 443816,
       "url": null
     },
     "f2cfd07d855ac6f2f9a5b1cca33dcebcce0f831d91c2f8afaf440ab23c37125b": {

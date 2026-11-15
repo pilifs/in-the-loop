@@ -2355,6 +2355,8 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                   f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
         if unchanged:
             print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
+        with perf.phase("metrics elsewhere"):
+            refresh_metrics({p.stem for p in src.glob("*.jsonl")}, redact, states)
         publish_runs(redact)  # again, for a session whose trace the loop above started
         for sid in sorted({p.parent.parent.name for p in TRACES.glob("*/runs/*.md")}):
             splice_runs(sid)  # a session rendered above already lists its runs; one traced elsewhere does not
@@ -2363,6 +2365,32 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
         with perf.phase("index"):
             write_index()  # once, after every session: it reads all their manifests
     return redact
+
+
+def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int:
+    """Rewrite metrics.json of each session whose transcript is not in this checkout's Claude
+    project folder (`here`: the ids that are), from its stored logs and manifest, as `check`
+    recomputes it. Such a session was traced in another jj workspace, whose folder is named after
+    that workspace's path, and merged since; sync can't process() it, yet its metrics follow the
+    price list and metrics.py, which change here. A session is recomputed once for each set of its
+    logs: the entry under "metrics:SID" in the sync cache, whose fingerprint covers the prices and
+    the tools, so editing either recomputes every one. One whose log isn't stored here is left as
+    it is. Returns how many files changed."""
+    changed = 0
+    for sid, m in all_manifests().items():
+        if sid in here or m.get("schema") != SCHEMA or not metrics_path(sid).exists():
+            continue
+        logs = [m["log"]["sha256"]] + [s["log"]["sha256"] for s in m.get("subagents", [])]
+        if states.entries.get(f"metrics:{sid}") == logs:
+            continue
+        if (data := load_log(sid, logs[0])) is None:
+            continue
+        text = session_metrics(sid, m, read_jsonl(data), redact)
+        if write_if_changed(metrics_path(sid), text):
+            changed += 1
+            print(f"{sid}  metrics.json recomputed from its stored log (transcript in another workspace's folder)")
+        states.entries[f"metrics:{sid}"] = logs
+    return changed
 
 
 def transcripts_of(p: Path) -> list[tuple[str, Path]]:

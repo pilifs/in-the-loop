@@ -414,6 +414,7 @@ class Sync(unittest.TestCase):
                     mock.patch.object(sync, "LOOP_SUMMARIES", Path(d) / "loop-summaries"), \
                     mock.patch.object(sync, "process", side_effect=fake), \
                     mock.patch.object(sync, "write_index") as index, \
+                    mock.patch.object(sync, "refresh_metrics", return_value=0) as elsewhere, \
                     mock.patch.object(sync, "commit_index", return_value=None), \
                     mock.patch.object(sync, "repo_web_url", return_value=None), \
                     mock.patch.object(sync, "Redactor", return_value=mock.Mock(fingerprint=lambda: "f")), \
@@ -423,6 +424,7 @@ class Sync(unittest.TestCase):
                     mock.patch("sys.stdout", io.StringIO()):
                 sync.cmd_sync([])
         index.assert_called_once_with()
+        self.assertEqual(elsewhere.call_args.args[0], {"a", "b", "c"})  # the transcripts here are processed instead
 
     def test_the_exporter_stops_at_the_first_failure(self):
         # Langfuse configured and no transcript on this machine, whatever this machine has: the stored log is sent.
@@ -865,6 +867,29 @@ class Checks(unittest.TestCase):
         found = self.check(m, checks)
         self.assertEqual(found, self.check(m, None))
         self.assertIn(f"s1: log {shas[2][:12]} content does not match its name", found[0])
+
+    def test_metrics_of_a_session_traced_in_another_workspace_follow_the_prices(self):
+        m, shas = self.session()
+        sync.manifest_path("s1").write_text(json.dumps(m))
+        sync.metrics_path("s1").write_text("old prices\n")
+        rendered = mock.Mock(side_effect=lambda sid, m, entries, redact: f"{len(entries)} entries, {sync.PRICING.read_text()}\n")
+        states = redactor.LocalCache(None, "made-up fingerprint")
+        with mock.patch.object(sync, "session_metrics", rendered), mock.patch("sys.stdout", io.StringIO()):
+            self.assertEqual(sync.refresh_metrics({"s1"}, self.r, states), 0)  # its transcript is here: sync processes it
+            self.assertEqual(rendered.call_count, 0)
+            self.assertEqual(sync.refresh_metrics({"other"}, self.r, states), 1)
+            self.assertEqual(sync.metrics_path("s1").read_text(), f"6 entries, {sync.PRICING.read_text()}\n")
+            self.assertEqual(sync.refresh_metrics(set(), self.r, states), 0)  # the same logs: not read again
+            self.assertEqual(rendered.call_count, 1)
+            # new prices empty the sync cache (its fingerprint covers them): recomputed under them
+            sync.PRICING.write_text(json.dumps({"models": {"made-up": {}}}))
+            self.assertEqual(sync.refresh_metrics(set(), self.r, redactor.LocalCache(None, "another")), 1)
+            self.assertIn("made-up", sync.metrics_path("s1").read_text())
+            # a log not stored here: the file is left as it is
+            sync.log_path("s1", shas[2]).unlink()
+            sync.metrics_path("s1").write_text("kept\n")
+            self.assertEqual(sync.refresh_metrics(set(), self.r, redactor.LocalCache(None, "a third")), 0)
+            self.assertEqual(sync.metrics_path("s1").read_text(), "kept\n")
 
     def test_metrics_are_compared_again_when_an_input_changes(self):
         m, shas = self.session()
