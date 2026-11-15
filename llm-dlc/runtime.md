@@ -56,6 +56,29 @@ update, conflicts in the user's commits are listed for the agent to resolve.
 Inside a development checkout the bootstrap answers `development`: there is nothing to install, and the checkout is
 the home.
 
+## Is the machine enough
+
+```bash
+python3 llm-dlc/tools/doctor.py           # a table: each check, what was found, what is wanted
+python3 llm-dlc/tools/doctor.py --json    # the same as data, with a proposed budget; exit 1 if anything blocks
+```
+
+[`doctor.py`](tools/doctor.py) only looks: it installs and changes nothing. It has three levels.
+
+- **Blocking**: a proof can't run here. A hardware limit (memory, CPUs or disk below the smallest machine this
+  repository has run on) or another operating system is blocking by itself, and no setup removes it. A missing tool
+  that every proof needs is blocking until it is installed, which
+  [`examples/setup/ubuntu/install.sh`](../examples/setup/ubuntu/install.sh) does by component (`devtools` for jj and
+  Rust, `jvm` for the JDKs); a runtime machine needs none of its Docker, Kubernetes or proof-assistant components.
+- **Limits**: the machine works with less, and the check says what is lost: without JBMC, only what the tool's own
+  checker decides; without systemd user scopes, no memory cap; without the JDKs under sdkman, no replay.
+- **Ok.**
+
+Its `budget` shares the machine out as [`verification/README.md`](../verification/README.md#running-resources-isolation-configuration)
+describes: a reserve for the person and the operating system, one loop's memory cap, and the rest to the verification
+runner. It is a proposal: the runner's share goes into `verification/pipeline.local.toml` (not committed), and the
+loop's is its memory cap (`FEATURE_LOOP_MEMORY_MAX`).
+
 ## Releases
 
 A release is one commit: the skill at a version, and the repository it runs on, pinned to each other by the sha256
