@@ -970,6 +970,14 @@
       "summary": "pricing.json back to its 2026-10-31 prices: a price change can't be carried to the stream sessions' metrics from here",
       "body": "The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and corrected claude-sonnet-5-5's cache read to $0.10. The commit's sync recomputed metrics.json for every session whose transcript is in this checkout's Claude project folder, but 17 sessions of the merged streams (alignment, cleanup-native, application-core-objects, example-targets-workflow and others) keep their transcripts in their own workspaces' folders. sync can't reach those, so their metrics.json no longer matched and check reported 17 errors. This restores the old prices, and the sessions this sync can reach are recomputed back to them. The price change waits on a person's decision on how to recompute the 17 (see the session summary). The app_of fix and the brief's updates stand.\n\nVerified: sync.py check reports 0 errors.",
       "log_sha256": "065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688"
+    },
+    {
+      "change_id": "zxsnysyqzqnpkzssyqykonvkmkyyszmw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: Filip Stankovic approved bca79831",
+      "body": "Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\nbca79831  other-home-dir  /h…u: A made-up path, /home/u/.local/bin/tlc, in lib/tools/test_test_costs.py's test of test_costs.tool_name (a TLC launcher script run by bash); not a real home directory. The test now uses /opt/tools/bin/tlc.",
+      "log_sha256": "065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688"
     }
   ],
   "logs": {

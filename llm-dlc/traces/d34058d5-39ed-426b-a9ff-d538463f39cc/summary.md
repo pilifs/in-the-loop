@@ -948,6 +948,14 @@ The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and correc
 
 Verified: sync.py check reports 0 errors.
 
+### Allow list: Filip Stankovic approved bca79831
+
+change `zxsnysyqzqnp` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+
+Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.
+
+bca79831  other-home-dir  /h…u: A made-up path, /home/u/.local/bin/tlc, in lib/tools/test_test_costs.py's test of test_costs.tool_name (a TLC launcher script run by bash); not a real home directory. The test now uses /opt/tools/bin/tlc.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz) has every step in between: reasoning, tool calls and their results.
