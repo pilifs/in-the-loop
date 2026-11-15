@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T00:45:54.637Z",
-  "duration_seconds": 22834,
+  "ended": "2026-11-15T00:46:34.288Z",
+  "duration_seconds": 22874,
   "stats": {
-    "turns": 128,
-    "api_calls": 1001,
-    "tool_calls": 1027,
+    "turns": 129,
+    "api_calls": 1007,
+    "tool_calls": 1031,
     "tool_errors": 20,
     "compactions": 23,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2032,
-      "output_tokens": 670691,
-      "cache_read_input_tokens": 124273512,
-      "cache_creation_input_tokens": 3363555
+      "input_tokens": 2044,
+      "output_tokens": 672675,
+      "cache_read_input_tokens": 125469054,
+      "cache_creation_input_tokens": 3371115
     }
   },
   "tools": {
-    "Bash": 880,
+    "Bash": 884,
     "Read": 69,
     "Edit": 65,
     "Agent": 5,
@@ -385,24 +385,24 @@
     {
       "index": 23,
       "started": "2026-11-15T00:27:47.155Z",
-      "ended": "2026-11-15T00:45:54.637Z",
-      "turns": 4,
-      "api_calls": 48,
+      "ended": "2026-11-15T00:46:34.288Z",
+      "turns": 5,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 35026,
-        "cache_read_input_tokens": 7328442,
-        "cache_creation_input_tokens": 183282
+        "input_tokens": 108,
+        "output_tokens": 37010,
+        "cache_read_input_tokens": 8523984,
+        "cache_creation_input_tokens": 190842
       },
-      "peak_context_tokens": 196468
+      "peak_context_tokens": 204028
     }
   ],
   "log": {
-    "sha256": "a9c3ba46907163df7fed1d17c0bdb8ddb42a3ea877d12fce9ff3e781fff21ed7",
-    "bytes": 33119273,
-    "lines": 10423,
-    "gzip_bytes": 6975382,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/a9c3ba46907163df7fed1d17c0bdb8ddb42a3ea877d12fce9ff3e781fff21ed7.jsonl.gz"
+    "sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a",
+    "bytes": 33228430,
+    "lines": 10480,
+    "gzip_bytes": 6997667,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a.jsonl.gz"
   },
   "subagents": [
     {
@@ -877,6 +877,22 @@
       "summary": "example-targets: 307 on the source slice, before's BCrypt.class checked against 5.2.0.M4's in every preparation; its replay and mutant-replay queued (verification pending)",
       "body": "The user chose the extracted-source slice for P3 (example 307, Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) on 2026-11-15, because the commits' own Gradle builds can't resolve their buildscript from the allowed hosts. The decision asks that before's compiled class be checked byte for byte against Spring Security 5.2.0.M4's published BCrypt.class, with a mismatch recorded as a blocker. The source-slice route had no such check, so it gained one: preparation.slice.matches names, per compiled revision, the published classes the slice must reproduce. Each match gives the class entry, its sha256 in the published JAR, and the JAR pinned by sha256. Changes are in target.schema.json, sidecar.py, the workflow planner (a mutant's base inherits no match) and runtime.py (_slice_matches at lock and _match_published at preparation). The preparation fetches the JAR into reference/, off the classpath, checks the entry's recorded sha256, and compares bytes with what javac wrote. A difference fails the preparation at build with a blocker. 305 names no match, so its plans, claim keys and receipts are unchanged.\n\n307's sidecar now uses the source-slice route: BCrypt.java alone at both commits, compiled by JDK 8 with -g -source 1.8 -target 1.8 -encoding UTF-8, with no dependency JARs. before matches BCrypt.class 0b137406... in spring-security-crypto 5.2.0.M4 (8871c1fe...). Its build blocker, handoff next, replay note, README and a new example.json note were rewritten and no longer offer options (a) and (b). The index was regenerated. Two jobs are queued: 20261115-003616-example-307-replay-p3-source-slice-route (before's class equals M4's, and both slices hold the oracle on JDK 21 and 25) and 20261115-003617-example-307-mutant-replay-p3-source-slic (after holds, and the US-ASCII mutant fails at the non-ASCII probes only). 307's native tasks wait for the replay and for VF-027's resubmission mechanism.",
       "log_sha256": "a9c3ba46907163df7fed1d17c0bdb8ddb42a3ea877d12fce9ff3e781fff21ed7"
+    },
+    {
+      "change_id": "vntrxswnuorrwuoqwnqmuvtrrkvwvqxq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a"
+    },
+    {
+      "change_id": "vzlqyvunwtwqsuwkwowquxsslmvywpvn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass",
+      "body": "Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.",
+      "log_sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a"
     }
   ],
   "logs": {
@@ -956,6 +972,12 @@
       "bytes": 19730971,
       "lines": 6339,
       "gzip_bytes": 4151195,
+      "url": null
+    },
+    "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a": {
+      "bytes": 33228430,
+      "lines": 10480,
+      "gzip_bytes": 6997667,
       "url": null
     },
     "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db": {

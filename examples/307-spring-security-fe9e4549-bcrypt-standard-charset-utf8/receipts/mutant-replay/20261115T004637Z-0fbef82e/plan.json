@@ -1,0 +1,286 @@
+{
+  "plan": {
+    "example": "307",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "hashpw-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe"
+        },
+        {
+          "id": "hashpw-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p307/HashpwDriver.java",
+          "sha256": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c"
+        },
+        {
+          "id": "hashpw-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+        },
+        {
+          "id": "us-ascii-mutant",
+          "kind": "mutation",
+          "path": "controls/us-ascii.patch",
+          "sha256": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b"
+        }
+      ],
+      "key": "6047e780b21e6b66"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "parent": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "published": [],
+        "slice": {
+          "files": [
+            "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "mutant": {
+          "base": {
+            "revision": "after",
+            "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+            "published": [],
+            "slice": {
+              "files": [
+                "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+              ],
+              "jdk": "8",
+              "flags": [
+                "-g",
+                "-source",
+                "1.8",
+                "-target",
+                "1.8",
+                "-encoding",
+                "UTF-8"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/us-ascii.patch",
+            "sha256": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b"
+          },
+          "description": "hashpw(String, String) encodes the password with US-ASCII instead of UTF-8, so every non-ASCII character becomes '?' and different non-ASCII passwords of one length hash alike. It breaks preservation at the non-ASCII probes and keeps the ASCII ones."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/mutant-replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-003617-example-307-mutant-replay-p3-source-slic/examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8",
+    "network": true
+  },
+  "inputs": {
+    "example": "307",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "preservation",
+    "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "after",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "preservation",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "hashpw-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe"
+        },
+        {
+          "id": "hashpw-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p307/HashpwDriver.java",
+          "sha256": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c"
+        },
+        {
+          "id": "hashpw-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+        },
+        {
+          "id": "us-ascii-mutant",
+          "kind": "mutation",
+          "path": "controls/us-ascii.patch",
+          "sha256": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b"
+        }
+      ],
+      "key": "6047e780b21e6b66"
+    },
+    "artifacts": [
+      {
+        "revision": "after",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "parent": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "published": [],
+        "slice": {
+          "files": [
+            "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+          ],
+          "jdk": "8",
+          "flags": [
+            "-g",
+            "-source",
+            "1.8",
+            "-target",
+            "1.8",
+            "-encoding",
+            "UTF-8"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "mutant": {
+          "base": {
+            "revision": "after",
+            "commit": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+            "published": [],
+            "slice": {
+              "files": [
+                "crypto/src/main/java/org/springframework/security/crypto/bcrypt/BCrypt.java"
+              ],
+              "jdk": "8",
+              "flags": [
+                "-g",
+                "-source",
+                "1.8",
+                "-target",
+                "1.8",
+                "-encoding",
+                "UTF-8"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/us-ascii.patch",
+            "sha256": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b"
+          },
+          "description": "hashpw(String, String) encodes the password with US-ASCII instead of UTF-8, so every non-ASCII character becomes '?' and different non-ASCII passwords of one length hash alike. It breaks preservation at the non-ASCII probes and keeps the ASCII ones."
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "4a7d64b320ae57ea3c7ab73719cbc2972f5e9504722e3a0dd5c2082c972028e8"
+}

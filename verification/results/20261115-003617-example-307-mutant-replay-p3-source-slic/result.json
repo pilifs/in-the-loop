@@ -1,0 +1,207 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-003617-example-307-mutant-replay-p3-source-slic",
+  "title": "example 307 mutant-replay (P3, source-slice route): after against the US-ASCII mutant of BCrypt.hashpw",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.4s, peak 200.0 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-003617-example-307-mutant-replay-p3-source-slic.json",
+    "sha256": "5b04861c143d4df4600e3a1fa108d80cb1df6988625d7c50df66ae719d00db3b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-003617-example-307-mutant-replay-p3-source-slic",
+      "title": "example 307 mutant-replay (P3, source-slice route): after against the US-ASCII mutant of BCrypt.hashpw",
+      "description": "The job runs python3 examples/tools/build.py 307 --task mutant-replay, the target route of llm-dlc/loops/example-targets.md, on the source-slice route the user chose for P3 (example 307, Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) on 2026-11-15, since the commits' own Gradle builds can't resolve their buildscript from the allowed hosts. Each commit is fetched from github.com at depth 1 or 2 and only crypto/.../bcrypt/BCrypt.java is compiled, by Temurin 8's javac with -g -source 1.8 -target 1.8 -encoding UTF-8; BCrypt needs only the JDK, so the slice has no dependency JARs. New in this job: before's preparation fetches Spring Security 5.2.0.M4's published spring-security-crypto JAR from repo.spring.io/milestone by its sha256 (8871c1fe...) and compares its BCrypt.class (sha256 0b137406...) with the slice's byte for byte (target.json preparation.slice.matches, runtime._match_published); a difference fails the preparation as a blocker, never a slice used anyway. A hand compile on 2026-11-14 (a note) gave identical bytes. The driver (HashpwDriver: 45 probes, three fixed salts from upstream's BCryptTests and four invalid ones, passwords from empty to 73 UTF-8 bytes, surrogates and null) runs in a separate JVM per revision on JDK 21 and on JDK 25, and workflow ingests the records into one format-2 receipt, read by the packet's independent oracle (controls/oracle.py problems(), which encodes UTF-8 itself and has no cipher), labelled extracted-source-slice in claim.target.scopes. A replay decides no claim: build.py exits 0 only when the receipt's matchesExpected is true. This task: the mutation pair, after (fe9e4549) against the constructed mutant (controls/us-ascii.patch, sha256 a2b4e97f..., applied to after's BCrypt.java and compiled by the same recipe: the password is encoded with US-ASCII, so every non-ASCII character becomes '?'). Its identity is mutant:fe9e4549+a2b4e97f; it is sensitivity evidence, never a historical result. After must hold the oracle on every probe and the mutant must fail it at the non-ASCII probes only.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay",
+        "target:source-slice",
+        "target:mutant"
+      ],
+      "links": {
+        "examples": [
+          "307"
+        ]
+      },
+      "expected": "build.py prints '307-...: task mutant-replay: none (completed; as expected)' and exits 0: after holds the oracle on JDK 21 and 25, and the mutant fails it at non-ASCII password probes and no ASCII one; a receipt under examples/307-*/receipts/mutant-replay/ whose claim.target.scopes says extracted-source-slice for after and constructed-mutation-of-a-slice for the mutant",
+      "submitted": {
+        "at": "2026-11-15T00:36:17+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "example 307 task mutant-replay (replay)",
+          "run": "python3 examples/tools/build.py 307 --task mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "f542897ff1fe654dae00007666a07ee981a4b14f",
+  "startedAt": "2026-11-15T00:46:30+00:00",
+  "finishedAt": "2026-11-15T00:46:37+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3317727,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 209702912,
+    "wallSeconds": 5.4,
+    "cpuSeconds": 5.5,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 307 task mutant-replay (replay)",
+      "run": "python3 examples/tools/build.py 307 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 5.409,
+      "cpuSeconds": 5.485,
+      "cpuThrottledSeconds": 0.408,
+      "peakMemoryBytes": 209702912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-307-task-mutant-replay.log",
+        "lines": 2,
+        "bytes": 280,
+        "sha256": "1348dc34af890cd1a019d86ed68f6638452a69df3559f295943b870a03fecb11",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T004637Z-0fbef82e/result.json",
+          "groups": [
+            "307",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task mutant-replay (target route)",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T004637Z-0fbef82e/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/plan.json",
+      "change": "added",
+      "bytes": 8660,
+      "sha256": "415e1001ff4c4f2c3a93e2de1d5f8519c924b1529136de67cdd46b7360ab8d0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/records/execution.json",
+      "change": "added",
+      "bytes": 192361,
+      "sha256": "f7a884392c63c763382fa6a45d854ecd93d96f32d24670fa524bad7c8abcae3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/records/summary.txt",
+      "change": "added",
+      "bytes": 20818,
+      "sha256": "1722ae3273efea203fa01fcaccf9d60f4ff6673a7f94dc500098a2f6220ca662",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/result.json",
+      "change": "added",
+      "bytes": 30374,
+      "sha256": "b43acb9fcdce1edd3e175a50c44c1d841fb0b54e89aa1612b0951d59e76af44c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T00:46:52+00:00",
+    "applied": [
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/plan.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/records/execution.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/records/summary.txt",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-replay/20261115T004637Z-0fbef82e/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
