@@ -22,6 +22,10 @@ cost. This module only decides which prompts belong to which loop:
   by the loop's own count of cycles starting over. That is every run before 2026-11-06: the script
   kept no record until 2026-11-03, and the records of the days between were never published.
   `source` says which way a run was found.
+- The loop a person ran by hand on 2026-10-31, before the script existed, is read the same way, from
+  the three instructions typed that evening (HAND_RUN): each was followed by a commit and a typed
+  /compact, which is the cycle the script automated two hours later. Its kind, `moonshot by hand`,
+  keeps it apart from what the script ran.
 - A session whose every prompt is /run-verification is one run of the verification loop.
 
 Within a run, the instruction turn and whatever answers it (background-task notifications,
@@ -80,9 +84,25 @@ EARLY_MOONSHOTS = {
     "relational": "Enhance relational verification capabilities to be more efficient and accurate",
 }
 
+# The loop before the loop: on 2026-10-31 a person typed an instruction, let the session commit,
+# typed /compact, and did it again, three times, each time for another audience. feature-loop.sh
+# was written that night to do the same unattended. Counted as a loop of its own kind, since no
+# script ran it: nothing capped a cycle, checked for a commit or compacted for it.
+BY_HAND = "moonshot by hand"
+HAND_RUN = {
+    "examples-by-hand": (
+        "Create more novel examples of formal verification against Java bytecode using the jvmcontract library that "
+        "feel exciting to expert Java distributed systems principals.",
+        "Create examples implementing formal Java bytecode verification using the jvmcontract library that will "
+        "impress senior principals working in the Java Spring Boot ecosystem at top firms globally.",
+        "Create examples implementing formal Java bytecode verification using the jvmcontract library that will "
+        "impress top global Java experts.",
+    ),
+}
+
 CATEGORIES = ("moonshot", "brief", "verification")
-KIND_CATEGORY = {"moonshot": "moonshot", "templated moonshot": "moonshot", "brief": "brief", "brief stream": "brief",
-                 "verification loop": "verification"}
+KIND_CATEGORY = {"moonshot": "moonshot", "templated moonshot": "moonshot", BY_HAND: "moonshot", "brief": "brief",
+                 "brief stream": "brief", "verification loop": "verification"}
 TIMES = ("agent_ms", "model_ms", "tool_ms", "busy_ms")
 ADDED = ("api_calls", "tool_calls", *metrics.TOKEN_KEYS, "usd", "uncached_usd", "unpriced_calls", *TIMES,
          "compaction_ms", "compactions", "tool_errors", "overhead_usd", "overhead_ms",
@@ -188,11 +208,13 @@ def _role(prompt: dict) -> tuple[str, int | None]:
     return "human", None
 
 
-def _loop_of(text: str, moonshots: dict[str, str]) -> str | None:
-    """The loop whose instruction this prompt is, by its opening words."""
+def _loop_of(text: str, moonshots: dict[str, tuple[str, ...]]) -> str | None:
+    """The loop whose instruction this prompt is, by its opening words: `moonshots` gives each
+    moonshot's, and more than one for a loop whose instruction a person reworded."""
     if m := BRIEF.match(text):
         return m[1].rsplit("/", 1)[-1].removesuffix(".md")
-    for name, prefix in sorted(moonshots.items(), key=lambda kv: -len(kv[1])):
+    openings = [(prefix, name) for name, prefixes in moonshots.items() for prefix in prefixes]
+    for prefix, name in sorted(openings, key=lambda pair: -len(pair[0])):
         if len(prefix) >= MIN_PREFIX and text.startswith(prefix):
             return name
     return None
@@ -283,7 +305,7 @@ def _record_runs(session: _Session, records: list[dict]) -> list[_Run]:
     return runs
 
 
-def _transcript_runs(session: _Session, moonshots: dict[str, str]) -> list[_Run]:
+def _transcript_runs(session: _Session, moonshots: dict[str, tuple[str, ...]]) -> list[_Run]:
     """The runs no record holds, read from the prompts no record's run claimed."""
     runs: list[_Run] = []
     run, last = None, 0
@@ -296,7 +318,7 @@ def _transcript_runs(session: _Session, moonshots: dict[str, str]) -> list[_Run]
         loop = _loop_of(text, moonshots) if role == "human" else None
         if loop:
             if run is None or run.loop != loop or session.ts[index] - last > RUN_GAP_MS:
-                run = _Run(session, loop, kind="brief" if BRIEF.match(text) else "moonshot")
+                run = _Run(session, loop, kind="brief" if BRIEF.match(text) else BY_HAND if loop in HAND_RUN else "moonshot")
                 runs.append(run)
             run.add("instruction", None, index)
         elif run is None:
@@ -407,7 +429,10 @@ def _rows_of(run: _Run, chains: dict[str, dict], taken: set[str]) -> tuple[dict,
             compactions = [c for ms, c in s.compactions if start <= ms < until]
             end = max([s.end[i] for i in found["work"] + found["overhead"]]
                       + [ms for ms, _ in s.compactions if start <= ms < until])
-            commits = [(c, text) for ms, c, text in s.commits if start <= ms < until]
+            # A commit is the cycle's when the session made it during one of the cycle's turns. One
+            # stamped on the session afterwards, while it sat idle, is another session's work.
+            turns_end = max(s.end[i] for i in found["work"] + found["overhead"])
+            commits = [(c, text) for ms, c, text in s.commits if start <= ms <= turns_end]
             # A job is the cycle's when it was submitted during it and names its session, or, naming
             # none, is named by a commit of the cycle: streams work side by side, so the time alone is not enough.
             owned = [c for ms, c in submitted if start <= ms < until and c["job"] not in taken and (
@@ -460,7 +485,8 @@ def _rows_of(run: _Run, chains: dict[str, dict], taken: set[str]) -> tuple[dict,
         "started": _iso(first), "ended": _iso(end["at"] if end else last),
         "elapsed_ms": (end["at"] if end else last) - first,
         "outcome": end["outcome"] if end else "ended" if run.summarized or verification else "unrecorded",
-        "reason": end["reason"] if end else "summarized" if run.summarized else "" if verification else "no end recorded",
+        "reason": end["reason"] if end else "summarized" if run.summarized else "" if verification else
+                  "typed by hand" if kind == BY_HAND else "no end recorded",
         "how": metrics._clip(end["how"], lambda t: t) if end else "",
         "model": max(spent, key=spent.get) if spent else record["model"] if record else None,
         "models": sorted(m for m in spent if m), "effort": record["effort"] if record else ", ".join(efforts) or None,
@@ -509,7 +535,8 @@ def loops(sessions: list[tuple[dict, dict]], records: list[tuple[str, str]], job
     supersedes, examples, and from its result, when it has one, status, wall_seconds, cpu_seconds
     and peak_memory_bytes."""
     parsed = [r for name, text in sorted(records) if (r := parse_record(name, text)) is not None]
-    moonshots = {**{r["loop"]: r["prefix"] for r in parsed if not r["brief"]}, **EARLY_MOONSHOTS}
+    moonshots = {**{r["loop"]: (r["prefix"],) for r in parsed if not r["brief"]},
+                 **{name: (opening,) for name, opening in EARLY_MOONSHOTS.items()}, **HAND_RUN}
     templated = {r["loop"] for r in parsed if r["all_items"]}
     chains, taken = _job_chains(jobs), set()
 
@@ -564,7 +591,8 @@ def loops(sessions: list[tuple[dict, dict]], records: list[tuple[str, str]], job
         done = {c["item"] for c in own_cycles if c["outcome"] == "commit" and c["item"] is not None}
         loop_rows.append({
             "loop": name, "category": own[0]["category"], "kind": own[-1]["kind"], "stream_of": own[-1]["stream_of"],
-            "instruction": latest["instruction"] if latest and not latest["brief"] else EARLY_MOONSHOTS.get(name),
+            "instruction": latest["instruction"] if latest and not latest["brief"] else
+                           " / ".join(HAND_RUN[name]) if name in HAND_RUN else EARLY_MOONSHOTS.get(name),
             **_group(own, own_cycles),
             "items": len(items) if items else None, "items_done": len(done & set(items)) if items else None})
 
@@ -681,9 +709,13 @@ loop or not.
 
 {glance}
 
+{by_hand_glance}
+
 ## Moonshots
 
 {moonshots}
+
+{by_hand}
 
 {items}
 
@@ -724,6 +756,8 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
   closing summary and a stream's fork turn. It is included in every cost and shown apart in `loops.json`.
 - **A cycle** counts once it starts. *With a commit* counts the cycles that ended in one; a cycle without one stops
   the loop, and its cost still counts.
+- **Commits** are those the loop's session made during a cycle's turns. A commit that only names the session, made
+  by another while it sat idle (a push's *Record session traces*, a person's approval), is not the cycle's.
 - **Jobs** are the verification jobs a cycle submitted: those that name its session and were submitted during it, and
   those a commit of the cycle names. A job that was rerun counts once, with its last result and the compute of every
   attempt. Jobs submitted before 2026-11-15 name their session only when the agent passed it, so older cycles list
@@ -731,8 +765,9 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 - **Runs read from transcripts** are split where a person typed a prompt, where 30 minutes passed without a turn, at
   the loop's closing summary, and where the script's count of cycles started over. A cycle a person finished by hand
   after the loop stopped (a typed "Continue") counts up to where the loop left it.
-- **Not counted:** the two hand-typed repeats of one instruction on 2026-10-31, before the script existed, and prompts
-  a person typed into a loop's session between runs.
+- **By hand.** A loop of kind `moonshot by hand` was typed by a person, so nothing but the person held it to a cycle.
+  It is counted with the moonshots and named wherever it is, and `loops.json` gives its kind on every row.
+- **Not counted:** prompts a person typed into a loop's session between runs.
 {notes}"""
 
 
@@ -763,12 +798,20 @@ def page(doc: dict) -> str:
                 _dur(r["median_cycle_busy_ms"]), written(r), _usd(r["usd"]), _usd(r["median_cycle_usd"]),
                 _per(r["usd"], r["commits"])]
 
+    def instructions(r: dict) -> str:
+        """A moonshot's instruction, or each wording of one a person typed."""
+        if r["loop"] in HAND_RUN:
+            return f"- `{r['loop']}`, typed by hand, a different wording each cycle:\n" + "\n".join(
+                f"  - \"{_cell(text, 400)}\"" for text in HAND_RUN[r["loop"]])
+        done = f", {r['items_done']} of {r['items']} items done" if r["items"] else ""
+        return f"- `{r['loop']}`{done}: \"{_cell(r['instruction'], 400)}\""
+
     loop_header = ["Loop", "Runs>", "Cycles>", "With a commit>", "Commits>", "Jobs>", "Model", "When", "Elapsed>",
                    "Active>", "Median cycle>", "Tokens written>", "Cost>", "Median cycle cost>", "Per commit>"]
     moon = [r for r in doc["loops"] if r["category"] == "moonshot"]
-    moonshots = (_table(loop_header, [loop_line(r) for r in moon]) + "\n\n"
-                 + "\n".join(f"- `{r['loop']}`" + (f", {r['items_done']} of {r['items']} items done" if r["items"] else "")
-                             + f": \"{_cell(r['instruction'], 400)}\"" for r in moon)) if moon else "*None yet.*"
+    moonshots = (_table(loop_header, [loop_line(r, f"`{r['loop']}` (by hand)" if r["kind"] == BY_HAND else None)
+                                      for r in moon]) + "\n\n"
+                 + "\n".join(instructions(r) for r in moon)) if moon else "*None yet.*"
 
     items = []
     for name in dict.fromkeys(i["loop"] for i in doc["items"]):
@@ -789,6 +832,18 @@ def page(doc: dict) -> str:
                 _dur(c["busy_ms"]) if c["measured"] else "?", f"{c['api_calls']:,}", f"{c['tool_calls']:,}",
                 c["tool_errors"], f"{c['output_tokens']:,}", f"{c['peak_context_tokens']:,}",
                 _usd(c["usd"]) if c["measured"] else "?", c["commits"], _jobs(c), _cell(c["summary"], 70) or "*no commit*"]
+
+    hand = [r for r in moon if r["kind"] == BY_HAND]
+    names = ", ".join(f"`{r['loop']}`" for r in hand)
+    spent = lambda rows: f"{sum(r['cycles'] for r in rows)} cycles, {_usd(sum(r['usd'] for r in rows))}"
+    by_hand_glance = (f"The moonshot row includes {names} ({spent(hand)}), which a person ran by hand before the script "
+                      "existed. See the note under [Moonshots](#moonshots).") if hand else ""
+    by_hand = ("**Run by hand.** " + names + " is the loop before the loop. On 2026-10-31 a person typed an instruction, "
+               "let the session commit, typed `/compact`, and did it again, each time worded for another audience. "
+               "`feature-loop.sh` was written that night to do the same unattended, and `features` is its first run. It is "
+               "counted here because it is the same cycle, and kept apart by its kind because no script ran it: nothing "
+               "capped a cycle, checked for a commit, or compacted for it, and a person chose each instruction after "
+               "reading the last result. Its figures are measured the same way as every other row's.") if hand else ""
 
     moon_cycles = [c for c in cycles if c["category"] == "moonshot"]
     moonshot_cycles = _table(
@@ -841,6 +896,7 @@ def page(doc: dict) -> str:
         notes.append("- **Clock:** these records give their times in a zone this page cannot place, read as UTC: "
                      + ", ".join(f"`{n}`" for n in zones) + ".")
     text = PAGE.format(glance=glance, moonshots=moonshots, items="\n\n".join(items), moonshot_cycles=moonshot_cycles,
+                       by_hand_glance=by_hand_glance, by_hand=by_hand,
                        briefs=_table(loop_header, brief_rows) if brief_rows else "*None yet.*",
                        verification=verification, runs=run_table, notes="\n".join(notes))
     return re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n"

@@ -327,6 +327,36 @@ class Briefs(unittest.TestCase):
         self.assertEqual([c["category"] for c in doc["categories"]], ["moonshot", "brief"])
         self.assertEqual(one(doc["loops"], loop="tla")["instruction"], loop_stats.EARLY_MOONSHOTS["tla"])
 
+    def test_the_loop_a_person_ran_by_hand_is_counted_as_its_own_kind(self):
+        first, second, third = loop_stats.HAND_RUN["examples-by-hand"]
+        t = Transcript().say(0, "Set the made-up project up", 300)
+        t.say(1, first, 1000).commit("Made-up family one").command(3, "/compact").compact(3)   # typed, so logged twice
+        t.say(5, second, 2000).commit("Made-up family two").compact(7)
+        t.say(9, third, 3000).commit("Made-up family three").compact(11)
+        t.cycle(20, loop_stats.EARLY_MOONSHOTS["features"], "The script's first cycle")
+        doc = stats([t])
+        run = doc["runs"][0]
+        self.assertEqual((run["loop"], run["kind"], run["category"], run["source"], run["outcome"], run["reason"]),
+                         ("examples-by-hand", loop_stats.BY_HAND, "moonshot", "transcript", "unrecorded", "typed by hand"))
+        self.assertEqual((run["cycles"], run["cycles_committed"], run["commits"], run["usd"]), (3, 3, 3, usd(6000)))
+        self.assertEqual([r["kind"] for r in doc["runs"]], [loop_stats.BY_HAND, "moonshot"])
+        loop = one(doc["loops"], loop="examples-by-hand")
+        self.assertEqual((loop["kind"], loop["instruction"]), (loop_stats.BY_HAND, " / ".join((first, second, third))))
+        self.assertEqual(one(doc["categories"], category="moonshot")["cycles"], 4)   # counted with the moonshots
+        page = loop_stats.page(doc)
+        for part in ("`examples-by-hand` (by hand)", "**Run by hand.**", "The moonshot row includes `examples-by-hand` (3 cycles, $0.30)",
+                     "| moonshot by hand |"):
+            self.assertIn(part, page)
+        self.assertNotIn("Run by hand", loop_stats.page(stats([Transcript().cycle(1, loop_stats.EARLY_MOONSHOTS["tla"])])))
+
+    def test_a_commit_stamped_on_an_idle_session_is_not_the_last_cycles(self):
+        t = Transcript().cycle(1, BRIEF_TEXT % "made-up", "The cycle's own commit", decide=None)
+        t.entries.append({"type": "system", "subtype": "made-up", "timestamp": at(30)})   # the session, closed later
+        t.commit("Another session's commit, which names this one")
+        doc = stats([t])
+        self.assertEqual((doc["cycles"][0]["commits"], doc["cycles"][0]["summary"]), (1, "The cycle's own commit"))
+        self.assertEqual(doc["runs"][0]["commits"], 1)
+
     def test_a_record_with_no_end_owns_prompts_until_a_person_types_or_the_next_run_starts(self):
         t = Transcript()
         t.cycle(1, BRIEF_TEXT % "made-up", decide=1).say(5, BRIEF_TEXT % "made-up", 2000)     # killed in cycle 2

@@ -16,24 +16,33 @@ loop or not.
 
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| moonshot | 4 | 4 | 46 | 43 | 49 | 30 (30 passed) | 33 h 24 min | 4,514,828 | $522.26 | $12.15 |
-| brief | 26 | 51 | 289 | 287 | 364 | 205 (160 passed, 45 failed) | 3.2 d | 12,693,414 | $1,078.32 | $3.76 |
+| moonshot | 5 | 5 | 49 | 46 | 52 | 30 (30 passed) | 35 h 58 min | 5,036,611 | $577.48 | $12.55 |
+| brief | 26 | 51 | 289 | 286 | 356 | 205 (160 passed, 45 failed) | 3.2 d | 12,693,414 | $1,078.32 | $3.77 |
 | verification | 1 | 49 | 0 | 0 | 161 | 0 | 9 h 17 min | 203,352 | $15.02 | n/a |
-| **all** | 31 | 104 | 335 | 330 | 574 | 235 (190 passed, 45 failed) | 5.0 d | 17,411,594 | $1,615.59 | $4.90 |
+| **all** | 32 | 105 | 338 | 332 | 569 | 235 (190 passed, 45 failed) | 5.1 d | 17,933,377 | $1,670.82 | $5.03 |
+
+The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
 ## Moonshots
 
 | Loop | Runs | Cycles | With a commit | Commits | Jobs | Model | When | Elapsed | Active | Median cycle | Tokens written | Cost | Median cycle cost | Per commit |
 | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `examples-by-hand` (by hand) | 1 | 3 | 3 | 3 | 0 | `claude-fable-5-1` | 2026-10-31 | 2 h 46 min | 2 h 34 min | 55 min | 521,783 | $55.22 | $18.97 | $18.41 |
 | `features` | 1 | 5 | 4 | 4 | 0 | `claude-fable-5-1` | 2026-11-01 | 14 h 38 min | 14 h 29 min | 51 min | 535,938 | $65.25 | $12.02 | $16.31 |
 | `tla` | 1 | 17 | 16 | 16 | 0 | `claude-fable-5-1` | 2026-11-02 | 18 h 24 min | 8 h 52 min | 28 min | 1,874,477 | $217.38 | $12.53 | $13.59 |
 | `spring` | 1 | 10 | 10 | 14 | 10 (10 passed) | `claude-fable-5-1` | 2026-11-03 | 5 h 29 min | 4 h 35 min | 29 min | 928,810 | $102.28 | $10.59 | $7.31 |
 | `relational` | 1 | 14 | 13 | 15 | 20 (20 passed) | `claude-fable-5-1` | 2026-11-04 | 5 h 50 min | 5 h 28 min | 23 min | 1,175,603 | $137.35 | $10.61 | $9.16 |
 
+- `examples-by-hand`, typed by hand, a different wording each cycle:
+  - "Create more novel examples of formal verification against Java bytecode using the jvmcontract library that feel exciting to expert Java distributed systems principals."
+  - "Create examples implementing formal Java bytecode verification using the jvmcontract library that will impress senior principals working in the Java Spring Boot ecosystem at top firms globally."
+  - "Create examples implementing formal Java bytecode verification using the jvmcontract library that will impress top global Java experts."
 - `features`: "Add more advanced features along with examples to the jvmcontract library."
 - `tla`: "Add more advanced examples showcasing verification of TLA specs"
 - `spring`: "Enhance the jvmcontract library to be more useful to expert Spring Boot developers."
 - `relational`: "Enhance relational verification capabilities to be more efficient and accurate"
+
+**Run by hand.** `examples-by-hand` is the loop before the loop. On 2026-10-31 a person typed an instruction, let the session commit, typed `/compact`, and did it again, each time worded for another audience. `feature-loop.sh` was written that night to do the same unattended, and `features` is its first run. It is counted here because it is the same cycle, and kept apart by its kind because no script ran it: nothing capped a cycle, checked for a commit, or compacted for it, and a person chose each instruction after reading the last result. Its figures are measured the same way as every other row's.
 
 ### Every moonshot cycle
 
@@ -41,6 +50,9 @@ Oldest first. A cycle is one turn of the instruction, then the commit, then the 
 
 | Run | Cycle | Item | Started | Elapsed | Active | Model calls | Tool calls | Failed | Tokens written | Peak context | Cost | Commits | Jobs | Last commit |
 | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `2026-10-31-195818-examples-by-hand` | 1 |  | 2026-10-31 19:58 | 46 min | 43 min | 42 | 161 | 1 | 173,353 | 409,283 | $19.31 | 1 | 0 | Add Quorum, ten distributed-systems examples, and property proofs to… |
+| `2026-10-31-195818-examples-by-hand` | 2 |  | 2026-10-31 20:46 | 59 min | 56 min | 40 | 146 | 1 | 158,169 | 359,066 | $16.94 | 1 | 0 | Add Crosscut, eleven Spring Boot examples verified by jvmcontract |
+| `2026-10-31-195818-examples-by-hand` | 3 |  | 2026-10-31 21:46 | 58 min | 55 min | 44 | 194 | 4 | 190,261 | 372,006 | $18.97 | 1 | 0 | Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes |
 | `2026-11-01-001950-features` | 1 |  | 2026-11-01 00:19 | 76 min | 73 min | 80 | 128 | 4 | 157,258 | 333,339 | $18.93 | 1 | 0 | Add array properties with JML quantifiers, and three Mica examples |
 | `2026-11-01-001950-features` | 2 |  | 2026-11-01 01:35 | 52 min | 50 min | 84 | 83 | 4 | 132,332 | 269,742 | $15.42 | 1 | 0 | Add generalized JML quantifiers, witness shrinking, and four Mica exa… |
 | `2026-11-01-001950-features` | 3 |  | 2026-11-01 02:27 | 31 min | 28 min | 57 | 56 | 1 | 82,512 | 223,975 | $10.33 | 1 | 0 | Add throws clauses to property proofs, and two Mica examples |
@@ -96,36 +108,36 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | Loop | Runs | Cycles | With a commit | Commits | Jobs | Model | When | Elapsed | Active | Median cycle | Tokens written | Cost | Median cycle cost | Per commit |
 | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | **`sync-performance`** | 2 | 14 | 13 | 13 | 0 | `claude-opus-5-5` | 2026-11-03 to 11-04 | 4 h 50 min | 4 h 18 min | 18 min | 679,705 | $42.40 | $2.76 | $3.26 |
-| **`build-orchestration`** | 1 | 9 | 9 | 9 | 38 (38 passed) | `claude-opus-5-5` | 2026-11-05 | 2 h 19 min | 1 h 45 min | 12 min | 427,775 | $32.93 | $3.93 | $3.66 |
+| **`build-orchestration`** | 1 | 9 | 8 | 8 | 38 (38 passed) | `claude-opus-5-5` | 2026-11-05 | 2 h 19 min | 1 h 45 min | 12 min | 427,775 | $32.93 | $3.93 | $4.12 |
 | **`sound-verdicts`** | 1 | 22 | 22 | 22 | 13 (9 passed, 4 failed) | `claude-opus-5-5` | 2026-11-06 | 9 h 40 min | 9 h 06 min | 25 min | 1,631,072 | $139.80 | $6.27 | $6.35 |
-| **`engine-priorities`** | 1 | 8 | 8 | 12 | 2 (2 passed) | `claude-opus-5-5` | 2026-11-07 | 2 h 40 min | 2 h 18 min | 17 min | 283,678 | $25.57 | $3.63 | $2.13 |
+| **`engine-priorities`** | 1 | 8 | 8 | 11 | 2 (2 passed) | `claude-opus-5-5` | 2026-11-07 | 2 h 40 min | 2 h 18 min | 17 min | 283,678 | $25.57 | $3.63 | $2.32 |
 | &nbsp;&nbsp;stream `engine-priorities-jbmc` | 4 | 12 | 12 | 14 | 6 (3 passed, 3 failed) | `claude-opus-5-5` | 2026-11-06 to 11-07 | 2 h 32 min | 2 h 21 min | 14 min | 455,048 | $35.20 | $2.51 | $2.51 |
 | &nbsp;&nbsp;stream `engine-priorities-native` | 2 | 12 | 12 | 12 | 5 (3 passed, 2 failed) | `claude-opus-5-5` | 2026-11-06 | 4 h 01 min | 3 h 49 min | 20 min | 653,750 | $50.14 | $3.77 | $4.18 |
-| &nbsp;&nbsp;*with its streams* | 7 | 32 | 32 | 38 | 13 (8 passed, 5 failed) | `claude-opus-5-5` | 2026-11-06 to 11-07 | 9 h 13 min | 8 h 28 min | 17 min | 1,392,476 | $110.91 | $3.40 | $2.92 |
-| **`foundations`** | 1 | 4 | 4 | 6 | 7 (7 passed) | `claude-opus-5-5` | 2026-11-07 | 2 h 02 min | 1 h 41 min | 25 min | 264,699 | $27.53 | $7.40 | $4.59 |
+| &nbsp;&nbsp;*with its streams* | 7 | 32 | 32 | 37 | 13 (8 passed, 5 failed) | `claude-opus-5-5` | 2026-11-06 to 11-07 | 9 h 13 min | 8 h 28 min | 17 min | 1,392,476 | $110.91 | $3.40 | $3.00 |
+| **`foundations`** | 1 | 4 | 4 | 5 | 7 (7 passed) | `claude-opus-5-5` | 2026-11-07 | 2 h 02 min | 1 h 41 min | 25 min | 264,699 | $27.53 | $7.40 | $5.51 |
 | &nbsp;&nbsp;stream `foundations-alignment` | 1 | 12 | 12 | 16 | 1 (1 passed) | `claude-opus-5-5` | 2026-11-07 | 3 h 57 min | 3 h 24 min | 15 min | 546,334 | $46.49 | $3.98 | $2.91 |
 | &nbsp;&nbsp;stream `foundations-observations` | 1 | 7 | 7 | 7 | 3 (3 passed) | `claude-opus-5-5` | 2026-11-07 | 2 h 58 min | 2 h 51 min | 20 min | 462,214 | $41.44 | $4.54 | $5.92 |
 | &nbsp;&nbsp;stream `foundations-heap` | 1 | 18 | 18 | 21 | 7 (4 passed, 3 failed) | `claude-opus-5-5` | 2026-11-07 | 8 h 20 min | 7 h 28 min | 22 min | 1,015,945 | $100.59 | $5.19 | $4.79 |
 | &nbsp;&nbsp;stream `foundations-summaries` | 1 | 8 | 8 | 15 | 3 (3 passed) | `claude-opus-5-5` | 2026-11-07 | 2 h 47 min | 2 h 24 min | 20 min | 534,103 | $46.38 | $5.20 | $3.09 |
-| &nbsp;&nbsp;*with its streams* | 5 | 49 | 49 | 65 | 21 (18 passed, 3 failed) | `claude-opus-5-5` | 2026-11-07 | 20 h 05 min | 17 h 48 min | 20 min | 2,823,295 | $262.43 | $4.91 | $4.04 |
-| **`cleanup`** | 2 | 4 | 4 | 7 | 4 (4 passed) | `claude-opus-5-5` | 2026-11-07 | 25 min | 23 min | 2.3 min | 49,626 | $5.08 | $1.00 | $0.73 |
+| &nbsp;&nbsp;*with its streams* | 5 | 49 | 49 | 64 | 21 (18 passed, 3 failed) | `claude-opus-5-5` | 2026-11-07 | 20 h 05 min | 17 h 48 min | 20 min | 2,823,295 | $262.43 | $4.91 | $4.10 |
+| **`cleanup`** | 2 | 4 | 4 | 4 | 4 (4 passed) | `claude-opus-5-5` | 2026-11-07 | 25 min | 23 min | 2.3 min | 49,626 | $5.08 | $1.00 | $1.27 |
 | &nbsp;&nbsp;stream `cleanup-examples` | 3 | 12 | 12 | 12 | 4 (4 passed) | `claude-opus-5-5` | 2026-11-07 | 80 min | 71 min | 5.8 min | 272,418 | $22.92 | $1.97 | $1.91 |
 | &nbsp;&nbsp;stream `cleanup-jbmc` | 2 | 3 | 3 | 6 | 5 (2 passed, 3 failed) | `claude-opus-5-5` | 2026-11-07 | 72 min | 69 min | 11 min | 167,210 | $14.06 | $3.42 | $2.34 |
 | &nbsp;&nbsp;stream `cleanup-native` | 4 | 7 | 7 | 7 | 7 (6 passed, 1 failed) | `claude-opus-5-5` | 2026-11-07 | 64 min | 59 min | 4.2 min | 153,721 | $12.04 | $1.65 | $1.72 |
-| &nbsp;&nbsp;*with its streams* | 11 | 26 | 26 | 32 | 20 (16 passed, 4 failed) | `claude-opus-5-5` | 2026-11-07 | 4 h 02 min | 3 h 42 min | 5.1 min | 642,975 | $54.10 | $1.80 | $1.69 |
+| &nbsp;&nbsp;*with its streams* | 11 | 26 | 26 | 29 | 20 (16 passed, 4 failed) | `claude-opus-5-5` | 2026-11-07 | 4 h 02 min | 3 h 42 min | 5.1 min | 642,975 | $54.10 | $1.80 | $1.87 |
 | **`stub-reachability`** | 3 | 6 | 5 | 7 | 2 (2 passed) | `claude-opus-5-5` | 2026-11-07 to 11-08 | 34 min | 31 min | 4.2 min | 145,066 | $9.40 | $0.98 | $1.34 |
 | **`application-core`** | 2 | 24 | 24 | 43 | 9 (9 passed) | `claude-opus-5-5` | 2026-11-08 | 8 h 22 min | 7 h 27 min | 16 min | 863,777 | $85.39 | $2.91 | $1.99 |
 | &nbsp;&nbsp;stream `application-core-environment` | 2 | 4 | 4 | 5 | 0 | `claude-opus-5-5` | 2026-11-08 | 1 h 43 min | 60 min | 18 min | 176,674 | $12.93 | $3.70 | $2.59 |
-| &nbsp;&nbsp;stream `application-core-objects` | 2 | 11 | 11 | 14 | 5 (3 passed, 2 failed) | `claude-opus-5-5` | 2026-11-08 | 3 h 15 min | 3 h 04 min | 15 min | 410,987 | $38.32 | $2.78 | $2.74 |
+| &nbsp;&nbsp;stream `application-core-objects` | 2 | 11 | 11 | 13 | 5 (3 passed, 2 failed) | `claude-opus-5-5` | 2026-11-08 | 3 h 15 min | 3 h 04 min | 15 min | 410,987 | $38.32 | $2.78 | $2.95 |
 | &nbsp;&nbsp;stream `application-core-reuse` | 4 | 11 | 11 | 12 | 2 (2 passed) | `claude-opus-5-5` | 2026-11-08 | 2 h 21 min | 2 h 12 min | 13 min | 440,794 | $31.18 | $2.50 | $2.60 |
 | &nbsp;&nbsp;stream `application-core-values` | 1 | 15 | 15 | 15 | 4 (3 passed, 1 failed) | `claude-opus-5-5` | 2026-11-08 | 5 h 48 min | 4 h 30 min | 17 min | 595,964 | $48.41 | $2.46 | $3.23 |
-| &nbsp;&nbsp;*with its streams* | 11 | 65 | 65 | 89 | 20 (17 passed, 3 failed) | `claude-opus-5-5` | 2026-11-08 | 21 h 30 min | 18 h 12 min | 15 min | 2,488,196 | $216.22 | $2.67 | $2.43 |
-| **`example-targets`** | 5 | 40 | 40 | 58 | 73 (48 passed, 25 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 8 h 02 min | 7 h 23 min | 10 min | 1,072,594 | $113.88 | $2.53 | $1.96 |
+| &nbsp;&nbsp;*with its streams* | 11 | 65 | 65 | 88 | 20 (17 passed, 3 failed) | `claude-opus-5-5` | 2026-11-08 | 21 h 30 min | 18 h 12 min | 15 min | 2,488,196 | $216.22 | $2.67 | $2.46 |
+| **`example-targets`** | 5 | 40 | 40 | 57 | 73 (48 passed, 25 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 8 h 02 min | 7 h 23 min | 10 min | 1,072,594 | $113.88 | $2.53 | $2.00 |
 | &nbsp;&nbsp;stream `example-targets-negative` | 1 | 5 | 5 | 5 | 0 | `claude-opus-5-5` | 2026-11-14 | 82 min | 75 min | 16 min | 365,393 | $23.92 | $5.27 | $4.78 |
 | &nbsp;&nbsp;stream `example-targets-positive` | 1 | 5 | 5 | 7 | 0 | `claude-opus-5-5` | 2026-11-14 | 62 min | 56 min | 12 min | 264,441 | $18.86 | $3.57 | $2.69 |
 | &nbsp;&nbsp;stream `example-targets-runtime` | 2 | 10 | 10 | 12 | 5 (4 passed, 1 failed) | `claude-opus-5-5` | 2026-11-14 | 2 h 49 min | 2 h 16 min | 13 min | 494,397 | $34.99 | $2.75 | $2.92 |
 | &nbsp;&nbsp;stream `example-targets-workflow` | 1 | 6 | 6 | 7 | 0 | `claude-opus-5-5` | 2026-11-14 | 70 min | 63 min | 10 min | 266,029 | $18.48 | $2.78 | $2.64 |
-| &nbsp;&nbsp;*with its streams* | 10 | 66 | 66 | 89 | 78 (52 passed, 26 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 14 h 25 min | 12 h 53 min | 11 min | 2,462,854 | $210.14 | $2.75 | $2.36 |
+| &nbsp;&nbsp;*with its streams* | 10 | 66 | 66 | 88 | 78 (52 passed, 26 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 14 h 25 min | 12 h 53 min | 11 min | 2,462,854 | $210.14 | $2.75 | $2.39 |
 
 ## Verification loop
 
@@ -138,13 +150,14 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 
 | Started | Run | Kind | Model | Cycles | Commits | Elapsed | Active | Cost | How it ended | Read from |
 | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| 2026-10-31 19:58 | `2026-10-31-195818-examples-by-hand` | moonshot by hand | `claude-fable-5-1` | 3 | 3 | 2 h 46 min | 2 h 34 min | $55.22 | typed by hand | transcript |
 | 2026-11-01 00:19 | `2026-11-01-001950-features` | moonshot | `claude-fable-5-1` | 5 | 4 | 14 h 38 min | 14 h 29 min | $65.25 | no end recorded | transcript |
 | 2026-11-02 02:52 | `2026-11-02-025225-tla` | moonshot | `claude-fable-5-1` | 17 | 16 | 18 h 24 min | 8 h 52 min | $217.38 | no end recorded | transcript |
 | 2026-11-03 02:33 | `2026-11-03-023359-spring` | moonshot | `claude-fable-5-1` | 10 | 14 | 5 h 29 min | 4 h 35 min | $102.28 | no end recorded | transcript |
 | 2026-11-03 14:52 | `2026-11-03-145202-sync-performance` | brief | `claude-opus-5-5` | 1 | 0 | 58 min | 58 min | $7.10 | no end recorded | transcript |
 | 2026-11-03 23:56 | `2026-11-03-235618-sync-performance` | brief | `claude-opus-5-5` | 13 | 13 | 3 h 52 min | 3 h 20 min | $35.30 | summarized | transcript |
 | 2026-11-04 05:20 | `2026-11-04-052019-relational` | moonshot | `claude-fable-5-1` | 14 | 15 | 5 h 50 min | 5 h 28 min | $137.35 | no end recorded | transcript |
-| 2026-11-05 11:13 | `2026-11-05-111358-build-orchestration` | brief | `claude-opus-5-5` | 9 | 9 | 2 h 19 min | 1 h 45 min | $32.93 | no end recorded | transcript |
+| 2026-11-05 11:13 | `2026-11-05-111358-build-orchestration` | brief | `claude-opus-5-5` | 9 | 8 | 2 h 19 min | 1 h 45 min | $32.93 | no end recorded | transcript |
 | 2026-11-06 00:51 | `2026-11-06-005123-sound-verdicts` | brief | `claude-opus-5-5` | 22 | 22 | 9 h 40 min | 9 h 06 min | $139.80 | summarized | transcript |
 | 2026-11-06 19:15 | [`2026-11-06-191503-engine-priorities-jbmc`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/runs/2026-11-06-191503-engine-priorities-jbmc.md) | brief stream | `claude-opus-5-5` | 6 | 8 | 90 min | 84 min | $20.53 | work done | record |
 | 2026-11-06 19:15 | [`2026-11-06-191503-engine-priorities-native`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/runs/2026-11-06-191503-engine-priorities-native.md) | brief stream | `claude-opus-5-5` | 11 | 11 | 3 h 55 min | 3 h 43 min | $48.01 | work done | record |
@@ -152,12 +165,12 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-06 23:14 | [`2026-11-06-231453-engine-priorities-native`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/runs/2026-11-06-231453-engine-priorities-native.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 6.3 min | 5.6 min | $2.13 | work done | record |
 | 2026-11-06 23:55 | [`2026-11-06-235545-engine-priorities-jbmc`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/runs/2026-11-06-235545-engine-priorities-jbmc.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 7.7 min | 6.9 min | $2.47 | work done | record |
 | 2026-11-07 00:08 | [`2026-11-07-000824-engine-priorities-jbmc`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/runs/2026-11-07-000824-engine-priorities-jbmc.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 3.3 min | 2.7 min | $1.06 | work done | record |
-| 2026-11-07 00:11 | [`2026-11-07-001140-engine-priorities`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/runs/2026-11-07-001140-engine-priorities.md) | brief | `claude-opus-5-5` | 8 | 12 | 2 h 40 min | 2 h 18 min | $25.57 | cycle count reached | record |
+| 2026-11-07 00:11 | [`2026-11-07-001140-engine-priorities`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/runs/2026-11-07-001140-engine-priorities.md) | brief | `claude-opus-5-5` | 8 | 11 | 2 h 40 min | 2 h 18 min | $25.57 | cycle count reached | record |
 | 2026-11-07 04:01 | [`2026-11-07-040118-foundations-alignment`](11f93b59-b830-4090-8775-33313957ef5c/runs/2026-11-07-040118-foundations-alignment.md) | brief stream | `claude-opus-5-5` | 12 | 16 | 3 h 57 min | 3 h 24 min | $46.49 | work done | record |
 | 2026-11-07 04:01 | [`2026-11-07-040118-foundations-observations`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/runs/2026-11-07-040118-foundations-observations.md) | brief stream | `claude-opus-5-5` | 7 | 7 | 2 h 58 min | 2 h 51 min | $41.44 | work done | record |
 | 2026-11-07 04:01 | [`2026-11-07-040118-foundations-heap`](750c8a36-92b9-44e3-adad-ef96dc6aa676/runs/2026-11-07-040118-foundations-heap.md) | brief stream | `claude-opus-5-5` | 18 | 21 | 8 h 20 min | 7 h 28 min | $100.59 | work done | record |
 | 2026-11-07 04:01 | [`2026-11-07-040118-foundations-summaries`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/runs/2026-11-07-040118-foundations-summaries.md) | brief stream | `claude-opus-5-5` | 8 | 15 | 2 h 47 min | 2 h 24 min | $46.38 | work done | record |
-| 2026-11-07 12:21 | [`2026-11-07-122116-foundations`](2df7775c-45a1-40a7-924b-75602d8ad256/runs/2026-11-07-122116-foundations.md) | brief | `claude-opus-5-5` | 4 | 6 | 2 h 02 min | 1 h 41 min | $27.53 | work done | record |
+| 2026-11-07 12:21 | [`2026-11-07-122116-foundations`](2df7775c-45a1-40a7-924b-75602d8ad256/runs/2026-11-07-122116-foundations.md) | brief | `claude-opus-5-5` | 4 | 5 | 2 h 02 min | 1 h 41 min | $27.53 | work done | record |
 | 2026-11-07 16:26 | [`2026-11-07-162645-cleanup-examples`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/runs/2026-11-07-162645-cleanup-examples.md) | brief stream | `claude-opus-5-5` | 9 | 9 | 69 min | 62 min | $19.32 | work done | record |
 | 2026-11-07 16:26 | [`2026-11-07-162645-cleanup-jbmc`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/runs/2026-11-07-162645-cleanup-jbmc.md) | brief stream | `claude-opus-5-5` | 2 | 5 | 65 min | 63 min | $11.70 | work done | record |
 | 2026-11-07 16:26 | [`2026-11-07-162645-cleanup-native`](2324d402-3f17-421a-8a85-5b6846d2c728/runs/2026-11-07-162645-cleanup-native.md) | brief stream | `claude-opus-5-5` | 4 | 4 | 51 min | 48 min | $8.04 | work done | record |
@@ -167,7 +180,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-07 20:23 | [`2026-11-07-202338-cleanup-native`](2324d402-3f17-421a-8a85-5b6846d2c728/runs/2026-11-07-202338-cleanup-native.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 2.6 min | 2.0 min | $0.95 | work done | record |
 | 2026-11-07 20:24 | [`2026-11-07-202415-cleanup-examples`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/runs/2026-11-07-202415-cleanup-examples.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 2.5 min | 1.9 min | $0.94 | work done | record |
 | 2026-11-07 21:22 | [`2026-11-07-212249-cleanup-jbmc`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/runs/2026-11-07-212249-cleanup-jbmc.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 6.9 min | 6.2 min | $2.36 | work done | record |
-| 2026-11-07 21:29 | [`2026-11-07-212943-cleanup`](2d24d762-29a6-4514-a681-485fd10f1c7e/runs/2026-11-07-212943-cleanup.md) | brief | `claude-opus-5-5` | 3 | 6 | 22 min | 20 min | $4.05 | work done | record |
+| 2026-11-07 21:29 | [`2026-11-07-212943-cleanup`](2d24d762-29a6-4514-a681-485fd10f1c7e/runs/2026-11-07-212943-cleanup.md) | brief | `claude-opus-5-5` | 3 | 3 | 22 min | 20 min | $4.05 | work done | record |
 | 2026-11-07 21:57 | [`2026-11-07-215701-cleanup`](2d24d762-29a6-4514-a681-485fd10f1c7e/runs/2026-11-07-215701-cleanup.md) | brief | `claude-opus-5-5` | 1 | 1 | 3.0 min | 2.5 min | $1.03 | work done | record |
 | 2026-11-07 23:23 | [`2026-11-07-232342-stub-reachability`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/runs/2026-11-07-232342-stub-reachability.md) | brief | `claude-opus-5-5` | 2 | 1 | 8.0 min | 7.3 min | $2.43 | no commit (stopped) | record |
 | 2026-11-08 00:56 | [`2026-11-08-005604-stub-reachability`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/runs/2026-11-08-005604-stub-reachability.md) | brief | `claude-opus-5-5` | 3 | 4 | 22 min | 21 min | $5.71 | work done | record |
@@ -179,7 +192,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-08 06:05 | [`2026-11-08-060507-application-core-reuse`](aa238023-596d-49bd-8039-52502ec096fc/runs/2026-11-08-060507-application-core-reuse.md) | brief stream | `claude-opus-5-5` | 2 | 2 | 31 min | 29 min | $6.67 | work done | record |
 | 2026-11-08 10:22 | [`2026-11-08-102228-application-core`](6ca21bdf-4743-4500-90ea-7fe6280624b2/runs/2026-11-08-102228-application-core.md) | brief | `claude-opus-5-5` | 1 | 1 | 3.5 min | 2.9 min | $1.05 | work done | record |
 | 2026-11-08 11:33 | [`2026-11-08-113344-application-core-environment`](73918f92-0381-4271-b3bb-48ca4e45803b/runs/2026-11-08-113344-application-core-environment.md) | brief stream | `claude-opus-5-5` | 1 | 2 | 4.4 min | 3.4 min | $1.44 | status left working (stopped) | record |
-| 2026-11-08 11:33 | [`2026-11-08-113344-application-core-objects`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/runs/2026-11-08-113344-application-core-objects.md) | brief stream | `claude-opus-5-5` | 1 | 3 | 5.0 min | 4.1 min | $1.85 | status left working (stopped) | record |
+| 2026-11-08 11:33 | [`2026-11-08-113344-application-core-objects`](3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/runs/2026-11-08-113344-application-core-objects.md) | brief stream | `claude-opus-5-5` | 1 | 2 | 5.0 min | 4.1 min | $1.85 | status left working (stopped) | record |
 | 2026-11-08 11:33 | [`2026-11-08-113344-application-core-reuse`](aa238023-596d-49bd-8039-52502ec096fc/runs/2026-11-08-113344-application-core-reuse.md) | brief stream | `claude-opus-5-5` | 2 | 3 | 13 min | 12 min | $4.01 | status left working (stopped) | record |
 | 2026-11-08 11:52 | [`2026-11-08-115201-application-core-reuse`](aa238023-596d-49bd-8039-52502ec096fc/runs/2026-11-08-115201-application-core-reuse.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 5.6 min | 4.7 min | $1.61 | status left working (stopped) | record |
 | 2026-11-08 11:57 | [`2026-11-08-115737-application-core`](6ca21bdf-4743-4500-90ea-7fe6280624b2/runs/2026-11-08-115737-application-core.md) | brief | `claude-opus-5-5` | 23 | 42 | 8 h 19 min | 7 h 24 min | $84.34 | blocked | record |
@@ -191,7 +204,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-14 18:25 | [`2026-11-14-182520-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-182520-example-targets.md) | brief | `claude-opus-5-5` | 1 | 2 | 13 min | 13 min | $2.33 | blocked | record |
 | 2026-11-14 19:43 | [`2026-11-14-194319-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-194319-example-targets.md) | brief | `claude-opus-5-5` | 14 | 14 | 2 h 17 min | 2 h 06 min | $29.00 | waiting on jobs | record |
 | 2026-11-14 22:29 | [`2026-11-14-222909-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-222909-example-targets.md) | brief | `claude-opus-5-5` | 7 | 13 | 1 h 45 min | 98 min | $26.20 | brief changed (stopped) | record |
-| 2026-11-15 00:18 | [`2026-11-15-001859-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-001859-example-targets.md) | brief | `claude-opus-5-5` | 8 | 16 | 1 h 57 min | 1 h 49 min | $28.53 | waiting on jobs | record |
+| 2026-11-15 00:18 | [`2026-11-15-001859-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-001859-example-targets.md) | brief | `claude-opus-5-5` | 8 | 15 | 1 h 57 min | 1 h 49 min | $28.53 | waiting on jobs | record |
 | 2026-11-15 04:13 | [`2026-11-15-041307-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-041307-example-targets.md) | brief | `claude-opus-5-5` | 10 | 13 | 1 h 50 min | 98 min | $27.82 | work done | record |
 
 ## Reading these numbers
@@ -207,6 +220,8 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
   closing summary and a stream's fork turn. It is included in every cost and shown apart in `loops.json`.
 - **A cycle** counts once it starts. *With a commit* counts the cycles that ended in one; a cycle without one stops
   the loop, and its cost still counts.
+- **Commits** are those the loop's session made during a cycle's turns. A commit that only names the session, made
+  by another while it sat idle (a push's *Record session traces*, a person's approval), is not the cycle's.
 - **Jobs** are the verification jobs a cycle submitted: those that name its session and were submitted during it, and
   those a commit of the cycle names. A job that was rerun counts once, with its last result and the compute of every
   attempt. Jobs submitted before 2026-11-15 name their session only when the agent passed it, so older cycles list
@@ -214,5 +229,6 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 - **Runs read from transcripts** are split where a person typed a prompt, where 30 minutes passed without a turn, at
   the loop's closing summary, and where the script's count of cycles started over. A cycle a person finished by hand
   after the loop stopped (a typed "Continue") counts up to where the loop left it.
-- **Not counted:** the two hand-typed repeats of one instruction on 2026-10-31, before the script existed, and prompts
-  a person typed into a loop's session between runs.
+- **By hand.** A loop of kind `moonshot by hand` was typed by a person, so nothing but the person held it to a cycle.
+  It is counted with the moonshots and named wherever it is, and `loops.json` gives its kind on every row.
+- **Not counted:** prompts a person typed into a loop's session between runs.
