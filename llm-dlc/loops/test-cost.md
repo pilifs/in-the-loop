@@ -286,6 +286,18 @@ Settled by the user on 2026-11-15:
 - 2026-11-15, example-targets done and pushed. The user chose to run this loop before the conductor's steps 4–6. The
   brief moved from the side workspace `test-cost-plan` onto main, and its count of Python test files was brought up to
   date (28). Next: Phase 1 step 1, `tool_time.py`.
+- 2026-11-15, Phase 1 step 1 done: `llm-dlc/tools/tool_time.py` (tested by `test_tool_time.py`, unit tier, on made-up
+  logs). It finds loop sessions from the briefs' `- session:` lines and the loop summaries, reads their redacted logs
+  (`--fetch` downloads published ones not stored here, checked against their sha256, into `~/.cache/llm-traces/logs`),
+  and reports blocked time by category, by loop, and by cargo test binary, with full-suite, debug and release spreads.
+  The measurement's set is `--fetch --exclude sync-performance --exclude test-cost --session
+  360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb=early-feature-loop` (26 sessions found, not 27). It reproduces the
+  measurement's compile/test split exactly (936 timed runs, compiling 0.9h, tests 8.2h) and the slow files' ranking,
+  but its stated definitions give other totals: active 116h, tools 47.8h, cargo test 20.8h plus 3.6h waiting on it in
+  the background, proofs inline 4.7h. Its full-suite debug runs (no target, filter or `--ignored`) are 91 calls, 14% of
+  cargo test time, median 11s, p90 579s; all debug runs are 788 calls, 44%, median 8s, p90 82s. The brief's "542 runs,
+  48%, median 17s, p90 136s" came from scripts not kept and isn't reproduced; Phase 5 compares against this tool's
+  numbers. Next: Phase 1 step 2, install cargo-nextest and queue the per-test cost job.
 - Status: working
 
 ## Loop settings
