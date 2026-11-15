@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "9afd524c-dd88-4be3-a7d1-e33e52803e1e",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-15T01:31:38.774Z",
+  "ended": "2026-11-15T01:32:43.990Z",
+  "duration_seconds": 65,
+  "stats": {
+    "turns": 1,
+    "api_calls": 11,
+    "tool_calls": 12,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 46779,
+    "usage": {
+      "input_tokens": 22,
+      "output_tokens": 2898,
+      "cache_read_input_tokens": 401210,
+      "cache_creation_input_tokens": 33513
+    }
+  },
+  "tools": {
+    "Bash": 12
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-15T01:31:38.774Z",
+      "ended": "2026-11-15T01:32:43.990Z",
+      "turns": 1,
+      "api_calls": 11,
+      "usage": {
+        "input_tokens": 22,
+        "output_tokens": 2898,
+        "cache_read_input_tokens": 401210,
+        "cache_creation_input_tokens": 33513
+      },
+      "peak_context_tokens": 46779
+    }
+  ],
+  "log": {
+    "sha256": "e24f86097bd316cc6e0ba93d28096a9c6aefc6974aa117ea357579a8de5a26c8",
+    "bytes": 403602,
+    "lines": 107,
+    "gzip_bytes": 88092,
+    "path": "llm-dlc/traces/9afd524c-dd88-4be3-a7d1-e33e52803e1e/logs/e24f86097bd316cc6e0ba93d28096a9c6aefc6974aa117ea357579a8de5a26c8.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wtwuqnwzxsnyowqskkxloyzunyutnzrx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: example 307's preservation and mutant-preservation are refused at --nullable password (VF-028)",
+      "body": "The two native strict Phase 5 step 1 jobs for example 307 (BCrypt.hashpw(String,String)) ran 5.6 s each and stopped at the checker's refusal: a String parameter with --nullable is not accepted in a regression check (cause 3 of VF-027). Neither task ran as expected; recorded as VF-028 for the example-targets loop to restate or record as unprovable. Outputs kept, not applied.",
+      "log_sha256": "e24f86097bd316cc6e0ba93d28096a9c6aefc6974aa117ea357579a8de5a26c8"
+    }
+  ],
+  "logs": {
+    "e24f86097bd316cc6e0ba93d28096a9c6aefc6974aa117ea357579a8de5a26c8": {
+      "bytes": 403602,
+      "lines": 107,
+      "gzip_bytes": 88092,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

@@ -1,0 +1,322 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "cccf6772f82ea16f",
+    "format": 1,
+    "example": "307",
+    "statement": {
+      "approach": "target",
+      "task": "mutant-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "revisions": [
+        "after",
+        "mutant"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "mutant-preservation",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "file": "claims/hashpw-preservation.json",
+        "sha256": "ee2e9189cc7d8bc38db5ce68794ca4890e61a3d9b6db2ef6bce629f7a0956ca8",
+        "property": "bcrypt-hashpw-string-preserved",
+        "claimKind": "preservation",
+        "statement": "Preservation of BCrypt.hashpw(String password, String salt) between Spring Security fb39d9c2 (password.getBytes(\"UTF-8\") inside a try that turns UnsupportedEncodingException into AssertionError) and fe9e4549 (password.getBytes(StandardCharsets.UTF_8)): for every password that is null or a String of at most 80 UTF-16 code units, each any of the 65,536 values (an isolated or reversed surrogate and a NUL included), and every salt among the seven fixed strings of the assume expression (three valid ones and four invalid ones, null among them, all from upstream's BCryptTests), both revisions return the same String (compared by equals) or throw the same exception class, on one and the same JDK. No allowed-change region: the patch is meant to change no observation. Expected per input, as replay/probes.json and controls/oracle.py state them: NullPointerException for a null password, whatever the salt; IllegalArgumentException for an invalid salt; for a valid salt, a result decided by the salt and the first 72 bytes of the cyclic key (the password's UTF-8 bytes, an isolated surrogate encoded as '?', with a NUL appended for revision a), except ArrayIndexOutOfBoundsException for the empty password under the salt with no minor revision. Nothing about timing, about BCryptPasswordEncoder, about a length policy or about bcrypt's cryptographic strength is claimed.",
+        "assume": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
+        "assert": null,
+        "throws": [],
+        "nullable": [
+          "password",
+          "salt"
+        ],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [
+          {
+            "text": "maxArrayLength bounds each String parameter's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md); the password's byte array and the cipher's own arrays (P, S, the salt and key bytes) are the method's, sized by its code, not by this bound.",
+            "basis": "80 code units reach every probe shape: 73 UTF-8 bytes take 73 ASCII units, 37 units of 2-byte characters, 25 of 3-byte ones (the fewest), or 37 with surrogate pairs; the longest salt is 60 units. Bytes past the 72nd matter to the observation only through the claim's statement that they don't (the cyclic key), which the probes at 71, 72 and 73 bytes test."
+          },
+          {
+            "text": "unwind 513 completes every loop on this domain: the key schedule's S-box loops run 512 times (1024 words, two per step), Blowfish's round loop 8, the cost loop at most 64 (cost 6; cost 3 throws before it), the base64 loops at most 23, and the JDK's encoding at most 80 code units.",
+            "basis": "Read from BCrypt.java at both revisions (the callee hashpw(byte[],String) and everything it calls are the same source, and the same bytecode up to constant-pool indices). An unwinding the check can't complete leaves the attempt unresolved, never established."
+          },
+          {
+            "text": "Both revisions run on the same JDK, whose String.getBytes(String) and String.getBytes(Charset) for UTF-8 encode alike, malformed input and all: both are specified to 'always replace malformed-input and unmappable-character sequences with this charset's default replacement byte array', which for UTF-8 is '?'.",
+            "basis": "The java.lang.String specification of both methods. The claim compares the two revisions on one JDK; a JDK whose two methods differed would be a finding about that JDK, recorded under its identity, not an assumption made true. The replay runs each side on 21 and 25."
+          },
+          {
+            "text": "Charset lookup by the name \"UTF-8\" always succeeds, so before's AssertionError is unreachable.",
+            "basis": "java.nio.charset.Charset: every implementation of the Java platform is required to support UTF-8 (StandardCharsets.UTF_8 exists on that guarantee). An attempt that reaches the AssertionError has modelled a JDK without UTF-8, which is outside the claim."
+          },
+          {
+            "text": "The exception is observed by class only, never by message.",
+            "basis": "Since JDK 14 a NullPointerException's helpful message names the method called on null: getBytes(String) at before, getBytes(Charset) at after. That is the patch's own difference, not behaviour a caller relies on; the class is what the method's callers can observe through its contract."
+          }
+        ],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 513,
+          "maxArrayLength": 80
+        },
+        "explicitBounds": {
+          "maxArrayLength": 80,
+          "unwind": 513
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "hashpw-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe"
+          },
+          {
+            "id": "hashpw-driver",
+            "kind": "driver",
+            "path": "replay/driver/inloop/p307/HashpwDriver.java",
+            "sha256": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c"
+          },
+          {
+            "id": "hashpw-probes",
+            "kind": "probe",
+            "path": "replay/probes.json",
+            "sha256": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+          },
+          {
+            "id": "us-ascii-mutant",
+            "kind": "mutation",
+            "path": "controls/us-ascii.patch",
+            "sha256": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b"
+          }
+        ],
+        "key": "7eb077dac7a25751"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 80,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "mutant-preservation",
+      "sidecar": "32a1c36647dca92fc016be6ac083937095be552145b5133f8d7e3f16a6319e38",
+      "revisions": {
+        "after": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "mutant": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1"
+      },
+      "dependencies": [
+        {
+          "revision": "after",
+          "position": 0,
+          "role": "driver",
+          "sha256": "6054ccd33418933918abee34260cfd9ff962edeabaaf62c48ced53d168aeb8e1"
+        },
+        {
+          "revision": "after",
+          "position": 1,
+          "role": "original",
+          "sha256": "f6aec1cedaa7c15ff8be5d3db154771e234738559abd662045c043f6196ef09c"
+        },
+        {
+          "revision": "mutant",
+          "position": 0,
+          "role": "driver",
+          "sha256": "6054ccd33418933918abee34260cfd9ff962edeabaaf62c48ced53d168aeb8e1"
+        },
+        {
+          "revision": "mutant",
+          "position": 1,
+          "role": "original",
+          "sha256": "54a1f226d5c9b63644bd62f4b77a70ae71f797611f58f2f49b6faff2b24ab23d"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/hashpw-preservation.json": "ee2e9189cc7d8bc38db5ce68794ca4890e61a3d9b6db2ef6bce629f7a0956ca8",
+        "controls/oracle.py": "82abae04ff3b740dac9a528dfc8dfad19ebdedb481abb38e9b0164df7aa263fe",
+        "controls/us-ascii.patch": "a2b4e97f32d9ab26057a3d7f28c99c1d91fcbcb5b5b7f7d40404e1f71703b01b",
+        "replay/driver/inloop/p307/HashpwDriver.java": "e4fb8460607bbc5f21583027faedd2e5ecac24cc5c25b530a026bed0ee1d1d0c",
+        "replay/probes.json": "363a66ca2b689cbada0b9b4cf4dae041c7270142d5d63b74020f2d0b2d9b20da"
+      },
+      "scopes": {
+        "after": "extracted-source-slice",
+        "mutant": "constructed-mutation-of-a-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261115T013208Z-f384fe34",
+    "claim": "cccf6772f82ea16f",
+    "startedAt": "2026-11-15T01:32:08+00:00",
+    "seconds": 0.7,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/after",
+      "--after",
+      "verifier/classes/mutant",
+      "--target",
+      "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String)",
+      "--nullable",
+      "password",
+      "--nullable",
+      "salt",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "513",
+      "--max-array-length",
+      "80",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "bda667f1c514b6a14d1e3c6dd8048589d9ab7b69a55a8cf5cb5fe8afb4cfbd84",
+        "files": 1
+      },
+      "after": {
+        "sha256": "2e8512ef6c36a4902f3c305a91b6d5529125e67a65c44af4973645906e990d6b",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261115-011448-example-307-mutant-preservation-phase-5",
+      "sourceCommit": "3ec935ff400b069820cacb58d8a69e520f40caff",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-011448-example-307-mutant-preservation-phase-5"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control after on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "controls/control-after-jdk21.stdout",
+        "stderr": "controls/control-after-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control after on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "controls/control-after-jdk25.stdout",
+        "stderr": "controls/control-after-jdk25.stderr"
+      },
+      {
+        "name": "jvm-control mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "controls/control-mutant-jdk21.stdout",
+        "stderr": "controls/control-mutant-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control mutant on JDK 25",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "controls/control-mutant-jdk25.stdout",
+        "stderr": "controls/control-mutant-jdk25.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 25",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.016,
+        "stdout": "verifier/verifier.stdout",
+        "stderr": "verifier/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 513,
+      "maxArrayLength": 80,
+      "complete": null
+    }
+  },
+  "conclusion": {
+    "claim": "cccf6772f82ea16f",
+    "attempt": "20261115T013208Z-f384fe34",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"after\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 24,
+      "code": "\"mutant\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "--nullable password: password is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another",
+    "domain": null,
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "4a023bc128bae19580dec02d8a7ec51ce2916d646cce70cd1e64b933548f611a",
+        "bytes": 195872
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "6cdc8e9b7edce63267a21b3c376a4268333064972ea79683399d4cff064c047f",
+        "bytes": 280
+      }
+    ]
+  }
+}

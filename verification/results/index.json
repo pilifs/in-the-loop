@@ -2,6 +2,72 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261115-011448-example-307-mutant-preservation-phase-5",
+      "title": "example 307 mutant-preservation (Phase 5 step 1): BCrypt.hashpw(String,String), after slice against the us-ascii mutant, native strict, expected refuted",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 5.6s, peak 185.1 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+      "attention": [
+        "step 1 (example 307 task mutant-preservation (equivalence)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json"
+        ],
+        "examples": [
+          "307"
+        ]
+      },
+      "sourceCommit": "3ec935ff400b069820cacb58d8a69e520f40caff",
+      "finishedAt": "2026-11-15T01:32:09+00:00",
+      "wallSeconds": 5.6,
+      "peakMemoryBytes": 194043904,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 1800.0,
+        "notes": "no dependency JARs (BCrypt needs only the JDK); one pinned fetch of the 5.2.0.M4 reference JAR for before (cached by sha256), the slice compile with JDK 8, two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached. The replays took about 6 s. A refusal ends in seconds; if the checker accepts the domain, unwind 513 over the cipher's 1024-word key schedule could run long, so the timeout is generous"
+      },
+      "host": "vm-1",
+      "result": "20261115-011448-example-307-mutant-preservation-phase-5/result.json"
+    },
+    {
+      "id": "20261115-011448-example-307-preservation-phase-5-step-1",
+      "title": "example 307 preservation (Phase 5 step 1): BCrypt.hashpw(String,String) on the before and after slices, native strict, expected established",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 5.6s, peak 184.3 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+      "attention": [
+        "step 1 (example 307 task preservation (equivalence)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json"
+        ],
+        "examples": [
+          "307"
+        ]
+      },
+      "sourceCommit": "3ec935ff400b069820cacb58d8a69e520f40caff",
+      "finishedAt": "2026-11-15T01:32:09+00:00",
+      "wallSeconds": 5.6,
+      "peakMemoryBytes": 193232896,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 1800.0,
+        "notes": "no dependency JARs (BCrypt needs only the JDK); one pinned fetch of the 5.2.0.M4 reference JAR for before (cached by sha256), the slice compile with JDK 8, two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached. The replays took about 6 s. A refusal ends in seconds; if the checker accepts the domain, unwind 513 over the cipher's 1024-word key schedule could run long, so the timeout is generous"
+      },
+      "host": "vm-1",
+      "result": "20261115-011448-example-307-preservation-phase-5-step-1/result.json"
+    },
+    {
       "id": "20261115-005926-example-105-confined-change-vf-027-rerun",
       "title": "example 105 confined-change (VF-027 rerun): stops at its recorded refusal, StringBuilder.<init>() refused under strict",
       "status": "passed",

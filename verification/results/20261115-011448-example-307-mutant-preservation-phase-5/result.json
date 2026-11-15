@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-011448-example-307-mutant-preservation-phase-5",
+  "title": "example 307 mutant-preservation (Phase 5 step 1): BCrypt.hashpw(String,String), after slice against the us-ascii mutant, native strict, expected refuted",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.6s, peak 185.1 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (example 307 task mutant-preservation (equivalence)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261115-011448-example-307-mutant-preservation-phase-5.json",
+    "sha256": "dd8df4311fb2bca5fb5a8c4321f3d2adba15c6aa765b94f9f9ee14a67f535bc5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-011448-example-307-mutant-preservation-phase-5",
+      "title": "example 307 mutant-preservation (Phase 5 step 1): BCrypt.hashpw(String,String), after slice against the us-ascii mutant, native strict, expected refuted",
+      "description": "The job runs python3 examples/tools/build.py 307 --task mutant-preservation, the target route of llm-dlc/loops/example-targets.md (Phase 5 step 1: each deep packet's claim tasks attempted once through the merged path). Example 307 is Spring Security fe9e4549 (BCrypt.hashpw encodes the password with StandardCharsets.UTF_8 in place of the charset name \"UTF-8\"), the independent positive of CVE-2025-22228's family. It is prepared by the source-slice route the user chose on 2026-11-15: each commit's BCrypt.java compiled alone by JDK 8 with -g -source 1.8 -target 1.8 -encoding UTF-8, labelled extracted-source-slice; before's preparation compares its BCrypt.class byte for byte with Spring Security 5.2.0.M4's published one (fetched from repo.spring.io/milestone by sha256) and fails on a difference. Its replay and mutant-replay passed (20261115-003616, 20261115-003617). Workflow plans the task from target.json; runtime prepares after and the constructed us-ascii mutant (us-ascii.patch applied to the after BCrypt.java, a constructed mutation, never a real CVE), runs the packet's controls in separate JVMs on JDK 21 and 25, then runs jvmcontract prove (built by the runner from lib/ at this commit) with --engine native --gaps strict on org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; with claims/hashpw-preservation.json (source-level claim key 7eb077dac7a25751, preservation, bounds unwind 513, maxArrayLength 80): for every password that is null or a String of at most 80 UTF-16 code units and every salt among seven fixed strings (null among them), both revisions return the same String or throw the same exception class, on one JDK. Workflow ingests every record into one format-2 receipt under receipts/mutant-preservation/, and build.py exits 0 only when the receipt's matchesExpected is true. This loop predicts, without having observed it, a refusal before any verdict: the nullable String parameters (lib/README.md: a String parameter of a regression check is never null), or the UTF-16 to UTF-8 conversion String.getBytes, which a static gap scan refused (records/hashpw-gaps.json). A capability refusal is a successful diagnostic, not a pass: it gives an unresolved receipt, prints NOT AS EXPECTED and exits 1, and is recorded as an observed gap for the v1 gap inventory, as VF-027's were, with the claim and its expectation left unchanged. No proof of this task has been attempted before.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json"
+        ],
+        "examples": [
+          "307"
+        ]
+      },
+      "expected": "example 307 task mutant-preservation gives its expected conclusion, refuted, with a witness at a non-ASCII password: build.py prints 'as expected' and exits 0. An observed capability refusal (unresolved, NOT AS EXPECTED, exit 1) is a recorded gap, not a pass",
+      "submitted": {
+        "at": "2026-11-15T01:14:48+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "no dependency JARs (BCrypt needs only the JDK); one pinned fetch of the 5.2.0.M4 reference JAR for before (cached by sha256), the slice compile with JDK 8, two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached. The replays took about 6 s. A refusal ends in seconds; if the checker accepts the domain, unwind 513 over the cipher's 1024-word key schedule could run long, so the timeout is generous"
+      },
+      "steps": [
+        {
+          "name": "example 307 task mutant-preservation (equivalence)",
+          "run": "python3 examples/tools/build.py 307 --task mutant-preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation"
+      ]
+    }
+  },
+  "sourceCommit": "3ec935ff400b069820cacb58d8a69e520f40caff",
+  "startedAt": "2026-11-15T01:32:02+00:00",
+  "finishedAt": "2026-11-15T01:32:09+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3701092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "no dependency JARs (BCrypt needs only the JDK); one pinned fetch of the 5.2.0.M4 reference JAR for before (cached by sha256), the slice compile with JDK 8, two short JVM control runs on JDK 21 and 25, one native strict jvmcontract proof, plus its cargo build if lib/'s tree isn't cached. The replays took about 6 s. A refusal ends in seconds; if the checker accepts the domain, unwind 513 over the cipher's 1024-word key schedule could run long, so the timeout is generous"
+  },
+  "usage": {
+    "peakMemoryBytes": 194043904,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 5.6,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 307 task mutant-preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 307 --task mutant-preservation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.61,
+      "cpuSeconds": 5.634,
+      "cpuThrottledSeconds": 0.337,
+      "peakMemoryBytes": 194043904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-307-task-mutant-preser.log",
+        "lines": 2,
+        "bytes": 318,
+        "sha256": "0b4e22ad3c43019be3ca3bfc8e27d7c869be900d07bc2421aa70df19aabeedd5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T013208Z-f384fe34/result.json",
+          "groups": [
+            "307",
+            "mutant-preservation",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task mutant-preservation (target route)",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T013208Z-f384fe34/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/plan.json",
+      "change": "added",
+      "bytes": 18368,
+      "sha256": "b9fc79ba0125fac38eb36e7a8958d16c0eaac8e52cea2014562723080e9addeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/records/execution.json",
+      "change": "added",
+      "bytes": 195872,
+      "sha256": "4a023bc128bae19580dec02d8a7ec51ce2916d646cce70cd1e64b933548f611a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 280,
+      "sha256": "6cdc8e9b7edce63267a21b3c376a4268333064972ea79683399d4cff064c047f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/result.json",
+      "change": "added",
+      "bytes": 13674,
+      "sha256": "989a9b05d773a48cb982348dc16cd43b9c77188b1bfbcbf3ef26afe360c02433",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:32:24+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/plan.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/records/execution.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/records/verifier-output.txt",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/mutant-preservation/20261115T013208Z-f384fe34/result.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-011448-example-307-mutant-preservation-phase-5"
+}

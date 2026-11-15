@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (ended) |
+| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (open) |
 | When | 2026-11-14 17:31 UTC to 2026-11-15 01:04 UTC (453 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.325 |
@@ -421,6 +421,12 @@ build.py exits 1 both for a refusal and for an unexpected verdict, so the new ex
 Verified: test_workflow_refusal.py (the judgement, the predictions, the check on 285 and 286, and the 23 packets against their job records and the inventory) and test_pipeline.py's new signal test. Both fail on vzlqyvun by construction. llm-dlc/tools/example-targets-integration.sh exits 0: the contract (16), the targets suite (243), test_build.py (190), test_pipeline.py (33) and build.py --plan.
 
 Queued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20261115-005926-example-105-confined-change-vf-027-rerun to 20261115-005928-example-306-preservation-vf-027-rerun-st (verification/jobs/20261115-00592*). When they pass, VF-027 closes as its Closes-when allows.
+
+### Record verification results for 2 jobs: example 307's preservation and mutant-preservation are refused at --nullable password (VF-028)
+
+change `wtwuqnwzxsny` · [log `eff74a3c8d4b`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5.jsonl.gz)
+
+The two native strict Phase 5 step 1 jobs for example 307 (BCrypt.hashpw(String,String)) ran 5.6 s each and stopped at the checker's refusal: a String parameter with --nullable is not accepted in a regression check (cause 3 of VF-027). Neither task ran as expected; recorded as VF-028 for the example-targets loop to restate or record as unprovable. Outputs kept, not applied.
 
 ## Conversation
 
