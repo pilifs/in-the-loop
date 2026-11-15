@@ -1,7 +1,10 @@
 # Brief: test cost: cheap by default, expensive once
 
 **Status of the brief**: drafted 2026-11-15 from the user's request and a measurement of the loops' time; the
-[decisions](#decisions) settled by the user the same day.
+[decisions](#decisions) settled by the user the same day. **Revised the same day** after the user stopped the first run
+as it began a measuring job: nothing is re-run to measure. Tiers come from past runs and from what a test spawns, and
+the loop is cut to the tags, the lint and the guidance, so the stream conductor can follow soon. The proxies, the
+retiering of the slow files and the reuse of passed results are [deferred](#deferred-not-in-this-loop).
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh), run alone in the default workspace after example-targets
 (done 2026-11-15) and before the stream conductor's steps 4–6:
@@ -10,6 +13,9 @@ A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh), run alone in th
 Every test gets a cost tier, the tests run by default are cheap, and an expensive test runs as a queued job, once for the
 inputs it checks. Agents are steered away from running expensive tests and from writing them where a cheaper test shows
 the same thing. Where an expensive test is needed, a cheap proxy beside it gives an indicative result while iterating.
+This loop lays the ground for that: every test tagged with its tier, a lint that keeps the tags honest, and the
+guidance. Making the default run cheap, by moving the slow files' JBMC tests to the proof tier behind proxies, is the
+next loop's.
 
 **Inputs.** Read these in full before the first piece of work of every cycle:
 - [Where it starts from](#where-it-starts-from), below: the measurement this brief rests on.
@@ -20,8 +26,9 @@ the same thing. Where an expensive test is needed, a cheap proxy beside it gives
 
 ## Direction
 
-- **Every test declares its cost.** Three tiers, by what a test runs and what it measures on this machine (thresholds in
-  [decision 1](#decisions)):
+- **Every test declares its cost.** Three tiers, by what a test runs and what it costs on this machine (thresholds in
+  [decision 1](#decisions)). In this loop the cost comes from past runs and from what the test spawns, never from a new
+  measuring run ([decision 9](#decisions)):
   - **unit**: in process, with no subprocess and nothing outside the repo. The default for a new test.
   - **tool**: spawns `javac`, `java`, the `jvmcontract` binary or a stand-in script; seconds. Runs inline.
   - **proof**: spawns JBMC, TLC or a solver on more than a toy, or goes over the tool tier's time or memory. Never runs
@@ -52,8 +59,8 @@ the same thing. Where an expensive test is needed, a cheap proxy beside it gives
   - the reason a cheaper test cannot show the same thing;
   - its proxy.
 
-  A test that spawns JBMC or TLC without a proof tag, or that measures over its tier's threshold, is caught: by a lint
-  in the default run, and by the measuring job.
+  A test that spawns JBMC or TLC without a proof tag is caught by a lint in the default run. (A test over its tier's
+  threshold is caught once the measuring tool of step 2 runs, in a later loop.)
 - **Nothing gets weaker.** Tiers change when a check runs, not whether it runs:
   - a test moved to the proof tier is run by a job in the commit that moves it;
   - a verdict still needs the real tool (only JBMC's `VERIFICATION SUCCESSFUL` is a proof);
@@ -128,108 +135,105 @@ What exists already:
 
 The [standing rules](brief-template.md#standing-rules), the [timebox](brief-template.md#the-timebox) included, with these
 of its own:
-- **Measure with jobs, not inline.** The full suite with the proof tier is a pipeline job, and so is any run over a
-  minute. Inline, run only what you changed, at the unit and tool tiers. Follow this brief from its first cycle.
-- **One file or one mechanism per cycle.** Retiering a test file is one step: tag its tests, give each proof-tier test
-  a proxy, and queue the job that runs its proof tier. All in one commit.
-- **A proxy is reviewed against its proof.** Before relying on a proxy, check that it fails where the proof fails: break
-  the code it covers, or run the proof's recorded failing case, in a unit test or in the job.
-- **Equivalence when making a test cheaper.** Say in the commit what the cheaper test still checks and what moved to the
-  proof tier. A test made cheaper by checking less is a weakening, so don't do it.
-- **Verification mode: with the pipeline.** A loop whose remaining work waits on jobs stops with
-  `- Status: waiting on jobs ID ...`.
+- **No measuring runs** ([decision 9](#decisions)). Don't run the whole suite, the ignored tests, the proof tier or the
+  measuring tool to find out what a test costs, inline or as a job. Take its cost from what already exists:
+  - the timings in past sessions' redacted logs (`tool_time.py` reads them: "test result … finished in Xs" per binary);
+  - past pipeline results in `verification/results/` (step durations and their `cargo test` logs; heap's ignored tests
+    took 2 to 25 minutes each there, and conformance's about 23);
+  - what the test calls: the JBMC or TLC helpers make it proof tier, `javac`, `java`, the binary or a stand-in script
+    tool tier, nothing outside the process unit tier.
+
+  Where these disagree or say nothing, estimate, and say so in the inventory. Inline, run only the tests you changed,
+  and the default run once before committing, as now.
+- **Nothing runs less than it does today.** This loop doesn't add `#[ignore]` to a test that runs by default now, or skip
+  one in a default Python run. A test the inventory puts in the proof tier that runs by default today stays as it is,
+  and is listed for retiering in the next loop (step 3). So no change of this loop needs a job.
+- **One mechanism, or a group of test files, per cycle.** Tagging a file means adding the tier helper to its tool-tier
+  tests and rewriting its `#[ignore]` reasons, in one commit with the inventory regenerated.
+- **Verification mode: none needed.** This loop queues no jobs. If a piece of work turns out to need one, record it as
+  deferred, with why, and go on.
 
 ## The plan
 
-### Phase 1: measure and classify
+### Phase 1: the tools and the inventory
 
-1. **The time analysis as a tool:** `llm-dlc/tools/tool_time.py`, which reads the redacted logs and reports blocked time
-   by category, by loop and by test binary, as [Where it starts from](#where-it-starts-from) does. Parallel calls are
-   counted once, and calls over two hours are left out. It is tested on made-up logs, and is used again in Phase 5.
-2. **Per-test cost, as a job:** first install cargo-nextest ([decision 3](#decisions)): its prebuilt release binary
-   from github.com, hash-pinned, under `~/.cargo/bin`. Then the job runs the whole Rust suite with the ignored tests
-   under nextest, taking each test's time from its JUnit output, and each Python suite with `unittest --durations`. It
-   records each test's time and the tools it spawns.
-3. **The inventory:** a generated `lib/tests/costs.json` (and one per Python suite, or one shared file), with each test's
-   measured time and the tier it measures into. It is written by the job's outputs, never by hand, and shows which tests
-   are mis-tiered today.
+1. **The time analysis as a tool:** `llm-dlc/tools/tool_time.py`. Done (`spvkptmn`).
+2. **The measuring tool, written but not run:** the stopped run left `lib/tools/test_costs.py`,
+   `lib/tools/install-nextest.sh` (cargo-nextest 0.9.151 is installed) and `lib/.config/nextest.toml` uncommitted in the
+   working copy. Finish them as a tool a later loop queues as a job:
+   - its `measure` is never run in this loop. Test its parsing (JUnit, the process samples, the inventory it writes) on
+     made-up inputs, at the unit tier, and its process watching on a made-up command of a second or less.
+   - nothing points outside the repo: the nextest wrapper runs the tool's `watch` from `lib/tools/`, not a script under
+     `/tmp`. A profile that is only for measuring stays out of the default run.
+   - `lib/README.md` says how to queue it later, with the estimate from past jobs (about 3 hours).
+3. **The inventory, from past runs and estimates:** `lib/tests/costs.json`, and the same for Python, generated by a
+   command (an `estimate` subcommand of `test_costs.py`, say) from the sources in
+   [How to work through it](#how-to-work-through-it), never by hand. Each test gets:
+   - its tier;
+   - its cost, with its source: a past job's id, a session's log (by sha256, per binary where per-test isn't known), or
+     `estimated` with the reason;
+   - for a test whose tier is proof but runs by default today, `retier: pending`. That list is the next loop's work.
 
-### Phase 2: the mechanism
+   A later `measure` run replaces the estimates in the same file.
+
+### Phase 2: the tags and the lint
 
 4. **Rust tiers** ([decision 2](#decisions)):
-   - The proof tier is `#[ignore = "cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST"]`. A plain `cargo test` skips it,
-     `-- --ignored` runs it, and nextest selects it.
-   - The tool tier is skipped under `JVMCONTRACT_TEST_TIER=unit`, through a helper each tool-tier test calls first, so
-     a quick unit-only run exists.
-   - The twelve existing ignore reasons are rewritten to the new form.
-5. **Python tiers** ([decision 7](#decisions)): one `@cost("tool" | "proof")` decorator in a shared helper. The proof
-   tier is skipped unless `TEST_COST=proof`, and the tool tier is skipped under `TEST_COST=unit`. Every Python test the
-   inventory puts above the unit tier is tagged. Python gets no proxies or retiering in Phase 4 unless the measurement
-   shows a file worth one (`test_performance.py` and `targets/test_runtime.py` are the likely ones).
-6. **One way to run each tier**, documented in `lib/README.md` and in CLAUDE.md: the default run, the unit-only run, and
-   the proof tier as a job. The job is a `pipeline.py submit` recipe (or a `--tests proof` option) that runs the given
-   proof-tier tests at the commit.
-7. **The lint, in the default run:** a unit-tier test, like `tests/skill.rs`, checks three things:
+   - The proof tier is `#[ignore = "cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST"]`. The twelve existing ignore reasons
+     are rewritten to that form. One with no proxy yet says `proxy: none yet`, and is listed in the inventory.
+   - The tool tier is skipped under `JVMCONTRACT_TEST_TIER=unit`, through a helper each tool-tier test calls first. The
+     tests with `retier: pending` call it too, so the unit-only run is quick. Without the variable, nothing changes.
+5. **Python tiers** ([decision 7](#decisions)): one `@cost("tool" | "proof")` decorator in a shared helper, with the tool
+   tier skipped under `TEST_COST=unit`. Every Python test the inventory puts above the unit tier is tagged. A Python
+   test that would be proof tier but runs by default today is tagged `pending` and still runs by default.
+6. **One way to run each tier**, documented in `lib/README.md`: the default run, the unit-only run, and the proof tier
+   as a job (the `pipeline.py submit` command for it, written down, not run).
+7. **The lint, in the default run:** a unit-tier test, like `tests/skill.rs`, checks:
    - every `#[ignore]` reason starts with `cost:`;
-   - every proof-tier tag names a proxy that exists;
-   - no test outside the proof tier calls the JBMC or TLC helpers directly.
+   - every proof-tier tag names a proxy that exists, or says `proxy: none yet` for a test the inventory lists;
+   - no test outside the proof tier calls the JBMC or TLC helpers directly, except the inventory's `retier: pending`
+     tests;
+   - every test the inventory names exists, and every test is in it.
 
-   Python gets the same check. The measuring job of step 2 also flags a test over its tier's threshold, as an
-   `attention` in its result.
+   Python gets the same checks.
 
-### Phase 3: once for its inputs
+### Phase 3: guidance
 
-8. **Reusing a passed result:** before running a proof-tier test, the job looks for a passing result of it at an
-   earlier commit C. If none of the test's inputs changed since C, it skips the test and reports "passed at C, inputs
-   unchanged". The inputs are the test file, its fixtures, `lib/src/`, `lib/Cargo.lock`, and the version of the tool it
-   spawns. They are coarse at first; finer only if measurement shows the coarse set reruns too much. This builds on
-   `verification/results/`, with no new store.
-9. **The JBMC answer cache** ([decision 5](#decisions)): keyed exactly by class bytes, harness, options and JBMC
-   version, and every reused answer says which run it came from. Proxies and tool-tier runs may reuse any exact hit. A
-   job that claims a verdict runs JBMC fresh, unless the hit comes from a pipeline result with the identical key.
-
-### Phase 4: proxies, and retiering the slow files
-
-10. **A record and replay stand-in for JBMC and TLC.** It builds on the existing stand-in scripts:
-    - a proof-tier job can record each run's answer, keyed by a hash of its inputs, into fixtures that `collect` applies;
-    - a proxy replays the recording;
-    - a missing or stale key gives "no recording for this input: run TEST", never a pass.
-11. **The five slow files, one per cycle:** `conformance.rs`, `observations.rs`, `alignment.rs`, `application_core.rs`,
-    then `integration.rs`, which may take two cycles. For each, its tests are split into proof-tier tests and proxies, and
-    its proof tier is queued in the same commit.
-12. **The rest of the inventory:** every Rust test the measuring job puts over its tier, and a Python file only where
-    step 5 found one worth it. Then the measuring job runs again, showing the default run inside its budget.
-
-### Phase 5: guidance, and the next run measured
-
-13. **The guidance**:
-    - **CLAUDE.md** gets a short Tests section: which tier to run when, and that the proof tier is a job. Also: write the
-      cheapest test that shows the behaviour, and give a proof-tier test a tag, a reason and a proxy.
-    - **`brief-template.md`'s standing rule** names the tiers instead of "conformance cases on a real `java`".
-    - **`verification/README.md`**: "the slow tests" become the proof tier, and its estimate row is updated.
-    - **`lib/README.md`'s Tests section.**
-    - **The integration scripts** (`*-integration.sh`) run the default tier and the proxies, and queue the proof tier.
-14. **For-review list** in Progress:
-    - tests whose proxy is weaker than its proof in a way worth knowing;
-    - tests left over their tier, with why;
-    - the default run's time before and after.
-
-    `tool_time.py` is run on the next loop's logs once it exists, and its numbers are compared with the ones above.
+8. **The guidance**:
+   - **CLAUDE.md** gets a short Tests section: the tiers; that the default run is what you run inline; the proof tier
+     as a job, with [decision 4](#decisions)'s one inline exception, stated as narrowly; write the cheapest test that
+     shows the behaviour, and give a new proof-tier test a tag, a reason and a proxy. Adding a test to the
+     `retier: pending` or `proxy: none yet` lists is for a person to decide.
+   - **`brief-template.md`'s standing rule** names the tiers instead of "conformance cases on a real `java`".
+   - **`verification/README.md`**: "the slow tests" become the proof tier, and the `retier: pending` tests until they
+     move.
+   - **`lib/README.md`'s Tests section.**
+9. **For-review list** in Progress:
+   - the tests whose tier is an estimate with no past timing behind it;
+   - the size of the `retier: pending` and `proxy: none yet` lists, by file;
+   - anything the tagging found that the next loop should know.
 
 ## Done when
 
 | Phase | Criterion |
 |---|---|
-| 1 | Every Rust and Python test has a measured time and a tier in the inventory, from a job. |
-| 2 | Every ignored test carries a `cost:` tag. The lint is in the default run and passes. Each tier has one documented way to run. |
-| 3 | A proof-tier job skips tests whose inputs haven't changed since a passing job, and says so in its result. |
-| 4 | Each of the five slow files has its proof tier queued and proxies inline. The default `cargo test` (debug, warm) takes at most 60 seconds on this VM, against today's median full run of 17s and its p90 of 136s. The proof tier passes as a job. |
-| 5 | CLAUDE.md, the brief template, the verification README and `lib/README.md` describe the tiers. The integration scripts use them. The for-review list is in Progress. |
+| 1 | `tool_time.py` is committed. `test_costs.py` and the installer are committed, tested on made-up inputs, and never run to measure. Every Rust and Python test has a tier in the generated inventory, with the source of its cost. |
+| 2 | Every ignored test carries a `cost:` tag. Every tool-tier and `retier: pending` test calls the tier helper. The lint is in the default run and passes. Each tier has one documented way to run. No test runs less by default than before. |
+| 3 | CLAUDE.md, the brief template, the verification README and `lib/README.md` describe the tiers. The for-review list is in Progress. |
 
 ## Deferred: not in this loop
 
+- **To the next test-cost loop**, by the user's decision on 2026-11-15 ([decision 9](#decisions)), after the stream
+  conductor:
+  - running the measuring tool as a job, replacing the estimates;
+  - the proxies: the record and replay stand-in for JBMC and TLC;
+  - retiering the `retier: pending` tests, starting with the five slow files, each with its proof tier queued, and
+    the default `cargo test` (debug, warm) within 60 seconds;
+  - reusing a passed result while its inputs are unchanged, and the JBMC answer cache ([decision 5](#decisions));
+  - the integration scripts running the default tier and queuing the proof tier;
+  - a measured comparison with [Where it starts from](#where-it-starts-from), using `tool_time.py`.
 - **Making JBMC, TLC or the native engine faster:** the engines' own loops do that.
-- **Changing what a test checks:** this loop moves and proxies checks, and doesn't redesign them.
+- **Changing what a test checks:** tests are tagged and moved, not redesigned.
 - **CI outside this machine.**
 - **`examples/tools/build.py` runs:** already queued.
 
@@ -275,6 +279,13 @@ Settled by the user on 2026-11-15:
      runs; one after the other, in either order.
    - The user chose this loop first (2026-11-15). The conductor's steps 1–3 stay unmerged in the jj workspace
      `stream-conductor` (`../in-the-loop-stream-conductor`): not this loop's to merge, edit or rebase.
+9. **No measuring run, and a shorter loop** (the user, 2026-11-15, after stopping the first run as it began the
+   measuring job, estimated at about 3 hours of jobs):
+   - Tiers come from past runs and from what a test spawns, never from re-running tests or jobs. The measuring tool is
+     written, and run in a later loop.
+   - This loop does the tags, the lint and the guidance. The proxies, the retiering and the reuse of results
+     (Phases 3 and 4 of the first draft) go to the next test-cost loop, after the stream conductor. Decision 5, and
+     decision 6's part on existing tests, apply there.
 
 ## Progress
 
@@ -298,6 +309,11 @@ Settled by the user on 2026-11-15:
   cargo test time, median 11s, p90 579s; all debug runs are 788 calls, 44%, median 8s, p90 82s. The brief's "542 runs,
   48%, median 17s, p90 136s" came from scripts not kept and isn't reproduced; Phase 5 compares against this tool's
   numbers. Next: Phase 1 step 2, install cargo-nextest and queue the per-test cost job.
+- 2026-11-15, the user stopped the run in cycle 2, as it was about to queue the measuring job, and revised the brief
+  ([decision 9](#decisions)): no measuring run, with tiers taken from past runs and estimates, and the loop cut to the
+  tags, the lint and the guidance. Cycle 2 had installed cargo-nextest 0.9.151 and left `lib/tools/test_costs.py`,
+  `lib/tools/install-nextest.sh` and `lib/.config/nextest.toml` uncommitted. Next: Phase 1 step 2 as revised, finishing
+  those files without running `measure`.
 - Status: working
 
 ## Loop settings
@@ -309,8 +325,9 @@ Settled by the user on 2026-11-15:
 
 ## Loop until
 
-Phases 1 to 4 first, in order, then Phase 5. Keep the last line of Progress a status: `working`, `waiting on jobs ID ...`
-with the job ids, `done`, or `blocked: ...` with what needs the user. Stop with `done` once every criterion of
-[Done when](#done-when) holds, or with the remaining items recorded as deferrals with their reasons. A test whose proof
-tier fails twice is deferred by the timebox, never made cheaper to pass. Items deferred by the timebox count as recorded
-deferrals, never as a reason to keep going.
+Phases 1 to 3, in order. Keep the last line of Progress a status: `working`, `done`, or `blocked: ...` with what needs
+the user. Stop with `done` once every criterion of [Done when](#done-when) holds, or with the remaining items recorded
+as deferrals with their reasons. Never run the measuring tool, the whole suite with its ignored tests, or a job to
+find out what a test costs: if a tier can't be estimated, say so in the inventory and go on. Items deferred by the
+timebox count as recorded deferrals, never as a reason to keep going.
+
