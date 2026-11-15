@@ -41,6 +41,8 @@ llm-dlc/
                                     the loop under it, against a stand-in claude
   tools/conductor.py                how a session outside a moonshot loop judges a compaction that found no commit
                                     (runtime.md#the-conductor); test_conductor.py tests it
+  tools/contribute.py               what of a runtime checkout's work can go upstream as a pull request, and a check of
+                                    a prepared one (runtime.md#contributing-back); test_contribute.py tests it
   tools/release.py                  cuts a release for /prove-java-change: one commit, pinned by the digest of its tree
                                     (runtime.md#releases); test_release.py tests it and the bootstrap that installs one
   tools/redaction_rules.py          what counts as sensitive, and the stamp that says which files have been checked

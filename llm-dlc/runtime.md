@@ -1,4 +1,4 @@
-# Runtime mode, the proof loop and releases
+# Runtime mode, the proof loop, contributions and releases
 
 This repository runs in one of two modes. `python3 llm-dlc/tools/mode.py` prints which.
 
@@ -126,6 +126,39 @@ failure or file keeps coming back. Then it answers and waits again.
 
 The verdict and its reason go into the run's record under the cycle's line. The conductor never writes to the loop's
 session, whose instruction stays the one line.
+
+## Contributing back
+
+A runtime checkout's results stay on the user's machine: the example's folder (`receipts/`, its page, its notes),
+`verification/results/` and `verification/findings.md`, and the run's record. Nothing of it is pushed anywhere.
+
+When a proof needed something new of the tool (a model, a checker extension, a route), that part is worth more to the
+next user than to this one, and it can go back as a pull request against `pilifs/in-the-loop`. The commits of a
+runtime checkout have no traces, so they don't follow the development procedure; this is theirs.
+
+```bash
+python3 llm-dlc/tools/contribute.py status      # the local commits, and what of them can travel
+python3 llm-dlc/tools/contribute.py check REV   # a prepared contribution, checked before it is pushed
+```
+
+A contribution is a branch from the upstream `main`, never the user's line as it is:
+
+1. **What travels:** the library (`lib/`), the tools and schemas (`examples/tools/`, `examples/schema/`), their tests,
+   their documentation, and an example whose every source is public (commits on github.com, JARs on an allowed host),
+   renumbered to the next free number upstream.
+2. **What stays:** `verification/jobs/`, `verification/results/` and `verification/findings.md` (the user's machine's
+   records: upstream runs the proofs again on its own), an example whose sources are local, and anything that names
+   the user's home directory, user name or host. `check` looks for each and never prints the line it found one in.
+3. **How:** fetch upstream, duplicate the chosen commits onto its `main` (`jj duplicate -d main@origin`), drop what
+   stays, regenerate what is generated (`build.py --index-only`, `test_costs.py estimate`), run the default tests,
+   and run `contribute.py check`. Each commit keeps its `In-The-Loop-Runtime` trailer.
+4. **The pull request**, only once the user agrees: push the branch to their fork (`gh repo fork --remote`, then
+   `jj git push --remote fork --bookmark NAME`) and open it with `gh pr create --repo pilifs/in-the-loop`, with the
+   body `check` prints: the release it was built on, what it adds, how it was verified and what was not run.
+
+**For the maintainers.** A contributed commit has no trace, by design, and its trailer says so: `sync.py` never
+stamps a session on a commit that carries it. Review it as any change, queue its proofs in the pipeline here (the
+contributor's results did not travel), and merge.
 
 ## Releases
 
