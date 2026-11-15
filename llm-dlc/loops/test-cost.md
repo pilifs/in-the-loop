@@ -525,7 +525,64 @@ Settled by the user on 2026-11-15:
   - **Verified.** Only Markdown changed, and no test reads these files, so no test was run.
 
   Next: Phase 3 step 9, the for-review list, then Status `done`.
-- Status: working
+- 2026-11-15, Phase 3 step 9 done: **for review**, for a person and the next test-cost loop. Counts are from
+  `lib/tests/costs.json` as committed: Rust 646 tests (272 unit, 299 tool, 75 proof), Python 833 (763 unit, 70 tool, no
+  proof).
+  - **Tiers with no past timing at all** (`"kind": "estimated"`: no session log or job names the test, so the tier is
+    only from what it calls). Rust 2: `tiers.rs`'s two lint tests, written in this loop. Python 162, every one written
+    or last run in ways the logs don't keep per file:
+    - unit: test_review.py 28, test_metrics.py 21, test_cost_inventory.py 19, test_test_costs.py 12, test_tier_lint.py
+      12, test_tool_time.py 10, test_workflow_refusal.py 8, test_workspaces.py 7, test_fixtures.py 6,
+      test_receipt_streams.py 5, test_streams_status.py 5, test_interfaces.py 4;
+    - tool: test_prune_workspaces.py 14, test_test_costs.py 4, test_streams_status.py 4, test_without_jbmc.py 3.
+  - **Tiers that past runs bound only from above** (a timing exists, but it covers a whole binary or file and is over
+    the tier's limit, so the tier is from what the test calls). Rust 228: 208 unit (188 in `lib/src`, then
+    summaries.rs 11, observations.rs 7, application_core.rs 3, reuse.rs 3), 18 tool (13 of them integration.rs) and
+    the 2 JBMC tests that took under 1 s (integration.rs `a_string_parameter_is_refused_under_jbmc`, object_strings.rs's
+    one), which may stop before JBMC runs. Python 274: test_performance.py 103, test_runtime.py 69,
+    verification/test_pipeline.py 34, test_targets_contract.py 16, test_acceptance.py 15, test_runtime_upstream.py 15,
+    test_economics.py 11, test_gap_inventory.py 11. The first three are slow under `TEST_COST=unit` (step 5), so some
+    of their "unit" tests spawn processes inside the module they test.
+  - **`retier: pending`: 63 Rust tests**, all still run by default: integration.rs 45, application_core.rs 4,
+    conformance.rs 3, summaries.rs 3, application_core_joint.rs 2, value_parameters.rs 2, and one each in
+    alignment.rs, compare.rs, object_strings.rs and observations.rs. Python none. Ten call neither JBMC nor TLC and
+    are there only by a past time: three ran over 60 s (alignment.rs
+    `an_approved_relation_s_evidence_comes_from_a_proof…`, application_core.rs `e1_…`, observations.rs
+    `box_office_examples_compare_as_their_boundary_diffs_say`), and seven between 10 and 78 s alone
+    (application_core_joint.rs `j1_…` 78 s, application_core.rs `e2_…` 44 s, compare.rs
+    `the_joint_example_passes_every_row` 16 s, application_core.rs `r1_…` and `v2_…` 11 s, and two in conformance.rs,
+    below).
+  - **`proxy: none yet`: 1**, preparation.rs `where_a_compare_runs_time_goes_stage_by_stage` (the benchmark, 49 s,
+    ignored).
+  - **What the next loop should know:**
+    - Both conformance proof tests name `the_corpus_agrees_with_the_jvm_on_the_tools_own_checker` as their proxy, and
+      it is itself `retier: pending` (11 s alone, up to 158 s). conformance.rs
+      `jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline` runs only a stand-in, at 10.15 s once:
+      one run is just over the tool tier's limit, so `measure` may put it back in the tool tier.
+    - Three heap proof tests (`object_properties`, `identity_relations`, `same_shape_relations`) took 3 to 5 s in their
+      one job, and return silently when `jbmc` is missing, so that job may not have run JBMC. Today they are three of
+      the four tests that qualify for the inline exception. Check them before anyone relies on that.
+    - Three heap proof tests failed their last jobs at about an hour (VF-018 `20261107-164356`), so the proof tier's
+      job may fail on them until they are fixed.
+    - Two `lib/src/jbmc.rs` tests are tool tier only because their text holds a shebang (step 4, part 2), and are
+      probably unit tier.
+    - The library's unit tests take 16 s and `summaries.rs`'s unit tests 9 s under `JVMCONTRACT_TEST_TIER=unit`, so
+      some exceed 1 s. `measure` will name them.
+    - The Python reading misses a spawn inside the module under test; following calls into the repository's
+      modules, stopping where a test patches `subprocess`, would tier test_runtime.py, test_pipeline.py and
+      test_performance.py.
+    - `measure`'s `inventory` writes rows keyed by nextest's binary id, not by file and name as `estimate` does: make it
+      write the same shape before it replaces the estimates.
+    - The Rust and Python lints read the sources separately and can disagree; the Python one names the fix.
+    - `examples/tools/test_economics.py` fails by default, before and apart from this loop (`subject.file` missing
+      in examples 287 and 289–291).
+  - **Done when** holds for all three phases: `tool_time.py`, `test_costs.py` and the installer are committed and
+    `measure` was never run; every test has a tier and the source of its cost; every ignored test has a `cost:` tag,
+    every tool-tier and pending test calls its helper, the lint is in the default run and passes, each tier has one
+    way to run, and no test runs less by default; the guidance is in the four files, and this list is in Progress.
+    Deferred to the next test-cost loop, as the brief already says: the measuring run, the proxies, the retiering,
+    and the reuse of passed results.
+- Status: done
 
 ## Loop settings
 
