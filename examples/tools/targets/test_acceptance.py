@@ -319,10 +319,20 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
                 self.assertEqual(doc["attempt"]["execution"]["status"], "completed")
                 if c["status"] == "unresolved":
                     # A refusal is never a verdict and never as expected: only a proof task whose observed gap packet
-                    # recorded this very refusal may leave one (VF-027's reruns, workflow_refusal.py's check).
+                    # recorded this very refusal may leave one (VF-027's reruns, workflow_refusal.py's check). Once
+                    # the gap is closed the packet blocks nothing and predicts nothing, and still says what was
+                    # refused, with the receipt that decided the claim since (285's, 2026-11-15).
                     self.assertNotEqual(kind, "replay")
                     self.assertEqual(c["expectation"], "no")
-                    [p] = workflow_refusal.predictions(folder, target, task)
+                    predicted = workflow_refusal.predictions(folder, target, task)
+                    if predicted:
+                        [p] = predicted
+                    else:
+                        packet = json.loads((folder / "records/refusals" / f"{task}.json").read_text())
+                        decided = json.loads((folder / packet["closed"]["receipt"]).read_text())["conclusion"]
+                        self.assertIn(decided["status"], ("established", "refuted"))
+                        self.assertEqual(decided["expectation"], "yes")
+                        p = packet["refusal"]
                     self.assertEqual(p["stage"], "verifier")
                     self.assertIn(p["text"], e["problem"])
                     self.assertEqual(doc["attempt"]["engine"], "native")

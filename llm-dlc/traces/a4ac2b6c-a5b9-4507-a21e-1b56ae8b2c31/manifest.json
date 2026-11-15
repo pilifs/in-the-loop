@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-15T18:56:09.427Z",
-  "duration_seconds": 9777,
+  "ended": "2026-11-15T19:12:13.504Z",
+  "duration_seconds": 10741,
   "stats": {
     "turns": 3,
-    "api_calls": 450,
-    "tool_calls": 460,
+    "api_calls": 481,
+    "tool_calls": 491,
     "tool_errors": 2,
     "compactions": 2,
     "peak_context_tokens": 466839,
     "usage": {
-      "input_tokens": 900,
-      "output_tokens": 440966,
-      "cache_read_input_tokens": 116680900,
-      "cache_creation_input_tokens": 1258574
+      "input_tokens": 962,
+      "output_tokens": 467660,
+      "cache_read_input_tokens": 128975718,
+      "cache_creation_input_tokens": 1320025
     }
   },
   "tools": {
-    "Bash": 443,
+    "Bash": 474,
     "Read": 7,
     "Write": 5,
     "Monitor": 3,
@@ -74,24 +74,24 @@
     {
       "index": 2,
       "started": "2026-11-15T17:35:29.508Z",
-      "ended": "2026-11-15T18:56:09.427Z",
+      "ended": "2026-11-15T19:12:13.504Z",
       "turns": 1,
-      "api_calls": 162,
+      "api_calls": 193,
       "usage": {
-        "input_tokens": 324,
-        "output_tokens": 128460,
-        "cache_read_input_tokens": 38942218,
-        "cache_creation_input_tokens": 352376
+        "input_tokens": 386,
+        "output_tokens": 155154,
+        "cache_read_input_tokens": 51237036,
+        "cache_creation_input_tokens": 413827
       },
-      "peak_context_tokens": 367036
+      "peak_context_tokens": 428487
     }
   ],
   "log": {
-    "sha256": "0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07",
-    "bytes": 9754990,
-    "lines": 3513,
-    "gzip_bytes": 1437271,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07.jsonl.gz"
+    "sha256": "d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227",
+    "bytes": 10310499,
+    "lines": 3752,
+    "gzip_bytes": 1502959,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -126,6 +126,14 @@
       "summary": "Verification results for 6 jobs: example 285's four receipts pass, the conformance corpus passes, the object comparisons fail as in VF-018",
       "body": "Ran 20261115-173146 (example 285 fixed, mutant, vulnerable: expected verdicts, outputs applied), 20261115-181427 (example 285 preservation, passed, outputs applied) and 20261115-173209-conformance (passed: JBMC and auto --confirm, 34m). 20261115-173209-object-comparisons (heap proof tier at 18cfa9e6) failed again on the same four tests as VF-018 (JBMC did not finish within 600 s), recorded there. 20261115-181435-object-comparisons was withdrawn by its submitter after it started and stopped; its leftover result was set aside, not collected (VF-029). Verified by pipeline.py status: nothing pending, running or uncollected.",
       "log_sha256": "0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07"
+    },
+    {
+      "change_id": "ywytmluumuttpxozmpuzvntlwvsyqort",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 285 is decided: its four proof tasks have their receipts, each as expected, and its blockers are closed",
+      "body": "Example 285 (CVE-2023-34055, Spring Boot's WebMvcTags.method(HttpServletRequest)) had every proof task refused before any proof (VF-027). With jvmcontract extended in the three commits before the pipeline's (lvvpsuxl, lustnxwm, oyvynrux), the unchanged claims were rerun on the released JARs by its own checker under strict gaps, and the pipeline collected the receipts in xkplwmyz: vulnerable-security refuted on 2.7.17 (witness request.getMethod() = \"\", the label ImmutableTag{key=\"method\", value=\"\"}, run on a JVM), fixed-security established on 2.7.18, mutant-security refuted on the mutant (the same witness), and preservation established between 2.7.17 and 2.7.18, each release on its own pinned closure. Each is as expected and not vacuous; the verifier's runs took 0.2 to 0.4 s.\n\nThis commit brings the example's records in line with the receipts. target.json lists no blocker (the four observed ones and the two predictions are removed) and its handoff says what is decided and what the claims leave open; each records/refusals/TASK.json keeps the refusal as it was observed and gains `closed`, naming the job and the receipt that decided the claim; example.json's summary, verdict label and notes say what was proved and about which domain (an implementation of HttpServletRequest that answers getMethod() with one non-null String of at most 8 code units, or a null request); the page's two blocker sections are replaced by 'The proofs' and 'Closed gaps'. The router and examples/gap-inventory.md are regenerated: 21 blocked obligations in five observed gaps, where there were 25; two-dependency-closures now blocks three tasks (286, 287 and 306's preservation, whose route no longer refuses them, so their rerun checks will fail as not predicted and their ordinary attempts will say what else each needs) and interface-parameter four (305's). VF-027 has a dated update saying so.\n\nThe tests that pinned the blocked state follow: test_gap_inventory.py's ranking, totals, dated predictions (285's two are gone) and closure tasks; test_workflow_refusal.py's table of blocked tasks (21), its rerun example (286's preservation, since 285's is decided), and a new test that a closed gap blocks nothing, predicts nothing, leaves the task executable and names a receipt that decided the unchanged claim as expected; test_acceptance.py accepts an earlier unresolved receipt of a task whose packet is closed. Verified by the Python half of the default run (32 of 33 suites, the one failure being the cost inventory's lint on the renamed tests, fixed with test_costs.py estimate and rerun with the three changed suites); nothing under lib/src or lib/tests changed since the last Rust run.\n\nA correction to the previous commit's message (oyvynrux): it said the second heap proof-tier job, 20261115-181435-object-comparisons-under-jbmc-and-auto-c, was withdrawn before it started. The runner had started it at 18:25 UTC from the commit that queued it, before the commit that removed its job file landed; it was stopped, and its leftover result set aside (VF-029). The first one (20261115-173209-object-comparisons-under-jbmc-and-auto-c, at lvvpsuxl) failed on the four claims of VF-018, where JBMC does not finish in 600 s, as it did before these changes; its other five tests passed.",
+      "log_sha256": "d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227"
     }
   ],
   "logs": {
@@ -151,6 +159,12 @@
       "bytes": 9532853,
       "lines": 3393,
       "gzip_bytes": 1414456,
+      "url": null
+    },
+    "d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227": {
+      "bytes": 10310499,
+      "lines": 3752,
+      "gzip_bytes": 1502959,
       "url": null
     }
   },

@@ -1,5 +1,6 @@
 """workflow_refusal.py: a rerun of a task an observed gap blocks passes only at the refusal its packet recorded, and
-the 23 packets of VF-027 and the 2 of VF-028 state exactly what their jobs observed, under the claims as they are now."""
+the 19 open packets of VF-027 and the 2 of VF-028 state exactly what their jobs observed, under the claims as they are
+now; example 285's four, closed by the receipts that decided its claims, keep what was observed and block nothing."""
 
 import json
 import sys
@@ -95,8 +96,8 @@ def load(number):
 
 
 class CheckTest(unittest.TestCase):
-    def test_a_rerun_of_285s_preservation_passes_only_at_its_recorded_closure_refusal(self):
-        folder, example, target = load("285")
+    def test_a_rerun_of_286s_preservation_passes_only_at_its_recorded_closure_refusal(self):
+        folder, example, target = load("286")
         line = f"{folder.name}: not-executed (task preservation: unsupported: run-verifier: the task can't be " \
                f"attempted as stated: {CLOSURES})"
         ok, said = workflow_refusal.check(folder, example, target, "preservation", lambda: (1, [line]))
@@ -124,9 +125,9 @@ class CheckTest(unittest.TestCase):
         self.assertIn("a verdict, not the refusal", said)
 
 
-# VF-027's 23 tasks, each with the job that observed its refusal (the user's decision of 2026-11-15).
+# VF-027's tasks still blocked, each with the job that observed its refusal (the user's decision of 2026-11-15):
+# 19 of its 23, example 285's four being closed (CLOSED, below).
 VF027 = {
-    "285": ("vulnerable-security", "fixed-security", "mutant-security", "preservation"),
     "286": ("vulnerable-security", "fixed-security", "mutant-security", "vulnerable-protected-state-mutation",
             "fixed-protected-state-mutation", "preservation"),
     "287": ("vulnerable-security", "fixed-security", "mutant-security", "vulnerable-guard", "fixed-guard",
@@ -138,10 +139,13 @@ VF027 = {
 # VF-028's 2 tasks, recorded the same way (example 307's native attempts, collected after VF-027 closed).
 VF028 = {"307": ("preservation", "mutant-preservation")}
 OBSERVED = [("VF-027", VF027), ("VF-028", VF028)]
+# Closed gaps: each task's unchanged claim, rerun with the extended checker, decided by a receipt as expected.
+CLOSED = {"285": {"vulnerable-security": "refuted", "fixed-security": "established", "mutant-security": "refuted",
+                  "preservation": "established"}}
 
 
 class Vf027PacketsTest(unittest.TestCase):
-    def test_each_of_the_25_tasks_is_blocked_by_its_observed_refusal_as_its_job_recorded_it(self):
+    def test_each_of_the_21_tasks_is_blocked_by_its_observed_refusal_as_its_job_recorded_it(self):
         count = 0
         for finding, number, tasks in ((f, n, ts) for f, rows in OBSERVED for n, ts in rows.items()):
             folder, example, target = load(number)
@@ -174,7 +178,7 @@ class Vf027PacketsTest(unittest.TestCase):
                     self.assertEqual(readiness["summary"], "blocked")
                     t = next(x for x in target["tasks"] if x["id"] == task)
                     self.assertIn(t.get("expected"), ("established", "refuted"), "the expectation is unchanged")
-        self.assertEqual(count, 25)
+        self.assertEqual(count, 21)
 
     def test_each_blocked_tasks_handoff_next_is_its_refusal_check_with_its_gap_id_and_closure_test(self):
         """Item 1 of the user's review of 2026-11-15: an ordinary attempt (pipeline.py submit) at a task an observed
@@ -198,7 +202,38 @@ class Vf027PacketsTest(unittest.TestCase):
                     self.assertIn(gap["packet"]["closure"]["check"], reason)
                     self.assertIn(value["plan"]["claim"]["key"], reason)
                     self.assertNotIn("pipeline.py submit", value["next"])
-        self.assertEqual(count, 25)
+        self.assertEqual(count, 21)
+
+    def test_a_closed_gap_blocks_nothing_and_its_packet_names_the_receipt_that_decided_the_claim(self):
+        """A gap closes by its packet's own test (workflow_handoff.py): the unchanged claim rerun on the same
+        artifacts with the extended checker, its receipt deciding it as expected, not vacuous. Then the sidecar lists
+        no blocker for the task, nothing predicts a refusal, the task is executable with that receipt current, and the
+        packet keeps the refusal as observed, with `closed` naming the job and the receipt."""
+        for number, tasks in CLOSED.items():
+            folder, example, target = load(number)
+            self.assertEqual(target["handoff"]["blockers"], [])
+            for task, status in tasks.items():
+                with self.subTest(example=number, task=task):
+                    self.assertEqual(workflow_refusal.predictions(folder, target, task), [])
+                    self.assertEqual(next(t for t in target["tasks"] if t["id"] == task)["expected"], status)
+                    packet = json.loads((folder / "records/refusals" / f"{task}.json").read_text())
+                    plan = workflow.plan_task(folder, example, target, task)
+                    self.assertEqual(packet["claimKey"], plan.claim["key"], "the claim is the one that was refused")
+                    self.assertTrue(packet["refusal"]["text"])
+                    closed = packet["closed"]
+                    self.assertEqual(json.loads((ROOT / closed["result"]).read_text())["status"], "passed")
+                    receipt = json.loads((folder / closed["receipt"]).read_text())
+                    conclusion = receipt["conclusion"]
+                    self.assertEqual((conclusion["status"], conclusion["expectation"], conclusion["vacuous"]),
+                                     (status, "yes", False))
+                    self.assertEqual(closed["status"], status)
+                    self.assertEqual(receipt["claim"]["statement"]["claim"]["key"], packet["claimKey"])
+                    self.assertEqual(receipt["attempt"]["engine"], "native")
+                    value = workflow_handoff.packet(folder, example, target, task)
+                    self.assertEqual(value["readiness"]["summary"], "executable")
+                    self.assertEqual(value["gaps"], [])
+                    self.assertIn(closed["receipt"], [r["path"] for r in value["receipts"]])
+                    self.assertNotIn("workflow_refusal.py", value["next"])
 
     def test_the_inventory_ranks_the_five_observed_causes(self):
         rows = [load(n) for n in (*VF027, *VF028)]
@@ -207,7 +242,7 @@ class Vf027PacketsTest(unittest.TestCase):
             "input-construction:interface-parameter", "input-construction:receiver-of-several-constructors",
             "input-construction:string-parameter", "verifier-interface:two-dependency-closures",
             "jdk-constructor:java.lang.StringBuilder.<init>()V"})
-        self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 25)
+        self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 21)
         self.assertEqual(observed["input-construction:string-parameter"]["blockedObligations"], 5)
 
 

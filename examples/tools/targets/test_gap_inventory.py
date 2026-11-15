@@ -22,11 +22,13 @@ from cost_tier import cost  # noqa: E402
 
 PAGE = EXAMPLES / "gap-inventory.md"
 RANKED = [
-    # (gap, distinct families, blocked obligations): observed first, then families, then obligations
-    ("verifier-interface:two-dependency-closures", 3, 4),
+    # (gap, distinct families, blocked obligations): observed first, then families, then obligations. Until
+    # 2026-11-15 two-dependency-closures was first (3 families, 4 obligations) and interface-parameter blocked 7:
+    # example 285's four tasks left both when their receipts decided the unchanged claims (its packets' `closed`).
     ("input-construction:receiver-of-several-constructors", 2, 8),
     ("input-construction:string-parameter", 2, 5),
-    ("input-construction:interface-parameter", 1, 7),
+    ("verifier-interface:two-dependency-closures", 2, 3),
+    ("input-construction:interface-parameter", 1, 4),
     ("jdk-constructor:java.lang.StringBuilder.<init>()V", 1, 1),
 ]
 
@@ -73,7 +75,7 @@ class GapInventoryTest(unittest.TestCase):
         observed = [g for g in self.value["gaps"] if g["observed"]]
         self.assertEqual([(g["gap"], len(g["families"]), g["blockedObligations"]) for g in observed], RANKED)
         self.assertEqual([g["rank"] for g in observed], list(range(1, len(RANKED) + 1)))
-        self.assertEqual(sum(g["blockedObligations"] for g in observed), 25)
+        self.assertEqual(sum(g["blockedObligations"] for g in observed), 21)
         predicted = [g for g in self.value["gaps"] if not g["observed"]]
         self.assertTrue(predicted)
         self.assertTrue(all(g["rank"] > len(RANKED) and g["blockedObligations"] == 0 for g in predicted))
@@ -124,8 +126,10 @@ DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 class DatedPredictionTest(unittest.TestCase):
     """Review item 3 of 2026-11-15: 285-287's prediction summaries, written by the negative stream on 2026-11-14 before
-    any verifier ran (seven of the ten say so), keep their text, dated, with a later dated line pointing to the
-    observed blockers and this page. A summary is also a predicted group's id on the page, so its text never changes."""
+    any verifier ran (seven of the ten said so), keep their text, dated, with a later dated line pointing to the
+    observed blockers and this page. A summary is also a predicted group's id on the page, so its text never changes.
+    285's two left the sidecar on 2026-11-15, when its four proof tasks were decided by their receipts: a prediction
+    about a task whose claim is decided is no hypothesis any more. 286's and 287's eight stay, five of them saying so."""
 
     @classmethod
     def setUpClass(cls):
@@ -134,9 +138,9 @@ class DatedPredictionTest(unittest.TestCase):
                      if not b["observed"] and e["id"] in ("285", "286", "287")]
 
     def test_the_summaries_keep_their_text(self):
-        self.assertEqual(len(self.stale), 10)
+        self.assertEqual(len(self.stale), 8)
         self.assertEqual(sorted(e["id"] for _, e, _, b in self.stale if b["summary"].startswith(STALE)),
-                         ["285", "285", "286", "286", "286", "286", "287"])
+                         ["286", "286", "286", "286", "287"])
 
     def test_each_is_dated_and_points_to_its_observed_blockers_and_the_page(self):
         for folder, example, target, b in self.stale:
@@ -180,14 +184,18 @@ class DatedPredictionTest(unittest.TestCase):
 
 
 CLOSURES = "verifier-interface:two-dependency-closures"
-CLOSURE_TASKS = [("285", "preservation"), ("286", "preservation"), ("287", "preservation"), ("306", "preservation")]
+CLOSURE_TASKS = [("286", "preservation"), ("287", "preservation"), ("306", "preservation")]
 
 
 class VerifierInterfaceKindTest(unittest.TestCase):
-    """Review item 4 of 2026-11-15: the four preservation tasks stop because jvmcontract's equivalence takes one
-    --classpath for both sides, so a pair with two dependency closures can't be given to it as stated. Nothing about
+    """Review item 4 of 2026-11-15: the four preservation tasks stopped because jvmcontract's equivalence took one
+    --classpath for both sides, so a pair with two dependency closures couldn't be given to it as stated. Nothing about
     the inputs is missing, so the gap is no input construction: it has a kind of its own, verifier-interface, a
-    capability kind (the scaffold is sound, the task is blocked), owned by the verifier's command line."""
+    capability kind (the scaffold is sound, the task is blocked), owned by the verifier's command line.
+
+    Since 2026-11-15 equivalence takes --before-classpath and the route passes it, and 285's preservation is decided
+    by its receipt (its packet says `closed`). The other three are recorded as they were observed until each one's
+    unchanged claim is rerun: the refusal is gone for them too, and what else each needs its attempt will say."""
 
     @classmethod
     def setUpClass(cls):
@@ -214,7 +222,7 @@ class VerifierInterfaceKindTest(unittest.TestCase):
                 self.assertRegex(b.get("note", ""), r"^\d{4}-\d{2}-\d{2}: .*input-construction")
                 self.assertEqual(workflow.task_readiness(folder, example, target, task)["summary"], "blocked")
 
-    def test_no_other_observed_gap_says_dependency_closures_and_the_inventory_groups_the_four(self):
+    def test_no_other_observed_gap_says_dependency_closures_and_the_inventory_groups_the_three(self):
         value = workflow_handoff.inventory(list(self.rows.values()))
         g = next(g for g in value["gaps"] if g["gap"] == CLOSURES)
         self.assertEqual((g["kind"], g["class"], g["observed"]), ("verifier-interface", "capability", True))
