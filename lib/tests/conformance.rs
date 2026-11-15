@@ -905,7 +905,7 @@ fn a_domain_jbmc_is_not_given_is_refused_by_name() {
     // is given: JBMC has not been run over one, and a String an accessor answers is the own checker's model.
     let sized = Case::new("sourceSize", &[]).holds(None, "result == s.size()", &[], V);
     let named = Case::new("sourceNameLength", &[]).holds(None, "result >= 0 && !(result > 8) && (result > 0 || s.name().equals(\"\"))", &[], V);
-    for (case, words) in [(&sized, "takes an interface the check gives an implementation of, which only the tool's own checker is given"), (&named, "takes a String inside an object")] {
+    for (case, words) in [(&sized, "takes an interface the check gives an implementation of, which only the tool's own checker is given"), (&named, "takes a String (a parameter, an array's element, or inside an object)")] {
         for mode in [(Engine::Auto, GapMode::Strict, true, Contracts::None), (Engine::Jbmc, GapMode::Strict, false, Contracts::None)] {
             let o = prove(case, &case.claims[0], 200, mode, &compiled.classes);
             assert_eq!(o.verdict, Verdict::Unverifiable, "{} {mode:?}: {}", case.method, o.output);

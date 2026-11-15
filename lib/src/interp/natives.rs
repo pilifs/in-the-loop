@@ -784,7 +784,23 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         _ => {}
     }
     match native {
-        Native::String(s) => string_method(m, &s, name, descriptor, &args).map(Some),
+        Native::String(s) => {
+            let value = string_method(m, &s, name, descriptor, &args)?;
+            // The JDK returns the String itself where a substring is its whole range or nothing is lowered, and
+            // the literal "" for any other empty substring: `==` sees which.
+            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase"), value) {
+                let content = match m.heap.get(made) {
+                    Object::Native(Native::String(t)) => Some(t.units().to_vec()),
+                    _ => None,
+                };
+                match content {
+                    Some(units) if units == s.units() => return Ok(Some(Value::Ref(r))),
+                    Some(units) if units.is_empty() && name == "substring" => return Ok(Some(m.intern_units(&[]))),
+                    _ => {}
+                }
+            }
+            Ok(Some(value))
+        }
         Native::StringBuilder(s) => string_builder_method(m, r, s, name, descriptor, &args),
         Native::Boxed { class, value } => boxed_method(m, r, &class, value, name, descriptor, &args).map(Some),
         Native::List { elements, mutable } => list_method(m, r, elements, mutable, name, descriptor, &args),

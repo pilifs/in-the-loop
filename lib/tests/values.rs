@@ -575,7 +575,8 @@ fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
     let out = list_checked(&cp, "copyOfAnotherImplementation", u64::MAX);
     assert_eq!(out.verdict, Verdict::Unverifiable);
     let problem = out.problem.unwrap_or_default();
-    assert!(problem.contains("jdk-constructor") && problem.contains("java.util.ArrayList"), "{problem}");
+    // `new ArrayList()` only makes the object (`bmc::runtime`): what the list holds is its methods', each a gap.
+    assert!(problem.contains("java.util.ArrayList.add(Ljava/lang/Object;)Z"), "{problem}");
 }
 
 /// The kernels a check of [`adapted_lists`] compares, by name in `values.Lists`, each taking the list.
@@ -752,6 +753,7 @@ fn the_list_adapter_makes_reads_and_rebuilds_lists_that_keep_order_duplicates_an
 
 const OPS: &str = "values.Operations";
 const C: i32 = 0x41;
+const STAR: i32 = 0x2A;
 
 /// The boundary cases of every modelled operation: empty, one, the most, past the end; null where an operation
 /// takes it; isolated surrogates, a pair and NUL as content; duplicates and aliases as elements.
@@ -801,6 +803,87 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "startsWith", &[1, C, 0, 0, 2, C, C, 0]),
     case(OPS, "startsWith", &[1, C, 0, 0, -1, 0, 0, 0]),
     case(OPS, "startsWith", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "endsWith", &[3, C, HIGH, LOW, 2, HIGH, LOW, 0]),
+    case(OPS, "endsWith", &[3, C, HIGH, LOW, 1, HIGH, 0, 0]),
+    case(OPS, "endsWith", &[1, C, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "endsWith", &[1, C, 0, 0, 2, C, C, 0]),
+    case(OPS, "endsWith", &[0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "endsWith", &[1, C, 0, 0, -1, 0, 0, 0]),
+    case(OPS, "endsWith", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "indexOfChar", &[3, C, 0, C, C]),
+    case(OPS, "indexOfChar", &[3, C, 0, C, 0]),
+    case(OPS, "indexOfChar", &[3, C, HIGH, LOW, LOW]),
+    case(OPS, "indexOfChar", &[3, C, SMILE.0, SMILE.1, 0x1F600]),
+    case(OPS, "indexOfChar", &[2, SMILE.1, SMILE.0, 0, 0x1F600]),
+    case(OPS, "indexOfChar", &[3, C, C, C, -1]),
+    case(OPS, "indexOfChar", &[3, C, C, C, 0x110000]),
+    case(OPS, "indexOfChar", &[0, 0, 0, 0, C]),
+    case(OPS, "indexOfChar", &[-1, 0, 0, 0, C]),
+    case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, 1]),
+    case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, -5]),
+    case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, 3]),
+    case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, 2147483647]),
+    case(OPS, "indexOfCharFrom", &[3, C, SMILE.0, SMILE.1, 0x1F600, 2]),
+    case(OPS, "indexOfCharFrom", &[-1, 0, 0, 0, C, 0]),
+    case(OPS, "indexOfString", &[3, C, HIGH, C, 2, HIGH, C, 0]),
+    case(OPS, "indexOfString", &[3, C, C, C, 2, C, C, 0]),
+    case(OPS, "indexOfString", &[3, C, C, C, 0, 0, 0, 0]),
+    case(OPS, "indexOfString", &[0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "indexOfString", &[1, C, 0, 0, 2, C, C, 0]),
+    case(OPS, "indexOfString", &[2, C, LOW, 0, 1, HIGH, 0, 0]),
+    case(OPS, "indexOfString", &[1, C, 0, 0, -1, 0, 0, 0]),
+    case(OPS, "indexOfString", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "indexOfStringFrom", &[3, C, C, C, 1, C, 0, 1]),
+    case(OPS, "indexOfStringFrom", &[3, C, C, C, 2, C, C, 2]),
+    case(OPS, "indexOfStringFrom", &[3, C, C, C, 1, C, 0, -7]),
+    case(OPS, "indexOfStringFrom", &[3, C, C, C, 0, 0, 0, 2]),
+    case(OPS, "indexOfStringFrom", &[3, C, C, C, 0, 0, 0, 9]),
+    case(OPS, "indexOfStringFrom", &[3, C, C, C, 1, C, 0, 3]),
+    case(OPS, "indexOfStringFrom", &[1, C, 0, 0, -1, 0, 0, 0]),
+    case(OPS, "indexOfStringFrom", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "substringFrom", &[3, C, HIGH, LOW, 1, 2, HIGH, LOW, 0]),
+    case(OPS, "substringFrom", &[3, C, HIGH, LOW, 2, 1, LOW, 0, 0]),
+    case(OPS, "substringFrom", &[3, C, HIGH, LOW, 0, 3, C, HIGH, LOW]),
+    case(OPS, "substringFrom", &[3, C, HIGH, LOW, 3, 0, 0, 0, 0]),
+    case(OPS, "substringFrom", &[0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "substringFrom", &[3, C, C, C, 4, 0, 0, 0, 0]),
+    case(OPS, "substringFrom", &[3, C, C, C, -1, 0, 0, 0, 0]),
+    case(OPS, "substringFrom", &[-1, 0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "substring", &[3, C, HIGH, LOW, 1, 2, 1, HIGH, 0, 0]),
+    case(OPS, "substring", &[3, C, HIGH, LOW, 0, 3, 3, C, HIGH, LOW]),
+    case(OPS, "substring", &[3, C, HIGH, LOW, 0, 2, 2, C, HIGH, 0]),
+    case(OPS, "substring", &[3, C, HIGH, LOW, 2, 2, 0, 0, 0, 0]),
+    case(OPS, "substring", &[3, C, HIGH, LOW, 3, 3, 0, 0, 0, 0]),
+    case(OPS, "substring", &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "substring", &[3, C, C, C, 2, 1, 0, 0, 0, 0]),
+    case(OPS, "substring", &[3, C, C, C, 0, 4, 0, 0, 0, 0]),
+    case(OPS, "substring", &[3, C, C, C, -1, 2, 0, 0, 0, 0]),
+    case(OPS, "substring", &[-1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "toLowerCase", &[3, C, 0x5A, 0x61, 3, 0x61, 0x7A, 0x61]),
+    case(OPS, "toLowerCase", &[3, 0x40, 0x5B, 0x7F, 3, 0x40, 0x5B, 0x7F]),
+    case(OPS, "toLowerCase", &[3, 0x61, 0x30, 0, 3, 0x61, 0x30, 0]),
+    case(OPS, "toLowerCase", &[1, 0x49, 0, 0, 1, 0x69, 0, 0]),
+    case(OPS, "toLowerCase", &[0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "toLowerCase", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[3, C, STAR, C, -1, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[3, C, STAR, C, 0, 1, C, 0, 0]),
+    refusable(OPS, "split", &[3, C, STAR, C, 1, 1, C, 0, 0]),
+    refusable(OPS, "split", &[3, STAR, STAR, C, -1, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[3, STAR, STAR, C, 0, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[3, STAR, STAR, C, 1, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[3, STAR, STAR, C, 2, 1, C, 0, 0]),
+    refusable(OPS, "split", &[3, C, C, STAR, 1, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[3, C, HIGH, C, 0, 3, C, HIGH, C]),
+    refusable(OPS, "split", &[0, 0, 0, 0, -1, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[1, STAR, 0, 0, -1, 0, 0, 0, 0]),
+    refusable(OPS, "split", &[-1, 0, 0, 0, -1, 0, 0, 0, 0]),
+    refusable(OPS, "splitByNull", &[1, C, 0, 0]),
+    refusable(OPS, "chars", &[3, HIGH, 0, 0xFFFF, 0x10000]),
+    refusable(OPS, "chars", &[3, HIGH, 0, 0xFFFF, 0xFFFF]),
+    refusable(OPS, "chars", &[2, C, 0x7F, 0, 0x80]),
+    refusable(OPS, "chars", &[0, 0, 0, 0, 0]),
+    refusable(OPS, "chars", &[-1, 0, 0, 0, 0]),
     case(OPS, "hashCode", &[0, 0, 0, 0]),
     case(OPS, "hashCode", &[1, C, 0, 0]),
     case(OPS, "hashCode", &[2, C, 0x61, 0]),
@@ -1042,8 +1125,8 @@ const OUTSIDE: &str = "values/Outside";
 /// when no record of `values::OPERATIONS` samples it.
 const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("upper", "jdk-reference-method:java.lang.String.toUpperCase()Ljava/lang/String;"),
-    ("indexOf", "jdk-primitive-method:java.lang.String.indexOf(I)I"),
-    ("substring", "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;"),
+    ("replace", "jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String;"),
+    ("trim", "jdk-reference-method:java.lang.String.trim()Ljava/lang/String;"),
     ("compareTo", "jdk-primitive-method:java.lang.String.compareTo(Ljava/lang/String;)I"),
     ("toStringAsObject", "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;"),
     ("subSequence", "jdk-reference-method:java.lang.CharSequence.subSequence(II)Ljava/lang/CharSequence;"),
@@ -1073,7 +1156,7 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
 
 /// V3's strict gap detection: an operation outside the values models is a named gap under the strict engine, never
 /// a verdict. Every claim of [`OUTSIDE`] holds on the JVM, so a verdict could only rest on semantics no record
-/// vouches for: a String method other than the six modelled on content, a list method or form the list models
+/// vouches for: a String method other than the ones modelled on content (`values::OPERATIONS`), a list method or form the list models
 /// implement (`contains`, `equals`, `hashCode`, `addAll`, `List.of(E...)` …) that no record samples, a map the
 /// `HashMap` model is not or a method it has not, a key hashed by its identity, a regular expression that is not a
 /// plain constant, a `Pattern`'s own methods. Each run, merging

@@ -299,7 +299,8 @@ impl ClassPath {
                 return Ok(Some(Loaded { class: Rc::new(class), origin: Origin::Jdk }));
             }
         }
-        if let Some(class) = self.model(name) {
+        // A model that is no class of the JDK (the stream models' own classes) has its shape from the model.
+        if let Some(class) = self.model(name).or_else(|| self.checker_model(name).filter(|_| crate::models::find(name).is_some_and(|m| m.checker_only))) {
             return Ok(Some(Loaded { class, origin: Origin::Model }));
         }
         Ok(None)

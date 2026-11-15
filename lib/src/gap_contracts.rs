@@ -708,7 +708,7 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         _ => {}
     }
     let static_call = gap.kind == GapKind::JdkStaticMethod;
-    let classified = if static_call { gaps::jdk_static_call(&gap.owner, &gap.name, &gap.descriptor) } else { gaps::jdk_instance_call(cp, &gap.owner, &gap.name, &gap.descriptor) };
+    let classified = if static_call { gaps::jdk_static_call(&gap.owner, &gap.name, &gap.descriptor) } else { gaps::unmodelled_instance_call(cp, &gap.owner, &gap.name, &gap.descriptor) };
     match classified {
         JdkCall::Gap(kind) if kind == gap.kind => {}
         JdkCall::Gap(kind) => return Err(format!("the call is a gap of kind {}, not {}", kind.name(), gap.kind.name())),

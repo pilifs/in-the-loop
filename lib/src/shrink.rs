@@ -62,6 +62,35 @@ fn candidates(types: &[Type], current: &[Argument]) -> Vec<Vec<Argument>> {
             }
         }
     }
+    // A String[] one cell shorter, a cell made null, and each of its Strings as a String parameter is shrunk.
+    for (i, argument) in current.iter().enumerate() {
+        if let Argument::Strings(items) = argument {
+            longest = longest.max(items.len());
+            for j in 0..items.len() {
+                let mut shorter = items.clone();
+                shorter.remove(j);
+                out.push(with(i, Argument::Strings(shorter)));
+            }
+            for (j, item) in items.iter().enumerate() {
+                let Some(units) = item else { continue };
+                let mut nulled = items.clone();
+                nulled[j] = None;
+                out.push(with(i, Argument::Strings(nulled)));
+                for k in 0..units.len() {
+                    let mut shorter = items.clone();
+                    shorter[j].as_mut().expect("a String").remove(k);
+                    out.push(with(i, Argument::Strings(shorter)));
+                }
+                for (k, u) in units.iter().enumerate() {
+                    if !(0x20..=0x7e).contains(u) {
+                        let mut plain = items.clone();
+                        plain[j].as_mut().expect("a String")[k] = u16::from(b'a');
+                        out.push(with(i, Argument::Strings(plain)));
+                    }
+                }
+            }
+        }
+    }
     // A String one unit shorter, then with a unit that isn't printable ASCII made `a`: each step shortens it or
     // leaves one unit fewer to escape, so a witness reads as text where the difference allows.
     for (i, argument) in current.iter().enumerate() {

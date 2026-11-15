@@ -684,6 +684,20 @@ struct ProveArgs {
     /// (`lib/README.md`).
     #[arg(long)]
     plan: Option<PathBuf>,
+    /// Proves the property by induction on a measure: an int Java expression over the parameters, such as
+    /// `pattern.length()`. A call the method makes of itself is then taken to satisfy the property, where its
+    /// arguments are within the assumption and the bounds and the measure on them is at least zero and below that
+    /// of the call under proof; any other such call ends the check with no verdict. Of a static method over
+    /// integral and boolean parameters and Strings, with the tool's own checker (`--engine native`).
+    #[arg(long)]
+    decreases: Option<String>,
+    /// Lemmas, as a properties file (a target line, then indented `assume:`, `assert:` and `decreases:` lines):
+    /// each is proved first, at this check's bounds, and its method's calls in this check are then its summary:
+    /// within its assumption and those bounds a call returns what the lemma states, and any other runs the method
+    /// as written. Of public static methods over integral and boolean parameters and Strings that change nothing
+    /// a caller could see, which the proof of each also shows; with the tool's own checker (`--engine native`).
+    #[arg(long)]
+    lemmas: Option<PathBuf>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
     /// claim's key (the code closure of the target and of what its inputs are made by, a construction plan's makers
     /// and setup calls included, the assertion, the assumptions, the domain, the plan whole, the bounds, the models,
@@ -900,7 +914,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     }
                     selected
                 }
-                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None }],
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None, decreases: args.decreases.clone() }],
                 (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
             };
             let mut outcomes = Vec::new();
@@ -937,6 +951,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.may_alias = args.may_alias.iter().map(|pair| pair.split_once(',').map(|(a, b)| (a.trim().to_string(), b.trim().to_string())).ok_or_else(|| Error::new(format!("--may-alias {pair}: give two parameters, `a,b`")))).collect::<Result<_, _>>()?;
                 options.plan = args.plan.as_deref().map(jvmcontract::construction::load).transpose().map_err(|u| Error::new(u.to_string()))?;
                 options.cache = args.cache.clone();
+                options.decreases = declaration.decreases.clone();
+                options.lemmas = args.lemmas.clone();
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

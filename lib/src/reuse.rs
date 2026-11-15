@@ -93,6 +93,9 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("may_alias", "an assumption of the claim"),
     ("cache", "the store itself: no verdict depends on it"),
     ("plan", "an assumption of the claim: the construction plan, whole"),
+    ("decreases", "how the claim is proved, by induction: refused under the cache, which does not key it"),
+    ("lemmas", "what the proof rests on: refused under the cache, which does not key the lemmas"),
+    ("summary", "set only by a check that uses the lemma: refused under the cache"),
 ];
 
 /// The first assumption of every property claim: no regression claim has it, so the two never share a key.
@@ -222,6 +225,9 @@ fn json<T: Serialize>(v: &T) -> String {
 /// refuse it itself (no such class or method), so that there is nothing to key; an error when it is uncacheable.
 pub fn property_claim(options: &Options) -> Result<Option<CanonicalClaim>, Unsupported> {
     check_fields(&format!("{options:?}"), PROPERTY_OPTIONS)?;
+    if options.decreases.is_some() || options.lemmas.is_some() || options.summary {
+        return Err(uncacheable("it is proved by induction or with lemmas (--decreases, --lemmas), which the key does not read: run it without --cache"));
+    }
     if options.engine != crate::Engine::Native {
         return Err(uncacheable("JBMC may decide it (--engine jbmc or auto), and JBMC's own identity is not yet part of the key: use the cache with --engine native"));
     }

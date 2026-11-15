@@ -26,9 +26,15 @@ pub fn argument(argument: &Argument, t: &Type) -> String {
         (Argument::Array(data), Type::Array(element)) => array(data, element),
         (Argument::Array(_), _) => "<array>".into(),
         (Argument::String(units), _) => string_literal(units),
+        (Argument::Strings(items), _) => strings_literal(items),
         (Argument::Null, _) => "null".into(),
         (Argument::Same(i), _) => format!("@{i}"),
     }
+}
+
+/// A `String[]` as Java writes its initializer: `{"AGE", null, ""}`.
+pub fn strings_literal(items: &[Option<Vec<u16>>]) -> String {
+    format!("{{{}}}", items.iter().map(|s| s.as_deref().map(string_literal).unwrap_or_else(|| "null".into())).collect::<Vec<_>>().join(", "))
 }
 
 /// A String's code units as a Java literal: printable ASCII as itself, every other unit (an isolated surrogate
@@ -73,8 +79,8 @@ pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16,
                 arrays.push((p.slot, data(p.slot, d)));
                 Value::Ref(k as Ref + 1)
             }
-            // A String is a reference of its own, which no expression reads into.
-            Argument::String(_) => Value::Ref(k as Ref + 1),
+            // A String is a reference of its own, which no expression reads into; so is an array of them.
+            Argument::String(_) | Argument::Strings(_) => Value::Ref(k as Ref + 1),
             Argument::Null => Value::Null,
             Argument::Same(i) => {
                 if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
@@ -295,6 +301,10 @@ pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
     match (argument, t) {
         (Argument::Same(i), _) => serde_json::json!({ "same": i }),
         (Argument::String(units), _) => serde_json::to_value(crate::spec::plans::WitnessValue::String { units: units.clone() }).unwrap_or_default(),
+        (Argument::Strings(items), _) => serde_json::Value::Array(items.iter().map(|s| match s {
+            Some(units) => serde_json::to_value(crate::spec::plans::WitnessValue::String { units: units.clone() }).unwrap_or_default(),
+            None => serde_json::Value::Null,
+        }).collect()),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
         (Argument::Array(data), _) => serde_json::Value::Array(data.iter().map(|v| exact(*v, &Type::Int)).collect()),
@@ -524,6 +534,10 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
             Argument::Null => Value::Null,
             Argument::Same(i) => values.get(*i).copied().unwrap_or(Value::Null),
             Argument::String(units) => crate::values::new_string(m, units),
+            Argument::Strings(items) => {
+                let cells: Vec<Value> = items.iter().map(|s| s.as_deref().map(|units| crate::values::new_string(m, units)).unwrap_or(Value::Null)).collect();
+                m.new_array_of(Type::Object("java/lang/String".into()), cells)
+            }
             Argument::Array(data) => {
                 let element = match t {
                     Type::Array(e) => (**e).clone(),

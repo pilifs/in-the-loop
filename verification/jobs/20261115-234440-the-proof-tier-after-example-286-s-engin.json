@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-234440-the-proof-tier-after-example-286-s-engin",
+  "title": "The proof tier after example 286's engine changes: every ignored Rust test in release and every Python test tagged proof",
+  "description": "Runs lib/tools/test_costs.py run --tier proof. The change behind it touches what nearly every proof-tier test runs, the own checker (lib/src/bmc): String, StringBuilder, stream and regex models, lambdas, String[] inputs, paths merged across heaps of two shapes once more than 1024 have been explored (with a new order in which waiting paths are resumed, and a loop's exit a join), an array of computed size taken within one more than the bound, and a contract applied in place of a model of the same call. The default run passes inline; the values sweep showed that merging heaps from the first path turns a proof by gate hashing into a hard equivalence, which is why it now waits for 1024 paths, so a proof-tier check that explores more than that (the heap and conformance suites) may take longer or run out of time where it did not: this job is where that would show.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/bmc/strings.rs",
+      "lib/src/bmc/regex.rs",
+      "lib/src/property.rs"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test passes",
+  "submitted": {
+    "at": "2026-11-15T23:44:40+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "1h30m",
+    "timeout": "3h",
+    "notes": "past jobs, one test file or test each: heap's tests 3 s to 42 min (up to 61 min at a 1800 s limit), conformance's 11 and 20 min, the benchmark under a minute, each at 1.2 to 1.9 GiB peak; four at a time"
+  },
+  "steps": [
+    {
+      "name": "proof tier",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 python3 lib/tools/test_costs.py run --tier proof --test-threads 4",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

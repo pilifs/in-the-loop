@@ -29,6 +29,8 @@ pub mod bmc;
 pub mod boundaries;
 pub mod capabilities;
 pub mod classfile;
+pub mod claim;
+pub mod summary;
 pub mod classpath;
 pub mod closure;
 pub mod compare;

@@ -30,7 +30,7 @@ public final class Outside {
         }
     }
 
-    // java.lang.String: every method but length, isEmpty, charAt, equals, startsWith and hashCode.
+    // java.lang.String: a method no record of values::OPERATIONS samples.
 
     public static void upper(String s) {
         if (s != null && s.toUpperCase().length() < 0) {
@@ -38,14 +38,14 @@ public final class Outside {
         }
     }
 
-    public static void indexOf(String s) {
-        if (s != null && s.indexOf('a') >= s.length()) {
+    public static void replace(String s) {
+        if (s != null && s.replace('a', 'b').length() != s.length()) {
             throw new AssertionError();
         }
     }
 
-    public static void substring(String s) {
-        if (s != null && s.substring(0).length() != s.length()) {
+    public static void trim(String s) {
+        if (s != null && s.trim().length() > s.length()) {
             throw new AssertionError();
         }
     }

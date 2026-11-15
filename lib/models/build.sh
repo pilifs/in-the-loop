@@ -11,4 +11,5 @@ mkdir -p classes
 javac --release 8 -Xlint:-options -g -d classes java/lang/*.java
 javac --release 8 -Xlint:-options -g -d classes java/nio/charset/*.java
 javac --release 8 -Xlint:-options -g -d classes java/util/*.java
+javac --release 8 -Xlint:-options -g -d classes java/util/stream/*.java
 find classes -name '*.class' | sort

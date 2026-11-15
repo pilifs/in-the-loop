@@ -108,6 +108,15 @@ pub struct Options {
     /// The construction plan of `prove --plan FILE` (its `after`, [`crate::construction::Plans`]): the receiver and
     /// parameters the check makes. What it can't make is refused by name.
     pub plan: Option<crate::construction::Plans>,
+    /// The measure of a proof by induction (`prove --decreases`, [`crate::summary`]): an int expression over the
+    /// parameters. The calls the method makes of itself are then the induction hypothesis.
+    pub decreases: Option<String>,
+    /// The lemmas (`prove --lemmas FILE`, a properties file): each is proved first, at this check's bounds, and
+    /// its method's calls are then its summary ([`crate::summary`]).
+    pub lemmas: Option<PathBuf>,
+    /// Whether the check proves a lemma, which also shows the method leaves the state as it was
+    /// ([`crate::bmc::Options::pure`]): set by the check that uses the lemma, never by a command line.
+    pub summary: bool,
 }
 
 impl Options {
@@ -143,6 +152,9 @@ impl Options {
             may_alias: Vec::new(),
             cache: None,
             plan: None,
+            decreases: None,
+            lemmas: None,
+            summary: false,
         }
     }
 }
@@ -385,7 +397,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 Err(u) => return refuse(&mut out, line, u.what),
             }
         }
-        if t.is_primitive() || harness::expr::element_ty(t).is_some() {
+        // A String is a value under the check's bound, and a String[] an array of such (the own checker's alone).
+        if t.is_primitive() || harness::expr::element_ty(t).is_some() || crate::values::is_string(t) || harness::is_string_array(t) {
             records.push(None);
             continue;
         }
@@ -422,15 +435,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // A String inside an object (a leaf of its construction, as the regression check makes one since J1's O2, or a
     // given implementation's accessor): a value of the values stream's adapter, of at most --max-array-length code
     // units and never null, which only the own checker takes.
-    let strings = match layout.params.iter().find(|p| crate::values::is_string(&p.ty)) {
-        Some(p) => match crate::values::adapter(&p.ty, options.max_array_length) {
+    let strings = match layout.params.iter().find(|p| crate::values::is_string(&p.ty) || harness::is_string_array(&p.ty)) {
+        Some(p) => match crate::values::adapter(&Type::Object("java/lang/String".into()), options.max_array_length) {
             Ok(a) => Some(a),
-            Err(u) => return refuse(&mut out, line, format!("{} is a String inside an object: {}", p.name, u.what)),
+            Err(u) => return refuse(&mut out, line, format!("{} is a String: {}", p.name, u.what)),
         },
         None => None,
     };
     if strings.is_some() && (options.engine == crate::Engine::Jbmc || options.confirm) {
-        return refuse(&mut out, line, format!("{method_name} takes a String inside an object, which the tool's own checker takes under the stated bound of {} code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim", options.max_array_length));
+        return refuse(&mut out, line, format!("{method_name} takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of {} code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim", options.max_array_length));
     }
     // A dependency the inputs' constructions pass null holds only where the target never reaches it.
     if let Some(reached) = crate::construction::dependency_reached(&cp, &crate::classfile::MemberRef::new(&class_internal, &method_name, &method.descriptor), &layout.dependencies().1) {
@@ -537,8 +550,139 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         signals.push(signal);
     }
-    let harness = match harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref(), &signals, options.max_array_length) {
+    // The lemmas (`--lemmas`): each proved here first, at this check's bounds, and then the summary of its method
+    // ([`crate::summary`]). One that is not proved, or that no summary can state, refuses the check.
+    let mut lemmas: Vec<(Declaration, crate::summary::Signature, u32, f64)> = Vec::new();
+    if let Some(file) = &options.lemmas {
+        if options.engine != crate::Engine::Native {
+            return refuse(&mut out, line, "a lemma's summary is the tool's own checker's alone (--engine native): JBMC is not given one".into());
+        }
+        for (i, declaration) in read_declarations(file)?.into_iter().enumerate() {
+            let signature = match crate::summary::Signature::of(&cp, &declaration.target) {
+                Ok(s) => s,
+                Err(problem) => return refuse(&mut out, line, format!("the lemma about {} in {} is not one a summary can state: {problem}", declaration.target, file.display())),
+            };
+            let (Some(assertion), true) = (&declaration.assert, declaration.throws.is_empty()) else {
+                return refuse(&mut out, line, format!("the lemma about {} in {} is not one a summary can state: it needs an `assert:` and no `throws:`, since a summary states the result of a call that returns", declaration.target, file.display()));
+            };
+            let bound = declaration.max_array_length.unwrap_or(options.max_array_length);
+            let lemma = Options {
+                target: declaration.target.clone(),
+                assume: declaration.assume.clone(),
+                assert: Some(assertion.clone()),
+                throws: Vec::new(),
+                decreases: declaration.decreases.clone(),
+                lemmas: None,
+                summary: true,
+                max_array_length: bound,
+                unwind: declaration.unwind.unwrap_or(options.unwind),
+                work: Some(work.join(format!("lemma-{i}"))),
+                report: None,
+                cache: None,
+                nullable: Vec::new(),
+                may_alias: Vec::new(),
+                plan: None,
+                ..options.clone()
+            };
+            let started = std::time::Instant::now();
+            let proved = run_check(&lemma)?;
+            let seconds = started.elapsed().as_secs_f64();
+            for said in proved.output.lines() {
+                let _ = writeln!(out, "lemma: {said}");
+            }
+            if proved.verdict != Verdict::Verified {
+                return refuse(&mut out, line, format!("the lemma about {} in {} is not proved ({}), and the check would rest on it", declaration.target, file.display(), proved.problem.unwrap_or_else(|| "it is refuted: see above".into())));
+            }
+            lemmas.push((declaration, signature, bound, seconds));
+        }
+    }
+    // A proof by induction (`--decreases`) and a summary are Java the tool writes into the claim's class.
+    let mut members = String::new();
+    let mut summaries: Vec<crate::bmc::Summary> = Vec::new();
+    if let Some(measure) = &options.decreases {
+        let hypothesis = if options.engine != crate::Engine::Native {
+            Err("the induction hypothesis is the tool's own checker's alone (--engine native): JBMC is not given one".to_string())
+        } else if over_objects || !method.is_static() {
+            Err("it is of a static method over integral and boolean parameters and Strings".to_string())
+        } else {
+            let signature = crate::summary::Signature { class: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), params: params.clone(), ret: descriptor.ret.clone() };
+            crate::summary::induction(&signature, options.max_array_length, options.assume.is_some(), measure)
+        };
+        match hypothesis {
+            Ok(java) => members.push_str(&java),
+            Err(problem) => return refuse(&mut out, line, format!("no proof by induction (--decreases) of {method_name}: {problem}")),
+        }
+        summaries.push(crate::bmc::Summary { owner: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), stub: crate::summary::HYPOTHESIS.into() });
+    }
+    for (i, (declaration, signature, bound, _)) in lemmas.iter().enumerate() {
+        match crate::summary::summary(i, signature, *bound, declaration.assume.as_deref(), declaration.assert.as_deref().expect("checked")) {
+            Ok(java) => members.push_str(&java),
+            Err(problem) => return refuse(&mut out, line, format!("the lemma about {} is not one a summary can state: {problem}", declaration.target)),
+        }
+        summaries.push(crate::bmc::Summary { owner: signature.class.clone(), name: signature.name.clone(), descriptor: signature.descriptor.clone(), stub: crate::summary::stub(i) });
+    }
+    let pure = options.summary.then(|| (class_internal.clone(), method_name.clone(), method.descriptor.clone()));
+    let generate = |assume: Option<&str>, assertion: Option<&str>| harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, &signals, options.max_array_length);
+    // With such members the claim's class is needed whatever the expressions are.
+    let own = if members.is_empty() { generate(options.assume.as_deref(), options.assert.as_deref()) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
+    let harness = match own {
         Ok(h) => h,
+        // Java the tool's own compiler doesn't take (a lambda, a stream, a library call) is javac's ([`crate::claim`]):
+        // over plain parameters, each expression becomes a static method the harness calls.
+        Err(e) if !over_objects && (options.assume.is_some() || options.assert.is_some() || !members.is_empty()) => {
+            // The assumption reads the parameters, and the assertion the result too.
+            let mut names = params.clone();
+            if descriptor.ret != Type::Void {
+                names.push(harness::Param { name: harness::RESULT.into(), ty: descriptor.ret.clone(), slot: 0 });
+            }
+            // A proof by induction reads the assertion in its hypothesis: with none given it is the result itself.
+            let assertion = options.assert.clone().or_else(|| (options.decreases.is_some() && descriptor.ret == Type::Boolean).then(|| harness::RESULT.to_string()));
+            let enter_call = options.decreases.as_ref().map(|_| harness::expr::claim_call(crate::summary::ENTER, &params));
+            let assume_call = match (options.assume.as_ref().map(|_| harness::expr::claim_call("assume", &params)), &enter_call) {
+                (Some(assume), Some(enter)) => Some(format!("{assume} && {enter}")),
+                (assume, enter) => assume.or_else(|| enter.clone()),
+            };
+            let mut methods: Vec<(&str, &[harness::Param], &str)> = options.assume.iter().map(|a| ("assume", params.as_slice(), a.as_str())).collect();
+            methods.extend(assertion.iter().map(|a| ("holds", names.as_slice(), a.as_str())));
+            let mut entries: Vec<PathBuf> = options.classes.clone();
+            entries.extend(options.classpath.iter().cloned());
+            let javac = match crate::claim::compile(&harness_dir, &entries, &methods, &members, options.java_home.as_deref()) {
+                Ok(v) => v,
+                Err(problem) if members.is_empty() => return refuse(&mut out, line, format!("the property is not well-formed: {e}; and javac does not take the expressions as Java either: {problem}")),
+                Err(problem) => return refuse(&mut out, line, format!("the property is not well-formed: javac does not take its expressions, its measure or its lemmas' as Java: {problem}")),
+            };
+            let holds_call = assertion.as_ref().map(|_| harness::expr::claim_call("holds", &names));
+            let mut h = match generate(assume_call.as_deref(), holds_call.as_deref()) {
+                Ok(h) => h,
+                Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
+            };
+            // The statement and the readers' source keep the expressions as given.
+            if let Some(enter) = &enter_call {
+                h.source = h.source.replace(&format!(" && {enter}"), "").replace(enter.as_str(), "true");
+            }
+            for (call, text) in [(options.assume.as_ref().map(|_| harness::expr::claim_call("assume", &params)), &options.assume), (holds_call, &assertion)] {
+                if let (Some(call), Some(text)) = (call, text) {
+                    h.source = h.source.replace(call.as_str(), text);
+                }
+            }
+            if let Some(a) = &assertion {
+                h.assertion_text = a.clone();
+            }
+            if members.is_empty() {
+                let _ = writeln!(out, "note: the expressions are Java beyond the tool's own expression compiler ({e}); {javac} compiled them as they are written, and the checker runs the result as bytecode, as it runs the target");
+            } else {
+                let _ = writeln!(out, "note: {javac} compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target");
+            }
+            if let Some(measure) = &options.decreases {
+                let _ = writeln!(out, "note: by induction on `{measure}`: a call {method_name} makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict");
+            }
+            for (declaration, _, bound, seconds) in &lemmas {
+                let where_ = declaration.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
+                let how = declaration.decreases.as_deref().map(|m| format!(" by induction on `{m}`")).unwrap_or_default();
+                let _ = writeln!(out, "note: lemma, proved above{how} in {seconds:.1} s: {} satisfies `{}`{where_}, on Strings of at most {bound} code units; its calls within that are taken to return what it states, and any other runs the method as written", declaration.target, declaration.assert.as_deref().unwrap_or_default());
+            }
+            h
+        }
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
     };
     let throws_text = signals.iter().map(Signal::render).collect::<Vec<_>>();
@@ -568,6 +712,18 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 id: None,
             }))
             .chain(crate::statement::checker_assumptions(last))
+            .chain(lemmas.iter().map(|(declaration, _, bound, _)| crate::statement::Assumption {
+                kind: crate::statement::AssumptionKind::Summary,
+                text: format!(
+                    "{} satisfies `{}`{}, on Strings of at most {bound} code units{}: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+                    declaration.target,
+                    declaration.assert.as_deref().unwrap_or_default(),
+                    declaration.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default(),
+                    declaration.decreases.as_deref().map(|m| format!(", by induction on `{m}`")).unwrap_or_default()
+                ),
+                basis: crate::statement::Basis::Proved,
+                id: None,
+            }))
             .collect(),
         observations: observations.clone(),
         bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
@@ -645,7 +801,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &work)?;
+        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), &work)?;
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
@@ -823,6 +979,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if !harness.probe.is_empty() {
                 let entries = replay_entries.clone();
                 let render = |r: &JbmcResult| r.arguments(&entry_types).ok().map(|found| render(&found).0);
+                // The claim's class ([`crate::claim`]) is beside the probe as it is beside the harness.
+                let claim = format!("{}.class", harness::expr::CLAIM_CLASS);
+                if harness_dir.join(&claim).is_file() {
+                    std::fs::create_dir_all(work.join("probe"))?;
+                    std::fs::copy(harness_dir.join(&claim), work.join("probe").join(&claim))?;
+                }
                 let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &parameters, &work, "failing the assumption (--assume)", &render, &mut search)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
@@ -929,7 +1091,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
             // Over objects the property reads the heap, which only the harness can: the interpreter runs the harness
             // itself on the witness, which makes the objects as the checker did.
-            let evaluable = !over_objects && !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
+            // An assertion javac compiled (`crate::claim`) is the claim class's to evaluate: the witness is run on a
+            // JVM below, in the harness, where Java's own libraries say whether the assertion fails on it.
+            let compiled = harness.assertion.is_compiled();
+            let evaluable = !over_objects && !compiled && !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
             let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
             let in_harness = if over_objects { witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &found) } else { None };
             let holds_on_found = match (applying(&found), replayed.returned, replayed.thrown.as_deref()) {
@@ -975,7 +1140,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // classes opened so that it may read their fields. The JVM is the reference: where its harness holds on
             // the witness, the interpreter was wrong and nothing is reported.
             let mut jvm_note = None;
-            if over_objects && on_jvm.is_none() {
+            if (over_objects || compiled) && on_jvm.is_none() {
                 let mut entries = vec![harness_dir.clone()];
                 entries.extend(options.classes.iter().cloned());
                 entries.extend(options.classpath.iter().cloned());
@@ -983,7 +1148,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &arguments, &[], &entries) {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => jvm_note = Some((true, format!("and run on a JVM (JDK {}), where the harness fails on it too", run.jdk))),
                     Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
-                        let p = format!("the counterexample {rendered} fails the property's harness in the interpreter, but on a JVM (JDK {}) the harness holds on it. The JVM is the reference, so the tool's interpreter is wrong here and the witness is not reported", run.jdk);
+                        let p = if compiled {
+                            format!("the checker's counterexample {rendered} is none: the assertion is Java that javac compiled, which the harness evaluates, and on a JVM (JDK {}) the harness holds on it. The JVM is the reference, so the tool's own checker is wrong here (a model of a library call the claim or the method makes) and the witness is not reported", run.jdk)
+                        } else {
+                            format!("the counterexample {rendered} fails the property's harness in the interpreter, but on a JVM (JDK {}) the harness holds on it. The JVM is the reference, so the tool's interpreter is wrong here and the witness is not reported", run.jdk)
+                        };
                         let message = format!("{} cannot be verified: {p}", options.target);
                         let _ = writeln!(out, "✗ {message}");
                         findings.push(Finding::new("unverifiable", message, uri.clone(), line));
@@ -1097,6 +1266,8 @@ fn parameter_domain(params: &[harness::Param], nullable: &[String], may_alias: &
     let array = |name: &str, flag: &str| -> Result<&harness::Param, String> {
         match params.iter().find(|p| p.name == name) {
             Some(p) if matches!(p.ty, Type::Array(_)) => Ok(p),
+            // A String parameter may be null, as an array may; one String with another is not a choice yet.
+            Some(p) if crate::values::is_string(&p.ty) && flag == "--nullable" => Ok(p),
             Some(p) => Err(format!("{flag} {name}: {name} is a {}, and only an array parameter may be null or one array with another", p.ty.java_name())),
             None => Err(format!("{flag} {name}: no parameter is named {name}; the parameters are {}", params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))),
         }
@@ -1157,10 +1328,14 @@ pub struct Declaration {
     /// `unwind:` the loop unwinding bound for this property, overriding the command line: the bound a sort of
     /// four elements needs is five, and what the solver does with the sixteen the default unwinds is paid for.
     pub unwind: Option<u32>,
+    /// `decreases:` the measure of a proof by induction ([`crate::summary`]): an int expression over the parameters.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub decreases: Option<String>,
 }
 
 /// Reads a properties file: blocks of a target line (`pkg.Class#method`) followed by indented `assume:`,
-/// `assert:`, `throws:`, `arrays:` and `unwind:` lines; `#` comments and `key: value` headers are skipped.
+/// `assert:`, `throws:`, `decreases:`, `arrays:` and `unwind:` lines; `#` comments and `key: value` headers are
+/// skipped.
 pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, Error> {
     let mut out: Vec<Declaration> = Vec::new();
     for (number, raw) in text.lines().enumerate() {
@@ -1172,7 +1347,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         let body = line.trim();
         if !indented {
             if body.contains('#') && !body.contains(':') {
-                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None });
+                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None, decreases: None });
                 continue;
             }
             if body.split_once(':').is_some() {
@@ -1186,6 +1361,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         match body.split_once(':') {
             Some(("assume", value)) => last.assume = Some(value.trim().to_string()),
             Some(("assert", value)) => last.assert = Some(value.trim().to_string()),
+            Some(("decreases", value)) => last.decreases = Some(value.trim().to_string()),
             Some(("throws", value)) => {
                 Signal::parse(value).map_err(|e| Error::new(format!("{origin}:{}: {e}", number + 1)))?;
                 last.throws.push(value.trim().to_string());
@@ -1194,7 +1370,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
                 last.max_array_length = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `arrays:` needs a number of elements, found {:?}", number + 1, value.trim())))?)
             }
             Some(("unwind", value)) => last.unwind = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `unwind:` needs a number of loop iterations, found {:?}", number + 1, value.trim())))?),
-            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:`, `arrays:` or `unwind:`, found {body:?}", number + 1))),
+            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:`, `decreases:`, `arrays:` or `unwind:`, found {body:?}", number + 1))),
         }
     }
     Ok(out)
@@ -1250,7 +1426,7 @@ mod tests {
         assert_eq!(declarations[0].assert.as_deref(), Some("2L * result > n"));
         assert_eq!(declarations[0].max_array_length, Some(4));
         assert_eq!(declarations[0].unwind, Some(5));
-        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None });
+        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None, decreases: None });
         assert!(parse_declarations("net.example.A#b\n  unwind: many\n", "f").is_err(), "a number");
         let signals = parse_declarations("net.example.A#div\n  throws: java.lang.ArithmeticException when b == 0\n  throws: IllegalArgumentException when a < 0\n", "f").unwrap();
         assert_eq!(signals[0].throws, vec!["java.lang.ArithmeticException when b == 0".to_string(), "IllegalArgumentException when a < 0".to_string()]);

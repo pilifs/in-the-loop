@@ -70,7 +70,7 @@ pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], argum
 fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
     for t in types {
         // A String is passed as a new String of the witness's code units ([`push`]).
-        if crate::values::is_string(t) {
+        if crate::values::is_string(t) || crate::harness::is_string_array(t) {
             continue;
         }
         let element = match t {
@@ -126,7 +126,8 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
         let (start, end, thrown, done) = (main.label(), main.label(), main.label(), main.label());
         // Fresh arrays for the call, kept in locals to print what it leaves in them (a null one leaves nothing).
         let locals = references(arguments, types, first_array_local, &mut main, &mut writer);
-        let array_locals: Vec<(usize, u16)> = locals.iter().enumerate().filter_map(|(i, l)| l.filter(|_| holds_array(arguments, i)).map(|l| (i, l))).collect();
+        // An array of Strings is not printed: a call leaves in it the Strings it wrote, which no witness line holds.
+        let array_locals: Vec<(usize, u16)> = locals.iter().enumerate().filter_map(|(i, l)| l.filter(|_| holds_array(arguments, i) && !crate::harness::is_string_array(&types[i])).map(|l| (i, l))).collect();
         main.bind(start);
         pass(arguments, types, &locals, &mut main, &mut writer);
         let m = writer.pool.method_ref(&call.owner, &call.name, &call.descriptor);
@@ -473,7 +474,7 @@ fn references(arguments: &[Argument], types: &[Type], first: u16, code: &mut Cod
 /// Whether argument `i` is an array, its own or an earlier argument's, rather than null.
 fn holds_array(arguments: &[Argument], i: usize) -> bool {
     match arguments.get(i) {
-        Some(Argument::Array(_)) => true,
+        Some(Argument::Array(_) | Argument::Strings(_)) => true,
         Some(Argument::Same(j)) => holds_array(arguments, *j),
         _ => false,
     }
@@ -502,6 +503,18 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
             let chars = Argument::Array(units.iter().map(|u| Value::Int(i32::from(*u))).collect());
             push(&chars, &Type::Array(Box::new(Type::Char)), code, writer);
             code.op_u16(0xb7, init); // invokespecial
+        }
+        (Argument::Strings(items), _) => {
+            let string = writer.pool.class("java/lang/String");
+            code.iconst(items.len() as i32);
+            code.op_u16(0xbd, string); // anewarray
+            for (k, item) in items.iter().enumerate() {
+                let Some(units) = item else { continue };
+                code.op(0x59); // dup
+                code.iconst(k as i32);
+                push(&Argument::String(units.clone()), &Type::Object("java/lang/String".into()), code, writer);
+                code.op(0x53); // aastore
+            }
         }
         (Argument::Array(items), Type::Array(element)) => {
             code.iconst(items.len() as i32);

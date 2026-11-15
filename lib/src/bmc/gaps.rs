@@ -530,9 +530,28 @@ pub enum JdkCall {
     Refused,
 }
 
+/// Whether the own checker models an instance call of the JDK on an object whose content it holds: a
+/// `StringBuilder`'s constructors and methods ([`super::strings`]), a class literal's name and loader, and
+/// `new ArrayList()` ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
+/// ([`crate::jbmc_gaps`] asks [`exact_jdk_call`], never this), and a contract for one is still a contract for a gap
+/// ([`unmodelled_instance_call`]), which the engine applies in place of its model where one is given.
+pub fn modelled_jdk_call(owner: &str, name: &str, descriptor: &str) -> bool {
+    super::strings::models_builder(owner, name, descriptor) || super::runtime::models_instance(owner, name, descriptor) || (name == "<init>" && super::runtime::plain_constructor(owner, descriptor))
+}
+
 /// How the engine treats an instance call `owner.name(descriptor)` that runs JDK code: the one classification the
-/// engine and the scan share.
+/// engine and the scan share. A call the engine models on content it holds ([`modelled_jdk_call`]) is no gap.
 pub fn jdk_instance_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str) -> JdkCall {
+    if modelled_jdk_call(owner, name, descriptor) {
+        return JdkCall::Exact;
+    }
+    unmodelled_instance_call(cp, owner, name, descriptor)
+}
+
+/// What an instance call of the JDK is where the engine has no model of its own for it, or is given a contract in
+/// place of the model: exact for the constructors that do nothing a proof observes, refused, or a gap of the kind
+/// its result gives it. A contract is read against this ([`crate::gap_contracts`]).
+pub fn unmodelled_instance_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str) -> JdkCall {
     if exact_jdk_call(cp, owner, name, descriptor) {
         return JdkCall::Exact;
     }

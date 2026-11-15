@@ -160,8 +160,10 @@ const LIST: &str = "java/util/List";
 /// one is not reused (V3 wires it into the claim key): the own checker's `bmc::Engine::string_method` and
 /// `bmc::Engine::concatenation`, and the interpreter's `interp::JStr`, which replays. Model 2 added `hashCode`, and
 /// runs a modelled method on a String whatever class the call names (`Object.equals`, `CharSequence.length`), as
-/// the JVM dispatches it: a map's keys are compared so.
-pub const STRING_MODEL: &str = "jvmcontract String model 2: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation), lib/src/interp (JStr)";
+/// the JVM dispatches it: a map's keys are compared so. Model 3 added `endsWith`, `indexOf`, `substring`,
+/// `toLowerCase` on ASCII, `split` at one character and `chars` (for example 286's claims, which state a wildcard
+/// match with them), each with its record.
+pub const STRING_MODEL: &str = "jvmcontract String model 3: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; regex's split), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -183,7 +185,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method but length, isEmpty, charAt, equals, startsWith and hashCode, and the compiler's concatenation of Strings, chars and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII, split at one character and chars), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap".into(),
             "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -777,6 +779,10 @@ impl OperationEvidence {
 }
 
 const NPE: &str = "java.lang.NullPointerException";
+const SIOOBE: &str = "java.lang.StringIndexOutOfBoundsException";
+const STRINGS_SOURCE: &str = "the own checker: bmc::strings, formulas over the String's content; the interpreter: interp::natives (string_method); JBMC: its own String model, not this one";
+const REGEX_SOURCE: &str = "the own checker: bmc::regex (Engine::string_split); the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
+const STREAM_SOURCE: &str = "the stream models' bytecode (lib/models/java/util/stream/CharsStream.java, IntStream.java), run by the own checker alone; the interpreter: none, a witness is run on a JVM; JBMC: not given the models";
 const STRING_SOURCE: &str = "the own checker: bmc::Engine::string_method on the String's content; the interpreter: interp::JStr; JBMC: its own String model, not this one";
 const MAP_SOURCE: &str = "the HashMap model's bytecode (lib/models/java/util/HashMap.java), run by the own checker and JBMC; the interpreter: its HashMap natives";
 const CALLS_SOURCE: &str = "the own checker: bmc::Engine::call_jdk_static; the interpreter: interp::natives; JBMC: the JDK's own bytecode, or its stub";
@@ -865,6 +871,116 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         level: EvidenceLevel::Tested,
         sampled_by: &["startsWith"],
         calls: &["startsWith(Ljava/lang/String;)Z"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.endsWith(Ljava/lang/String;)Z",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content, and a String with content or null as the suffix",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["endsWith"],
+        calls: &["endsWith(Ljava/lang/String;)Z"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.indexOf(I)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content and any int: a code unit, a supplementary code point as its surrogate pair, and -1 for a value that is no code point",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["indexOfChar"],
+        calls: &["indexOf(I)I"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.indexOf(II)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content, any int as the character and any int as the start: below zero is zero, at or past the length finds nothing",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["indexOfCharFrom"],
+        calls: &["indexOf(II)I"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.indexOf(Ljava/lang/String;)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content, and a String with content or null to find: the empty String is found at 0",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["indexOfString"],
+        calls: &["indexOf(Ljava/lang/String;)I"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.indexOf(Ljava/lang/String;I)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content, a String with content or null to find, and any int as the start: below zero is zero, past the length is the length, where the empty String is still found",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["indexOfStringFrom"],
+        calls: &["indexOf(Ljava/lang/String;I)I"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.substring(I)Ljava/lang/String;",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content and any int: the String itself from 0, the literal \"\" from its length, a new String between",
+        throws: &[NPE, SIOOBE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["substringFrom"],
+        calls: &["substring(I)Ljava/lang/String;"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.substring(II)Ljava/lang/String;",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content and any two ints: the String itself for its whole range, the literal \"\" for any other empty range, a new String otherwise",
+        throws: &[NPE, SIOOBE],
+        leaves_out: &["subSequence(int, int)"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["substring"],
+        calls: &["substring(II)Ljava/lang/String;"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.toLowerCase()Ljava/lang/String;",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String whose code units are all ASCII, under a default locale whose language is not tr, az or lt (bmc::strings::LOCALE_ASSUMPTION, which a statement lists): A to Z lowered, and the String itself when it has none",
+        throws: &[NPE],
+        leaves_out: &["a String with a code unit outside ASCII, lowered by Unicode's tables and its context (a final sigma): a named gap", "toLowerCase(Locale)", "the three locales whose rules change an ASCII letter: assumed away, and stated"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["toLowerCase"],
+        calls: &["toLowerCase()Ljava/lang/String;"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;",
+        family: Family::String,
+        source: REGEX_SOURCE,
+        admits: "a String with content, a constant regex of one character that stands for itself or of a backslash and one character that is no ASCII letter or digit (the JDK's own fast path), and a negative constant limit: every part kept, each as substring makes it, and the String itself as the one part where the character does not occur",
+        throws: &[NPE],
+        leaves_out: &["any other regex, and a limit of zero or more: refused, as a JDK call with an array result is", "split(String)"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["split", "splitByNull"],
+        calls: &["split(Ljava/lang/String;I)[Ljava/lang/String;"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.chars()Ljava/util/stream/IntStream;",
+        family: Family::String,
+        source: STREAM_SOURCE,
+        admits: "a String with content: its code units in order, each zero-extended to an int, as a sequential stream of the stream models",
+        throws: &[NPE],
+        leaves_out: &["the stream's methods beyond the models' (lib/models/java/util/stream): each is the JDK call it names, a gap", "codePoints()"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["chars"],
+        calls: &["chars()Ljava/util/stream/IntStream;"],
     },
     OperationEvidence {
         operation: "java.lang.String.hashCode()I",
@@ -1092,7 +1208,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 8);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 18);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

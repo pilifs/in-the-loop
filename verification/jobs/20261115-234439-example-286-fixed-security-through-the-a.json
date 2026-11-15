@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-234439-example-286-fixed-security-through-the-a",
+  "title": "Example 286 fixed-security through the adapter entry: the frozen decision claim on Spring Framework 5.3.19 with the simpleMatch lemma, expected established",
+  "description": "The frozen claim claims/disallowed-field-denied-ignoring-case.json, unchanged, run by examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example286.adapter.BinderDecisionAdapter#allowed(String[] allowedPatterns, String[] disallowedPatterns, String field), the entry the claim's first assumption names, with the claim's assumption, assertion and nullable parameters as they are written (streams, lambdas and java.util.regex, compiled by javac and run as bytecode) and the lemma examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract (PatternMatchUtils.simpleMatch on ASCII Strings is the claim's regular expression, proved first by induction on the pattern's length and applied where it was proved). The class path is the revision's pinned JARs, each checked against its SHA-256, and the adapter compiled against them. This is a proof beside the example route, whose own attempt of the task stops at DataBinder's receiver (VF-027): the route runs the verifier on the original artifact alone and has no adapter entry. Until this change jvmcontract refused the claim at its String[] parameters, its expressions and every String, StringBuilder, stream and regex call on the way. Here on 5.3.19 (fixed-release), expected established: isAllowed denies every field a disallowed pattern matches ignoring ASCII case. The first step is a trial at 6 code units and 6 elements, the second the frozen bound of 8. Inline, with an unoptimized build, the claim was proved at 3, 4 and 5 in 7, 15 and 51 s (1,402 to 2,237 paths, 0.16 to 0.59 million variables), and nothing larger was run inline.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract",
+      "lib/src/summary.rs",
+      "lib/src/bmc/regex.rs",
+      "lib/src/bmc/strings.rs"
+    ]
+  },
+  "expected": "both steps exit 0: prove.py prints 'verdict: verified (expected verified)' at 6 and at 8, the lemma's own line '✓ org.springframework.util.PatternMatchUtils#simpleMatch' above each",
+  "submitted": {
+    "at": "2026-11-15T23:44:39+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "8G",
+    "duration": "45m",
+    "timeout": "2h",
+    "notes": "time grew about threefold per unit of the bound between 3 and 5 in an unoptimized build (7, 15, 51 s); a release build is a few times faster in the engine and no faster in the solver, which is most of it. Memory is a guess from 0.6 million variables and 2 million clauses at 5."
+  },
+  "steps": [
+    {
+      "name": "the claim at 6 code units, a trial below the frozen bound",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-security --max-array-length 6 --timeout 1500 --work verification/.work-286/trial",
+      "cwd": "."
+    },
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-286/frozen",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-286/trial/fixed-security/outcome.json",
+    "verification/.work-286/frozen/fixed-security/outcome.json",
+    "verification/.work-286/frozen/fixed-security/work/harness/PropertyHarness.java",
+    "verification/.work-286/frozen/fixed-security/work/harness/PropertyClaim.java",
+    "verification/.work-286/frozen/fixed-security/work/lemma-0/harness/PropertyClaim.java"
+  ]
+}

@@ -1,0 +1,425 @@
+//! `java.lang.String` beyond its first six methods, and `java.lang.StringBuilder`, on content.
+//!
+//! A String the engine holds the content of is a length and a cell per code unit ([`super::Obj::content`]); the
+//! methods here are formulas over those, as the first six are (`length`, `isEmpty`, `charAt`, `equals`,
+//! `hashCode`, `startsWith`, in [`super::Engine::string_method`]): no path is split for what a method computes,
+//! only for what it throws. Each is the JDK's method by its Javadoc and its source (JDK 25), sampled against a JVM
+//! by the values corpus (`values::OPERATIONS`).
+//!
+//! - `substring(int)`, `substring(int, int)`: `StringIndexOutOfBoundsException` for a begin below zero, an end
+//!   beyond the length or before the begin; the units between. The JDK returns the String itself for its whole
+//!   range and the literal `""` for an empty one, and so does this: the new String is those objects where the
+//!   range is ([`super::Obj::same`]), which `==` sees and nothing else does.
+//! - `indexOf(int)`, `indexOf(int, int)`: the first index at or after the start (below zero is zero) whose unit is
+//!   the character, or whose two units are the surrogate pair of a supplementary one; `-1` for none, and for a
+//!   value that is no code point.
+//! - `indexOf(String)`, `indexOf(String, int)`: `NullPointerException` for null; the first index at or after the
+//!   start (held to the length) where the other's units all are; the start itself for the empty String.
+//! - `endsWith(String)`: `NullPointerException` for null; the other's units at the end.
+//! - `toLowerCase()`: of a String whose units are all ASCII, each of `A` to `Z` lowered, and the String itself
+//!   when none is. That is the JDK's answer under every default locale but Turkish, Azeri and Lithuanian, whose
+//!   rules differ for `I`: the run assumes the default locale is none of the three and says so
+//!   ([`LOCALE_ASSUMPTION`]). A String with a unit outside ASCII is lowered by Unicode's tables and its context
+//!   (a final sigma), which the engine has not: there the call is the gap it was.
+//!
+//! A `StringBuilder` is an object with a content of its own, which its methods change: `StringBuilder()`,
+//! `StringBuilder(String)` (`NullPointerException` for null), `length()`, `indexOf(String)`, `indexOf(String,
+//! int)`, `substring(int, int)` (the literal `""` for an empty range, else a new String), `delete(int, int)` (the
+//! end held to the length; `StringIndexOutOfBoundsException` for a start below zero or beyond the end; the builder
+//! itself returned) and `toString()` (the literal `""` when empty, else a new String). Any other method of a
+//! builder is the JDK call it was, a gap: after it the engine holds the builder's content no longer, whatever the
+//! gap's assumption or contract says the call did, and a later modelled call on that builder is refused by name.
+//! A contract given for a modelled call stands in place of the model ([`gaps::modelled_jdk_call`]).
+
+use super::*;
+
+/// The builder's class.
+pub const BUILDER: &str = "java/lang/StringBuilder";
+
+/// What a run that lowered a String's case took for granted about the JVM's default locale.
+pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered";
+
+/// Whether the engine models `String.name(descriptor)` here.
+pub fn models(name: &str, descriptor: &str) -> bool {
+    matches!(
+        (name, descriptor),
+        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+    )
+}
+
+/// Whether the engine models `StringBuilder.name(descriptor)`, its two constructors included.
+pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
+    owner == BUILDER
+        && matches!(
+            (name, descriptor),
+            ("<init>", "()V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
+        )
+}
+
+impl Engine<'_> {
+    /// The unit of `s` at the index `at`: a choice among its cells, zero for an index it has no cell for.
+    fn unit_at(&mut self, s: &Array, at: &Bits) -> Bits {
+        let mut unit = self.b.constant(0, 16);
+        for (i, cell) in s.cells.iter().enumerate().rev() {
+            let here = self.b.constant(i as i64, 32);
+            let is = self.b.eq(at, &here);
+            unit = self.b.ite_bits(is, cell, &unit);
+        }
+        unit
+    }
+
+    /// A new String of `length` units, `cells`, which is the object `o` under each guard of `same`.
+    fn new_string(&mut self, path: &mut Path, length: Bits, cells: Vec<Bits>, same: Vec<(Lit, usize)>) -> usize {
+        path.objects.push(Obj { array: Some(Array { element: Type::Char, length, cells, refs: Vec::new() }), same: same.into_iter().filter(|(g, _)| *g != FALSE).collect(), ..Obj::new(STRING) });
+        path.objects.len() - 1
+    }
+
+    /// The literal `""`, which the JDK returns for an empty range.
+    fn empty_literal(&mut self, path: &mut Path) -> usize {
+        self.literal(path, Literal::Str(Vec::new()), STRING)
+    }
+
+    /// The units of `s` from `begin` to `end`, as a String: the JDK's `newString` of a checked range, which is the
+    /// literal `""` when the range is empty; `itself` is the String the range is taken of, returned for its whole
+    /// range, and absent for a builder's.
+    pub(super) fn range(&mut self, path: &mut Path, s: &Array, begin: &Bits, end: &Bits, itself: Option<usize>) -> Val {
+        let zero = self.b.constant(0, 32);
+        let whole = match itself {
+            Some(_) => {
+                let from_start = self.b.eq(begin, &zero);
+                let to_end = self.b.eq(end, &s.length);
+                self.b.and(from_start, to_end)
+            }
+            None => FALSE,
+        };
+        if whole == TRUE {
+            return Val::R(itself);
+        }
+        let none = self.b.eq(begin, end);
+        let empty = self.b.and(-whole, none);
+        // A begin that is a constant leaves the cells after it; any other, every cell.
+        let skipped = self.b.constant_value(begin).and_then(|b| usize::try_from(b).ok()).unwrap_or(0).min(s.cells.len());
+        let most = match self.b.constant_value(end).and_then(|e| usize::try_from(e).ok()) {
+            Some(e) => e.min(s.cells.len()).saturating_sub(skipped),
+            None => s.cells.len() - skipped,
+        };
+        let mut cells = Vec::with_capacity(most);
+        for i in 0..most {
+            let offset = self.b.constant(i as i64, 32);
+            let at = self.b.add(begin, &offset);
+            cells.push(self.unit_at(s, &at));
+        }
+        let length = self.b.sub(end, begin);
+        let mut same = Vec::new();
+        if let Some(o) = itself {
+            same.push((whole, o));
+        }
+        if empty != FALSE {
+            let literal = self.empty_literal(path);
+            same.push((empty, literal));
+        }
+        Val::R(Some(self.new_string(path, length, cells, same)))
+    }
+
+    /// Whether `begin..end` is no range of a sequence of `length` units: the JDK's `checkBoundsBeginEnd`.
+    fn bad_range(&mut self, begin: &Bits, end: &Bits, length: &Bits) -> Lit {
+        let zero = self.b.constant(0, 32);
+        let below = self.b.slt(begin, &zero);
+        let crossed = self.b.slt(end, begin);
+        let beyond = self.b.slt(length, end);
+        let either = self.b.or(below, crossed);
+        self.b.or(either, beyond)
+    }
+
+    /// The first index of `s` at or after `from` where the code point `ch` is: its unit, or the surrogate pair of
+    /// a supplementary one; `-1` where there is none (`String.indexOf(int, int)`).
+    fn index_of_unit(&mut self, s: &Array, ch: &Bits, from: &Bits) -> Bits {
+        let bmp_limit = self.b.constant(0x1_0000, 32);
+        let limit = self.b.constant(0x11_0000, 32);
+        let is_bmp = self.b.ult(ch, &bmp_limit);
+        let below_limit = self.b.ult(ch, &limit);
+        let is_supplementary = self.b.and(-is_bmp, below_limit);
+        let unit = self.b.trunc(ch, 16);
+        let offset = self.b.sub(ch, &bmp_limit);
+        let ten = self.b.constant(10, 32);
+        let top = self.b.ushr(&offset, &ten);
+        let high_base = self.b.constant(0xD800, 32);
+        let high = self.b.add(&top, &high_base);
+        let high = self.b.trunc(&high, 16);
+        let mask = self.b.constant(0x3ff, 32);
+        let bottom = self.b.and_bits(&offset, &mask);
+        let low_base = self.b.constant(0xDC00, 32);
+        let low = self.b.add(&bottom, &low_base);
+        let low = self.b.trunc(&low, 16);
+        let mut result = self.b.constant(-1, 32);
+        for i in (0..s.cells.len()).rev() {
+            let here = self.b.constant(i as i64, 32);
+            let inside = self.b.slt(&here, &s.length);
+            let after = self.b.sle(from, &here);
+            let one = self.b.eq(&s.cells[i], &unit);
+            let one = self.b.and(is_bmp, one);
+            let pair = match s.cells.get(i + 1) {
+                Some(next) => {
+                    let second = self.b.constant(i as i64 + 1, 32);
+                    let has_second = self.b.slt(&second, &s.length);
+                    let first_is = self.b.eq(&s.cells[i], &high);
+                    let second_is = self.b.eq(next, &low);
+                    self.b.all(&[is_supplementary, has_second, first_is, second_is])
+                }
+                None => FALSE,
+            };
+            let found = self.b.or(one, pair);
+            let hit = self.b.all(&[inside, after, found]);
+            result = self.b.ite_bits(hit, &here, &result);
+        }
+        result
+    }
+
+    /// The first index of `s` at or after `from` (held to `0..=length`) where the units of `t` all are; `-1` where
+    /// there is none (`String.indexOf(String, int)`: the empty String is found at the start index).
+    fn index_of_string(&mut self, s: &Array, t: &Array, from: &Bits) -> Bits {
+        let zero = self.b.constant(0, 32);
+        let negative = self.b.slt(from, &zero);
+        let start = self.b.ite_bits(negative, &zero, from);
+        let beyond = self.b.slt(&s.length, &start);
+        let start = self.b.ite_bits(beyond, &s.length, &start);
+        let mut result = self.b.constant(-1, 32);
+        for i in (0..=s.cells.len()).rev() {
+            let here = self.b.constant(i as i64, 32);
+            let end = self.b.add(&here, &t.length);
+            let fits = self.b.sle(&end, &s.length);
+            let after = self.b.sle(&start, &here);
+            let mut agree = vec![fits, after];
+            for (k, unit) in t.cells.iter().enumerate() {
+                let index = self.b.constant(k as i64, 32);
+                let inside = self.b.slt(&index, &t.length);
+                let same = match s.cells.get(i + k) {
+                    Some(cell) => self.b.eq(cell, unit),
+                    None => FALSE,
+                };
+                agree.push(self.b.or(-inside, same));
+            }
+            let hit = self.b.all(&agree);
+            result = self.b.ite_bits(hit, &here, &result);
+        }
+        result
+    }
+
+    /// Whether the unit is an ASCII upper-case letter, and the unit with such a letter lowered: one formula for
+    /// `String.toLowerCase()` and for a comparison that ignores ASCII case ([`regex`]).
+    pub(super) fn lowered_ascii(&mut self, unit: &Bits) -> (Lit, Bits) {
+        let (upper_a, upper_z) = (self.b.constant(i64::from(b'A'), 16), self.b.constant(i64::from(b'Z'), 16));
+        let below = self.b.ult(unit, &upper_a);
+        let above = self.b.ult(&upper_z, unit);
+        let is_upper = self.b.and(-below, -above);
+        let case_bit = self.b.constant(0x20, 16);
+        let lowered = self.b.or_bits(unit, &case_bit);
+        (is_upper, self.b.ite_bits(is_upper, &lowered, unit))
+    }
+
+    /// Pushes a truth value as the int the JVM holds it as.
+    pub(super) fn push_truth(&mut self, path: &mut Path, truth: Lit) {
+        let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
+        let value = self.b.ite_bits(truth, &one, &zero);
+        self.push(path, Val::I(value));
+        self.advance(path);
+    }
+
+    /// The content of the String argument `r`, a `NullPointerException` thrown where it is null: `Err` carries the
+    /// step that ends the call (the exception, or a String with no content, whose call stays the JDK's).
+    fn string_argument(&mut self, path: &mut Path, r: Option<usize>, gap: (&str, &str, &str)) -> Result<Array, Step> {
+        let Some(p) = r else { return Err(self.raise(path, "java/lang/NullPointerException")) };
+        match path.objects[p].content().cloned() {
+            Some(t) => Ok(t),
+            None => match path.objects[p].limit.clone() {
+                Some(why) => Err(unsupported(why)),
+                None => Err(Ok(self.meet(path, GapKind::JdkPrimitiveMethod, gap.0, gap.1, gap.2))),
+            },
+        }
+    }
+
+    /// The String methods of this module on the String `o` of content `s`: see the module's notes.
+    pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
+        match (name, descriptor, args) {
+            ("substring", "(I)Ljava/lang/String;", [Val::I(begin)]) => {
+                let length = s.length.clone();
+                let bad = self.bad_range(begin, &length, &length);
+                let value = self.range(path, s, begin, &length, Some(o));
+                self.branch_throw(path, bad, "java/lang/StringIndexOutOfBoundsException", value)
+            }
+            ("substring", _, [Val::I(begin), Val::I(end)]) => {
+                let bad = self.bad_range(begin, end, &s.length);
+                let value = self.range(path, s, begin, end, Some(o));
+                self.branch_throw(path, bad, "java/lang/StringIndexOutOfBoundsException", value)
+            }
+            ("indexOf", "(I)I", [Val::I(ch)]) => {
+                let zero = self.b.constant(0, 32);
+                let at = self.index_of_unit(s, ch, &zero);
+                self.push(path, Val::I(at));
+                self.advance(path);
+                Ok(None)
+            }
+            ("indexOf", "(II)I", [Val::I(ch), Val::I(from)]) => {
+                let at = self.index_of_unit(s, ch, from);
+                self.push(path, Val::I(at));
+                self.advance(path);
+                Ok(None)
+            }
+            ("indexOf", _, [Val::R(other), rest @ ..]) => {
+                let t = match self.string_argument(path, *other, (STRING, name, descriptor)) {
+                    Ok(t) => t,
+                    Err(step) => return step,
+                };
+                let from = match rest {
+                    [Val::I(from)] => from.clone(),
+                    _ => self.b.constant(0, 32),
+                };
+                let at = self.index_of_string(s, &t, &from);
+                self.push(path, Val::I(at));
+                self.advance(path);
+                Ok(None)
+            }
+            ("endsWith", _, [Val::R(other)]) => {
+                let t = match self.string_argument(path, *other, (STRING, name, descriptor)) {
+                    Ok(t) => t,
+                    Err(step) => return step,
+                };
+                let fits = self.b.sle(&t.length, &s.length);
+                let offset = self.b.sub(&s.length, &t.length);
+                let mut agree = vec![fits];
+                for (k, unit) in t.cells.iter().enumerate() {
+                    let index = self.b.constant(k as i64, 32);
+                    let inside = self.b.slt(&index, &t.length);
+                    let at = self.b.add(&offset, &index);
+                    let mine = self.unit_at(s, &at);
+                    let same = self.b.eq(&mine, unit);
+                    agree.push(self.b.or(-inside, same));
+                }
+                let truth = self.b.all(&agree);
+                self.push_truth(path, truth);
+                Ok(None)
+            }
+            ("toLowerCase", _, []) => {
+                let ascii_limit = self.b.constant(128, 16);
+                let mut outside = Vec::new();
+                let mut changes = Vec::new();
+                let mut cells = Vec::with_capacity(s.cells.len());
+                for (i, cell) in s.cells.iter().enumerate() {
+                    let here = self.b.constant(i as i64, 32);
+                    let inside = self.b.slt(&here, &s.length);
+                    let ascii = self.b.ult(cell, &ascii_limit);
+                    outside.push(self.b.and(inside, -ascii));
+                    let (is_upper, lowered) = self.lowered_ascii(cell);
+                    changes.push(self.b.and(inside, is_upper));
+                    cells.push(lowered);
+                }
+                let beyond_ascii = self.any(&outside);
+                let changed = self.any(&changes);
+                self.assumed.insert(LOCALE_ASSUMPTION);
+                let (owner, name, descriptor) = (STRING, name.to_string(), descriptor.to_string());
+                let length = s.length.clone();
+                let original = s.clone();
+                self.branch_gap_or(path, beyond_ascii, (GapKind::JdkReferenceMethod, owner, &name, &descriptor), move |engine, path| {
+                    let value = if changed == FALSE {
+                        o
+                    } else {
+                        // The new String remembers the units it is the lower case of ([`regex::Regex::Lowered`]).
+                        let lowered = engine.new_string(path, length, cells, vec![(-changed, o)]);
+                        path.objects[lowered].regex = Some(Rc::new(regex::Regex::lowered(&original)));
+                        lowered
+                    };
+                    engine.push(path, Val::R(Some(value)));
+                    engine.advance(path);
+                })
+            }
+            _ => unsupported(format!("String.{name}{descriptor} with arguments {args:?}")),
+        }
+    }
+
+    /// A `StringBuilder`'s constructor or method on the builder `o`: see the module's notes. `None` for a call
+    /// the module doesn't model, which stays the JDK call it was.
+    pub(super) fn builder_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if path.objects[o].class != BUILDER || !models_builder(BUILDER, name, descriptor) {
+            return None;
+        }
+        if !matches!(name, "length" | "indexOf" | "substring" | "toString") {
+            if let Err(stop) = self.keeps(path, Some(o), "changes a StringBuilder made before it was called") {
+                return Some(Err(stop));
+            }
+        }
+        let empty = |engine: &mut Self| Array { element: Type::Char, length: engine.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() };
+        if name == "<init>" {
+            let content = match args {
+                [] => empty(self),
+                [Val::R(from)] => match self.string_argument(path, *from, (BUILDER, name, descriptor)) {
+                    Ok(t) => t,
+                    Err(step) => return Some(step),
+                },
+                _ => return Some(unsupported(format!("StringBuilder.{name}{descriptor} with arguments {args:?}"))),
+            };
+            path.objects[o].array = Some(content);
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        // A builder made or changed by a call the module doesn't model (a gap, or a contract's call) has no content.
+        let Some(s) = path.objects[o].array.clone() else { return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model"))) };
+        Some(match (name, args) {
+            ("length", []) => {
+                self.push(path, Val::I(s.length));
+                self.advance(path);
+                Ok(None)
+            }
+            ("indexOf", [Val::R(other), rest @ ..]) => {
+                let t = match self.string_argument(path, *other, (BUILDER, name, descriptor)) {
+                    Ok(t) => t,
+                    Err(step) => return Some(step),
+                };
+                let from = match rest {
+                    [Val::I(from)] => from.clone(),
+                    _ => self.b.constant(0, 32),
+                };
+                let at = self.index_of_string(&s, &t, &from);
+                self.push(path, Val::I(at));
+                self.advance(path);
+                Ok(None)
+            }
+            ("substring", [Val::I(begin), Val::I(end)]) => {
+                let bad = self.bad_range(begin, end, &s.length);
+                let value = self.range(path, &s, begin, end, None);
+                self.branch_throw(path, bad, "java/lang/StringIndexOutOfBoundsException", value)
+            }
+            ("delete", [Val::I(start), Val::I(end)]) => {
+                // The end is held to the length; then the range is checked, and the units after it move down.
+                let beyond = self.b.slt(&s.length, end);
+                let end = self.b.ite_bits(beyond, &s.length, end);
+                let zero = self.b.constant(0, 32);
+                let below = self.b.slt(start, &zero);
+                let crossed = self.b.slt(&end, start);
+                let bad = self.b.or(below, crossed);
+                let removed = self.b.sub(&end, start);
+                let length = self.b.sub(&s.length, &removed);
+                let mut cells = Vec::with_capacity(s.cells.len());
+                for (i, cell) in s.cells.iter().enumerate() {
+                    let here = self.b.constant(i as i64, 32);
+                    let before = self.b.slt(&here, start);
+                    let at = self.b.add(&here, &removed);
+                    let moved = self.unit_at(&s, &at);
+                    cells.push(self.b.ite_bits(before, cell, &moved));
+                }
+                self.branch_throw_or(path, bad, "java/lang/StringIndexOutOfBoundsException", move |engine, path| {
+                    path.objects[o].array = Some(Array { element: Type::Char, length, cells, refs: Vec::new() });
+                    engine.push(path, Val::R(Some(o)));
+                    engine.advance(path);
+                })
+            }
+            ("toString", []) => {
+                let zero = self.b.constant(0, 32);
+                let value = self.range(path, &s, &zero, &s.length.clone(), None);
+                self.push(path, value);
+                self.advance(path);
+                Ok(None)
+            }
+            _ => unsupported(format!("StringBuilder.{name}{descriptor} with arguments {args:?}")),
+        })
+    }
+}

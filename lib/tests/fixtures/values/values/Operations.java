@@ -78,6 +78,68 @@ public final class Operations {
         return of(n, a, b, c).startsWith(of(m, d, e, f));
     }
 
+    static boolean endsWith(int n, int a, int b, int c, int m, int d, int e, int f) {
+        return of(n, a, b, c).endsWith(of(m, d, e, f));
+    }
+
+    static int indexOfChar(int n, int a, int b, int c, int ch) {
+        return of(n, a, b, c).indexOf(ch);
+    }
+
+    static int indexOfCharFrom(int n, int a, int b, int c, int ch, int from) {
+        return of(n, a, b, c).indexOf(ch, from);
+    }
+
+    static int indexOfString(int n, int a, int b, int c, int m, int d, int e, int f) {
+        return of(n, a, b, c).indexOf(of(m, d, e, f));
+    }
+
+    static int indexOfStringFrom(int n, int a, int b, int c, int m, int d, int e, int from) {
+        return of(n, a, b, c).indexOf(of(m, d, e, 0), from);
+    }
+
+    /**
+     * What a method made of s, against the content expected: 0 for another content, 2 for s itself, 3 for the
+     * literal "", 1 for any other String of that content.
+     */
+    static int made(String s, String part, String want) {
+        if (!part.equals(want)) {
+            return 0;
+        }
+        return part == s ? 2 : part == "" ? 3 : 1;
+    }
+
+    static int substringFrom(int n, int a, int b, int c, int from, int m, int d, int e, int f) {
+        String s = of(n, a, b, c);
+        return made(s, s.substring(from), of(m, d, e, f));
+    }
+
+    static int substring(int n, int a, int b, int c, int from, int to, int m, int d, int e, int f) {
+        String s = of(n, a, b, c);
+        return made(s, s.substring(from, to), of(m, d, e, f));
+    }
+
+    static int toLowerCase(int n, int a, int b, int c, int m, int d, int e, int f) {
+        String s = of(n, a, b, c);
+        return made(s, s.toLowerCase(), of(m, d, e, f));
+    }
+
+    /** The parts at one character, every one kept: how many for a negative i, else what the ith is. */
+    static int split(int n, int a, int b, int c, int i, int m, int d, int e, int f) {
+        String s = of(n, a, b, c);
+        String[] parts = s.split("\\*", -1);
+        return i < 0 ? parts.length : made(s, parts[i], of(m, d, e, f));
+    }
+
+    static int splitByNull(int n, int a, int b, int c) {
+        return of(n, a, b, c).split(null, -1).length;
+    }
+
+    /** Whether every code unit, as the int the stream gives, is below the limit. */
+    static boolean chars(int n, int a, int b, int c, int limit) {
+        return of(n, a, b, c).chars().allMatch(u -> u >= 0 && u < limit);
+    }
+
     /** The compiler's concatenation of two Strings and a constant, null as "null". */
     static String concatenated(int n, int a, int b, int c, int m, int d, int e, int f) {
         return of(n, a, b, c) + "-" + of(m, d, e, f);

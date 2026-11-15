@@ -117,8 +117,9 @@ fn a_witness_with_an_isolated_surrogate_replays_on_the_jvm_unit_for_unit() {
 }
 
 /// What the wiring leaves out is refused by name, never decided otherwise: JBMC, whose Strings are its own model
-/// (`--engine jbmc` refused, and under `--confirm` not asked); a property over a String, whose expressions can't
-/// read one; and a String result, which the harness compares with `Objects.equals`, a gap the own checker refuses.
+/// (`--engine jbmc` refused, and under `--confirm` not asked), and a String result, which the harness compares with
+/// `Objects.equals`, a gap the own checker refuses. A property over a String is the own checker's too: its
+/// expressions read the String as Java does (`lib/tests/claims.rs`).
 #[test]
 fn a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
     jvmcontract::tool_tier!(pending);
@@ -141,9 +142,15 @@ fn a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() 
     p.engine = Engine::Native;
     p.jbmc = NO_JBMC.into();
     p.work = Some(tmp("vip-property"));
+    p.assert = Some("result == code.startsWith(\"VIP\")".into());
     let o = property::run(&p).unwrap();
-    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.problem.as_deref().unwrap_or_default().contains("java.lang.String"), "{}", o.output);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap_or_default().contains("code: String of ≤ 8 code units, not null"), "{:?}", o.domain);
+    p.assert = Some("!result".into());
+    p.work = Some(tmp("vip-property-refuted"));
+    let o = property::run(&p).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.counterexample.as_ref().is_some_and(|c| c.input.contains("VIP")), "{}", o.output);
 
     let root = strings();
     let mut echo = options(&root.join("before"), &root.join("after"), "s.Text#echo", "echo");

@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-234439-example-286-vulnerable-security-through",
+  "title": "Example 286 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 5.3.18, expected refuted",
+  "description": "The frozen claim claims/disallowed-field-denied-ignoring-case.json, unchanged, run by examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example286.adapter.BinderDecisionAdapter#allowed(String[] allowedPatterns, String[] disallowedPatterns, String field), the entry the claim's first assumption names, with the claim's assumption, assertion and nullable parameters as they are written (streams, lambdas and java.util.regex, compiled by javac and run as bytecode) and the lemma examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract (PatternMatchUtils.simpleMatch on ASCII Strings is the claim's regular expression, proved first by induction on the pattern's length and applied where it was proved). The class path is the revision's pinned JARs, each checked against its SHA-256, and the adapter compiled against them. This is a proof beside the example route, whose own attempt of the task stops at DataBinder's receiver (VF-027): the route runs the verifier on the original artifact alone and has no adapter entry. Until this change jvmcontract refused the claim at its String[] parameters, its expressions and every String, StringBuilder, stream and regex call on the way. Here on 5.3.18 (vulnerable-release), expected refuted, at the frozen bound of 8: a field a disallowed pattern matches only ignoring case is allowed. The witness is run in the harness on a JVM, where the release's bytecode and Java's own java.util.regex decide it, so the refutation rests on no model of the checker. Inline at 3 code units the claim was refuted in 7 s at allowed(allowedPatterns=null, disallowedPatterns={null, \"J\", \"*p\"}, field=\"*\\u0018P\"): the pattern *p against a field that ends in P.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract",
+      "lib/src/summary.rs",
+      "lib/src/bmc/regex.rs",
+      "lib/src/bmc/strings.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM'",
+  "submitted": {
+    "at": "2026-11-15T23:44:39+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "8G",
+    "duration": "30m",
+    "timeout": "2h",
+    "notes": "a refutation stops at the first violating path, so it should take less than the proof of the same bound (see the fixed-security job); the lemma is proved first either way."
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-security --timeout 3300 --work verification/.work-286/frozen",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-286/frozen/vulnerable-security/outcome.json",
+    "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyHarness.java",
+    "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyClaim.java"
+  ]
+}

@@ -36,16 +36,23 @@ pub struct Model {
     /// the state they stand for (an enum's name and ordinal, an immutable list's elements) is part of every object
     /// the interpreter allocates.
     pub jbmc_only: bool,
+    /// Only for the tool's own checker ([`CHECKER_RUNS`]): not on JBMC's class path either, whose stubs of the
+    /// class stay what they were. The stream models are, which a claim compiled by javac calls
+    /// ([`crate::claim`]) and only the own checker is given.
+    pub checker_only: bool,
     #[serde(skip)]
     pub bytes: &'static [u8],
 }
 
 macro_rules! model {
     ($name:literal, $source:literal, $class:literal, $note:literal) => {
-        Model { name: $name, source: $source, note: $note, jbmc_only: false, bytes: include_bytes!(concat!("../models/classes/", $class)) }
+        Model { name: $name, source: $source, note: $note, jbmc_only: false, checker_only: false, bytes: include_bytes!(concat!("../models/classes/", $class)) }
     };
     (jbmc $name:literal, $source:literal, $class:literal, $note:literal) => {
-        Model { name: $name, source: $source, note: $note, jbmc_only: true, bytes: include_bytes!(concat!("../models/classes/", $class)) }
+        Model { name: $name, source: $source, note: $note, jbmc_only: true, checker_only: false, bytes: include_bytes!(concat!("../models/classes/", $class)) }
+    };
+    (checker $name:literal, $source:literal, $class:literal, $note:literal) => {
+        Model { name: $name, source: $source, note: $note, jbmc_only: true, checker_only: true, bytes: include_bytes!(concat!("../models/classes/", $class)) }
     };
 }
 
@@ -70,6 +77,10 @@ pub const MODELS: &[Model] = &[
     model!(jbmc "java/util/ImmutableCollections$ListItr", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListItr.class", "the immutable lists' iterator: NoSuchElementException past the end, UnsupportedOperationException on remove; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$List12", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$List12.class", "an immutable list of one or two elements, as the JDK's; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListN.class", "an immutable list of none or three or more elements over an array of its own, as the JDK's; JBMC only"),
+    model!(checker "java/util/stream/Stream", "java/util/stream/Stream.java", "java/util/stream/Stream.class", "a sequential stream's allMatch, anyMatch, noneMatch, map and toArray(IntFunction), declared for the model's stream over an array; the own checker only"),
+    model!(checker "java/util/stream/SequentialArrayStream", "java/util/stream/SequentialArrayStream.java", "java/util/stream/SequentialArrayStream.class", "what Arrays.stream(T[]) returns: the array's elements one at a time through each map, a match stopped where it is decided, a stream used once; not a JDK class; the own checker only"),
+    model!(checker "java/util/stream/IntStream", "java/util/stream/IntStream.java", "java/util/stream/IntStream.class", "an int stream's allMatch, anyMatch and noneMatch, declared for the model's stream of a String's code units; the own checker only"),
+    model!(checker "java/util/stream/CharsStream", "java/util/stream/CharsStream.java", "java/util/stream/CharsStream.class", "what String.chars() returns: the code units in order, each zero-extended; not a JDK class; the own checker only"),
 ];
 
 /// The models only for JBMC's class path ([`Model::jbmc_only`]) that the tool's own checker runs as bytecode all the
@@ -92,7 +103,22 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/util/ImmutableCollections$ListItr",
     "java/util/ImmutableCollections$List12",
     "java/util/ImmutableCollections$ListN",
+    "java/util/stream/Stream",
+    "java/util/stream/SequentialArrayStream",
+    "java/util/stream/IntStream",
+    "java/util/stream/CharsStream",
 ];
+
+/// The JDK calls that enter a model by a method of the model's own: `java.util.Arrays.stream(T[])` and
+/// `String.chars()`, whose classes the tool does not model otherwise. Each is the model's static method
+/// `(class, name, descriptor)`, called with the call's receiver, if it has one, and its arguments.
+pub fn entry(owner: &str, name: &str, descriptor: &str) -> Option<(&'static str, &'static str, &'static str)> {
+    match (owner, name, descriptor) {
+        ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;") => Some(("java/util/stream/SequentialArrayStream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")),
+        ("java/lang/String", "chars", "()Ljava/util/stream/IntStream;") => Some(("java/util/stream/CharsStream", "of", "(Ljava/lang/String;)Ljava/util/stream/IntStream;")),
+        _ => None,
+    }
+}
 
 /// Whether a class is one of the immutable-list models the own checker runs ([`CHECKER_RUNS`]): `java.util.List`
 /// and `java.util.ImmutableCollections` with its list classes. A call into one of them from outside them runs only
@@ -119,7 +145,7 @@ pub fn write_to(dir: &Path) -> Result<(), Error> {
 }
 
 fn write_to_untimed(dir: &Path) -> Result<(), Error> {
-    for model in MODELS {
+    for model in MODELS.iter().filter(|m| !m.checker_only) {
         let target = dir.join(format!("{}.class", model.name));
         if let Some(parent) = target.parent() {
             std::fs::create_dir_all(parent)?;
@@ -159,7 +185,13 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         write_to(dir.path()).unwrap();
         for model in MODELS {
-            assert_eq!(std::fs::read(dir.path().join(format!("{}.class", model.name))).unwrap(), model.bytes);
+            let written = dir.path().join(format!("{}.class", model.name));
+            // A model only the checker runs is no class of JBMC's class path.
+            if model.checker_only {
+                assert!(!written.exists(), "{}", model.name);
+            } else {
+                assert_eq!(std::fs::read(written).unwrap(), model.bytes);
+            }
         }
         assert!(listing().contains("java.nio.charset.StandardCharsets  (java/nio/charset/StandardCharsets.java)"));
     }
@@ -178,7 +210,7 @@ mod tests {
         }
         let models = Path::new(env!("CARGO_MANIFEST_DIR")).join("models");
         let out = tempfile::tempdir().unwrap();
-        for package in ["lang", "nio/charset", "util"] {
+        for package in ["lang", "nio/charset", "util", "util/stream"] {
             let sources: Vec<_> = std::fs::read_dir(models.join("java").join(package)).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
             let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g", "-d"]).arg(out.path()).args(&sources).status().unwrap();
             assert!(status.success(), "the models compile");

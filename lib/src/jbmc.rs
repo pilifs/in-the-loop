@@ -141,6 +141,8 @@ pub enum Argument {
     /// A `java.lang.String`, as its code units: any of them, an isolated surrogate included
     /// ([`crate::values::StringAdapter`]). A replay makes it a fresh String of these units.
     String(Vec<u16>),
+    /// A `String[]`: each cell null or a String's code units, each String an object of its own.
+    Strings(Vec<Option<Vec<u16>>>),
     Null,
     Same(usize),
 }
@@ -172,6 +174,11 @@ impl JbmcResult {
                     Some(Some(raw)) => Argument::String(crate::values::string_units(raw).map_err(|e| Error::new(format!("the counterexample's String in slot {slot}: {e}")))?),
                     Some(None) => Argument::Null,
                     None => return Err(Error::new(format!("the counterexample has no String in slot {slot}"))),
+                },
+                Type::Array(element) if crate::values::is_string(element) => match self.raw_arrays.get(&slot) {
+                    Some(Some(raw)) => Argument::Strings(raw.iter().map(|r| crate::bmc::read_string_element(r)).collect::<Result<Vec<_>, _>>().map_err(|e| Error::new(format!("the counterexample's String[] in slot {slot}: {e}")))?),
+                    Some(None) => Argument::Null,
+                    None => Argument::Strings(Vec::new()),
                 },
                 Type::Array(element) => match self.raw_arrays.get(&slot) {
                     Some(Some(raw)) => Argument::Array(raw.iter().map(|r| parse_value(element, r)).collect::<Result<Vec<_>, _>>()?),

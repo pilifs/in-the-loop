@@ -135,7 +135,7 @@ fn a_string_inside_an_object_outside_the_regression_check_is_refused_by_name() {
     p.work = Some(tmp("work-property-jbmc"));
     let o = property::run(&p).unwrap();
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.problem.as_deref().unwrap_or_default().contains("takes a String inside an object"), "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("takes a String (a parameter, an array's element, or inside an object)"), "{}", o.output);
 
     let mut o = options("jbmc", &before, &before, "strs.Desk#score");
     o.engine = jvmcontract::Engine::Jbmc;

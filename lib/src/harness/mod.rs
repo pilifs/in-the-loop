@@ -1595,6 +1595,11 @@ fn arrays_of(record: &RecordType, max_array_length: u32) -> String {
 /// the same array`, since both engines give each array parameter an array of its own (JBMC under
 /// `--java-assume-inputs-non-null`). A claim the JVM refutes only with a null or a shared array is outside the
 /// domain, and the domain says so (step 1d of `llm-dlc/loops/sound-verdicts.md`).
+/// Whether `t` is `String[]`: an array parameter whose cells are Strings of the check's bound, or null.
+pub fn is_string_array(t: &Type) -> bool {
+    matches!(t, Type::Array(element) if crate::values::is_string(element))
+}
+
 /// A String parameter's part of a domain: `code: String of ≤ 8 code units, not null`, any UTF-16 code units
 /// (`values::StringAdapter`'s domain, its bound the check's).
 pub fn string_part(name: &str, max_length: u32) -> String {
@@ -1627,12 +1632,17 @@ pub fn domain(parts: Vec<(String, bool)>, max_array_length: u32) -> String {
 /// them no two the same array. With neither, it is [`domain`]'s text.
 pub fn domain_of(params: &[Param], max_array_length: u32, nullable: &[String], groups: &[Vec<String>]) -> String {
     let is_array = |p: &Param| matches!(p.ty, Type::Array(_));
-    if nullable.is_empty() && groups.is_empty() {
+    let has_strings = params.iter().any(|p| crate::values::is_string(&p.ty) || is_string_array(&p.ty));
+    if nullable.is_empty() && groups.is_empty() && !has_strings {
         return domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), is_array(p))).collect(), max_array_length);
     }
+    let or_null = |p: &Param| if nullable.contains(&p.name) { "or null" } else { "not null" };
     let joined = params
         .iter()
         .map(|p| match (is_array(p), nullable.contains(&p.name)) {
+            // A String is a value of at most the bound in code units, and a String[] an array of such, null among them.
+            _ if crate::values::is_string(&p.ty) => format!("{}: String of ≤ {max_array_length} code units, {}", p.name, or_null(p)),
+            _ if is_string_array(&p.ty) => format!("{}: String[] of length ≤ {max_array_length}, {}, each element a String of ≤ {max_array_length} code units of its own or null", p.name, or_null(p)),
             (true, true) => format!("{}: {} of length ≤ {max_array_length}, or null", p.name, p.ty.java_name()),
             (true, false) => format!("{}: {} of length ≤ {max_array_length}, not null", p.name, p.ty.java_name()),
             (false, _) => format!("{}: {}", p.name, p.ty.java_name()),

@@ -104,6 +104,12 @@ states what a call does, for the own checker, and says at which level that is kn
 4. `cargo test` checks that the embedded class files match the sources (as disassembly, so a javac of another
    version does not fail it) and that the interpreter and JBMC compute the same function on the fixture.
 
+A model only the tool's own checker runs (`model!(checker ...)`: the stream models, `java.util.stream.Stream`,
+`SequentialArrayStream`, `IntStream` and `CharsStream`) is never on JBMC's class path and never replaces a JDK
+class: a JDK call enters it by a method of its own (`models::entry`: `Arrays.stream(Object[])`,
+`String.chars()`), and the checker runs its bytecode as an application's. Its conformance is the proofs of
+`tests/claims.rs`, where each stream operation is the loop it stands for.
+
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken
 yet.
