@@ -11,9 +11,15 @@
 # instruction with no commit since the cycle began, or since the last such
 # compaction, ends the turn there and stops the loop for a person to look at.
 # The session stays chained across cycles, so later ones build on earlier ones.
+# With LOOP_CONDUCTOR naming a directory, that compaction is put to a conductor
+# first (llm-dlc/tools/conductor.py): the turn goes on while a session outside
+# the loop judges whether the work is moving, for FEATURE_LOOP_CONDUCTOR_WAIT
+# seconds (900), and only its stop, or its silence, ends the turn.
 #
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
-# that runs away is killed alone and cannot exhaust the machine.
+# that runs away is killed alone and cannot exhaust the machine. On a machine
+# without systemd user scopes it refuses to start, unless FEATURE_LOOP_UNCAPPED=1
+# says to run with no cap at all.
 #
 # Usage: [FEATURE_LOOP_MEMORY_MAX=3.5G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
 #
@@ -25,6 +31,8 @@
 #   relational  make relational verification more efficient and accurate, with examples
 # Templated moonshots, one item of a list per cycle:
 #   prove-examples  formally prove examples 285 to 300, one per cycle, as elegantly and efficiently as possible
+#   prove-change    the same instruction over the examples FEATURE_LOOP_ITEMS names: step 3 of
+#                   /prove-java-change, started by llm-dlc/tools/prove-loop.sh, which also forks its session
 # Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
@@ -47,7 +55,8 @@
 # record (llm-dlc/loop-summaries/*-NAME.md) lists a commit for it, so a run starts
 # at the first item none has committed, and ends when the list does; CYCLES still
 # caps it. A cycle that makes no commit stops the loop as usual, and leaves its
-# item for the next run.
+# item for the next run. prove-change is the exception: it takes whichever
+# examples it is given, done before or not, since a later pass may return to one.
 #
 # A stopped loop is continued by running the same command again: the brief fixes
 # the session, its Progress section says what is done, and each cycle first
@@ -113,9 +122,10 @@ WORKSPACE=
 FORK_FROM=
 TEMPLATE=
 ITEMS=()
+EVERY_ITEM=
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|prove-examples|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|prove-examples|prove-change|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -208,6 +218,18 @@ case "$PROMPT" in
     SESSION_ID=a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31
     MODEL=claude-fable-5-2
     ;;
+  prove-change)
+    # The examples are the caller's: prove-loop.sh names them, and the session, a fork of the one that prepared them.
+    TEMPLATE="Formally prove example {} as elegantly and efficiently as possible"
+    read -r -a ITEMS <<<"${FEATURE_LOOP_ITEMS:-}"
+    if (( ${#ITEMS[@]} == 0 )); then
+      echo "feature-loop.sh: prove-change takes its examples from FEATURE_LOOP_ITEMS; start it with llm-dlc/tools/prove-loop.sh" >&2
+      exit 2
+    fi
+    EVERY_ITEM=1
+    SESSION_ID=new
+    MODEL=claude-fable-5-2
+    ;;
   *) usage ;;
 esac
 
@@ -254,6 +276,10 @@ fi
 # exact, and a process over it is killed rather than left thrashing.
 contain() {
   grep -q "/$SCOPE\.scope\$" /proc/self/cgroup && return
+  if [[ -n "${FEATURE_LOOP_UNCAPPED:-}" ]]; then
+    log "FEATURE_LOOP_UNCAPPED: running with no memory cap; a proof that runs away can exhaust the machine"
+    return
+  fi
 
   # The scope outlives the loop while anything in it runs, such as a Gradle daemon.
   if systemctl --user is-active --quiet "$SCOPE.scope"; then
@@ -295,7 +321,8 @@ PENDING=()
 if [[ -n "$TEMPLATE" ]]; then
   done_items=$(cat "$SUMMARIES"/*-"$PROMPT".md 2>/dev/null | sed -n 's/^- cycle [0-9]*, item \([^,]*\),.*/\1/p')
   for item in "${ITEMS[@]}"; do
-    grep -qxF -- "$item" <<<"$done_items" || PENDING+=("$item")
+    [[ -z "$EVERY_ITEM" ]] && grep -qxF -- "$item" <<<"$done_items" && continue
+    PENDING+=("$item")
   done
   if (( ${#PENDING[@]} == 0 )); then
     log "every item of $PROMPT has a commit (${ITEMS[*]}): nothing to do"
@@ -440,7 +467,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -642,11 +669,13 @@ while :; do
   with_state standing
   [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop, ? or help"
   if [[ -n "$AUTOCOMPACT" ]]; then
-    rm -f "$STATE.compacted"
-    export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted
+    rm -f "$STATE.compacted" "$STATE.notes"
+    export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted LOOP_WATCH_NOTES=$STATE.notes
+    export LOOP_WATCH_CYCLE=$cycle LOOP_WATCH_ITEM=$item LOOP_WATCH_SESSION=$SESSION_ID
+    export LOOP_WATCH_TRANSCRIPT="$(project_dir "$ROOT")/$SESSION_ID.jsonl"
   fi
   run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
-  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK
+  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")
     log "cycle $cycle: $compacted, stopping; session $SESSION_ID needs attention"
@@ -662,6 +691,10 @@ while :; do
   fi
   log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
   note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+  # What a conductor let go on during the turn, under the cycle's line.
+  if [[ -s "$STATE.notes" ]]; then
+    while IFS= read -r line; do note "  - $line"; done <"$STATE.notes"
+  fi
 
   decision=continue
   # The last cycle of a count ends the loop anyway, so there is nothing to decide.

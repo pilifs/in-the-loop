@@ -1,4 +1,4 @@
-# Runtime mode and releases
+# Runtime mode, the proof loop and releases
 
 This repository runs in one of two modes. `python3 llm-dlc/tools/mode.py` prints which.
 
@@ -13,8 +13,8 @@ This repository runs in one of two modes. `python3 llm-dlc/tools/mode.py` prints
 | Verification pipeline, loops, tests, examples | the same in both | the same in both |
 
 The commands are the same in both modes, so an agent follows one procedure: [`tools/mode.py`](tools/mode.py) decides
-what `sync.py commit`, `sync.py check` and the hooks in `.claude/settings.json` do. This page is the runtime side, and
-the release process that feeds it.
+what `sync.py commit`, `sync.py check` and the hooks in `.claude/settings.json` do. This page is the runtime side, the
+proof loop that runs in both, and the release process.
 
 ## Procedure for agents in a runtime checkout
 
@@ -78,6 +78,54 @@ Its `budget` shares the machine out as [`verification/README.md`](../verificatio
 describes: a reserve for the person and the operating system, one loop's memory cap, and the rest to the verification
 runner. It is a proposal: the runner's share goes into `verification/pipeline.local.toml` (not committed), and the
 loop's is its memory cap (`FEATURE_LOOP_MEMORY_MAX`).
+
+## The proof loop
+
+```bash
+llm-dlc/tools/prove-loop.sh --fork SESSION --memory SIZE NNN [NNN ...]
+```
+
+[`prove-loop.sh`](tools/prove-loop.sh) runs [`feature-loop.sh`](tools/feature-loop.sh)'s `prove-change` moonshot over
+the examples it is given, one per cycle: "Formally prove example NNN as elegantly and efficiently as possible", on
+Fable 5.2 at high effort, the instruction and nothing else. It works the same in both modes.
+
+- **The fork.** With `--fork`, the loop's session starts as a fork of the session that prepared the example, made in
+  one turn without tools and then compacted, so the loop begins knowing what the preparation learned and needs no
+  brief. The parent goes on untouched and may be mid-turn. Without `--fork` the loop starts a fresh session.
+- **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
+  does. `prove-loop.sh` starts the [verification loop](README.md#unattended-loops) for them unless one already runs
+  for this repository, and stops it when the loop has ended and the queue is clear.
+- **The cap.** The loop runs in a systemd scope with a memory cap (`--memory`; `doctor.py`'s budget proposes one). On
+  a machine without systemd user scopes it refuses to start unless `FEATURE_LOOP_UNCAPPED=1` says to run with none.
+- **The run's state** is in `llm-dlc/loop-summaries/prove-change/` (gitignored): `run.json` (the session, the
+  examples, how it ended), `events.jsonl`, and the verification loop's log. The run's record is beside it, as for
+  every loop. One run at a time in a checkout.
+
+### The conductor
+
+A moonshot has no acceptance criteria, so its context window is its measure: the session compacts itself at 600k
+tokens, and a compaction with no commit since the cycle began, or since the last compaction, is where the work is
+either hard and going well or stuck. A rule can't tell which. A loop by itself stops there; this one asks first. It
+appends the event to `events.jsonl`, lets the turn go on, and waits fifteen minutes (`FEATURE_LOOP_CONDUCTOR_WAIT`,
+in seconds) for a verdict:
+
+```bash
+python3 llm-dlc/tools/conductor.py wait llm-dlc/loop-summaries/prove-change      # blocks until there is something to judge
+python3 llm-dlc/tools/conductor.py decide llm-dlc/loop-summaries/prove-change N continue --reason "..."
+```
+
+The session that started the loop is its conductor. It runs `wait` as a background task, so it is called back when
+there is something to judge or the loop has ended (exit 3 means neither yet: wait again). It judges from outside: the
+loop's transcript, which the event names, the commits and the working copy's diff, the jobs, and whether the same
+failure or file keeps coming back. Then it answers and waits again.
+
+- `continue` lets the turn run to its next compaction, where the question is asked again if there is still no commit.
+- `stop`, or no answer in time, ends the turn and the loop, as the rule alone would have.
+- Lean towards `continue` while the work is moving. An example left unfinished is fine, since a later run can return
+  to it, and a stop costs a person's attention.
+
+The verdict and its reason go into the run's record under the cycle's line. The conductor never writes to the loop's
+session, whose instruction stays the one line.
 
 ## Releases
 
