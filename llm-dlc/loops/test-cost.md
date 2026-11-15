@@ -405,6 +405,39 @@ Settled by the user on 2026-11-15:
       run by default.
 
   Next: Phase 2 step 5, the Python `@cost` decorator and the tags in the Python tests.
+- 2026-11-15, Phase 2 step 5 done: every Python test the inventory puts above the unit tier is tagged.
+  - **The decorator.** `lib/tools/cost_tier.py`'s `@cost("tool")`, `@cost("pending")` and `@cost("proof")`. Under
+    `TEST_COST=unit` the first two are skipped, with the reason given. `@cost("proof")` is skipped unless
+    `TEST_COST=proof`, and `estimate` reads it as Python's counterpart of an ignore reason. Unset, nothing that runs
+    today is skipped. A misspelt value or tag raises, as the Rust helper panics.
+  - **What a Python test calls, corrected.** The inventory's check matched any mention of `subprocess`. It now
+    matches a call (`subprocess.run(`, `Popen(`, `os.system(` and the like). That moved 117 tests from tool to unit:
+    test_build.py 81, test_workflow.py 26, test_acceptance.py 4, test_targets_contract.py 2, test_performance.py 2,
+    and one each in test_runtime.py and test_runs.py. Each of them patches `subprocess` away, refuses `Popen`, or
+    builds a `CompletedProcess` for a mock. Python is now 790 tests: 736 unit, 54 tool, no proof, 408 estimated.
+    Rust is unchanged.
+  - **Tagging.** `test_costs.py tag` now takes Python files too. It decorates each test method as its row asks,
+    adding the import of `cost` while a decorator is left and taking it away with the last one. It added 54
+    `@cost("tool")` in 12 files: test_performance.py 15, test_prune_workspaces.py 14, test_build.py,
+    test_runtime.py and test_streams_status.py 4 each, test_without_jbmc.py and test_test_costs.py 3 each,
+    test_run.py and test_pipeline.py 2 each, and one each in test_gap_inventory.py, test_packets.py and
+    test_workflow.py. A second `tag` over all 31 Python test files changes nothing. `test_cost_inventory.py` tests
+    the decorator, the narrower check and the tagging (19 tests).
+  - **Verified.** The 12 tagged files and `test_cost_inventory.py`, each run by default and under `TEST_COST=unit`,
+    all pass. By default none of them skips a test. Under `unit` they skip exactly the 54 tagged tests. The Rust code
+    is unchanged, so `cargo test` wasn't run.
+  - **For review.** The reading sees a call only in the test, its file's helpers and its `setUp`. It misses a spawn
+    inside the module under test. So three files are still slow under `TEST_COST=unit`, though most of their tests
+    are unit tier by the inventory:
+    - test_runtime.py: 100 s against 103 s by default. Its tests reach `javac` through `runtime.prepare`.
+    - verification/test_pipeline.py: 67 s against 70 s.
+    - test_performance.py: 25 s against 28 s.
+
+    These tiers are marked `estimated`, since past runs bound them only above 1 s. Following calls into the
+    repository's modules, cut off where a test patches `subprocess`, would tier them; that is for step 7's lint or
+    for `measure`.
+
+  Next: Phase 2 step 6, one documented way to run each tier in `lib/README.md`.
 - Status: working
 
 ## Loop settings

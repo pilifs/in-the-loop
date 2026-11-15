@@ -20,6 +20,8 @@ HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
 from targets import interfaces, runtime, runtime_maven, sidecar, workflow, workflow_ingest  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 # Each packet: the mutant's base, its patch, the task whose claim the mutant is meant to fail, and the mutant's own
 # claim task. A CVE packet's mutant fails the fixed release's security property; a positive's fails its preservation
@@ -373,6 +375,7 @@ class OracleConventionTest(unittest.TestCase):
         runtime._add_controls(build, {"oracle": source["oracle"]}, folder.resolve(), workdir, "r", [])
         return SimpleNamespace(revision="r", source=source, artifacts=build.artifacts)
 
+    @cost("tool")
     def test_the_runner_gives_each_driver_the_arguments_its_oracle_documents(self):
         for number in self.NUMBERS:
             with self.subTest(number), tempfile.TemporaryDirectory() as tmp:

@@ -30,6 +30,8 @@ import redaction_rules
 import redactor
 import sync
 from redaction_rules import EMAIL_RE, WIN_USER_RE, email_spans
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 # No test reaches R2: the real token file, if this machine has one, is never read.
 sync.R2_CREDENTIALS = Path(tempfile.gettempdir()) / "llm-traces-tests-no-r2-credentials"
@@ -959,6 +961,7 @@ class Fingerprints(unittest.TestCase):
             out = subprocess.run([sys.executable, "-I", "-c", FINGERPRINTS, d], capture_output=True, text=True, check=True)
         return tuple(out.stdout.split())
 
+    @cost("tool")
     def test_an_edit_to_sync_keeps_the_content_caches_and_drops_what_depends_on_it(self):
         before = self.fingerprints(None)
         self.assertEqual(self.fingerprints(None), before)  # by content, not by path
@@ -1186,9 +1189,11 @@ class PublicationGate(unittest.TestCase):
         self.assertEqual(pushed.call_args.args, ("::(bookmarks(exact:\"main\")) ~ ::remote_bookmarks()",))
         return errors
 
+    @cost("tool")
     def test_the_checked_revision_passes(self):
         self.assertEqual(self.gate(self.snapshot()), [])
 
+    @cost("tool")
     def test_a_file_changed_since_the_commit_is_caught(self):
         commit = self.snapshot()
         sync.summary_path(self.SID).write_text("# made-up summary, edited after the commit\n")
@@ -1196,6 +1201,7 @@ class PublicationGate(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("summary.md differs from the copy that was checked", errors[0])
 
+    @cost("tool")
     def test_files_check_did_not_read_are_caught(self):
         log = sync.log_path(self.SID, self.sha)  # gitignored in the real repo; committed here by mistake
         log.parent.mkdir(parents=True)
@@ -1207,6 +1213,7 @@ class PublicationGate(unittest.TestCase):
         self.assertEqual(len(errors), 2)
         self.assertTrue(all("is in the revision but was not checked" in e for e in errors))
 
+    @cost("tool")
     def test_a_checked_file_missing_from_the_revision_is_caught(self):
         commit = self.snapshot()
         sync.notes_path(self.SID).parent.mkdir(parents=True)
@@ -1215,6 +1222,7 @@ class PublicationGate(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("was checked but is not in the revision", errors[0])
 
+    @cost("tool")
     def test_a_pushed_commit_must_point_at_an_uploaded_log(self):
         self.write_session(url=False)
         errors = self.gate(self.snapshot())
@@ -1225,6 +1233,7 @@ class PublicationGate(unittest.TestCase):
         legacy = f"Made-up change\n\n{sync.TRAILER}: {self.SID}\n"  # no sha256: nothing to fetch
         self.assertEqual(self.gate(self.snapshot(), legacy), [])
 
+    @cost("tool")
     def test_a_revset_jj_cannot_resolve_fails(self):
         failed = sync.subprocess.CompletedProcess([], 1, "", "made-up revset error")
         with mock.patch.object(sync, "jj", return_value=failed):
@@ -1232,6 +1241,7 @@ class PublicationGate(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("made-up revset error", errors[0])
 
+    @cost("tool")
     def test_what_a_push_publishes(self):
         self.assertEqual(sync.push_revisions(["--bookmark", "main"]), 'bookmarks(exact:"main")')
         self.assertEqual(sync.push_revisions(["-b=glob:feat*", "--remote", "origin"]), 'bookmarks(glob:"feat*")')
@@ -1240,6 +1250,7 @@ class PublicationGate(unittest.TestCase):
         self.assertEqual(sync.push_revisions(["--all"]), "bookmarks()")
         self.assertEqual(sync.push_revisions([]), "bookmarks() ~ ::remote_bookmarks()")
 
+    @cost("tool")
     def test_push_stops_before_git_when_the_gate_fails(self):
         for problems, pushed in ((["made-up problem"], False), ([], True)):
             ok = sync.subprocess.CompletedProcess([], 0, "", "")
@@ -1985,6 +1996,7 @@ class Coordinator(unittest.TestCase):
         self.assertEqual(child.stdout.readline().strip(), "held")
         return child
 
+    @cost("tool")
     def test_a_writer_waits_for_the_holder_and_names_it(self):
         child = self.hold("sync")
         with mock.patch("sys.stderr", io.StringIO()) as err, self.assertRaises(sync.Busy) as busy:
@@ -2007,6 +2019,7 @@ class Coordinator(unittest.TestCase):
         self.assertEqual(len(got), 1)
         self.assertGreaterEqual(got[0], released)
 
+    @cost("tool")
     def test_readers_share_and_exclude_writers(self):
         self.hold("check", "shared")
         with sync.Operation("scan", exclusive=False, wait=0.3):
@@ -2016,6 +2029,7 @@ class Coordinator(unittest.TestCase):
                 pass
         self.assertIn("a `sync.py check` or `scan`", err.getvalue())
 
+    @cost("tool")
     def test_a_lock_dies_with_its_holder(self):
         child = self.hold("push")
         child.kill()
@@ -2074,6 +2088,7 @@ class Coordinator(unittest.TestCase):
         return subprocess.run([sys.executable, "-c", HOOK, str(Path(sync.__file__).parent), str(self.state),
                                str(self.repo), how], env=env, capture_output=True, text=True, timeout=60)
 
+    @cost("tool")
     def test_a_killed_commit_hook_leaves_the_working_copy_to_be_put_back(self):
         run, env = self.jj_repo()
         at = lambda: run("log", "--no-graph", "-r", "@", "-T", "change_id ++ ' ' ++ description.first_line()").split()
@@ -2087,6 +2102,7 @@ class Coordinator(unittest.TestCase):
         self.assertEqual(len(at()), 1)  # a new, empty change without a description
         self.assertEqual(run("log", "--no-graph", "-r", "@-", "-T", "change_id"), committed)
 
+    @cost("tool")
     def test_a_terminated_commit_hook_puts_the_working_copy_back_itself(self):
         run, env = self.jj_repo()
         committed = run("log", "--no-graph", "-r", "@-", "-T", "change_id")
@@ -2172,6 +2188,7 @@ class Pool(unittest.TestCase):
 class ProfileRules(unittest.TestCase):
     """profile_rules.py, the harness behind performance.md, prints rule names and numbers only."""
 
+    @cost("tool")
     def test_it_prints_every_rule_and_counts_but_none_of_what_matched(self):
         token = "gh" + "p_" + "Q7x" * 12  # made up, assembled here
         address = "203.0." + "113.7"

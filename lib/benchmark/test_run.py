@@ -12,6 +12,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 
@@ -98,6 +100,7 @@ class WitnessTest(unittest.TestCase):
 
 
 class MeasureTest(unittest.TestCase):
+    @cost("tool")
     def test_peak_memory_counts_the_processes_a_run_waits_for(self):
         child = "import subprocess, sys; subprocess.run([sys.executable, '-c', 'x = bytearray(64 * 1024 * 1024)\\nfor i in range(0, len(x), 4096): x[i] = 1'])"
         m = run.measure([sys.executable, "-c", child], 60)
@@ -414,6 +417,7 @@ class CorpusTest(unittest.TestCase):
         cmd = run.command(cases["example/141"], "jbmc", "strict", {"example-141-before": Path("/b"), "example-141-after": Path("/a")}, Path("/w"), CommandTest.Options)
         self.assertEqual(cmd[cmd.index("--unchanged-unless") + 1], cases["example/141"]["unchangedUnless"])
 
+    @cost("tool")
     @unittest.skipUnless(shutil.which("java") and shutil.which("javac"), "needs a JDK")
     def test_the_reference_has_exactly_the_corpus_cases(self):
         with tempfile.TemporaryDirectory() as tmp:

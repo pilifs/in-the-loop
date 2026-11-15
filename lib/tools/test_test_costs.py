@@ -11,6 +11,8 @@ import unittest
 from pathlib import Path
 
 import test_costs as tc
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 
@@ -197,6 +199,7 @@ class Files(unittest.TestCase):
 class Watching(unittest.TestCase):
     """The process sampling, on made-up commands of well under a second."""
 
+    @cost("tool")
     def test_watch_records_a_spawned_process_and_passes_the_exit_on(self):
         with tempfile.TemporaryDirectory() as tmp:
             env = {**os.environ, "TEST_COSTS_DIR": tmp, "NEXTEST_BINARY_ID": "demo::bin", "NEXTEST_TEST_NAME": "t"}
@@ -209,11 +212,13 @@ class Watching(unittest.TestCase):
             self.assertGreaterEqual(record["wall_s"], 0.2)
             self.assertGreater(record["max_rss_mb"], 0)
 
+    @cost("tool")
     def test_watch_without_a_directory_only_runs_the_command(self):
         env = {k: v for k, v in os.environ.items() if k != "TEST_COSTS_DIR"}
         self.assertEqual(subprocess.run([sys.executable, str(HERE / "test_costs.py"), "watch", "true"],
                                         env=env).returncode, 0)
 
+    @cost("tool")
     def test_python_file_test_by_test(self):
         with tempfile.TemporaryDirectory() as tmp:
             f = Path(tmp) / "test_demo.py"

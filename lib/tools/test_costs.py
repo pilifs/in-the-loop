@@ -7,7 +7,7 @@
     python3 lib/tools/test_costs.py measure --out DIR      # everything; writes DIR's raw files and lib/tests/costs.json
     python3 lib/tools/test_costs.py inventory DIR          # rewrite lib/tests/costs.json from DIR's raw files
     python3 lib/tools/test_costs.py estimate               # write lib/tests/costs.json from past runs, running nothing
-    python3 lib/tools/test_costs.py tag FILE ...           # give FILE's tests the tool_tier! call their tier asks for
+    python3 lib/tools/test_costs.py tag FILE ...           # give FILE's tests the tier tag their row asks for
     python3 lib/tools/test_costs.py watch -- CMD ...       # nextest's wrapper: run one test, record what it cost
     python3 lib/tools/test_costs.py python FILE --out F    # run one Python test file, recording each test
 
@@ -477,8 +477,9 @@ def estimate(root=ROOT, fetch=False, exclude=("test-cost",)):
         rust.append(row)
     python = []
     for t in py_tests:
-        row = _row({"file": t["file"], "name": t["name"]}, t, ci.cost(py_ev[(t["file"], t["name"])]))
-        if row["tier"] == "proof":
+        skipped = '@cost("proof")' if t["cost"] == "proof" else None  # Python's counterpart of an ignore reason
+        row = _row({"file": t["file"], "name": t["name"]}, t, ci.cost(py_ev[(t["file"], t["name"])]), skipped)
+        if row["tier"] == "proof" and skipped is None:
             row["retier"] = "pending"
         python.append(row)
 
@@ -604,13 +605,15 @@ def measure(out, threads, source):
 
 
 def tag(files, path=INVENTORY, root=ROOT):
-    """Make each test's first statement in FILES (Rust) the `tool_tier!` call its row in the inventory asks for:
-    `tool_tier!()` for the tool tier, `tool_tier!(pending)` for `retier: pending`, none for the unit tier and for
-    ignored tests. Returns {file: tests changed}."""
+    """Give each test in FILES the tier tag its row in the inventory asks for, and take it away from a unit-tier
+    test. In Rust the first statement: `tool_tier!()` for the tool tier, `tool_tier!(pending)` for `retier: pending`,
+    none for an ignored test. In Python the decorator: `@cost("tool")`, `@cost("pending")`, or `@cost("proof")` for a
+    test the default run already skips, with the import of `cost` while one is left. Returns {file: tests changed}."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import cost_inventory as ci
+    doc = json.loads(Path(path).read_text())
     rows = {}
-    for r in json.loads(Path(path).read_text())["rust"]:
+    for r in doc["rust"] + doc["python"]:
         rows.setdefault(r["file"], {})[r["name"]] = r
     out = {}
     for f in files:
@@ -618,8 +621,9 @@ def tag(files, path=INVENTORY, root=ROOT):
         rel = str(p.relative_to(root))
         if rel not in rows:
             raise SystemExit(f"{rel}: no tests of it in {path}")
-        src, n = ci.tier_calls(p.read_text(), rel, rows[rel])
-        if n:
+        retag = ci.cost_decorators if rel.endswith(".py") else ci.tier_calls
+        src, n = retag(p.read_text(), rel, rows[rel])
+        if src != p.read_text():
             p.write_text(src)
         out[rel] = n
     return out
@@ -647,7 +651,8 @@ def main(argv=None):
     e.add_argument("--fetch", action="store_true", help="download published session logs not stored here")
     e.add_argument("--exclude", action="append", default=None, metavar="LOOP",
                    help="leave a loop's sessions out (default: test-cost, whose log changes with every commit)")
-    t = sub.add_parser("tag", help="give Rust test files' tests the tool_tier! call their tier asks for")
+    t = sub.add_parser("tag", help="give a test file's tests the tier tag their row asks for (tool_tier! in Rust, "
+                                   "@cost in Python)")
     t.add_argument("files", nargs="+")
     t.add_argument("--path", default=str(INVENTORY))
     py = sub.add_parser("python", help="run one Python test file, test by test")

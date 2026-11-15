@@ -17,6 +17,8 @@ EXAMPLES = HERE.parent.parent
 ROOT = EXAMPLES.parent
 sys.path.insert(0, str(HERE.parent))
 from targets import sidecar, workflow, workflow_handoff  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 PAGE = EXAMPLES / "gap-inventory.md"
 RANKED = [
@@ -100,6 +102,7 @@ class GapInventoryTest(unittest.TestCase):
                 if known:
                     self.assertEqual(r["seconds"], min(known), "the smallest recorded attempt")
 
+    @cost("tool")
     def test_find_gap_takes_a_gap_id_or_its_part_before_a_colon(self):
         def found(gap):
             out = subprocess.run([sys.executable, str(EXAMPLES / "tools/find.py"), "--json", "--limit", "50",

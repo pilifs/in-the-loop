@@ -7,6 +7,8 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 WRAPPER = HERE / "without_jbmc.sh"
@@ -18,6 +20,7 @@ class WithoutJbmcTest(unittest.TestCase):
     def run_wrapped(self, *command, env=None):
         return subprocess.run([str(WRAPPER), *command], capture_output=True, text=True, env=env, timeout=60)
 
+    @cost("tool")
     def test_no_jbmc_is_found_or_runs_and_the_commands_exit_code_comes_back(self):
         out = self.run_wrapped(sys.executable, "-c", WHICH)
         self.assertEqual(out.returncode, 7, out.stderr)
@@ -27,6 +30,7 @@ class WithoutJbmcTest(unittest.TestCase):
             ran = self.run_wrapped("bash", "-c", "jbmc --version")
             self.assertNotEqual(ran.returncode, 0, "a jbmc on PATH still ran inside the wrapper")
 
+    @cost("tool")
     def test_it_refuses_to_run_the_command_when_jbmc_is_still_there(self):
         if not shutil.which("jbmc"):
             self.skipTest("no jbmc here to find")
@@ -34,6 +38,7 @@ class WithoutJbmcTest(unittest.TestCase):
         self.assertEqual(out.returncode, 2)
         self.assertNotIn("None", out.stdout)
 
+    @cost("tool")
     def test_no_command_is_a_usage_error(self):
         self.assertEqual(self.run_wrapped().returncode, 2)
 

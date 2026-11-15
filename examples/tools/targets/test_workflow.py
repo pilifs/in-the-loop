@@ -25,6 +25,8 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 from targets import interfaces, route, sidecar, workflow  # noqa: E402
 from test_interfaces import plan  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
 SHA = "0123456789abcdef0123456789abcdef01234567"
@@ -660,6 +662,7 @@ class IngestTest(Fixture):
         self.assertEqual({(s["kept"], s["why"]) for s in streams}, {(None, workflow_ingest.NO_DIRECTORY)})
         self.assertEqual(len(streams), 2 * len(document["attempt"]["stages"]))
 
+    @cost("tool")
     def test_the_fixture_revisions_identity_is_its_git_tree(self):
         from targets import workflow_ingest
         repo = HERE.parents[2]

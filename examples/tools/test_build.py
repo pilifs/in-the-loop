@@ -24,6 +24,8 @@ from unittest import mock
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import build  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 EQUIVALENCE_VIOLATION = """\
 ✗ Behaviour of a.B#m changed:
@@ -1193,6 +1195,7 @@ class PlanTest(unittest.TestCase):
             self.assertIn(q["approach"], build.RUNNERS[q["app"]])
             self.assertEqual(q["runner"], build.RUNNERS[q["app"]][q["approach"]].__name__)
 
+    @cost("tool")
     def test_importing_build_py_makes_no_directory(self):
         code = (f"import sys, tempfile\n"
                 f"made = []\n"
@@ -1853,6 +1856,7 @@ class StagesTest(unittest.TestCase):
             self.addCleanup(shutil.rmtree, build.scratch(), True)
             return out, build.run(self.source, self.example, out)
 
+    @cost("tool")
     def test_an_interrupted_job_leaves_its_stage_logs_and_workspace_behind(self):
         # The work directory is a repository, as a job's could be: the patch still applies to the copy inside it.
         work = self.dir / "work"
@@ -1874,6 +1878,7 @@ class StagesTest(unittest.TestCase):
                           ("the verifier", "running"), ("the verifier", "exited")])
         self.assertEqual((attempt / "logs/02-the-verifier.stdout").read_text(), "half a proof\n")
 
+    @cost("tool")
     def test_a_git_format_patch_applies_to_a_copy_inside_a_repository(self):
         # A pipeline job's copy is inside this repository's tree. There, git apply took a git-format patch's paths
         # from the repository's top level, skipped every file and exited 0 (examples 128-131 and 134, job -073804).
@@ -2417,6 +2422,7 @@ class PatchesApplyTest(unittest.TestCase):
     and the job fails in its first stage: VF-002's jobs 20261107-163046, -163047 and -163049 (examples 147-149),
     whose `Tests.java` hunk predates `RetryThrottlingTest` in the list."""
 
+    @cost("tool")
     def test_every_example_s_patch_applies_to_the_current_tree(self):
         stale = []
         for path in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*/example.json")):

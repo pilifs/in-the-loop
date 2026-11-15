@@ -7,6 +7,8 @@ import unittest
 from pathlib import Path
 
 import streams_status
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 
@@ -47,6 +49,7 @@ BRIEF = """# Stream brief
 
 
 class Tag(unittest.TestCase):
+    @cost("tool")
     def test_prefixes_every_line_and_keeps_the_state(self):
         with tempfile.TemporaryDirectory() as d:
             proc = subprocess.run([sys.executable, str(HERE / "streams_status.py"), "tag", "heap", d],
@@ -65,15 +68,18 @@ class Tag(unittest.TestCase):
                            input=output.encode("latin-1"), capture_output=True, check=True)
         return streams_status.spend(d, "heap")
 
+    @cost("tool")
     def test_each_figure_is_the_sessions_total_so_far_so_spend_is_its_rise(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertAlmostEqual(self.tagged(d, OUTPUT, RESUMED), 5.20)
 
+    @cost("tool")
     def test_a_forks_first_figure_is_its_parents_total_not_spend(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertAlmostEqual(self.tagged(d, FORKED), 2.80)
             self.assertEqual((Path(d) / "heap.cost").read_text().split()[:2], ["=28.32", "31.07"])
 
+    @cost("tool")
     def test_a_figure_below_the_last_starts_a_new_session_counted_whole(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertAlmostEqual(self.tagged(d, FORKED, OUTPUT), 2.80 + 3.35)

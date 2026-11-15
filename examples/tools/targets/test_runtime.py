@@ -28,6 +28,8 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "fixtures"))
 import build_fixtures  # noqa: E402
 from targets import interfaces, runtime, runtime_jar, runtime_jdk, runtime_maven  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
 STUB = "Phase 0's stub"
@@ -1046,6 +1048,7 @@ class ParameterNamesTest(unittest.TestCase):
     SOURCE = ("package p; public class A { public static boolean f(int code, long w, String s, int[][] a) "
               "{ return code > 0; } public boolean g(double d, int x) { return x > 0; } }")
 
+    @cost("tool")
     def test_each_way_a_class_records_names_or_none(self):
         home = runtime_jdk.homes().get("25") or next(iter(runtime_jdk.homes().values()), None)
         if home is None:
@@ -1106,6 +1109,7 @@ class InheritedCallTest(unittest.TestCase):
             plan = type("Plan", (), {"target": "p.Base#ok(Ljava/lang/String;)Z", "kind": kind})()
             return runtime._check_classpath(plan, work, ["adapter.jar", "original.jar"], "original.jar", "adapter.jar")
 
+    @cost("tool")
     def test_a_call_through_a_subclass_resolves_to_the_originals_declaration(self):
         found = self.check(["Sub"])
         self.assertTrue(found["adapterCallsTarget"])
@@ -1113,6 +1117,7 @@ class InheritedCallTest(unittest.TestCase):
                          "the implicit super() is a call into the original too")
         self.assertTrue(self.check(["Sub", "Deeper"])["adapterCallsTarget"], "through two subclasses")
 
+    @cost("tool")
     def test_an_override_that_never_calls_super_does_not_call_the_target(self):
         with self.assertRaises(runtime.Refused) as refused:
             self.check(["Own"])
@@ -1120,6 +1125,7 @@ class InheritedCallTest(unittest.TestCase):
         found = self.check(["Own"], kind="prove")
         self.assertEqual((found["adapterCallsTarget"], found["adapterCalls"]), (False, ["p.Base#<init>()V"]))
 
+    @cost("tool")
     def test_the_resolution_follows_declarations_and_stops_where_the_bytes_end(self):
         with tempfile.TemporaryDirectory() as d:
             work = self.jars(d, ["Sub", "Deeper", "Own"])

@@ -295,69 +295,162 @@ def tier_calls(src: str, rel: str, rows: dict) -> tuple[str, int]:
 
 # --- reading Python -----------------------------------------------------------------------------------------------
 
+# A call, not a mention: a test that patches `subprocess.run` away, refuses `Popen`, or builds a
+# `subprocess.CompletedProcess` for a mock to return spawns nothing.
 PY_CALLS = [
-    ("process", r"\bsubprocess\b|\bos\.system\(|\bPopen\(|\bposix_spawn|\bos\.exec"),
-    ("network", r"\burllib\.request\.urlopen\(|\bhttp\.client\b|\bsocket\.socket\("),
+    ("process", r"\bsubprocess\.(?:run|Popen|call|check_call|check_output|getoutput|getstatusoutput)\("
+                r"|(?<![\w.])Popen\(|\bos\.(?:system|popen|posix_spawnp?|exec\w*|spawn\w*)\("
+                r"|\bcreate_subprocess_(?:exec|shell)\("),
+    ("network", r"\burllib\.request\.urlopen\(|\bhttp\.client\.\w+\(|\bsocket\.(?:socket|create_connection)\("),
 ]
 
 
+def python_cases(tree: ast.Module):
+    """Each test method of a parsed test file, inherited ones once per TestCase that has them: (class name, class
+    node, method name, method node, the module's functions by name, the class's methods by name)."""
+    funcs = {n.name: n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    classes = {n.name: n for n in tree.body if isinstance(n, ast.ClassDef)}
+
+    def methods(cls, seen=()):
+        own = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+        for b in cls.bases:
+            name = b.id if isinstance(b, ast.Name) else None
+            if name in classes and name not in seen:
+                own = {**methods(classes[name], seen + (name,)), **own}
+        return own
+
+    def is_case(cls, seen=()):
+        for b in cls.bases:
+            name = b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else None
+            if name in ("TestCase", "IsolatedAsyncioTestCase"):
+                return True
+            if name in classes and name not in seen and is_case(classes[name], seen + (name,)):
+                return True
+        return False
+
+    for cname, cls in classes.items():
+        if not is_case(cls):
+            continue
+        ms = methods(cls)
+        for mname, node in ms.items():
+            if mname.startswith("test"):
+                yield cname, cls, mname, node, funcs, ms
+
+
+def _cost_decorator(d) -> str | None:
+    """The tag of a decorator node if it is `@cost("...")`, or None."""
+    if (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "cost" and len(d.args) == 1
+            and isinstance(d.args[0], ast.Constant)):
+        return d.args[0].value
+    return None
+
+
+def cost_tag(node) -> str | None:
+    """The tag of a `@cost("...")` decorator on a function or class node, or None."""
+    return next((t for d in node.decorator_list if (t := _cost_decorator(d)) is not None), None)
+
+
 def python_tests(root: Path = ROOT, files=None) -> list[dict]:
-    """Every Python test method: file, name (Class.method), line, and what it calls."""
+    """Every Python test method: file, name (Class.method), line, what it calls, and its `@cost` tag."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from test_costs import python_test_files
     out = []
     for path in files if files is not None else python_test_files(root):
         src = path.read_text()
         tree = ast.parse(src)
-        funcs = {n.name: n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
-        classes = {n.name: n for n in tree.body if isinstance(n, ast.ClassDef)}
-
-        def methods(cls, seen=()):
-            own = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
-            for b in cls.bases:
-                name = b.id if isinstance(b, ast.Name) else None
-                if name in classes and name not in seen:
-                    own = {**methods(classes[name], seen + (name,)), **own}
-            return own
-
-        def is_case(cls, seen=()):
-            for b in cls.bases:
-                name = b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else None
-                if name in ("TestCase", "IsolatedAsyncioTestCase"):
-                    return True
-                if name in classes and name not in seen and is_case(classes[name], seen + (name,)):
-                    return True
-            return False
-
-        for cname, cls in classes.items():
-            if not is_case(cls):
-                continue
-            ms = methods(cls)
+        for cname, cls, mname, node, funcs, ms in python_cases(tree):
             setup = [ms[k] for k in ("setUp", "setUpClass", "tearDown", "asyncSetUp") if k in ms]
             setup += [funcs[k] for k in ("setUpModule",) if k in funcs]
-            for mname, node in ms.items():
-                if not mname.startswith("test"):
-                    continue
-                seen, todo, reach = set(), [node, *setup], []
-                while todo:
-                    n = todo.pop()
-                    reach.append(ast.get_source_segment(src, n) or "")
-                    for c in ast.walk(n):
-                        if isinstance(c, ast.Call):
-                            f = c.func
-                            name = f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else None
-                            if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name) and f.value.id in ("self", "cls"):
-                                target = ms.get(name)
-                            else:
-                                target = funcs.get(name) if isinstance(f, ast.Name) else None
-                            if target is not None and (target.name, id(target)) not in seen:
-                                seen.add((target.name, id(target)))
-                                todo.append(target)
-                body = "\n".join(reach)
-                calls = {kind for kind, rx in PY_CALLS if re.search(rx, body)}
-                out.append({"file": str(path.relative_to(root)), "name": f"{cname}.{mname}", "line": node.lineno,
-                            "calls": sorted(calls)})
+            seen, todo, reach = set(), [node, *setup], []
+            while todo:
+                n = todo.pop()
+                reach.append(ast.get_source_segment(src, n) or "")
+                for c in ast.walk(n):
+                    if isinstance(c, ast.Call):
+                        f = c.func
+                        name = f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else None
+                        if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name) and f.value.id in ("self", "cls"):
+                            target = ms.get(name)
+                        else:
+                            target = funcs.get(name) if isinstance(f, ast.Name) else None
+                        if target is not None and (target.name, id(target)) not in seen:
+                            seen.add((target.name, id(target)))
+                            todo.append(target)
+            body = "\n".join(reach)
+            calls = {kind for kind, rx in PY_CALLS if re.search(rx, body)}
+            out.append({"file": str(path.relative_to(root)), "name": f"{cname}.{mname}", "line": node.lineno,
+                        "calls": sorted(calls), "cost": cost_tag(node) or cost_tag(cls)})
     return out
+
+
+# --- the `@cost` decorator in the Python tests ----------------------------------------------------------------------
+
+COST_IMPORT = ('sys.path.append(str(Path(__file__).resolve().parents[{depth}] / "lib/tools"))\n'
+               'from cost_tier import cost  # noqa: E402\n')
+COST_IMPORT_RX = re.compile(r'sys\.path\.append\(str\(Path\(__file__\)\.resolve\(\)\.parents\[\d+\] / "lib/tools"\)\)\n'
+                            r'from cost_tier import cost  # noqa: E402\n')
+_RANK = (None, "tool", "pending", "proof")
+
+
+def _lines(src: str) -> list[str]:
+    """SRC's lines with their ends, split at newlines alone, as `ast` counts them (`str.splitlines` also splits at a
+    form feed or a line separator in a string)."""
+    return re.findall(r"[^\n]*\n|[^\n]+$", src)
+
+
+def wanted_cost_tag(row: dict | None) -> str | None:
+    """The `@cost` tag a Python test's inventory row asks for: `pending` for `retier: pending`, `proof` for a test
+    the default run skips as proof tier, `tool` for the tool tier, None for the unit tier (and a test the inventory
+    doesn't list)."""
+    if row is None or row["tier"] == "unit":
+        return None
+    if row.get("ignored") is not None:
+        return "proof"
+    return "pending" if row.get("retier") == "pending" else "tool"
+
+
+def cost_decorators(src: str, rel: str, rows: dict) -> tuple[str, int]:
+    """SRC with each test method decorated `@cost(...)` as its row in ROWS ({Class.method: row}) asks for, and no
+    other, and the import of `cost` present exactly when a decorator is: (new source, test methods changed). A
+    method a base class gives several TestCases takes the highest tag they ask for. REL is the file's path from the
+    repository root."""
+    tree = ast.parse(src)
+    want, nodes = {}, {}
+    for cname, _cls, mname, node, _funcs, _ms in python_cases(tree):
+        w = wanted_cost_tag(rows.get(f"{cname}.{mname}"))
+        nodes[id(node)] = node
+        want[id(node)] = max(want.get(id(node)), w, key=_RANK.index)
+    lines = _lines(src)
+    edits, changed = [], 0  # (first line, lines removed, text inserted), 0-based, applied from the end
+    for key, node in nodes.items():
+        have = [d for d in node.decorator_list if _cost_decorator(d) is not None]
+        w = want[key]
+        if w is None and not have or len(have) == 1 and cost_tag(node) == w:
+            continue
+        changed += 1
+        edits += [(d.lineno - 1, d.end_lineno - d.lineno + 1, "") for d in have]
+        if w is not None:
+            first = min([d.lineno for d in node.decorator_list] + [node.lineno]) - 1
+            edits.append((first, 0, " " * node.col_offset + f'@cost("{w}")\n'))
+    for first, n, text in sorted(edits, key=lambda e: (e[0], -e[1]), reverse=True):
+        lines[first:first + n] = [text] if text else []
+    src = "".join(lines)
+    tagged = any(cost_tag(n) is not None for n in ast.walk(ast.parse(src))
+                 if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)))
+    block = COST_IMPORT_RX.search(src)
+    if block and not tagged:
+        src = src[:block.start()] + src[block.end():]
+    elif tagged and not block:
+        tree = ast.parse(src)
+        imported = {a.asname or a.name for n in tree.body if isinstance(n, (ast.Import, ast.ImportFrom))
+                    for a in n.names}
+        if not {"sys", "Path"} <= imported:
+            raise SystemExit(f"{rel}: import sys and pathlib's Path at the top, for the import of `cost`")
+        last = max(n.end_lineno for n in tree.body if isinstance(n, (ast.Import, ast.ImportFrom)))
+        lines = _lines(src)
+        lines.insert(last, COST_IMPORT.format(depth=len(Path(rel).parts) - 1))
+        src = "".join(lines)
+    return src, changed
 
 
 # --- what past runs say ---------------------------------------------------------------------------------------------

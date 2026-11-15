@@ -12,6 +12,8 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 SCRIPT = Path(__file__).resolve().with_name("prune_workspaces.py")
 ENV = {**os.environ, "JJ_USER": "Test", "JJ_EMAIL": "test@example.invalid", "JJ_CONFIG": "/dev/null"}
@@ -65,6 +67,7 @@ class PruneTest(unittest.TestCase):
         sh(self.root, "jj", "new", "@-", "side@-", "-m", "merge")
         sh(self.root, "jj", "new")
 
+    @cost("tool")
     def test_a_merged_workspace_is_clear_and_deleted(self):
         (self.ws / "b.txt").write_text("side work\n")
         sh(self.ws, "jj", "commit", "-m", "side work")
@@ -80,6 +83,7 @@ class PruneTest(unittest.TestCase):
         self.assertNotIn("side", sh(self.root, "jj", "workspace", "list"))
         self.assertNotIn("repo-side", sh(self.root, "git", "worktree", "list"))
 
+    @cost("tool")
     def test_an_unmerged_commit_blocks(self):
         (self.ws / "b.txt").write_text("side work\n")
         sh(self.ws, "jj", "commit", "-m", "side work")
@@ -88,6 +92,7 @@ class PruneTest(unittest.TestCase):
         self.assertIn("not in ::@-", out)
         self.assertTrue(self.ws.exists())
 
+    @cost("tool")
     def test_an_edit_jj_never_snapshotted_blocks(self):
         self.merge_side()
         (self.ws / "a.txt").write_text("edited, never snapshotted\n")
@@ -96,6 +101,7 @@ class PruneTest(unittest.TestCase):
         self.assertIn("a.txt", out)
         self.assertTrue((self.ws / "a.txt").exists())
 
+    @cost("tool")
     def test_a_gitignored_file_found_nowhere_blocks_and_archive_keeps_it(self):
         (self.ws / ".env").write_text("TOKEN=made-up-value\n")
         code, out = self.prune("side")
@@ -111,6 +117,7 @@ class PruneTest(unittest.TestCase):
         self.assertEqual((archive / "side" / ".env").read_text(), "TOKEN=made-up-value\n")
         self.assertFalse(self.ws.exists())
 
+    @cost("tool")
     def test_a_gitignored_file_copied_into_the_default_workspace_is_clear(self):
         (self.ws / "records").mkdir()
         (self.ws / "records" / "run.md").write_text("a run record\n")
@@ -119,6 +126,7 @@ class PruneTest(unittest.TestCase):
         code, out = self.prune("side")
         self.assertEqual(code, 0, out)
 
+    @cost("tool")
     def test_ignored_build_output_is_regenerable(self):
         (self.ws / "target" / "debug").mkdir(parents=True)
         (self.ws / "target" / "debug" / "bin").write_bytes(os.urandom(4096))
@@ -126,6 +134,7 @@ class PruneTest(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("build output not checked", out)
 
+    @cost("tool")
     def test_a_tracked_directory_named_like_build_output_is_checked(self):
         self.merge_side()
         (self.ws / "build" / "new.txt").write_text("not ignored, not committed\n")
@@ -133,6 +142,7 @@ class PruneTest(unittest.TestCase):
         self.assertEqual(code, 1, out)
         self.assertIn("build/new.txt", out)
 
+    @cost("tool")
     def test_a_forgotten_workspace_directory_is_found_and_checked(self):
         sh(self.root, "jj", "workspace", "forget", "side")
         code, out = self.prune()
@@ -144,6 +154,7 @@ class PruneTest(unittest.TestCase):
         self.assertIn("only-here.txt", out)
         self.assertTrue(self.ws.exists())
 
+    @cost("tool")
     def test_a_workspace_in_use_blocks(self):
         proc = subprocess.Popen(["sleep", "30"], cwd=self.ws)
         try:
@@ -155,6 +166,7 @@ class PruneTest(unittest.TestCase):
         self.assertIn("in use by", out)
         self.assertTrue(self.ws.exists())
 
+    @cost("tool")
     def test_a_git_directory_of_its_own_blocks(self):
         (self.ws / ".git").unlink(missing_ok=True)
         sh(self.ws, "git", "init", "-q")
@@ -162,6 +174,7 @@ class PruneTest(unittest.TestCase):
         self.assertEqual(code, 1, out)
         self.assertIn(".git directory", out)
 
+    @cost("tool")
     def test_a_workspace_of_an_unfinished_loop_is_kept(self):
         sh(self.root, "jj", "workspace", "forget", "side")
         loops = self.root / "llm-dlc" / "loops"
@@ -176,12 +189,14 @@ class PruneTest(unittest.TestCase):
         code, out = self.prune("repo-side")
         self.assertEqual(code, 0, out)
 
+    @cost("tool")
     def test_delete_is_refused_in_an_agents_shell(self):
         code, out = self.prune("--delete", "side")  # no terminal, and CLAUDECODE when an agent runs the tests
         self.assertEqual(code, 1, out)
         self.assertIn("refused: a person must delete workspaces", out)
         self.assertTrue(self.ws.exists())
 
+    @cost("tool")
     def test_delete_needs_names_and_the_typed_confirmation(self):
         self.assertEqual(self.delete()[0], 2)
         code, out = self.delete("side", answer="yes")
@@ -189,6 +204,7 @@ class PruneTest(unittest.TestCase):
         self.assertIn("nothing deleted", out)
         self.assertTrue(self.ws.exists())
 
+    @cost("tool")
     def test_it_runs_only_from_the_default_workspace(self):
         r = subprocess.run([sys.executable, str(SCRIPT)], cwd=self.ws, env=ENV, capture_output=True, text=True)
         self.assertEqual(r.returncode, 2, r.stdout + r.stderr)

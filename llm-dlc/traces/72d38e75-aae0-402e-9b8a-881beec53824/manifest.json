@@ -12,33 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T12:23:38.409Z",
-  "ended": "2026-11-15T13:58:58.218Z",
-  "duration_seconds": 5720,
+  "ended": "2026-11-15T14:15:48.179Z",
+  "duration_seconds": 6730,
   "stats": {
-    "turns": 25,
-    "api_calls": 213,
-    "tool_calls": 220,
-    "tool_errors": 1,
-    "compactions": 4,
+    "turns": 31,
+    "api_calls": 268,
+    "tool_calls": 273,
+    "tool_errors": 2,
+    "compactions": 5,
     "peak_context_tokens": 182553,
     "usage": {
-      "input_tokens": 432,
-      "output_tokens": 212295,
-      "cache_read_input_tokens": 21628147,
-      "cache_creation_input_tokens": 638141
+      "input_tokens": 542,
+      "output_tokens": 254411,
+      "cache_read_input_tokens": 26762839,
+      "cache_creation_input_tokens": 768321
     }
   },
   "tools": {
-    "Bash": 195,
-    "Write": 9,
+    "Bash": 244,
+    "Write": 10,
     "Edit": 7,
-    "Read": 6,
-    "ToolSearch": 2,
-    "Monitor": 1
+    "Read": 7,
+    "ToolSearch": 3,
+    "Monitor": 2
   },
   "files_touched": [
     "lib/.config/nextest.toml",
     "lib/src/test_tier.rs",
+    "lib/tools/cost_tier.py",
     "lib/tools/install-nextest.sh",
     "lib/tools/test_cost_inventory.py",
     "lib/tools/test_costs.py",
@@ -108,24 +109,38 @@
     {
       "index": 4,
       "started": "2026-11-15T13:44:02.961Z",
-      "ended": "2026-11-15T13:58:58.218Z",
-      "turns": 6,
-      "api_calls": 25,
+      "ended": "2026-11-15T13:59:16.993Z",
+      "turns": 8,
+      "api_calls": 27,
       "usage": {
-        "input_tokens": 56,
-        "output_tokens": 9162,
-        "cache_read_input_tokens": 1667372,
-        "cache_creation_input_tokens": 68846
+        "input_tokens": 60,
+        "output_tokens": 10104,
+        "cache_read_input_tokens": 1832784,
+        "cache_creation_input_tokens": 72691
       },
-      "peak_context_tokens": 82032
+      "peak_context_tokens": 85877
+    },
+    {
+      "index": 5,
+      "started": "2026-11-15T14:00:05.610Z",
+      "ended": "2026-11-15T14:15:48.179Z",
+      "turns": 4,
+      "api_calls": 53,
+      "usage": {
+        "input_tokens": 106,
+        "output_tokens": 41174,
+        "cache_read_input_tokens": 4969280,
+        "cache_creation_input_tokens": 126335
+      },
+      "peak_context_tokens": 139521
     }
   ],
   "log": {
-    "sha256": "95b9d81d481304eade04c6a872f46a5d0dec6b686376b7c12c59318194ffea2f",
-    "bytes": 6094104,
-    "lines": 2065,
-    "gzip_bytes": 1088574,
-    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/95b9d81d481304eade04c6a872f46a5d0dec6b686376b7c12c59318194ffea2f.jsonl.gz"
+    "sha256": "2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030",
+    "bytes": 7492507,
+    "lines": 2586,
+    "gzip_bytes": 1330429,
+    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -184,6 +199,14 @@
       "summary": "Rust test tiers: every tool-tier and retier-pending test calls tool_tier!, 305 more across 27 files",
       "body": "python3 lib/tools/test_costs.py tag, run over the 22 remaining files in lib/tests/ and the five in lib/src/ with tool-tier or retier-pending tests, added 245 tool_tier!() calls and 60 tool_tier!(pending) calls (crate::tool_tier!() in lib/src/). With the previous commit's 57, all 299 tool-tier tests and 63 retier-pending tests in lib/tests/costs.json now call the helper first. A second tag over all 30 files changes nothing. Under JVMCONTRACT_TEST_TIER=unit those tests return at once. Without the variable nothing changes, and no test runs less by default.\n\nThe regenerated inventory's Rust rows are unchanged. It now also lists the two Tagging tests in lib/tools/test_cost_inventory.py, which the previous commit's inventory had left out because they were written after its last estimate.\n\nVerified: cargo build --tests is clean, apart from foundations.rs's three unused imports, which were there before. JVMCONTRACT_TEST_TIER=unit cargo test --no-fail-fast passes in 27 s. The default cargo test --no-fail-fast passes: 632 passed, 12 ignored, 0 failed, in 11 min 4 s. Progress lists for review the unit-tier tests that are still slow under the unit-only run (the library's and summaries.rs's), and two lib/src/jbmc.rs tests that are tool tier only because their text holds a shebang.",
       "log_sha256": "95b9d81d481304eade04c6a872f46a5d0dec6b686376b7c12c59318194ffea2f"
+    },
+    {
+      "change_id": "qqtnyrpvxyqupwzpvvxylmwpxvmxzrkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Python test tiers: the @cost decorator, test_costs.py tag for Python, and the 54 tool-tier tests tagged",
+      "body": "lib/tools/cost_tier.py adds @cost(\"tool\" | \"pending\" | \"proof\"), Python's counterpart of tool_tier!. Under TEST_COST=unit the tool and pending tests are skipped with a reason; proof is skipped unless TEST_COST=proof; unset, nothing that runs today is skipped; a misspelt value raises. The inventory's Python reading counted any mention of subprocess as a spawn. It now counts a call, so 117 tests that only patch subprocess away, refuse Popen or build a CompletedProcess for a mock moved from tool to unit (test_build.py 81, test_workflow.py 26, and others). Python is now 790 tests, 736 unit and 54 tool; Rust rows are unchanged. test_costs.py tag now decorates Python test methods as their rows ask and manages the import of cost. It tagged 54 tests in 12 files, and a second run over all 31 Python test files changes nothing. lib/README.md's Tests section describes the decorator.\n\nVerified: test_cost_inventory.py (19 tests, unit tier) covers the decorator, the narrower check, tagging, a U+2028 in a file (str.splitlines splits there, ast doesn't) and a decorator inside a string. The 12 tagged files and test_cost_inventory.py, each run by default and under TEST_COST=unit, all pass. The default runs skip nothing, and the unit runs skip exactly the 54 tagged tests. Rust is untouched, so cargo test wasn't rerun. test_runtime.py, test_pipeline.py and test_performance.py stay slow under TEST_COST=unit, because their tests spawn through the module under test, which the static reading can't see. This is listed for review in Progress.\n\nThe brief is out of date in one place: 'Where it starts from' counts 28 Python test_*.py files; the inventory now finds 31.",
+      "log_sha256": "2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030"
     }
   ],
   "logs": {
@@ -191,6 +214,12 @@
       "bytes": 1049881,
       "lines": 322,
       "gzip_bytes": 180598,
+      "url": null
+    },
+    "2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030": {
+      "bytes": 7492507,
+      "lines": 2586,
+      "gzip_bytes": 1330429,
       "url": null
     },
     "4c7e85a330a38efae5a99aa9d3e0eabcf0f4fce5a53d7ea3d48b36e173a8e3c5": {

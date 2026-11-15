@@ -89,6 +89,7 @@ mod tests {
 PYTHON = '''
 import subprocess
 import unittest
+from unittest import mock
 
 
 def run_git():
@@ -109,6 +110,15 @@ class Spawning(Base):
 
     def test_pure(self):
         self.assertEqual(self.x, 1)
+
+    def test_a_mocked_process_is_not_a_call(self):
+        done = subprocess.CompletedProcess([], 0, "", "")
+        with mock.patch.object(subprocess, "run", return_value=done), mock.patch("subprocess.Popen"):
+            self.assertEqual(done.returncode, 0)
+
+    @cost("proof")
+    def test_skipped_as_proof(self):
+        pass
 
 
 class NotACase:
@@ -190,10 +200,14 @@ class Calls(unittest.TestCase):
 
     def test_what_each_python_test_calls(self):
         tests = {t["name"]: t for t in ci.python_tests(self.root, [self.root / "examples/tools/test_made_up.py"])}
-        self.assertEqual(sorted(tests), ["Base.test_inherited", "Spawning.test_inherited",
-                                         "Spawning.test_pure", "Spawning.test_through_a_function"])
+        self.assertEqual(sorted(tests), ["Base.test_inherited", "Spawning.test_a_mocked_process_is_not_a_call",
+                                         "Spawning.test_inherited", "Spawning.test_pure",
+                                         "Spawning.test_skipped_as_proof", "Spawning.test_through_a_function"])
         self.assertEqual(tests["Spawning.test_through_a_function"]["calls"], ["process"])
         self.assertEqual(tests["Spawning.test_pure"]["calls"], [])
+        self.assertEqual(tests["Spawning.test_a_mocked_process_is_not_a_call"]["calls"], [])
+        self.assertEqual({n: t["cost"] for n, t in tests.items() if t["cost"]},
+                         {"Spawning.test_skipped_as_proof": "proof"})
 
 
 class PastRuns(unittest.TestCase):
@@ -342,6 +356,104 @@ class Tagging(unittest.TestCase):
         src = "#[cfg(test)]\nmod tests {\n    #[test]\n    fn t() {\n        run();\n    }\n}\n"
         out, n = ci.tier_calls(src, "lib/src/bmc/sat.rs", {"bmc::sat::tests::t": {"tier": "tool"}})
         self.assertEqual((n, out), (1, src.replace("fn t() {\n", "fn t() {\n        crate::tool_tier!();\n")))
+
+
+
+class TaggingPython(unittest.TestCase):
+    SRC = textwrap.dedent("""\
+        import sys
+        import unittest
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import made_up  # noqa: E402
+
+
+        class Base(unittest.TestCase):
+            def test_shared(self):
+                pass  # a line separator, which str.splitlines would split at: \u2028
+
+
+        class A(Base):
+            def test_spawns(self):
+                pass
+
+            @unittest.skipIf(False, "kept")
+            def test_pending(self):
+                pass
+
+            @cost("tool")
+            def test_was_tool_now_unit(self):
+                pass
+
+
+        class B(Base):
+            pass
+        """)
+    ROWS = {"A.test_spawns": {"tier": "tool"}, "A.test_pending": {"tier": "proof", "retier": "pending"},
+            "A.test_was_tool_now_unit": {"tier": "unit"}, "A.test_shared": {"tier": "unit"},
+            "B.test_shared": {"tier": "tool"}, "Base.test_shared": {"tier": "unit"}}
+    IMPORT = 'sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))\nfrom cost_tier import cost'
+
+    def test_each_test_gets_the_decorator_its_tier_asks_for_once(self):
+        out, n = ci.cost_decorators(self.SRC, "examples/tools/test_a.py", self.ROWS)
+        self.assertEqual(n, 4)
+        self.assertIn("import made_up  # noqa: E402\n" + self.IMPORT + "  # noqa: E402\n\n\nclass Base", out)
+        self.assertIn('    @cost("tool")\n    def test_shared(self):', out)  # B inherits it and spawns
+        self.assertIn('    @cost("tool")\n    def test_spawns(self):', out)
+        self.assertIn('    @cost("pending")\n    @unittest.skipIf(False, "kept")\n    def test_pending(self):', out)
+        self.assertIn('        pass\n\n    def test_was_tool_now_unit(self):', out)
+        self.assertEqual(ci.cost_decorators(out, "examples/tools/test_a.py", self.ROWS), (out, 0))
+        compile(out, "test_a.py", "exec")
+
+    def test_the_import_goes_with_the_last_decorator(self):
+        tagged, _ = ci.cost_decorators(self.SRC, "examples/tools/test_a.py", self.ROWS)
+        out, n = ci.cost_decorators(tagged, "examples/tools/test_a.py", {})
+        self.assertEqual(n, 3)
+        self.assertNotIn("cost_tier", out)
+        self.assertEqual(out, self.SRC.replace('    @cost("tool")\n', ""))
+
+    def test_a_decorator_in_a_string_is_not_one(self):
+        src = ('import unittest\n\nSRC = """\n@cost("tool")\n"""\n\n\n'
+               'class A(unittest.TestCase):\n    def test_a(self):\n        pass\n')
+        self.assertEqual(ci.cost_decorators(src, "x/test_a.py", {"A.test_a": {"tier": "unit"}}), (src, 0))
+
+    def test_a_file_without_sys_and_path_is_refused(self):
+        src = "import unittest\n\n\nclass A(unittest.TestCase):\n    def test_spawns(self):\n        pass\n"
+        with self.assertRaises(SystemExit):
+            ci.cost_decorators(src, "x/test_a.py", {"A.test_spawns": {"tier": "tool"}})
+
+
+class PythonTier(unittest.TestCase):
+    def test_which_tags_each_value_runs(self):
+        import cost_tier
+        runs = {v: [t for t in cost_tier.TAGS if cost_tier.included(t, v)] for v in (None, "", "unit", "tool", "proof")}
+        self.assertEqual(runs, {None: ["tool", "pending"], "": ["tool", "pending"], "unit": [],
+                                "tool": ["tool", "pending"], "proof": ["tool", "pending", "proof"]})
+        for tag, value in (("tool", "units"), ("slow", None)):
+            with self.assertRaises(ValueError):
+                cost_tier.included(tag, value)
+
+    def test_a_left_out_test_is_skipped_saying_why(self):
+        import cost_tier
+        from unittest import mock
+
+        class Case(unittest.TestCase):
+            with mock.patch.dict("os.environ", {"TEST_COST": "unit"}):
+                @cost_tier.cost("tool")
+                def test_tool(self):
+                    pass
+
+            with mock.patch.dict("os.environ", clear=True):
+                @cost_tier.cost("tool")
+                def test_by_default(self):
+                    pass
+
+        result = unittest.TestResult()
+        unittest.defaultTestLoader.loadTestsFromTestCase(Case).run(result)
+        self.assertEqual([(t.id().rsplit(".", 1)[1], why) for t, why in result.skipped],
+                         [("test_tool", "a tool-tier test, under TEST_COST=unit")])
+        self.assertEqual(result.testsRun, 2)
 
 
 if __name__ == "__main__":

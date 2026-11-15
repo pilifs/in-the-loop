@@ -21,6 +21,8 @@ from unittest import mock
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import pipeline  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[1] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 SYSTEMD = pipeline.systemd_works()
 
@@ -329,6 +331,7 @@ class PipelineTest(unittest.TestCase):
         self.repo.pipeline("prioritize", b, "--clear")
         self.assertNotIn(b, self.repo.pipeline("prioritize").stdout)
 
+    @cost("tool")
     @unittest.skipUnless(shutil.which("jj"), "needs jj")
     def test_a_job_committed_in_another_jj_workspace_is_queued_and_run_at_its_commit(self):
         # A feature loop's streams each work in their own workspace on their own branch; the runner, in the
@@ -417,6 +420,7 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(job["supersedes"], job_id)
         self.assertEqual(job["resources"]["memory"], "8G")
 
+    @cost("tool")
     def test_a_stopped_runner_cancels_its_job_and_the_next_run_takes_it_again(self):
         job_id = self.repo.submit("Interrupt me", "--run", "sleep 60")
         self.repo.commit("job")
