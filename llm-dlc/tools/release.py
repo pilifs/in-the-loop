@@ -151,6 +151,12 @@ def status() -> int:
                              "-T", "commit_id"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     print(f"  commit {commit[:12]}, {'on the remote main' if pushed else 'not pushed: no user can install it yet'}")
     print(f"  {len(since)} commit(s) since, in no release" + "".join(f"\n    {s}" for s in since[:20]))
+    changed = bootstrap().skill_differences(REPO, commit)
+    if changed:
+        # The plugin is installed from the tip of main, and a copy that is not its release's bytes refuses to run.
+        print("  the skill has changed since that release: cut another before main is pushed, or the skill installed\n"
+              "  from it will refuse to run" + "".join(f"\n    {c}" for c in changed))
+        return 1
     return 0
 
 
@@ -161,7 +167,7 @@ def main(argv: list[str]) -> int:
     c.add_argument("version", nargs="?", help="MAJOR.MINOR.PATCH; by default the last version's patch number plus one")
     c.add_argument("--note", help="a sentence for the pin and the commit message: what this release is for")
     sub.add_parser("verify", help="check the pin against the commit that carries it")
-    sub.add_parser("status", help="the last release and the commits since")
+    sub.add_parser("status", help="the last release and the commits since; exit 1 if the skill has changed since it")
     args = p.parse_args(argv)
     if args.command == "cut":
         return cut(args.version, args.note)

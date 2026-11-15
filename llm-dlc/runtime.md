@@ -1,4 +1,4 @@
-# Runtime mode, the proof loop, contributions and releases
+# Runtime mode and `/prove-java-change`
 
 This repository runs in one of two modes. `python3 llm-dlc/tools/mode.py` prints which.
 
@@ -13,8 +13,39 @@ This repository runs in one of two modes. `python3 llm-dlc/tools/mode.py` prints
 | Verification pipeline, loops, tests, examples | the same in both | the same in both |
 
 The commands are the same in both modes, so an agent follows one procedure: [`tools/mode.py`](tools/mode.py) decides
-what `sync.py commit`, `sync.py check` and the hooks in `.claude/settings.json` do. This page is the runtime side, the
-proof loop that runs in both, and the release process.
+what `sync.py commit`, `sync.py check` and the hooks in `.claude/settings.json` do. This page is the runtime side: the
+skill that sets it up, the proof loop, contributions and releases.
+
+## `/prove-java-change`
+
+The skill ([`SKILL.md`](../plugins/in-the-loop/skills/prove-java-change/SKILL.md)) proves a change to Java code on a
+user's machine, in four steps, orchestrated by Fable 5.2 at high effort. It is short on purpose: it says what each
+step is for and when to stop, and this repository holds what the steps stand on.
+
+| Step | Runs in | Stands on |
+|---|---|---|
+| 1. Set up, verify and measure the machine | a subagent on Opus, only when something needs setting up | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough) |
+| 2. Assess the change and set the example up | the orchestrating session | [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task |
+| 3. Prove it | a fork of that session, in a moonshot loop it conducts | [the proof loop](#the-proof-loop) |
+| 4. Report, and offer to contribute | the orchestrating session | [contributing back](#contributing-back) |
+
+The user confirms after steps 1 and 2, and a blocker is settled before the next step starts.
+
+**Not there yet: a change that is not public.** A revision is prepared from a commit on github.com or a published
+JAR on an allowed host ([`examples/README.md`](../examples/README.md#add-an-example)); the `fixture` route, sources
+copied into the example's folder, is the only one that takes code from the machine itself, and it was made for
+constructed controls. A change in a private repository, or one not committed yet, has no route of its own until a
+local repository can be a revision's source. Until then step 2 names this as a blocker, or uses a fixture when the
+change is small enough to copy; either way such an example stays local, and `contribute.py` refuses to send it.
+
+**In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
+plugin, so `/prove-java-change NNN` runs the copy being worked on. The bootstrap answers `development`, steps 1 and 2
+don't apply (the checkout is the home, its machine is known and the example exists), and the skill goes straight to
+step 3 on the examples named, with traces as for any loop here, and reports as in step 4.
+
+**Installed.** A user adds this repository as a plugin marketplace and installs the plugin `in-the-loop`; the skill
+is then `/in-the-loop:prove-java-change`. The plugin carries only the skill's folder: the skill, its bootstrap and
+its pin.
 
 ## Procedure for agents in a runtime checkout
 
@@ -182,6 +213,9 @@ python3 llm-dlc/tools/release.py verify
 - **Finding** a release needs no tag: the bootstrap looks through the history of the pin for the commit that carries
   this version and digest and accepts it only when its tree hashes to the digest again. One implementation of the
   digest serves both sides, in `bootstrap.py`.
+- **The skill changes only in a release.** The plugin is installed from the tip of `main`, and a copy of the skill
+  that is not its release's bytes refuses to run. So a change to anything in the skill's folder is followed by a cut
+  before `main` is pushed; `release.py status` exits 1 while one is owed.
 - **A release reaches users when `main` is pushed with it**, which stays the user's call. A copy of the skill installed
   earlier keeps its own pin and its own release until the plugin is updated (`claude plugin update`); its version in
   `plugin.json` is what tells Claude Code there is an update.

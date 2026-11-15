@@ -68,6 +68,29 @@ The folder also holds everything that makes this work:
 | [`llm-dlc/infra/cdn/`](llm-dlc/infra/cdn) | The Cloudflare Worker that serves the published logs |
 | [`llm-dlc/infra/langfuse/`](llm-dlc/infra/langfuse) | An optional local Langfuse for browsing traces |
 
+## [`/prove-java-change`](llm-dlc/runtime.md): the repository as a skill
+
+A Claude Code skill that formally proves a change to Java code on your own machine, with this repository as its tool.
+It installs a released copy of the repository, checked against a hash the skill carries, measures the machine,
+prepares the change as an example with its claims, proves it in an unattended loop on Fable 5.2, and reports what was
+proved, refuted or left open. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you
+agree to send a contribution back as a pull request.
+
+```bash
+claude plugin marketplace add pilifs/in-the-loop
+claude plugin install in-the-loop@in-the-loop
+# then, in Claude Code, on Fable 5.2 at high effort:
+/in-the-loop:prove-java-change <the change: a pull request, a commit, or what to prove about it>
+```
+
+| Path | What it is |
+|---|---|
+| [`plugins/in-the-loop/skills/prove-java-change/`](plugins/in-the-loop/skills/prove-java-change/SKILL.md) | The skill, the bootstrap that installs and checks a release, and the pin of the release it runs on |
+| [`llm-dlc/runtime.md`](llm-dlc/runtime.md) | The two modes of a checkout, what each step of the skill stands on, the proof loop and its conductor, contributions and releases |
+| [`llm-dlc/tools/doctor.py`](llm-dlc/tools/doctor.py), [`prove-loop.sh`](llm-dlc/tools/prove-loop.sh), [`contribute.py`](llm-dlc/tools/contribute.py), [`release.py`](llm-dlc/tools/release.py) | Whether a machine is enough, the loop, what can go upstream, and cutting a release |
+
+In this repository the same skill runs as `/prove-java-change NNN` on an existing example, without the setup steps.
+
 ## License
 
 Code is licensed under Apache-2.0 ([LICENSE](LICENSE)).
