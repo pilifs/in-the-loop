@@ -905,6 +905,14 @@
       "summary": "test_costs.py: the per-test cost measuring tool, written and tested but not run; cargo-nextest installed, hash-pinned",
       "body": "Phase 1 step 2 of the test-cost brief, as revised after the user stopped the run before its measuring job. lib/tools/test_costs.py measures what each test costs: a warm plain cargo test for the default run's wall time, then every Rust test under cargo-nextest, one process each (debug for default tests, release for ignored ones), and every Python test file test by test. For each test it records time, CPU, peak memory and the processes spawned (sampled from /proc), and writes lib/tests/costs.json with the tier each test measures into (unit: no subprocess, under 1 s; tool: under 10 s and 1 GB; proof: JBMC/TLC or over those). lib/.config/nextest.toml defines only a measure profile that runs each test under the tool's watch wrapper; plain cargo test and nextest's default profile are unaffected. lib/tools/install-nextest.sh installs cargo-nextest 0.9.151 from its github.com release, pinned to the sha256 that both the release's .sha256 asset and GitHub's asset digest give.",
       "log_sha256": "b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e"
+    },
+    {
+      "change_id": "qnytyympotsnlpnuqwtksqkmswstsxuw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test_test_costs.py: a made-up TLC path outside /home; the earlier one proposed for the allow list",
+      "body": "The test of test_costs.tool_name used /home/u/.local/bin/tlc as a made-up TLC launcher path, which the redaction scan flags as another user's home directory (finding bca79831, other-home-dir, in this session's log). The test now uses /opt/tools/bin/tlc, and the finding is proposed for the allow list as a false positive, for the user to approve. Verified: python3 lib/tools/test_test_costs.py passes (12 tests).",
+      "log_sha256": "b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e"
     }
   ],
   "logs": {

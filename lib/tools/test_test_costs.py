@@ -61,7 +61,7 @@ class Names(unittest.TestCase):
             ((f"{jdk}/javac", ["javac", "-d", "out", "A.java"]), "javac"),
             ((f"{jdk}/java", ["java", "-cp", "out", "Runner"]), "java"),
             ((f"{jdk}/java", ["java", "-cp", "/x/tla2tools.jar", "tlc2.TLC", "M"]), "tlc"),
-            (("/usr/bin/bash", ["bash", "/home/u/.local/bin/tlc", "M.tla"]), "tlc"),
+            (("/usr/bin/bash", ["bash", "/opt/tools/bin/tlc", "M.tla"]), "tlc"),
             (("/usr/bin/dash", ["sh", "/tmp/t/jbmc-stand-in", "--version"]), "sh jbmc-stand-in"),
             (("/usr/bin/python3.14", ["python3", "-I", "fake_jbmc.py"]), "python3 fake_jbmc.py"),
             (("/repo/lib/target/debug/jvmcontract", ["jvmcontract", "prove"]), "jvmcontract"),
