@@ -1460,6 +1460,31 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     - Close VF-027 as its "Closes when" allows: each example records the task as unprovable by this route, and each
       job is resubmitted unchanged in its claim, predicting the observed refusal, so it passes as expected. That also
       settles those jobs for A8.
+- 2026-11-15, **maven.aliyun.com withdrawn from the download hosts** (the user's decisions of 2026-11-15).
+  - **Reproducer**: `test_runtime.py`'s mirror test is now
+    `test_the_aliyun_mirror_withdrawn_is_refused_like_any_unlisted_host`. It failed on `ryszmlnr`, where `HOSTS`
+    still held `maven.aliyun.com`. It checks that the host is gone from `HOSTS` and from the refusal text, and that
+    four mirror URLs are refused by `allowed()`, as redirects, and by `check_item`. Those are the pinned
+    spring-build-conventions plugin and the `public`, `jcenter` and `gradle-plugin` repositories. It also checks that
+    decision 1's other hosts stay allowed.
+  - **The change**: `runtime_maven.HOSTS` and `HOST_NAMES` are back to decision 1's five hosts. The `PATH_PREFIXES`
+    mechanism held only the mirror, so it went with it: `allowed()` is the plain host check again. The docstrings of
+    `runtime_maven.py`, `runtime.py` and `runtime_upstream.py` say the mirror is withdrawn and the Gradle route
+    isn't built. 307's `sources.lock.json` keeps the mirror's hashes as a record of the lookups, and nothing fetches
+    them.
+  - **A7 passes**: the isolated session's job `20261114-235737-example-105-task-fix-property-before-the` passed in
+    31 s with `task-as-expected`, and the verification loop collected it in `olumqtlx`. Its receipt
+    `receipts/fix-property-before/20261115T001438Z-b304cfd0` has the earlier attempt's claim id (`bb2955ce…`), and
+    `refuted` with the witness `pow(-2, 31)`. The earlier attempt `20261114T222911Z-f3a33202` is kept beside it.
+    `test_acceptance.py` still passes with the second attempt in the tree (13).
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (234), `test_build.py`
+    (190), `test_pipeline.py` (32) and `build.py --plan`.
+  - **Next**: 307 on the source slice (the user's choice (b)). Give its sidecar the `source-slice` route with
+    javac 8 and `-g -source 1.8 -target 1.8 -encoding UTF-8`. Check before's class byte for byte against 5.2.0.M4's
+    published `BCrypt.class`, as a job or in the replay job's preparation. Rewrite its blocker, `next` and README,
+    which still offer options (a) and (b). Then queue its replay, `mutant-replay` and claim tasks. After that comes
+    VF-027 as the user decided: observed gaps, `blocked` readiness, and resubmissions predicting the refusals. Then
+    the gap inventory, A8 and the for-review list.
 - Status: working
 
 ## Loop settings

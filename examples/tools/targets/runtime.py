@@ -1,7 +1,7 @@
 """Preparation and separate-JVM execution: the runtime stream's side of the interfaces (interfaces.py), for
 llm-dlc/loops/example-targets.md (R1-R4). Signatures are frozen. Acquisition follows the brief's downloads policy:
-Maven Central, github.com, repo.spring.io, services.gradle.org, plugins.gradle.org and maven.aliyun.com's mirror of
-Spring's plugin repository only (runtime_maven.HOSTS and PATH_PREFIXES), every file's sha256 recorded and rechecked.
+Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org only (runtime_maven.HOSTS), every
+file's sha256 recorded and rechecked.
 
     lock(plan, revision)                   source-locked: immutable paths, revisions and recipe, hashed; offline, pure
     prepare(plan, revision, workdir)       artifacts-ready: built or fetched, every byte hashed and the classpath

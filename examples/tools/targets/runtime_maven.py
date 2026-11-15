@@ -1,7 +1,6 @@
 """Hash-pinned acquisition of published artifacts (llm-dlc/loops/example-targets.md, runtime's R2, and the brief's
-downloads policy, decision 1 and its two extensions of 2026-11-14): Maven Central, github.com, repo.spring.io,
-services.gradle.org, plugins.gradle.org and Alibaba Cloud's mirror of Spring's plugin repository on maven.aliyun.com
-only (HOSTS, PATH_PREFIXES), every file by the sha256 its lock records, checked when it is
+downloads policy, decision 1 and its extension of 2026-11-14): Maven Central, github.com, repo.spring.io,
+services.gradle.org and plugins.gradle.org only (HOSTS), every file by the sha256 its lock records, checked when it is
 fetched and again whenever a cached copy is reused. A mutable reference (a range, `+`, LATEST, RELEASE, a SNAPSHOT) and
 a missing hash are preparation blockers, never resolved here. The URL says where bytes came from; the sha256 is what
 they are. Runtime stream's.
@@ -36,16 +35,11 @@ from pathlib import Path
 
 CENTRAL = "https://repo.maven.apache.org/maven2/"
 # Decision 1: Maven Central and github.com; its extension (the user, 2026-11-14): repo.spring.io, services.gradle.org
-# and plugins.gradle.org, under the same hash-pinned acquisition; its second extension (the user, 2026-11-14):
-# maven.aliyun.com, for P3's (307) Spring Gradle plugins, which no anonymous upstream repository serves, so only under
-# its mirror of Spring's plugin repository (PATH_PREFIXES). No other host, and no host by another name.
-HOSTS = ("repo.maven.apache.org", "github.com", "repo.spring.io", "services.gradle.org", "plugins.gradle.org",
-         "maven.aliyun.com")
-HOST_NAMES = ("Maven Central, github.com, repo.spring.io, services.gradle.org, plugins.gradle.org or "
-              "maven.aliyun.com/repository/spring-plugin/")
-# A host allowed only under one path: the path must start with the prefix, and may not leave it by a `.` or `..`
-# segment or a percent-encoding (which a server would decode after this check).
-PATH_PREFIXES = {"maven.aliyun.com": "/repository/spring-plugin/"}
+# and plugins.gradle.org, under the same hash-pinned acquisition. No other host, and no host by another name. Its second
+# extension, maven.aliyun.com's mirror of Spring's plugin repository for P3's (307) Gradle plugins, was withdrawn by the
+# user on 2026-11-15, once P3 took the source slice instead: its URLs are refused like any other host's.
+HOSTS = ("repo.maven.apache.org", "github.com", "repo.spring.io", "services.gradle.org", "plugins.gradle.org")
+HOST_NAMES = "Maven Central, github.com, repo.spring.io, services.gradle.org or plugins.gradle.org"
 # github.com serves release assets by redirecting to its own content hosts; nothing else is followed (services.gradle.org
 # redirects a distribution to github.com, and its .sha256 to downloads.gradle.org, which is not followed).
 REDIRECT_HOSTS = HOSTS + ("objects.githubusercontent.com", "release-assets.githubusercontent.com")
@@ -101,13 +95,7 @@ def central_url(coords, extension="jar"):
 
 def allowed(url, hosts=HOSTS):
     parts = urllib.parse.urlsplit(url)
-    if not (parts.scheme == "https" and parts.hostname in hosts and not parts.username and not parts.port):
-        return False
-    prefix = PATH_PREFIXES.get(parts.hostname)
-    if prefix is None:
-        return True
-    segments = parts.path.split("/")
-    return parts.path.startswith(prefix) and "%" not in parts.path and "." not in segments and ".." not in segments
+    return parts.scheme == "https" and parts.hostname in hosts and not parts.username and not parts.port
 
 
 def source_url(url, coords):

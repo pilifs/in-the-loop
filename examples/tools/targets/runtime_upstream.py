@@ -21,11 +21,10 @@ Maven only, for now. A Maven wrapper's distribution is fetched from Maven Centra
 or else checked against Central's .sha1 and recorded, then run directly: the wrapper's own download step is not.
 A Gradle build is a preparation blocker. Its hosts are allowed since decision 1's extension (services.gradle.org,
 plugins.gradle.org, repo.spring.io), but there is no Gradle route yet: the wrapper's distribution by sha256, the
-build's repositories held to runtime_maven.HOSTS, and every file it resolves hashed. The one packet that would use it,
-example 307, gets its four Spring plugins from maven.aliyun.com's mirror of Spring's plugin repository (decision 1's
-second extension, 2026-11-14). The rest of its buildscript is still out of reach: plugins.gradle.org serves the
-plugins it hosts by redirect to plugins-artifacts.gradle.org, which isn't followed, and some second-level dependencies
-were JCenter-only (its target.json). So the route waits on the user's choice for 307 and isn't built.
+build's repositories held to runtime_maven.HOSTS, and every file it resolves hashed. It isn't built: the one packet that
+would have used it, example 307, can't resolve its buildscript from the allowed hosts (four Spring plugins only on a
+mirror, plugins.gradle.org's redirect to plugins-artifacts.gradle.org, JCenter-only dependencies; its target.json), and
+the user chose the source slice for it on 2026-11-15, withdrawing the mirror the same day.
 An installed Gradle is not the revision's own build tool. No build-enabling patch is applied: one would be separate
 recorded bytes with a scope review.
 

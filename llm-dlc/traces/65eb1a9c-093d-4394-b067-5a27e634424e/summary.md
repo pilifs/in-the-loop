@@ -380,15 +380,21 @@ VF-027's 23 no-verdict proof jobs stop on five checker capabilities. They are re
 
 Committed with a path-limited jj commit while the loop was stopped.
 
-### (in progress)
-
-change `woouysxlqonu`, not yet described
-
 ### Record verification results for 1 job: example 105's fix-property-before calibration prove passes
 
 change `olumqtlxopqu` · [log `4da1cb56f97d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/4da1cb56f97d62caaaf24f0416ffc755b71822e21f37a16c66544e24d5f705ef.jsonl.gz)
 
 Job 20261114-235737-example-105-task-fix-property-before-the (the calibration prove of ArithmeticUtils#pow(II)I) passed in 31s, peak 780 MiB (estimated 15m, 3 GiB). Its 4 outputs, the task's receipt under example 105, were applied; no conflicts. No verdicts or errors needing a person; no findings.md changes.
+
+### example-targets: maven.aliyun.com withdrawn from the download hosts; A7 passes on its isolated session's job
+
+change `vwrqwqqyosrt` · [log `4da1cb56f97d`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/4da1cb56f97d62caaaf24f0416ffc755b71822e21f37a16c66544e24d5f705ef.jsonl.gz)
+
+The user withdrew decision 1's second extension on 2026-11-15, once P3 (307) took the source slice: no route needs Alibaba Cloud's mirror of Spring's plugin repository. runtime_maven.HOSTS and HOST_NAMES are back to Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. The PATH_PREFIXES mechanism held only the mirror, so it went too, and allowed() is the plain host check again. The docstrings of runtime_maven.py, runtime.py and runtime_upstream.py say so. 307's sources.lock.json keeps the mirror's hashes as a record of the lookups; nothing fetches them.
+
+Reproducer: test_runtime.py's mirror test, now test_the_aliyun_mirror_withdrawn_is_refused_like_any_unlisted_host, failed on the parent. It checks that the host is gone from HOSTS and the refusal text, that four mirror URLs (the pinned spring-build-conventions plugin, and the public, jcenter and gradle-plugin repositories) are refused by allowed(), as redirects and by check_item, and that the other hosts stay allowed.
+
+A7 (agent continuation) passes: the isolated session's job 20261114-235737-example-105-task-fix-property-before-the, collected in olumqtlx, came back task-as-expected, with the earlier attempt's claim id and refuted with the witness pow(-2, 31). Both attempts are kept.
 
 ## Conversation
 
