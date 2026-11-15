@@ -217,7 +217,10 @@ timebox and the safety rules. Planning and discovery never touch the network.
   checked), and the case's oracle (`check(lines)`, run in a separate `python3 -I` with a 60 s limit) read each one.
   Then its expectation is `yes` when each revision shows, alike on every JDK, what its pair's kind says (exact fix or
   release: before violates, after holds; mutation or introduction: before holds, after violates; positive: both hold),
-  else `no`; `replay.reproduced` is true only for `yes`, `replay.by` is `model` when a record says so. A kill, a
+  else `no` (*changed at the merge, noted 2026-11-15*: since `ykxtqwmt` a `release` pair's sides follow the case's role,
+  a negative case's vulnerable release violating and its fixed one holding, a positive case's both holding, and any
+  other role giving no expectation; see [`example-targets.md`](example-targets.md)'s Progress, Phase 5 step 1's A3
+  and A4 entry); `replay.reproduced` is true only for `yes`, `replay.by` is `model` when a record says so. A kill, a
   timeout, a JVM that didn't start, exit 1, missing, malformed or incomplete output, other bytes, and one side or one
   JDK missing give a receipt with that execution status, the reasons, expectation `not-evaluable` and
   `reproduced: false`. **A proof** is read from its one verifier record with `build.py`'s rules (`execution_status`,

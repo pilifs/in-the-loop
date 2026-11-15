@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 105, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-15 02:21 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-15 02:27 UTC |
 | Prompts | 2,391 |
-| Model calls | 22,724 |
-| Tool calls | 23,718 (414 failed) |
+| Model calls | 22,737 |
+| Tool calls | 23,731 (414 failed) |
 | Compactions | 370 |
 | Subagents | 17 |
-| Tokens written | 22,898,223 |
-| Tokens read | 3,497,074,641 (97.8% from cache) |
-| Commits with a trace | 693 |
-| Log snapshots | 882 (1924.0 MB gzipped, 732 uploaded) |
+| Tokens written | 22,910,921 |
+| Tokens read | 3,498,450,572 (97.8% from cache) |
+| Commits with a trace | 694 |
+| Log snapshots | 884 (1933.3 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -121,7 +121,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | ended | 7 h 33 min | `claude-opus-5-5` | 11 | 64 | 58 | 2 | 0 | 151,934 | 50 |
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
-| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 7 h 55 min | `claude-opus-5-5` | 164 | 1,373 | 1,404 | 27 | 30 | 313,393 | 54 |
+| 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 8 h 2 min | `claude-opus-5-5` | 164 | 1,385 | 1,416 | 27 | 30 | 313,393 | 55 |
 | 2026-11-14 22:28 UTC | [778b368b-7c15-49d4-8a80-52a00eae477a](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 2 | 20 | 18 | 4 | 0 | 61,265 | 2 |
 | 2026-11-14 22:40 UTC | [8eb322f2-65b0-48fa-be73-1357ad3bd4d7](8eb322f2-65b0-48fa-be73-1357ad3bd4d7/summary.md) | ended | 0 min | `claude-sonnet-5-5` | 1 | 5 | 4 | 0 | 0 | 36,561 | 2 |
 | 2026-11-14 23:29 UTC | [577f63c1-0bd5-4fa4-9f0e-3c96500c2881](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 1 | 7 | 6 | 0 | 0 | 41,274 | 2 |
@@ -131,7 +131,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 01:10 UTC | [28108fd0-2356-46e1-8340-483cce5ffcd0](28108fd0-2356-46e1-8340-483cce5ffcd0/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 8 | 7 | 0 | 0 | 47,083 | 2 |
 | 2026-11-15 01:31 UTC | [9afd524c-dd88-4be3-a7d1-e33e52803e1e](9afd524c-dd88-4be3-a7d1-e33e52803e1e/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 48,050 | 3 |
 | 2026-11-15 01:41 UTC | [bd59e87b-a013-4704-9c5c-cdab7fe9dd65](bd59e87b-a013-4704-9c5c-cdab7fe9dd65/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 1 | 0 | 44,379 | 2 |
-| 2026-11-15 02:06 UTC | [5341c50c-7a2a-449a-af31-94af17c66fbe](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | open | 10 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 34,306 | 3 |
+| 2026-11-15 02:06 UTC | [5341c50c-7a2a-449a-af31-94af17c66fbe](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | open | 20 min | `claude-sonnet-5-5` | 1 | 9 | 9 | 1 | 0 | 34,771 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -235,7 +235,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 42,027 | 142 | 199,827 | 6,231,261 | 96.9% | 153 |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 899,332 | 2,784 | 4,498,398 | 175,330,126 | 97.5% | 200 |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 911,892 | 2,808 | 4,518,103 | 176,651,557 | 97.5% | 199 |
 | [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | 4,497 | 44 | 49,893 | 855,785 | 94.5% | 201 |
 | [`8eb322f2`](8eb322f2-65b0-48fa-be73-1357ad3bd4d7/summary.md) | 1,611 | 10 | 25,189 | 138,543 | 84.6% | 102 |
 | [`577f63c1`](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) | 1,802 | 14 | 28,048 | 212,344 | 88.3% | 133 |
@@ -245,19 +245,19 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`28108fd0`](28108fd0-2356-46e1-8340-483cce5ffcd0/summary.md) | 2,698 | 16 | 35,711 | 275,014 | 88.5% | 115 |
 | [`9afd524c`](9afd524c-dd88-4be3-a7d1-e33e52803e1e/summary.md) | 3,599 | 24 | 34,784 | 447,987 | 92.8% | 134 |
 | [`bd59e87b`](bd59e87b-a013-4704-9c5c-cdab7fe9dd65/summary.md) | 2,637 | 20 | 31,153 | 332,814 | 91.4% | 138 |
-| [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | 1,233 | 16 | 21,080 | 238,017 | 91.9% | 210 |
+| [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | 1,371 | 18 | 21,545 | 272,321 | 92.7% | 214 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 20,787 | 87.6% | 105 |
+| `Bash` | 20,795 | 87.6% | 105 |
 | `Read` | 1,128 | 4.8% | 46 |
 | `Edit` | 889 | 3.7% | 46 |
 | `Write` | 521 | 2.2% | 42 |
-| `ToolSearch` | 132 | 0.6% | 34 |
+| `ToolSearch` | 133 | 0.6% | 34 |
 | `Monitor` | 103 | 0.4% | 40 |
-| `AskUserQuestion` | 41 | 0.2% | 13 |
+| `AskUserQuestion` | 45 | 0.2% | 13 |
 | `TaskStop` | 34 | 0.1% | 14 |
 | `WebFetch` | 28 | 0.1% | 8 |
 | `Agent` | 17 | 0.1% | 7 |
@@ -967,6 +967,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 691 | change `mwsuupln` | example-targets: Phase 5 step 5, the for-review list; A0-A7 pass and A8 waits on its two jobs | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/1e126a11cb062f5c998532480f84140bca12d39361005d3c408e02df7552ae4c.jsonl.gz)), [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) ([log](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)) |
 | 692 | change `pummuplw` | Allow list: Filip Stankovic approved 345f455a, 71c156ce, 7e48b0a7, f5f8f407 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/70641db2b7d3f52e1e772d77b5fbd78f08b539238a62d43bdda835e69473a64f.jsonl.gz)), [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) ([log](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)) |
 | 693 | change `pynmtoxm` | example-targets: the brief brought up to date outside Progress | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/85dcb05f2d6fb2a90b3f380336b72d629b9b0a5277e150b15f3e2f6868f2eb23.jsonl.gz)), [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) ([log](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/1a2ff5a25807ca0bd4fbbbd6da22d659bdd689ff93f931cc07df17ab1c35b9fe.jsonl.gz)) |
+| 694 | change `zpsktlxz` | example-targets: the user's decisions on the for-review list, nine items to do before done; the workflow brief's release-pair rule noted | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/bd966fe3a77333bf27666ea8095418bc280e605aaebea37ac54394b533e15938.jsonl.gz)), [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) ([log](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/af4fe749acec77d0ad6ad2d7695ced2f12f81b32d4477fd2c9c061eb4d575f1f.jsonl.gz)) |
 
 ## Logs
 
@@ -1068,7 +1069,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 11 | 0 | 2.0 MB | `eff74a3c8d4b`, not uploaded |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
-| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 52 | 0 | 223.7 MB | `85dcb05f2d6f`, not uploaded |
+| [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 53 | 0 | 233.0 MB | `bd966fe3a773`, not uploaded |
 | [`778b368b`](778b368b-7c15-49d4-8a80-52a00eae477a/summary.md) | 2 | 0 | 0.2 MB | `614c725d7625`, not uploaded |
 | [`8eb322f2`](8eb322f2-65b0-48fa-be73-1357ad3bd4d7/summary.md) | 2 | 0 | 0.2 MB | `2138830cab37`, not uploaded |
 | [`577f63c1`](577f63c1-0bd5-4fa4-9f0e-3c96500c2881/summary.md) | 2 | 0 | 0.2 MB | `f87a5358ad81`, not uploaded |
@@ -1078,7 +1079,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`28108fd0`](28108fd0-2356-46e1-8340-483cce5ffcd0/summary.md) | 2 | 0 | 0.2 MB | `2b3e36ba2ef2`, not uploaded |
 | [`9afd524c`](9afd524c-dd88-4be3-a7d1-e33e52803e1e/summary.md) | 2 | 0 | 0.2 MB | `cf814520ac95`, not uploaded |
 | [`bd59e87b`](bd59e87b-a013-4704-9c5c-cdab7fe9dd65/summary.md) | 2 | 0 | 0.2 MB | `34350549e131`, not uploaded |
-| [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | 2 | 0 | 0.2 MB | `1a2ff5a25807`, not uploaded |
+| [`5341c50c`](5341c50c-7a2a-449a-af31-94af17c66fbe/summary.md) | 3 | 0 | 0.2 MB | `af4fe749acec`, not uploaded |
 
 ## Session notes
 

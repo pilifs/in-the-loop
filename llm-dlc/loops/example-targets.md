@@ -2005,7 +2005,38 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   third, and decision 8 its change. This settles step 5's two "out of date in the brief" items. The user approved the
   four allow-list proposals (`pummuplw`), so `check` reports 0 warnings. Next: the for-review list, with the user;
   then the A8 jobs, as above.
-- Status: waiting on jobs 20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na 20261115-020015-gate-a8-one-constructed-example-per-buil
+- 2026-11-15, **the user's decisions on the for-review list** (a review with the user after the run stopped; step 5's
+  entry lists the items). Accepted as read, no change: every reading of a decision (the storage redirect, 305's extra
+  JARs, M6 on the slice's dependencies, 307's unmatched after slice, request 9's breadth, the release-pair roles, and
+  A8's four readings: the merged line, the 28-path sample, JBMC hidden rather than uninstalled, 147/148 and cargo not
+  rerun), and the streams' and Phase 0's packet notes, which stay notes. **To do before `done`**, one per cycle, each
+  with a reproducer where it fixes behaviour:
+  1. **A blocked task's handoff `next`** names `workflow_refusal.py N T` and its gap id with the inventory's closure
+     test, not `pipeline.py submit` (`workflow_handoff.py`).
+  2. **`build.py --index-only` (and `--render-only`) regenerate `examples/gap-inventory.md`**, so it moves with the
+     index.
+  3. **285–287's prediction summaries** keep their text, dated, with a line pointing to the observed blockers and the
+     gap inventory.
+  4. **A new gap kind for `two-dependency-closures`** in `target.schema.json` (the verifier's single `--classpath`, not
+     input construction), the gap reclassified in its packets and the inventory.
+  5. **Receipts bundle the raw streams**: ingestion copies the JVM and verifier stdout/stderr and `controls.json` into
+     the receipt's `records/`, hashed and capped in size; a `not-started` controls record states why (287's guard
+     tasks).
+  6. **A7's four observations fixed**: a property check's `evidence.replay` filled; a one-revision witness names the
+     revision it ran on, not `after`; the receipt records both `claim.id` and the frozen claim key and documents which
+     is compared; the handoff lists the files a claim cites (105's `records/pow-gaps.json`).
+  7. **307's receipt records the slice's published-class match** (entry, sha256, JAR) from the preparation.
+  8. **The 18-versus-19 count** of `kqpykqpp`'s collect investigated; a `pipeline.py collect` bug, if it is one, fixed
+     with a reproducer.
+  9. *Done in this commit*: **`example-targets-workflow.md:219`** has a dated note that the release-pair rule changed
+     at the merge (`ykxtqwmt`), pointing here.
+  10. **287's unguarded single-byte entry** recorded in its notes and handoff as a missing sensitivity control: no
+      mutant claim covers dropping the 72-byte guard for ASCII passwords. No new task now.
+
+  Items 1–7 change code or packets after the A8 jobs were queued. A8's jobs stay the evidence for the tree they ran
+  on; whether an item needs a rerun is judged when it is done (none touches `without_jbmc.sh` or the constructed
+  run paths). **Next**: item 1, and the A8 jobs when they are collected.
+- Status: working
 
 ## Loop settings
 
