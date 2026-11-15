@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T12:23:38.409Z",
-  "ended": "2026-11-15T14:15:48.179Z",
-  "duration_seconds": 6730,
+  "ended": "2026-11-15T14:34:36.122Z",
+  "duration_seconds": 7858,
   "stats": {
-    "turns": 31,
-    "api_calls": 268,
-    "tool_calls": 273,
-    "tool_errors": 2,
-    "compactions": 5,
+    "turns": 36,
+    "api_calls": 308,
+    "tool_calls": 312,
+    "tool_errors": 4,
+    "compactions": 6,
     "peak_context_tokens": 182553,
     "usage": {
-      "input_tokens": 542,
-      "output_tokens": 254411,
-      "cache_read_input_tokens": 26762839,
-      "cache_creation_input_tokens": 768321
+      "input_tokens": 622,
+      "output_tokens": 286888,
+      "cache_read_input_tokens": 30713223,
+      "cache_creation_input_tokens": 890936
     }
   },
   "tools": {
-    "Bash": 244,
+    "Bash": 279,
+    "Edit": 10,
     "Write": 10,
-    "Edit": 7,
-    "Read": 7,
+    "Read": 8,
     "ToolSearch": 3,
     "Monitor": 2
   },
@@ -123,24 +123,38 @@
     {
       "index": 5,
       "started": "2026-11-15T14:00:05.610Z",
-      "ended": "2026-11-15T14:15:48.179Z",
-      "turns": 4,
-      "api_calls": 53,
+      "ended": "2026-11-15T14:16:18.863Z",
+      "turns": 5,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 41174,
-        "cache_read_input_tokens": 4969280,
-        "cache_creation_input_tokens": 126335
+        "input_tokens": 114,
+        "output_tokens": 42801,
+        "cache_read_input_tokens": 5533345,
+        "cache_creation_input_tokens": 130500
       },
-      "peak_context_tokens": 139521
+      "peak_context_tokens": 143686
+    },
+    {
+      "index": 6,
+      "started": "2026-11-15T14:17:14.141Z",
+      "ended": "2026-11-15T14:34:36.122Z",
+      "turns": 4,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 72,
+        "output_tokens": 30850,
+        "cache_read_input_tokens": 3386319,
+        "cache_creation_input_tokens": 118450
+      },
+      "peak_context_tokens": 131636
     }
   ],
   "log": {
-    "sha256": "2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030",
-    "bytes": 7492507,
-    "lines": 2586,
-    "gzip_bytes": 1330429,
-    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030.jsonl.gz"
+    "sha256": "38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8",
+    "bytes": 8638815,
+    "lines": 2988,
+    "gzip_bytes": 1548174,
+    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -207,6 +221,14 @@
       "summary": "Python test tiers: the @cost decorator, test_costs.py tag for Python, and the 54 tool-tier tests tagged",
       "body": "lib/tools/cost_tier.py adds @cost(\"tool\" | \"pending\" | \"proof\"), Python's counterpart of tool_tier!. Under TEST_COST=unit the tool and pending tests are skipped with a reason; proof is skipped unless TEST_COST=proof; unset, nothing that runs today is skipped; a misspelt value raises. The inventory's Python reading counted any mention of subprocess as a spawn. It now counts a call, so 117 tests that only patch subprocess away, refuse Popen or build a CompletedProcess for a mock moved from tool to unit (test_build.py 81, test_workflow.py 26, and others). Python is now 790 tests, 736 unit and 54 tool; Rust rows are unchanged. test_costs.py tag now decorates Python test methods as their rows ask and manages the import of cost. It tagged 54 tests in 12 files, and a second run over all 31 Python test files changes nothing. lib/README.md's Tests section describes the decorator.\n\nVerified: test_cost_inventory.py (19 tests, unit tier) covers the decorator, the narrower check, tagging, a U+2028 in a file (str.splitlines splits there, ast doesn't) and a decorator inside a string. The 12 tagged files and test_cost_inventory.py, each run by default and under TEST_COST=unit, all pass. The default runs skip nothing, and the unit runs skip exactly the 54 tagged tests. Rust is untouched, so cargo test wasn't rerun. test_runtime.py, test_pipeline.py and test_performance.py stay slow under TEST_COST=unit, because their tests spawn through the module under test, which the static reading can't see. This is listed for review in Progress.\n\nThe brief is out of date in one place: 'Where it starts from' counts 28 Python test_*.py files; the inventory now finds 31.",
       "log_sha256": "2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030"
+    },
+    {
+      "change_id": "wykynwxqpyyqptqplunmuzoxsqxwnlpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Test tiers: one way to run each, test_costs.py run --tier default|unit|proof, documented in lib/README.md",
+      "body": "Phase 2 step 6 of llm-dlc/loops/test-cost.md. python3 lib/tools/test_costs.py run runs cargo test in lib/ and then each Python test file lib/tests/costs.json lists, in its own process, with one line per file and the full output on failure. --tier default (what runs inline) sets JVMCONTRACT_TEST_TIER and TEST_COST to tool, which is the same as unset, so nothing is skipped that ran before. --tier unit sets them to unit. --tier proof runs cargo test --release -- --ignored and only the Python tests tagged @cost(\"proof\"), of which there are none yet. --only, --test and --dry-run narrow a run.\n\nlib/README.md's Tests section opens with the tiers and the two inline commands. It writes down the proof tier's pipeline.py submit command: 4 CPUs, 8G, 1.5 h, from past jobs' times. That command was checked with --dry-run only, and no job was written. The measure paragraph's heap and conformance times are corrected to the inventory's.\n\nVerified: test_test_costs.py (16 tests, 4 of them new for run) passes by default and under TEST_COST=unit. run --only python passed 30 of 31 files by default, skipping nothing, and 30 of 31 under --tier unit. The Rust code is unchanged, so cargo test wasn't run. The inventory was regenerated.\n\nFound, and recorded for review in the brief's Progress: examples/tools/test_economics.py fails by default, apart from this loop, because examples 287 and 289 to 291 have no subject.file. The inventory misses 27 of test_runtime_upstream.py's 30 tests, whose classes inherit a TestCase from test_runtime; step 7 starts by listing them. Three heap proof tests failed their last jobs (VF-018 reruns).",
+      "log_sha256": "38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8"
     }
   ],
   "logs": {
@@ -220,6 +242,12 @@
       "bytes": 7492507,
       "lines": 2586,
       "gzip_bytes": 1330429,
+      "url": null
+    },
+    "38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8": {
+      "bytes": 8638815,
+      "lines": 2988,
+      "gzip_bytes": 1548174,
       "url": null
     },
     "4c7e85a330a38efae5a99aa9d3e0eabcf0f4fce5a53d7ea3d48b36e173a8e3c5": {

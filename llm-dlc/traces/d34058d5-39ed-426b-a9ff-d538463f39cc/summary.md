@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (ended) |
+| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (open) |
 | When | 2026-11-14 15:11 UTC to 2026-11-15 13:01 UTC (1309 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.321 |
@@ -880,6 +880,18 @@ The test of test_costs.tool_name used /home/u/.local/bin/tlc as a made-up TLC la
 change `vlrntnkoowln` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
 
 Phase 2 step 4 of llm-dlc/loops/test-cost.md, first part. lib/src/test_tier.rs adds tool_tier!(), the first statement of a tool-tier test, and tool_tier!(pending) for a proof-tier test that still runs by default (retier: pending in lib/tests/costs.json). Both return at once under JVMCONTRACT_TEST_TIER=unit and do nothing without it; any other value than unit, tool or proof panics. A new subcommand, python3 lib/tools/test_costs.py tag FILE ..., gives each test the call its inventory row asks for, and takes it off unit-tier and ignored tests. A second run changes nothing. heap.rs (48 tool-tier tests), conformance.rs (6 tool, 3 pending) and preparation.rs (none) are tagged. Their twelve #[ignore] reasons now read 'cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST', with times from past jobs. The heap proxies are the native-engine tests that run the same cases. The conformance proxy is the own-checker corpus run, itself retier: pending. The benchmark says 'proxy: none yet'. The inventory was regenerated (644 Rust tests, with test_tier's two). A second regeneration was byte-identical.
+
+### Test tiers: one way to run each, test_costs.py run --tier default|unit|proof, documented in lib/README.md
+
+change `wykynwxqpyyq` · [log `b264d4b0cfba`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b264d4b0cfba0b7c12cfba17e2e3598d4298d4c90f1247c1f2a601a1a9fd1b0e.jsonl.gz)
+
+Phase 2 step 6 of llm-dlc/loops/test-cost.md. python3 lib/tools/test_costs.py run runs cargo test in lib/ and then each Python test file lib/tests/costs.json lists, in its own process, with one line per file and the full output on failure. --tier default (what runs inline) sets JVMCONTRACT_TEST_TIER and TEST_COST to tool, which is the same as unset, so nothing is skipped that ran before. --tier unit sets them to unit. --tier proof runs cargo test --release -- --ignored and only the Python tests tagged @cost("proof"), of which there are none yet. --only, --test and --dry-run narrow a run.
+
+lib/README.md's Tests section opens with the tiers and the two inline commands. It writes down the proof tier's pipeline.py submit command: 4 CPUs, 8G, 1.5 h, from past jobs' times. That command was checked with --dry-run only, and no job was written. The measure paragraph's heap and conformance times are corrected to the inventory's.
+
+Verified: test_test_costs.py (16 tests, 4 of them new for run) passes by default and under TEST_COST=unit. run --only python passed 30 of 31 files by default, skipping nothing, and 30 of 31 under --tier unit. The Rust code is unchanged, so cargo test wasn't run. The inventory was regenerated.
+
+Found, and recorded for review in the brief's Progress: examples/tools/test_economics.py fails by default, apart from this loop, because examples 287 and 289 to 291 have no subject.file. The inventory misses 27 of test_runtime_upstream.py's 30 tests, whose classes inherit a TestCase from test_runtime; step 7 starts by listing them. Three heap proof tests failed their last jobs (VF-018 reruns).
 
 ## Conversation
 

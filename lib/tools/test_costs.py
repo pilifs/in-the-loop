@@ -8,6 +8,8 @@
     python3 lib/tools/test_costs.py inventory DIR          # rewrite lib/tests/costs.json from DIR's raw files
     python3 lib/tools/test_costs.py estimate               # write lib/tests/costs.json from past runs, running nothing
     python3 lib/tools/test_costs.py tag FILE ...           # give FILE's tests the tier tag their row asks for
+    python3 lib/tools/test_costs.py run [--tier unit]      # the default run (or the unit tier alone), Rust and Python
+    python3 lib/tools/test_costs.py run --tier proof       # the proof tier: a pipeline job, never inline
     python3 lib/tools/test_costs.py watch -- CMD ...       # nextest's wrapper: run one test, record what it cost
     python3 lib/tools/test_costs.py python FILE --out F    # run one Python test file, recording each test
 
@@ -604,6 +606,80 @@ def measure(out, threads, source):
     return 0
 
 
+# --- running a tier -----------------------------------------------------------------------------------------------
+
+RUN_TIERS = ("default", "unit", "proof")
+PY_RAN_LINE = re.compile(r"^Ran \d+ tests? in [\d.]+s$", re.M)
+PY_OUTCOME_LINE = re.compile(r"^(?:OK|FAILED|NO TESTS RAN)\b.*$", re.M)
+
+
+def tier_runs(tier, doc, root=ROOT, only=None, tests=(), test_threads=None):
+    """The commands that run TIER, as (label, argv, env, cwd): `cargo test` in lib/, then each Python test file the
+    inventory DOC lists, in its own process. `default` is what runs inline: the unit and tool tiers and the
+    `retier: pending` tests. `unit` is the unit tier alone. `proof` is the ignored Rust tests in release and the
+    Python tests tagged `@cost("proof")`: a pipeline job, never run inline. ONLY ("rust" or "python") keeps one
+    language; TESTS keeps those Rust test binaries (`--test NAME`)."""
+    if tier not in RUN_TIERS:
+        raise ValueError(f"tier {tier!r}: the tiers to run are {', '.join(RUN_TIERS)}")
+    value = {"default": "tool", "unit": "unit", "proof": "proof"}[tier]
+    env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}
+    runs = []
+    if only in (None, "rust"):
+        argv = ["cargo", "test", "--manifest-path", "lib/Cargo.toml"] + (["--release"] if tier == "proof" else [])
+        argv += [a for t in tests for a in ("--test", t)]
+        after = (["--ignored"] if tier == "proof" else []) + (["--test-threads", str(test_threads)] if test_threads else [])
+        runs.append(("cargo test", argv + (["--"] + after if after else []), env, root))
+    if only in (None, "python"):
+        rows = {}
+        for r in doc["python"]:
+            if tier != "proof" or (r["tier"] == "proof" and r.get("retier") != "pending"):
+                rows.setdefault(r["file"], []).append(r["name"])
+        for rel in sorted(rows):
+            top, here, module = _module_for(root / rel)
+            paths = [os.path.relpath(d, root) for d in ([top] if top == here else [top, here])]
+            argv = [sys.executable, "-m", "unittest", module]
+            if tier == "proof":
+                argv += [a for name in rows[rel] for a in ("-k", name)]
+            runs.append((rel, argv, {**env, "PYTHONPATH": os.pathsep.join(paths)}, root))
+    return runs
+
+
+def _shown(argv, env):
+    return " ".join([f"{k}={v}" for k, v in env.items()] + [Path(a).name if a == sys.executable else a for a in argv])
+
+
+def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=None, dry_run=False):
+    """Run TIER's commands one after another: cargo's output as it comes, one line per Python file (its output in
+    full when it fails). Returns 0 if every command passed."""
+    doc = json.loads(Path(path).read_text())
+    runs = tier_runs(tier, doc, root, only, tests, test_threads)
+    if tier == "proof" and not any(label != "cargo test" for label, *_ in runs) and only != "rust":
+        print("python: no proof-tier tests")
+    failed = []
+    for label, argv, env, cwd in runs:
+        if dry_run:
+            print(_shown(argv, env))
+            continue
+        full = {**os.environ, **env}
+        if label == "cargo test":
+            print(f"$ {_shown(argv, env)}", flush=True)
+            code = subprocess.run(argv, env=full, cwd=cwd).returncode
+        else:
+            p = subprocess.run(argv, env=full, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            code = p.returncode
+            ran, outcome = PY_RAN_LINE.findall(p.stdout), PY_OUTCOME_LINE.findall(p.stdout)
+            print(f"{'ok  ' if code == 0 else 'FAIL'} {label}: {ran[-1] if ran else 'no tests ran'}"
+                  f"{', ' + outcome[-1] if outcome else ''}", flush=True)
+            if code:
+                print(p.stdout)
+        if code:
+            failed.append(label)
+    if not dry_run:
+        print(f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
+              + (f"; failed: {', '.join(failed)}" if failed else ""))
+    return 1 if failed else 0
+
+
 def tag(files, path=INVENTORY, root=ROOT):
     """Give each test in FILES the tier tag its row in the inventory asks for, and take it away from a unit-tier
     test. In Rust the first statement: `tool_tier!()` for the tool tier, `tool_tier!(pending)` for `retier: pending`,
@@ -655,6 +731,14 @@ def main(argv=None):
                                    "@cost in Python)")
     t.add_argument("files", nargs="+")
     t.add_argument("--path", default=str(INVENTORY))
+    r = sub.add_parser("run", help="run one tier: default (what runs inline), unit (the unit tier alone) or proof "
+                                   "(a pipeline job, never inline)")
+    r.add_argument("--tier", choices=RUN_TIERS, default="default")
+    r.add_argument("--only", choices=("rust", "python"), help="one language")
+    r.add_argument("--test", action="append", default=[], metavar="NAME", help="a Rust test binary (repeatable)")
+    r.add_argument("--test-threads", type=int, help="Rust tests at once")
+    r.add_argument("--dry-run", action="store_true", help="print the commands, run nothing")
+    r.add_argument("--path", default=str(INVENTORY))
     py = sub.add_parser("python", help="run one Python test file, test by test")
     py.add_argument("file")
     py.add_argument("--out", required=True)
@@ -673,6 +757,8 @@ def main(argv=None):
             print(f"{key}: {len(rows)} tests, {tiers}, {sum('estimated' in r['cost'] for r in rows)} estimated, "
                   f"{sum(r.get('retier') == 'pending' for r in rows)} retier pending")
         return 0
+    if a.command == "run":
+        return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run)
     if a.command == "tag":
         for f, n in tag(a.files, a.path).items():
             print(f"{f}: {n} tests changed")

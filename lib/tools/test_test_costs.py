@@ -196,6 +196,70 @@ class Files(unittest.TestCase):
             self.assertEqual(found, ["examples/tools/test_build.py", "verification/test_pipeline.py"])
 
 
+class RunningATier(unittest.TestCase):
+    """`run`'s commands for each tier, from a made-up inventory; the one test that runs them runs made-up files."""
+    DOC = {"python": [
+        {"file": "tools/targets/test_x.py", "name": "X.test_unit", "tier": "unit"},
+        {"file": "tools/targets/test_x.py", "name": "X.test_proof", "tier": "proof"},
+        {"file": "tools/test_y.py", "name": "Y.test_pending", "tier": "proof", "retier": "pending"},
+        {"file": "tools/test_y.py", "name": "Y.test_tool", "tier": "tool"},
+    ]}
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        (self.root / "tools/targets").mkdir(parents=True)
+        (self.root / "tools/targets/__init__.py").write_text("")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_the_default_and_unit_tiers_run_cargo_and_every_python_file_with_both_variables_set(self):
+        for tier, value in (("default", "tool"), ("unit", "unit")):
+            runs = tc.tier_runs(tier, self.DOC, self.root)
+            self.assertEqual([r[0] for r in runs], ["cargo test", "tools/targets/test_x.py", "tools/test_y.py"])
+            label, argv, env, cwd = runs[0]
+            self.assertEqual(argv, ["cargo", "test", "--manifest-path", "lib/Cargo.toml"])
+            self.assertEqual((env, cwd), ({"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}, self.root))
+            _, argv, env, _ = runs[1]
+            self.assertEqual(argv[1:], ["-m", "unittest", "targets.test_x"])
+            self.assertEqual(env["PYTHONPATH"], os.pathsep.join(["tools", "tools/targets"]))
+            self.assertEqual(runs[2][2]["PYTHONPATH"], "tools")
+
+    def test_the_proof_tier_runs_the_ignored_rust_tests_in_release_and_only_the_python_proof_tests(self):
+        runs = tc.tier_runs("proof", self.DOC, self.root, tests=["heap"], test_threads=4)
+        self.assertEqual(runs[0][1], ["cargo", "test", "--manifest-path", "lib/Cargo.toml", "--release",
+                                      "--test", "heap", "--", "--ignored", "--test-threads", "4"])
+        self.assertEqual([r[0] for r in runs[1:]], ["tools/targets/test_x.py"])
+        self.assertEqual(runs[1][1][-2:], ["-k", "X.test_proof"])
+        self.assertEqual(runs[1][2]["TEST_COST"], "proof")
+
+    def test_one_language_and_a_misspelt_tier(self):
+        self.assertEqual([r[0] for r in tc.tier_runs("unit", self.DOC, self.root, only="rust")], ["cargo test"])
+        self.assertNotIn("cargo test", [r[0] for r in tc.tier_runs("unit", self.DOC, self.root, only="python")])
+        with self.assertRaises(ValueError):
+            tc.tier_runs("tool", self.DOC, self.root)
+
+    @cost("tool")
+    def test_running_a_tier_reports_each_python_file_and_fails_if_one_does(self):
+        cases = "import os, unittest\nclass {c}(unittest.TestCase):\n    def test_{t}(self):\n        {body}\n"
+        (self.root / "tools/targets/test_x.py").write_text(
+            cases.format(c="X", t="unit", body="self.assertEqual(os.environ['TEST_COST'], 'unit')"))
+        (self.root / "tools/test_y.py").write_text(cases.format(c="Y", t="tool", body="self.fail('made up')"))
+        inventory = self.root / "costs.json"
+        inventory.write_text(json.dumps(self.DOC))
+        out = subprocess.run([sys.executable, "-c", "import sys, test_costs as tc; sys.exit(tc.run_tier("
+                              f"'unit', {str(inventory)!r}, __import__('pathlib').Path({str(self.root)!r}), "
+                              "'python'))"], cwd=HERE, capture_output=True, text=True)
+        self.assertEqual(out.returncode, 1, out.stdout + out.stderr)
+        lines = out.stdout.splitlines()
+        self.assertTrue(lines[0].startswith("ok   tools/targets/test_x.py: Ran 1 test in"), lines)
+        self.assertTrue(lines[0].endswith(", OK"), lines)
+        self.assertTrue(lines[1].startswith("FAIL tools/test_y.py: Ran 1 test in"), lines)
+        self.assertIn("AssertionError: made up", out.stdout)
+        self.assertEqual(lines[-1], "unit tier: 1 of 2 passed; failed: tools/test_y.py")
+
+
 class Watching(unittest.TestCase):
     """The process sampling, on made-up commands of well under a second."""
 

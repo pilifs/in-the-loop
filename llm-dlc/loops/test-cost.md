@@ -438,6 +438,35 @@ Settled by the user on 2026-11-15:
     for `measure`.
 
   Next: Phase 2 step 6, one documented way to run each tier in `lib/README.md`.
+- 2026-11-15, Phase 2 step 6 done: one command per tier, `python3 lib/tools/test_costs.py run [--tier default|unit|proof]`.
+  It runs `cargo test` in `lib/`, then each Python file the inventory lists, in its own process, one line each.
+  - `default` sets both variables to `tool`, which is the same as unset, so nothing is skipped that ran before.
+  - `unit` sets them to `unit`.
+  - `proof` runs `cargo test --release -- --ignored` and only the Python tests tagged `@cost("proof")` (none yet).
+  - `--only rust|python`, `--test NAME` and `--dry-run` narrow it.
+
+  `lib/README.md`'s Tests section now opens with the tiers and the two inline commands. The proof tier's
+  `pipeline.py submit` command is written down: 4 CPUs, 8G, 1.5 h, from past jobs. It was checked with `--dry-run`
+  only, and no job was written. The `measure` paragraph's heap and conformance times now match the inventory's.
+  `test_test_costs.py` tests the commands for each tier, and one tool-tier test runs two made-up files (16 tests).
+  - **Verified.**
+    - `test_test_costs.py` passes by default and under `TEST_COST=unit` (4 skipped).
+    - `run --only python` passed 30 of 31 files by default and skipped nothing. Under `--tier unit` it also passed 30
+      of 31, in 5 minutes either way.
+    - The Rust code is unchanged, so `cargo test` wasn't run.
+    - The inventory was regenerated: Python is 794 tests, 55 tool.
+  - **For review.**
+    - `examples/tools/test_economics.py` fails by default, before and apart from this loop. `build.app_of` reads
+      `subject.file`, which examples 287, 289, 290 and 291 (example-targets) don't have. Fixing it is not this brief's.
+    - The inventory misses 27 of `examples/tools/targets/test_runtime_upstream.py`'s 30 tests. Their classes inherit
+      `test_runtime.FixtureCopy`, a TestCase from another module, and the `ast` listing only follows classes in the
+      same file. They run by default and under `unit`, untagged. No other file is short.
+    - Three heap proof tests failed their last jobs at about an hour, under `JVMCONTRACT_HEAP_TIME_LIMIT=1800`:
+      VF-018's `20261107-164356` reruns of `the_output_relations…`, `the_parameter_reads…` and
+      `the_other_object_reads…`. The proof-tier job may fail on them until they are fixed.
+
+  Next: Phase 2 step 7, the lint. It starts by listing classes that inherit a TestCase from another module, which
+  its "every test is in the inventory" check needs, and by tagging what that adds.
 - Status: working
 
 ## Loop settings
