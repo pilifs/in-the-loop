@@ -109,6 +109,11 @@ pub struct ClassPath {
     /// Whether the tool's models of JDK classes are part of this class path (they are, unless turned off).
     models: bool,
     cache: RefCell<HashMap<String, Option<Loaded>>>,
+    /// Every application class, once read ([`ClassPath::application_classes_shared`]).
+    classes: RefCell<Option<Rc<BTreeMap<String, Rc<ClassFile>>>>>,
+    /// Whether the own checker runs each class initializer asked about ([`crate::bmc::gaps::runs_initializer`]): a
+    /// function of the class path alone.
+    pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
     /// The time spent reading and parsing class files, for a checker's phases ([`crate::phases`]).
     loading: std::cell::Cell<std::time::Duration>,
 }
@@ -123,7 +128,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), loading: Default::default() }
+        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), loading: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -131,6 +136,8 @@ impl ClassPath {
     pub fn with_models(mut self, models: bool) -> ClassPath {
         self.models = models;
         self.cache.borrow_mut().clear();
+        self.classes.replace(None);
+        self.initializer_runs.borrow_mut().clear();
         self
     }
 
@@ -148,6 +155,8 @@ impl ClassPath {
             return Err(Error::new(format!("{} is neither a directory nor a jar", path.display())));
         }
         self.cache.borrow_mut().clear();
+        self.classes.replace(None);
+        self.initializer_runs.borrow_mut().clear();
         Ok(self)
     }
 
@@ -165,11 +174,13 @@ impl ClassPath {
     /// Uses the JDK found through `JAVA_HOME` or `PATH` for JDK class shapes, if there is one.
     pub fn with_default_jdk(mut self) -> ClassPath {
         self.jdk = JImage::open_default();
+        self.initializer_runs.borrow_mut().clear();
         self
     }
 
     pub fn with_jdk(mut self, jdk: JImage) -> ClassPath {
         self.jdk = Some(jdk);
+        self.initializer_runs.borrow_mut().clear();
         self
     }
 
@@ -230,6 +241,18 @@ impl ClassPath {
             }
         }
         Ok(out)
+    }
+
+    /// [`ClassPath::application_classes`], read once and shared: for a walk that asks at every call site which
+    /// classes override a method, over a class path of whole libraries (thousands of classes), where reading the
+    /// entries again each time took the gap scan of a Spring Boot method minutes.
+    pub fn application_classes_shared(&self) -> Result<Rc<BTreeMap<String, Rc<ClassFile>>>, Error> {
+        if let Some(classes) = self.classes.borrow().as_ref() {
+            return Ok(classes.clone());
+        }
+        let classes = Rc::new(self.application_classes()?);
+        self.classes.replace(Some(classes.clone()));
+        Ok(classes)
     }
 
     /// Loads a class by internal name: the application entries first, then the JDK, then the tool's models. `None`

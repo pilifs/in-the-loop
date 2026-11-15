@@ -158,8 +158,10 @@ const LIST: &str = "java/util/List";
 
 /// The String model's identity, to be bumped whenever its semantics change, so that evidence cached under the old
 /// one is not reused (V3 wires it into the claim key): the own checker's `bmc::Engine::string_method` and
-/// `bmc::Engine::concatenation`, and the interpreter's `interp::JStr`, which replays.
-pub const STRING_MODEL: &str = "jvmcontract String model 1: lib/src/bmc (Engine::string_method, Engine::concatenation), lib/src/interp (JStr)";
+/// `bmc::Engine::concatenation`, and the interpreter's `interp::JStr`, which replays. Model 2 added `hashCode`, and
+/// runs a modelled method on a String whatever class the call names (`Object.equals`, `CharSequence.length`), as
+/// the JVM dispatches it: a map's keys are compared so.
+pub const STRING_MODEL: &str = "jvmcontract String model 2: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -181,10 +183,10 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method but length, isEmpty, charAt, equals and startsWith, and the compiler's concatenation of Strings, chars and constants: each is a named gap".into(),
+            "every String method but length, isEmpty, charAt, equals, startsWith and hashCode, and the compiler's concatenation of Strings, chars and constants: each is a named gap".into(),
             "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
-            "hashCode, intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
+            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
         ],
     }
 }
@@ -326,6 +328,69 @@ pub fn list_model() -> ModelEvidence {
             "lists of Strings (ElementKind::String, with its elements' bound): the adapter makes lists of an application class's objects only, and refuses a list of Strings by name".into(),
             "the models' methods beyond the calls values::OPERATIONS samples (contains, indexOf, equals, hashCode, toArray, addAll, sort, the array form of List.of and the like): the own checker meets each as the JDK call it is, a named gap, though JBMC runs the models' bytecode for them".into(),
             "the interpreter's getClass of a list of one or two elements, which names ListN where the JVM's is List12".into(),
+        ],
+    }
+}
+
+/// The `HashMap` model's identity, to be bumped whenever its semantics change outside the model's bytecode (the
+/// interpreter's natives, which replay); [`map_model`] adds the digest of the bytecode itself.
+pub const MAP_MODEL: &str = "jvmcontract HashMap model 1: lib/models (java.util.HashMap and its Node, run by the own checker and JBMC), lib/src/interp (the HashMap natives, which replay)";
+
+/// The JDK whose `java.util.HashMap` the model was written after and sampled against (`lib/tests/values.rs`).
+pub const MAP_MODEL_JDK: &str = "25.0.5";
+
+/// The classes of the `HashMap` model.
+pub fn of_the_map_model(name: &str) -> bool {
+    name == "java/util/HashMap" || name.starts_with("java/util/HashMap$")
+}
+
+/// The SHA-256 of the `HashMap` model's bytecode, in class path order.
+pub fn map_model_digest() -> String {
+    let mut bytes = Vec::new();
+    for model in crate::models::MODELS.iter().filter(|m| crate::models::CHECKER_RUNS.contains(&m.name) && of_the_map_model(m.name)) {
+        bytes.extend_from_slice(model.name.as_bytes());
+        bytes.push(0);
+        bytes.extend_from_slice(&(model.bytes.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(model.bytes);
+    }
+    crate::digest::sha256_hex(&bytes)
+}
+
+/// The evidence of the `HashMap` model: a map the code under check makes and fills (an enum's map of its names,
+/// filled by its class initializer), never an input. `tested`: the JDK's map written out by hand as one chain of
+/// entries, sampled by JVM conformance.
+pub fn map_model() -> ModelEvidence {
+    ModelEvidence {
+        source: format!("{MAP_MODEL}; models sha256 {}", map_model_digest()),
+        jdk: MAP_MODEL_JDK.into(),
+        level: EvidenceLevel::Tested,
+        leaves_out: vec![
+            "every Map but a java.util.HashMap made by HashMap() or HashMap(int): another map's constructor (LinkedHashMap, TreeMap, HashMap(int, float), HashMap(Map)) is the JDK call it names".into(),
+            "every method but put, get, containsKey, size and isEmpty: the model has no other (remove, clear, putAll, keySet, values, entrySet, the compute family), so each is the JDK call it names, a gap".into(),
+            "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and a key of an application class runs its own hashCode and equals, but Object's hashCode (an identity) is a named gap".into(),
+            "the table: the order in which the entries of one hash are compared, and resizing, which a key whose equals and hashCode only compute does not observe".into(),
+            "a map as an input: no adapter makes one, so a map parameter or a map inside an object is refused".into(),
+        ],
+    }
+}
+
+/// The JDK static calls over references that the own checker and the interpreter reproduce
+/// (`bmc::models_jdk_reference_static`): their identity, to be bumped whenever either changes.
+pub const CALLS_MODEL: &str = "jvmcontract reference calls 1: lib/src/bmc (Engine::call_jdk_static: Objects.requireNonNull, Pattern.compile), lib/src/jdk_facts.rs (plain_regex), lib/src/interp (natives)";
+
+/// The JDK those calls were sampled on (`lib/tests/values.rs`).
+pub const CALLS_MODEL_JDK: &str = "25.0.5";
+
+/// The evidence of the reference calls: `tested`, by JVM conformance on the sampled cases.
+pub fn calls_model() -> ModelEvidence {
+    ModelEvidence {
+        source: CALLS_MODEL.into(),
+        jdk: CALLS_MODEL_JDK.into(),
+        level: EvidenceLevel::Tested,
+        leaves_out: vec![
+            "Objects.requireNonNull's forms with a message supplier, and every other method of java.util.Objects: each is a named gap".into(),
+            "what a Pattern does: the one compile returns is an object with no content, and each of its methods (matcher, split, pattern) is the JDK call it names, a gap".into(),
+            "Pattern.compile of a regular expression that is not a constant of the plain form (jdk_facts::plain_regex), and Pattern.compile(String, int): named gaps".into(),
         ],
     }
 }
@@ -657,6 +722,10 @@ pub enum Family {
     String,
     /// [`list_model`].
     List,
+    /// [`map_model`].
+    Map,
+    /// [`calls_model`].
+    Call,
 }
 
 /// The evidence of one modelled operation (V3): what implements it in each engine, the JDK it was sampled on, the
@@ -691,6 +760,8 @@ impl OperationEvidence {
         match self.family {
             Family::String => STRING_MODEL_JDK,
             Family::List => LIST_MODEL_JDK,
+            Family::Map => MAP_MODEL_JDK,
+            Family::Call => CALLS_MODEL_JDK,
         }
     }
 
@@ -699,12 +770,17 @@ impl OperationEvidence {
         match self.family {
             Family::String => string_model(),
             Family::List => list_model(),
+            Family::Map => map_model(),
+            Family::Call => calls_model(),
         }
     }
 }
 
 const NPE: &str = "java.lang.NullPointerException";
 const STRING_SOURCE: &str = "the own checker: bmc::Engine::string_method on the String's content; the interpreter: interp::JStr; JBMC: its own String model, not this one";
+const MAP_SOURCE: &str = "the HashMap model's bytecode (lib/models/java/util/HashMap.java), run by the own checker and JBMC; the interpreter: its HashMap natives";
+const CALLS_SOURCE: &str = "the own checker: bmc::Engine::call_jdk_static; the interpreter: interp::natives; JBMC: the JDK's own bytecode, or its stub";
+const IAE: &str = "java.lang.IllegalArgumentException";
 const LIST_SOURCE: &str = "the list models' bytecode (lib/models/java/util/List.java, ImmutableCollections.java), run by the own checker and JBMC; the interpreter: interp::ImmutableList";
 
 /// Every operation of the values models, with its evidence. An operation not here is outside the models: a named
@@ -743,7 +819,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         throws: &[NPE],
         leaves_out: &[],
         level: EvidenceLevel::Tested,
-        sampled_by: &["length"],
+        sampled_by: &["length", "lengthThroughCharSequence"],
         calls: &["length()I"],
     },
     OperationEvidence {
@@ -754,7 +830,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         throws: &[NPE],
         leaves_out: &[],
         level: EvidenceLevel::Tested,
-        sampled_by: &["isEmpty"],
+        sampled_by: &["isEmpty", "isEmptyThroughCharSequence"],
         calls: &["isEmpty()Z"],
     },
     OperationEvidence {
@@ -765,7 +841,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         throws: &["java.lang.StringIndexOutOfBoundsException", NPE],
         leaves_out: &["the exception's message"],
         level: EvidenceLevel::Tested,
-        sampled_by: &["charAt"],
+        sampled_by: &["charAt", "charAtThroughCharSequence"],
         calls: &["charAt(I)C"],
     },
     OperationEvidence {
@@ -776,7 +852,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         throws: &[NPE],
         leaves_out: &["a String argument with no content (a number made into a String), which is a named gap"],
         level: EvidenceLevel::Tested,
-        sampled_by: &["equalsContent", "equalsItself", "equalsAnotherClass", "equalNotSame"],
+        sampled_by: &["equalsContent", "equalsItself", "equalsAnotherClass", "equalNotSame", "equalsThroughObject"],
         calls: &["equals(Ljava/lang/Object;)Z"],
     },
     OperationEvidence {
@@ -789,6 +865,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         level: EvidenceLevel::Tested,
         sampled_by: &["startsWith"],
         calls: &["startsWith(Ljava/lang/String;)Z"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.hashCode()I",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "a String with content: s[0]*31^(n-1) + ... + s[n-1] over its code units in int arithmetic, 0 for the empty String",
+        throws: &[NPE],
+        leaves_out: &["a String with no content (a number made into a String), which is a named gap"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["hashCode", "hashCodeOfConcatenation", "hashCodeThroughObject"],
+        calls: &["hashCode()I"],
     },
     OperationEvidence {
         operation: "java.util.List.of: its fixed forms, () to (E, E, E, E, E, E, E, E, E, E)",
@@ -888,6 +975,94 @@ pub const OPERATIONS: &[OperationEvidence] = &[
             "remove()V",
         ],
     },
+    OperationEvidence {
+        operation: "java.util.HashMap.<init>()V and <init>(I)V",
+        family: Family::Map,
+        source: MAP_SOURCE,
+        admits: "no argument, or any int as the initial capacity: an empty map",
+        throws: &[IAE],
+        leaves_out: &["the capacity itself, which nothing observes", "the exception's message"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["mapNew", "mapOfCapacity"],
+        calls: &["<init>()V", "<init>(I)V"],
+    },
+    OperationEvidence {
+        operation: "java.util.HashMap.put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+        family: Family::Map,
+        source: MAP_SOURCE,
+        admits: "a map of the model; as the key a String with content or null, as the value any reference or null: a key equal to one held replaces its value and returns the old one, another is added and returns null",
+        throws: &[],
+        leaves_out: &["a key whose hashCode or equals is a gap (Object's own hashCode), named where it is called"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["mapPut", "mapPutReplaces", "mapPutNullKey"],
+        calls: &["put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"],
+    },
+    OperationEvidence {
+        operation: "java.util.HashMap.get(Ljava/lang/Object;)Ljava/lang/Object;",
+        family: Family::Map,
+        source: MAP_SOURCE,
+        admits: "a map of the model, called as a HashMap or as the Map it is; as the key a String with content, held or not, another object of the same content, or null",
+        throws: &[],
+        leaves_out: &["a key whose hashCode or equals is a gap, named where it is called"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["mapGet", "mapGetEqualKey", "mapGetNullKey", "mapGetNullValue", "mapGetCollidingKeys"],
+        calls: &["get(Ljava/lang/Object;)Ljava/lang/Object;"],
+    },
+    OperationEvidence {
+        operation: "java.util.HashMap.containsKey(Ljava/lang/Object;)Z",
+        family: Family::Map,
+        source: MAP_SOURCE,
+        admits: "a map of the model; as the key a String with content or null: true for a key held with a null value too",
+        throws: &[],
+        leaves_out: &["a key whose hashCode or equals is a gap, named where it is called"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["mapContainsKey", "mapContainsNullValued"],
+        calls: &["containsKey(Ljava/lang/Object;)Z"],
+    },
+    OperationEvidence {
+        operation: "java.util.HashMap.size()I",
+        family: Family::Map,
+        source: MAP_SOURCE,
+        admits: "a map of the model: the number of its keys, a key put twice counted once",
+        throws: &[],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["mapSize"],
+        calls: &["size()I"],
+    },
+    OperationEvidence {
+        operation: "java.util.HashMap.isEmpty()Z",
+        family: Family::Map,
+        source: MAP_SOURCE,
+        admits: "a map of the model",
+        throws: &[],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["mapIsEmpty"],
+        calls: &["isEmpty()Z"],
+    },
+    OperationEvidence {
+        operation: "java.util.Objects.requireNonNull(Ljava/lang/Object;)Ljava/lang/Object; and (Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
+        family: Family::Call,
+        source: CALLS_SOURCE,
+        admits: "any reference, with or without a message: the reference itself, or a NullPointerException for null",
+        throws: &[NPE],
+        leaves_out: &["the exception's message", "the form with a message supplier"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["requireNonNull", "requireNonNullWithMessage"],
+        calls: &["requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;", "requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;"],
+    },
+    OperationEvidence {
+        operation: "java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;",
+        family: Family::Call,
+        source: CALLS_SOURCE,
+        admits: "null, or a constant regular expression of the plain form (jdk_facts::plain_regex: characters that stand for themselves, each followed by at most one of + * ?, ^ first and $ last), which the JDK compiles whatever it is: a new Pattern each time",
+        throws: &[NPE],
+        leaves_out: &["every other regular expression, and one that is not a constant: a named gap, since whether it compiles is the JDK's parser's to say", "the Pattern's content: its methods are the JDK calls they name, each a gap"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["patternCompile", "patternsAreFresh"],
+        calls: &["compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"],
+    },
 ];
 
 /// Whether a call `name(descriptor)` into the list models, from outside them, is one a list record of [`OPERATIONS`]
@@ -917,7 +1092,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 7);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 8);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 
@@ -934,7 +1109,22 @@ mod tests {
                     assert!(crate::bmc::models_string_method(STRING, name, descriptor), "{member}");
                 }
                 (Family::String, None) => assert!(record.calls.is_empty(), "{}: an instruction", record.operation),
-                (Family::List, _) => assert!(!record.calls.is_empty(), "{}", record.operation),
+                (Family::List | Family::Map | Family::Call, _) => assert!(!record.calls.is_empty(), "{}", record.operation),
+            }
+        }
+        // The HashMap model has code for exactly the calls its records name, so that a method no case samples is
+        // the JDK call it names; and the reference calls are the ones the checker reproduces.
+        let map: Vec<&str> = OPERATIONS.iter().filter(|r| r.family == Family::Map).flat_map(|r| r.calls).copied().collect();
+        let model = crate::models::class("java/util/HashMap").unwrap().unwrap();
+        let mut modelled: Vec<String> = model.methods.iter().filter(|m| m.code.is_some() && !m.is_private()).map(|m| format!("{}{}", m.name, m.descriptor)).collect();
+        modelled.sort();
+        let mut named: Vec<String> = map.iter().map(|c| c.to_string()).collect();
+        named.sort();
+        assert_eq!(modelled, named, "the HashMap model's methods and its records' calls");
+        for (record, owner) in OPERATIONS.iter().filter(|r| r.family == Family::Call).map(|r| (r, r.operation.split_once('(').unwrap().0.rsplit_once('.').unwrap().0.replace('.', "/"))) {
+            for call in record.calls {
+                let (name, descriptor) = call.split_at(call.find('(').unwrap());
+                assert!(crate::bmc::models_jdk_reference_static(&owner, name, descriptor), "{}", record.operation);
             }
         }
         let models: Vec<crate::classfile::ClassFile> = crate::models::MODELS.iter().filter(|m| crate::models::of_the_list_family(m.name)).map(|m| crate::models::class(m.name).unwrap().unwrap()).collect();
@@ -1308,6 +1498,7 @@ mod tests {
                     out.push(format!("null, {label}: encoded {}, rebuilt {rebuilt}", shown(adapter.encode(&m, Value::Null, &nodes))));
                 }
             }
+            Family::Map | Family::Call => unreachable!("no adapter makes a value of the {family:?} family: it has no snapshot rule"),
         }
         out
     }

@@ -115,7 +115,8 @@ fn corpus() -> Vec<Case> {
         // Gaps (step 1b): a JDK constructor that throws, refused by name; a monitor on null, an NPE.
         Case::new("capacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], U),
         Case::new("builderCapacity", &[("-1", "throws java.lang.NegativeArraySizeException"), ("3", "returns 1")]).refuted(None, "result == 1", &[], U),
-        Case::new("mapCapacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], U),
+        // `HashMap(int)` is no gap since the own checker runs a model of the map (lib/models/java/util/HashMap.java).
+        Case::new("mapCapacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], X).holds(Some("n >= 0"), "result == 1", &[], V),
         Case::new("setCapacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], U),
         Case::new("loadFactor", &[("0", IAE), ("-1", IAE), ("1", "returns 1")]).refuted(None, "result == 1", &[], U),
         Case::new("nullMonitor", &[("0", "throws java.lang.NullPointerException")]).refuted(None, "result == 1", &[], X),
@@ -452,12 +453,6 @@ jdk-constructor:java.util.ArrayList.<init>(I)V@{jdk}
 jdk-constructor:java.lang.StringBuilder.<init>(I)V@{jdk}
   call: java.lang.StringBuilder.<init>(int capacity)
   throws: NegativeArraySizeException when capacity < 0
-  modifies: nothing
-  written-by: an agent (claude-opus-5-5, sound-verdicts step 3b)
-
-jdk-constructor:java.util.HashMap.<init>(I)V@{jdk}
-  call: java.util.HashMap.<init>(int initialCapacity)
-  throws: IllegalArgumentException when initialCapacity < 0
   modifies: nothing
   written-by: an agent (claude-opus-5-5, sound-verdicts step 3b)
 
@@ -905,6 +900,20 @@ fn a_domain_jbmc_is_not_given_is_refused_by_name() {
         }
     }
     assert_eq!(seen, 6, "H2's six claims over a domain JBMC is not given");
+
+    // A parameter of an interface type is given an implementation (`jvmcontract::given`), which only the own checker
+    // is given: JBMC has not been run over one, and a String an accessor answers is the own checker's model.
+    let sized = Case::new("sourceSize", &[]).holds(None, "result == s.size()", &[], V);
+    let named = Case::new("sourceNameLength", &[]).holds(None, "result >= 0 && !(result > 8) && (result > 0 || s.name().equals(\"\"))", &[], V);
+    for (case, words) in [(&sized, "takes an interface the check gives an implementation of, which only the tool's own checker is given"), (&named, "takes a String inside an object")] {
+        for mode in [(Engine::Auto, GapMode::Strict, true, Contracts::None), (Engine::Jbmc, GapMode::Strict, false, Contracts::None)] {
+            let o = prove(case, &case.claims[0], 200, mode, &compiled.classes);
+            assert_eq!(o.verdict, Verdict::Unverifiable, "{} {mode:?}: {}", case.method, o.output);
+            assert!(o.statement.is_none() && o.search.is_none() && o.problem.as_deref().is_some_and(|p| p.contains(words)), "{} {mode:?}: {}", case.method, o.output);
+        }
+        let o = prove(case, &case.claims[0], 200, (Engine::Auto, GapMode::Strict, false, Contracts::None), &compiled.classes);
+        assert!(o.verdict == Verdict::Verified && o.statement.is_some(), "{} auto: {}", case.method, o.output);
+    }
 }
 
 /// `--engine auto --confirm` under strict and assume, on the same corpus: JBMC proves again every claim the own

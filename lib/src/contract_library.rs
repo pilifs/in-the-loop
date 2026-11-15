@@ -35,7 +35,6 @@ const FILES: &[(&str, &str)] = &[
     ("java.lang.Integer.contracts", include_str!("../models/contracts/java.lang.Integer.contracts")),
     ("java.lang.StringBuilder.contracts", include_str!("../models/contracts/java.lang.StringBuilder.contracts")),
     ("java.util.ArrayList.contracts", include_str!("../models/contracts/java.util.ArrayList.contracts")),
-    ("java.util.HashMap.contracts", include_str!("../models/contracts/java.util.HashMap.contracts")),
     ("java.util.HashSet.contracts", include_str!("../models/contracts/java.util.HashSet.contracts")),
     ("java.util.Random.contracts", include_str!("../models/contracts/java.util.Random.contracts")),
 ];

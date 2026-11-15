@@ -40,6 +40,7 @@ pub mod contract_library;
 pub mod contract_proving;
 pub mod contract_testing;
 pub mod gap_contracts;
+pub mod given;
 pub mod activation;
 pub mod validation;
 /// The values stream's module of `llm-dlc/loops/application-core.md`.

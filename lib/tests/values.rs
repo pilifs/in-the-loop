@@ -801,6 +801,28 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "startsWith", &[1, C, 0, 0, 2, C, C, 0]),
     case(OPS, "startsWith", &[1, C, 0, 0, -1, 0, 0, 0]),
     case(OPS, "startsWith", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "hashCode", &[0, 0, 0, 0]),
+    case(OPS, "hashCode", &[1, C, 0, 0]),
+    case(OPS, "hashCode", &[2, C, 0x61, 0]),
+    case(OPS, "hashCode", &[2, 0x42, 0x42, 0]),
+    case(OPS, "hashCode", &[3, HIGH, 0, LOW]),
+    case(OPS, "hashCode", &[3, 0xffff, 0xffff, 0xffff]),
+    case(OPS, "hashCode", &[-1, 0, 0, 0]),
+    case(OPS, "hashCodeOfConcatenation", &[3, 0xffff, 0xffff, 0xffff]),
+    case(OPS, "hashCodeOfConcatenation", &[2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "hashCodeOfConcatenation", &[0, 0, 0, 0]),
+    case(OPS, "hashCodeThroughObject", &[2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "hashCodeThroughObject", &[-1, 0, 0, 0]),
+    case(OPS, "equalsThroughObject", &[2, SMILE.0, SMILE.1, 0, 2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "equalsThroughObject", &[1, C, 0, 0, 2, C, C, 0]),
+    case(OPS, "equalsThroughObject", &[1, C, 0, 0, -1, 0, 0, 0]),
+    case(OPS, "equalsThroughObject", &[-1, 0, 0, 0, 1, C, 0, 0]),
+    case(OPS, "lengthThroughCharSequence", &[2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "lengthThroughCharSequence", &[-1, 0, 0, 0]),
+    case(OPS, "charAtThroughCharSequence", &[3, HIGH, 0, LOW, 2]),
+    case(OPS, "charAtThroughCharSequence", &[1, C, 0, 0, 1]),
+    case(OPS, "isEmptyThroughCharSequence", &[0, 0, 0, 0]),
+    case(OPS, "isEmptyThroughCharSequence", &[1, 0, 0, 0]),
     case(OPS, "ofWithNull", &[1, 0]),
     case(OPS, "ofWithNull", &[2, 1]),
     case(OPS, "ofWithNull", &[3, 2]),
@@ -847,6 +869,49 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "clear", &[2]),
     case(OPS, "iteratorRemove", &[1]),
     case(OPS, "iteratorRemove", &[3]),
+    case(OPS, "mapNew", &[]),
+    case(OPS, "mapOfCapacity", &[0]),
+    case(OPS, "mapOfCapacity", &[16]),
+    case(OPS, "mapOfCapacity", &[-1]),
+    case(OPS, "mapPut", &[0]),
+    case(OPS, "mapPut", &[2]),
+    case(OPS, "mapPutReplaces", &[1, 0]),
+    case(OPS, "mapPutReplaces", &[3, 1]),
+    case(OPS, "mapPutReplaces", &[3, 2]),
+    case(OPS, "mapPutReplaces", &[2, 2]),
+    case(OPS, "mapPutNullKey", &[]),
+    case(OPS, "mapGet", &[0, 0]),
+    case(OPS, "mapGet", &[1, 0]),
+    case(OPS, "mapGet", &[3, 0]),
+    case(OPS, "mapGet", &[3, 2]),
+    case(OPS, "mapGet", &[3, 3]),
+    case(OPS, "mapGetEqualKey", &[0, 0, 0, 0]),
+    case(OPS, "mapGetEqualKey", &[2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "mapGetEqualKey", &[3, HIGH, 0, LOW]),
+    case(OPS, "mapGetEqualKey", &[-1, 0, 0, 0]),
+    case(OPS, "mapGetNullKey", &[0]),
+    case(OPS, "mapGetNullKey", &[2]),
+    case(OPS, "mapGetNullValue", &[]),
+    case(OPS, "mapGetCollidingKeys", &[]),
+    case(OPS, "mapContainsKey", &[0, 0]),
+    case(OPS, "mapContainsKey", &[2, 1]),
+    case(OPS, "mapContainsKey", &[2, 2]),
+    case(OPS, "mapContainsNullValued", &[]),
+    case(OPS, "mapSize", &[0]),
+    case(OPS, "mapSize", &[1]),
+    case(OPS, "mapSize", &[3]),
+    case(OPS, "mapIsEmpty", &[0]),
+    case(OPS, "mapIsEmpty", &[1]),
+    case(OPS, "requireNonNull", &[0, 0, 0, 0]),
+    case(OPS, "requireNonNull", &[2, C, C, 0]),
+    case(OPS, "requireNonNull", &[-1, 0, 0, 0]),
+    case(OPS, "requireNonNullWithMessage", &[1, C, 0, 0]),
+    case(OPS, "requireNonNullWithMessage", &[-1, 0, 0, 0]),
+    case(OPS, "patternCompile", &[0]),
+    case(OPS, "patternCompile", &[1]),
+    case(OPS, "patternCompile", &[2]),
+    case(OPS, "patternCompile", &[-1]),
+    case(OPS, "patternsAreFresh", &[]),
 ];
 
 /// Exceptions a case may throw, each after the ones of them that are its subclasses, so that a generated check
@@ -935,7 +1000,7 @@ fn every_modelled_operation_has_a_record_its_boundary_cases_hold_on_the_jvm_the_
     assert_eq!(modelled.len(), string_records.len(), "a record for each of {modelled:?}");
     for record in OPERATIONS {
         assert_eq!(Some(record.jdk().to_string()), bmc::gaps::jdk_release(), "{}: sampled on the JDK the cases run on", record.operation);
-        assert!(matches!(record.family, Family::String | Family::List));
+        assert!(matches!(record.family, Family::String | Family::List | Family::Map | Family::Call));
     }
 
     // The interpreter gives the JVM's outcome on every case.
@@ -978,11 +1043,10 @@ const OUTSIDE: &str = "values/Outside";
 const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("upper", "jdk-reference-method:java.lang.String.toUpperCase()Ljava/lang/String;"),
     ("indexOf", "jdk-primitive-method:java.lang.String.indexOf(I)I"),
-    ("hashCodeOf", "jdk-primitive-method:java.lang.String.hashCode()I"),
     ("substring", "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;"),
     ("compareTo", "jdk-primitive-method:java.lang.String.compareTo(Ljava/lang/String;)I"),
-    ("equalsAsObject", "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z"),
-    ("lengthAsCharSequence", "jdk-primitive-method:java.lang.CharSequence.length()I"),
+    ("toStringAsObject", "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;"),
+    ("subSequence", "jdk-reference-method:java.lang.CharSequence.subSequence(II)Ljava/lang/CharSequence;"),
     ("valueOf", "jdk-static-method:java.lang.String.valueOf(I)Ljava/lang/String;"),
     ("contains", "jdk-primitive-method:java.util.List.contains(Ljava/lang/Object;)Z"),
     ("indexOfElement", "jdk-primitive-method:java.util.List.indexOf(Ljava/lang/Object;)I"),
@@ -996,12 +1060,23 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("sort", "jdk-void-method:java.util.List.sort(Ljava/util/Comparator;)V"),
     ("arrayForm", "jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"),
     ("elevenElements", "jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"),
+    ("mapRemove", "jdk-reference-method:java.util.Map.remove(Ljava/lang/Object;)Ljava/lang/Object;"),
+    ("mapGetOrDefault", "jdk-reference-method:java.util.Map.getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
+    ("mapKeyOfIdentity", "jdk-primitive-method:java.lang.Object.hashCode()I"),
+    ("linkedMap", "jdk-constructor:java.util.LinkedHashMap.<init>()V"),
+    ("mapOfAMap", "jdk-constructor:java.util.HashMap.<init>(Ljava/util/Map;)V"),
+    ("patternWithAClass", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
+    ("patternOfAnInput", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
+    ("patternMatcher", "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;"),
+    ("requireNonNullElse", "jdk-static-method:java.util.Objects.requireNonNullElse(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
 ];
 
 /// V3's strict gap detection: an operation outside the values models is a named gap under the strict engine, never
 /// a verdict. Every claim of [`OUTSIDE`] holds on the JVM, so a verdict could only rest on semantics no record
-/// vouches for: a String method other than the five modelled on content, or a list method or form the list models
-/// implement (`contains`, `equals`, `hashCode`, `addAll`, `List.of(E...)` …) that no record samples. Each run, merging
+/// vouches for: a String method other than the six modelled on content, a list method or form the list models
+/// implement (`contains`, `equals`, `hashCode`, `addAll`, `List.of(E...)` …) that no record samples, a map the
+/// `HashMap` model is not or a method it has not, a key hashed by its identity, a regular expression that is not a
+/// plain constant, a `Pattern`'s own methods. Each run, merging
 /// from the start and never, has no verdict and names the operation's gap (or its refusal), and the gap scan reports
 /// the same gap and walks none of the models' unsampled methods. Before, the own checker ran every method the list
 /// models implement, so `contains`, `indexOf`, `equals`, `hashCode`, `addAll`, `sort` and the array form were proved.
@@ -1206,7 +1281,7 @@ fn a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects() {
     let mut list_changed = current.clone();
     list_changed.list.source = format!("{}; models sha256 {}", values::LIST_MODEL, "0".repeat(64));
     let mut string_changed = current.clone();
-    string_changed.string.source = values::STRING_MODEL.replace("model 1", "model 2");
+    string_changed.string.source = values::STRING_MODEL.replace("model 2", "model 3");
     assert_ne!(string_changed.string, current.string, "the String model's identity names its version");
     let mut list_snapshot = current.clone();
     list_snapshot.list.source = current.list.source.replace(values::LIST_SNAPSHOT, &"0".repeat(64));
@@ -1343,7 +1418,7 @@ fn a_claims_value_domains_are_resolved_before_its_key_and_its_checks() {
     let current = values::ValueModels::current();
     let mut stale = current.clone();
     stale.list.source = format!("{}; models sha256 {}", values::LIST_MODEL, "0".repeat(64));
-    stale.string.source = values::STRING_MODEL.replace("model 1", "model 0");
+    stale.string.source = values::STRING_MODEL.replace("model 2", "model 0");
     // The production walk is the reference walk, on every frozen claim.
     let mut names: Vec<_> = std::fs::read_dir(&golden).unwrap().map(|e| e.unwrap().file_name().into_string().unwrap()).filter(|n| n.ends_with("-claim.json")).collect();
     names.sort();

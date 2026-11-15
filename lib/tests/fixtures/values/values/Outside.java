@@ -1,11 +1,18 @@
 package values;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Harness-shaped checks that each reach one operation outside the values models (lib/tests/values.rs, V3's strict
- * gap detection): a String method other than the five the own checker models on content, and a list method or form
- * that no evidence record of values::OPERATIONS samples, although the list models implement it. Each claim holds on
+ * gap detection): a String method other than the six the own checker models on content, a list method or form
+ * that no evidence record of values::OPERATIONS samples, although the list models implement it, a map the HashMap
+ * model is not, a method it has not or a key it can't hash, and a regular expression that is not a plain constant.
+ * Each claim holds on
  * the JVM (ValuesRunner runs each method there and must see it return), so that a verdict could only come from
  * semantics the records don't vouch for: under the strict engine every one must end with the operation as a named
  * gap, and no verdict.
@@ -23,7 +30,7 @@ public final class Outside {
         }
     }
 
-    // java.lang.String: every method but length, isEmpty, charAt, equals and startsWith.
+    // java.lang.String: every method but length, isEmpty, charAt, equals, startsWith and hashCode.
 
     public static void upper(String s) {
         if (s != null && s.toUpperCase().length() < 0) {
@@ -33,12 +40,6 @@ public final class Outside {
 
     public static void indexOf(String s) {
         if (s != null && s.indexOf('a') >= s.length()) {
-            throw new AssertionError();
-        }
-    }
-
-    public static void hashCodeOf(String s) {
-        if (s != null && s.isEmpty() && s.hashCode() != 0) {
             throw new AssertionError();
         }
     }
@@ -55,18 +56,18 @@ public final class Outside {
         }
     }
 
-    /** equals called through Object, not String: the JDK's Object.equals as the bytecode names it. */
-    public static void equalsAsObject(String s) {
+    /** toString called through Object: a String's is itself, and the call is the JDK's Object.toString. */
+    public static void toStringAsObject(String s) {
         Object o = s;
-        if (s != null && !o.equals(s)) {
+        if (s != null && o.toString() != s) {
             throw new AssertionError();
         }
     }
 
-    /** length called through CharSequence. */
-    public static void lengthAsCharSequence(String s) {
+    /** subSequence called through CharSequence. */
+    public static void subSequence(String s) {
         CharSequence c = s;
-        if (s != null && c.length() != s.length()) {
+        if (s != null && c.subSequence(0, 0).length() != 0) {
             throw new AssertionError();
         }
     }
@@ -169,6 +170,74 @@ public final class Outside {
     public static void elevenElements(int v) {
         Item x = new Item(v);
         if (List.of(x, x, x, x, x, x, x, x, x, x, x).size() != 11) {
+            throw new AssertionError();
+        }
+    }
+
+    // java.util.HashMap: what the model has not, is not, or can't hash.
+
+    public static void mapRemove(String s) {
+        Map<String, String> m = new HashMap<>();
+        m.put(s, s);
+        if (m.remove(s) != s) {
+            throw new AssertionError();
+        }
+    }
+
+    /** A default method of java.util.Map, which the model doesn't override: the JDK's. */
+    public static void mapGetOrDefault(String s) {
+        Map<String, String> m = new HashMap<>();
+        if (m.getOrDefault(s, s) != s) {
+            throw new AssertionError();
+        }
+    }
+
+    /** A key of a class with Object's own hashCode, an identity the checker has none of. */
+    public static void mapKeyOfIdentity(int v) {
+        Map<Item, Item> m = new HashMap<>();
+        Item key = new Item(v);
+        m.put(key, key);
+        if (m.get(key) != key) {
+            throw new AssertionError();
+        }
+    }
+
+    public static void linkedMap(String s) {
+        Map<String, String> m = new LinkedHashMap<>();
+        if (!m.isEmpty()) {
+            throw new AssertionError();
+        }
+    }
+
+    public static void mapOfAMap(String s) {
+        Map<String, String> m = new HashMap<>(new HashMap<String, String>());
+        if (!m.isEmpty()) {
+            throw new AssertionError();
+        }
+    }
+
+    // java.util.regex.Pattern and java.util.Objects: all but compile of a plain constant and requireNonNull.
+
+    public static void patternWithAClass(String s) {
+        if (Pattern.compile("[a-z]+") == null) {
+            throw new AssertionError();
+        }
+    }
+
+    public static void patternOfAnInput(String s) {
+        if (s != null && s.equals("ab") && Pattern.compile(s) == null) {
+            throw new AssertionError();
+        }
+    }
+
+    public static void patternMatcher(String s) {
+        if (s != null && Pattern.compile("a+").matcher(s) == null) {
+            throw new AssertionError();
+        }
+    }
+
+    public static void requireNonNullElse(String s) {
+        if (Objects.requireNonNullElse(s, "") == null) {
             throw new AssertionError();
         }
     }

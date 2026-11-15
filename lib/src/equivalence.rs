@@ -887,6 +887,10 @@ pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) ->
     if within.iter().any(|w| w == name) {
         return Ok(Err(format!("a {java} can refer to another {java}: objects that refer to their own class are not supported yet")));
     }
+    // An interface's object is read through its accessors ([`crate::given`]).
+    if cf.is_interface() {
+        return Ok(Ok(crate::given::fields(cp, name)?));
+    }
     let expected_super = if cf.is_record() { "java/lang/Record" } else { "java/lang/Object" };
     if cf.super_class.as_deref() != Some(expected_super) {
         return Ok(Err(format!("{java} extends {}; the fields of a class that extends another are not supported yet", cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
@@ -930,7 +934,8 @@ fn observes_objects(layout: &harness::Layout, differs: &[String]) -> bool {
 /// states are those the constructor makes, which a claim over it names. A record of primitive components is not
 /// among them, its constructor making every state its components can hold that it accepts.
 pub(crate) fn made_by_constructor(layout: &harness::Layout) -> bool {
-    layout.receiver.iter().chain(&layout.args).any(|s| matches!(s, harness::Slot::Record { record, before, .. } if record.fields.is_some() || before.as_ref().is_some_and(|b| b.fields.is_some() || b.corresponds.is_some())))
+    // An interface's given implementation ([`crate::given`]) has every state its accessors' values make.
+    layout.receiver.iter().chain(&layout.args).any(|s| matches!(s, harness::Slot::Record { record, before, .. } if record.given.is_none() && (record.fields.is_some() || before.as_ref().is_some_and(|b| b.fields.is_some() || b.corresponds.is_some()))))
 }
 
 fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {

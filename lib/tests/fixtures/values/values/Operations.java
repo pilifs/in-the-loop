@@ -1,7 +1,11 @@
 package values;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * The boundary cases of every operation the values models implement (lib/tests/values.rs,
@@ -11,7 +15,8 @@ import java.util.List;
  * exceptions they were seen to throw.
  *
  * A String is made at run time by concatenating chars (never a literal with an isolated surrogate, which the class
- * reader decodes lossily), and a list by List.of over items made by their constructor.
+ * reader decodes lossily), a list by List.of over items made by their constructor, and a map by HashMap's
+ * constructors and put, its keys Strings made the same way.
  */
 public final class Operations {
     private Operations() {
@@ -102,6 +107,43 @@ public final class Operations {
         String high = "\uDBFF";
         String other = "\uDBFE";
         return (high == other ? 4 : 0) + (high.equals(other) ? 2 : 0) + (high == "\uDBFF" ? 1 : 0);
+    }
+
+    static int hashCode(int n, int a, int b, int c) {
+        return of(n, a, b, c).hashCode();
+    }
+
+    /** Of twice the code units, where the sum passes an int. */
+    static int hashCodeOfConcatenation(int n, int a, int b, int c) {
+        return (of(n, a, b, c) + of(n, a, b, c)).hashCode();
+    }
+
+    // java.lang.String, called as the Object or the CharSequence it is: the bytecode names that class, and the JVM
+    // runs the String's method.
+
+    static int hashCodeThroughObject(int n, int a, int b, int c) {
+        Object o = of(n, a, b, c);
+        return o.hashCode();
+    }
+
+    static boolean equalsThroughObject(int n, int a, int b, int c, int m, int d, int e, int f) {
+        Object o = of(n, a, b, c);
+        return o.equals(of(m, d, e, f));
+    }
+
+    static int lengthThroughCharSequence(int n, int a, int b, int c) {
+        CharSequence s = of(n, a, b, c);
+        return s.length();
+    }
+
+    static int charAtThroughCharSequence(int n, int a, int b, int c, int i) {
+        CharSequence s = of(n, a, b, c);
+        return s.charAt(i);
+    }
+
+    static boolean isEmptyThroughCharSequence(int n, int a, int b, int c) {
+        CharSequence s = of(n, a, b, c);
+        return s.isEmpty();
     }
 
     // java.util.List: List.of, List.copyOf, size, isEmpty, get, the iterator and the changes they refuse
@@ -242,5 +284,141 @@ public final class Operations {
     static boolean copyOfIsTheList(int n) {
         List<Item> l = n < 0 ? null : items(n);
         return List.copyOf(l) == l;
+    }
+
+    // java.util.HashMap: HashMap(), HashMap(int), put, get, containsKey, size and isEmpty, over String keys
+
+    /** The key of index i: a fresh String of one letter, "a" for 0. */
+    static String key(int i) {
+        return of(1, 'a' + i, 0, 0);
+    }
+
+    /** A map of the first n keys, key i to an item of value i, called as the Map it is. */
+    static Map<String, Item> map(int n) {
+        Map<String, Item> m = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            m.put(key(i), new Item(i));
+        }
+        return m;
+    }
+
+    static int mapNew() {
+        return new HashMap<String, Item>().size();
+    }
+
+    /** An IllegalArgumentException for a negative capacity. */
+    static int mapOfCapacity(int capacity) {
+        return new HashMap<String, Item>(capacity).size();
+    }
+
+    /** A new key's put returns null and adds it: 1, and ten times the size after. */
+    static int mapPut(int n) {
+        Map<String, Item> m = map(n);
+        return (m.put(key(n), new Item(n)) == null ? 1 : 0) + 10 * m.size();
+    }
+
+    /** A put of key k over the first n: the value it returns (-1 for none), the one held after, and the size. */
+    static int mapPutReplaces(int n, int k) {
+        Map<String, Item> m = map(n);
+        Item old = m.put(key(k), new Item(7));
+        return (old == null ? -1 : old.value) * 100 + m.get(key(k)).value * 10 + m.size();
+    }
+
+    /** null is a key like any other: added, replaced, found and counted. */
+    static int mapPutNullKey() {
+        Map<String, Item> m = map(2);
+        int first = m.put(null, new Item(7)) == null ? 1 : 0;
+        int second = m.put(null, new Item(8)).value;
+        return first * 1000 + second * 100 + m.get(null).value * 10 + m.size();
+    }
+
+    /** The value of key k among the first n, -1 where it has none. */
+    static int mapGet(int n, int k) {
+        Item item = map(n).get(key(k));
+        return item == null ? -1 : item.value;
+    }
+
+    /** A key is found by content: by another String of the same code units, the empty one and null included. */
+    static int mapGetEqualKey(int n, int a, int b, int c) {
+        Map<String, Item> m = map(2);
+        m.put(of(n, a, b, c), new Item(5));
+        return m.get(of(n, a, b, c)).value * 10 + m.size();
+    }
+
+    static boolean mapGetNullKey(int n) {
+        return map(n).get(null) == null;
+    }
+
+    /** A key held with a null value: get returns null, as for a key not held. */
+    static boolean mapGetNullValue() {
+        Map<String, Item> m = new HashMap<>();
+        return m.put("a", null) == null && m.get("a") == null && m.size() == 1;
+    }
+
+    /** "Aa" and "BB" have one hash code and are two keys, called on the HashMap itself. */
+    static int mapGetCollidingKeys() {
+        HashMap<String, Item> m = new HashMap<>(4);
+        m.put(of(2, 'A', 'a', 0), new Item(1));
+        m.put(of(2, 'B', 'B', 0), new Item(2));
+        return m.get(of(2, 'A', 'a', 0)).value * 100 + m.get(of(2, 'B', 'B', 0)).value * 10 + m.size();
+    }
+
+    static boolean mapContainsKey(int n, int k) {
+        return map(n).containsKey(key(k));
+    }
+
+    static boolean mapContainsNullValued() {
+        Map<String, Item> m = new HashMap<>();
+        m.put("a", null);
+        return m.containsKey("a") && !m.containsKey("b") && !m.containsKey(null);
+    }
+
+    /** The first n keys, the first put again: counted once. */
+    static int mapSize(int n) {
+        Map<String, Item> m = map(n);
+        if (n > 0) {
+            m.put(key(0), new Item(9));
+        }
+        return m.size();
+    }
+
+    static boolean mapIsEmpty(int n) {
+        return map(n).isEmpty();
+    }
+
+    // The JDK's static calls over references: Objects.requireNonNull and Pattern.compile of a plain constant
+
+    /** The reference itself, or a NullPointerException for null. */
+    static int requireNonNull(int n, int a, int b, int c) {
+        String s = of(n, a, b, c);
+        return Objects.requireNonNull(s) == s ? s.length() : -2;
+    }
+
+    static int requireNonNullWithMessage(int n, int a, int b, int c) {
+        String s = of(n, a, b, c);
+        return Objects.requireNonNull(s, "a String") == s ? s.length() : -2;
+    }
+
+    /** A constant regular expression of the plain form compiles; null is a NullPointerException. */
+    static boolean patternCompile(int which) {
+        String regex;
+        switch (which) {
+            case 0:
+                regex = "//+";
+                break;
+            case 1:
+                regex = "^/a?b*$";
+                break;
+            case 2:
+                regex = "";
+                break;
+            default:
+                regex = null;
+        }
+        return Pattern.compile(regex) != null;
+    }
+
+    static boolean patternsAreFresh() {
+        return Pattern.compile("/$") != Pattern.compile("/$");
     }
 }

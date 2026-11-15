@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-173146-example-285-mutant-security-the-bounded",
+  "title": "Example 285 mutant-security: the bounded method label decided as stated, expected refuted",
+  "description": "The frozen claim claims/bounded-method-label.json (key 196346d46d4d81fb) on the task's pinned closure, by jvmcontract's own checker under strict gaps, as the task states it: no wrapper and no narrower subject. Until this change the task was refused before any proof (input-construction:interface-parameter, VF-027), because WebMvcTags#method takes a javax.servlet.http.HttpServletRequest. jvmcontract now gives a parameter of an interface type an implementation of the accessors the target calls (here getMethod(), any String of up to 8 code units), reads the Tag result through getKey() and getValue() with Strings compared by content, and runs HttpMethod's map of names through a HashMap model. This run is the gap packet's closure test: the unchanged claim on the same artifacts. The constructed mutant (2.7.18 with controls/raw-method-fallback.patch, which falls back to the raw method) must fail the claim the fixed release satisfies; expected refuted with a witness run on a JVM.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/given.rs"
+    ],
+    "examples": [
+      "285"
+    ]
+  },
+  "expected": "example 285 task mutant-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-15T17:31:46+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "10m",
+    "notes": "the earlier attempts of this task took 122 s and 0.2 GB, of which 120 s was the gap scan running into its limit; the scan now takes 0.04 s and the proof 0.1 s in a debug build, so the time is the acquisition, the two JVM control runs and the release build of lib/ if its tree isn't cached"
+  },
+  "steps": [
+    {
+      "name": "example 285 task mutant-security (prove)",
+      "run": "python3 examples/tools/build.py 285 --task mutant-security",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/mutant-security"
+  ]
+}

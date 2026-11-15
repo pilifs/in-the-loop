@@ -1898,6 +1898,21 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             ("format", _) => return unsupported("String.format depends on the default locale"),
             _ => return unsupported(format!("String.{name}{descriptor}")),
         },
+        // A regex of the plain form compiles (`jdk_facts::plain_regex`): a Pattern with nothing in it, whose methods
+        // stay outside the interpreter, as the own checker models it.
+        "java/util/regex/Pattern" => match (name, descriptor) {
+            ("compile", "(Ljava/lang/String;)Ljava/util/regex/Pattern;") => {
+                if a[0] == Value::Null {
+                    return Err(m.npe());
+                }
+                let regex = char_sequence(m, a[0])?;
+                if !crate::jdk_facts::plain_regex(regex.units()) {
+                    return unsupported("Pattern.compile of a regex outside the plain form (jdk_facts::plain_regex)");
+                }
+                Value::Ref(m.alloc(Object::Instance { class: owner.into(), fields: Default::default(), base: Base::Object }))
+            }
+            _ => return unsupported(format!("Pattern.{name}{descriptor}")),
+        },
         "java/util/Objects" => match (name, descriptor) {
             ("requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;") => {
                 if a[0] == Value::Null {

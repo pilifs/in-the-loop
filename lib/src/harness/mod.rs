@@ -110,6 +110,10 @@ pub struct RecordType {
     /// `llm-dlc/loops/foundations-heap.md`): which of the new construction's leaves each of its leaves is made from,
     /// and the equations it is compared under in place of field-by-field equality.
     pub corresponds: Option<Corresponds>,
+    /// For a parameter of an interface type the check gives an implementation of ([`crate::given`]): the interface,
+    /// which the object is passed as. [`RecordType::class`] is then the generated class, its constructor's
+    /// parameters one per accessor, and [`RecordType::fields`] the interface's accessors.
+    pub given: Option<String>,
 }
 
 /// How the previous version's object is related to the new version's where a correspondence's input equations say
@@ -529,7 +533,7 @@ fn is_inner(record: &RecordType, i: usize, t: &Type) -> bool {
 impl RecordType {
     /// A record of primitive components, made by its canonical constructor.
     pub fn record(class: &str, components: Vec<(String, Type)>) -> RecordType {
-        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), dependencies: Vec::new(), fields: None, corresponds: None }
+        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), dependencies: Vec::new(), fields: None, corresponds: None, given: None }
     }
 
     /// An object of the application class `class` made by its constructor of `params`, each parameter of a class
@@ -551,7 +555,12 @@ impl RecordType {
                 components.extend(made.components.iter().map(|(c, t)| (format!("{name}.{c}"), t.clone())));
             }
         }
-        RecordType { class: class.to_string(), components, params, inner, dependencies, fields: Some(fields), corresponds: None }
+        RecordType { class: class.to_string(), components, params, inner, dependencies, fields: Some(fields), corresponds: None, given: None }
+    }
+
+    /// The class the object is passed as: its own, or the interface it is a given implementation of.
+    pub fn declared(&self) -> &str {
+        self.given.as_deref().unwrap_or(&self.class)
     }
 
     /// Whether its constructor's parameter `i` is a dependency, passed null.
@@ -660,7 +669,7 @@ impl RecordType {
     }
 
     pub fn simple_name(&self) -> String {
-        crate::classfile::simple_name_of(&self.class)
+        crate::classfile::simple_name_of(self.declared())
     }
 
     /// `Backoff(baseMillis: long, capMillis: long)`, for the domain; a class made by its constructor shows the
@@ -689,6 +698,26 @@ impl RecordType {
             format!("{name}: a {} made by its constructor, {}, from any arguments it accepts", self.simple_name(), self.describe())
         } else {
             format!("{name}: {}", self.describe())
+        }
+    }
+
+    /// The domain's words for a parameter `name` of an interface type given an implementation ([`crate::given`]):
+    /// `request: an implementation of HttpServletRequest that answers getMethod() (a String of ≤ 8 code units, not
+    /// null) with one value on every call, and no other abstract method`.
+    pub fn given_part(&self, name: &str, max_array_length: u32) -> String {
+        let answers: Vec<String> = self
+            .params
+            .iter()
+            .map(|(accessor, t)| match t {
+                t if crate::values::is_string(t) => format!("{accessor}() (a String of ≤ {max_array_length} code units, not null)"),
+                Type::Int => format!("{accessor}() (an int)"),
+                t => format!("{accessor}() (a {})", t.java_name()),
+            })
+            .collect();
+        match answers.split_last() {
+            None => format!("{name}: an implementation of {} that answers none of its abstract methods", self.simple_name()),
+            Some((one, [])) => format!("{name}: an implementation of {} that answers {one} with one value on every call, and no other abstract method", self.simple_name()),
+            Some((last, rest)) => format!("{name}: an implementation of {} that answers {} and {last}, each with one value on every call, and no other abstract method", self.simple_name(), rest.join(", ")),
         }
     }
 
@@ -1316,7 +1345,7 @@ impl Layout {
             .iter()
             .map(|s| match s {
                 Slot::Plain(i) => self.params[*i].ty.clone(),
-                Slot::Record { record, .. } => Type::Object(record.class.clone()),
+                Slot::Record { record, .. } => Type::Object(record.declared().to_string()),
                 Slot::List { .. } => Type::Object(LIST.into()),
             })
             .collect()
@@ -1487,6 +1516,7 @@ impl Layout {
                 // A plan's node at two roots (O2): the earlier root's object, which its own part describes.
                 Slot::Record { name, .. } if self.choice(name).is_some_and(|c| c.always.is_some()) => (format!("{name}: the same object as {}", self.choice(name).and_then(|c| c.always.clone()).unwrap_or_default()), false),
                 Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| !c.same_shape) => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
+                Slot::Record { name, record, .. } if record.given.is_some() => (format!("{}{}", record.given_part(name, max_array_length), self.or_null(name)), false),
                 Slot::Record { name, record, .. } => (format!("{}{}{}", record.domain_part(name), arrays_of(record, max_array_length), self.or_null(name)), false),
                 Slot::List { name, max_length, elements, .. } => match elements.first() {
                     Some(Slot::Record { record, .. }) => (list_part(name, *max_length, record), false),
@@ -2884,18 +2914,31 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
             FieldKind::String => "Ljava/lang/String;".to_string(),
             FieldKind::Object(f) => format!("L{prefix}{};", f.class),
         };
-        let old_field = pool.field_ref(&format!("before/{}", old_fields.class), old_name, &descriptor(old_kind, "before/"));
-        let new_field = pool.field_ref(&fields.class, name, &descriptor(kind, ""));
+        // An interface's accessor (`getKey()`, [`expr::accessor_name`]) is called where a field is read.
+        let mut member = |owner: &str, name: &str, descriptor: String| match name.strip_suffix("()") {
+            Some(method) => (pool.interface_method_ref(owner, method, &format!("(){descriptor}")), true),
+            None => (pool.field_ref(owner, name, &descriptor), false),
+        };
+        let old_field = member(&format!("before/{}", old_fields.class), old_name, descriptor(old_kind, "before/"));
+        let new_field = member(&fields.class, name, descriptor(kind, ""));
+        let read = |code: &mut CodeBuilder, (member, called): (u16, bool)| {
+            if called {
+                code.op_u16(0xb9, member); // invokeinterface
+                code.op_u8(1, 0); // its count, the receiver, and the zero byte
+            } else {
+                code.op_u16(0xb4, member); // getfield
+            }
+        };
         match (kind, old_kind) {
             (FieldKind::Value(t), _) => compare_values(code, t, fail, &|code, side| {
                 code.load(Kind::Ref, if side == 0 { old } else { new });
-                code.op_u16(0xb4, if side == 0 { old_field } else { new_field }); // getfield
+                read(code, if side == 0 { old_field } else { new_field });
             }),
             (FieldKind::Array(t), _) => {
                 let (x, y) = (scratch, scratch + 1);
                 for (local, object, field) in [(x, old, old_field), (y, new, new_field)] {
                     code.load(Kind::Ref, object);
-                    code.op_u16(0xb4, field); // getfield
+                    read(code, field);
                     code.store(Kind::Ref, local);
                 }
                 let element = match t {
@@ -2925,7 +2968,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
                 let (x, y) = (scratch, scratch + 1);
                 for (local, object, field) in [(x, old, old_field), (y, new, new_field)] {
                     code.load(Kind::Ref, object);
-                    code.op_u16(0xb4, field); // getfield
+                    read(code, field);
                     code.store(Kind::Ref, local);
                 }
                 let compare = code.label();
@@ -2947,7 +2990,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
                 let (x, y) = (scratch, scratch + 1);
                 for (local, object, field) in [(x, old, old_field), (y, new, new_field)] {
                     code.load(Kind::Ref, object);
-                    code.op_u16(0xb4, field); // getfield
+                    read(code, field);
                     code.store(Kind::Ref, local);
                 }
                 let compare = code.label();
@@ -3100,8 +3143,7 @@ fn emit_read_path(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
             Some(p) => (format!("{p}/{owner}"), descriptor.strip_prefix('L').map(|c| format!("L{p}/{c}")).unwrap_or_else(|| descriptor.clone())),
             None => (owner.clone(), descriptor.clone()),
         };
-        let field = pool.field_ref(&owner, name, &descriptor);
-        code.op_u16(0xb4, field); // getfield
+        expr::emit_step(code, pool, &owner, name, &descriptor);
         if k + 1 < steps.len() {
             code.store(Kind::Ref, link);
             code.load(Kind::Ref, link);

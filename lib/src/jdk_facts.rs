@@ -131,3 +131,46 @@ pub fn declares(class: &str, method: &str) -> bool {
 pub fn known(name: &str) -> bool {
     name == "java/lang/Object" || superclass(name).is_some() || INTERFACES.iter().any(|(c, _)| *c == name)
 }
+
+/// Whether a regular expression is of the plain form, which `java.util.regex.Pattern.compile(String)` accepts
+/// whatever the JDK: characters that stand for themselves (ASCII letters, digits, the space and
+/// `! " # % & ' , - / : ; < = > @ _ ` ~`, none of them one of the pattern syntax's metacharacters outside a
+/// character class or a group), each followed by at most one of the quantifiers `+`, `*` and `?`, with `^` allowed
+/// first and `$` last. `/$` and `//+` are; a class, a group, an escape, a brace, a `.` or a second quantifier is
+/// not, and whether such a regex compiles is the JDK's parser's to say. The own checker and the interpreter model
+/// `Pattern.compile` on these alone: it throws nothing and returns a new Pattern.
+pub fn plain_regex(units: &[u16]) -> bool {
+    let is = |u: u16, c: char| u == c as u16;
+    let literal = |u: u16| char::from_u32(u32::from(u)).is_some_and(|c| c.is_ascii_alphanumeric() || " !\"#%&',-/:;<=>@_`~".contains(c));
+    let start = usize::from(units.first().is_some_and(|u| is(*u, '^')));
+    let end = if units.len() > start && units.last().is_some_and(|u| is(*u, '$')) { units.len() - 1 } else { units.len() };
+    let mut quantifiable = false;
+    for &u in &units[start..end] {
+        if literal(u) {
+            quantifiable = true;
+        } else if quantifiable && (is(u, '+') || is(u, '*') || is(u, '?')) {
+            quantifiable = false;
+        } else {
+            return false;
+        }
+    }
+    true
+}
+
+#[cfg(test)]
+mod plain_regex_tests {
+    use super::plain_regex;
+
+    #[test]
+    fn a_plain_regex_is_literals_single_quantifiers_and_the_two_anchors_at_its_ends() {
+        let units = |s: &str| s.encode_utf16().collect::<Vec<u16>>();
+        for plain in ["", "/$", "//+", "^a-b_c$", "ab?c*d+", "^", "$", "^$", "x y", "a=b;c"] {
+            assert!(plain_regex(&units(plain)), "{plain:?}");
+        }
+        // A quantifier with nothing to repeat, two in a row, an anchor inside, and every construct the parser has.
+        for other in ["+a", "a++", "a+?", "a$b", "a^", "a.b", "[ab]", "(a)", "a|b", "a\\d", "a{2}", "a}", "é", "]"] {
+            assert!(!plain_regex(&units(other)), "{other:?}");
+        }
+        assert!(!plain_regex(&[0xd800]), "a surrogate alone");
+    }
+}

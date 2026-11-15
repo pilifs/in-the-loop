@@ -16,10 +16,10 @@ loop or not.
 
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| moonshot | 5 | 5 | 49 | 46 | 52 | 30 (30 passed) | 35 h 58 min | 5,036,611 | $577.48 | $12.55 |
+| moonshot | 6 | 6 | 50 | 47 | 53 | 35 (30 passed, 5 pending) | 37 h 16 min | 5,348,504 | $619.88 | $13.19 |
 | brief | 27 | 53 | 300 | 297 | 368 | 205 (160 passed, 45 failed) | 3.3 d | 13,072,341 | $1,104.01 | $3.72 |
 | verification | 1 | 49 | 0 | 0 | 162 | 0 | 9 h 17 min | 203,352 | $12.52 | n/a |
-| **all** | 33 | 107 | 349 | 343 | 582 | 235 (190 passed, 45 failed) | 5.2 d | 18,312,304 | $1,694.01 | $4.94 |
+| **all** | 34 | 108 | 350 | 344 | 583 | 240 (190 passed, 45 failed, 5 pending) | 5.2 d | 18,624,197 | $1,736.40 | $5.05 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -32,6 +32,7 @@ The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person 
 | `tla` | 1 | 17 | 16 | 16 | 0 | `claude-fable-5-1` | 2026-11-02 | 18 h 24 min | 8 h 52 min | 28 min | 1,874,477 | $217.38 | $12.53 | $13.59 |
 | `spring` | 1 | 10 | 10 | 14 | 10 (10 passed) | `claude-fable-5-1` | 2026-11-03 | 5 h 29 min | 4 h 35 min | 29 min | 928,810 | $102.28 | $10.59 | $7.31 |
 | `relational` | 1 | 14 | 13 | 15 | 20 (20 passed) | `claude-fable-5-1` | 2026-11-04 | 5 h 50 min | 5 h 28 min | 23 min | 1,175,603 | $137.35 | $10.61 | $9.16 |
+| `prove-examples` | 1 | 1 | 1 | 1 | 5 (5 pending) | `claude-fable-5-2` | 2026-11-15 | 80 min | 78 min | 78 min | 311,893 | $42.39 | $42.39 | $42.39 |
 
 - `examples-by-hand`, typed by hand, a different wording each cycle:
   - "Create more novel examples of formal verification against Java bytecode using the jvmcontract library that feel exciting to expert Java distributed systems principals."
@@ -41,8 +42,32 @@ The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person 
 - `tla`: "Add more advanced examples showcasing verification of TLA specs"
 - `spring`: "Enhance the jvmcontract library to be more useful to expert Spring Boot developers."
 - `relational`: "Enhance relational verification capabilities to be more efficient and accurate"
+- `prove-examples`, 1 of 16 items done: "Formally prove example {} as elegantly and efficiently as possible"
 
 **Run by hand.** `examples-by-hand` is the loop before the loop. On 2026-10-31 a person typed an instruction, let the session commit, typed `/compact`, and did it again, each time worded for another audience. `feature-loop.sh` was written that night to do the same unattended, and `features` is its first run. It is counted here because it is the same cycle, and kept apart by its kind because no script ran it: nothing capped a cycle, checked for a commit, or compacted for it, and a person chose each instruction after reading the last result. Its figures are measured the same way as every other row's.
+
+### Items of `prove-examples`
+
+One row per item of the list. *Attempts* are the cycles that took the item, and the figures add them up. *Proof* is what the jobs those cycles submitted came to.
+
+| Item | Status | Attempts | Elapsed | Active | Model calls | Tool calls | Failed | Tokens written | Peak context | Cost | Jobs | Proof | Proof compute | Commit |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: | --- |
+| 285 | done | 1 | 80 min | 78 min | 287 | 295 | 2 | 311,893 | 465,391 | $42.39 | 5 (5 pending) | pending | 0 CPU s | `lvvpsuxlnnqw` jvmcontract: a property check gives an interface parameter an impleme… |
+| 286 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 287 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 288 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 289 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 290 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 291 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 292 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 293 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 294 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 295 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 296 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 297 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 298 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 299 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
+| 300 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
 
 ### Every moonshot cycle
 
@@ -99,6 +124,7 @@ Oldest first. A cycle is one turn of the instruction, then the commit, then the 
 | `2026-11-04-052019-relational` | 12 |  | 2026-11-04 09:53 | 25 min | 23 min | 58 | 57 | 0 | 88,109 | 223,496 | $10.61 | 1 | 2 (2 passed) | The tool's own checker takes arrays of primitives into its fragment:… |
 | `2026-11-04-052019-relational` | 13 |  | 2026-11-04 10:18 | 48 min | 47 min | 81 | 80 | 1 | 106,096 | 249,530 | $13.05 | 1 | 2 (2 passed) | The tool's own checker merges paths where they meet once a search has… |
 | `2026-11-04-052019-relational` | 14 |  | 2026-11-04 11:06 | 3.9 min | 3.9 min | 13 | 13 | 1 | 15,946 | 84,788 | $2.39 | 0 | 0 | *no commit* |
+| `2026-11-15-161311-prove-examples` | 1 | 285 | 2026-11-15 16:13 | 80 min | 78 min | 287 | 295 | 2 | 311,893 | 465,391 | $42.39 | 1 | 5 (5 pending) | jvmcontract: a property check gives an interface parameter an impleme… |
 
 ## Briefs
 
@@ -142,7 +168,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 
 ## Verification loop
 
-49 runs from 2026-11-03 to 11-15, on `claude-sonnet-5-5`: 9 h 17 min active, 162 commits, 203,352 tokens written, $12.52 ($0.26 a run). Of the 280 verification jobs on record, 235 are tied to the loop cycle that submitted them.
+49 runs from 2026-11-03 to 11-15, on `claude-sonnet-5-5`: 9 h 17 min active, 162 commits, 203,352 tokens written, $12.52 ($0.26 a run). Of the 285 verification jobs on record, 240 are tied to the loop cycle that submitted them.
 
 ## Runs
 
@@ -209,6 +235,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-15 04:13 | [`2026-11-15-041307-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-041307-example-targets.md) | brief | `claude-opus-5-5` | 10 | 13 | 1 h 50 min | 98 min | $27.82 | work done | record |
 | 2026-11-15 12:23 | [`2026-11-15-122338-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-122338-test-cost.md) | brief | `claude-opus-5-5` | 2 | 2 | 17 min | 16 min | $4.46 | interrupted | record |
 | 2026-11-15 13:01 | [`2026-11-15-130104-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-130104-test-cost.md) | brief | `claude-opus-5-5` | 9 | 10 | 2 h 12 min | 99 min | $21.23 | work done | record |
+| 2026-11-15 16:13 | [`2026-11-15-161311-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-15-161311-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 1 | 1 | 80 min | 78 min | $42.39 | no end recorded | record |
 
 ## Reading these numbers
 

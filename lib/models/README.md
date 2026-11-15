@@ -28,6 +28,7 @@ as a class path entry for any other tool.
 | `java.nio.charset.IllegalCharsetNameException`, `UnsupportedCharsetException` | the real classes, written out | nothing | the JDK generates them from a template at build time |
 | `java.lang.Enum` (JBMC only, and run by the tool's own checker) | the `name` and `ordinal` fields, the constructor `Enum(String, int)` that sets them (the name is the very string it is given), `name()`, `ordinal()`, `toString()`, `equals` (identity) | `compareTo` (the JDK's throws `ClassCastException` across two enum classes, which needs `Class`), `hashCode` (identity, as `Object`'s), `getDeclaringClass`, `valueOf(Class, String)`, `clone`, serialization: JBMC's stubs, named as gaps | every enum constant's constructor calls `Enum.<init>(String, int)`, which JBMC stubbed as a constructor that sets nothing, so `ordinal()` and `name()` returned any value. Example 071's property proofs reach it through the Quorum enums |
 | `java.util.List` (JBMC and the tool's own checker) | the static factories `of` (every arity, and varargs) and `copyOf`, step for step as the JDK's; the instance methods the model's lists define, declared abstract | `listIterator`, `subList`, `reversed`, `spliterator`, `getFirst`, `getLast`, `addFirst`, `addLast`; `java.util.Collection` stays JBMC's own | JBMC stubbed `List.of` and `List.copyOf` as returning any list or `null`. Every Quorum kernel returns a `Decision`, which calls both |
+| `java.util.HashMap` and its `Node` (JBMC and the tool's own checker) | a map as its entries in one chain, in insertion order: `HashMap()`, `HashMap(int)` with its `IllegalArgumentException` for a negative capacity, `put`, `get`, `containsKey`, `size`, `isEmpty`; a key found as the JDK finds one, an entry of the same hash (`hashCode()`, 0 for `null`) whose key is the same reference or `equals` the one looked up; `null` a key and a value like any other | the table: the order in which entries of one hash are compared and resizing, which a key whose `equals` and `hashCode` only compute doesn't observe; every other constructor and method (`remove`, `clear`, `putAll`, `keySet`, `values`, `entrySet`, the `compute` family, `Map`'s default methods), each the JDK call it names: a gap for the own checker, JBMC's stub | the JDK's `HashMap` reads a `float` load factor, which the own checker has no arithmetic for, and JBMC stubs the class, so a map a class initializer fills answered anything. Spring's `HttpMethod` resolves a name through such a map of its constants (example 285, `WebMvcTags.method`) |
 | `java.util.ImmutableCollections` and its `List12`, `ListN`, `AbstractImmutableList`, `ListItr` (JBMC and the tool's own checker) | the JDK's immutable lists: `List12` for one or two elements, `ListN` over an array of its own otherwise, one `EMPTY_LIST`; no `null` element (`NullPointerException` when made, and on `contains`, `indexOf`, `lastIndexOf` of `null`); `UnsupportedOperationException` on every change, `remove` of the iterator included; `get` out of range throws `IndexOutOfBoundsException` from a `List12`, `ArrayIndexOutOfBoundsException` from a `ListN`, as the JDK's do; `iterator`, `toArray()`, `equals`, `hashCode` over the elements; `copyOf` of one of them is the list itself | exception messages (built by string concatenation, which JBMC stubs), the views (`subList`, `reversed`), `toArray(T[])`, `forEach`, `stream`, `toString`, `containsAll`, serialization (what JBMC makes of `java.util.AbstractCollection`, a stub), and the `ListN` that allows `null`s, which only `Stream.toList` makes | what `List.of` and `copyOf` return, written without a JDK call (not even `Objects.requireNonNull`), so that nothing in them is a stub |
 
 ## Where the models are used
@@ -43,8 +44,8 @@ as a class path entry for any other tool.
   bundles and which settles that proof in a second (`--sat-solver`; a JBMC built without it is run again with its
   default).
 - **The tool's own checker** (`--engine native`/`auto`, [`src/bmc`](../src/bmc/mod.rs)) runs a model's bytecode symbolically for the static methods it defines, as JBMC does from the class path.
-- **Models marked JBMC only** (`Model::jbmc_only` in [`src/models.rs`](../src/models.rs): `Enum`, `List` and the
-  immutable lists) are on JBMC's class path and nowhere else. The interpreter keeps its natives for these classes,
+- **Models marked JBMC only** (`Model::jbmc_only` in [`src/models.rs`](../src/models.rs): `Enum`, `List`, the
+  immutable lists and `HashMap`) are on JBMC's class path and nowhere else. The interpreter keeps its natives for these classes,
   because the state they stand for (an enum's name and ordinal, a list's elements) is part of every object it
   allocates. The tool's own checker runs all of them as bytecode (`CHECKER_RUNS` in `src/models.rs`,
   `ClassPath::checker_method`): `Enum`'s for an enum's constructor and accessors, since an enum's name and ordinal are
@@ -60,7 +61,11 @@ as a class path entry for any other tool.
   no JDK call, but `AbstractCollection()`'s empty constructor, which the checker reproduces exactly; `copyOf` of
   another implementation (an `ArrayList`) reaches that implementation's methods, which stay JDK gaps. Before, the
   checker met `List.of` as the gap `jdk-static-method`. The values stream's `lib/tests/values.rs` checks the
-  checker's verdicts over these lists, each refutation's witness replayed on a JVM and in the interpreter. A list
+  checker's verdicts over these lists, each refutation's witness replayed on a JVM and in the interpreter. Since
+  2026-11-15 it runs the `HashMap` model too, a map's entries being fields of its objects: every method the model
+  has is one an evidence record samples (`values::OPERATIONS`, the same corpus), its keys' `hashCode` and `equals`
+  are the keys' own (a String's on its content, whatever class the call names), and a key hashed by `Object`'s
+  identity is a named gap. A list
   value's domain (`values::ListAdapter`) states these models as its evidence (`values::list_model`), with the SHA-256
   of their bytecode (`values::list_model_digest`), so that changing a model changes the identity of the evidence
   that rests on it. The conformance
@@ -109,5 +114,6 @@ The `java.nio.charset` models carry the OpenJDK header (GPL v2 with the Classpat
 [`LICENSE-GPL-2.0-WITH-CLASSPATH-EXCEPTION.txt`](LICENSE-GPL-2.0-WITH-CLASSPATH-EXCEPTION.txt)): they were written
 for the CProver [models library](https://github.com/diffblue/java-models-library), which is distributed under it, and
 their Javadoc follows the JDK's. The Classpath exception is what lets the compiled classes be embedded in a binary
-under another licence. The `java.util` models carry it too: their code follows OpenJDK's `List` and
-`ImmutableCollections` (JDK 25) step for step. The `java.lang` models are this repository's own, under its licence.
+under another licence. The `java.util` list models carry it too: their code follows OpenJDK's `List` and
+`ImmutableCollections` (JDK 25) step for step. The `java.lang` models and `java.util.HashMap` (one chain of
+entries, not the JDK's table) are this repository's own, under its licence.

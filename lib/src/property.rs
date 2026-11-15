@@ -364,6 +364,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // A parameter of an application class is an object made by its constructor (step H2 of
     // `llm-dlc/loops/foundations-heap.md`), from symbolic leaves, as in a regression check.
     let mut records = Vec::new();
+    // The implementations the check gives the parameters of an interface type ([`crate::given`]), generated beside
+    // the harness, on every class path the harness is.
+    let harness_dir = work.join("harness");
+    let mut given = Vec::new();
     for (name, t) in names.iter().zip(&descriptor.params) {
         if let Some(p) = plan {
             match crate::construction::root(&cp, p, name) {
@@ -386,6 +390,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             continue;
         }
         let made = match t {
+            // A parameter of an application interface: an implementation whose accessors each return one value.
+            Type::Object(class) if cp.application(class)?.is_some_and(|c| c.is_interface()) => {
+                let roots = crate::bmc::gaps::roots(&cp, std::slice::from_ref(&options.target))?;
+                let called = crate::bmc::gaps::calls_on_given(&cp, &roots, class)?;
+                let g = crate::given::Given::of(&cp, class, &called)?;
+                let record = g.record(&cp)?;
+                given.push(g);
+                Ok(record)
+            }
             Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::made_of(&cp, class, &mut Vec::new())?,
             _ => return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{}", t.java_name(), crate::equivalence::adapted_refusal(t, options.max_array_length))),
         };
@@ -406,10 +419,18 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let mut layout = if over_objects { harness::Layout::new(receiver, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
     layout.result_fields.0 = result_fields;
-    // A String inside an object (a leaf of its construction, as the regression check makes one since J1's O2): a
-    // property's expressions have no String terms, and its checker is given no String bound, so it is refused by name.
-    if let Some(p) = layout.params.iter().find(|p| crate::values::is_string(&p.ty)) {
-        return refuse(&mut out, line, format!("{} is a String inside an object: a property check makes no String, since its expressions have no String terms; the regression check (jvmcontract equivalence) makes one", p.name));
+    // A String inside an object (a leaf of its construction, as the regression check makes one since J1's O2, or a
+    // given implementation's accessor): a value of the values stream's adapter, of at most --max-array-length code
+    // units and never null, which only the own checker takes.
+    let strings = match layout.params.iter().find(|p| crate::values::is_string(&p.ty)) {
+        Some(p) => match crate::values::adapter(&p.ty, options.max_array_length) {
+            Ok(a) => Some(a),
+            Err(u) => return refuse(&mut out, line, format!("{} is a String inside an object: {}", p.name, u.what)),
+        },
+        None => None,
+    };
+    if strings.is_some() && (options.engine == crate::Engine::Jbmc || options.confirm) {
+        return refuse(&mut out, line, format!("{method_name} takes a String inside an object, which the tool's own checker takes under the stated bound of {} code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim", options.max_array_length));
     }
     // A dependency the inputs' constructions pass null holds only where the target never reaches it.
     if let Some(reached) = crate::construction::dependency_reached(&cp, &crate::classfile::MemberRef::new(&class_internal, &method_name, &method.descriptor), &layout.dependencies().1) {
@@ -444,10 +465,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if over_objects && (!array_nullable.is_empty() || !array_pairs.is_empty()) {
         return refuse(&mut out, line, "a property over objects does not let an array parameter be null or one array with another yet; check the arrays' choices in a property of no object parameters".into());
     }
-    let (parameters, groups) = match parameter_domain(&params, &array_nullable, &array_pairs) {
+    let (mut parameters, groups) = match parameter_domain(&params, &array_nullable, &array_pairs) {
         Ok(p) => p,
         Err(problem) => return refuse(&mut out, line, problem),
     };
+    if let Some(a) = &strings {
+        parameters.max_string_length = Some(a.domain().max_length);
+    }
+    let parameters = parameters;
     // The plan's choices (O2), as in a regression check: flags for null and for one of other roots' objects, and a
     // node at two roots one object with no flag.
     if let Some(c) = plan.map(crate::construction::choices).filter(|c| !c.is_empty()) {
@@ -476,9 +501,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let domain = if over_objects { layout.domain(options.max_array_length) } else { harness::domain_of(&params, options.max_array_length, &options.nullable, &groups) };
     // A claim over objects made by their constructor is about those objects alone, and says so.
     let every = if crate::equivalence::made_by_constructor(&layout) { "every input of constructor-made objects" } else { "every input" };
+    // An interface's given implementation is the own checker's alone: JBMC has not been run over one.
+    if !given.is_empty() && strings.is_none() && (options.engine == crate::Engine::Jbmc || options.confirm) {
+        return refuse(&mut out, line, format!("{method_name} takes an interface the check gives an implementation of, which only the tool's own checker is given (--engine native or auto, without --confirm)"));
+    }
     // JBMC gives each array parameter an array of its own, never null: it would prove a narrower claim.
-    let widened = !parameters.is_default();
-    if widened && (options.engine == crate::Engine::Jbmc || options.confirm) {
+    let widened = !parameters.is_default() || !given.is_empty();
+    if widened && strings.is_none() && (options.engine == crate::Engine::Jbmc || options.confirm) {
         let how = if options.confirm { "--confirm would have JBMC check a narrower claim than this one" } else { "JBMC is not given it" };
         let mut refused = refuse(&mut out, line, format!("the domain {domain} lets an array parameter be null or one array with another, which only the tool's own checker takes, and {how}: check it with --engine native or auto"))?;
         refused.refused = Some(WIDENED_DOMAIN);
@@ -514,8 +543,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let throws_text = signals.iter().map(Signal::render).collect::<Vec<_>>();
     let throws_checked = signals.iter().map(|s| format!("{} when {}", s.java_name(), s.when)).collect::<Vec<_>>();
-    let harness_dir = work.join("harness");
     std::fs::create_dir_all(&harness_dir)?;
+    for g in &given {
+        g.write_to(&harness_dir)?;
+    }
     std::fs::write(harness_dir.join(format!("{}.class", harness::PROPERTY_CLASS)), &harness.bytes)?;
     let statement = harness_dir.join(format!("{}.java", harness::PROPERTY_CLASS));
     std::fs::write(&statement, &harness.source)?;
@@ -540,7 +571,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             .collect(),
         observations: observations.clone(),
         bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
-        models: crate::statement::models(options.models),
+        models: crate::statement::Models { values: strings.iter().map(|a| a.domain().model.clone()).collect(), ..crate::statement::models(options.models) },
         checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
@@ -618,7 +649,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                let _ = writeln!(out, "{}", if widened { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
+                let _ = writeln!(out, "{}", if strings.is_some() { NOT_JBMC_STRINGS } else if !given.is_empty() { NOT_JBMC_GIVEN } else if widened { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
             }
             stages.clear();
             last = Some(result);
@@ -711,6 +742,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     } else {
         (None, None)
     };
+    // What a replay of the target loads: the application, and the implementations given to its interface
+    // parameters, which are beside the harness.
+    let replay_entries: Vec<PathBuf> = given.iter().map(|_| harness_dir.clone()).take(1).chain(options.classes.iter().chain(&options.classpath).cloned()).collect();
     let mut search = Some(crate::equivalence::Search {
         engine: if last.native.is_some() { "native" } else { "jbmc" }.into(),
         checker: last.version.clone(),
@@ -747,7 +781,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // models, and the disagreement is for a person (or a JVM) to settle.
     if let Some(refuting) = &refuting {
         let found = refuting.arguments(&entry_types)?;
-        let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?.with_models(options.models);
+        let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path))?.with_models(options.models);
         let replayed = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
         let outcome = replayed.with_leftovers(&flat, &found);
         let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
@@ -787,8 +821,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             proof = Some(how);
             // An assumption may admit no input in the domain: the property is then checked on none.
             if !harness.probe.is_empty() {
-                let mut entries = options.classes.clone();
-                entries.extend(options.classpath.iter().cloned());
+                let entries = replay_entries.clone();
                 let render = |r: &JbmcResult| r.arguments(&entry_types).ok().map(|found| render(&found).0);
                 let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &parameters, &work, "failing the assumption (--assume)", &render, &mut search)?;
                 vacuous = reason;
@@ -799,7 +832,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let found = last.arguments(&entry_types)?;
-            let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?.with_models(options.models);
+            let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path))?.with_models(options.models);
             let replay_on = |arguments: &[Argument]| witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
             let mut replayed = replay_on(&found);
             // The JDK the witness was run on, when the interpreter could not run it and a JVM did.
@@ -1050,6 +1083,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     })
 }
 
+
+const NOT_JBMC_STRINGS: &str = "note: the domain has a String, which the tool's own checker takes under its bound and JBMC models its own way, so JBMC is not asked";
+
+const NOT_JBMC_GIVEN: &str = "note: the domain has an implementation of an interface, which only the tool's own checker is given, so JBMC is not asked";
 
 const NOT_JBMC_DOMAIN: &str = "note: the domain lets an array parameter be null or one array with another, which JBMC is not given, so JBMC is not asked";
 

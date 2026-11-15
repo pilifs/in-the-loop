@@ -44,10 +44,11 @@ would rest every verdict that used it on whoever wrote it, and `--max-trust 0` r
 | `java.lang.Integer` | `numberOfTrailingZeros(int)` | proved |
 | `java.lang.StringBuilder` | `<init>(int)` | tested |
 | `java.util.ArrayList` | `<init>(int)` | tested |
-| `java.util.HashMap` | `<init>(int)` | tested |
 | `java.util.HashSet` | `<init>(int)` | tested |
 | `java.util.Random` | `<init>(long)`, `nextInt(int)`, `nextBytes(byte[])` | tested |
 
 `Integer.numberOfLeadingZeros` and `Long.numberOfLeadingZeros` had proved contracts here until the tool's own checker
 modelled them exactly (`Engine::call_jdk_static`): a call it reproduces is no gap, and a contract for one is refused,
-so they were taken out with their records.
+so they were taken out with their records. `HashMap.<init>(int)` had a tested contract until the checker ran a
+model of the map (`lib/models/java/util/HashMap.java`): the constructor is the model's, no gap, and its contract
+and records were taken out too.

@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-173209-conformance-corpus-under-jbmc-auto-and-a",
+  "title": "Conformance corpus under JBMC, auto and auto --confirm after the HashMap model and the interface-parameter change",
+  "description": "The proof tier of lib/tests/conformance.rs, whose corpus and models this change touched: HashMap(int) is no longer a gap (the corpus's mapCapacity claims are now decided, by a model of java.util.HashMap that JBMC runs too), the corpus class gained an interface and two methods for the refusal of a given implementation under JBMC, and the gap scan follows calls into the classes of the objects made. Both ignored tests run JBMC on every claim of the corpus and compare each verdict with a JVM; a disagreement fails.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs",
+      "lib/models/java/util/HashMap.java"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-15T17:32:09+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "jbmc",
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "40m",
+    "notes": "lib/tests/costs.json: 651 s and 1226 s run alone, plus the release build of the tests"
+  },
+  "steps": [
+    {
+      "name": "conformance under jbmc and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored",
+      "cwd": "."
+    },
+    {
+      "name": "conformance under auto --confirm",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

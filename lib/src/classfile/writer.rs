@@ -356,6 +356,8 @@ pub struct ClassWriter {
     pub access: u16,
     pub name: String,
     pub super_class: String,
+    /// The interfaces it implements, by internal name.
+    pub interfaces: Vec<String>,
     pub fields: Vec<FieldWriter>,
     pub methods: Vec<MethodWriter>,
     pub source_file: Option<String>,
@@ -371,6 +373,7 @@ impl ClassWriter {
             access: flags::PUBLIC | flags::FINAL | flags::SUPER,
             name: name.to_string(),
             super_class: "java/lang/Object".to_string(),
+            interfaces: Vec::new(),
             fields: Vec::new(),
             methods: Vec::new(),
             source_file: None,
@@ -392,6 +395,7 @@ impl ClassWriter {
     pub fn to_bytes(mut self) -> Vec<u8> {
         let this = self.pool.class(&self.name.clone());
         let superclass = self.pool.class(&self.super_class.clone());
+        let interfaces: Vec<u16> = self.interfaces.clone().iter().map(|i| self.pool.class(i)).collect();
         let code_name = self.pool.utf8("Code");
         let source = self.source_file.clone().map(|s| (self.pool.utf8("SourceFile"), self.pool.utf8(&s)));
         let mut field_names = Vec::new();
@@ -410,7 +414,10 @@ impl ClassWriter {
         out.extend(self.access.to_be_bytes());
         out.extend(this.to_be_bytes());
         out.extend(superclass.to_be_bytes());
-        out.extend(0u16.to_be_bytes()); // interfaces
+        out.extend((interfaces.len() as u16).to_be_bytes());
+        for i in interfaces {
+            out.extend(i.to_be_bytes());
+        }
         out.extend((self.fields.len() as u16).to_be_bytes());
         for (f, (name, descriptor)) in self.fields.iter().zip(field_names) {
             out.extend(f.access.to_be_bytes());

@@ -180,6 +180,12 @@ fn scalar_int(a: Option<&Argument>) -> Option<i64> {
 /// How an object made by its constructor is made, as Java writes it, from the renderings of its leaves in order:
 /// `new Quote(new Money(5), 1)`.
 fn recipe<'a>(record: &crate::harness::RecordType, leaves: &mut impl Iterator<Item = &'a String>) -> String {
+    // An interface's given implementation (`crate::given`), by what each accessor answers:
+    // `HttpServletRequest{getMethod()="TRACE"}`.
+    if record.given.is_some() {
+        let answers: Vec<String> = record.params.iter().map(|(accessor, _)| format!("{accessor}()={}", leaves.next().cloned().unwrap_or_default())).collect();
+        return format!("{}{{{}}}", record.simple_name(), answers.join(", "));
+    }
     let mut nested = record.inner.iter();
     let args: Vec<String> = record
         .params
@@ -211,7 +217,9 @@ pub struct Typed {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
     /// A record's components, in declaration order: the arguments of its canonical constructor; for an object
-    /// made by its constructor, that constructor's arguments, an object among them typed so in turn.
+    /// made by its constructor, that constructor's arguments, an object among them typed so in turn; for a
+    /// parameter of an interface type given an implementation (`crate::given`), its accessors, each named as its
+    /// call (`getMethod()`) with the one value it answers.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub components: Option<Vec<Typed>>,
     /// Where a call's argument came from: the input it is (`this.baseMillis`), or for the previous version's
@@ -314,8 +322,8 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
             let record = if before { previous.as_ref().unwrap_or(record) } else { record };
             // A choice's object (step H2): null, or `{"same": "a"}` for the same object as the parameter `a`.
             match made.iter().find(|(n, _)| n == name).map(|(_, m)| m) {
-                Some(harness::Made::Null) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::Value::Null), components: None, from: None },
-                Some(harness::Made::Same(other)) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::json!({ "same": other })), components: None, from: None },
+                Some(harness::Made::Null) => Typed { name: name.clone(), ty: record.declared().replace('/', "."), value: Some(serde_json::Value::Null), components: None, from: None },
+                Some(harness::Made::Same(other)) => Typed { name: name.clone(), ty: record.declared().replace('/', "."), value: Some(serde_json::json!({ "same": other })), components: None, from: None },
                 _ => typed_made(name, record, arguments, &source, &mut record.leaves(*first).into_iter()),
             }
         }
@@ -387,7 +395,13 @@ fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argu
                 }
             },
         })
-        .collect();
+        .collect::<Vec<Typed>>();
+    // An interface's given implementation (`crate::given`) is the parameter's interface, by what each accessor
+    // answers: `{"type": "javax.servlet.http.HttpServletRequest", "components": [{"name": "getMethod()", ...}]}`.
+    if record.given.is_some() {
+        let answers = components.into_iter().map(|c| Typed { name: format!("{}()", c.name), ..c }).collect();
+        return Typed { name: name.to_string(), ty: record.declared().replace('/', "."), value: None, components: Some(answers), from: None };
+    }
     Typed { name: name.to_string(), ty: record.java_name(), value: None, components: Some(components), from: None }
 }
 
@@ -953,7 +967,24 @@ fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Optio
 /// `Quote{amount=Money{cents=5}, quantity=3}`, by simple class name, so that both versions' objects read alike.
 pub fn object_fields(m: &Machine, v: Value, fields: &crate::harness::Fields) -> String {
     let Value::Ref(r) = v else { return "null".into() };
-    let Object::Instance { fields: values, .. } = m.heap.get(r) else { return "<not an object>".into() };
+    let Object::Instance { fields: values, class, .. } = m.heap.get(r) else { return "<not an object>".into() };
+    // An object read through an interface's accessors (`crate::given`), which only running code calls: shown as
+    // the object it is, its class and its own primitive and String fields, `ImmutableTag{key="method", value="GET"}`.
+    if fields.fields.iter().any(|(name, _)| name.ends_with("()")) {
+        let declared = m.cp.load(class).ok().flatten().map(|l| l.class.fields.iter().filter(|f| !f.is_static()).map(|f| (f.name.clone(), f.descriptor.clone())).collect::<Vec<_>>()).unwrap_or_default();
+        let shown: Vec<String> = declared
+            .iter()
+            .filter_map(|(name, descriptor)| {
+                let value = values.get(name).copied().unwrap_or(Value::Null);
+                match Type::parse(descriptor).ok()? {
+                    t if t.is_primitive() => Some(format!("{name}={}", render::witness(value, &t))),
+                    t if crate::values::is_string(&t) => Some(format!("{name}={}", m.units_of(value).map(|s| string_literal(s.units())).unwrap_or_else(|| "null".into()))),
+                    _ => None,
+                }
+            })
+            .collect();
+        return format!("{}{{{}}}", crate::classfile::simple_name_of(class), shown.join(", "));
+    }
     let shown: Vec<String> = fields
         .fields
         .iter()
@@ -989,6 +1020,10 @@ fn primitive_paths(m: &Machine, v: Value, fields: &crate::harness::Fields) -> BT
     let Value::Ref(r) = v else { return out };
     let Object::Instance { fields: values, .. } = m.heap.get(r) else { return out };
     for (name, kind) in &fields.fields {
+        // An accessor's value is the harness's to read: it is no field of the object.
+        if name.ends_with("()") {
+            continue;
+        }
         let value = values.get(name).copied().unwrap_or(Value::Null);
         match kind {
             crate::harness::FieldKind::Value(_) => {

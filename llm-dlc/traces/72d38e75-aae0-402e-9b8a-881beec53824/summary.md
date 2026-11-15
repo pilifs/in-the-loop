@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `72d38e75-aae0-402e-9b8a-881beec53824` (open) |
+| Session | `72d38e75-aae0-402e-9b8a-881beec53824` (ended) |
 | When | 2026-11-15 12:23 UTC to 2026-11-15 15:57 UTC (213 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.325 |
@@ -212,7 +212,7 @@ Verified: test_loop_stats.py (20 tests, two new: the hand-run loop, and a commit
 
 ### Record session traces
 
-change `xuyzoxtqyvmv` · [log `899d4403f2b2`](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941.jsonl.gz)
+[`7b90a3311b53`](https://github.com/pilifs/in-the-loop/commit/7b90a3311b53028e0b4371b2cde8cf5ee8117e76) · [log `899d4403f2b2`](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

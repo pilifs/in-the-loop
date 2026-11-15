@@ -55,13 +55,15 @@
 //! | class initialization (JVMS §5.5), at the first `new`, `getstatic`, `putstatic` or `invokestatic` of an application class | implemented ([`Engine::initialise`]): the class's superclass, then the superinterfaces that declare a default method ([`gaps::initialization_supers`]), then its `<clinit>`, run as bytecode; a use from inside its own initialization goes on; an exception that leaves a `<clinit>` is thrown as an `ExceptionInInitializerError` (an `Error` as it is), and a later use of the class, or of one that waited on it, throws `NoClassDefFoundError`. A JDK class is taken to be initialized already |
 //! | a `<clinit>` outside the fragment ([`gaps::runs_initializer`]: one that reaches what the engine refuses, or reads or writes a static of a class whose `<clinit>` is outside; a gap inside one it runs is met there) | gap: `class-initializer`, met where the JVM would run it; under assume, or closed by a contract that it throws nothing, taken to have run, its static fields then known only as constants |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
+//! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
+//! | `new HashMap()` and `new HashMap(int)`, and `invokevirtual`/`invokeinterface` of `put`, `get`, `containsKey`, `size` and `isEmpty` on the map ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/util/HashMap.java`, which JBMC runs too), a map's entries one chain of objects, a key found by its `hashCode` and `equals` as the JDK finds one; each call has an evidence record of `values::OPERATIONS`. The model has no other method: any other (`remove`, `keySet`, `Map`'s default methods) is the JDK call it names |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
-//! | `invokevirtual` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)` and `startsWith(String)` on a String whose content the engine holds ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
+//! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
@@ -2639,8 +2641,9 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
-                // A String method the engine models on the content it holds.
-                if !special && member.owner == STRING && path.objects[o].class == STRING {
+                // A String method the engine models on the content it holds, whichever type the call names: a
+                // String's `equals` and `hashCode` are its own when a map calls them on a key it holds as an Object.
+                if !special && path.objects[o].class == STRING {
                     if let Some(step) = self.string_method(path, o, &member.name, &member.descriptor, &args) {
                         return step;
                     }
@@ -2783,6 +2786,23 @@ impl<'a> Engine<'a> {
         let truth = match (name, args) {
             ("length", _) => {
                 self.push(path, Val::I(s.length));
+                self.advance(path);
+                return Some(Ok(None));
+            }
+            // s[0]*31^(n-1) + ... + s[n-1], in int arithmetic (String.hashCode's Javadoc): 0 for the empty String.
+            ("hashCode", _) => {
+                let mut hash = self.b.constant(0, 32);
+                let five = self.b.constant(5, 32);
+                for (i, cell) in s.cells.iter().enumerate() {
+                    let here = self.b.constant(i as i64, 32);
+                    let inside = self.b.ult(&here, &s.length);
+                    let shifted = self.b.shl(&hash, &five);
+                    let times31 = self.b.sub(&shifted, &hash);
+                    let unit = self.b.extend_cell(&Type::Char, cell);
+                    let next = self.b.add(&times31, &unit);
+                    hash = self.b.ite_bits(inside, &next, &hash);
+                }
+                self.push(path, Val::I(hash));
                 self.advance(path);
                 return Some(Ok(None));
             }
@@ -3403,6 +3423,36 @@ impl<'a> Engine<'a> {
     /// The JDK's static methods the engine models: the exact and floor arithmetic of `Math`, the comparisons
     /// of the integer wrappers, and their `numberOfLeadingZeros`. [`models_jdk_static`] lists the same arms, for the gap scan.
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
+        // The models over references ([`models_jdk_reference_static`]), whose arguments are known objects or null.
+        match (owner, name, args.as_slice()) {
+            // The object itself, or a NullPointerException; the message of the second form is one no proof observes.
+            ("java/util/Objects", "requireNonNull", [Val::R(object), ..]) => {
+                if object.is_none() {
+                    return self.raise(path, "java/lang/NullPointerException");
+                }
+                self.push(path, Val::R(*object));
+                self.advance(path);
+                return Ok(None);
+            }
+            // A regex that is a constant of the plain form ([`crate::jdk_facts::plain_regex`]) compiles: a new
+            // Pattern, an object with no content, whose methods are the JDK calls they were. Any other regex is the
+            // gap the call was, since whether it compiles is the JDK's parser's to say.
+            ("java/util/regex/Pattern", "compile", [Val::R(regex)]) => {
+                let Some(o) = *regex else { return self.raise(path, "java/lang/NullPointerException") };
+                let units = path.objects[o].content().and_then(|s| {
+                    let length = usize::try_from(self.b.constant_value(&s.length)?).ok()?;
+                    s.cells.get(..length)?.iter().map(|c| self.b.constant_value(c).map(|u| u as u16)).collect::<Option<Vec<u16>>>()
+                });
+                if !units.is_some_and(|u| crate::jdk_facts::plain_regex(&u)) {
+                    return Ok(self.meet(path, GapKind::JdkStaticMethod, owner, name, descriptor));
+                }
+                let r = self.alloc(path, "java/util/regex/Pattern");
+                self.push(path, Val::R(Some(r)));
+                self.advance(path);
+                return Ok(None);
+            }
+            _ => {}
+        }
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
             Val::R(_) | Val::C(_) => None,
@@ -3546,14 +3596,14 @@ impl<'a> Engine<'a> {
     }
 }
 
-/// Whether [`Engine::call_jdk_static`] models `owner.name`: the arms of its match, for [`gaps::scan`], which counts
-/// such a call as reproduced exactly rather than a gap.
 /// Whether the engine models the String method `owner.name(descriptor)` on a String whose content it holds
 /// ([`Engine::string_method`]); the engine and the gap scan share it.
 pub fn models_string_method(owner: &str, name: &str, descriptor: &str) -> bool {
-    owner == STRING && matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("startsWith", "(Ljava/lang/String;)Z"))
+    owner == STRING && matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("hashCode", "()I") | ("startsWith", "(Ljava/lang/String;)Z"))
 }
 
+/// Whether [`Engine::call_jdk_static`] models `owner.name`: the arms of its match, for [`gaps::scan`], which counts
+/// such a call as reproduced exactly rather than a gap.
 pub fn models_jdk_static(owner: &str, name: &str) -> bool {
     matches!(
         (owner, name),
@@ -3562,6 +3612,17 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
             | ("java/lang/Integer", "toUnsignedLong")
             | ("java/lang/Integer" | "java/lang/Long", "numberOfLeadingZeros")
             | ("java/lang/Boolean", "logicalAnd" | "logicalOr" | "logicalXor")
+    )
+}
+
+/// Whether [`Engine::call_jdk_static`] models the static call `owner.name(descriptor)` over references:
+/// `Objects.requireNonNull` of an object, with or without a message, and `Pattern.compile` of a regex (where it is a
+/// constant of the plain form, [`crate::jdk_facts::plain_regex`]; on any other the engine meets the call as the gap it
+/// was, where it runs it).
+pub fn models_jdk_reference_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    matches!(
+        (owner, name, descriptor),
+        ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;" | "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;") | ("java/util/regex/Pattern", "compile", "(Ljava/lang/String;)Ljava/util/regex/Pattern;")
     )
 }
 

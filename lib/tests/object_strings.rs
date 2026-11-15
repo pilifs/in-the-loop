@@ -106,9 +106,13 @@ fn a_string_inside_an_object_is_a_leaf_and_a_string_field_is_compared_by_content
     assert!(o.output.contains("code=\""), "the result's code is shown by content: {}", o.output);
 }
 
-/// The named boundary: a property check makes no String inside an object; `--engine jbmc` is refused, since JBMC's
-/// Strings are its own model; and a plan's String inside a node must be the String adapter's, never null, bounded as
-/// the check bounds every String, and named by its path.
+/// The named boundary. A property check takes a String inside an object as the regression check does, a leaf of
+/// every content up to the bound (since a parameter of an interface type is given an implementation,
+/// `tests/interface_parameters.rs`, whose constructor takes the Strings its accessors answer): a claim over the
+/// request's code is proved, and a wrong one refuted on a request made with its String and run on a JVM; before, it
+/// was refused by name. `--engine jbmc` is refused in both checks, since JBMC's Strings are its own model; and a
+/// plan's String inside a node must be the String adapter's, never null, bounded as the check bounds every String,
+/// and named by its path.
 #[test]
 fn a_string_inside_an_object_outside_the_regression_check_is_refused_by_name() {
     jvmcontract::tool_tier!(pending);
@@ -116,11 +120,22 @@ fn a_string_inside_an_object_outside_the_regression_check_is_refused_by_name() {
     let mut p = property::Options::new(&[before.clone()], "strs.Desk#score");
     p.engine = jvmcontract::Engine::Native;
     p.jbmc = NO_JBMC.into();
-    p.assert = Some("result >= 0 || result < 0".into());
+    p.max_array_length = 3;
+    p.assert = Some("result == r.count || (result == r.count * 2 && !r.code.equals(\"\") && r.code != null)".into());
     p.work = Some(tmp("work-property"));
     let o = property::run(&p).unwrap();
-    assert_eq!(o.verdict, Verdict::Unverifiable);
-    assert!(o.problem.as_deref().unwrap_or_default().contains("is a String inside an object"), "{}", o.output);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap_or_default().contains("String"), "{}", o.output);
+    p.assert = Some("result == r.count".into());
+    p.work = Some(tmp("work-property-defect"));
+    let o = property::run(&p).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.output.contains("new Request(\"V\", ") && o.output.contains("run on a JVM"), "{}", o.output);
+    p.engine = jvmcontract::Engine::Jbmc;
+    p.work = Some(tmp("work-property-jbmc"));
+    let o = property::run(&p).unwrap();
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("takes a String inside an object"), "{}", o.output);
 
     let mut o = options("jbmc", &before, &before, "strs.Desk#score");
     o.engine = jvmcontract::Engine::Jbmc;

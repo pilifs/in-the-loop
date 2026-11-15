@@ -491,6 +491,18 @@ public class Conformance {
             return -1;
         }
     }
+
+    // A parameter of an interface type: a property check gives it an implementation of the accessors the method
+    // calls (jvmcontract::given), a domain only the tool's own checker is given.
+    public interface Source {
+        int size();
+
+        String name();
+    }
+
+    public static int sourceSize(Source s) { return s.size(); }
+
+    public static int sourceNameLength(Source s) { return s.name().length(); }
 }
 
 // A top-level enum: javac switches over it through a $SwitchMap class (Conformance$1), as it does for an enum of

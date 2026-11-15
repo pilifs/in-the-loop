@@ -31,6 +31,12 @@
 //! copy to a call. That is how a method that writes into an array is held to what it changed and what it left:
 //! `(\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` is a frame condition, and
 //! `(\exists int j; 0 <= j && j < keys.length; keys[j] == \old(keys[i]))` says an element is kept.
+//!
+//! An object of an interface type (a `result`, or a parameter the harness gives an implementation of) is read
+//! through the interface's accessors, its abstract methods of no parameters that return a primitive or a String
+//! (`equivalence::fields_of`): `result.getCount()` is a value, and a String, a field's or an accessor's, is compared
+//! with a literal by `equals`, `result.getKey().equals("method")`, or with `null` by `==` and `!=`. The harness calls
+//! the accessor, so what it throws fails the expression as a path through null does.
 
 use crate::classfile::writer::{CodeBuilder, PoolBuilder};
 use crate::classfile::{Cond, Kind, Type};
@@ -103,11 +109,16 @@ pub enum Expr {
     /// `l == null`, `result == l`, `result.price != l.price`: whether two references (an object parameter, `result`, or
     /// a reference field path of one; `None` for `null`) are one object (`true`) or not (`false`).
     Refs(Option<Box<FieldPath>>, Option<Box<FieldPath>>, bool),
+    /// `result.getKey().equals("method")`: whether the String a path ends at has the literal's content, its UTF-16
+    /// code units. A path through null, or a null String, throws `NullPointerException`, as in Java.
+    StringEquals(Box<FieldPath>, Vec<u16>),
 }
 
 /// A path from an object parameter or an object `result` through its fields (step H2): `l.price.cents` as the
 /// object's name and slot, each field read in turn (its declaring class, name and descriptor), and the type the
-/// path ends in: a primitive, or the class of an object it ends at (`Type::Object`).
+/// path ends in: a primitive, or the class of an object it ends at (`Type::Object`), a String's included. A step
+/// whose descriptor is a method's (`()Ljava/lang/String;`) is a call of that accessor of the interface `owner`
+/// ([`is_accessor`]), shown as `result.getKey()`.
 #[derive(Debug, Clone, PartialEq)]
 pub struct FieldPath {
     /// As written: `l.price.cents`.
@@ -122,9 +133,30 @@ impl FieldPath {
     pub fn emit(&self, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
         code.load(Kind::Ref, self.slot);
         for (owner, name, descriptor) in &self.steps {
-            let field = pool.field_ref(owner, name, descriptor);
-            code.op_u16(0xb4, field); // getfield
+            emit_step(code, pool, owner, name, descriptor);
         }
+    }
+}
+
+/// Whether a path's step is a call of an interface's accessor, not a field read: its descriptor is a method's.
+pub fn is_accessor(descriptor: &str) -> bool {
+    descriptor.starts_with('(')
+}
+
+/// The name of the pseudo-field an accessor `method` is in [`super::Fields`]: `getKey()`.
+pub fn accessor_name(method: &str) -> String {
+    format!("{method}()")
+}
+
+/// One step of a path, on the object the stack holds: `getfield`, or `invokeinterface` of an accessor.
+pub fn emit_step(code: &mut CodeBuilder, pool: &mut PoolBuilder, owner: &str, name: &str, descriptor: &str) {
+    if is_accessor(descriptor) {
+        let method = pool.interface_method_ref(owner, name, descriptor);
+        code.op_u16(0xb9, method); // invokeinterface
+        code.op_u8(1, 0); // count: the receiver; and the zero byte
+    } else {
+        let field = pool.field_ref(owner, name, descriptor);
+        code.op_u16(0xb4, field); // getfield
     }
 }
 
@@ -253,7 +285,7 @@ impl Expr {
             Expr::Var(_, t, _) => *t,
             Expr::Call(callee, _) => callee.ret,
             Expr::Length(..) => Ty::Int,
-            Expr::Same(..) | Expr::Refs(..) => Ty::Boolean,
+            Expr::Same(..) | Expr::Refs(..) | Expr::StringEquals(..) => Ty::Boolean,
             Expr::Field(f) | Expr::OldField(f, _) => ty_of(&f.ty).unwrap_or(Ty::Int),
             Expr::Index(_, _, t, _) => ty_of(t).unwrap_or(Ty::Int),
             Expr::Quantifier(q) => q.ty(),
@@ -293,7 +325,7 @@ impl Expr {
             Expr::Var(_, Ty::Long, slot) => slot + 2,
             Expr::Var(_, _, slot) | Expr::Length(_, slot) => slot + 1,
             Expr::Same(l, r, _) => l.iter().chain(r).map(|(_, s)| s + 1).max().unwrap_or(0),
-            Expr::Field(f) => f.slot + 1,
+            Expr::Field(f) | Expr::StringEquals(f, _) => f.slot + 1,
             Expr::OldField(f, value) => (f.slot + 1).max(value + 3),
             Expr::Refs(l, r, _) => l.iter().chain(r).map(|f| f.slot + 1).max().unwrap_or(0),
             Expr::Index(_, slot, _, index) => (slot + 1).max(index.slots_used()),
@@ -311,7 +343,7 @@ impl Expr {
     /// Whether the expression calls the method under proof, which only the harness can evaluate.
     pub fn has_call(&self) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) => false,
             Expr::Call(..) => true,
             Expr::Index(_, _, _, index) => index.has_call(),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.has_call(),
@@ -324,7 +356,7 @@ impl Expr {
     /// Whether the expression passes the array in `slot` to a call, which sees its whole length.
     pub fn passes(&self, slot: u16) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) => false,
             Expr::Index(_, _, _, index) => index.passes(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.passes(slot),
             Expr::Binary(_, l, r) => l.passes(slot) || r.passes(slot),
@@ -340,7 +372,7 @@ impl Expr {
             Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => false,
             Expr::Var(_, _, s) | Expr::Length(_, s) => *s == slot,
             Expr::Same(l, r, _) => l.iter().chain(r).any(|(_, s)| *s == slot),
-            Expr::Field(f) => f.slot == slot,
+            Expr::Field(f) | Expr::StringEquals(f, _) => f.slot == slot,
             Expr::OldField(f, value) => f.slot == slot || (*value..value + 3).contains(&slot),
             Expr::Refs(l, r, _) => l.iter().chain(r).any(|f| f.slot == slot),
             Expr::Index(_, s, _, index) => *s == slot || index.mentions(slot),
@@ -370,7 +402,7 @@ impl Expr {
     /// evaluate.
     pub fn reads_objects(&self) -> bool {
         let mut reads = false;
-        self.visit(&mut |e| reads |= matches!(e, Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..)));
+        self.visit(&mut |e| reads |= matches!(e, Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..)));
         reads
     }
 
@@ -378,7 +410,7 @@ impl Expr {
     fn visit(&self, f: &mut dyn FnMut(&Expr)) {
         f(self);
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) => {}
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) => {}
             Expr::Index(_, _, _, index) => index.visit(f),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.visit(f),
             Expr::Binary(_, l, r) => {
@@ -448,6 +480,8 @@ enum Token {
     Quantifier(Quant),
     /// `\old`.
     Old,
+    /// A string literal, as its UTF-16 code units.
+    Str(Vec<u16>),
     End,
 }
 
@@ -498,6 +532,12 @@ fn lex(src: &str) -> Result<Vec<Token>, Error> {
             tokens.push(Token::Ident(chars[start..i].iter().collect()));
             continue;
         }
+        if c == '"' {
+            let (units, after) = lex_string(&chars, i + 1)?;
+            tokens.push(Token::Str(units));
+            i = after;
+            continue;
+        }
         if c == '\\' {
             let start = i + 1;
             i += 1;
@@ -528,6 +568,40 @@ fn lex(src: &str) -> Result<Vec<Token>, Error> {
     }
     tokens.push(Token::End);
     Ok(tokens)
+}
+
+/// A string literal's code units, from after its opening quote: Java's escapes `\\`, `\"`, `\'`, `\n`, `\r`, `\t`,
+/// `\b`, `\f`, `\0` and `\uXXXX` (a code unit, so a surrogate alone can be written). And the index after its
+/// closing quote.
+fn lex_string(chars: &[char], mut i: usize) -> Result<(Vec<u16>, usize), Error> {
+    let mut units = Vec::new();
+    loop {
+        let Some(&c) = chars.get(i) else { return Err(Error::new("a string literal with no closing quote")) };
+        i += 1;
+        match c {
+            '"' => return Ok((units, i)),
+            '\\' => {
+                let Some(&e) = chars.get(i) else { return Err(Error::new("a string literal with no closing quote")) };
+                i += 1;
+                units.push(match e {
+                    '\\' | '"' | '\'' => e as u16,
+                    'n' => 10,
+                    'r' => 13,
+                    't' => 9,
+                    'b' => 8,
+                    'f' => 12,
+                    '0' => 0,
+                    'u' => {
+                        let hex: String = chars.iter().skip(i).take(4).collect();
+                        i += 4;
+                        u16::from_str_radix(&hex, 16).ok().filter(|_| hex.len() == 4).ok_or_else(|| Error::new(format!("bad escape \\u{hex} in a string literal")))?
+                    }
+                    other => return Err(Error::new(format!("unknown escape \\{other} in a string literal"))),
+                });
+            }
+            c => units.extend(c.encode_utf16(&mut [0; 2]).iter()),
+        }
+    }
 }
 
 // Parser
@@ -862,26 +936,46 @@ impl Parser<'_> {
         let mut at = Some(fields);
         let mut ty = Type::Object(fields.class.clone());
         while let (Token::Op("."), Some(Token::Ident(field))) = (self.peek(), self.tokens.get(self.pos + 1)) {
-            let field = field.clone();
+            // A String's `equals` is the operand's to read ([`Parser::object_operand`]).
+            if crate::values::is_string(&ty) && field == "equals" {
+                break;
+            }
+            // `.getKey()` is the accessor `getKey()` among the fields of an interface; `.cents` a field.
+            let called = self.tokens.get(self.pos + 2) == Some(&Token::Op("(")) && self.tokens.get(self.pos + 3) == Some(&Token::Op(")"));
+            let method = field.clone();
+            let field = if called { accessor_name(field) } else { field.clone() };
             let Some(here) = at else { return Err(Error::new(format!("{shown} is a {}, which has no field {field}", ty.java_name()))) };
             let Some((_, kind)) = here.fields.iter().find(|(n, _)| *n == field) else {
-                return Err(Error::new(format!("{} has no field {field}; its fields are {}", here.class.replace('/', "."), here.fields.iter().map(|(n, _)| n.as_str()).collect::<Vec<_>>().join(", "))));
+                let names = here.fields.iter().map(|(n, _)| n.as_str()).collect::<Vec<_>>().join(", ");
+                // An interface is read through its accessors, and one the check gives an implementation of
+                // (`crate::given`) through those the target may call.
+                if called || here.fields.iter().any(|(n, _)| n.ends_with("()")) {
+                    let reads = if here.fields.is_empty() { "they can read nothing of it".to_string() } else { format!("they can read {names}") };
+                    return Err(Error::new(format!("{} has no {field} the expressions can read; {reads}", here.class.replace('/', "."))));
+                }
+                let has = if here.fields.is_empty() { "it has none the expressions read".to_string() } else { format!("its fields are {names}") };
+                return Err(Error::new(format!("{} has no field {field}; {has}", here.class.replace('/', "."))));
             };
-            self.pos += 2;
+            self.pos += if called { 4 } else { 2 };
             shown = format!("{shown}.{field}");
+            let step = |descriptor: String| if called { (here.class.clone(), method.clone(), format!("(){descriptor}")) } else { (here.class.clone(), field.clone(), descriptor) };
             match kind {
                 super::FieldKind::Value(t) => {
-                    steps.push((here.class.clone(), field, t.descriptor()));
+                    steps.push(step(t.descriptor()));
                     ty = t.clone();
                     at = None;
                 }
                 super::FieldKind::Object(inner) => {
-                    steps.push((here.class.clone(), field, format!("L{};", inner.class)));
+                    steps.push(step(format!("L{};", inner.class)));
                     ty = Type::Object(inner.class.clone());
                     at = Some(inner);
                 }
                 super::FieldKind::Array(t) => return Err(Error::new(format!("{shown} is an array field ({}); a property does not read an object's array fields yet", t.java_name()))),
-                super::FieldKind::String => return Err(Error::new(format!("{shown} is a String field; a property's expressions have no String terms"))),
+                super::FieldKind::String => {
+                    ty = Type::Object("java/lang/String".into());
+                    steps.push(step(ty.descriptor()));
+                    at = None;
+                }
             }
         }
         Ok(FieldPath { shown, slot, steps, ty })
@@ -890,6 +984,30 @@ impl Parser<'_> {
     /// What a field path is in the expression: a value where it ends at a primitive (under `\old`, the value before
     /// the call), and where it ends at an object, the left side of `==` or `!=` with another or with `null`.
     fn object_operand(&mut self, path: FieldPath) -> Result<Expr, Error> {
+        // A String: its content against a literal's, or the reference against null.
+        if crate::values::is_string(&path.ty) {
+            require(!self.in_old, &format!("\\old({}) is a String; \\old applies to a primitive field of an object", path.shown))?;
+            if self.eat(".") {
+                self.next(); // `equals`, as `path` left it
+                self.expect("(")?;
+                let Token::Str(units) = self.next() else {
+                    return Err(Error::new(format!("{}.equals takes a string literal, as {}.equals(\"GET\")", path.shown, path.shown)));
+                };
+                self.expect(")")?;
+                return Ok(Expr::StringEquals(Box::new(path), units));
+            }
+            let equal = if self.eat("==") {
+                true
+            } else if self.eat("!=") {
+                false
+            } else {
+                return Err(Error::new(format!("{} is a String; compare its content with a literal, {}.equals(\"...\"), or the reference with null by == or !=", path.shown, path.shown)));
+            };
+            return match self.next() {
+                Token::Ident(n) if n == "null" => Ok(Expr::Refs(Some(Box::new(path)), None, equal)),
+                other => Err(Error::new(format!("a String is compared by == or != with null alone (its content by equals), found {other:?}"))),
+            };
+        }
         if let Type::Object(class) = &path.ty {
             require(!self.in_old, &format!("\\old({}) is an object; \\old applies to a primitive field of one, as \\old({}.f)", path.shown, path.shown))?;
             let equal = if self.eat("==") {
@@ -1191,6 +1309,7 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)], f
         Expr::Field(f) => return fields(f).ok_or_else(|| Error::new(format!("{} reads an object, which only the harness can, or goes through null", f.shown))),
         Expr::OldField(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
         Expr::Refs(..) => return Err(Error::new("a comparison of objects can only be evaluated in the harness")),
+        Expr::StringEquals(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
         Expr::BitNot(e) => match eval_in(e, locals, arrays, fields)? {
             Value::Int(x) => Value::Int(!x),
             Value::Long(x) => Value::Long(!x),
@@ -1314,6 +1433,13 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
             code.bind(end);
         }
         Expr::Field(f) => f.emit(code, pool),
+        Expr::StringEquals(f, units) => {
+            f.emit(code, pool);
+            let literal = pool.string_units(units);
+            code.ldc(literal);
+            let equals = pool.method_ref("java/lang/String", "equals", "(Ljava/lang/Object;)Z");
+            code.op_u16(0xb6, equals); // invokevirtual
+        }
         Expr::OldField(f, value) => {
             // Through null before the call: reading it then would have thrown, and so does this.
             let read = code.label();
@@ -1619,6 +1745,49 @@ mod tests {
 
     fn locals(price: i64, seats: i32, vip: bool) -> Vec<Value> {
         vec![Value::Long(price), Value::Int(0), Value::Int(seats), Value::Int(vip as i32)]
+    }
+
+    /// An interface's object is read through its accessors, written as the calls they are, and a String by its
+    /// content against a literal (`equals`) or its reference against null: the terms of example 285's claim,
+    /// `result.getKey().equals("method")`. Before, a path had fields alone and an expression no String.
+    #[test]
+    fn an_interfaces_accessors_and_a_strings_content_are_terms() {
+        use super::super::{FieldKind, Fields};
+        let tag = Fields { class: "web/Tag".into(), fields: vec![("getKey()".into(), FieldKind::String), ("getCount()".into(), FieldKind::Value(Type::Int))] };
+        let line = Fields { class: "web/Line".into(), fields: vec![("code".into(), FieldKind::String), ("tag".into(), FieldKind::Object(Box::new(tag.clone())))] };
+        let params = vec![Param { name: "tag".into(), ty: Type::Object("web/Tag".into()), slot: 0 }, Param { name: "line".into(), ty: Type::Object("web/Line".into()), slot: 1 }];
+        let objects = vec![("tag".to_string(), tag), ("line".to_string(), line)];
+        let parse = |src: &str| parse_over_objects(src, &params, None, 2, None, &objects);
+        let units = |s: &str| s.encode_utf16().collect::<Vec<u16>>();
+
+        let Expr::StringEquals(path, literal) = parse("tag.getKey().equals(\"GET\")").unwrap() else { panic!("a String's content against a literal") };
+        assert_eq!((path.shown.as_str(), path.slot, &path.ty, literal), ("tag.getKey()", 0, &Type::Object("java/lang/String".into()), units("GET")));
+        assert_eq!(path.steps.iter().map(|(owner, name, descriptor)| format!("{owner}.{name}{descriptor}")).collect::<Vec<_>>(), ["web/Tag.getKey()Ljava/lang/String;"]);
+        assert!(is_accessor(&path.steps[0].2) && accessor_name("getKey") == "getKey()");
+        // A literal's escapes are Java's, a code unit each; a field is read as before, and an accessor after one.
+        let Expr::StringEquals(path, literal) = parse("line.tag.getKey().equals(\"a\\\"b\\n\\u00e9\\ud83d\")").unwrap() else { panic!() };
+        assert_eq!((path.shown.as_str(), literal), ("line.tag.getKey()", vec![0x61, 0x22, 0x62, 0x0a, 0xe9, 0xd83d]));
+        assert_eq!(path.steps.iter().map(|(_, name, descriptor)| format!("{name}{descriptor}")).collect::<Vec<_>>(), ["tagLweb/Tag;", "getKey()Ljava/lang/String;"]);
+        let e = parse("tag != null && (tag.getKey() == null || !line.code.equals(\"\")) && tag.getCount() + 1 > 0").unwrap();
+        assert_eq!(e.ty(), Ty::Boolean);
+        assert!(e.reads_objects() && !e.has_call());
+        let unread = eval(&parse("tag.getKey().equals(\"GET\")").unwrap(), &[Value::Null, Value::Null]).unwrap_err().to_string();
+        assert_eq!(unread, "tag.getKey() reads an object, which only the harness can");
+
+        for (src, problem) in [
+            ("tag.getValue().equals(\"x\")", "web.Tag has no getValue() the expressions can read; they can read getKey(), getCount()"),
+            ("tag.key == null", "web.Tag has no key the expressions can read; they can read getKey(), getCount()"),
+            ("line.name == null", "web.Line has no field name; its fields are code, tag"),
+            ("tag.getKey() == \"GET\"", "a String is compared by == or != with null alone (its content by equals)"),
+            ("tag.getKey()", "tag.getKey() is a String; compare its content with a literal, tag.getKey().equals(\"...\"), or the reference with null by == or !="),
+            ("tag.getKey().equals(line.code)", "tag.getKey().equals takes a string literal, as tag.getKey().equals(\"GET\")"),
+            ("tag.getKey().equals(\"GET)", "a string literal with no closing quote"),
+            ("tag.getKey().equals(\"\\q\")", "unknown escape \\q in a string literal"),
+            ("tag.getKey().equals(\"\\u12\")", "bad escape \\u12"),
+        ] {
+            let found = parse(src).map(|_| ()).unwrap_err().to_string();
+            assert!(found.contains(problem), "{src}: {found}");
+        }
     }
 
     #[test]

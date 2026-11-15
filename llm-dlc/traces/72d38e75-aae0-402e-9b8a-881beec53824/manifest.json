@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "72d38e75-aae0-402e-9b8a-881beec53824",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "Work on the brief in `llm-dlc/loops/test-cost.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it ",
   "client": {
@@ -357,7 +357,7 @@
     {
       "change_id": "uklpttstmurwwyklyyksnsnrylwrxkzm",
       "commit_id": "26110c84323d538dfcdde7d31a72d45b5ae37ea2",
-      "immutable": false,
+      "immutable": true,
       "summary": "feature-loop.sh: moonshots, and templated moonshots that take one item of a list per cycle, starting with prove-examples (285-300)",
       "body": "The one-line named instructions of the repo's first days (features, tla, spring, relational) are now called moonshots, apart from briefs and their streams. A templated moonshot puts the next item of its list into its template each cycle: prove-examples gives examples 285 to 300 in turn to \"Formally prove example {} as elegantly and efficiently as possible\", in a session of its own fixed in the script (a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31) on claude-fable-5-2 at high effort, which the first run creates and later runs resume. An item is done once an earlier run's record in llm-dlc/loop-summaries lists a commit for it ('- cycle N, item X, ...'), so a run starts at the first item without one, runs at most as many cycles as items are left, and ends when the list does. pricing.json gains claude-fable-5-2 at its list price (8/40 per MTok, cache read 0.20).\n\nVerified with a stub claude in a throwaway jj repo: the first turn created the session with --session-id on claude-fable-5-2 at high effort and every later turn resumed it; a 3-cycle run took 285-287; a run whose cycle made no commit stopped and left 288; the next run took 288-289; with every item recorded the loop exits 0 without calling claude.",
       "log_sha256": "8708d29833b7797152a26818c6c85f49059862051a88ef70292a9f549d490fe9"
@@ -365,7 +365,7 @@
     {
       "change_id": "tkvkkllxztqnrxztnzwrpzsqoqstzmvt",
       "commit_id": "e9ba536416873c85bd4ceb430247e7db031503f2",
-      "immutable": false,
+      "immutable": true,
       "summary": "Loop statistics: every loop added up by category, loop, run, cycle and item, with the history back to 2026-11-01",
       "body": "llm-dlc/traces/loops.json and loops.md are new generated files: what the unattended loops cost and produced. A new module, llm-dlc/tools/loop_stats.py, adds up moonshots, briefs with their streams, and the verification loop, each by loop, run and cycle: time (elapsed and active), tokens, cost at list price, commits, compactions and context, and the verification jobs each cycle submitted with their final result and compute. A templated moonshot such as prove-examples also gets a row per item: its attempts, what they cost, its commit, and whether its proof passed. sync.py writes both files on every sync, check fails when either is stale, regenerate settles them after a merge, and the publication gate covers them. If the statistics cannot be computed, the files say why, the commit goes on and check warns.\n\nThe data was already there, in each session's metrics.json (every prompt with its time, tokens and cost); nothing said which prompts were a loop's. A run with a published record owns the prompts of its session between its Started and end lines; the n-th instruction is cycle n and, in a templated moonshot, takes the n-th item of the header's list. The 8 runs with no published record (all before 2026-11-06: the moonshots features, tla, spring and relational, and the briefs sync-performance, build-orchestration and sound-verdicts) are read from their sessions' prompts and marked source: transcript. They are split where a person typed, after 30 minutes without a turn, at the closing summary, and where the script's count of cycles starts over. History as extracted: 4 moonshots (46 cycles, 43 with a commit, $522), 26 brief loops in 51 runs (289 cycles, $1,078), and 49 verification-loop sessions ($15); 235 of 280 verification jobs are tied to the cycle that submitted them.\n\nThree changes make the data sufficient from here on. feature-loop.sh writes a record's times in UTC whatever the machine's zone, since they are matched against the transcript's, and names the item in the line for a cycle that made no commit. pipeline.py submit records the session Claude Code runs it in when --session is not given, so a job is tied to its cycle without relying on the commit message. Records with a zone the reader cannot place are read as UTC and listed on the page.\n\nVerified: test_loop_stats.py (18 tests, new) on made-up sessions, records and jobs; the other llm-dlc tool suites (test_performance 103, test_runs, test_workspaces, test_metrics, test_review, test_streams_status, test_prune_workspaces) and verification/test_pipeline.py (35, one new). On the real history, every one of the 47 published records agrees with what was read from its session: the same number of cycles as its end line says, and a commit line for exactly the cycles found committed. feature-loop.sh was run against a stub claude in a throwaway jj repo with TZ=America/New_York: its records carried UTC times and parsed, including the no-commit stop. This commit was made in the moonshot workspace, on main plus uklpttst: when it moves onto the default line, run sync.py regenerate (the two files are computed from the sessions and records on that line), and tag the new tests with lib/tools/test_costs.py, which does not exist here.",
       "log_sha256": "8708d29833b7797152a26818c6c85f49059862051a88ef70292a9f549d490fe9"
@@ -373,15 +373,15 @@
     {
       "change_id": "lstvvumnvlnulpvzsvmrokxwpumxyuzk",
       "commit_id": "3ae23f915dbfd1cef6bf60dd6baaf34c3823113d",
-      "immutable": false,
+      "immutable": true,
       "summary": "Loop statistics: the loop a person ran by hand on 2026-10-31 counted as a moonshot of its own kind, and a cycle's commits held to its own turns",
       "body": "examples-by-hand is a new loop in llm-dlc/traces/loops.json and loops.md: the three cycles a person typed on the evening of 2026-10-31, before feature-loop.sh existed. Each was an instruction (reworded each time, for another audience), a commit (the Quorum, Crosscut and Mica example families) and a typed /compact, which is the cycle the script was written that night to automate. It is read from the session's prompts like the other runs with no record: 3 cycles, 3 commits, 2 h 34 min active, $55.22 at list price. It counts with the moonshots, and is kept apart by a kind of its own, moonshot by hand, on every row; the page marks it in the moonshots table, lists its three wordings, says under the totals that the moonshot row includes it, and explains what differs: no script capped a cycle, checked for a commit or compacted for it, and a person chose each instruction after reading the last result. The user asked for it to be counted, with a disclaimer.\n\nA cycle's commits are now those its session made during the cycle's turns. Before, the last cycle of a run also took commits stamped on the session afterwards, while it sat idle: another session's work, or a person's allow-list approval. That had given six cycles 9 commits too many (574 in all, now 569 before the three by hand), and had counted the last build-orchestration cycle as committed when the loop had stopped on it without a commit. All 47 published records still agree with what is read from their sessions.\n\nVerified: test_loop_stats.py (20 tests, two new: the hand-run loop, and a commit stamped on an idle session), the other llm-dlc tool suites, and sync.py check at 0 errors and 0 warnings. Made in the moonshot workspace, on tkvkkllx: after the move onto the default line, run sync.py regenerate.",
       "log_sha256": "8708d29833b7797152a26818c6c85f49059862051a88ef70292a9f549d490fe9"
     },
     {
       "change_id": "xuyzoxtqyvmvosmkzwlyxukrnsqsmtlx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7b90a3311b53028e0b4371b2cde8cf5ee8117e76",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941"

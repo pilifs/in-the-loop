@@ -359,11 +359,12 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
             Slot::Plain(i) => parameter(&layout.params[*i], max_array_length),
             Slot::Record { name, record, .. } => Parameter {
                 name: name.clone(),
-                ty: record.java_name(),
+                // An interface's given implementation (`crate::given`) is stated as the interface it is passed as.
+                ty: record.declared().replace('/', "."),
                 kind: if record.is_made() { ParameterKind::Object } else { ParameterKind::Record },
                 null: layout.choice(name).is_some_and(|c| c.null.is_some()),
                 max_length: None,
-                components: record.components.iter().map(|(c, t)| format!("{c}: {}", t.java_name())).collect(),
+                components: record.components.iter().map(|(c, t)| format!("{c}{}: {}", if record.given.is_some() { "()" } else { "" }, t.java_name())).collect(),
             },
             // A list is a value of the values stream's list adapter, of at most its bound in elements, each an
             // object of the element class made by its constructor.
@@ -538,12 +539,27 @@ fn slot_first(slot: &Slot) -> Option<&Slot> {
 }
 
 /// A property's assumptions from how its harness makes its inputs (step H2 of `llm-dlc/loops/foundations-heap.md`):
-/// each object parameter made by its constructor, which skips an input it rejects.
+/// each object parameter made by its constructor, which skips an input it rejects; and each parameter of an
+/// interface type given an implementation ([`crate::given`]), which the property is about and no other.
 pub fn property_assumptions(layout: &Layout) -> Vec<Assumption> {
     layout
         .records()
         .iter()
         .filter_map(|slot| match slot {
+            Slot::Record { name, record, .. } if record.given.is_some() => Some(Assumption {
+                kind: AssumptionKind::Environment,
+                text: format!(
+                    "{name} is an implementation of {} the check gives: {}; an implementation that answers a call another way (a value that changes between calls, an exception) is outside the property",
+                    record.declared().replace('/', "."),
+                    match record.params.as_slice() {
+                        [] => "it answers none of the interface's abstract methods".to_string(),
+                        [(one, _)] => format!("{one}() returns one value, the same on every call, and throws nothing, and it answers no other abstract method"),
+                        accessors => format!("{} each return one value, the same on every call, and throw nothing, and it answers no other abstract method", accessors.iter().map(|(a, _)| format!("{a}()")).collect::<Vec<_>>().join(", ")),
+                    }
+                ),
+                basis: Basis::Harness,
+                id: None,
+            }),
             Slot::Record { name, record, .. } => Some(Assumption {
                 kind: AssumptionKind::Constructible,
                 text: format!("the constructor {} accepts the arguments of {name}: an input it rejects is skipped, so the property is about the objects it makes", record.describe()),

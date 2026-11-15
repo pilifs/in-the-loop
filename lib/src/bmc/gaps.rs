@@ -32,7 +32,13 @@
 //! `Record.<init>`, the constructors of the JDK's exceptions that take no argument or a message (and a cause),
 //! which change nothing the proof observes, and the static JDK methods it models ([`super::models_jdk_static`]).
 //! Nor are the String methods it models on a String's content ([`super::models_string_method`]): on a String whose
-//! content it doesn't hold (a number's digits) it meets the call as the gap it was, where it runs it. Nor are the
+//! content it doesn't hold (a number's digits) it meets the call as the gap it was, where it runs it. The engine
+//! runs them on a String whatever class the call names (`Object.equals`, `CharSequence.length`), as the JVM
+//! dispatches them; the scan, which sees the class named and not the receiver, reports such a call as the gap it
+//! may be. Nor are `Objects.requireNonNull` and `Pattern.compile` of a constant regular expression of the plain
+//! form ([`super::models_jdk_reference_static`], [`crate::jdk_facts::plain_regex`]), nor the calls of the
+//! `HashMap` model (`lib/models/java/util/HashMap.java`: its two constructors, `put`, `get`, `containsKey`,
+//! `size`, `isEmpty`), each with an evidence record of `values::OPERATIONS`. Nor are the
 //! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples (`List.of`'s fixed forms,
 //! `copyOf`, `size`, `isEmpty`, `get`, the iterator's path and the changes they refuse), which it runs as the
 //! models' bytecode; any other method the models implement, called from outside them (`contains`, `equals`,
@@ -47,9 +53,14 @@
 //! `NullPointerException` on null and otherwise do nothing, which is all they do in a run of one thread.
 //!
 //! [`scan`] walks the methods a set of roots may reach, as the engine resolves them: the application's own methods
-//! (with every override an application class declares, since the receiver's class picks one), and the static
-//! methods of the tool's models. It reads every instruction of each, so it may report a gap on a path no input
-//! takes. The harness itself, and the
+//! and the static methods of the tool's models. A virtual or interface call is followed into the method each
+//! class has for it whose objects the walk has seen made, by a `new` it walked or by the harness (a root's
+//! constructor, and the constructors of its parameters' classes in turn), since the receiver's class picks one
+//! ([`Walker::dispatch`], rapid type analysis), and is classified when the walk has seen them all
+//! ([`Walker::settle`]). An object the walk never saw made is one a gap made (a JDK constructor or method), met
+//! where the engine runs the call. Following every class below the call's owner instead reached, for a call on a
+//! `java.util.Map` in a class initializer, every `Map` of the application's libraries. It reads every instruction
+//! of each method, so it may report a gap on a path no input takes. The harness itself, and the
 //! expressions of a property or relation compiled into it, are not walked. An initializer the engine runs is
 //! walked like a method; one that is a gap is not, so a class that only such an initializer initializes is not
 //! reached. Step 1a of
@@ -480,23 +491,22 @@ pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str)
     matches!(descriptor, "()V" | "(Ljava/lang/String;)V" | "(Ljava/lang/String;Ljava/lang/Throwable;)V") && crate::classpath::is_jdk_name(owner) && cp.is_subtype(owner, "java/lang/Throwable")
 }
 
-/// The JDK interfaces the immutable-list models implement that no other object the engine holds does, unless a gap
-/// made it: a `java.util` collection or iterator is never a parameter of a check but one of these models' (the values
-/// adapter refuses any other implementation), and is otherwise made by a JDK constructor or returned by a JDK method,
-/// each a gap where it is made.
-const LIST_MODEL_INTERFACES: &[&str] = &["java/util/List", "java/util/Collection", "java/lang/Iterable", "java/util/Iterator"];
+/// The JDK interfaces the immutable-list models and the `HashMap` model implement that no other object the engine
+/// holds does, unless a gap made it: a `java.util` collection, iterator or map is never a parameter of a check but
+/// one of the list models' (the values adapter refuses any other implementation), and is otherwise made by a
+/// constructor of a model (`new HashMap()`), or by a JDK constructor or a JDK method, each a gap where it is made.
+const MODEL_INTERFACES: &[&str] = &["java/util/List", "java/util/Collection", "java/lang/Iterable", "java/util/Iterator", "java/util/Map"];
 
 /// Whether a virtual or interface call `owner.name(descriptor)` reaches only methods the engine runs, so that the
 /// scan counts it as no gap: `owner` is one of the models the engine runs ([`crate::models::CHECKER_RUNS`]), whose
-/// subclasses are the models' own, or one of [`LIST_MODEL_INTERFACES`]; a model implements the method
+/// subclasses are the models' own, or one of [`MODEL_INTERFACES`]; a model implements the method
 /// (`overrides`, the walk's), and every application class below `owner` has code for it too, its own or a model's.
 /// On a receiver a gap made, the engine meets the JDK call where it runs it, as before.
-fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &str, overrides: &[String]) -> bool {
-    if !(crate::models::CHECKER_RUNS.contains(&owner) || LIST_MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| crate::models::CHECKER_RUNS.contains(&o.as_str())) {
+fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &str, overrides: &[String], made: &BTreeSet<String>) -> bool {
+    if !(crate::models::CHECKER_RUNS.contains(&owner) || MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| crate::models::CHECKER_RUNS.contains(&o.as_str())) {
         return false;
     }
-    let Ok(classes) = cp.application_classes() else { return false };
-    classes.iter().filter(|(n, cf)| !cf.is_interface() && cp.is_subtype(n, owner)).all(|(n, _)| cp.checker_method(n, name, descriptor).is_some_and(|(c, m)| cp.checker_runs(&c.name) && m.code.is_some()))
+    made.iter().filter(|n| cp.is_application(n) && cp.is_subtype(n, owner)).all(|n| cp.checker_method(n, name, descriptor).is_some_and(|(c, m)| cp.checker_runs(&c.name) && m.code.is_some()))
 }
 
 /// Whether a call from code of class `caller` into `callee`, one of the immutable-list models the engine runs
@@ -546,7 +556,7 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
     if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {
         return JdkCall::Refused;
     }
-    if super::models_jdk_static(owner, name) {
+    if super::models_jdk_reference_static(owner, name, descriptor) || super::models_jdk_static(owner, name) {
         return JdkCall::Exact;
     }
     JdkCall::Gap(GapKind::JdkStaticMethod)
@@ -642,29 +652,44 @@ pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
 /// is outside the engine's fragment ([`scan`]'s refusals). That includes a static field it reads or writes of a
 /// class whose initializer the engine does not run (a constant read apart), so an enum outside keeps its
 /// `$SwitchMap` classes out with it. Initializers that use each other's fields run if each would given that the
-/// others do.
+/// others do: so one runs exactly when it, and every initializer it reaches through the static fields they use, is
+/// inside the fragment, which one walk of them together decides ([`Walker::runs`]). A walk that finds nothing
+/// outside settles every initializer it took in, since each one's own walk is part of it. Decided once for a class
+/// path, whoever asks: deciding one again for each chain of initializers that led to it took the scan of a method
+/// that reaches a `Map` call minutes.
 pub fn runs_initializer(cp: &ClassPath, class: &str) -> bool {
-    runs_initializer_in(cp, class, &BTreeSet::new())
-}
-
-fn runs_initializer_in(cp: &ClassPath, class: &str, visiting: &BTreeSet<String>) -> bool {
-    if visiting.contains(class) {
-        return true;
+    if let Some(&runs) = cp.initializer_runs.borrow().get(class) {
+        return runs;
     }
-    let Some(cf) = cp.checker_class(class) else { return false };
-    if cf.method("<clinit>", "()V").is_none() {
-        return false;
-    }
-    let mut inner = visiting.clone();
-    inner.insert(class.to_string());
-    let mut w = Walker::new(cp, inner);
-    w.enqueue(class, "<clinit>", "()V");
-    while let Some((owner, name, descriptor)) = w.queue.pop_front() {
-        if w.walk(&owner, &name, &descriptor).is_err() {
-            return false;
+    let together = (|| {
+        let cf = cp.checker_class(class)?;
+        cf.method("<clinit>", "()V")?;
+        let mut w = Walker::new(cp, true);
+        w.deciding_with.insert(class.to_string());
+        w.enqueue(class, "<clinit>", "()V");
+        while let Some((owner, name, descriptor)) = w.queue.pop_front() {
+            w.walk(&owner, &name, &descriptor).ok()?;
+            if !w.scan.refused.is_empty() {
+                return None;
+            }
+        }
+        w.settle();
+        if !w.scan.refused.is_empty() {
+            return None;
+        }
+        Some(w.deciding_with)
+    })();
+    let mut decided = cp.initializer_runs.borrow_mut();
+    match together {
+        Some(all) => {
+            decided.extend(all.into_iter().map(|c| (c, true)));
+            true
+        }
+        None => {
+            decided.insert(class.to_string(), false);
+            false
         }
     }
-    w.scan.refused.is_empty()
 }
 
 /// The shape of an application class's `<clinit>`, by which Phase 4b of `llm-dlc/loops/engine-priorities.md` counts
@@ -795,42 +820,168 @@ struct Walker<'a> {
     queue: VecDeque<(String, String, String)>,
     seen: BTreeSet<(String, String, String)>,
     initialised: BTreeSet<String>,
-    /// Empty for a scan. For the walk [`runs_initializer`] makes of an initializer, the classes whose initializers
-    /// are being decided: the walk then follows no other initializer, and takes these to run.
-    deciding: BTreeSet<String>,
-    /// [`runs_initializer`] by class, given `deciding`.
-    runs: BTreeMap<String, bool>,
+    /// False for a scan. True for the walk that decides whether an initializer runs ([`runs_initializer`]): it
+    /// initializes no class by a use, and walks with it, in `deciding_with`, the initializers of the classes whose
+    /// static fields it reads or writes, which must run for it to.
+    deciding: bool,
+    deciding_with: BTreeSet<String>,
+    /// The classes the walk has seen made, by a `new` or by the harness (a root's constructor): the receivers a
+    /// virtual or interface call may have ([`Walker::dispatch`]).
+    made: BTreeSet<String>,
+    /// The virtual and interface calls the walk has met (the calling class, then the call), each followed again
+    /// into a class made later.
+    dispatched: BTreeSet<(String, String, String, String)>,
+    /// The virtual and interface calls that resolved to no application method (the calling class, the call and its
+    /// site), to classify when the walk ends ([`Walker::settle`]).
+    deferred: Vec<(String, String, String, String, Site)>,
 }
 
 /// Scans what the roots (`(owner, name, descriptor)`, internal names) may reach. A root that is a static method
 /// or a constructor initialises its class, as the harness's call does.
 pub fn scan(cp: &ClassPath, roots: &[MemberRef]) -> Result<Scan, Error> {
-    let mut w = Walker::new(cp, BTreeSet::new());
+    Ok(walked(cp, roots, &[])?.scan)
+}
+
+/// The methods a walk from `roots` may call on an object of the application interface `interface` that a check gives
+/// an implementation of ([`crate::given`]), by name and descriptor: every virtual or interface call the walk meets
+/// whose owner the interface is or extends. The interface's default methods are walked, as on any object of it.
+pub fn calls_on_given(cp: &ClassPath, roots: &[MemberRef], interface: &str) -> Result<BTreeSet<(String, String)>, Error> {
+    let w = walked(cp, roots, &[interface])?;
+    Ok(w.dispatched.iter().filter(|(_, owner, _, _)| cp.is_subtype(interface, owner)).map(|(_, _, name, descriptor)| (name.clone(), descriptor.clone())).collect())
+}
+
+/// The walk of what `roots` may reach, with an object of each of the interfaces `given` made by the harness.
+fn walked<'a>(cp: &'a ClassPath, roots: &[MemberRef], given: &[&str]) -> Result<Walker<'a>, Error> {
+    let mut w = Walker::new(cp, false);
     w.scan.jdk = jdk_release();
+    for interface in given {
+        w.make(interface);
+    }
     for r in roots {
         let root = Site { class: "harness".into(), method: "check".into(), line: None };
         w.initialise(&r.owner, &root);
+        // A root's constructor is the harness's call: it makes an object of the class, and of each class among the
+        // constructor's parameters in turn, as an object made by its constructor is made.
+        if r.name == "<init>" {
+            w.made_by_harness(&r.owner, &r.descriptor);
+        }
         w.enqueue(&r.owner, &r.name, &r.descriptor);
     }
     while let Some((owner, name, descriptor)) = w.queue.pop_front() {
         w.walk(&owner, &name, &descriptor)?;
     }
-    Ok(w.scan)
+    w.settle();
+    Ok(w)
 }
 
 impl<'a> Walker<'a> {
-    fn new(cp: &'a ClassPath, deciding: BTreeSet<String>) -> Walker<'a> {
-        Walker { cp, scan: Scan::default(), queue: VecDeque::new(), seen: BTreeSet::new(), initialised: BTreeSet::new(), deciding, runs: BTreeMap::new() }
+    fn new(cp: &'a ClassPath, deciding: bool) -> Walker<'a> {
+        Walker { cp, scan: Scan::default(), queue: VecDeque::new(), seen: BTreeSet::new(), initialised: BTreeSet::new(), deciding, deciding_with: BTreeSet::new(), made: BTreeSet::new(), dispatched: BTreeSet::new(), deferred: Vec::new() }
     }
 
-    /// Whether the engine runs `class`'s `<clinit>` ([`runs_initializer`]), given that those being decided do.
+    /// Whether the engine runs `class`'s `<clinit>` ([`runs_initializer`]). In the walk that decides one, an
+    /// initializer already known not to run decides it; any other is walked with it, and runs if the walk finds
+    /// nothing outside the fragment.
     fn runs(&mut self, class: &str) -> bool {
-        if let Some(&r) = self.runs.get(class) {
-            return r;
+        if !self.deciding {
+            return runs_initializer(self.cp, class);
         }
-        let r = runs_initializer_in(self.cp, class, &self.deciding);
-        self.runs.insert(class.to_string(), r);
-        r
+        if let Some(&runs) = self.cp.initializer_runs.borrow().get(class) {
+            if !runs {
+                return false;
+            }
+        }
+        if self.deciding_with.insert(class.to_string()) {
+            self.enqueue(class, "<clinit>", "()V");
+        }
+        true
+    }
+
+    /// An object of `class` is made: every virtual or interface call met so far that it may receive is followed
+    /// into the method it runs for it.
+    fn make(&mut self, class: &str) {
+        if !self.made.insert(class.to_string()) {
+            return;
+        }
+        for (caller, owner, name, descriptor) in self.dispatched.clone() {
+            if self.cp.is_subtype(class, &owner) {
+                self.dispatch_to(&caller, class, &name, &descriptor);
+            }
+        }
+    }
+
+    /// The harness makes an object of `class` by the constructor of `descriptor`, and an object of each
+    /// application class among its parameters by that class's constructors in turn.
+    fn made_by_harness(&mut self, class: &str, descriptor: &str) {
+        if self.made.contains(class) {
+            return;
+        }
+        self.make(class);
+        let Ok(d) = MethodDescriptor::parse(descriptor) else { return };
+        for t in &d.params {
+            let Type::Object(inner) = t else { continue };
+            let Ok(Some(cf)) = self.cp.application(inner) else { continue };
+            for init in cf.methods.iter().filter(|m| m.name == "<init>") {
+                self.made_by_harness(inner, &init.descriptor);
+            }
+        }
+    }
+
+    /// Follows a call from code of `caller` of `name(descriptor)` on a receiver of `class` into the method that
+    /// runs: the one an application class, or a model the engine runs, has code for, unless it is a list model's
+    /// that no evidence record samples ([`outside_the_list_records`]). Its declaring class, when there is one.
+    fn dispatch_to(&mut self, caller: &str, class: &str, name: &str, descriptor: &str) -> Option<String> {
+        let (cf, m) = self.cp.checker_method(class, name, descriptor)?;
+        if !self.cp.checker_runs(&cf.name) || m.code.is_none() || outside_the_list_records(caller, &cf.name, name, descriptor) {
+            return None;
+        }
+        self.enqueue(&cf.name, name, descriptor);
+        Some(cf.name.clone())
+    }
+
+    /// The methods a virtual or interface call of `owner.name(descriptor)` may run that the engine runs as
+    /// bytecode, each followed, by the class that declares it: the receiver's class picks the method, and a
+    /// receiver is an object the walk has seen made ([`Walker::make`]: rapid type analysis). Following every
+    /// class below `owner` instead reached, for a call on a `java.util.Map` in a class initializer, every `Map`
+    /// of the application's libraries, and found the initializer outside the fragment for what one of them does.
+    /// An object the walk never saw made (one a static field held before, one a JDK call returned) is met where
+    /// the engine runs the call.
+    fn dispatch(&mut self, caller: &str, owner: &str, name: &str, descriptor: &str) -> Vec<String> {
+        self.dispatched.insert((caller.to_string(), owner.to_string(), name.to_string(), descriptor.to_string()));
+        let receivers: Vec<String> = self.made.iter().filter(|c| self.cp.is_subtype(c, owner)).cloned().collect();
+        let mut out: Vec<String> = receivers.iter().filter_map(|c| self.dispatch_to(caller, c, name, descriptor)).collect();
+        out.sort();
+        out.dedup();
+        out
+    }
+
+    /// Classifies the virtual and interface calls that resolved to no application method, once the walk has found
+    /// every object made: a call the models the engine runs implement for every receiver made, a String method
+    /// modelled on content, or the JDK call it names. Following a call again follows nothing new.
+    fn settle(&mut self) {
+        for (caller, owner, name, descriptor, site) in std::mem::take(&mut self.deferred) {
+            let overrides = self.dispatch(&caller, &owner, &name, &descriptor);
+            // A call on a list, its iterator or a map that the models the engine runs implement (`size`, `get`,
+            // `iterator`, `next` …), walked among the overrides: see [`dispatched_to_models`].
+            if dispatched_to_models(self.cp, &owner, &name, &descriptor, &overrides, &self.made) {
+                let models = if matches!(owner.as_str(), "java/util/Map" | "java/util/HashMap") { "on the map model" } else { "on the list models" };
+                *self.scan.exact.entry(format!("{}.{name}{descriptor} ({models})", owner.replace('/', "."))).or_default() += 1;
+                continue;
+            }
+            // A String method the engine models on content it holds; on a String with none (a number's digits)
+            // the engine meets the JDK call as a gap where it is run.
+            if super::models_string_method(&owner, &name, &descriptor) {
+                *self.scan.exact.entry(format!("{}.{name}{descriptor} (on its content)", owner.replace('/', "."))).or_default() += 1;
+                continue;
+            }
+            // The method is the JDK's, on this receiver: the engine's fallback.
+            match jdk_instance_call(self.cp, &owner, &name, &descriptor) {
+                JdkCall::Exact => *self.scan.exact.entry(format!("{}.{name}{descriptor}", owner.replace('/', "."))).or_default() += 1,
+                JdkCall::Gap(kind) => self.gap(kind, &owner, &name, &descriptor, site),
+                JdkCall::Refused => self.refuse("a floating-point or array result of a JDK instance method", java_call(&owner, &name, &descriptor), &site),
+            }
+        }
+        debug_assert!(self.queue.is_empty(), "a settled call followed a method the walk had not");
     }
 
     fn enqueue(&mut self, owner: &str, name: &str, descriptor: &str) {
@@ -852,7 +1003,7 @@ impl<'a> Walker<'a> {
     /// when the engine runs it ([`runs_initializer`]), and is otherwise a gap, recorded where the walk first
     /// reaches it. The walk that decides an initializer follows no other.
     fn initialise(&mut self, class: &str, site: &Site) {
-        if !self.deciding.is_empty() {
+        if self.deciding {
             return;
         }
         for c in initializers(self.cp, class) {
@@ -888,20 +1039,6 @@ impl<'a> Walker<'a> {
         self.initialise(&declaring, site);
     }
 
-    /// The application classes, and the models the engine runs ([`crate::models::CHECKER_RUNS`]), that are `owner`
-    /// or below it and declare `name(descriptor)`: the methods an invocation on a receiver of one of them runs.
-    fn overrides(&self, owner: &str, name: &str, descriptor: &str) -> Vec<String> {
-        let Ok(classes) = self.cp.application_classes() else { return Vec::new() };
-        let mut out: Vec<String> = classes.iter().filter(|(n, cf)| cf.method(name, descriptor).is_some_and(|m| m.code.is_some()) && self.cp.is_subtype(n, owner)).map(|(n, _)| n.clone()).collect();
-        // And the models the engine runs (an immutable list's `size`, on a `List`).
-        for model in crate::models::CHECKER_RUNS {
-            if self.cp.checker_model(model).is_some_and(|cf| cf.method(name, descriptor).is_some_and(|m| m.code.is_some())) && self.cp.is_subtype(model, owner) {
-                out.push(model.to_string());
-            }
-        }
-        out
-    }
-
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
         let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
@@ -914,8 +1051,14 @@ impl<'a> Walker<'a> {
             return Ok(());
         };
         let insns = code.instructions().map_err(|e| Error::new(format!("{}.{name}: {e}", cf.name)))?;
+        // The String constant the instruction before loaded, for a call that is modelled on a constant alone.
+        let mut constant: Option<Vec<u16>> = None;
         for (pc, insn) in insns {
             let site = Site { class: cf.name.clone(), method: name.to_string(), line: code.line_at(pc) };
+            let loaded = constant.take();
+            if let Insn::Ldc(index) = insn {
+                constant = cf.pool.loadable(index).ok().and_then(|c| c.string_units().map(|units| units.into_owned()));
+            }
             match insn {
                 Insn::FConst(_) | Insn::DConst(_) => self.refuse("floating point", "a floating-point constant".into(), &site),
                 Insn::Arith(_, k) | Insn::Return(Some(k)) | Insn::Load(k, _) | Insn::Store(k, _) | Insn::Convert(k, _) if matches!(k, Kind::Float | Kind::Double) => self.refuse("floating point", "floating-point arithmetic".into(), &site),
@@ -933,6 +1076,7 @@ impl<'a> Walker<'a> {
                 Insn::New(index) => {
                     let class = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?.to_string();
                     self.initialise(&class, &site);
+                    self.make(&class);
                 }
                 Insn::InvokeDynamic(index) => {
                     let (_, _, text) = cf.pool.invoke_dynamic(index).map_err(|e| Error::new(e.to_string()))?;
@@ -957,6 +1101,10 @@ impl<'a> Walker<'a> {
                         // A model the engine runs although it is only for JBMC's class path (`List.of`), as it does.
                         self.initialise(&c.name, &site);
                         self.enqueue(&c.name, &member.name, &member.descriptor);
+                    } else if (member.owner.as_str(), member.name.as_str()) == ("java/util/regex/Pattern", "compile") && super::models_jdk_reference_static(&member.owner, &member.name, &member.descriptor) && !loaded.is_some_and(|units| crate::jdk_facts::plain_regex(&units)) {
+                        // The engine compiles a constant regex of the plain form alone ([`crate::jdk_facts::plain_regex`]):
+                        // any other, or one this walk doesn't see loaded just before the call, may be the gap it meets.
+                        self.gap(GapKind::JdkStaticMethod, &member.owner, &member.name, &member.descriptor, site);
                     } else {
                         match jdk_static_call(&member.owner, &member.name, &member.descriptor) {
                             JdkCall::Exact => *self.scan.exact.entry(format!("{}.{}", member.owner.replace('/', "."), member.name)).or_default() += 1,
@@ -977,9 +1125,8 @@ impl<'a> Walker<'a> {
                     // outside the models: neither resolved to nor walked ([`outside_the_list_records`]).
                     let outside = |class: &str| outside_the_list_records(&cf.name, class, &member.name, &member.descriptor);
                     let resolved = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, _)| self.cp.checker_runs(&c.name) && !outside(&c.name));
-                    let overrides: Vec<String> = if special { Vec::new() } else { self.overrides(&member.owner, &member.name, &member.descriptor).into_iter().filter(|o| !outside(o)).collect() };
-                    for o in &overrides {
-                        self.enqueue(o, &member.name, &member.descriptor);
+                    if !special {
+                        self.dispatch(&cf.name, &member.owner, &member.name, &member.descriptor);
                     }
                     // An application method; an abstract one (an enum constant's body, an interface's) is one of the
                     // overrides above on the receiver the engine dispatches on, and no call into the JDK.
@@ -989,19 +1136,13 @@ impl<'a> Walker<'a> {
                         }
                         continue;
                     }
-                    // A call on a list or its iterator that the models the engine runs implement (`size`,
-                    // `get`, `iterator`, `next` …), walked above among the overrides: see [`dispatched_to_models`].
-                    if !special && dispatched_to_models(self.cp, &member.owner, &member.name, &member.descriptor, &overrides) {
-                        *self.scan.exact.entry(format!("{}.{}{} (on the list models)", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1;
+                    // Any other virtual or interface call runs what the receiver's class has for it, and the walk
+                    // is still finding the objects made: classified when it ends ([`Walker::settle`]).
+                    if !special {
+                        self.deferred.push((cf.name.clone(), member.owner.clone(), member.name.clone(), member.descriptor.clone(), site));
                         continue;
                     }
-                    // A String method the engine models on content it holds; on a String with none (a
-                    // number's digits) the engine meets the JDK call as a gap where it is run.
-                    if !special && super::models_string_method(&member.owner, &member.name, &member.descriptor) {
-                        *self.scan.exact.entry(format!("{}.{}{} (on its content)", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1;
-                        continue;
-                    }
-                    // The method is the JDK's, on this receiver: the engine's fallback.
+                    // A constructor or a superclass's method that is the JDK's: the engine's fallback.
                     match jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) {
                         JdkCall::Exact => *self.scan.exact.entry(format!("{}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1,
                         JdkCall::Gap(kind) => self.gap(kind, &member.owner, &member.name, &member.descriptor, site),

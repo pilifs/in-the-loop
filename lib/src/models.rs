@@ -62,6 +62,8 @@ pub const MODELS: &[Model] = &[
     model!("java/nio/charset/IllegalCharsetNameException", "java/nio/charset/IllegalCharsetNameException.java", "java/nio/charset/IllegalCharsetNameException.class", "the exception Charset.forName throws for a null name"),
     model!("java/nio/charset/UnsupportedCharsetException", "java/nio/charset/UnsupportedCharsetException.java", "java/nio/charset/UnsupportedCharsetException.class", "the exception Charset.forName throws for a name that is none of the six"),
     model!(jbmc "java/lang/Enum", "java/lang/Enum.java", "java/lang/Enum.class", "an enum constant's name and ordinal, set by Enum.<init>(String, int) and read by name, ordinal and toString; equals by identity; JBMC only"),
+    model!(jbmc "java/util/HashMap", "java/util/HashMap.java", "java/util/HashMap.class", "a HashMap as its entries in insertion order: HashMap() and HashMap(int), get, containsKey, put, size and isEmpty, a key found by hashCode and equals as the JDK finds one; no iteration, removal or resizing; JBMC only"),
+    model!(jbmc "java/util/HashMap$Node", "java/util/HashMap.java", "java/util/HashMap$Node.class", "an entry of the HashMap model: its key, the key's hash and its value; JBMC only"),
     model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
@@ -74,13 +76,16 @@ pub const MODELS: &[Model] = &[
 /// same ([`ClassPath::checker_model`](crate::classpath::ClassPath::checker_model)): `java.lang.Enum`, whose
 /// constructor and accessors an enum's initializer and methods call, and the immutable lists `List.of` and
 /// `List.copyOf` make (`List`'s factories, `ImmutableCollections`, its `List12`, `ListN`, `AbstractImmutableList` and
-/// `ListItr`), written without a JDK call so that the checker runs every step as JBMC does. Their state is fields of
+/// `ListItr`), written without a JDK call so that the checker runs every step as JBMC does, and `java.util.HashMap`
+/// with its entries (`HashMap$Node`), whose only calls out are its keys' `hashCode` and `equals`. Their state is fields of
 /// their own objects (an enum's name and ordinal, a list's elements) and `ImmutableCollections`' two statics (the one
 /// empty list, the sentinel of a list of one), which the checker holds as an application class's
 /// ([`ClassPath::checker_class`](crate::classpath::ClassPath::checker_class)); the interpreter keeps its natives for
 /// these classes, which the conformance corpus checks against a JVM.
 pub const CHECKER_RUNS: &[&str] = &[
     "java/lang/Enum",
+    "java/util/HashMap",
+    "java/util/HashMap$Node",
     "java/util/List",
     "java/util/ImmutableCollections",
     "java/util/ImmutableCollections$AbstractImmutableList",

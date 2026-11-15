@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
+  "status": "open",
+  "title": "Moonshot loop status",
+  "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-15T17:27:26.715Z",
+  "ended": "2026-11-15T17:30:12.458Z",
+  "duration_seconds": 166,
+  "stats": {
+    "turns": 2,
+    "api_calls": 10,
+    "tool_calls": 9,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 66994,
+    "usage": {
+      "input_tokens": 22,
+      "output_tokens": 8073,
+      "cache_read_input_tokens": 505441,
+      "cache_creation_input_tokens": 38855
+    }
+  },
+  "tools": {
+    "Bash": 9
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-15T17:27:26.715Z",
+      "ended": "2026-11-15T17:30:12.458Z",
+      "turns": 2,
+      "api_calls": 10,
+      "usage": {
+        "input_tokens": 22,
+        "output_tokens": 8073,
+        "cache_read_input_tokens": 505441,
+        "cache_creation_input_tokens": 38855
+      },
+      "peak_context_tokens": 66994
+    }
+  ],
+  "log": {
+    "sha256": "1703671c7044be46a2f4ade865aabac3782be17a184516e6c0d94bb44c5c1f60",
+    "bytes": 530235,
+    "lines": 107,
+    "gzip_bytes": 125255,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/1703671c7044be46a2f4ade865aabac3782be17a184516e6c0d94bb44c5c1f60.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lvvpsuxlnnqwxlvqyqkkpytrqwrymyux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "jvmcontract: a property check gives an interface parameter an implementation, reads accessors and Strings, and runs a HashMap model, for example 285 (verification pending)",
+      "body": "Example 285 (CVE-2023-34055, Spring Boot's WebMvcTags.method(HttpServletRequest)) had every proof task refused before any proof (VF-027): a property check made no input of an interface type, its expressions had no String terms and read no interface, the fix resolves the method through a HashMap that HttpMethod's class initializer fills, and the gap scan of the fixed release ran into its two-minute limit. The verifier is extended so that the frozen claim is decided as stated, on the released JARs, with no wrapper and no narrower subject.\n\nWhat changed in lib/:\n- A parameter of an interface type is given an implementation (src/given.rs): a generated class that answers each accessor the target may call (an abstract method of no parameters returning an integer, a boolean or a String) with one value, the same on every call. It is an object made by its constructor, so the accessors' values are the harness's symbolic inputs; the domain line and the statement say what that covers, a witness reads `method(request=HttpServletRequest{getMethod()=\"TRACE\"})`, and the interpreter and a JVM replay the same class file. A method it doesn't answer is a named gap, never passed over.\n- A property's expressions read an interface's object through its accessors and a String by content: `result.getKey().equals(\"method\")`, `request.getMethod() != null` (src/harness/expr.rs). A property check now takes a String inside any object it makes, as the regression check does.\n- The own checker runs a model of java.util.HashMap (lib/models/java/util/HashMap.java: HashMap(), HashMap(int), put, get, containsKey, size, isEmpty), models String.hashCode, runs a modelled String method whatever class the call names (Object.equals, CharSequence.length), and reproduces Objects.requireNonNull and Pattern.compile of a constant regular expression of a plain form the JDK always compiles. Each has an evidence record in values::OPERATIONS, sampled by cases that must agree on a JVM, in the interpreter and in the checker; 28 operations outside the records are checked to stay named gaps.\n- The gap scan follows a virtual or interface call into the classes of the objects it has seen made, not every class below the call's owner, classifies such a call once it has seen them all, and decides a class initializer in one memoized walk. The scan of example 285's fixed release went from over two minutes (its limit) to 0.04 s, and HttpMethod's initializer is no longer judged outside the fragment for what an unrelated Map of the class path does.\n- The contract library's contract for HashMap.<init>(int) is taken out with its records: the call is the model's, no gap.\n\nVerified inline: the default run, python3 lib/tools/test_costs.py run, 34 of 34 (cargo test and every Python suite), which includes the new lib/tests/interface_parameters.rs (a label bounded through an enum's map proved, the raw label and a claim that forgets a verb refuted on a JVM, what an implementation doesn't answer refused by name, the scan's dispatch), a unit test of the expression terms, and the values corpus, where every new case (String.hashCode, the map's seven calls over String and null keys and two keys of one hash, requireNonNull, Pattern.compile) gives the JVM's outcome in the interpreter and in the checker. On the cached JARs of example 285 and a debug build, the frozen assertion under --nullable request, --gaps strict and --max-array-length 8 was refuted on Spring Boot 2.7.17 (witness HttpServletRequest{getMethod()=\"\"}, run on a JVM), established on 2.7.18 in 0.1 s, and refuted on the mutant; dropping a name from the assertion is refuted on 2.7.18, so the proof is not vacuous. Those inline runs are no receipts, and JBMC was not run.\n\nVerification pending: jobs 20261115-173146-example-285-vulnerable-security-the-boun, 20261115-173146-example-285-fixed-security-the-bounded-m and 20261115-173146-example-285-mutant-security-the-bounded (the three tasks' ordinary attempts through build.py, the gap packets' closure test: the unchanged claim 196346d46d4d81fb on the same artifacts), 20261115-173209-conformance-corpus-under-jbmc-auto-and-a (the conformance corpus's proof tier, where JBMC runs the HashMap model) and 20261115-173209-object-comparisons-under-jbmc-and-auto-c (the object comparisons' proof tier, since the harness reads fields through a new emitter). Example 285's sidecar keeps its blockers until the receipts decide; its notes say what is queued. The preservation task is still blocked on the two dependency closures, which is next.",
+      "log_sha256": "1703671c7044be46a2f4ade865aabac3782be17a184516e6c0d94bb44c5c1f60"
+    }
+  ],
+  "logs": {
+    "1703671c7044be46a2f4ade865aabac3782be17a184516e6c0d94bb44c5c1f60": {
+      "bytes": 530235,
+      "lines": 107,
+      "gzip_bytes": 125255,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
