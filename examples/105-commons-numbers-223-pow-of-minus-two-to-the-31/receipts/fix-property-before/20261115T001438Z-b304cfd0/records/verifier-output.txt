@@ -1,0 +1,6 @@
+✗ Property of org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int) violated: `result == ((e & 1) == 0 ? 1 << e : -(1 << e))` where k == -2 && e >= 0 && e <= 31:
+  pow(k=-2, e=31)
+    outcome: throws ArithmeticException("integer overflow")
+  (found by jvmcontract's own checker (CaDiCaL) in 2.7 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

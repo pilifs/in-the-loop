@@ -1,0 +1,216 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261114-235737-example-105-task-fix-property-before-the",
+  "title": "example 105 task fix-property-before: the calibration prove of org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 31.3s, peak 780.2 MiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261114-235737-example-105-task-fix-property-before-the.json",
+    "sha256": "57f483d0840fd62e782639d8f5e6245a9377d6670429acf675417a4fb422c17b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261114-235737-example-105-task-fix-property-before-the",
+      "title": "example 105 task fix-property-before: the calibration prove of org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "description": "Runs task fix-property-before of example 105 through the target route of build.py: its frozen claim 8a4071f6a417d239, engine native, gaps strict, expected refuted. The receipt is ingested by workflow.ingest(); an unresolved result stays unresolved.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/workflow_handoff.py"
+        ],
+        "examples": [
+          "105"
+        ]
+      },
+      "expected": "Conclusion refuted under the same frozen claim key 8a4071f6a417d239 (engine native, gaps strict, unwind 16, maxArrayLength 8), matching the packet expectation and the existing receipt 20261114T222911Z-f3a33202; the witness pow(k=-2, e=31) throwing ArithmeticException(\"integer overflow\") is replayed. An unresolved result, a different claim key, or a refutation whose witness is not replayed is not a pass.",
+      "submitted": {
+        "at": "2026-11-14T23:57:37+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop, gate A7: an isolated session following 105's exported handoff"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "same task as the receipt the packet names; it ran in seconds"
+      },
+      "steps": [
+        {
+          "name": "example 105 task fix-property-before (prove)",
+          "run": "python3 examples/tools/build.py 105 --task fix-property-before",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before"
+      ]
+    }
+  },
+  "sourceCommit": "4440d82bc061ab813700f97f187f081166263bc7",
+  "startedAt": "2026-11-15T00:14:06+00:00",
+  "finishedAt": "2026-11-15T00:14:38+00:00",
+  "wallSeconds": 32.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3104036,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "same task as the receipt the packet names; it ran in seconds"
+  },
+  "usage": {
+    "peakMemoryBytes": 818089984,
+    "wallSeconds": 31.3,
+    "cpuSeconds": 39.1,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task fix-property-before (prove)",
+      "run": "python3 examples/tools/build.py 105 --task fix-property-before",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 31.271,
+      "cpuSeconds": 39.098,
+      "cpuThrottledSeconds": 3.795,
+      "peakMemoryBytes": 818089984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-fix-property.log",
+        "lines": 2,
+        "bytes": 287,
+        "sha256": "2ec800f3537a95d081987e38aadbd09a1837dd3b3e3a15e81ae1a0cb79fac2d7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property-before: refuted (completed; as expected), receipt receipts/fix-property-before/20261115T001438Z-b304cfd0/result.json",
+          "groups": [
+            "105",
+            "fix-property-before",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task fix-property-before (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property-before: refuted (completed; as expected), receipt receipts/fix-property-before/20261115T001438Z-b304cfd0/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/plan.json",
+      "change": "added",
+      "bytes": 10160,
+      "sha256": "f26af727312cac86c4f57c0b559cbd0afecece56f7a3161b1d5b757c39d9bf4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/records/execution.json",
+      "change": "added",
+      "bytes": 42723,
+      "sha256": "d212a561e19d0ca77415de90a3355e65ff390a63c86ff41f0a42d13a9f88e60b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 644,
+      "sha256": "37f53eb34024c8d20237e390ca7396436d1bd295b988216c287736f31b3388fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/result.json",
+      "change": "added",
+      "bytes": 16979,
+      "sha256": "2f08fcfbc9076f4c1a767e8bd7bef8f702ecb16ffb77afebd5ade38e83391ea9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T00:23:12+00:00",
+    "applied": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/plan.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/records/execution.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/records/verifier-output.txt",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T001438Z-b304cfd0/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

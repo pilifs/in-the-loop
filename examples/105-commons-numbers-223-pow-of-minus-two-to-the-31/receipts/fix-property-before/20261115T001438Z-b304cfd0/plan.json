@@ -1,0 +1,264 @@
+{
+  "plan": {
+    "example": "105",
+    "task": "fix-property-before",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+    "revisions": [
+      "before"
+    ],
+    "claim": {
+      "task": "fix-property-before",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "file": "claims/pow-minus-two.json",
+      "sha256": "32dcc9f1290aebf8c259d3b6be75d73d251701e5a688def39b5fcf659d1ae355",
+      "property": "pow-int-minus-two-exact",
+      "claimKind": "property",
+      "statement": "For k == -2 and every e from 0 to 31, ArithmeticUtils.pow(int k, int e) returns (-2)^e: 1, -2, 4, ..., 2^30, and -2^31 (Integer.MIN_VALUE) at e = 31, all representable as an int, so the Javadoc's '@return k^e' applies and its '@throws ArithmeticException if the result would overflow' does not. Shared by the fix commit 8cfc04e8 (expected established) and its parent e7c172d2 (expected refuted at e = 31, where it throws ArithmeticException: the overflow report NUMBERS-218 fixed). The result and the exception are observed: with no throws clause, a revision that throws anywhere in the domain fails the property.",
+      "assume": "k == -2 && e >= 0 && e <= 31",
+      "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "The assertion is evaluated in Java int arithmetic, and states (-2)^e exactly on the whole domain: 1 << e is 2^e for e <= 30, and at e = 31 both 1 << 31 and its negation are Integer.MIN_VALUE, which is -2^31 = (-2)^31.",
+          "basis": "JLS 15.19 (a shift uses the low five bits of e, here e itself) and 15.15.4 (negating Integer.MIN_VALUE gives Integer.MIN_VALUE). controls/oracle.py computes (-2)^e with unbounded integers instead, and the replay checks every point of the domain against it."
+        },
+        {
+          "text": "unwind 16 completes the method's only loop on this domain: the square-and-multiply loop runs once per bit of e, at most 5 times for e <= 31.",
+          "basis": "Read from pow(int,int)'s bytecode at both revisions (exp >>= 1 until exp == 0; records/pow-gaps.json lists the classes read). A bound the check can't complete leaves the attempt unresolved, never established."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "javadoc-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+        },
+        {
+          "id": "pow-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p105/PowDriver.java",
+          "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+        },
+        {
+          "id": "pow-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+        },
+        {
+          "id": "pow-witness",
+          "kind": "trigger",
+          "path": "replay/probes.json",
+          "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+        }
+      ],
+      "key": "8a4071f6a417d239"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "before",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-numbers",
+        "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "11"
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/fix-property-before"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261114-235737-example-105-task-fix-property-before-the/examples/105-commons-numbers-223-pow-of-minus-two-to-the-31",
+    "network": true
+  },
+  "inputs": {
+    "example": "105",
+    "task": "fix-property-before",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+    "revisions": [
+      "before"
+    ],
+    "claim": {
+      "task": "fix-property-before",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+      "file": "claims/pow-minus-two.json",
+      "sha256": "32dcc9f1290aebf8c259d3b6be75d73d251701e5a688def39b5fcf659d1ae355",
+      "property": "pow-int-minus-two-exact",
+      "claimKind": "property",
+      "statement": "For k == -2 and every e from 0 to 31, ArithmeticUtils.pow(int k, int e) returns (-2)^e: 1, -2, 4, ..., 2^30, and -2^31 (Integer.MIN_VALUE) at e = 31, all representable as an int, so the Javadoc's '@return k^e' applies and its '@throws ArithmeticException if the result would overflow' does not. Shared by the fix commit 8cfc04e8 (expected established) and its parent e7c172d2 (expected refuted at e = 31, where it throws ArithmeticException: the overflow report NUMBERS-218 fixed). The result and the exception are observed: with no throws clause, a revision that throws anywhere in the domain fails the property.",
+      "assume": "k == -2 && e >= 0 && e <= 31",
+      "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [
+        {
+          "text": "The assertion is evaluated in Java int arithmetic, and states (-2)^e exactly on the whole domain: 1 << e is 2^e for e <= 30, and at e = 31 both 1 << 31 and its negation are Integer.MIN_VALUE, which is -2^31 = (-2)^31.",
+          "basis": "JLS 15.19 (a shift uses the low five bits of e, here e itself) and 15.15.4 (negating Integer.MIN_VALUE gives Integer.MIN_VALUE). controls/oracle.py computes (-2)^e with unbounded integers instead, and the replay checks every point of the domain against it."
+        },
+        {
+          "text": "unwind 16 completes the method's only loop on this domain: the square-and-multiply loop runs once per bit of e, at most 5 times for e <= 31.",
+          "basis": "Read from pow(int,int)'s bytecode at both revisions (exp >>= 1 until exp == 0; records/pow-gaps.json lists the classes read). A bound the check can't complete leaves the attempt unresolved, never established."
+        }
+      ],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "javadoc-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "3a291b7ad7a1feeaf340d89075ed7175bcf907d9a8cf4605b4cafb53c2718797"
+        },
+        {
+          "id": "pow-driver",
+          "kind": "driver",
+          "path": "replay/driver/inloop/p105/PowDriver.java",
+          "sha256": "ae5aa68dc88d18eea88caab071eb0bf8388c0556a099a2e7571a640bf6cb0cf3"
+        },
+        {
+          "id": "pow-probes",
+          "kind": "probe",
+          "path": "replay/probes.json",
+          "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+        },
+        {
+          "id": "pow-witness",
+          "kind": "trigger",
+          "path": "replay/probes.json",
+          "sha256": "5fba83e57e346e4a9f8681b8363522161a3a7420b9f6f8a1f804a464112fee1c"
+        }
+      ],
+      "key": "8a4071f6a417d239"
+    },
+    "artifacts": [
+      {
+        "revision": "before",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-numbers",
+        "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "--projects",
+            "commons-numbers-core",
+            "-Dmaven.test.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dpmd.skip=true",
+            "-Dcpd.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Djapicmp.skip=true",
+            "-Danimal.sniffer.skip=true",
+            "-Djacoco.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "11"
+        },
+        "adapters": [],
+        "jdks": [
+          "21",
+          "25"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "7b90e926052c2fc447744dadd925c47108743abd1ac7bc476b0c1f8a3c3ef8ad"
+}
