@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T12:13:32.145Z",
-  "duration_seconds": 64092,
+  "ended": "2026-11-15T12:14:15.484Z",
+  "duration_seconds": 64135,
   "stats": {
     "turns": 222,
-    "api_calls": 1789,
-    "tool_calls": 1831,
+    "api_calls": 1790,
+    "tool_calls": 1832,
     "tool_errors": 36,
     "compactions": 40,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3626,
-      "output_tokens": 1140861,
-      "cache_read_input_tokens": 234211875,
-      "cache_creation_input_tokens": 6332065
+      "input_tokens": 3628,
+      "output_tokens": 1141726,
+      "cache_read_input_tokens": 234321523,
+      "cache_creation_input_tokens": 6332745
     }
   },
   "tools": {
-    "Bash": 1565,
+    "Bash": 1566,
     "Read": 136,
     "Edit": 98,
     "Write": 10,
@@ -637,24 +637,24 @@
     {
       "index": 40,
       "started": "2026-11-15T06:02:02.125Z",
-      "ended": "2026-11-15T12:13:32.145Z",
+      "ended": "2026-11-15T12:14:15.484Z",
       "turns": 8,
-      "api_calls": 36,
+      "api_calls": 37,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 19820,
-        "cache_read_input_tokens": 2683104,
-        "cache_creation_input_tokens": 127107
+        "input_tokens": 80,
+        "output_tokens": 20685,
+        "cache_read_input_tokens": 2792752,
+        "cache_creation_input_tokens": 127787
       },
-      "peak_context_tokens": 109650
+      "peak_context_tokens": 110330
     }
   ],
   "log": {
-    "sha256": "b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede",
-    "bytes": 60114265,
-    "lines": 18374,
-    "gzip_bytes": 12986802,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede.jsonl.gz"
+    "sha256": "0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b",
+    "bytes": 60159055,
+    "lines": 18391,
+    "gzip_bytes": 12998117,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b.jsonl.gz"
   },
   "subagents": [
     {
@@ -1364,11 +1364,19 @@
     },
     {
       "change_id": "mmnktupmzkknmpqpptyvvwtpoooxunoz",
-      "commit_id": null,
+      "commit_id": "b3f163386a3663ef32f55dcf984fca4f455710f8",
       "immutable": false,
       "summary": "run-streams status bar: a loop's spend is what its sessions' running totals rose by, not their sum",
       "body": "The status bar of run-streams.sh added up the dollar figure of every 'turn done' line a loop printed. That figure is Claude Code's total_cost_usd, the session's cost so far: each cycle resumes one session, and a resumed session goes on from its total, so every turn counted all the turns before it again. A forked stream's total also starts at the planning session's, which every stream of a run inherited. On the recorded runs the bar's figures were 15 to 36 times too high, for example example-targets $3,893 against $216 by the new count (still including the four inherited starting totals of $28.32, which the old state files don't mark), and application-core $14,056 against $392.\n\nstreams_status.py tag now marks the figure of a fork's first turn, the turn after feature-loop.sh's 'starting session ... as a fork of ...' line, as '=X' in LABEL.cost, and spend() counts each figure's rise over the one before, a fork's marked figure only as where the rises start, and a figure below the last as a new session counted whole. The fork turn's own cost (one turn without tools) is the only spend left out. The module docstring and run-streams.sh's header say what the figure is. Verified: test_streams_status.py's tests now use running totals as the loops print them, with three new ones (a resumed session across a restart, a fork, a new session after a drop); 8 of its 9 tests fail on the old code and all 9 pass. render on the example-targets run's state prints the bar line, and bash -n passes on run-streams.sh. The state files of past runs, local and ignored by git, are left as they are.",
       "log_sha256": "b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede"
+    },
+    {
+      "change_id": "quqryrynzroqwntsrllrmpzwruswqtvk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b"
     }
   ],
   "logs": {
@@ -1389,6 +1397,12 @@
       "lines": 2152,
       "gzip_bytes": 1247462,
       "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea.jsonl.gz"
+    },
+    "0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b": {
+      "bytes": 60159055,
+      "lines": 18391,
+      "gzip_bytes": 12998117,
+      "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/0c0debf8cf4df0a9297ac3127337b043ce27e09856dab7b596079fa4a12b593b.jsonl.gz"
     },
     "1221486e5ef2212ba36e234399358a655c9c33ccbc63264ae22cbe40f64bad5a": {
       "bytes": 10091195,
@@ -1664,7 +1678,7 @@
       "bytes": 60114265,
       "lines": 18374,
       "gzip_bytes": 12986802,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede.jsonl.gz"
     },
     "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832": {
       "bytes": 15005228,
