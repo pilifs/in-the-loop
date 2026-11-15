@@ -478,7 +478,9 @@ Settled by the user on 2026-11-08:
    the same hash-pinned acquisition, for P3's four Spring Gradle plugins. No independent hash of them exists, so P3's
    build job also compares the `before` `BCrypt.class` it builds with Spring Security 5.2.0.M4's published one. P1
    (305) takes the narrower slice instead, checked against Boot 2.2.0.M6's published classes (Progress, the user's
-   decisions of 2026-11-14).
+   decisions of 2026-11-14). **No longer used by P3 since 2026-11-15**: the user chose the slice for P3
+   (Progress, the user's choice for 307's route), so no route needs this host now. The allowance stays until the
+   user says otherwise.
 2. **Four streams, and the case packets run in Phase 5**: the streams build against Phase 0's frozen interfaces and
    fixtures, and this brief's own loop runs the original-JVM replays and the calibration after the merge (gates A3–A5).
 3. **Older JDKs installed**, so each revision is built with its own build tool and a JDK it supports: Temurin 8, 11 and
@@ -1425,6 +1427,18 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     becomes an observed blocker of that task, citing its verifier output. The claims and expectations stay as they
     are: an observed refusal is a diagnostic, and the claim stays unresolved. Then A8 (examples keep their outcomes;
     native without JBMC; the queued acceptance jobs), and step 5, the for-review list. A7's job runs meanwhile.
+- 2026-11-15, **the user's choice for 307's route: (b), the slice.** Asked in a session with the user, after the
+  entry above that found the decided Gradle build can't resolve its buildscript.
+  - **Decided**: P3 (307) takes the source slice, on the source-slice route 305 uses, as a separately labelled scope.
+    Each commit's `BCrypt.java` is compiled with javac 8 and `-g -source 1.8 -target 1.8 -encoding UTF-8`. The
+    `before` class is checked byte for byte against Spring Security 5.2.0.M4's published `BCrypt.class` (the hashes
+    in 307's `sources.lock.json`), and a mismatch is recorded as a blocker. Then 307's replay, mutation control and
+    claim tasks are queued on the slice, as 305's were.
+  - **Superseded**: the upstream Gradle build decided for P3 in the user's decisions of 2026-11-14, and option (a).
+    plugins-artifacts.gradle.org and maven.aliyun.com's `jcenter`, `public` and `gradle-plugin` repositories are not
+    allowed.
+  - **For review**: decision 1's second extension (maven.aliyun.com for Spring's plugin repository) now has no user.
+    It stays as recorded until the user decides whether to withdraw it.
 - Status: working
 
 ## Loop settings
