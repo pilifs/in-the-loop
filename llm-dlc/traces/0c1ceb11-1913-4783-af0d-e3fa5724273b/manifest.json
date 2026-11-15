@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "0c1ceb11-1913-4783-af0d-e3fa5724273b",
+  "status": "open",
+  "title": "Moonshot loop stats backfill",
+  "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-fable-5-2"
+  ],
+  "started": "2026-11-15T14:52:36.407Z",
+  "ended": "2026-11-15T15:06:13.399Z",
+  "duration_seconds": 817,
+  "stats": {
+    "turns": 7,
+    "api_calls": 26,
+    "tool_calls": 29,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 193848,
+    "usage": {
+      "input_tokens": 54,
+      "output_tokens": 40857,
+      "cache_read_input_tokens": 3254181,
+      "cache_creation_input_tokens": 167889
+    }
+  },
+  "tools": {
+    "Bash": 27,
+    "Read": 2
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-15T14:52:36.407Z",
+      "ended": "2026-11-15T15:06:13.399Z",
+      "turns": 7,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 54,
+        "output_tokens": 40857,
+        "cache_read_input_tokens": 3254181,
+        "cache_creation_input_tokens": 167889
+      },
+      "peak_context_tokens": 193848
+    }
+  ],
+  "log": {
+    "sha256": "c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8",
+    "bytes": 1236840,
+    "lines": 272,
+    "gzip_bytes": 273946,
+    "path": "llm-dlc/traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/logs/c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "sxutsywlupkslkuptzwzwzyzxyxvxxtp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Test tiers: the lint, test_costs.py lint, in the default run as tests/tiers.rs and tools/test_tier_lint.py",
+      "body": "Phase 2 step 7 of llm-dlc/loops/test-cost.md. The lint checks four things against the sources and lib/tests/costs.json: every ignore reason is a cost:proof tag with a proxy that runs by default, or proxy: none yet for a test on the inventory's list; no test outside the proof tier calls JBMC or TLC, except the retier: pending tests; the inventory and the sources name the same tests, and what it records of each is current; and every tool_tier! or @cost tag is the one its row asks for. It runs in the default run twice, both at the unit tier. lib/tests/tiers.rs is in cargo test and checks what it can read without following a test into its helpers. lib/tools/test_tier_lint.py is in the Python run and checks all of it for both languages, with ten more tests of the lint on made-up sources. lib/README.md's Tests section says what each problem asks for.\n\nJoining the retier: pending or proxy: none yet list is now for a person: estimate keeps the tests already listed. A new JBMC or TLC test that runs by default, or a new proxy: none yet, gets an unlisted row, which the lint refuses until a person runs estimate --list FILE::NAME. A Python proof tag now carries its reason, @cost(\"proof\", \"...; proxy: Class.test\"), and the lint refuses an unconditional @unittest.skip. The Python listing now follows a TestCase base imported from another file of the repository. That lists the 27 tests of examples/tools/targets/test_runtime_upstream.py the inventory had missed, 15 of them now @cost(\"tool\"). The Rust listing went from 13 s to 0.9 s, with the same result for every test.\n\nVerified: tiers.rs, test_tier_lint.py, test_cost_inventory.py and test_test_costs.py pass by default and under the unit tier. test_runtime_upstream.py passes under unit, with 15 tests skipped. The default run (test_costs.py run) was run once: cargo test 634 passed, 0 failed, 12 ignored; Python 32 of 33 files passed. The failing file is examples/tools/test_economics.py, which was already failing before this loop (KeyError 'file' in build.app_of on examples 287 and 289-291; recorded in Progress last cycle). No job is needed: nothing that runs by default was skipped or ignored.",
+      "log_sha256": "c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8"
+    }
+  ],
+  "logs": {
+    "c107bd60d372df4802538f70e1198dc19d8af3f80950443e9ad27d48c30f57e8": {
+      "bytes": 1236840,
+      "lines": 272,
+      "gzip_bytes": 273946,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

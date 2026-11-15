@@ -27,6 +27,8 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "fixtures"))
 from targets import interfaces, runtime, runtime_jdk, runtime_maven, runtime_upstream  # noqa: E402
 from targets import test_runtime as base  # noqa: E402  (its helpers; its tests stay in its own module)
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 GIT_ENV = {"PATH": "/usr/bin:/bin", "HOME": "/nonexistent", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
            "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.invalid", "GIT_COMMITTER_NAME": "t",
@@ -175,6 +177,7 @@ class UpstreamCase(base.FixtureCopy):
 
 
 class UpstreamTest(UpstreamCase):
+    @cost("tool")
     def test_an_upstream_lock_fetches_nothing_and_refuses_a_recipe_that_is_not_immutable(self):
         with mock.patch.object(runtime_upstream, "REMOTE", side_effect=AssertionError("a source lock fetched")), \
                 mock.patch.object(subprocess, "run", side_effect=AssertionError("a source lock ran a process")):
@@ -202,6 +205,7 @@ class UpstreamTest(UpstreamCase):
             self.assertIn("next", value.blocker, why)
         self.assertEqual(self.remotes, [])
 
+    @cost("tool")
     def test_artifacts_ready_records_the_checkout_toolchain_build_and_every_output(self):
         with mock.patch.dict(os.environ, {"MAVEN_OPTS": "-Dleak=1", "JAVA_TOOL_OPTIONS": "-Dleak=2",
                                           "MAVEN_ARGS": "-Dleak=3"}):
@@ -270,6 +274,7 @@ class UpstreamTest(UpstreamCase):
             self.assertIn(log, prepared.logs)
         self.assertEqual(json.loads((work / runtime.RECORD).read_text()), json.loads(json.dumps(prepared.as_dict())))
 
+    @cost("tool")
     def test_a_parent_the_commit_does_not_have_is_a_history_blocker(self):
         prepared = self.prepare(parents={"after": "1" * 40})
         self.assertEqual(prepared.failedStage, "history", prepared.diagnostic)
@@ -278,17 +283,20 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(prepared.source["checkout"]["parents"], [self.commits["before"]])
         self.assertEqual(self.made_calls(), [], "a build ran on a history that is wrong")
 
+    @cost("tool")
     def test_a_commit_the_repository_lacks_is_an_acquire_blocker_with_its_command(self):
         prepared = self.prepare(commits={"after": "f" * 40}, parents={})
         self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
         self.assertIn("fetch", prepared.blocker["command"])
         self.assertIn("logs/git-fetch.log", prepared.logs)
 
+    @cost("tool")
     def test_without_acquisition_nothing_is_fetched_or_built(self):
         prepared = self.prepare(network=False)
         self.assertEqual(prepared.failedStage, "acquire", prepared.diagnostic)
         self.assertEqual((self.remotes, self.made_calls()), ([], []))
 
+    @cost("tool")
     def test_a_failing_build_or_one_that_changes_tracked_sources_is_refused(self):
         self.set_knobs(fail=True)
         failed = self.prepare(workdir=self.work / "fail")
@@ -302,6 +310,7 @@ class UpstreamTest(UpstreamCase):
         self.assertIn("changed tracked files", touched.diagnostic)
         self.assertEqual(touched.source["checkout"]["changedByBuild"], [" M gate/src/main/java/fixture/Gate.java"])
 
+    @cost("tool")
     def test_the_original_is_the_one_produced_jar_that_holds_the_target(self):
         self.set_knobs(noJar=True)
         none = self.prepare(workdir=self.work / "none")
@@ -312,6 +321,7 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(two.failedStage, "classpath", two.diagnostic)
         self.assertIn("gate/target/gate-1.0-all.jar", two.diagnostic)
 
+    @cost("tool")
     def test_a_dependency_that_repeats_the_targets_class_is_refused_as_shadowing(self):
         shadow = base.dependency_jar(self.dir / "shadow.jar", ["fixture/Gate"])
         self.set_knobs(dependencies=[["x/y/shadow/1.0/shadow-1.0.jar", str(shadow)]])
@@ -319,6 +329,7 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(prepared.failedStage, "classpath", prepared.diagnostic)
         self.assertIn("fixture.Gate", prepared.diagnostic)
 
+    @cost("tool")
     def test_gradle_is_a_toolchain_blocker_naming_the_distribution_it_would_need(self):
         props = ("distributionUrl=https\\://services.gradle.org/distributions/gradle-8.5-bin.zip\n"
                  "distributionSha256Sum=" + "a" * 64 + "\n")
@@ -339,6 +350,7 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(plain.failedStage, "toolchain", plain.diagnostic)
         self.assertEqual((self.remotes, self.made_calls()), ([], []))
 
+    @cost("tool")
     def test_a_gradle_distribution_on_any_other_host_is_still_outside_the_policy(self):
         props = "distributionUrl=https\\://downloads.gradle.org/distributions/gradle-8.5-bin.zip\n"
         self.upstream, before, after = make_upstream(self.dir / "gradle-other",
@@ -352,6 +364,7 @@ class UpstreamTest(UpstreamCase):
         self.assertIn("user decides", wrapper.blocker["next"])
         self.assertEqual(self.made_calls(), [])
 
+    @cost("tool")
     def test_a_maven_wrapper_runs_its_own_distribution_from_central_by_sha256(self):
         dist = self.dir / "dist/apache-maven-9.9.9-bin.zip"
         dist.parent.mkdir()
@@ -390,6 +403,7 @@ class UpstreamTest(UpstreamCase):
         self.assertEqual(wrong.failedStage, "acquire", wrong.diagnostic)
         self.assertIn("not the recorded", wrong.diagnostic)
 
+    @cost("tool")
     def test_a_zip_entry_outside_its_root_is_never_unpacked(self):
         evil = self.dir / "evil.zip"
         with zipfile.ZipFile(evil, "w") as z:
@@ -398,6 +412,7 @@ class UpstreamTest(UpstreamCase):
             runtime_upstream._unzip(evil, self.dir / "into")
         self.assertFalse((self.dir / "escaped").exists())
 
+    @cost("tool")
     def test_each_built_revision_runs_in_its_own_jvm(self):
         if not {"21", "25"} <= set(runtime_jdk.homes()):
             self.skipTest(f"JDKs 21 and 25 are not both under {runtime_jdk.CANDIDATES}")
@@ -617,6 +632,7 @@ class SliceRouteTest(UpstreamCase):
         del no_recipe["slice"]
         self.assertIn("names no slice", runtime.lock(self.plan_of([no_recipe]), "after").diagnostic)
 
+    @cost("tool")
     def test_the_slice_compiles_only_its_files_and_gives_the_fixture_recipes_bytes(self):
         prepared = runtime.prepare(self.plan_of([self.entry()]), "after", self.work / "after")
         self.assertEqual(prepared.stage, "artifacts-ready", prepared.diagnostic)
@@ -637,6 +653,7 @@ class SliceRouteTest(UpstreamCase):
         self.assertTrue(original.origin.startswith("an extracted source slice of"), original.origin)
         self.assertEqual(prepared.source["target"]["loadedFrom"], "slice/after.jar")
 
+    @cost("tool")
     def test_a_file_the_commit_lacks_offline_or_a_stray_class_is_refused(self):
         missing = runtime.prepare(self.plan_of([self.entry(files=("gate/src/main/java/fixture/Nope.java",))]), "after",
                                   self.work / "a")

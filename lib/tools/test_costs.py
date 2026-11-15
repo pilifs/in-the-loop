@@ -10,6 +10,7 @@
     python3 lib/tools/test_costs.py tag FILE ...           # give FILE's tests the tier tag their row asks for
     python3 lib/tools/test_costs.py run [--tier unit]      # the default run (or the unit tier alone), Rust and Python
     python3 lib/tools/test_costs.py run --tier proof       # the proof tier: a pipeline job, never inline
+    python3 lib/tools/test_costs.py lint                   # the tier tags, the sources and the inventory agree
     python3 lib/tools/test_costs.py watch -- CMD ...       # nextest's wrapper: run one test, record what it cost
     python3 lib/tools/test_costs.py python FILE --out F    # run one Python test file, recording each test
 
@@ -461,8 +462,37 @@ def _row(key, test, cost, ignore=None):
     return row
 
 
-def estimate(root=ROOT, fetch=False, exclude=("test-cost",)):
-    """costs.json's content, from the tests' sources, past sessions' logs and past jobs: nothing is run."""
+NONE_YET = "proxy: none yet"
+
+
+def _listed(rows, previous, listed):
+    """Mark the rows that join the `retier: pending` or `proxy: none yet` list without a person's say. Joining is
+    for a person to decide: a row is on a list if PREVIOUS (the inventory before, None for none) had it there, or
+    LISTED (`FILE::NAME`s, from `estimate --list`) names it. A proof-tier test that calls JBMC or TLC and runs by
+    default, or a proof tag with no proxy, that is on neither gets `unlisted`, which the lint refuses. A test that is
+    proof tier only by a past run's time joins `retier: pending` freely: the tier is an estimate."""
+    if previous is None:
+        return
+    before = {(r["file"], r["name"]): r for r in previous}
+    for r in rows:
+        key = (r["file"], r["name"])
+        old = before.get(key, {})
+        named = f"{r['file']}::{r['name']}" in listed
+        unlisted = []
+        if r.get("retier") == "pending" and PROOF_CALLS.keys() & set(r["calls"]):
+            if not (named or old.get("retier") == "pending"):
+                del r["retier"]
+                unlisted.append("retier: pending")
+        if NONE_YET in (r.get("ignored") or ""):
+            if not (named or (NONE_YET in (old.get("ignored") or "") and "unlisted" not in old)):
+                unlisted.append(NONE_YET)
+        if unlisted:
+            r["unlisted"] = ", ".join(unlisted) + ": for a person to decide (estimate --list), or tag it"
+
+
+def estimate(root=ROOT, fetch=False, exclude=("test-cost",), previous=None, listed=()):
+    """costs.json's content, from the tests' sources, past sessions' logs and past jobs: nothing is run. PREVIOUS is
+    the inventory it replaces, whose `retier: pending` and `proxy: none yet` lists only LISTED tests may join."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import cost_inventory as ci
     rust_tests = ci.rust_tests(root)
@@ -479,11 +509,15 @@ def estimate(root=ROOT, fetch=False, exclude=("test-cost",)):
         rust.append(row)
     python = []
     for t in py_tests:
-        skipped = '@cost("proof")' if t["cost"] == "proof" else None  # Python's counterpart of an ignore reason
+        # Python's counterpart of an ignore reason
+        skipped = (t["reason"] or '@cost("proof")') if t["cost"] == "proof" else None
         row = _row({"file": t["file"], "name": t["name"]}, t, ci.cost(py_ev[(t["file"], t["name"])]), skipped)
         if row["tier"] == "proof" and skipped is None:
             row["retier"] = "pending"
         python.append(row)
+    listed = set(listed)
+    _listed(rust, (previous or {}).get("rust") if previous is not None else None, listed)
+    _listed(python, (previous or {}).get("python") if previous is not None else None, listed)
 
     def counts(rows, key):
         out = {}
@@ -507,7 +541,10 @@ def estimate(root=ROOT, fetch=False, exclude=("test-cost",)):
                      "what a past run took (cost.kind `run alone` or `over 60 s`). `at most` is a bound from runs "
                      "with other tests. A source is a past job (`job:ID`) or a session's redacted log (`log:` and the "
                      "start of its sha256, in full under sources.logs); `estimated` says why no past run settles the tier. `retier: pending` marks "
-                     "a proof-tier test that runs by default, for the next loop. A later `measure` run replaces it.",
+                     "a proof-tier test that runs by default, for the next loop. A test that calls JBMC or TLC joins "
+                     "that list, and a proof tag joins the `proxy: none yet` list, only when a person names it "
+                     "(`estimate --list FILE::NAME`); until then its row is `unlisted`, which `test_costs.py lint` "
+                     "refuses. A later `measure` run replaces the estimates.",
         "thresholds": {"unit": f"no subprocess, under {UNIT_S:g} s", "tool": f"under {TOOL_S:g} s and {TOOL_MB} MB",
                        "proof": "JBMC, TLC, or over the tool tier's limits"},
         "sources": {"read": {"session_logs": len({e["source"] for e in cargo + py_runs}),
@@ -680,6 +717,101 @@ def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=
     return 1 if failed else 0
 
 
+# --- the lint: the tags, the sources and the inventory agree ----------------------------------------------------
+
+PROXY = re.compile(r";\s*proxy:\s*(.+?)\s*$", re.S)
+PROOF_PREFIX = "cost:proof: "
+
+
+def _proof_reason(test, lang):
+    """A test's proof tag as the inventory records it: Rust's ignore reason, or Python's `@cost("proof", ...)`
+    reason (`@cost("proof")` without one), or None."""
+    if lang == "rust":
+        return test["ignore"]
+    return (test["reason"] or '@cost("proof")') if test["cost"] == "proof" else None
+
+
+def _lint_language(rows, tests, lang, root):
+    import cost_inventory as ci
+    problems = []
+    inv = {(r["file"], r["name"]): r for r in rows}
+    src = {(t["file"], t["name"]): t for t in tests}
+    fix = "run `python3 lib/tools/test_costs.py estimate`"
+    for f, n in sorted(src.keys() - inv.keys()):
+        problems.append(f"{f}::{n}: not in the inventory: {fix}")
+    for f, n in sorted(inv.keys() - src.keys()):
+        problems.append(f"{f}::{n}: in the inventory, but no such test: {fix}")
+    # A proxy is any test of the same language that runs by default, named in full or (Rust) by its last segment.
+    runs, proof_tests = set(), set()
+    for (f, n), t in src.items():
+        names = {n, n.rsplit("::", 1)[-1]}
+        (runs if _proof_reason(t, lang) is None else proof_tests).update(names)
+    for key in sorted(src.keys() & inv.keys()):
+        t, r = src[key], inv[key]
+        where = f"{key[0]}::{key[1]}"
+        reason = _proof_reason(t, lang)
+        if r.get("ignored") != reason or r["calls"] != t["calls"]:
+            problems.append(f"{where}: the inventory is out of date (what it calls, or its proof tag): {fix}")
+        if "unlisted" in r:
+            problems.append(f"{where}: {r['unlisted']}")
+        if lang == "python" and t["skip"] is not None:
+            problems.append(f"{where}: skipped unconditionally ({t['skip']!r}): a test set aside for its cost is "
+                            f"@cost(\"proof\", \"WHAT IT RUNS, ~TIME; proxy: TEST\")")
+        if reason is not None:
+            if lang == "rust" and not reason.startswith(PROOF_PREFIX):
+                problems.append(f"{where}: its ignore reason doesn't start with {PROOF_PREFIX!r}: {reason!r}")
+            if lang == "python" and t["reason"] is None:
+                problems.append(f"{where}: @cost(\"proof\") without a reason: give what it runs, about how long, and "
+                                f"its proxy")
+            m = PROXY.search(reason)
+            if not m:
+                problems.append(f"{where}: its proof tag names no proxy (`; proxy: TEST`, or `; {NONE_YET}`)")
+            elif m[1] != "none yet":
+                for proxy in (x.strip() for x in m[1].split(",")):
+                    if proxy in runs:
+                        continue
+                    problems.append(f"{where}: its proxy {proxy} is " + ("itself proof tier: a proxy runs by default"
+                                                                       if proxy in proof_tests else "no test"))
+        if reason is None and PROOF_CALLS.keys() & set(t["calls"]) and r.get("retier") != "pending":
+            tools = " and ".join(PROOF_CALLS[c] for c in t["calls"] if c in PROOF_CALLS)
+            problems.append(f"{where}: calls {tools} but isn't proof tier: tag it "
+                            + ("#[ignore = \"cost:proof: …; proxy: TEST\"]" if lang == "rust"
+                               else "@cost(\"proof\", \"…; proxy: TEST\")")
+                            + " and queue it, or a person lists it as retier: pending")
+    by_file = {}
+    for (f, n), r in inv.items():
+        by_file.setdefault(f, {})[n] = r
+    for f in sorted({k[0] for k in src}):
+        text, rows_of = (root / f).read_text(), by_file.get(f, {})
+        _, changed = ci.cost_decorators(text, f, rows_of, root) if lang == "python" else ci.tier_calls(text, f, rows_of)
+        if changed:
+            problems.append(f"{f}: {changed} tests' tier tags aren't what the inventory asks for: run "
+                            f"`python3 lib/tools/test_costs.py tag {f}`")
+    return problems
+
+
+def lint(path=INVENTORY, root=ROOT, only=None):
+    """What is wrong with the tests' tier tags, as a list of problems (empty when all is well). Read from the sources,
+    against the inventory at PATH:
+    - every test is in the inventory, every test it names exists, and what it records of each (what the test calls,
+      its proof tag) is current;
+    - every proof tag is `cost:proof: WHAT IT RUNS, ~TIME; proxy: TEST` (in Python, `@cost("proof", "...; proxy:
+      TEST")`, and no unconditional `@unittest.skip`), and its proxy is a test that runs by default, or `none yet`
+      for a test on the inventory's list;
+    - no test outside the proof tier calls JBMC or TLC, except the inventory's `retier: pending` tests;
+    - every test's tier tag (`tool_tier!`, `@cost`) is the one its row asks for;
+    - no row joined the `retier: pending` or `proxy: none yet` list without a person (`unlisted`)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import cost_inventory as ci
+    doc = json.loads(Path(path).read_text())
+    problems = []
+    if only != "python":
+        problems += _lint_language(doc["rust"], ci.rust_tests(root), "rust", root)
+    if only != "rust":
+        problems += _lint_language(doc["python"], ci.python_tests(root), "python", root)
+    return problems
+
+
 def tag(files, path=INVENTORY, root=ROOT):
     """Give each test in FILES the tier tag its row in the inventory asks for, and take it away from a unit-tier
     test. In Rust the first statement: `tool_tier!()` for the tool tier, `tool_tier!(pending)` for `retier: pending`,
@@ -727,6 +859,9 @@ def main(argv=None):
     e.add_argument("--fetch", action="store_true", help="download published session logs not stored here")
     e.add_argument("--exclude", action="append", default=None, metavar="LOOP",
                    help="leave a loop's sessions out (default: test-cost, whose log changes with every commit)")
+    e.add_argument("--list", action="append", default=[], metavar="FILE::NAME",
+                   help="put a test on the retier-pending or proxy-none-yet list: for a person to decide, or for a "
+                        "listed test that was renamed")
     t = sub.add_parser("tag", help="give a test file's tests the tier tag their row asks for (tool_tier! in Rust, "
                                    "@cost in Python)")
     t.add_argument("files", nargs="+")
@@ -739,6 +874,9 @@ def main(argv=None):
     r.add_argument("--test-threads", type=int, help="Rust tests at once")
     r.add_argument("--dry-run", action="store_true", help="print the commands, run nothing")
     r.add_argument("--path", default=str(INVENTORY))
+    lt = sub.add_parser("lint", help="check that the tests' tier tags, their sources and the inventory agree")
+    lt.add_argument("--only", choices=("rust", "python"), help="one language")
+    lt.add_argument("--path", default=str(INVENTORY))
     py = sub.add_parser("python", help="run one Python test file, test by test")
     py.add_argument("file")
     py.add_argument("--out", required=True)
@@ -749,16 +887,26 @@ def main(argv=None):
         write_inventory(a.raw, a.source, a.path)
         return 0
     if a.command == "estimate":
-        doc = estimate(ROOT, a.fetch, tuple(a.exclude) if a.exclude is not None else ("test-cost",))
+        previous = json.loads(Path(a.path).read_text()) if Path(a.path).exists() else None
+        doc = estimate(ROOT, a.fetch, tuple(a.exclude) if a.exclude is not None else ("test-cost",), previous, a.list)
         Path(a.path).write_text(dumps(doc))
         for key in ("rust", "python"):
             rows = doc[key]
             tiers = {t: sum(r["tier"] == t for r in rows) for t in TIERS}
             print(f"{key}: {len(rows)} tests, {tiers}, {sum('estimated' in r['cost'] for r in rows)} estimated, "
                   f"{sum(r.get('retier') == 'pending' for r in rows)} retier pending")
+            for r in rows:
+                if "unlisted" in r:
+                    print(f"  unlisted: {r['file']}::{r['name']}: {r['unlisted']}")
         return 0
     if a.command == "run":
         return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run)
+    if a.command == "lint":
+        problems = lint(a.path, ROOT, a.only)
+        for line in problems:
+            print(line)
+        print(f"{len(problems)} problems" if problems else "the tier tags, the sources and the inventory agree")
+        return 1 if problems else 0
     if a.command == "tag":
         for f, n in tag(a.files, a.path).items():
             print(f"{f}: {n} tests changed")

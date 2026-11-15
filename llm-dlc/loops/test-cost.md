@@ -467,6 +467,45 @@ Settled by the user on 2026-11-15:
 
   Next: Phase 2 step 7, the lint. It starts by listing classes that inherit a TestCase from another module, which
   its "every test is in the inventory" check needs, and by tagging what that adds.
+- 2026-11-15, Phase 2 step 7 done: the lint is `python3 lib/tools/test_costs.py lint`, and it runs in the default
+  run twice, at the unit tier:
+  - `lib/tests/tiers.rs` in `cargo test` checks what it can read without following a test into its helpers: the
+    ignore reasons, their proxies, the `none yet` list, the inventory's JBMC and TLC tests outside the proof tier, and
+    that the sources and the inventory name the same tests.
+  - `lib/tools/test_tier_lint.py` in the Python run checks all of it for both languages. It also checks that what
+    the inventory records of each test (what it calls, its proof tag) is current, and that each test's `tool_tier!` or
+    `@cost` is the one its row asks for. Ten more tests check the lint itself on made-up sources.
+
+  What else changed:
+  - **Who adds a test to the lists.** "For a person to decide" is now enforced. `estimate` keeps every test that
+    was already on the `retier: pending` or `proxy: none yet` list. A test that newly calls JBMC or TLC and runs by
+    default, or a new `proxy: none yet`, gets `unlisted` in its row, and the lint refuses that. A person adds it with
+    `estimate --list FILE::NAME`. A test that is proof tier only because a past run was slow still joins `retier:
+    pending` freely, since that tier is an estimate.
+  - **Python.**
+    - A proof-tier test now gives a reason, `@cost("proof", "WHAT IT RUNS, ~TIME; proxy: Class.test")`, and the
+      lint refuses an unconditional `@unittest.skip`.
+    - A Python test counts as running JBMC or TLC only when it spawns a process and names `jbmc` as the command, or
+      names `tlc2.TLC` or `tla2tools.jar`. Today that matches no test. A looser match (any mention of jbmc) flagged
+      91 tests, all unit tests that check plans, command lines or mocks.
+  - **The missing 27.** The Python listing follows a TestCase base imported from another file of the repository,
+    so `test_runtime_upstream.py`'s 27 tests are now listed. `tag` gave 15 of them `@cost("tool")`. Python is now 833
+    tests: 763 unit, 70 tool, no proof. Rust is 646 (the lint's two tests added), with its tiers unchanged.
+  - **Speed.** The Rust listing went from 13 s to 0.9 s and `estimate` from 20 s to 7 s, so each lint test runs in
+    about 1 s. Its output is unchanged: the old and new listings give the same result for every Rust test, and
+    for every Python test apart from the 27 added.
+
+  - **Verified.**
+    - `tiers.rs` passes by default and under `JVMCONTRACT_TEST_TIER=unit`.
+    - `test_tier_lint.py`, `test_cost_inventory.py` and `test_test_costs.py` pass by default and under
+      `TEST_COST=unit`.
+    - `test_runtime_upstream.py` passes under `unit`, with its 15 tool-tier tests skipped.
+    - The default run, `test_costs.py run`, was run once (see the commit message).
+  - **For review.** The Rust lint and the Python lint read the sources separately, so they can disagree. If the Rust
+    one fails, the Python one names the fix.
+
+  Next: Phase 3 step 8, the guidance in CLAUDE.md, the brief template and `verification/README.md`, then the rest
+  of `lib/README.md`'s Tests section.
 - Status: working
 
 ## Loop settings

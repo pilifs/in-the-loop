@@ -17,6 +17,7 @@ Standard library only.
 from __future__ import annotations
 
 import ast
+import functools
 import json
 import re
 import shlex
@@ -31,59 +32,63 @@ TOOLS = ROOT / "llm-dlc" / "tools"
 
 # --- reading Rust ---------------------------------------------------------------------------------------------------
 
+# What starts a comment or a literal. A raw string's `r` must not end an identifier (`for"` is no raw string).
+_OPENER = re.compile(r"//|/\*|(?<!\w)b?r(#*)\"|\"|'")
+_COMMENT_END = re.compile(r"/\*|\*/")
+_STRING_BODY = re.compile(r'[^"\\]*(?:\\.[^"\\]*)*', re.S)
+_CHAR = re.compile(r"'(?:\\(?:u\{[0-9a-fA-F]+\}|x[0-9a-fA-F]{2}|.)|[^\\'])'")
+_NOT_NEWLINE = re.compile(r"[^\n]")
+
+
+@functools.lru_cache(maxsize=512)
 def blank(src: str, strings: bool = True) -> str:
     """SRC with comments (and, if STRINGS, the contents of string and char literals) replaced by spaces, newlines
-    kept, so that positions and line numbers stay the same and braces inside them don't count."""
-    out = list(src)
-    i, n = 0, len(src)
+    kept, so that positions and line numbers stay the same and braces inside them don't count. Cached: the lint
+    reads each file several times."""
+    parts, kept, i, n = [], 0, 0, len(src)
 
     def wipe(a, b):
-        for k in range(a, b):
-            if out[k] != "\n":
-                out[k] = " "
+        nonlocal kept
+        parts.append(src[kept:a])
+        parts.append(_NOT_NEWLINE.sub(" ", src[a:b]))
+        kept = b
 
-    while i < n:
-        c = src[i]
-        if src.startswith("//", i):
+    while (m := _OPENER.search(src, i)):
+        i, tok = m.start(), m[0]
+        if tok == "//":
             j = src.find("\n", i)
             j = n if j < 0 else j
             wipe(i, j)
             i = j
-        elif src.startswith("/*", i):
+        elif tok == "/*":
             depth, j = 1, i + 2
-            while j < n and depth:
-                if src.startswith("/*", j):
-                    depth, j = depth + 1, j + 2
-                elif src.startswith("*/", j):
-                    depth, j = depth - 1, j + 2
-                else:
-                    j += 1
+            while depth and (c := _COMMENT_END.search(src, j)):
+                depth, j = depth + (1 if c[0] == "/*" else -1), c.end()
+            j = j if not depth else n
             wipe(i, j)
             i = j
-        elif (m := re.compile(r'b?r(#*)"').match(src, i)) and (i == 0 or not (src[i - 1].isalnum() or src[i - 1] == "_")):
+        elif tok.endswith('"') and tok != '"':  # a raw string: no escapes, it ends at `"` and its hashes
             end = src.find('"' + m[1], m.end())
             end = n if end < 0 else end
             if strings:
                 wipe(m.end(), end)
             i = end + 1 + len(m[1])
-        elif c == '"':
-            j = i + 1
-            while j < n and src[j] != '"':
-                j += 2 if src[j] == "\\" else 1
+        elif tok == '"':
+            j = _STRING_BODY.match(src, i + 1).end()
+            j = j if j < n and src[j] == '"' else n
             if strings:
                 wipe(i + 1, j)
             i = j + 1
-        elif c == "'":
-            m = re.compile(r"'(?:\\(?:u\{[0-9a-fA-F]+\}|x[0-9a-fA-F]{2}|.)|[^\\'])'").match(src, i)
-            if m:
+        else:
+            c = _CHAR.match(src, i)
+            if c:
                 if strings:
-                    wipe(i + 1, m.end() - 1)
-                i = m.end()
+                    wipe(i + 1, c.end() - 1)
+                i = c.end()
             else:
                 i += 1  # a lifetime
-        else:
-            i += 1
-    return "".join(out)
+    parts.append(src[kept:])
+    return "".join(parts)
 
 
 def _match(code: str, i: int, open_: str, close: str) -> int:
@@ -99,6 +104,9 @@ def _match(code: str, i: int, open_: str, close: str) -> int:
     return len(code) - 1
 
 
+_QUALIFIER = re.compile(r"(?:\bpub(?:\([^)]*\))?|\basync|\bunsafe|\bconst|\bextern\s*\"?\w*\"?)$")
+
+
 def _attributes(src: str, code: str, at: int) -> list[str]:
     """The outer attributes (`#[...]`, as written) before the item starting at AT, nearest last."""
     attrs, i = [], at
@@ -106,9 +114,10 @@ def _attributes(src: str, code: str, at: int) -> list[str]:
         j = i
         while j > 0 and code[j - 1].isspace():
             j -= 1
-        m = re.search(r"(?:\bpub(?:\([^)]*\))?|\basync|\bunsafe|\bconst|\bextern\s*\"?\w*\"?)$", code[:j])
+        w = max(0, j - 200)
+        m = _QUALIFIER.search(code[w:j])
         if m and j:
-            i = m.start()
+            i = w + m.start()
             continue
         if j and code[j - 1] == "]":
             depth, k = 0, j - 1
@@ -130,9 +139,11 @@ def _attributes(src: str, code: str, at: int) -> list[str]:
 ITEM = re.compile(r"\b(?:mod\s+(\w+)\s*([{;])|fn\s+(\w+))")
 
 
+@functools.lru_cache(maxsize=1024)
 def rust_items(src: str, prefix: tuple[str, ...] = ()) -> list[dict]:
     """Every `fn` of a Rust file outside another fn's body: its path (module path within the file, under PREFIX, and
-    its name), its attributes, and its body's span. Modules declared with `mod x;` are listed as `{"mod": x}`."""
+    its name), its attributes, and its body's span. Modules declared with `mod x;` are listed as `{"mod": x}`.
+    Cached, so the list is shared: don't change it."""
     code = blank(src)
     items, i, stack = [], 0, []  # stack: (module name, index of its closing brace)
     while m := ITEM.search(code, i):
@@ -212,6 +223,15 @@ RUST_NATIVE = r"Engine::Native\b|\"native\"|/nonexistent/jbmc|\bNO_JBMC\b"
 NOT_FOLLOWED = {"default", "new", "from", "into", "clone"}
 
 
+@functools.lru_cache(maxsize=None)
+def _kinds(text: str) -> frozenset[str]:
+    """The RUST_CALLS kinds TEXT (a fn, comments blanked) shows, and `default jbmc` and `native` for
+    RUST_DEFAULT_JBMC and RUST_NATIVE. A test's are the union of its own and its helpers'."""
+    found = {kind for kind, rx in RUST_CALLS if re.search(rx, text)}
+    return frozenset(found | {k for k, rx in (("default jbmc", RUST_DEFAULT_JBMC), ("native", RUST_NATIVE))
+                              if re.search(rx, text)})
+
+
 def _calls(text: str) -> set[str]:
     return set(re.findall(r"(?<![.\w])(\w+)\s*(?:::<[^>]*>)?\s*\(", text))
 
@@ -225,26 +245,29 @@ def rust_tests(root: Path = ROOT) -> list[dict]:
         sources = [(src, rust_items(src, prefix))] + [(m.read_text(), rust_items(m.read_text())) for m in mods]
         if not any(it.get("test") for it in sources[0][1]):
             continue
-        texts: dict[str, list[str]] = {}
+        texts: dict[str, list[tuple[str, str]]] = {}  # fn name: (its text with comments blanked, and strings too)
         for s, items in sources:
-            nc = blank(s, strings=False)
+            nc, code = blank(s, strings=False), blank(s)
             for it in items:
                 if "fn" in it:
-                    texts.setdefault(it["fn"], []).append(nc[it["start"]:it["body"][1]])
+                    span = slice(it["start"], it["body"][1])
+                    texts.setdefault(it["fn"], []).append((nc[span], code[span]))
+        nc, code = blank(src, strings=False), blank(src)
         for it in sources[0][1]:
             if not it.get("test"):
                 continue
-            seen, todo, reach = {it["fn"]}, [blank(src, strings=False)[it["start"]:it["body"][1]]], []
+            span = slice(it["start"], it["body"][1])
+            seen, todo, reach = {it["fn"]}, [(nc[span], code[span])], []
             while todo:
-                text = todo.pop()
+                text, text_code = todo.pop()
                 reach.append(text)
-                for name in _calls(blank(text)) - seen - NOT_FOLLOWED:
+                for name in _calls(text_code) - seen - NOT_FOLLOWED:
                     if name in texts:
                         seen.add(name)
                         todo += texts[name]
-            body = "\n".join(reach)
-            calls = {kind for kind, rx in RUST_CALLS if re.search(rx, body)}
-            if re.search(RUST_DEFAULT_JBMC, body) and not re.search(RUST_NATIVE, body):
+            found = set().union(*(_kinds(text) for text in reach))
+            calls = found - {"default jbmc", "native"}
+            if "default jbmc" in found and "native" not in found:
                 calls.add("jbmc")
             if "stand-in" in calls:
                 calls.discard("jbmc")  # the JBMC it names is the stand-in
@@ -302,44 +325,114 @@ PY_CALLS = [
                 r"|(?<![\w.])Popen\(|\bos\.(?:system|popen|posix_spawnp?|exec\w*|spawn\w*)\("
                 r"|\bcreate_subprocess_(?:exec|shell)\("),
     ("network", r"\burllib\.request\.urlopen\(|\bhttp\.client\.\w+\(|\bsocket\.(?:socket|create_connection)\("),
+    # Counted only beside a process call: a test that names JBMC or TLC to check a plan, a command line or a mock's
+    # arguments runs neither. The modules under test (build.py's runners) aren't followed.
+    ("jbmc", r"\b(?:run|Popen|call|check_call|check_output)\(\s*\[\s*[\"'](?:jbmc|cbmc)[\"']"),
+    ("tlc", r"\btlc2\.TLC\b|\btla2tools\.jar\b"),
 ]
+PY_PROOF_CALLS = {"jbmc", "tlc"}
 
 
-def python_cases(tree: ast.Module):
-    """Each test method of a parsed test file, inherited ones once per TestCase that has them: (class name, class
-    node, method name, method node, the module's functions by name, the class's methods by name)."""
-    funcs = {n.name: n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
-    classes = {n.name: n for n in tree.body if isinstance(n, ast.ClassDef)}
+class PyModule:
+    """A parsed Python file: its source, lines, functions and classes by name, and what it imports by local name
+    (`{name: (module, attribute or None)}`), so that a TestCase base imported from another file can be followed."""
 
-    def methods(cls, seen=()):
-        own = {n.name: n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    def __init__(self, path: Path | None, src: str | None = None):
+        self.path = path
+        self.src = path.read_text() if src is None else src
+        self.tree = ast.parse(self.src)
+        self.lines = self.src.split("\n")
+        body = self.tree.body
+        self.funcs = {n.name: n for n in body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+        self.classes = {n.name: n for n in body if isinstance(n, ast.ClassDef)}
+        self.imports = {}
+        for n in body:
+            if isinstance(n, ast.Import):
+                for a in n.names:
+                    self.imports[a.asname or a.name.split(".")[0]] = (a.name if a.asname else a.name.split(".")[0], None)
+            elif isinstance(n, ast.ImportFrom) and not n.level and n.module:
+                for a in n.names:
+                    self.imports[a.asname or a.name] = (n.module, a.name)
+
+    def segment(self, node) -> str:
+        """The lines of NODE's source."""
+        return "\n".join(self.lines[node.lineno - 1:node.end_lineno])
+
+    def module(self, dotted: str, root: Path) -> "PyModule | None":
+        """The repository file DOTTED names, imported as this file's directory or an ancestor up to ROOT would
+        import it (a test file puts its package's parent on sys.path), or None."""
+        if self.path is None:
+            return None
+        rel = Path(*dotted.split("."))
+        for d in [self.path.parent, *self.path.parents]:
+            for f in (d / rel.with_suffix(".py"), d / rel / "__init__.py"):
+                if f.is_file():
+                    return _py_module(f.resolve())
+            if d == root:
+                break
+        return None
+
+    def base(self, expr, root: Path) -> "tuple[PyModule, ast.ClassDef] | None":
+        """The class a base expression of a class here names, in this file or a repository file it imports."""
+        if isinstance(expr, ast.Name):
+            if expr.id in self.classes:
+                return self, self.classes[expr.id]
+            module, attr = self.imports.get(expr.id, (None, None))
+            other = self.module(module, root) if attr else None
+            return (other, other.classes[attr]) if other and attr in other.classes else None
+        if isinstance(expr, ast.Attribute) and isinstance(expr.value, ast.Name):
+            module, attr = self.imports.get(expr.value.id, (None, None))
+            if module is None:
+                return None
+            other = self.module(f"{module}.{attr}" if attr else module, root)
+            return (other, other.classes[expr.attr]) if other and expr.attr in other.classes else None
+        return None
+
+
+def _py_module(path: Path) -> PyModule:
+    st = path.stat()
+    return _py_module_as_of(path, st.st_mtime_ns, st.st_size)
+
+
+@functools.lru_cache(maxsize=None)
+def _py_module_as_of(path: Path, _mtime_ns: int, _size: int) -> PyModule:
+    return PyModule(path)
+
+
+def python_cases(mod: PyModule, root: Path = ROOT):
+    """Each test method of a parsed test file, inherited ones once per TestCase that has them, bases imported from
+    another repository file included: (class name, class node, method name, method node, the class's methods by name
+    as {name: (module, node)})."""
+    def methods(m, cls, seen=()):
+        own = {n.name: (m, n) for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
         for b in cls.bases:
-            name = b.id if isinstance(b, ast.Name) else None
-            if name in classes and name not in seen:
-                own = {**methods(classes[name], seen + (name,)), **own}
+            found = m.base(b, root)
+            if found and (key := (id(found[0]), found[1].name)) not in seen:
+                own = {**methods(*found, seen + (key,)), **own}
         return own
 
-    def is_case(cls, seen=()):
+    def is_case(m, cls, seen=()):
         for b in cls.bases:
             name = b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else None
             if name in ("TestCase", "IsolatedAsyncioTestCase"):
                 return True
-            if name in classes and name not in seen and is_case(classes[name], seen + (name,)):
+            found = m.base(b, root)
+            if found and (key := (id(found[0]), found[1].name)) not in seen and is_case(*found, seen + (key,)):
                 return True
         return False
 
-    for cname, cls in classes.items():
-        if not is_case(cls):
+    for cname, cls in mod.classes.items():
+        if not is_case(mod, cls):
             continue
-        ms = methods(cls)
-        for mname, node in ms.items():
+        ms = methods(mod, cls)
+        for mname, (_m, node) in ms.items():
             if mname.startswith("test"):
-                yield cname, cls, mname, node, funcs, ms
+                yield cname, cls, mname, node, ms
 
 
 def _cost_decorator(d) -> str | None:
-    """The tag of a decorator node if it is `@cost("...")`, or None."""
-    if (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "cost" and len(d.args) == 1
+    """The tag of a decorator node if it is `@cost("...")` or `@cost("...", "reason")`, or None."""
+    if (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "cost" and 1 <= len(d.args) <= 2
             and isinstance(d.args[0], ast.Constant)):
         return d.args[0].value
     return None
@@ -350,21 +443,40 @@ def cost_tag(node) -> str | None:
     return next((t for d in node.decorator_list if (t := _cost_decorator(d)) is not None), None)
 
 
+def cost_reason(node) -> str | None:
+    """The reason of a `@cost(tag, "reason")` decorator on a function or class node, or None."""
+    for d in node.decorator_list:
+        if _cost_decorator(d) is not None:
+            reason = d.args[1] if len(d.args) > 1 else next((k.value for k in d.keywords if k.arg == "reason"), None)
+            return reason.value if isinstance(reason, ast.Constant) and isinstance(reason.value, str) else None
+    return None
+
+
+def unconditional_skip(node) -> str | None:
+    """The reason of an `@unittest.skip(...)` (or `@skip(...)`) decorator on a function or class node, or None. A
+    `skipIf`/`skipUnless` on a missing tool is no cost tag, and isn't returned."""
+    for d in node.decorator_list:
+        f = d.func if isinstance(d, ast.Call) else d
+        if (isinstance(f, ast.Attribute) and f.attr == "skip") or (isinstance(f, ast.Name) and f.id == "skip"):
+            arg = d.args[0] if isinstance(d, ast.Call) and d.args else None
+            return arg.value if isinstance(arg, ast.Constant) else ""
+    return None
+
+
 def python_tests(root: Path = ROOT, files=None) -> list[dict]:
     """Every Python test method: file, name (Class.method), line, what it calls, and its `@cost` tag."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from test_costs import python_test_files
     out = []
     for path in files if files is not None else python_test_files(root):
-        src = path.read_text()
-        tree = ast.parse(src)
-        for cname, cls, mname, node, funcs, ms in python_cases(tree):
+        mod = _py_module(Path(path).resolve())
+        for cname, cls, mname, node, ms in python_cases(mod, root):
             setup = [ms[k] for k in ("setUp", "setUpClass", "tearDown", "asyncSetUp") if k in ms]
-            setup += [funcs[k] for k in ("setUpModule",) if k in funcs]
-            seen, todo, reach = set(), [node, *setup], []
+            setup += [(mod, mod.funcs[k]) for k in ("setUpModule",) if k in mod.funcs]
+            seen, todo, reach = set(), [(ms[mname][0], node), *setup], []
             while todo:
-                n = todo.pop()
-                reach.append(ast.get_source_segment(src, n) or "")
+                m, n = todo.pop()
+                reach.append(m.segment(n))
                 for c in ast.walk(n):
                     if isinstance(c, ast.Call):
                         f = c.func
@@ -372,14 +484,19 @@ def python_tests(root: Path = ROOT, files=None) -> list[dict]:
                         if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name) and f.value.id in ("self", "cls"):
                             target = ms.get(name)
                         else:
-                            target = funcs.get(name) if isinstance(f, ast.Name) else None
-                        if target is not None and (target.name, id(target)) not in seen:
-                            seen.add((target.name, id(target)))
+                            target = (m, m.funcs[name]) if isinstance(f, ast.Name) and name in m.funcs else None
+                        if target is not None and id(target[1]) not in seen:
+                            seen.add(id(target[1]))
                             todo.append(target)
             body = "\n".join(reach)
             calls = {kind for kind, rx in PY_CALLS if re.search(rx, body)}
-            out.append({"file": str(path.relative_to(root)), "name": f"{cname}.{mname}", "line": node.lineno,
-                        "calls": sorted(calls), "cost": cost_tag(node) or cost_tag(cls)})
+            if "process" not in calls:
+                calls -= PY_PROOF_CALLS
+            out.append({"file": str(Path(path).resolve().relative_to(root)), "name": f"{cname}.{mname}",
+                        "line": node.lineno, "calls": sorted(calls), "cost": cost_tag(node) or cost_tag(cls),
+                        "reason": cost_reason(node) if cost_tag(node) else cost_reason(cls),
+                        "skip": unconditional_skip(node) if unconditional_skip(node) is not None
+                        else unconditional_skip(cls)})
     return out
 
 
@@ -409,14 +526,16 @@ def wanted_cost_tag(row: dict | None) -> str | None:
     return "pending" if row.get("retier") == "pending" else "tool"
 
 
-def cost_decorators(src: str, rel: str, rows: dict) -> tuple[str, int]:
+def cost_decorators(src: str, rel: str, rows: dict, root: Path | None = ROOT) -> tuple[str, int]:
     """SRC with each test method decorated `@cost(...)` as its row in ROWS ({Class.method: row}) asks for, and no
     other, and the import of `cost` present exactly when a decorator is: (new source, test methods changed). A
     method a base class gives several TestCases takes the highest tag they ask for. REL is the file's path from the
     repository root."""
-    tree = ast.parse(src)
+    mod = PyModule(root / rel if root else None, src)
     want, nodes = {}, {}
-    for cname, _cls, mname, node, _funcs, _ms in python_cases(tree):
+    for cname, _cls, mname, node, ms in python_cases(mod, root or ROOT):
+        if ms[mname][0] is not mod:
+            continue  # a test method another file defines is tagged there
         w = wanted_cost_tag(rows.get(f"{cname}.{mname}"))
         nodes[id(node)] = node
         want[id(node)] = max(want.get(id(node)), w, key=_RANK.index)

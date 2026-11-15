@@ -12,39 +12,41 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T12:23:38.409Z",
-  "ended": "2026-11-15T14:34:36.122Z",
-  "duration_seconds": 7858,
+  "ended": "2026-11-15T15:06:40.538Z",
+  "duration_seconds": 9782,
   "stats": {
-    "turns": 36,
-    "api_calls": 308,
-    "tool_calls": 312,
-    "tool_errors": 4,
-    "compactions": 6,
-    "peak_context_tokens": 182553,
+    "turns": 43,
+    "api_calls": 377,
+    "tool_calls": 380,
+    "tool_errors": 8,
+    "compactions": 7,
+    "peak_context_tokens": 185191,
     "usage": {
-      "input_tokens": 622,
-      "output_tokens": 286888,
-      "cache_read_input_tokens": 30713223,
-      "cache_creation_input_tokens": 890936
+      "input_tokens": 766,
+      "output_tokens": 357109,
+      "cache_read_input_tokens": 39312296,
+      "cache_creation_input_tokens": 1066275
     }
   },
   "tools": {
-    "Bash": 279,
-    "Edit": 10,
-    "Write": 10,
-    "Read": 8,
-    "ToolSearch": 3,
-    "Monitor": 2
+    "Bash": 340,
+    "Write": 12,
+    "Edit": 11,
+    "Read": 10,
+    "ToolSearch": 4,
+    "Monitor": 3
   },
   "files_touched": [
     "lib/.config/nextest.toml",
     "lib/src/test_tier.rs",
+    "lib/tests/tiers.rs",
     "lib/tools/cost_tier.py",
     "lib/tools/install-nextest.sh",
     "lib/tools/test_cost_inventory.py",
     "lib/tools/test_costs.py",
     "lib/tools/test_inventory.py",
     "lib/tools/test_test_costs.py",
+    "lib/tools/test_tier_lint.py",
     "llm-dlc/loops/test-cost.md",
     "llm-dlc/tools/test_tool_time.py",
     "llm-dlc/tools/tool_time.py"
@@ -137,24 +139,38 @@
     {
       "index": 6,
       "started": "2026-11-15T14:17:14.141Z",
-      "ended": "2026-11-15T14:34:36.122Z",
-      "turns": 4,
-      "api_calls": 36,
+      "ended": "2026-11-15T14:34:57.194Z",
+      "turns": 5,
+      "api_calls": 38,
       "usage": {
-        "input_tokens": 72,
-        "output_tokens": 30850,
-        "cache_read_input_tokens": 3386319,
-        "cache_creation_input_tokens": 118450
+        "input_tokens": 76,
+        "output_tokens": 31892,
+        "cache_read_input_tokens": 3651100,
+        "cache_creation_input_tokens": 121784
       },
-      "peak_context_tokens": 131636
+      "peak_context_tokens": 134970
+    },
+    {
+      "index": 7,
+      "started": "2026-11-15T14:35:53.017Z",
+      "ended": "2026-11-15T15:06:40.538Z",
+      "turns": 6,
+      "api_calls": 67,
+      "usage": {
+        "input_tokens": 140,
+        "output_tokens": 69179,
+        "cache_read_input_tokens": 8334292,
+        "cache_creation_input_tokens": 172005
+      },
+      "peak_context_tokens": 185191
     }
   ],
   "log": {
-    "sha256": "38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8",
-    "bytes": 8638815,
-    "lines": 2988,
-    "gzip_bytes": 1548174,
-    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8.jsonl.gz"
+    "sha256": "262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc",
+    "bytes": 10362413,
+    "lines": 3612,
+    "gzip_bytes": 1848630,
+    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -229,6 +245,14 @@
       "summary": "Test tiers: one way to run each, test_costs.py run --tier default|unit|proof, documented in lib/README.md",
       "body": "Phase 2 step 6 of llm-dlc/loops/test-cost.md. python3 lib/tools/test_costs.py run runs cargo test in lib/ and then each Python test file lib/tests/costs.json lists, in its own process, with one line per file and the full output on failure. --tier default (what runs inline) sets JVMCONTRACT_TEST_TIER and TEST_COST to tool, which is the same as unset, so nothing is skipped that ran before. --tier unit sets them to unit. --tier proof runs cargo test --release -- --ignored and only the Python tests tagged @cost(\"proof\"), of which there are none yet. --only, --test and --dry-run narrow a run.\n\nlib/README.md's Tests section opens with the tiers and the two inline commands. It writes down the proof tier's pipeline.py submit command: 4 CPUs, 8G, 1.5 h, from past jobs' times. That command was checked with --dry-run only, and no job was written. The measure paragraph's heap and conformance times are corrected to the inventory's.\n\nVerified: test_test_costs.py (16 tests, 4 of them new for run) passes by default and under TEST_COST=unit. run --only python passed 30 of 31 files by default, skipping nothing, and 30 of 31 under --tier unit. The Rust code is unchanged, so cargo test wasn't run. The inventory was regenerated.\n\nFound, and recorded for review in the brief's Progress: examples/tools/test_economics.py fails by default, apart from this loop, because examples 287 and 289 to 291 have no subject.file. The inventory misses 27 of test_runtime_upstream.py's 30 tests, whose classes inherit a TestCase from test_runtime; step 7 starts by listing them. Three heap proof tests failed their last jobs (VF-018 reruns).",
       "log_sha256": "38fec6993a6bb546ba524dee8917b6b6ff35be2c3ebb0db812c8c0c9dc58bef8"
+    },
+    {
+      "change_id": "sxutsywlupkslkuptzwzwzyzxyxvxxtp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Test tiers: the lint, test_costs.py lint, in the default run as tests/tiers.rs and tools/test_tier_lint.py",
+      "body": "Phase 2 step 7 of llm-dlc/loops/test-cost.md. The lint checks four things against the sources and lib/tests/costs.json: every ignore reason is a cost:proof tag with a proxy that runs by default, or proxy: none yet for a test on the inventory's list; no test outside the proof tier calls JBMC or TLC, except the retier: pending tests; the inventory and the sources name the same tests, and what it records of each is current; and every tool_tier! or @cost tag is the one its row asks for. It runs in the default run twice, both at the unit tier. lib/tests/tiers.rs is in cargo test and checks what it can read without following a test into its helpers. lib/tools/test_tier_lint.py is in the Python run and checks all of it for both languages, with ten more tests of the lint on made-up sources. lib/README.md's Tests section says what each problem asks for.\n\nJoining the retier: pending or proxy: none yet list is now for a person: estimate keeps the tests already listed. A new JBMC or TLC test that runs by default, or a new proxy: none yet, gets an unlisted row, which the lint refuses until a person runs estimate --list FILE::NAME. A Python proof tag now carries its reason, @cost(\"proof\", \"...; proxy: Class.test\"), and the lint refuses an unconditional @unittest.skip. The Python listing now follows a TestCase base imported from another file of the repository. That lists the 27 tests of examples/tools/targets/test_runtime_upstream.py the inventory had missed, 15 of them now @cost(\"tool\"). The Rust listing went from 13 s to 0.9 s, with the same result for every test.\n\nVerified: tiers.rs, test_tier_lint.py, test_cost_inventory.py and test_test_costs.py pass by default and under the unit tier. test_runtime_upstream.py passes under unit, with 15 tests skipped. The default run (test_costs.py run) was run once: cargo test 634 passed, 0 failed, 12 ignored; Python 32 of 33 files passed. The failing file is examples/tools/test_economics.py, which was already failing before this loop (KeyError 'file' in build.app_of on examples 287 and 289-291; recorded in Progress last cycle). No job is needed: nothing that runs by default was skipped or ignored.",
+      "log_sha256": "262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc"
     }
   ],
   "logs": {
@@ -236,6 +260,12 @@
       "bytes": 1049881,
       "lines": 322,
       "gzip_bytes": 180598,
+      "url": null
+    },
+    "262124a45b82a418825fe7bbf4fea2cba2e000f7a93c9e5519cfac66c82e13cc": {
+      "bytes": 10362413,
+      "lines": 3612,
+      "gzip_bytes": 1848630,
       "url": null
     },
     "2f4e98cdfe6042b9601fa1cce0e402b8c99bf19d18bc7aaf1f767a7c67f21030": {
