@@ -34,6 +34,8 @@ llm-dlc/
                                     `sync.py perf` times it
   tools/mode.py                     which mode a checkout is in, development or runtime; test_mode.py tests it and what
                                     sync.py does in a runtime one
+  tools/release.py                  cuts a release for /prove-java-change: one commit, pinned by the digest of its tree
+                                    (runtime.md#releases); test_release.py tests it and the bootstrap that installs one
   tools/redaction_rules.py          what counts as sensitive, and the stamp that says which files have been checked
   tools/redactor.py                 the redactor and the local caches of its results, keyed on it and the rules alone
   tools/measure.py                  where a command's time goes, for `sync.py perf`
