@@ -503,6 +503,16 @@ public class Conformance {
     public static int sourceSize(Source s) { return s.size(); }
 
     public static int sourceNameLength(Source s) { return s.name().length(); }
+
+    // A loop over what an accessor answers: comparing two runs of it takes solving, so a check given no time has
+    // no verdict.
+    public static int sourceTriangle(Source s) {
+        int n = 0;
+        for (int i = 0; i < (s.size() & 7); i++) {
+            n += i;
+        }
+        return n;
+    }
 }
 
 // A top-level enum: javac switches over it through a $SwitchMap class (Conformance$1), as it does for an enum of

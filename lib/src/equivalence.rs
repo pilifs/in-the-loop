@@ -1863,10 +1863,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let budget = own_budget(&deadline, options.engine);
         let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &checker_parameters, &work)?;
         runs.push(Run::of(&result, "proof", budget));
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) || strings.is_some() || lists_taken {
+        // A given implementation and a previous version's own closure are the own checker's alone, as a String is.
+        let own_only = !given.is_empty() || options.before_classpath.is_some();
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) || strings.is_some() || lists_taken || own_only {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                if refuses_gaps(&result) || (strings.is_none() && !lists_taken) {
+                if refuses_gaps(&result) || (strings.is_none() && !lists_taken && !own_only) {
                     let _ = writeln!(out, "{}", NOT_JBMC);
+                } else if strings.is_none() && !lists_taken {
+                    let what = if given.is_empty() { "the previous version runs on a dependency closure of its own" } else { "it takes an implementation of an interface the check gives" };
+                    let _ = writeln!(out, "note: the tool's own checker gave no verdict, and JBMC is not asked: {what}, which only the own checker is given");
                 } else if strings.is_some() {
                     let _ = writeln!(out, "note: the tool's own checker gave no verdict, and JBMC is not asked: it takes a String parameter, which JBMC models its own way");
                 } else {

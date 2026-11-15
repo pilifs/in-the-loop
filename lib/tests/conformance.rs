@@ -932,6 +932,21 @@ fn a_domain_jbmc_is_not_given_is_refused_by_name() {
             assert!(o.statement.is_none() && o.problem.as_deref().is_some_and(|p| p.contains(words)), "{method} {engine:?}: {}", o.output);
         }
     }
+    // Nor is JBMC the fallback under auto where the own checker has no verdict (here, no time at all).
+    for (method, closure, words) in [
+        ("sourceTriangle", None, "JBMC is not asked: it takes an implementation of an interface the check gives, which only the own checker is given"),
+        ("mapCapacity", Some(Vec::new()), "JBMC is not asked: the previous version runs on a dependency closure of its own, which only the own checker is given"),
+    ] {
+        let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#{method}"));
+        options.before_classpath = closure;
+        options.engine = Engine::Auto;
+        options.shared_callees = false;
+        options.timeout_seconds = 0;
+        options.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("conformance").join(format!("regression-{method}-no-fallback")));
+        let o = jvmcontract::equivalence::run(&options).unwrap();
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(words), "{method}: {}", o.output);
+    }
 }
 
 /// `--engine auto --confirm` under strict and assume, on the same corpus: JBMC proves again every claim the own
