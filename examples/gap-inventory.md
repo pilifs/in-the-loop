@@ -8,13 +8,13 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 
 | Rank | Gap | Kind | Families | Blocked obligations | CVE and positive | Owner modules | Findings |
 |---|---|---|---|---|---|---|---|
-| 1 | `input-construction:two-dependency-closures` | input-construction | 3: bcrypt-input-limit, boot-method-metrics, spring-data-binding | 4 | yes | examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs | VF-027 |
+| 1 | `verifier-interface:two-dependency-closures` | verifier-interface | 3: bcrypt-input-limit, boot-method-metrics, spring-data-binding | 4 | yes | examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs | VF-027 |
 | 2 | `input-construction:receiver-of-several-constructors` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 8 | no | examples/tools/targets/runtime.py (run_verifier passes no --plan) and the claim format; lib/src/construction.rs | VF-027 |
 | 3 | `input-construction:string-parameter` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 5 | yes | lib/src/values.rs | VF-027, VF-028 |
 | 4 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 7 | yes | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
 | 5 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
 
-### 1. `input-construction:two-dependency-closures`
+### 1. `verifier-interface:two-dependency-closures`
 
 - **Blocks**: [285](285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) `preservation` (daec01225d6313a5); [286](286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/README.md) `preservation` (93e54e75b16748cd); [287](287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/README.md) `preservation` (59e6744bcaca7b2b); [306](306-spring-framework-db9a10bf-pattern-match-prefix-startswith/README.md) `preservation` (51d7f1127b4df870).
 - **Smallest reproducer**: [285](285-spring-boot-cve-2023-34055-unbounded-http-method-labels/records/refusals/preservation.json) `preservation`, observed by job `20261114-234211-example-285-preservation-phase-5-step-1`. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 285 preservation`.

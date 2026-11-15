@@ -205,7 +205,7 @@ class Vf027PacketsTest(unittest.TestCase):
         observed = {g["gap"]: g for g in workflow_handoff.inventory(rows)["gaps"] if g["observed"]}
         self.assertEqual(set(observed), {
             "input-construction:interface-parameter", "input-construction:receiver-of-several-constructors",
-            "input-construction:string-parameter", "input-construction:two-dependency-closures",
+            "input-construction:string-parameter", "verifier-interface:two-dependency-closures",
             "jdk-constructor:java.lang.StringBuilder.<init>()V"})
         self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 25)
         self.assertEqual(observed["input-construction:string-parameter"]["blockedObligations"], 5)

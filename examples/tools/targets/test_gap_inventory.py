@@ -16,12 +16,12 @@ HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent.parent
 ROOT = EXAMPLES.parent
 sys.path.insert(0, str(HERE.parent))
-from targets import sidecar, workflow_handoff  # noqa: E402
+from targets import sidecar, workflow, workflow_handoff  # noqa: E402
 
 PAGE = EXAMPLES / "gap-inventory.md"
 RANKED = [
     # (gap, distinct families, blocked obligations): observed first, then families, then obligations
-    ("input-construction:two-dependency-closures", 3, 4),
+    ("verifier-interface:two-dependency-closures", 3, 4),
     ("input-construction:receiver-of-several-constructors", 2, 8),
     ("input-construction:string-parameter", 2, 5),
     ("input-construction:interface-parameter", 1, 7),
@@ -174,6 +174,53 @@ class DatedPredictionTest(unittest.TestCase):
                 self.assertIn("2026-11-14", section)
                 self.assertIn("gap-inventory.md", section)
                 self.assertIn("(#observed-blockers)", section)
+
+
+CLOSURES = "verifier-interface:two-dependency-closures"
+CLOSURE_TASKS = [("285", "preservation"), ("286", "preservation"), ("287", "preservation"), ("306", "preservation")]
+
+
+class VerifierInterfaceKindTest(unittest.TestCase):
+    """Review item 4 of 2026-11-15: the four preservation tasks stop because jvmcontract's equivalence takes one
+    --classpath for both sides, so a pair with two dependency closures can't be given to it as stated. Nothing about
+    the inputs is missing, so the gap is no input construction: it has a kind of its own, verifier-interface, a
+    capability kind (the scaffold is sound, the task is blocked), owned by the verifier's command line."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = {e["id"]: (f, e, t) for f, e, t in rows()}
+
+    def test_the_schema_and_the_workflow_know_the_kind(self):
+        schema = json.loads((EXAMPLES / "schema/target.schema.json").read_text())
+        kind = schema["properties"]["handoff"]["properties"]["blockers"]["items"]["properties"]["kind"]
+        self.assertIn("verifier-interface", kind["enum"])
+        self.assertIn("verifier-interface", kind["description"])
+        self.assertIn("verifier-interface", workflow.CAPABILITY_KINDS)
+        self.assertIn("--classpath", workflow_handoff.KIND_MODULES["verifier-interface"])
+
+    def test_the_packets_and_the_sidecars_are_reclassified(self):
+        for n, task in CLOSURE_TASKS:
+            with self.subTest(example=n):
+                folder, example, target = self.rows[n]
+                packet = json.loads((folder / "records/refusals" / f"{task}.json").read_text())
+                self.assertEqual([d["id"] for d in packet["diagnostic"]], [CLOSURES])
+                self.assertIn("dependency closures", packet["refusal"]["text"])
+                b = next(b for b in target["handoff"]["blockers"]
+                         if b.get("packet") == f"records/refusals/{task}.json")
+                self.assertEqual((b["kind"], b["observed"]), ("verifier-interface", True))
+                self.assertRegex(b.get("note", ""), r"^\d{4}-\d{2}-\d{2}: .*input-construction")
+                self.assertEqual(workflow.task_readiness(folder, example, target, task)["summary"], "blocked")
+
+    def test_no_other_observed_gap_says_dependency_closures_and_the_inventory_groups_the_four(self):
+        value = workflow_handoff.inventory(list(self.rows.values()))
+        g = next(g for g in value["gaps"] if g["gap"] == CLOSURES)
+        self.assertEqual((g["kind"], g["class"], g["observed"]), ("verifier-interface", "capability", True))
+        self.assertEqual(sorted((o["example"], o["task"]) for o in g["obligations"]), CLOSURE_TASKS)
+        self.assertIn("--classpath", " ".join(g["modules"]))
+        for other in value["gaps"]:
+            if other["gap"] != CLOSURES:
+                self.assertNotIn("two-dependency-closures", other["gap"])
+                self.assertNotIn("dependency closures", other.get("semantics") or "")
 
 
 if __name__ == "__main__":

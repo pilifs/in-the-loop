@@ -69,6 +69,7 @@ GAP_MODULES = {
 KIND_MODULES = {
     "java-semantics": "lib/src/models.rs",
     "input-construction": "lib/src/construction.rs",
+    "verifier-interface": "lib/src/main.rs (the command line, such as equivalence's one --classpath)",
     "build-or-dependency": "examples/tools/targets/runtime.py (preparation), or the case's preparation entry",
     "replay": "examples/tools/targets/runtime.py (replay), or the case's driver",
     "source-provenance": "the case's history (target.json)",

@@ -2125,6 +2125,31 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
   - **Next**: item 4, a new gap kind for `two-dependency-closures` in `target.schema.json` (the verifier's single
     `--classpath`, not input construction), with the gap reclassified in its packets and the inventory.
+- 2026-11-15, **review item 4 done: `two-dependency-closures` has a gap kind of its own, `verifier-interface`.**
+  - **Reproducer**: `test_gap_inventory.py`'s `VerifierInterfaceKindTest` (3 tests) failed on `uyxpswmp`, with the
+    updated pins in `RANKED` and `test_workflow_refusal.py`'s inventory test (7 failures, 1 error). The schema had no
+    such kind, and the four packets and their sidecar blockers said `input-construction`.
+  - **The kind**: `target.schema.json`'s blocker `kind` gains `verifier-interface`. Its description says what it means:
+    the verifier can't be given the task as stated, because its command line has no way to say it (equivalence's one
+    `--classpath` for a pair with two dependency closures), though the inputs and the code are within what it checks.
+    - It is a capability kind (`workflow.CAPABILITY_KINDS`), since the scaffold is sound and only the proof is stopped,
+      so the four tasks stay `blocked`.
+    - Its owner in `workflow_handoff.KIND_MODULES` is `lib/src/main.rs`'s command line.
+  - **Reclassified**: the `preservation` packets of 285, 286, 287 and 306 (`records/refusals/preservation.json`). Their
+    diagnostic id is now `verifier-interface:two-dependency-closures`, and nothing else in them changed. Their sidecar
+    blockers have the new kind and a dated `note` saying what changed and why; the summary is kept. Each `example.json`
+    has a note. `build.py --index-only` regenerated the index and the page. Gap 1 keeps its rank (3 families, 4
+    obligations), its reproducer, owners and closure test. `find.py --gap verifier-interface` finds the four examples.
+  - **Unchanged**: every claim key, refusal text and stage, `expected`, and rerun check. `workflow_refusal.py` compares
+    the claim key and the refusal, not the gap id. No A8 rerun is needed: no plan, receipt or verdict changed, and
+    neither `without_jbmc.sh` nor a constructed run path.
+  - **Out of date in the brief**: [The capability-gap packet](#the-capability-gap-packet) lists eight kinds; the
+    schema now has nine.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (261, three new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: item 5. Receipts bundle the raw streams: ingestion copies the JVM and verifier stdout/stderr and
+    `controls.json` into the receipt's `records/`, hashed and capped in size, and a `not-started` controls record says
+    why (287's guard tasks).
 - Status: working
 
 ## Loop settings

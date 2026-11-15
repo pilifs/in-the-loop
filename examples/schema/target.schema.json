@@ -245,7 +245,7 @@
             "required": ["kind", "observed", "summary"],
             "additionalProperties": false,
             "properties": {
-              "kind": { "description": "The capability-gap kinds of the brief, kept apart.", "enum": ["java-semantics", "input-construction", "oracle-ambiguity", "source-provenance", "build-or-dependency", "replay", "resources", "verifier-bug"] },
+              "kind": { "description": "The capability-gap kinds of the brief, kept apart. verifier-interface: the verifier can't be given the task as stated, because its command line has no way to say it (equivalence's one --classpath for a pair with two dependency closures), though the inputs and the code are within what it checks; not an input it can't construct.", "enum": ["java-semantics", "input-construction", "verifier-interface", "oracle-ambiguity", "source-provenance", "build-or-dependency", "replay", "resources", "verifier-bug"] },
               "observed": { "description": "true: a probe or attempt produced it; false: predicted, a hypothesis until a probe reaches it.", "type": "boolean" },
               "task": { "description": "The task it blocks. Omitted: the whole target's, which applies to every task, a capability kind only to the tasks that run the verifier.", "$ref": "#/$defs/name" },
               "summary": { "description": "Kept as it was written, even when a later attempt changes the packet's state: a predicted group on examples/gap-inventory.md is named by its kind and summary.", "type": "string" },
