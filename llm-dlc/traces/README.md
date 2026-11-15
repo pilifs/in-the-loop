@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 99, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-15 00:13 UTC |
-| Prompts | 2,334 |
-| Model calls | 22,190 |
-| Tool calls | 23,182 (402 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-15 00:17 UTC |
+| Prompts | 2,335 |
+| Model calls | 22,195 |
+| Tool calls | 23,186 (402 failed) |
 | Compactions | 360 |
 | Subagents | 17 |
-| Tokens written | 22,579,451 |
-| Tokens read | 3,426,697,085 (97.8% from cache) |
-| Commits with a trace | 677 |
-| Log snapshots | 849 (1801.7 MB gzipped, 732 uploaded) |
+| Tokens written | 22,584,125 |
+| Tokens read | 3,427,343,818 (97.8% from cache) |
+| Commits with a trace | 678 |
+| Log snapshots | 850 (1801.9 MB gzipped, 732 uploaded) |
 
 ## Sessions
 
@@ -118,7 +118,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-14 16:30 UTC | [8b430aa4-bc67-4493-ac6d-36a360ce06cc](8b430aa4-bc67-4493-ac6d-36a360ce06cc/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 12 | 11 | 0 | 0 | 47,658 | 5 |
 | 2026-11-14 16:47 UTC | [c9b766bf-51e8-4b7e-b1f9-94e31b01568c](c9b766bf-51e8-4b7e-b1f9-94e31b01568c/summary.md) | ended | 2 min | `claude-sonnet-5-5` | 1 | 11 | 11 | 1 | 0 | 44,147 | 2 |
 | 2026-11-14 17:08 UTC | [278c4037-4ac0-4122-ad69-f61e45f5acb6](278c4037-4ac0-4122-ad69-f61e45f5acb6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 11 | 10 | 2 | 0 | 48,157 | 3 |
-| 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | open | 6 h 42 min | `claude-opus-5-5` | 8 | 44 | 41 | 1 | 0 | 125,677 | 42 |
+| 2026-11-14 17:31 UTC | [Feature loop run status](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | open | 6 h 46 min | `claude-opus-5-5` | 9 | 49 | 45 | 1 | 0 | 132,220 | 43 |
 | 2026-11-14 17:43 UTC | [133eee93-4f78-45c3-95c0-d6bf95c57555](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | ended | 8 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 0 | 0 | 44,057 | 1 |
 | 2026-11-14 18:07 UTC | [5e358522-4337-40e7-8791-2a6d6381d778](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | ended | 12 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 46,666 | 1 |
 | 2026-11-14 18:25 UTC | [051e402b-750c-4a9d-bdd2-24dfb39add84](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | open | 5 h 46 min | `claude-opus-5-5` | 118 | 920 | 942 | 18 | 21 | 313,393 | 37 |
@@ -226,7 +226,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8b430aa4`](8b430aa4-bc67-4493-ac6d-36a360ce06cc/summary.md) | 4,064 | 24 | 36,286 | 427,528 | 92.2% | 114 |
 | [`c9b766bf`](c9b766bf-51e8-4b7e-b1f9-94e31b01568c/summary.md) | 2,886 | 22 | 30,921 | 370,721 | 92.3% | 139 |
 | [`278c4037`](278c4037-4ac0-4122-ad69-f61e45f5acb6/summary.md) | 3,592 | 22 | 34,931 | 376,918 | 91.5% | 115 |
-| [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 28,072 | 96 | 176,435 | 3,471,383 | 95.2% | 130 |
+| [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 32,746 | 108 | 181,714 | 4,112,825 | 95.8% | 131 |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2,299 | 16 | 30,831 | 264,535 | 89.6% | 128 |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 3,923 | 24 | 33,440 | 423,840 | 92.7% | 117 |
 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 618,836 | 1,870 | 3,043,532 | 112,970,568 | 97.4% | 187 |
@@ -239,7 +239,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 20,323 | 87.7% | 99 |
+| `Bash` | 20,327 | 87.7% | 99 |
 | `Read` | 1,097 | 4.7% | 46 |
 | `Edit` | 863 | 3.7% | 46 |
 | `Write` | 516 | 2.2% | 42 |
@@ -939,6 +939,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 675 | change `ynvtsvxs` | Record verification results for 24 job(s): 105's regression passes; 23 Phase 5 proof jobs give no verdict (VF-027) | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)), [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/8498f893460a7e7b23b7a9e8722bd1b2f80c3d73a20eefb063ead0596e5a7eb9.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff.jsonl.gz)), [`1d75f339`](1d75f339-9e21-4d1a-b631-a40985de271f/summary.md) ([log](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc.jsonl.gz)) |
 | 676 | change `ssyppxlv` | example-targets Phase 5 step 3: A1, A2 and A6 pass on the real packets; a target's blockers reach every task's handoff; A7's isolated session queued its job (verification pending) | [`d34058d5`](d34058d5-39ed-426b-a9ff-d538463f39cc/summary.md) ([log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b9514ad1b9de4f45cb63985a6830d673fbc6509d6e1559c1d07b2a8660b51333.jsonl.gz)), [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/8498f893460a7e7b23b7a9e8722bd1b2f80c3d73a20eefb063ead0596e5a7eb9.jsonl.gz)), [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) ([log](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/995c861b41e801f545c27f3652b55560323ae32ddae4fbe841947844f9208c3e.jsonl.gz)), [`1d75f339`](1d75f339-9e21-4d1a-b631-a40985de271f/summary.md) ([log](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/95ae5cc1e455a53e55a21e8030db20577757fc736f18aca034bf5dcd2d5e8727.jsonl.gz)) |
 | 677 | change `qkrttquv` | example-targets: the user chooses the slice, option (b), for 307's route | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/e74882822524f625d36af551d8efe28bb1bfe066e93fd3156adfb345f204a341.jsonl.gz)) |
+| 678 | change `ryszmlnr` | example-targets: the user withdraws maven.aliyun.com, and VF-027's causes are recorded as gaps, not restated | [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) ([log](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/a27a278d86d064383ad6014661a6a4ec40511255fd28b4d0a03603069e0c4d50.jsonl.gz)) |
 
 ## Logs
 
@@ -1037,7 +1038,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8b430aa4`](8b430aa4-bc67-4493-ac6d-36a360ce06cc/summary.md) | 2 | 0 | 0.2 MB | `cd802556d392`, not uploaded |
 | [`c9b766bf`](c9b766bf-51e8-4b7e-b1f9-94e31b01568c/summary.md) | 3 | 0 | 0.2 MB | `9e309f00f26d`, not uploaded |
 | [`278c4037`](278c4037-4ac0-4122-ad69-f61e45f5acb6/summary.md) | 3 | 0 | 0.2 MB | `fe094834c187`, not uploaded |
-| [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 8 | 0 | 1.3 MB | `e74882822524`, not uploaded |
+| [`65eb1a9c`](65eb1a9c-093d-4394-b067-5a27e634424e/summary.md) | 9 | 0 | 1.5 MB | `a27a278d86d0`, not uploaded |
 | [`133eee93`](133eee93-4f78-45c3-95c0-d6bf95c57555/summary.md) | 2 | 0 | 0.2 MB | `ddbdaf3ee2fa`, not uploaded |
 | [`5e358522`](5e358522-4337-40e7-8791-2a6d6381d778/summary.md) | 2 | 0 | 0.2 MB | `0d235ba3de80`, not uploaded |
 | [`051e402b`](051e402b-750c-4a9d-bdd2-24dfb39add84/summary.md) | 37 | 0 | 105.3 MB | `995c861b41e8`, not uploaded |

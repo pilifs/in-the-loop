@@ -479,8 +479,9 @@ Settled by the user on 2026-11-08:
    build job also compares the `before` `BCrypt.class` it builds with Spring Security 5.2.0.M4's published one. P1
    (305) takes the narrower slice instead, checked against Boot 2.2.0.M6's published classes (Progress, the user's
    decisions of 2026-11-14). **No longer used by P3 since 2026-11-15**: the user chose the slice for P3
-   (Progress, the user's choice for 307's route), so no route needs this host now. The allowance stays until the
-   user says otherwise.
+   (Progress, the user's choice for 307's route), so no route needs this host now. **Withdrawn by the user on
+   2026-11-15** (Progress, the user's decisions of 2026-11-15): maven.aliyun.com is refused again, and decision 1's
+   hosts are github.com, Central, repo.spring.io, services.gradle.org and plugins.gradle.org.
 2. **Four streams, and the case packets run in Phase 5**: the streams build against Phase 0's frozen interfaces and
    fixtures, and this brief's own loop runs the original-JVM replays and the calibration after the merge (gates A3–A5).
 3. **Older JDKs installed**, so each revision is built with its own build tool and a JDK it supports: Temurin 8, 11 and
@@ -1437,8 +1438,28 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Superseded**: the upstream Gradle build decided for P3 in the user's decisions of 2026-11-14, and option (a).
     plugins-artifacts.gradle.org and maven.aliyun.com's `jcenter`, `public` and `gradle-plugin` repositories are not
     allowed.
-  - **For review**: decision 1's second extension (maven.aliyun.com for Spring's plugin repository) now has no user.
-    It stays as recorded until the user decides whether to withdraw it.
+  - **Settled the same day**: decision 1's second extension (maven.aliyun.com), left without a user by this choice,
+    is withdrawn (the next entry).
+- 2026-11-15, **the user's decisions of 2026-11-15: maven.aliyun.com withdrawn, and VF-027's five causes recorded
+  as observed gaps, not restated.** Decided with the user, on the session's recommendation, while the loop was stopped
+  after cycle 7.
+  - **maven.aliyun.com is withdrawn** (decision 1's second extension). With P3 on the slice, no route needs it, and
+    an unused download host only widens what acquisition accepts. Remove it from `runtime_maven.py`'s hosts, with a
+    reproducer that a maven.aliyun.com URL is refused, as other unlisted hosts are. 307's `sources.lock.json` may keep
+    the mirror's hashes of the four Spring plugins as a historical note of the lookup; nothing fetches them.
+  - **VF-027: record, don't restate.** The 23 native strict proof jobs that gave no verdict stop on five checker
+    causes (an interface parameter, a receiver only the adapter builds, a `String` parameter, before and after with
+    different dependency closures, and a JDK constructor refused under strict gaps). Each is recorded as an observed
+    capability gap for step 4's inventory (decision 11), with its reproducer (the job and its receipt), the semantics
+    needed, the claims affected, its owner module and its closure test, as the Deferred section asks.
+    - Don't restate a task over a wrapper, a narrower subject or a simpler signature to get a verdict, and don't
+      change a claim's `expected` conclusion. The claim stays unresolved, and the task's readiness says `blocked` with
+      its observed gap.
+    - Don't extend jvmcontract or the runtime's equivalence in this loop. That is a future library extension, out of
+      this wave.
+    - Close VF-027 as its "Closes when" allows: each example records the task as unprovable by this route, and each
+      job is resubmitted unchanged in its claim, predicting the observed refusal, so it passes as expected. That also
+      settles those jobs for A8.
 - Status: working
 
 ## Loop settings
