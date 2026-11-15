@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 5 | 5 | 49 | 46 | 52 | 30 (30 passed) | 35 h 58 min | 5,036,611 | $577.48 | $12.55 |
-| brief | 26 | 51 | 289 | 286 | 356 | 205 (160 passed, 45 failed) | 3.2 d | 12,693,414 | $1,078.32 | $3.77 |
-| verification | 1 | 49 | 0 | 0 | 161 | 0 | 9 h 17 min | 203,352 | $15.02 | n/a |
-| **all** | 32 | 105 | 338 | 332 | 569 | 235 (190 passed, 45 failed) | 5.1 d | 17,933,377 | $1,670.82 | $5.03 |
+| brief | 27 | 53 | 300 | 297 | 368 | 205 (160 passed, 45 failed) | 3.3 d | 13,072,341 | $1,104.01 | $3.72 |
+| verification | 1 | 49 | 0 | 0 | 162 | 0 | 9 h 17 min | 203,352 | $12.52 | n/a |
+| **all** | 33 | 107 | 349 | 343 | 582 | 235 (190 passed, 45 failed) | 5.2 d | 18,312,304 | $1,694.01 | $4.94 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -138,10 +138,11 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | &nbsp;&nbsp;stream `example-targets-runtime` | 2 | 10 | 10 | 12 | 5 (4 passed, 1 failed) | `claude-opus-5-5` | 2026-11-14 | 2 h 49 min | 2 h 16 min | 13 min | 494,397 | $34.99 | $2.75 | $2.92 |
 | &nbsp;&nbsp;stream `example-targets-workflow` | 1 | 6 | 6 | 7 | 0 | `claude-opus-5-5` | 2026-11-14 | 70 min | 63 min | 10 min | 266,029 | $18.48 | $2.78 | $2.64 |
 | &nbsp;&nbsp;*with its streams* | 10 | 66 | 66 | 88 | 78 (52 passed, 26 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 14 h 25 min | 12 h 53 min | 11 min | 2,462,854 | $210.14 | $2.75 | $2.39 |
+| **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 
 ## Verification loop
 
-49 runs from 2026-11-03 to 11-15, on `claude-sonnet-5-5`: 9 h 17 min active, 161 commits, 203,352 tokens written, $15.02 ($0.31 a run). Of the 280 verification jobs on record, 235 are tied to the loop cycle that submitted them.
+49 runs from 2026-11-03 to 11-15, on `claude-sonnet-5-5`: 9 h 17 min active, 162 commits, 203,352 tokens written, $12.52 ($0.26 a run). Of the 280 verification jobs on record, 235 are tied to the loop cycle that submitted them.
 
 ## Runs
 
@@ -206,6 +207,8 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-14 22:29 | [`2026-11-14-222909-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-222909-example-targets.md) | brief | `claude-opus-5-5` | 7 | 13 | 1 h 45 min | 98 min | $26.20 | brief changed (stopped) | record |
 | 2026-11-15 00:18 | [`2026-11-15-001859-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-001859-example-targets.md) | brief | `claude-opus-5-5` | 8 | 15 | 1 h 57 min | 1 h 49 min | $28.53 | waiting on jobs | record |
 | 2026-11-15 04:13 | [`2026-11-15-041307-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-041307-example-targets.md) | brief | `claude-opus-5-5` | 10 | 13 | 1 h 50 min | 98 min | $27.82 | work done | record |
+| 2026-11-15 12:23 | [`2026-11-15-122338-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-122338-test-cost.md) | brief | `claude-opus-5-5` | 2 | 2 | 17 min | 16 min | $4.46 | interrupted | record |
+| 2026-11-15 13:01 | [`2026-11-15-130104-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-130104-test-cost.md) | brief | `claude-opus-5-5` | 9 | 10 | 2 h 12 min | 99 min | $21.23 | work done | record |
 
 ## Reading these numbers
 

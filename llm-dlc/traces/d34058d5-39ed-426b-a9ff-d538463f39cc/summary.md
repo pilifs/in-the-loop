@@ -956,6 +956,14 @@ Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the co
 
 bca79831  other-home-dir  /h…u: A made-up path, /home/u/.local/bin/tlc, in lib/tools/test_test_costs.py's test of test_costs.tool_name (a TLC launcher script run by bash); not a real home directory. The test now uses /opt/tools/bin/tlc.
 
+### feature-loop.sh: moonshots, and templated moonshots that take one item of a list per cycle, starting with prove-examples (285-300)
+
+change `uklpttstmurw` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+
+The one-line named instructions of the repo's first days (features, tla, spring, relational) are now called moonshots, apart from briefs and their streams. A templated moonshot puts the next item of its list into its template each cycle: prove-examples gives examples 285 to 300 in turn to "Formally prove example {} as elegantly and efficiently as possible", in a session of its own fixed in the script (a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31) on claude-fable-5-2 at high effort, which the first run creates and later runs resume. An item is done once an earlier run's record in llm-dlc/loop-summaries lists a commit for it ('- cycle N, item X, ...'), so a run starts at the first item without one, runs at most as many cycles as items are left, and ends when the list does. pricing.json gains claude-fable-5-2 at its list price (8/40 per MTok, cache read 0.20).
+
+Verified with a stub claude in a throwaway jj repo: the first turn created the session with --session-id on claude-fable-5-2 at high effort and every later turn resumed it; a 3-cycle run took 285-287; a run whose cycle made no commit stopped and left 288; the next run took 288-289; with every item recorded the loop exits 0 without calling claude.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz) has every step in between: reasoning, tool calls and their results.
