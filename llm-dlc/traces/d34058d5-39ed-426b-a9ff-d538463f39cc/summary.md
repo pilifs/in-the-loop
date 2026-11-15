@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (ended) |
+| Session | `d34058d5-39ed-426b-a9ff-d538463f39cc` (open) |
 | When | 2026-11-14 15:11 UTC to 2026-11-15 14:47 UTC (1416 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.321 |
@@ -939,6 +939,14 @@ Phase 2 step 7 of llm-dlc/loops/test-cost.md. The lint checks four things agains
 Joining the retier: pending or proxy: none yet list is now for a person: estimate keeps the tests already listed. A new JBMC or TLC test that runs by default, or a new proxy: none yet, gets an unlisted row, which the lint refuses until a person runs estimate --list FILE::NAME. A Python proof tag now carries its reason, @cost("proof", "...; proxy: Class.test"), and the lint refuses an unconditional @unittest.skip. The Python listing now follows a TestCase base imported from another file of the repository. That lists the 27 tests of examples/tools/targets/test_runtime_upstream.py the inventory had missed, 15 of them now @cost("tool"). The Rust listing went from 13 s to 0.9 s, with the same result for every test.
 
 Verified: tiers.rs, test_tier_lint.py, test_cost_inventory.py and test_test_costs.py pass by default and under the unit tier. test_runtime_upstream.py passes under unit, with 15 tests skipped. The default run (test_costs.py run) was run once: cargo test 634 passed, 0 failed, 12 ignored; Python 32 of 33 files passed. The failing file is examples/tools/test_economics.py, which was already failing before this loop (KeyError 'file' in build.app_of on examples 287 and 289-291; recorded in Progress last cycle). No job is needed: nothing that runs by default was skipped or ignored.
+
+### pricing.json back to its 2026-10-31 prices: a price change can't be carried to the stream sessions' metrics from here
+
+change `ysutlusoqrmm` · [log `065c5d17cede`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/065c5d17cede5edea550a18c24254e5deec92378613712cafec1a42be9c41688.jsonl.gz)
+
+The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and corrected claude-sonnet-5-5's cache read to $0.10. The commit's sync recomputed metrics.json for every session whose transcript is in this checkout's Claude project folder, but 17 sessions of the merged streams (alignment, cleanup-native, application-core-objects, example-targets-workflow and others) keep their transcripts in their own workspaces' folders. sync can't reach those, so their metrics.json no longer matched and check reported 17 errors. This restores the old prices, and the sessions this sync can reach are recomputed back to them. The price change waits on a person's decision on how to recompute the 17 (see the session summary). The app_of fix and the brief's updates stand.
+
+Verified: sync.py check reports 0 errors.
 
 ## Conversation
 

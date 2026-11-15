@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T12:23:38.409Z",
-  "ended": "2026-11-15T15:33:25.016Z",
-  "duration_seconds": 11387,
+  "ended": "2026-11-15T15:35:56.883Z",
+  "duration_seconds": 11538,
   "stats": {
     "turns": 60,
-    "api_calls": 420,
-    "tool_calls": 420,
-    "tool_errors": 8,
+    "api_calls": 435,
+    "tool_calls": 435,
+    "tool_errors": 9,
     "compactions": 10,
     "peak_context_tokens": 190640,
     "usage": {
-      "input_tokens": 854,
-      "output_tokens": 385216,
-      "cache_read_input_tokens": 42509096,
-      "cache_creation_input_tokens": 1307181
+      "input_tokens": 884,
+      "output_tokens": 392863,
+      "cache_read_input_tokens": 44365240,
+      "cache_creation_input_tokens": 1320555
     }
   },
   "tools": {
-    "Bash": 375,
+    "Bash": 390,
     "Read": 13,
     "Edit": 12,
     "Write": 12,
@@ -196,24 +196,24 @@
     {
       "index": 10,
       "started": "2026-11-15T15:12:39.254Z",
-      "ended": "2026-11-15T15:33:25.016Z",
+      "ended": "2026-11-15T15:35:56.883Z",
       "turns": 5,
-      "api_calls": 15,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 32,
-        "output_tokens": 10163,
-        "cache_read_input_tokens": 1262148,
-        "cache_creation_input_tokens": 103952
+        "input_tokens": 62,
+        "output_tokens": 17810,
+        "cache_read_input_tokens": 3118292,
+        "cache_creation_input_tokens": 117326
       },
-      "peak_context_tokens": 117138
+      "peak_context_tokens": 130512
     }
   ],
   "log": {
-    "sha256": "38d6ccf9453737d9261a01495fc7ef4327bc0b9a8191a0dccd9575fa29da988b",
-    "bytes": 12799419,
-    "lines": 4193,
-    "gzip_bytes": 2464096,
-    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/38d6ccf9453737d9261a01495fc7ef4327bc0b9a8191a0dccd9575fa29da988b.jsonl.gz"
+    "sha256": "d1c5098f7611ad93375e4494084999dd2b963973fd41176d727b6459314b2299",
+    "bytes": 13064472,
+    "lines": 4314,
+    "gzip_bytes": 2499411,
+    "path": "llm-dlc/traces/72d38e75-aae0-402e-9b8a-881beec53824/logs/d1c5098f7611ad93375e4494084999dd2b963973fd41176d727b6459314b2299.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -320,6 +320,14 @@
       "summary": "Fixes after the test-cost loop: app_of for real-world examples without a file, Fable 5.2 pricing, the brief's stale passages",
       "body": "examples/tools/build.py's app_of read example['subject']['file'], which the schema requires only of constructed examples. The real-world Spring Security examples 287 and 289-291 name only a system and symbol, so economics.recorded() raised KeyError 'file' and examples/tools/test_economics.py failed by default (4 errors), as it had since before the test-cost loop. app_of now returns None when the example names no file, as its docstring already said for an example on no known app; every caller handles None.\n\nllm-dlc/pricing.json gains claude-fable-5-2 at the API list price, $8 input and $40 output per million tokens, $0.20 cache reads, and cache writes at the file's 1.25x and 2x input ($10 and $16), so session 0c1ceb11's 31 Fable 5.2 calls stop counting as $0. claude-sonnet-5-5's cache read is corrected from $0.20 to its list price of $0.10. as_of moves to 2026-11-15. Every metrics.json is recomputed on the next sync.\n\nllm-dlc/loops/test-cost.md, outside Progress: 'Where it starts from' now says its counts were the loop's start and gives the end's (646 Rust, 833 Python in 31 files); decision 4's inline exception reads as the guidance does, a past run of the test alone under a minute; decision 6's proxies go to the next test-cost loop instead of a Phase 4 that no longer exists.\n\nVerified: test_economics.py passes (11 tests), and so do test_alignment.py and test_metrics.py, the other callers and readers. The default Python run (test_costs.py run --only python) passed 32 of 32 files, and test_costs.py lint agrees. No Rust changed, so cargo test was not rerun.",
       "log_sha256": "38d6ccf9453737d9261a01495fc7ef4327bc0b9a8191a0dccd9575fa29da988b"
+    },
+    {
+      "change_id": "ysutlusoqrmmzrlsmrxxyvtwrqpllutn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "pricing.json back to its 2026-10-31 prices: a price change can't be carried to the stream sessions' metrics from here",
+      "body": "The previous commit added claude-fable-5-2 ($8/$40, cache read $0.20) and corrected claude-sonnet-5-5's cache read to $0.10. The commit's sync recomputed metrics.json for every session whose transcript is in this checkout's Claude project folder, but 17 sessions of the merged streams (alignment, cleanup-native, application-core-objects, example-targets-workflow and others) keep their transcripts in their own workspaces' folders. sync can't reach those, so their metrics.json no longer matched and check reported 17 errors. This restores the old prices, and the sessions this sync can reach are recomputed back to them. The price change waits on a person's decision on how to recompute the 17 (see the session summary). The app_of fix and the brief's updates stand.\n\nVerified: sync.py check reports 0 errors.",
+      "log_sha256": "d1c5098f7611ad93375e4494084999dd2b963973fd41176d727b6459314b2299"
     }
   ],
   "logs": {
@@ -399,6 +407,12 @@
       "bytes": 2291662,
       "lines": 744,
       "gzip_bytes": 404101,
+      "url": null
+    },
+    "d1c5098f7611ad93375e4494084999dd2b963973fd41176d727b6459314b2299": {
+      "bytes": 13064472,
+      "lines": 4314,
+      "gzip_bytes": 2499411,
       "url": null
     }
   },
