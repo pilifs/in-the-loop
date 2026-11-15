@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T12:07:05.914Z",
-  "duration_seconds": 63705,
+  "ended": "2026-11-15T12:13:32.145Z",
+  "duration_seconds": 64092,
   "stats": {
-    "turns": 221,
-    "api_calls": 1770,
-    "tool_calls": 1812,
+    "turns": 222,
+    "api_calls": 1789,
+    "tool_calls": 1831,
     "tool_errors": 36,
     "compactions": 40,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3584,
-      "output_tokens": 1129933,
-      "cache_read_input_tokens": 232509172,
-      "cache_creation_input_tokens": 6298566
+      "input_tokens": 3626,
+      "output_tokens": 1140861,
+      "cache_read_input_tokens": 234211875,
+      "cache_creation_input_tokens": 6332065
     }
   },
   "tools": {
-    "Bash": 1548,
-    "Read": 134,
+    "Bash": 1565,
+    "Read": 136,
     "Edit": 98,
     "Write": 10,
     "ToolSearch": 7,
@@ -637,24 +637,24 @@
     {
       "index": 40,
       "started": "2026-11-15T06:02:02.125Z",
-      "ended": "2026-11-15T12:07:05.914Z",
-      "turns": 7,
-      "api_calls": 17,
+      "ended": "2026-11-15T12:13:32.145Z",
+      "turns": 8,
+      "api_calls": 36,
       "usage": {
-        "input_tokens": 36,
-        "output_tokens": 8892,
-        "cache_read_input_tokens": 980401,
-        "cache_creation_input_tokens": 93608
+        "input_tokens": 78,
+        "output_tokens": 19820,
+        "cache_read_input_tokens": 2683104,
+        "cache_creation_input_tokens": 127107
       },
-      "peak_context_tokens": 75405
+      "peak_context_tokens": 109650
     }
   ],
   "log": {
-    "sha256": "7530498319e08ddce2452f5c77166377d83428b8d254252424029a5e592ff03e",
-    "bytes": 59763815,
-    "lines": 18226,
-    "gzip_bytes": 12937063,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/7530498319e08ddce2452f5c77166377d83428b8d254252424029a5e592ff03e.jsonl.gz"
+    "sha256": "b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede",
+    "bytes": 60114265,
+    "lines": 18374,
+    "gzip_bytes": 12986802,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede.jsonl.gz"
   },
   "subagents": [
     {
@@ -797,7 +797,7 @@
     {
       "change_id": "msotkvrvkvkttvktwsmsnknzwykystxl",
       "commit_id": "52c54bd6129e1b818354e9661bf1c8d9c65ca4f9",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results: example-targets runtime R2 constructed-mutant route passes",
       "body": "Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e2663be, vm-1) passed in 6.2 s: the published-artifact route prepared spring-core 5.3.19's simpleMatch mutant, and both revisions ran on JDK 21 and 25 with the expected oracle problems. 54 outputs applied under runtime-mutant/; three 1.4 MiB spring-core JARs are over jj's snapshot limit and left out of the commit (VF-025, open).",
       "log_sha256": "89f56b781a1443d0ca3e6b9953e5c66aae09cf17820a37f7434ccad376039d0b"
@@ -805,7 +805,7 @@
     {
       "change_id": "nuzqkkvuqqyyrlrpypoymqnmzktskuxy",
       "commit_id": "4a2e30b4a165ffcddcc34969b45cde697e681caa",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets reconcile: streams' traces recorded and logs copied; the merge blocked on an allow-list conflict only the user may resolve",
       "body": "Reconcile steps 1-3 of llm-dlc/loops/example-targets.md. All four streams finished done (runtime qrsyzzwu, negative zuoknpln, positive uzxpwmku, workflow nqztmpwy), and no stream or integration scope was active, nor any job pending. Each stream's last turns are recorded on its own branch (Record session traces: xvvuxmqs, mqnnxzkt, kxqozyus, svrtnrlo; negative's also carries the 8 allow-list proposals its last turn left uncommitted), and the 35 gitignored logs not yet in the default workspace were copied in. Those commits ran the workspaces' old sync.py, so their checks reported only the cross-workspace 'session ... has no manifest' errors that xyootzvm ends at the merge.\n\nStep 4, the merge (jj new of the default line and the four branches, then sync.py regenerate), leaves exactly one conflict: llm-dlc/allowlist.json, where positive added 15 proposals and negative 8 to the same base of 23. Their union is 46 entries with no id differing between the sides, but this loop may not write that file, and taking one side with jj restore was refused as undermining oversight. So the merge was backed out uncommitted, and the brief's status is blocked on the user: resolve that one file in the merge, or allow the loop to.\n\nBefore backing out, example-targets-integration.sh ran on the merged tree: everything passes (targets suite 181, test_build.py 190, test_pipeline.py 29, every sidecar's plan, contract rows A0-A4, A6, A7) except contract A5. There all four fixture proof tasks are unresolved, because the claims name the parameter 'code' while the fixture's classes record no parameter names (arg0): VF-024's first point, reached now that the whole route runs. It waits for runtime's interface request to compile Phase 0's fixture recipe with -parameters, Phase 5 step 1's first item. The brief's reconcile step 4 doesn't anticipate a conflict in a file only a person may write; otherwise the brief is current.",
       "log_sha256": "a6cd0591f3c8d9e7701a801f7e526b7496adfb74f8480f65651c807a44cbcc7f"
@@ -813,7 +813,7 @@
     {
       "change_id": "kxqozyuslzvrkkzzpyznntksrwmostwl",
       "commit_id": "89fc1ef6eacf1fa27f5bf049cb38fba2f42fe19d",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record session traces",
       "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).",
       "log_sha256": "e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83"
@@ -821,7 +821,7 @@
     {
       "change_id": "xvvuxmqsstptmlwwowmomuulwksuvkwn",
       "commit_id": "f8e6e30455e0b2ff71ff5f26108cb50074c5cd41",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record session traces",
       "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.",
       "log_sha256": "e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83"
@@ -829,7 +829,7 @@
     {
       "change_id": "svrtnrloymnpursvnuqmumvtovvmuwol",
       "commit_id": "ef6d30dd0ce4589b10b56ee19e743a6f9fb38960",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record session traces",
       "body": "The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.",
       "log_sha256": "e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83"
@@ -837,7 +837,7 @@
     {
       "change_id": "ptyqvxxlyvskrmvxvoprznryxqvttzpz",
       "commit_id": "fb401a6a996d1bac8043fc34a853ed443903f2ca",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets reconcile step 4: streams merged, allow-list conflict resolved",
       "body": "",
       "log_sha256": "e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83"
@@ -845,7 +845,7 @@
     {
       "change_id": "lpkzkttsonksrmypouyzozmswzvxrkxw",
       "commit_id": "0f774d2cfa6197105ce3e2dc875787f25503cc49",
-      "immutable": false,
+      "immutable": true,
       "summary": "Allow list: Filip Stankovic approved 043a3764, 1061814e, 12d09d6e, 155db487, 262bb771, 2f3c997d, 36f507b2, 385129c1, 3e9d926e, 541a7555, 54c32c6b, 5609d615, 587e045b, 7400292c, 748b6704, 7789bb63, 7ff05194, 815d7484, 981d7f81, dd2fcadc, e798f19e, f054d7e5, fcbc71d7",
       "body": "Filip Stankovic approved 23 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n043a3764  long-token  Ex4…nO (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\n1061814e  long-token  8NJ…eS (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n12d09d6e  long-token  fVH…dq (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n155db487  long-token  FGW…IG (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n262bb771  long-token  Ex4…dW (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\n2f3c997d  long-token  G6a…r6 (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n36f507b2  long-token  Ex4…FG (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\n385129c1  long-token  WAp…gC (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n3e9d926e  long-token  6Xm…nq (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n541a7555  long-token  Ex4…se (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\n54c32c6b  long-token  hSL…vG (50 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n5609d615  long-token  cfc…18 (40 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n587e045b  long-token  Ex4…0a (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\n7400292c  long-token  sYD…ti (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n748b6704  long-token  Lgf…fS (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n7789bb63  long-token  Ex4…jG (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\n7ff05194  long-token  mFD…LK (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n815d7484  long-token  Ro0…cm (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\n981d7f81  long-token  Ex4…ci (53 chars): A bcrypt test hash (cost 04, salt spelled Ex4mpleSalt...) of a public test string (the upstream test's digits, 'password', U+00E9 or U+1D11E runs), made with pyca bcrypt for example 287's probes and committed in examples/287-*/controls/probes.json; it protects nothing\ndd2fcadc  long-token  iX5…xq (44 chars): Public test vector: the stored bcrypt hash of the digits 1-71 from Spring Security's BCryptPasswordEncoderTests at commit c1aa99fd (matchesWhenPasswordOverMaxLengthThenAllowToMatch), quoted from the upstream diff and checked with pyca bcrypt; not a credential.\ne798f19e  long-token  H8V…jK (43 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\nf054d7e5  long-token  rCV…tC (52 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.\nfcbc71d7  long-token  Nlg…a2 (53 chars): A bcrypt hash from the public test_vectors table of Spring Security's BCryptTests.java (crypto/src/test/.../bcrypt/BCryptTests.java, blob dc242a49 at commits fb39d9c2 and fe9e4549), printed while choosing example 307's fixed salt: published upstream test data, not a credential.",
       "log_sha256": "e84ebe4193eab7dca898fab64b68424a08c5a30969db635402c92eb1d3cf0c83"
@@ -853,7 +853,7 @@
     {
       "change_id": "zvlkvmyxvvtktpvkmxutxktyzwuuvxor",
       "commit_id": "95de04638489a119f76fd340a71039683dd8a995",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets reconcile steps 5-6: the four streams' Progress folded into the brief, their workspaces forgotten",
       "body": "Folds the runtime, negative, positive and workflow streams' Progress into llm-dlc/loops/example-targets.md, as its reconcile step 5 asks. No stream had a timebox deferral. The one item deferred for the user, P1's and P3's upstream build route, was answered by decision 1's extension. Eleven groups of interface requests waited for the merge and are now Phase 5 step 1's ordered work list, grouped by file owner. They are: the fixture recipe's -parameters (contract A5's fix), the widened download hosts in runtime_maven.py (then P3), the six packets' mutants rewritten as W1 mutant revisions, the router regenerated for 285-300 and 305-307, readiness in the index, companion links, PreparedTarget's workdir and blocker fields, the result schema's existingTests for target receipts, a driver's invocation convention, smaller requests, and VF-025's .gitignore. Also recorded: the case packets' state at the merge (all source-locked, none prepared by a job), the runtime stream's five jobs, and the streams' for-review findings.\n\nEach request was checked against the merged code: HOSTS still lists only Central and github.com, READINESS_IN_INDEX is False, build_fixtures.py has no JAVAC_FLAGS, examples/index.json has none of 285-307, all six packet sidecars declare their mutant as a controls entry, and result.schema.json still requires existingTests. sync.py check reports 0 errors at the merge, so the streams' cross-workspace 'has no manifest' errors are gone. Step 6 forgot the five workspaces (example-targets-runtime, -negative, -positive, -workflow, -integration); their directories under ../in-the-loop-example-targets-* are left for the user to delete. The brief's status is back to working.",
       "log_sha256": "4ee2c3259b8f9bff8a61d56689a143c35dc81eaf6186a088c97c80c7b81e95ca"
@@ -861,7 +861,7 @@
     {
       "change_id": "nrtqqxqxzurnmpznpvnyvtsxnwxqmzxq",
       "commit_id": "ec2f27d488729a38390598b6b3e61e8956de1ae2",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: the fixture recipe compiles with -parameters, so contract A5 passes",
       "body": "Phase 0's fixture recipe (examples/tools/targets/fixtures/build_fixtures.py) compiled the Gate classes without parameter names, so the verifier called the claims' `code` arg0, and every fixture proof task of contract A5 came back unresolved on the merged streams (VF-024's first point). The recipe now has JAVAC_FLAGS = (\"-parameters\",), which runtime's fixture route already read, and records the flags in its manifest. Runtime's toolchain record lists the recipe's flags too. make_records.py remade records/: every fixture JAR's sha256 changed, but the controls' outputs, the oracle's verdicts on JDK 21 and 25, and the gap scan's three regex calls did not.\n\nThree runtime tests pinned the old bytes and were updated: the verifier's scope names `code` from MethodParameters, the flags test builds its no-names variant with the flags removed and now checks that variant's arg0 scope, and the published mutant route's recompile carries -parameters from its base classes and still gives build_fixtures.py's mutant bytes. runtime_calibrate.py's docstring and the fixtures README are updated; the README also lists claims/.",
       "log_sha256": "9b908c95f7ad604a579249c0aa5cc6020dd54cdb22059a5ea451721294ce0886"
@@ -869,7 +869,7 @@
     {
       "change_id": "owpostsymrqnqtpprkmsskvmntowutkr",
       "commit_id": "ae5f70ca7491a4d5fe9642e103cb0469d7597f4b",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: the download hosts widened to repo.spring.io and services/plugins.gradle.org; P3's build plugin needs credentials",
       "body": "runtime_maven.HOSTS now holds decision 1's extended hosts: Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. A new test, which failed first, checks that they are allowed and that the rest stays refused: other hosts and look-alikes, the Gradle CDNs as hosts or redirects, http, a user name or port, and a SNAPSHOT on repo.spring.io. Refusal messages name the five hosts.\n\nThe Gradle route itself was not built. HEAD requests showed that P3's (307) buildscript plugin, spring-build-conventions 0.0.23.RELEASE, is on no anonymous repository: repo.spring.io answers 401, and plugins.gradle.org redirects to Maven Central, which has 404. Its upstream build would stop at the buildscript, so it was not queued. Runtime's Gradle blocker now says that the route is missing, not that the policy forbids it; a distribution on another host is still outside the policy (new test). 307's sidecar blocker, handoff, notes and README record this and name the narrower slice (each commit's BCrypt.java compiled alone) as the alternative. Whether to use repo.spring.io credentials or that slice is left for review. 305's wording about decision 1 is updated.\n\nBrief out of date: Progress's request 2 said 'Runtime's Gradle toolchain blocker goes with it. Then P3 (307) by its pinned upstream build, as a job'; neither happened, for the reason above. Decision 1's extension also assumed that P3's build becomes possible, which it doesn't without credentials.",
       "log_sha256": "2c75b4c530b6cf5881a172ec54dcca0416f663ebeb4e50f34ec0e981d22aaf48"
@@ -877,7 +877,7 @@
     {
       "change_id": "lllrnmuoqwvszoyvltqttvruprmwmrto",
       "commit_id": "ab3db300a32aff59a43169da7ed205069c3734d0",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: the six packets' mutation controls become W1 mutant revisions, with tasks of their own",
       "body": "Each deep packet (285, 286, 287, 305, 306, 307) declared its constructed mutant only as a controls entry of kind mutation on its base revision, which no task prepared. Each patch is now workflow W1's revision mutant (base fixed-release, after or release-after; the patch's sha256 unchanged; the mutation described in words), the after of a new mutation pair. Each packet gains a mutant-replay task (the concrete controls on that pair: base holds, mutant fails) and a claim task expected refuted: mutant-security, fixed-security's claim on the mutant (285-287), or mutant-preservation, preservation's claim over the mutation pair (305-307; 306's is gate A4's nearby mutation). The mutation control now names the revision mutant, as the fixture's does. Side effect: the patch is no longer among fixed-security's or replay's controls, so those plans' input keys changed (and replay's claim key for 305-307); no packet has a receipt, so nothing went stale. Runtime's slice runtime_simplematch/mutation.json moved into its target.json unchanged, and runtime_slice.py no longer merges it. The READMEs, example.json notes and the slice README say so.",
       "log_sha256": "056a469b491442d09799e2ec45d986c3ecedb23ebdd050523bdefbea95424cea"
@@ -885,7 +885,7 @@
     {
       "change_id": "vrzlzssrqxqvokzzmrwoqkrvnqrnuyoy",
       "commit_id": "3a536700d311e065d42db8e3a461a6499acb2600",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: the router regenerated, so index.json and examples/README.md list 285-300 and 305-307",
       "body": "Request 4 of the merge's interface requests (llm-dlc/loops/example-targets.md, Progress). The streams couldn't write the coordinator's generated files, so examples/index.json and examples/README.md had none of the 19 new folders, and find.py couldn't reach the catalog or the positive packets. A new test, examples/tools/targets/test_packets.py's RouterTest, failed for those 19 folders. It checks that the committed router lists every numbered folder and gives each sidecar example a target projection. python3 examples/tools/build.py --index-only regenerated both files. The 19 folders gained rows, tag links and index entries. Example 105's entry gained its migration notes and its target projection (role calibration), and its historical verdictLabel is unchanged. No other entry changed.\n\nVerified: llm-dlc/tools/example-targets-integration.sh exits 0 (contract 16, targets suite 188, test_build.py 190, test_pipeline.py 29, build.py --plan). find.py --family spring-data-binding finds 286, 288, 299 and 306, and --role positive finds 305-307. --readiness still matches nothing until request 5 sets READINESS_IN_INDEX. Two tag issues are noted for request 6. The external-target tag misses 105 and 305-307. Example 306's request-binding tag describes handler parameters, so data-binding fits better.",
       "log_sha256": "ef6b8e92dfcb6e3761f832779bc45db878d357ad34d49f5e17e521bfcae76e9a"
@@ -893,7 +893,7 @@
     {
       "change_id": "ymrtzmlsytuyxvryqulwpynwxwmwqwvp",
       "commit_id": "61808c509a4c379d2eff288538f8a6b0d78c0c16",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: the index carries each target's readiness, so find.py --readiness reaches 288-300 (catalogued) and the packets (partial)",
       "body": "Request 5 of the brief's merge-time interface requests. workflow_discovery.READINESS_IN_INDEX is now True. Phase 0's test_route.py IndexAndFindTest expects the stub sidecar's readiness to be 'catalogued', and that find.py --readiness catalogued finds it. test_workflow.py's two tests that assumed the flag was off now treat projected readiness as the default and keep the hold as the flag-off case. build.py --index-only regenerated examples/index.json; only each target's readiness changed, and the 'unsupported' hold line went.",
       "log_sha256": "969a95ecc5fd7ffc550da15ab43408e5e2b24cb016e5c2b40d524554e472a267"
@@ -901,7 +901,7 @@
     {
       "change_id": "krnmkrsmnqprxnqunsrztqzssnxvmzzn",
       "commit_id": "7cd5348a9298bb725253aaf07d67117e54acfcca",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: 305-307 name 285-287 as companions, and the sidecar examples carry external-target and their family's domain tag",
       "body": "Request 6 of Phase 5 step 1 in llm-dlc/loops/example-targets.md (the positive stream's request 3). Each family's CVE packet already named its positive, but the positives 305, 306 and 307 named no companion. Their target.json identities now name 285, 286 and 287, and each matching text gives that number. Tags: 105 and 305-307 gain external-target, which until now covered only 285-300 though all four have a sidecar. 305 gains metrics and 307 password-hashing, their families' domain tags. 306's request-binding, a defect tag for handler parameters that can't bind, becomes data-binding, the domain of DataBinder's field checks, which call PatternMatchUtils. Each example.json has a note, and build.py --index-only regenerated examples/README.md and index.json.",
       "log_sha256": "d6b1e0f6099f160c26d02842600e56921a17e69111362bad6939acf71ff50511"
@@ -909,7 +909,7 @@
     {
       "change_id": "ptnszuvlzszxwulpsmoskrsnvyyqqmzl",
       "commit_id": "8d29c6f7fdd90886884899f56cd8a2404ad9b64a",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: PreparedTarget names its work directory and its blocker, so the controls and the verifier stop relying on route.py's layout",
       "body": "Request 7 of the example-targets brief's Phase 5 step 1. interfaces.py appends two optional fields to PreparedTarget, workdir and blocker, both None by default, an additive change. runtime.prepare() now records the preparation's absolute directory in workdir, on every preparation made once that directory exists, failed ones included, and writes it to prepared.json. A failed preparation's blocker (stage, command, diagnostic, needs, next) moves out of source, which claims are bound to, into its own field, and runtime_slice.py reads it there. run_controls and run_verifier find a preparation by its workdir, still only if its prepared.json matches; one without a directory is a not-started record, never run.\n\nReproducer: three new tests failed first: the frozen field order in test_interfaces.py, a preparation that names its directory outside source, and controls run from a preparation outside <attempt>/prepare/<revision>, which runtime used to refuse. The existing tests that read source[\"blocker\"] now read the field. The cache-hit test compares two preparations without their directories, which differ by design. example-targets-integration.sh exits 0: the contract (16), the targets suite (195), test_build.py (190), test_pipeline.py (29) and build.py --plan.\n\nThe brief is out of date on one point. Its request 7 says workdir would let ingestion stop deriving the preparation from route.py's layout, and bundle raw stdout and stderr. In fact ingestion never read a preparation's directory. The raw streams are relative to the attempt's directory, which workdir doesn't give, so ingestion still bundles none. That goes on the for-review list (Progress).",
       "log_sha256": "1221486e5ef2212ba36e234399358a655c9c33ccbc63264ae22cbe40f64bad5a"
@@ -917,7 +917,7 @@
     {
       "change_id": "vukqmmvomypqksswtkkluykxxzymoswz",
       "commit_id": "2dd8cc394e92a86db79b30c686869e5e3cebbbb8",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: a target receipt's existingTests is null, not a test run that didn't pass",
       "body": "Request 8 of the interface requests folded at the merge. result.schema.json lets existingTests, before and after be null, and only in a result whose claim has a target (a top-level if/then keeps them objects otherwise, so constructed and format-1 results are unchanged). claim.target.revisions' description now says a fixture revision's identity is its source directory's git tree id and a mutant's is its base's. workflow_ingest.publish writes existingTests: null instead of the 'none: ...' placeholder with passed: false, and before: null for a task on one revision instead of repeating after.",
       "log_sha256": "1de356b88c17c3c9f73b02ef570f7bf5117ac4c8e3f417f562f63041b90a3dc0"
@@ -925,7 +925,7 @@
     {
       "change_id": "kmqzoyplqrxkmvrsvzszxnunrsrpuzqn",
       "commit_id": "5861db9702dca5afd74b26b06435a7eeafee75d9",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: one oracle convention, so the runner can drive the seven packets' controls and ingestion reads them right",
       "body": "Request 9 of llm-dlc/loops/example-targets.md's Phase 5 step 1. The merged runner (runtime.run_controls) took a driver's inputs from the oracle's PROBES list and expected one echoed 'input' line per argument; ingestion read each revision with check(lines) as (input, problem) pairs. None of the seven packets (105, 285-287, 305-307) followed that: they define argv() and check() with other signatures, their drivers print an identity line or take two arguments per probe, the preparation copied oracle.py without the probes file it reads, and 285-287's check() returns a dict that ingestion read as character pairs, so a fixed release would have counted as violating. 105's PROBES was a Path, which would have raised a TypeError instead of a refusal.\n\nThe convention, in runtime.py's docstring: an oracle's driver_args() gives the driver's whole argument vector (else PROBES, the fixture's form, unchanged), every JSON line is kept and the oracle matches lines to probes itself; ingestion calls problems(lines) (else check), and a result that is not a list of (input, problem) pairs, or a SystemExit, is an error, never a verdict; the preparation locks and copies the sidecar's probe and trigger files beside the oracle, refusing a path out of the work directory. Each of the seven oracles gains driver_args() (equal to its argv command) and problems(lines) over its unchanged logic; 105's reads the Javadoc's contract without its declared deviations, so before violates at (-2)^31 and after holds, as its exact-fix pair expects. Each packet's example.json has a note; the index is regenerated.",
       "log_sha256": "7efb17b82cda691603414f20c85c1b231b17535a4a409888829b7e56ca2461fd"
@@ -933,7 +933,7 @@
     {
       "change_id": "qpynptrqvmqqmsysmlmkquxknrzxwvnw",
       "commit_id": "2d7ebb64c07ef743bda194b7a0ed6be71bff712b",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: a verifier record names the lib/ commit and tree its jvmcontract was built from; no adapter entry-point key",
       "body": "Request 10 of the merge's interface requests. A pipeline job that requires jvmcontract now gets JVMCONTRACT_LIB_TREE, the git tree id of the lib/ its binary was built from, and drops one inherited from the runner. runtime.run_verifier records identities.commit (the job's VERIFY_SOURCE_COMMIT) and identities.libTree, only when $JVMCONTRACT is the binary that ran and both are 40 hex digits; a developer build names neither, never a guess. The handoff's gap packet keeps libTree with its verifier, and still lists verifier.commit as missing when it is null (the fixture's developer-built gap record does). verification/README.md documents the variable.\n\nThe adapter entry-point claim key is left a gap, as the request allowed: all 41 tasks of the seven packets name their original method, the claim schema's plan already builds receivers, and verifying through an adapter would put its code inside the proof and need a lib/ capability this wave doesn't edit. run_verifier's docstring says so; it enters the v1 gap inventory when a packet's verifier job observes it. The optional handoff-beside---plan and find.py task readiness were not done.",
       "log_sha256": "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a"
@@ -941,7 +941,7 @@
     {
       "change_id": "wxmnlqpyqnqvzyrlxqkmsrnwztyqvmpx",
       "commit_id": "928ea9104ba474f7391e3ea61eabf8fda52553b2",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: VF-025 closed; the spring-core JARs were committed by sync.py's 100 MiB snapshot, so no ignore rule",
       "body": "Request 11, the last of the interface requests that waited for the merge, asked to gitignore runtime-mutant/**/spring-core-5.3.19.jar, the three 1.4 MiB JARs of the runtime stream's job 20261114-180443 that VF-025 said jj's 1 MiB snapshot limit had left out of the commit. They are in fact in the history: the collect commit msotkvrv lists all three, and jj st shows no refused file. The reason is that sync.py runs every jj command with snapshot.max-new-file-size=100MiB, so a sync.py commit takes a file a plain jj command refuses. That also explains VF-020's two diffs that 'got past the limit'. An ignore rule does nothing to tracked files, so none was added. The brief's request 11 (and its Next line) was out of date on this point.\n\nVF-025 moves to findings.md's closed entries, with a correction under its original text. The runtime slice's README, runtime_simplematch/README.md, now says the JARs are in the history. It also gives the cleanup rule for later jobs that keep a preparation directory as their output: delete prepare/*/lib/. A packet task's job via pipeline.py submit --example --task prepares in scratch space and keeps only its receipts. msotkvrv is not pushed, so whether the roughly 3 MB of JARs go into the published history is a question for the user, on the for-review list. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 203, test_build.py 190, test_pipeline.py 30, build.py --plan).",
       "log_sha256": "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832"
@@ -949,7 +949,7 @@
     {
       "change_id": "ykxtqwmtypxyszlmywnsrzvuuvqsmwxu",
       "commit_id": "a437ddb47de7f3baa47f882f86d6d917d56d8d81",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: the replay jobs of gates A3 and A4 queued, after fixing build.py's exit and ingestion's release-pair expectation (verification pending)",
       "body": "build.py NNN --task T compared the receipt's status with the task's expected, but a replay decides no claim (status always None, no expected), so every replay job would have exited 1, a reproduced one included. It now exits 0 exactly when the receipt's matchesExpected is true, as its docstring already said; this also stops a vacuous established proof from passing. test_route.py has the reproducer. The pipeline's expected text for a replay job now says what it must show, and scan_signals picks up a target task's 'as expected' and 'NOT AS EXPECTED' lines (new test_pipeline.py test); verification/README.md and examples/README.md say so.\n\nworkflow_ingest read every release pair as a fix (before violates, after holds), though the schema defines it only as a release comparison. Example 306's replay runs its release pair 5.3.6 -> 5.3.7 around a behaviour-preserving change, where both releases hold, so gate A4's replay would have been recorded as not expected. A release pair's sides now follow the case's role: negative = violates/holds, positive = holds/holds, any other role no expectation. test_packets.py's ReplayExpectationTest checks all 13 replay tasks of the seven packets against their READMEs. 306's example.json has a note. Out of date elsewhere: the finished workflow stream's brief (example-targets-workflow.md:219) still states the old rule, left as its record.\n\nQueued, each python3 examples/tools/build.py NNN --task T on the published-artifact route, JDK 21 and 25, expecting 'as expected' and exit 0: 20261114-214754-example-targets-phase-5-gate-a3-example (285 replay, Boot 2.7.17/2.7.18), 20261114-214818-example-286-replay-gate-a3-cve-2022-2296 (286 replay, Framework 5.3.18/5.3.19), 20261114-214818-example-287-replay-gate-a3-cve-2025-2222 (287 replay, Security 6.3.7/6.3.8), 20261114-214818-example-306-replay-gate-a4-framework-db9 (306 replay, spring-core 5.3.6/5.3.7, both hold) and 20261114-214818-example-306-mutant-replay-gate-a4-the-ne (306 mutant-replay: 5.3.7 holds, drop-prefix mutant violates).",
       "log_sha256": "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db"
@@ -957,7 +957,7 @@
     {
       "change_id": "xkmosovtkkktqkwqnstusmusrmmwlxwq",
       "commit_id": "b2126e33fdf654e1dabacb02aca0a60ef1223d56",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 2: the 105 calibration's two proof jobs queued for gate A5, after the runner learned where Maven is (verification pending)",
       "body": "The runner refused every upstream-build task's job before running it: build.py's plan for example 105 requires 'maven' (workflow.BUILD_TOOLS), and verification/pipeline.py's missing_tools looked that name up on PATH, where no executable is called maven. So both A5 jobs would have ended as 'missing on this machine: maven'. Runtime builds with the highest Maven under $TARGETS_MAVEN_CANDIDATES (sdkman's candidates) by full path, and missing_tools now asks installed_maven() the same question. The job schema's requires description and --requires' help name maven. Reproducer: test_pipeline.py's MissingToolsTest, which failed on the parent and passes now; it also checks that an empty candidates directory, or only a 'current' link, counts as missing.\n\nQueued: 20261114-215343-example-105-fix-property-gate-a5-arithme (fix-property on commons-numbers 8cfc04e8, native strict, claims/pow-minus-two.json, expected established) and 20261114-215345-example-105-fix-property-before-gate-a5 (the same claim on the parent e7c172d2, expected refuted with the witness k = -2, e = 31). Each prepares its revision by the upstream-build route (Maven 3.10.0 on JDK 11, Central only), replays the 75 probes on JDK 21 and 25, runs the runner's own jvmcontract and ingests one format-2 receipt. build.py exits 0 only when the receipt matches its expectation, and an unresolved result doesn't pass A5. Both plans were checked offline with build.py --plan.",
       "log_sha256": "ce16854c0712f10e1521f775de9954323deba1830d267c3708168af260d79bbf"
@@ -965,7 +965,7 @@
     {
       "change_id": "vxwvxmtwrvxxvkvronlxrxtxnmsxsyku",
       "commit_id": "74289a2e07fdcf74cf496260258ac21328c200db",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the user's decisions on four for-review items; 307 loses the authentication tag",
       "body": "In a review after the feature loop stopped, the user decided four items, recorded in llm-dlc/loops/example-targets.md's Progress. P3 (307) gets its upstream build: spring-build-conventions 0.0.23.RELEASE, which repo.spring.io serves only after a login, is on Alibaba Cloud's anonymous mirror maven.aliyun.com/repository/spring-plugin (sha256 65b65633..., its META-INF dated the minute of upstream's release commit f373956f). No independent hash exists: repo.spring.io's checksums answer 401 and the Wayback Machine has no copy. Building it from its tag doesn't help, since three of its own dependencies are also only on the mirror. So the download hosts gain maven.aliyun.com, hash-pinned, and the build job compares the before BCrypt.class it builds with Spring Security 5.2.0.M4's published one, which has the same source. P1 (305) takes the narrower slice: the SNAPSHOTs its commits resolved in 2019-09 are gone (repo.spring.io/snapshot keeps only each one's last builds). Boot 2.2.0.M6's published actuator has after's exact WebMvcTags.java and Outcome.java by git blob id, so the slice of each commit, compiled against spring-web 5.2.0.RC2, micrometer 1.2.0 and servlet-api 4.0.1, is checked by replaying M6's classes beside the after slice. The msotkvrv JARs are published as they are. 307's authentication tag goes, because the vocabulary entry means tokens; 300 keeps it.\n\nDone here: 307's example.json (the tag and a note) and the router regenerated with build.py --index-only; test_packets.py (16) passes. The host extension is also recorded under decision 1 in the brief's Decisions section, where the first extension of 2026-11-14 is, because the next cycle reads the rule there. Its Downloads paragraph (line 118) still names only github.com and Central, out of date since the first extension. The portfolio's readiness for P1 (blocked) and P3 (partial at source locked) will change once the new routes run. The brief's status goes from waiting to working: the host extension, 307's Gradle route and 305's slice don't wait on the seven pending jobs, which the Progress entry lists.",
       "log_sha256": "c8aa7b9f45698460845095862fdc09ba4ceca5edefccf6d33f6101a7ac1b86c8"
@@ -973,7 +973,7 @@
     {
       "change_id": "vwuvypskvkrssrzuqxrmsnmlpkmqowty",
       "commit_id": "669382656c35240dc6c0eb2d9babfd56a8bc5306",
-      "immutable": false,
+      "immutable": true,
       "summary": "Propose the asciidoctor plugin's version 1.5.8.1 for the allow list",
       "body": "This session's log tripped the public-ip rule on '1.5.8.1', the version of org.asciidoctor:asciidoctor-gradle-plugin, printed while checking where example 307's build plugin and its dependencies can be downloaded. It is not an address. The proposal (finding 531caa54) stays a warning until the user approves it.",
       "log_sha256": "cb18941a9608eaafcc48d89c8fe47fec089843300dab11ffd48d783ef90e7e05"
@@ -981,7 +981,7 @@
     {
       "change_id": "nosxmsrxykoxmukwwqzwlkmvklrmsnlu",
       "commit_id": "ee9e524a8fc53fa083d6f2a6074577a72010ef87",
-      "immutable": false,
+      "immutable": true,
       "summary": "Allow list: Filip Stankovic approved 531caa54",
       "body": "Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n531caa54  public-ip  1.…1: Not an address: the version number 1.5.8.1 of org.asciidoctor:asciidoctor-gradle-plugin, a compile dependency of spring-build-conventions 0.0.23.RELEASE, printed from its build.gradle and from a repository availability check while looking for an anonymous source for example 307's build plugin.",
       "log_sha256": "fda79ced1b3cbdeb54a971385b9dd964e2db55a609362943dc4999ac96af305b"
@@ -989,7 +989,7 @@
     {
       "change_id": "kkppnnuympxquouvtylzlrwrkzszkmns",
       "commit_id": "327f84708ade6fa7024d723b2a23c8d748921607",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 7 example-targets jobs (6 passed, 1 failed: 286 replay)",
       "body": "Run on vm-1 with the whole 92G/28-CPU budget (no feature loop, no streams). Passed as expected: 285 and 287 replay (gate A3), 306 replay and mutant-replay (gate A4), and 105's fix-property and fix-property-before (gate A5); their receipts and outputs were applied. 286's replay was not executed: revision vulnerable-release (Framework 5.3.18) failed to prepare. Recorded as VF-026 for the example-targets loop; nothing in the job was changed.",
       "log_sha256": "581b5270378ae12362ef006ecca65c53b6cf265652fe3a1413d87cc658f3c004"
@@ -997,7 +997,7 @@
     {
       "change_id": "nrxvrqpxlxwrspptrykuqmlmzyuyvppz",
       "commit_id": "5fdb08263823eee86d6a5599141f08e7e9345780",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5: gates A3, A4 and A5 pass on the seven jobs' receipts; 286's adapter check fixed and its replay resubmitted (verification pending)",
       "body": "The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as expected. A3 passes on 285 (Boot 2.7.17 violates the frozen method-label set at five triggers, 2.7.18 holds with its legitimate labels kept) and 287 (Security 6.3.7 violates at 12 overlong triggers, 6.3.8 holds), each on the original pinned JARs on JDK 21 and 25. A4 passes on 306 (spring-core 5.3.6 and 5.3.7 both hold; the drop-prefix mutant violates). A5 passes on 105: fix-property on commons-numbers 8cfc04e8 is established and not vacuous, and fix-property-before on e7c172d2 is refuted with the witness pow(-2, 31), replayed in the interpreter, both native and strict through the upstream-build route. For review: the proof receipts don't record what their JVM controls observed, since ingestion bundles no raw streams.\n\n286's replay (VF-026) never ran: the job's kept preparation record says the adapter check refused it, 'never references DataBinder#isAllowed'. Its ExposedDataBinder calls the inherited protected isAllowed(field) unqualified, which javac writes as a Methodref owned by the subclass, and runtime's _check_classpath counted only references owned by an original class, so every revision would have failed alike. runtime_jar.resolve_method now resolves a reference owned by an adapter class up the superclass chain as the JVM does, stopping where the classpath's bytes end; an override that doesn't call super still doesn't count. Reproducer: test_runtime.py's InheritedCallTest, which gave 286's diagnostic on the old code. Rerun offline on the job's kept 5.3.18 JARs, the check finds the call. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 209, test_build.py 190, test_pipeline.py 32, build.py --plan). VF-026 has the cause, and 286's example.json a note.",
       "log_sha256": "fc5763612dc81f68eca6f03885e2bd22f140ef591a609dc31487c0a9e69f83a8"
@@ -1005,7 +1005,7 @@
     {
       "change_id": "kxzlrsouuzkkpmvzomrxzknqsmtynuts",
       "commit_id": "c6974317144eafdb70a2c1012ca2389671ea9337",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification result for example 286's replay (passed): VF-026 closed",
       "body": "Job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 ran on vm-1 after the adapter check fix: 1 step passed in 4.0 s, task-as-expected, receipt under examples/286-*/receipts/replay. Collect applied its 4 outputs; findings.md VF-026 marked closed by this job.",
       "log_sha256": "68c0005ec80aa2ccd39644719c64fdad426e9df9830ed6d57f822cdc199f0737"
@@ -1013,7 +1013,7 @@
     {
       "change_id": "zwyoumxmwmuuqkrwrsttnzymzzywtynl",
       "commit_id": "d61960db270ba28843ab602a29f65943e5e912c0",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5: maven.aliyun.com allowed for Spring's plugin repository only (decision 1's second extension); A3 passes on 285-287",
       "body": "runtime_maven.py's HOSTS gains maven.aliyun.com, held by a new PATH_PREFIXES to /repository/spring-plugin/, the mirror the user allowed on 2026-11-14 for P3's (307) Spring Gradle plugins, which no anonymous upstream repository serves. A path leaving the prefix by a dot segment or a percent-encoding is refused, since a server would resolve it after the check. Every download and redirect goes through allowed(), so the rule covers them all. HOST_NAMES and the docstrings of runtime.py and runtime_upstream.py name it. Reproducer: test_runtime.py's test_the_aliyun_mirror_is_allowed_for_springs_plugin_repository_only, which failed on nrxvrqpx. It also checks the refusals: the mirror's other repositories, dot segments, %2e%2e, http, user names, ports, look-alike hosts and a SNAPSHOT. example-targets-integration.sh exits 0: contract 16, targets suite 210 (one new), test_build.py 190, test_pipeline.py 32 and build.py --plan.\n\nThe brief's Progress also records that 286's resubmitted replay passed (collected in kxzlrsou). 5.3.18 violates the oracle at 12 triggers, 4 of them actual protected-property mutations through bind, and 5.3.19 holds, on JDK 21 and 25. So gate A3 passes on all three negative packets. 307's records still describe the credentials blocker; the Gradle route's cycle rewrites them. The brief's Downloads paragraph (line 118) still names only github.com and Central, out of date since decision 1's extensions, as the for-review list already notes.",
       "log_sha256": "2a7f760e3f0e5c9c69117e42efe1776cda1ccb209c5707fee7534374e32d8234"
@@ -1021,7 +1021,7 @@
     {
       "change_id": "ylkruvtnqrykpotmrtsplrwvwvquwxur",
       "commit_id": "a03fca9aa1f571d22f948dcc7bed734de45c4ffc",
-      "immutable": false,
+      "immutable": true,
       "summary": "Verification findings: VF-026 moved to Decided and closed, and a stray sentence dropped from its Status",
       "body": "kxzlrsou closed VF-026 (example 286's replay; job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 passed) but left the entry under Open, with \"(Entry moved below is not done; it stays here with its history.)\" added to its Status line. The managing agent's own report named the slip. The entry now heads Decided and closed, as findings.md's ordering asks, with that sentence removed. No other text changed.\n\nCommitted with a path-limited jj commit, because the example-targets loop has uncommitted work in the default workspace that sync.py commit would have swept in.",
       "log_sha256": "8e7551d437bd66101264e6c4b640740a6f04ea5ab43f5a8b697e9a4ba92bbffd"
@@ -1029,7 +1029,7 @@
     {
       "change_id": "trtnqwqyzuwxwtuywnwvuwwlvkvvmzvx",
       "commit_id": "66777432137ebed8c1cf24e75230db3c83032297",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5: 307's decided Gradle build can't resolve its buildscript (JCenter-only modules, the plugin portal's content host); route not built, the user's choice recorded",
       "body": "307 (Spring Security fe9e4549, BCrypt UTF-8) was to be built upstream with Gradle 5.5.1, with Spring's four build plugins from maven.aliyun.com's spring-plugin mirror (the user's decision of 2026-11-14). Lookups on 2026-11-14 (HEAD requests and pinned fetches, recorded in 307's sources.lock.json under buildRoute) show the buildscript's closure is still out of reach. plugins.gradle.org serves the plugins it hosts by redirect to plugins-artifacts.gradle.org, which the download policy doesn't follow. At least org.gretty:gretty-core:2.2.0 and org.jfrog.buildinfo:build-info-extractor:2.11.3 were JCenter-only: JCenter now redirects to Maven Central, which lacks them, and only maven.aliyun.com's JCenter mirror serves them. The four plugins (sha1 agreeing) and the 5.5.1 distribution (Gradle's published checksum) are pinned for later. The Gradle route wasn't built, since its only user can't run it.\n\nA fact for the user's choice: before's BCrypt.java compiled alone by javac 1.8.0_512 with -g -source 1.8 -target 1.8 is byte-identical to the BCrypt.class in Spring Security 5.2.0.M4's published JAR (repo.spring.io/milestone, class sha256 0b137406...). 307's handoff gives two options: (a) allow the portal's content host and the JCenter mirror for the build, or (b) the extracted-source slice, with before's class checked against M4's. The loop recommends (b). 307's target.json, README, notes and runtime_upstream.py's docstring say this, and the index is regenerated. Verified: example-targets-integration.sh exits 0 (contract 16, targets 210, test_build 190, test_pipeline 32, build.py --plan).\n\nThe brief is out of date in one place: decision 1's second extension says the mirror gives P3 its upstream build. Next: 305's slice route and the Boot 2.2.0.M6 replay.",
       "log_sha256": "8e7551d437bd66101264e6c4b640740a6f04ea5ab43f5a8b697e9a4ba92bbffd"
@@ -1037,7 +1037,7 @@
     {
       "change_id": "xovopusrktnwumyrmuvvnnsqquuqowps",
       "commit_id": "9f5a22bc270b928eb9aed16ee68fbacdaccc440d",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5: the source-slice route, and 305's slice replays with the Boot 2.2.0.M6 check queued (verification pending)",
       "body": "P1 (example 305) can't be built from its exact commits, whose builds pin SNAPSHOTs that are gone, so the user decided on a narrower, separately labelled scope: each commit's WebMvcTags.java (and after's Outcome.java) compiled alone against Framework 5.2.0.RC2, micrometer-core 1.2.0 and javax.servlet-api 4.0.1, with Boot 2.2.0.M6's published classes replayed beside the after slice. A hand compile (a note) found that javac 8 with -g -parameters -source 1.8 -target 1.8 makes the after slice's two classes byte-identical to M6's published ones.\n\nThe new route, source-slice, is in the sidecar schema (preparation.slice, a revision's own published route for a reference, the pair kind correspondence, repo.spring.io artifact URLs), sidecar.py, workflow's planner (per-revision routes), runtime (_lock_slice and _prepare_slice: pinned JARs, the commit checked out, only the named files compiled by the recorded JDK and flags, stray classes refused, mutants patched first) and ingestion (a correspondence expects the same observations and oracle problems on every JDK; a slice receipt's claim names each revision's scope, additively in result.schema.json). 307 can reuse it unchanged if the user picks option (b).\n\nTwo things the decision didn't foresee. repo.spring.io serves its larger JARs by a 302 to its own S3 storage, which runtime_maven.py now follows from repo.spring.io only and only under that path; the sha256 still decides. WebMvcTags also needs spring-webmvc and spring-core (with spring-jcl) from the same milestone, beside the three JARs named. Both are on the brief's for-review list.\n\n305's sidecar now uses the route, with a release-m6 revision, an m6-correspondence pair and an m6-replay task; its sources.lock.json, README, a note and the index record the pins and the byte identity. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 220 with ten new tests, test_build.py 190, test_pipeline.py 32, build.py --plan).\n\nJobs: 20261114-232734-example-305-replay-p1-source-slice-route, 20261114-232734-example-305-m6-replay-p1-s-check-against, 20261114-232735-example-305-mutant-replay-p1-s-mutation.\n\nOut of date in the brief, outside Progress: the Downloads paragraph and decision 1's text don't mention repo.spring.io's storage redirect or the source-slice route's extra Framework JARs.",
       "log_sha256": "e53aa9cc3e1f61c4a30e75368b97277b997bbd712121efd69ce7d8eb73b6b96e"
@@ -1045,7 +1045,7 @@
     {
       "change_id": "xoqmqynmltoxpzyonxqrupuxslmzqryv",
       "commit_id": "92097fb48ab7cb6daec982cec6770285c9d93dc6",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 3 job(s): example 305's slice replay, its Boot 2.2.0.M6 check and its mutation control pass",
       "body": "The three jobs queued by 6f0e54a8 ran on vm-1 (38G/18 CPUs/9 workers, the streams row) and passed in 6-8 s each, with the example task as expected. Their outputs (the three receipts under example 305, the regenerated examples index) were applied. No findings opened or closed.",
       "log_sha256": "4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4"
@@ -1053,7 +1053,7 @@
     {
       "change_id": "rxzozluxtzyvuprvxvtxxlxvkzmsmxoq",
       "commit_id": "c12dc3bd5659e452ce26882b6db578c3c2c43100",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5: 305's slice replays read (all pass, a reproducible scaffold at the slice's scope); 285-287 mutant-replay and 105 replay queued (verification pending)",
       "body": "Example 305's three source-slice jobs, collected in xoqmqynm, all pass on JDK 21 and 25: both slices of WebMvcTags/Outcome hold the packet's oracle (replay), the after slice and Boot 2.2.0.M6's published actuator JAR give the same observations (m6-replay, the correspondence the user asked for), and the status-200 mutant fails at 200 alone while after holds (mutant-replay). Each receipt labels its scopes (extracted-source-slice, original-bytecode for M6, constructed-mutation-of-a-slice). 305's README state, handoff next and a note record this, and the regenerated index gives it 'scaffolded'. No proof was attempted.\n\nThe remaining replays of the brief's Phase 5 step 1 are queued, each a build.py NNN --task T job whose plan was checked offline first: 20261114-233239-example-285-mutant-replay-phase-5-step-1, 20261114-233239-example-286-mutant-replay-phase-5-step-1, 20261114-233239-example-287-mutant-replay-phase-5-step-1 (each fixed release must hold and its constructed mutant fail the same oracle at its stated probes) and 20261114-233239-example-105-replay-phase-5-commons-numbe (before fails at (-2, 31) alone, after holds). Verified with example-targets-integration.sh, which exits 0: the contract (16), the targets suite (220), test_build.py (190), test_pipeline.py (32) and build.py --plan. Out of date in the brief, as recorded before: the Downloads paragraph and decision 1's second extension (307's build).",
       "log_sha256": "26b75001d797a8804c1e80c9156f65ea2e311a47d7cf28440da54067755d7769"
@@ -1061,7 +1061,7 @@
     {
       "change_id": "wnywrrutntnknstmvwsqxnszrsoouvrz",
       "commit_id": "5757e329e94a292119ecee58ccc5c860de59ed6b",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 1: every claim task of 285-287, 305 and 306, and 105's two preservation tasks, queued as native strict proof jobs (verification pending)",
       "body": "Step 1 of Phase 5 attempts each deep packet's claim tasks once through the merged path. All 25 claim plans were checked offline with build.py --plan NNN --task T and are executable; 24 jobs are queued: 285's four (vulnerable/fixed security on Boot 2.7.17/2.7.18's WebMvcTags.method, preservation, the mutant), 286's six (DataBinder.isAllowed and bind on Framework 5.3.18/5.3.19, preservation, the mutant), 287's six (BCryptPasswordEncoder.matches and the BCrypt.checkpw byte guard on Security 6.3.7/6.3.8, preservation, the mutant), 305's four on the user's source slice, 306's preservation and mutant-preservation on spring-core 5.3.6/5.3.7, and 105's regression and confined-change. 307's preservation is not queued: its plan is executable but its preparation stops at the Gradle route the user still has to choose. Each job states its expected conclusion and the stop this loop predicts (library-interface arguments for 285 and 305, the DataBinder receiver for 286, String conversion and the encoder receiver for 287); a capability refusal exits 1 with an unresolved receipt and is read as an observed gap, never a pass. The four replays queued last cycle have finished as passed and await collection.\n\nJobs: 20261114-234211-example-285-vulnerable-security-phase-5, 20261114-234211-example-285-fixed-security-phase-5-step, 20261114-234211-example-285-preservation-phase-5-step-1, 20261114-234211-example-285-mutant-security-phase-5-step, 20261114-234211-example-286-vulnerable-security-phase-5, 20261114-234212-example-286-fixed-security-phase-5-step, 20261114-234212-example-286-preservation-phase-5-step-1, 20261114-234212-example-286-vulnerable-protected-state-m, 20261114-234212-example-286-fixed-protected-state-mutati, 20261114-234212-example-286-mutant-security-phase-5-step, 20261114-234212-example-287-vulnerable-security-phase-5, 20261114-234212-example-287-fixed-security-phase-5-step, 20261114-234213-example-287-preservation-phase-5-step-1, 20261114-234213-example-287-vulnerable-guard-phase-5-ste, 20261114-234213-example-287-fixed-guard-phase-5-step-1-b, 20261114-234213-example-287-mutant-security-phase-5-step, 20261114-234213-example-305-preservation-phase-5-step-1, 20261114-234213-example-305-finite-outcome-before-phase, 20261114-234213-example-305-finite-outcome-after-phase-5, 20261114-234213-example-305-mutant-preservation-phase-5, 20261114-234213-example-306-preservation-phase-5-step-1, 20261114-234214-example-306-mutant-preservation-phase-5, 20261114-234214-example-105-regression-phase-5-step-1-ar, 20261114-234214-example-105-confined-change-phase-5-step.",
       "log_sha256": "8357cd68475cb36a579983cbc98d20770254209274f719d723c4ece2c3b8555f"
@@ -1069,7 +1069,7 @@
     {
       "change_id": "mtvwvktkzotppxxkylzyonntsutntvuv",
       "commit_id": "b8000880042e8e44c2252df999d3593d3772e363",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 4 job(s): example 105's replay and the 285-287 mutant replays pass",
       "body": "Jobs 20261114-233239 example-105 replay and example-285/286/287 mutant-replay all passed (one step each, 6-54 s, peaks under 1 GiB against 3 GiB estimated; estimates far high). Each task result was as expected; the receipts and results were applied. Run on vm-1 with the streams row (38G, 18 CPUs, 9 workers). No findings.",
       "log_sha256": "317af522321d27f364f68ede4467147297fdc8398fd47b2e2353e1d078646183"
@@ -1077,7 +1077,7 @@
     {
       "change_id": "ynvtsvxsskomosnnnsvopwrmuqrqxuzv",
       "commit_id": "f216afbd036a4c3c6d225ea96c93c93178843239",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 24 job(s): 105's regression passes; 23 Phase 5 proof jobs give no verdict (VF-027)",
       "body": "Jobs 20261114-234211..234214 (285, 286, 287, 305, 306 and 105, queued at 72a1337a1529 by the example-targets loop) ran on vm-1. 20261114-234214-example-105-regression passed (refuted, as expected; outputs applied). The other 23 failed without a verdict: the task subjects are interfaces, receivers or String parameters the checker cannot build, the four preservation tasks have different before/after dependency closures, and 105's confined-change meets a StringBuilder gap under --gaps strict. Recorded as VF-027 for the example-targets loop; nothing was changed or resubmitted.",
       "log_sha256": "13f9c1abdb365d8b99b5253d9180fbe85ac62e6624fe02243d90800131ae96ff"
@@ -1085,7 +1085,7 @@
     {
       "change_id": "ssyppxlvwpovqnpoquqolqupqktmmvpr",
       "commit_id": "4440d82bc061ab813700f97f187f081166263bc7",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets Phase 5 step 3: A1, A2 and A6 pass on the real packets; a target's blockers reach every task's handoff; A7's isolated session queued its job (verification pending)",
       "body": "The joint acceptance on the merged revision, from the receipts already in the tree. A new offline test, examples/tools/targets/test_acceptance.py (13 tests), checks three rows over the 20 sidecar examples and the 15 receipts. A1: every task plans and hands off with no network, process or write, and discovery equals the committed index. A2: every receipt names its commits, its JDK release files and the classpath in order, the same in the claim and in each JVM record, on JDK 21 and 25, with each published JAR a sidecar pin. A6: every receipt passes check_result, attempts and claims stay distinct, and execution, conclusion, expectation, scope and replay stay separate fields. The four replays collected in mtvwvktk (105 replay, 285-287 mutant-replay) were read, and all are as expected.\n\nA1 found a defect, fixed with a reproducer: workflow.task_blockers dropped any blocker that names no task. Discovery reads such a blocker as the whole target's. So 307's predicted Gradle build blocker was in none of its handoffs, and 305's and 307's predicted gaps were missing from the gap inventory. Now a target's blocker applies to every task, a capability-kind one only to the tasks that run the verifier. test_workflow.py's test_a_blocker_naming_no_task_is_the_targets and test_acceptance.py's blocker test both fail on the old code. target.schema.json describes the omitted task. The index is unchanged.\n\nA7: an isolated subagent was given only 105 fix-property-before's exported handoff. All 6 inputs matched their sha256, and the plan matched the packet field by field (claim key 8a4071f6a417d239). It queued job 20261114-235737-example-105-task-fix-property-before-the with the packet's own command, expecting the same refutation, pow(-2, 31). A7 passes when that job comes back as expected. Its four observations (a property receipt's replay field is null; a witness names its classes 'after'; the receipt's claim.id differs from the claim key; records/pow-gaps.json isn't a handoff input) are for the for-review list.",
       "log_sha256": "995c861b41e801f545c27f3652b55560323ae32ddae4fbe841947844f9208c3e"
@@ -1093,7 +1093,7 @@
     {
       "change_id": "qkrttquvwlwzoymxlmtzynvxqluwlzny",
       "commit_id": "2c6135dc571ffed7a1df9081fcb00700c6a3ad36",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the user chooses the slice, option (b), for 307's route",
       "body": "The 307 lookups (trtnqwqy) found that the upstream Gradle build decided for P3 on 2026-11-14 can't resolve its buildscript: plugins.gradle.org redirects to plugins-artifacts.gradle.org, and at least two modules exist only on JCenter, now served only by maven.aliyun.com's JCenter mirror. The loop offered (a) allowing those hosts or (b) a source slice, and recommended (b), since before's BCrypt.java compiled with javac 8 -g is byte-identical to Spring Security 5.2.0.M4's published BCrypt.class.\n\nThe user chose (b). The brief's Progress records the decision for the loop's next cycle: 307 takes 305's source-slice route, before's class is checked byte for byte against 5.2.0.M4's, and 307's replay, mutation control and claim tasks are then queued. Decision 1's second extension (maven.aliyun.com for Spring's plugin repository) is marked as no longer used by P3 and left in place for the user to keep or withdraw.\n\nCommitted with a path-limited jj commit while the loop's brief had no uncommitted edits, so none of the loop's uncommitted work was swept in.",
       "log_sha256": "782944dba19d63885d7b41850f63fbfac2b52ec33455c4523a9b07b35852d351"
@@ -1101,7 +1101,7 @@
     {
       "change_id": "ryszmlnrrzolxwrqxqwkvkpyowmrloqo",
       "commit_id": "24c11e1d74581d5c9fc4c39fc673b9e1f20fbb30",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the user withdraws maven.aliyun.com, and VF-027's causes are recorded as gaps, not restated",
       "body": "Two decisions for the loop's next cycle, recorded in the brief's Progress on this session's recommendation.\n\nmaven.aliyun.com, allowed on 2026-11-14 as decision 1's second extension only for P3's Gradle plugins, is withdrawn: P3 now takes the slice (qkrttquv), so no route needs it. The loop removes it from runtime_maven.py's hosts with a reproducer that it is refused. Decision 1's paragraph and the earlier for-review note say so.\n\nVF-027's 23 no-verdict proof jobs stop on five checker capabilities. They are recorded as observed gaps for the step 4 inventory (reproducer, semantics needed, claims affected, owner module, closure test), as the brief's Deferred section asks. Tasks are not restated over wrappers or simpler signatures, no claim's expected conclusion changes, and jvmcontract is not extended in this loop. Each job is resubmitted predicting its observed refusal, which closes VF-027 as its Closes-when allows and settles those jobs for A8.\n\nCommitted with a path-limited jj commit while the loop was stopped.",
       "log_sha256": "782944dba19d63885d7b41850f63fbfac2b52ec33455c4523a9b07b35852d351"
@@ -1109,7 +1109,7 @@
     {
       "change_id": "olumqtlxopquyysnynssmnslysxpstmm",
       "commit_id": "8fa81dc696b7f7662b6bcd7604406ddfee3c824d",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 1 job: example 105's fix-property-before calibration prove passes",
       "body": "Job 20261114-235737-example-105-task-fix-property-before-the (the calibration prove of ArithmeticUtils#pow(II)I) passed in 31s, peak 780 MiB (estimated 15m, 3 GiB). Its 4 outputs, the task's receipt under example 105, were applied; no conflicts. No verdicts or errors needing a person; no findings.md changes.",
       "log_sha256": "782944dba19d63885d7b41850f63fbfac2b52ec33455c4523a9b07b35852d351"
@@ -1117,7 +1117,7 @@
     {
       "change_id": "vwrqwqqyosrtmlpsrxynxkvoxmxnwywu",
       "commit_id": "79fd5d8dc3489dd126c39e0d5895214fad5d5dce",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: maven.aliyun.com withdrawn from the download hosts; A7 passes on its isolated session's job",
       "body": "The user withdrew decision 1's second extension on 2026-11-15, once P3 (307) took the source slice: no route needs Alibaba Cloud's mirror of Spring's plugin repository. runtime_maven.HOSTS and HOST_NAMES are back to Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. The PATH_PREFIXES mechanism held only the mirror, so it went too, and allowed() is the plain host check again. The docstrings of runtime_maven.py, runtime.py and runtime_upstream.py say so. 307's sources.lock.json keeps the mirror's hashes as a record of the lookups; nothing fetches them.\n\nReproducer: test_runtime.py's mirror test, now test_the_aliyun_mirror_withdrawn_is_refused_like_any_unlisted_host, failed on the parent. It checks that the host is gone from HOSTS and the refusal text, that four mirror URLs (the pinned spring-build-conventions plugin, and the public, jcenter and gradle-plugin repositories) are refused by allowed(), as redirects and by check_item, and that the other hosts stay allowed.\n\nA7 (agent continuation) passes: the isolated session's job 20261114-235737-example-105-task-fix-property-before-the, collected in olumqtlx, came back task-as-expected, with the earlier attempt's claim id and refuted with the witness pow(-2, 31). Both attempts are kept.",
       "log_sha256": "e6cc01e06aa6ebb5a8568a44146ba934dc6dac2671c7b6afc84c564b89a6a1de"
@@ -1125,7 +1125,7 @@
     {
       "change_id": "pulkwwwvssqmwlkpktpyqplumyzqmkwo",
       "commit_id": "239db0e29fcd6caa9a9042574bda84accd8926d5",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: 307 on the source slice, before's BCrypt.class checked against 5.2.0.M4's in every preparation; its replay and mutant-replay queued (verification pending)",
       "body": "The user chose the extracted-source slice for P3 (example 307, Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) on 2026-11-15, because the commits' own Gradle builds can't resolve their buildscript from the allowed hosts. The decision asks that before's compiled class be checked byte for byte against Spring Security 5.2.0.M4's published BCrypt.class, with a mismatch recorded as a blocker. The source-slice route had no such check, so it gained one: preparation.slice.matches names, per compiled revision, the published classes the slice must reproduce. Each match gives the class entry, its sha256 in the published JAR, and the JAR pinned by sha256. Changes are in target.schema.json, sidecar.py, the workflow planner (a mutant's base inherits no match) and runtime.py (_slice_matches at lock and _match_published at preparation). The preparation fetches the JAR into reference/, off the classpath, checks the entry's recorded sha256, and compares bytes with what javac wrote. A difference fails the preparation at build with a blocker. 305 names no match, so its plans, claim keys and receipts are unchanged.\n\n307's sidecar now uses the source-slice route: BCrypt.java alone at both commits, compiled by JDK 8 with -g -source 1.8 -target 1.8 -encoding UTF-8, with no dependency JARs. before matches BCrypt.class 0b137406... in spring-security-crypto 5.2.0.M4 (8871c1fe...). Its build blocker, handoff next, replay note, README and a new example.json note were rewritten and no longer offer options (a) and (b). The index was regenerated. Two jobs are queued: 20261115-003616-example-307-replay-p3-source-slice-route (before's class equals M4's, and both slices hold the oracle on JDK 21 and 25) and 20261115-003617-example-307-mutant-replay-p3-source-slic (after holds, and the US-ASCII mutant fails at the non-ASCII probes only). 307's native tasks wait for the replay and for VF-027's resubmission mechanism.",
       "log_sha256": "a9c3ba46907163df7fed1d17c0bdb8ddb42a3ea877d12fce9ff3e781fff21ed7"
@@ -1133,7 +1133,7 @@
     {
       "change_id": "vzlqyvunwtwqsuwkwowquxsslmvywpvn",
       "commit_id": "38e53288c9bee833dac1535d973c693ef9496d34",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass",
       "body": "Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.",
       "log_sha256": "5a427432673f014f094a5c12a69d1aca2a416b48153b0cb1a8d3f8493b60c50a"
@@ -1141,7 +1141,7 @@
     {
       "change_id": "srxlxttrlxmvwoknnxmknzqyyrsuqxmk",
       "commit_id": "71b9a38622d114ecbec861cbcc2e893d552ed6da",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)",
       "body": "As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.<init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.\n\nbuild.py exits 1 both for a refusal and for an unexpected verdict, so the new examples/tools/targets/workflow_refusal.py ID TASK runs it once and passes only when the task plans under the recorded claim key, build.py exits 1, and the attempt gives either one new unresolved receipt with the recorded problem or, at the route's stage, no receipt and the recorded not-executed reason. A verdict, another refusal, a changed claim or a closed gap prints NOT AS PREDICTED. pipeline.py has signals for both lines. 307's two source-slice replays, collected in vzlqyvun, pass, so 307 is a reproducible scaffold at the slice's scope. Its receipt doesn't carry the byte match with 5.2.0.M4 (the preparation would have refused a mismatch), which goes on the for-review list. test_acceptance.py's A2 test, which still expected 307 to have no receipts, is updated.\n\nVerified: test_workflow_refusal.py (the judgement, the predictions, the check on 285 and 286, and the 23 packets against their job records and the inventory) and test_pipeline.py's new signal test. Both fail on vzlqyvun by construction. llm-dlc/tools/example-targets-integration.sh exits 0: the contract (16), the targets suite (243), test_build.py (190), test_pipeline.py (33) and build.py --plan.\n\nQueued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20261115-005926-example-105-confined-change-vf-027-rerun to 20261115-005928-example-306-preservation-vf-027-rerun-st (verification/jobs/20261115-00592*). When they pass, VF-027 closes as its Closes-when allows.",
       "log_sha256": "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02"
@@ -1149,7 +1149,7 @@
     {
       "change_id": "kqpykqppqumtqrvyornwworzkwkvvpwu",
       "commit_id": "e4b98e922e8462e8e4462a349bdda45be18e34aa",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted",
       "body": "Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>",
       "log_sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a"
@@ -1157,7 +1157,7 @@
     {
       "change_id": "zkqwwplutwpuzpypnnspkqmzltrwlqlz",
       "commit_id": "c2ab5dc47852cff03fece4fdb0987f27cd921529",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: 307's native attempts queued; the 23 VF-027 reruns read, all refused as predicted, and VF-027 closed (verification pending)",
       "body": "The verification loop collected the 23 VF-027 reruns in kqpykqpp: each passed with example:task-refused-as-predicted, stopping at the refusal its gap packet records, under the claim key it records. 19 left an unresolved receipt in their example (the collect's message says 18 jobs had outputs applied); the four preservation reruns of 285, 286, 287 and 306 stop before the verifier and leave none. VF-027 moves to findings.md's closed entries by the second branch of its Closes when, as the user decided on 2026-11-15: each task is recorded as unprovable by this route (an observed blocker, its packet, readiness blocked, claim and expected unchanged) and each rerun's prediction matched. The collect had kept it open, reading Closes when as needing task-as-expected.\n\nThose receipts broke this loop's examples/tools/targets/test_acceptance.py on kqpykqpp (19 failures, 2 errors), whose rows assumed what held for the receipts of the time. A6 now allows an unresolved receipt only for a proof task whose observed gap packet records that very refusal (workflow_refusal.predictions), with the text in the receipt's problem, never as expected. A2 now allows a not-started JVM record that ran nothing for a proof task, never a replay: 287's vulnerable-guard and fixed-guard target BCrypt.checkpw(byte[], String), which their adapter doesn't call, so runtime ran no controls (adapterCallsTarget). Such a receipt doesn't say why its controls didn't start, since ingestion bundles neither the stream nor controls.json: for review, with the raw-streams item.\n\n307's native tasks are queued as ordinary attempts with pipeline.py submit --example 307 --task T, claim key 7eb077dac7a25751, unwind 513, maxArrayLength 80, 2 CPUs, 4 GiB, 30 minutes: 20261115-011448-example-307-preservation-phase-5-step-1 (expected established) and 20261115-011448-example-307-mutant-preservation-phase-5 (expected refuted). Their predicted refusals (nullable String parameters, String.getBytes) are stated as predictions. 307's handoff next, README state and a note now say its replays passed: a reproducible scaffold at the slice's scope. The brief's Progress records this, with Next: the v1 gap inventory, A8, the for-review list.",
       "log_sha256": "fd2e69af9eb3b552b1856f29d0c5b62bb8d4796a21d5dc7d99f8aaf8f0942a84"
@@ -1165,7 +1165,7 @@
     {
       "change_id": "wtwuqnwzxsnyowqskkxloyzunyutnzrx",
       "commit_id": "c376f3e0fbf465a7ac1e4dec38c1e1d2c99e892e",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 2 jobs: example 307's preservation and mutant-preservation are refused at --nullable password (VF-028)",
       "body": "The two native strict Phase 5 step 1 jobs for example 307 (BCrypt.hashpw(String,String)) ran 5.6 s each and stopped at the checker's refusal: a String parameter with --nullable is not accepted in a regression check (cause 3 of VF-027). Neither task ran as expected; recorded as VF-028 for the example-targets loop to restate or record as unprovable. Outputs kept, not applied.",
       "log_sha256": "d003bf3575d52c871d2ce7cdad66c391f537aecc7f9fb0e53af22348af7dfa59"
@@ -1173,7 +1173,7 @@
     {
       "change_id": "ymtkuqqqyrktsrmonnkwskslwkszszkt",
       "commit_id": "2125e68855d332c7846049b87454fc224c062575",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: 307's native attempts refused at the nullable String password (VF-028), recorded as VF-027's were; two reruns predicting the refusal queued (verification pending)",
       "body": "Example 307's two native strict proof jobs (20261115-011448-example-307-preservation-phase-5-step-1 and -mutant-preservation-phase-5, collected in wtwuqnwz) both stopped before any proof at --nullable password: the checker takes a String parameter of a regression check only as non-null bounded UTF-16, and the frozen claim's domain has a null password. This is VF-027's third cause (input-construction:string-parameter). As the user decided on 2026-11-15 for VF-027, the refusal is recorded, not restated: each task gets an observed gap packet under examples/307-.../records/refusals/ (citing its job, log, receipt and verifier output by sha256, and claim key 7eb077dac7a25751) and an observed blocker with finding VF-028, replacing the target-wide input-construction prediction. Both tasks now read blocked; the claim and its expected conclusions are unchanged. 307's handoff next, README, a note and the index say so, and VF-028's status records it.\n\nQueued, each running workflow_refusal.py 307 TASK, which passes only if the same refusal recurs under the same claim key: 20261115-013518-example-307-preservation-vf-028-rerun-st and 20261115-013518-example-307-mutant-preservation-vf-028-r. VF-028 closes when both pass.",
       "log_sha256": "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3"
@@ -1181,7 +1181,7 @@
     {
       "change_id": "ovvoultportryproopplkqyuzvwmtxqs",
       "commit_id": "275c3691c2fcc3e6a176c1ebfa85e24eda77afec",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028",
       "body": "Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task <T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.",
       "log_sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550"
@@ -1189,7 +1189,7 @@
     {
       "change_id": "tupmvorkvloswskyklmxsknxryxkkrrz",
       "commit_id": "e861e37b5e2c6a7a0deaca0ff7228fc672425100",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: Phase 5 step 4, the v1 gap inventory, published as examples/gap-inventory.md and through find.py --gap; VF-028 closed",
       "body": "The v1 gap inventory (decision 11) is now a page, examples/gap-inventory.md, generated offline by workflow_handoff.py inventory --markdown from the 20 target sidecars, their gap packets and receipts; test_gap_inventory.py checks the committed page equals the rendering. It ranks the five observed capability gaps by distinct families, then blocked obligations: two-dependency-closures (3 families, 4 obligations), receiver-of-several-constructors (2, 8), string-parameter (2, 5), interface-parameter (1, 7) and the StringBuilder constructor under strict (1, 1), 25 blocked obligations in all. Each entry gives the obligations it blocks with their claim keys, the smallest reproducer (the fastest observed attempt, its packet, job, and the workflow_refusal.py check that reruns it), the missing semantics, owner modules and closure test. The 17 predicted groups are kept apart in their own table, unranked against the observed ones. inventory() now gives each group a rank and a reproducer; find.py --gap also takes a gap id or its part before a colon (the projection's JDK suffix dropped), so --gap input-construction:string-parameter finds 287, 306 and 307; examples/README.md links the page.\n\nVF-028's two reruns passed with task-refused-as-predicted (collected in ovvoultp, which closed VF-028); the entry is moved under findings.md's Decided and closed heading beside VF-027. Verified: example-targets-integration.sh exits 0 (contract 16, targets suite 247 with four new tests, test_build 190, test_pipeline 33, build.py --plan), and build.py --index-only gives no diff. For review, in the brief: 285-287's prediction summaries still say no verifier has run on the packet, kept as recorded; the page is regenerated by hand after a sidecar or packet change.",
       "log_sha256": "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c"
@@ -1197,7 +1197,7 @@
     {
       "change_id": "uwuktzllopqqpmutpoxopmtpvwnwmxwk",
       "commit_id": "516062cc1b56df706ded09fcd9e3730540690d30",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: A8's offline part checked, and its two jobs queued: the 42 target tasks with JBMC absent, and a constructed example per build.py run path (verification pending)",
       "body": "Gate A8 of llm-dlc/loops/example-targets-acceptance.md requires three things: existing relevant examples keep their outcomes, the new native tasks run with JBMC absent, and the shared tests and acceptance jobs pass at the merged revision.\n\nWhat the collected jobs already show is now checked offline, in a new class A8 in examples/tools/targets/test_acceptance.py. Each of the 42 tasks of 105, 285-287 and 305-307 has a collected pipeline job step, and the latest one passed. The failures are 286's first replay, the 23 first attempts VF-027 recorded and 307's two VF-028 attempts, and each is superseded by a later pass of the same task. A rerun of a refusal passes only at its recorded refusal, so no failure is hidden. The legacy reports 106-109 stay non-executable, with no sidecar or result, and keep their historical labels; 105 keeps its label. lib/ is unchanged since 47358229, where application-core's final job ran the cargo suites and passed.\n\nWhat wasn't shown is queued. Neither job applies outputs back; the per-step log lines are the evidence.\n- 20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na runs all 42 tasks, plus one constructed example per native run path (144, 145, 149, 151, 161, 172, 190), each inside the new examples/tools/targets/without_jbmc.sh. That wrapper covers every jbmc with /dev/null in a private bwrap mount namespace, checks that none can be run or found, and refuses otherwise. test_without_jbmc.py has 3 tests for it.\n- 20261115-020015-gate-a8-one-constructed-example-per-buil reruns the fastest recorded example of each of build.py's 28 constructed run paths. Each is expected to give its recorded verdict, because the wave's build.py and result-schema changes reach every constructed example.\n\nFor review: these jobs run at this commit, not at the merge commit itself, so \"merged revision\" is read as the merged line. The 28 run paths are a sample, not every constructed example. JBMC is made unrunnable rather than uninstalled.",
       "log_sha256": "34ca68cff8212f8c26fc6ee9682b66d83c610fd51b61531a962c57acb76582e1"
@@ -1205,7 +1205,7 @@
     {
       "change_id": "mwsuuplnzqyqkuyszqzouqssuswysznw",
       "commit_id": "6879573bef5284bccb6e6ba46b45f545f1be2343",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: Phase 5 step 5, the for-review list; A0-A7 pass and A8 waits on its two jobs",
       "body": "The brief's Progress gains the for-review list Phase 5 step 5 asks for, at uwuktzll.\n\nTier A: each gate's state, with its commits and job ids. A0-A7 pass on the merged line. A8's offline part passes. Its two jobs decide the rest: 20261115-015944 (the 42 packet tasks and 7 native run paths with JBMC absent) and 20261115-020015 (28 constructed run paths). At writing, 020015 had finished passed but wasn't collected, and 015944 was running.\n\nThe portfolio in counts:\n- 13 catalog-only entries;\n- the six deep targets, all reproducible scaffolds. 285-287 and 306 are on published original JARs. 305 and 307 are source slices byte-matched to Spring's published classes on one side, partial at the exact commits' original-bytecode scope;\n- all six attempted, with no claim of theirs closed;\n- 105 with 3 of its 4 claims closed (one established, two refuted at pow(-2, 31)).\n\nThe 28 claim tasks are 1 proved, 2 refuted, 21 unresolved and 4 not executed, with what each scope permits concluding. Also listed: the five observed gaps (25 obligations, examples/gap-inventory.md), the pending jobs, timebox deferrals (none), what is for the user (four allow-list proposals, the stream directories, a push), and the review items gathered across the run.\n\nThe status is now waiting on the two A8 jobs. When both are collected and pass, Tier A passes and the brief is done.\n\nOut of date in the brief, outside Progress: the Streams section's 4 GB per stream predates the 12G caps. Where it starts from is a recount at a7abc155, kept as recorded.",
       "log_sha256": "1e126a11cb062f5c998532480f84140bca12d39361005d3c408e02df7552ae4c"
@@ -1213,7 +1213,7 @@
     {
       "change_id": "pummuplwqvmrqpvlkxywpysxmqprpnvw",
       "commit_id": "f7ac5c6ab16b30917605beff0e8318f36ef8ba49",
-      "immutable": false,
+      "immutable": true,
       "summary": "Allow list: Filip Stankovic approved 345f455a, 71c156ce, 7e48b0a7, f5f8f407",
       "body": "Filip Stankovic approved 4 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n345f455a  long-token  If6…HG (53 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.\n71c156ce  long-token  If6…wA (49 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.\n7e48b0a7  public-ip  9.…8: Not an IP address: the Maven version of net.sourceforge.saxon:saxon in spring-security fb39d9c2's buildSrc/build.gradle (a public upstream file printed while inspecting example 307's build), and this session's mentions of that finding\nf5f8f407  long-token  If6…PO (53 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.",
       "log_sha256": "70641db2b7d3f52e1e772d77b5fbd78f08b539238a62d43bdda835e69473a64f"
@@ -1221,7 +1221,7 @@
     {
       "change_id": "pynmtoxmwzrmmluvtokovswktutxtrru",
       "commit_id": "29fc3387fa941778be93d05dad085a3045ea534a",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the brief brought up to date outside Progress",
       "body": "At the user's request, after the loop stopped waiting on gate A8's two jobs, the parts of llm-dlc/loops/example-targets.md outside Progress that the for-review list called out of date were updated. The header now gives the dates of Phase 0, the merge and Phase 5. Where it starts from opens with the rows that changed since its launch baseline (the external-target seam, pinned dependencies, the 20 sidecars, the hosts the locks pin from, the observed gaps), and keeps the recount itself as recorded. The downloads paragraph names decision 1's current hosts (github.com, Central, repo.spring.io and the two Gradle hosts, maven.aliyun.com withdrawn) and says runtime's acquisition is merged. Streams gives the 12G loop caps and 6G integration scope that replaced 4 GB a stream, the forgotten workspaces and the example numbers used. Phases 1-4 and 5 carry done markers. Decision 3 records the extracted source slice as a third artifact route (305 and 307, by the user's decisions), and decision 8 its 2026-11-14 change. Checked: test_targets_contract.py passes all 16 tests inline, the hosts against runtime_maven.HOSTS and the packets' sources.lock.json files, and sync.py check reports 0 warnings now that the user approved the four allow-list proposals.",
       "log_sha256": "85dcb05f2d6fb2a90b3f380336b72d629b9b0a5277e150b15f3e2f6868f2eb23"
@@ -1229,7 +1229,7 @@
     {
       "change_id": "zpsktlxztnspxwonpotvqooqnkyspoyl",
       "commit_id": "16a75e36c04320e893f9456755621a6579851cc8",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: the user's decisions on the for-review list, nine items to do before done; the workflow brief's release-pair rule noted",
       "body": "The user reviewed step 5's for-review list with the agent after the loop stopped. Every reading of a decision is accepted as read, including gate A8's four (the jobs run at the tip of the merged line, the 28-path sample of constructed examples, JBMC hidden with bwrap rather than uninstalled, 147/148 and the cargo suites not rerun), and the streams' packet notes stay notes. Ten items are decided, recorded as a numbered list in the brief's Progress: a blocked task's handoff names workflow_refusal.py; build.py --index-only regenerates the gap inventory; 285-287's prediction summaries get a pointer to the observed blockers; a new gap kind for two-dependency-closures; receipts bundle size-capped raw streams and say why controls didn't start; A7's four receipt and handoff observations fixed; 307's receipt records its published-class match; the 18-versus-19 collect count investigated; 287's missing single-byte sensitivity control recorded; and a dated note in example-targets-workflow.md that the release-pair rule changed at the merge (ykxtqwmt), done in this commit. The brief's status goes back to working. Nothing was run: this commit records decisions and edits two briefs.",
       "log_sha256": "bd966fe3a77333bf27666ea8095418bc280e605aaebea37ac54394b533e15938"
@@ -1237,7 +1237,7 @@
     {
       "change_id": "qswsrqywvwortlwuvtnmqnkuzxzzxurn",
       "commit_id": "acbc80e43e3dad69912bf154373b0a4608231d18",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 2 jobs: gate A8's 42 target tasks with JBMC absent, and one constructed example per build.py run path, both passed",
       "body": "20261115-015944 (49 steps, 20m56s, peak 955 MiB): the 42 target tasks and 7 native constructed run paths behave as expected with JBMC absent, including the task refusals predicted. 20261115-020015 (28 steps, 3m37s, peak 1.3 GiB): each build.py run path keeps its recorded verdict at the merged revision. Collect applied no output files. Run with the one-loop budget (80G, 26 CPUs, 13 workers); the first runner was killed by the session's 10 minute background limit and the job re-ran from pending.",
       "log_sha256": "428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3"
@@ -1245,7 +1245,7 @@
     {
       "change_id": "qroonxrsrozvkvqnnozyspwqqqykluyy",
       "commit_id": "f894d75c6c690fcabd4efaf6878139890e8ab4f6",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: gate A8 passes on its two collected jobs, so Tier A passes on the merged line",
       "body": "The verification loop collected gate A8's two jobs in qswsrqyw, both run at uwuktzll. 20261115-015944 passed all 49 steps: the 42 target tasks of 105, 285-287 and 305-307 (17 as expected through build.py, 25 refused as predicted through workflow_refusal.py) and seven native constructed examples, each step inside without_jbmc.sh, whose line 'JBMC absent' opens every log once, with no other mention of jbmc, so no hidden JBMC dependency showed. 20261115-020015 passed all 28 steps: one constructed example per build.py run path keeps its recorded verdict. With A8's offline part, every Tier A gate A0-A8 now passes, as the user's review of the A8 readings accepted. The brief's Progress records it. The status stays working: the user's ten review items come before done, and item 1 (a blocked task's handoff names workflow_refusal.py) is next. Checked: test_acceptance.py (15 tests) passes with the job collected.",
       "log_sha256": "428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3"
@@ -1253,7 +1253,7 @@
     {
       "change_id": "tzoqsuqmuztkspyvloomznvxwmlqwtoz",
       "commit_id": "4b994e7af04c00e12b93ebcfaac447fd2d267c2c",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: a blocked task's handoff next is its refusal check, with its gap id and closure test (review item 1)",
       "body": "The handoff of each of the 25 tasks that VF-027 and VF-028 block used to recommend pipeline.py submit, an ordinary attempt that would end NOT AS EXPECTED; the four preservation tasks even said to reproduce the blocker as a receipt their refusal never writes. workflow_handoff.next_action now recommends python3 examples/tools/targets/workflow_refusal.py N T whenever an observed capability gap's packet states a refusal (read by workflow_refusal.predictions, as the check reads it), and its reason names the gap id ranked in examples/gap-inventory.md, the packet and finding, the unchanged claim key and the inventory's closure test. The ordinary attempt stays the handoff's second command, for when the refusal is gone. A gap without a stated refusal keeps the old recommendation.",
       "log_sha256": "6a05a266e222a78a6f3b7aeeb5d5426b109f2cafc5c4d14334ca790aba4d5029"
@@ -1261,7 +1261,7 @@
     {
       "change_id": "wvulozulrrlusqquxpxtlolqtuxsrkxn",
       "commit_id": "7cd987aaccc1da5b121a0f4db569547a30be3265",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: build.py --index-only and --render-only rewrite the gap inventory with the router (review item 2)",
       "body": "examples/gap-inventory.md used to be regenerated by hand with workflow_handoff.py inventory --markdown, so it could fall behind the index. build.py's render_index() now ends with render_gap_inventory(), which loads the sidecars of the examples it was given and writes the same rendering, so every mode that rewrites the router (--index-only, --render-only, a run) rewrites the page too. Reproducer: test_gap_inventory.py's test_index_only_and_render_only_rewrite_the_page_with_the_router, which captures every write and failed for both modes before the change. The usage line, docstrings, the page's header, examples/README.md and the test's hint for a stale page say so; the page changed only in its header line, and inventory --markdown gives the same bytes. No A8 rerun is needed: the change adds one file write and changes no verdict, receipt or plan. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 254 with one new, test_build.py 190, test_pipeline.py 33, build.py --plan).",
       "log_sha256": "9db3eb04295b2f12d62ccfe8c64353fd043913e6e6b60a74c3454ffda15cb5ae"
@@ -1269,7 +1269,7 @@
     {
       "change_id": "uyxpswmpsrruppspptqmuumqnwpuzmyr",
       "commit_id": "03dc7d32effe0ebc250eb2329b3acf30812def02",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: 285-287's prediction summaries keep their text, dated, with a note pointing to the observed blockers and the gap inventory (review item 3)",
       "body": "The user's review item 3 of 2026-11-15. The ten predicted blockers of examples 285-287 were written by the negative stream on 2026-11-14, before any verifier ran, and seven say 'no verifier has run on this packet', which Phase 5's attempts made untrue. Their text is kept, since a predicted gap's summary is also its group's id on examples/gap-inventory.md. target.schema.json gains two optional blocker fields: recorded (the date the summary was written) and note (a later line opening with its own date). Each of the ten now has recorded 2026-11-14 and a 2026-11-15 note naming the job, finding (VF-027), gap id and refusal packet where its task's attempt was refused first, and pointing to the gap inventory. The handoff carries both fields, and the page's predicted rows open with '(recorded DATE)'. The READMEs' Predicted blockers sections are dated, link the observed blockers and the page, and mark their old Next as that day's plan, done since. 285's interface-parameter prediction, confirmed and replaced in target.json on 2026-11-15, is marked as observed in its README. Each example.json has a note, and the router and page are regenerated.",
       "log_sha256": "03421ebaa1c45bda79a02fb6f562b8ac55fd5bbf2a11d6b854f91511c6663f07"
@@ -1277,7 +1277,7 @@
     {
       "change_id": "lpmxuzzzyvqopnqsllroutrokwxyqtpl",
       "commit_id": "9be66da892aeff38edafe24504a207ed17aa7b27",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: two-dependency-closures gets a gap kind of its own, verifier-interface (review item 4)",
       "body": "The four preservation tasks of 285, 286, 287 and 306 stop because jvmcontract's equivalence takes one --classpath for both sides, so a pair with two dependency closures can't be given to it as stated. Nothing about the inputs is missing, so the user's review moved the gap out of input-construction. target.schema.json's blocker kind gains verifier-interface, described as a task the verifier's command line can't express. It is a capability kind in workflow.CAPABILITY_KINDS, so the tasks stay blocked, and its owner in workflow_handoff.KIND_MODULES is lib/src/main.rs's command line. The four packets' diagnostic id is now verifier-interface:two-dependency-closures. Their sidecar blockers have the new kind and a dated note, with the summary kept, and each example.json has a note. build.py --index-only regenerated the index and examples/gap-inventory.md, where gap 1 keeps its rank, reproducer, owners and closure test. No claim key, refusal, expected conclusion or rerun check changed, so A8 needs no rerun.\n\nReproducer: test_gap_inventory.py's VerifierInterfaceKindTest (3 tests) and the updated pins failed on uyxpswmp (7 failures, 1 error). Verified: example-targets-integration.sh exits 0, with the contract (16), the targets suite (261), test_build.py (190), test_pipeline.py (33) and build.py --plan. find.py --gap verifier-interface finds 285, 286, 287 and 306.\n\nOut of date in the brief: its section on the capability-gap packet (llm-dlc/loops/example-targets.md, 'Kinds stay apart') lists eight kinds, but the schema now has nine.",
       "log_sha256": "00ecff93a9b5b813d00282ce008c42b4dd566f591003c026b654c7106e23cf8a"
@@ -1285,7 +1285,7 @@
     {
       "change_id": "vmuvwopurzlqxywsqwpuutsopynyxyks",
       "commit_id": "de401d25c8e6897f384a38a0ca6ad82e8282f538",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: a target receipt keeps the attempt's raw streams and says why a stage didn't start (review item 5) (verification pending)",
       "body": "The user's review item 5 of 2026-11-15. Ingestion now copies each control's and the verifier's stdout and stderr, and the runner's controls.json and verifier.json, into the receipt's records/, each cut to 512 KiB. records/streams.json gives every copy's source, whole size and sha256, and whether it was cut, or why nothing was kept. attempt.stages points at the copies, and a not-started stage gives its reason: for example 287's guard tasks, whose adapter doesn't call their target. To make this possible, ExecutionRecord gains three additive fields with defaults: the attempt's directory (a temporary path, kept out of the receipt), the runner's record file, and the not-started reason. runtime.run_controls and run_verifier set them. ingest's frozen signature is unchanged. result.schema.json allows the stage's optional reason, and old receipts stay valid. A new examples/tools/targets/receipt_streams.py lists what a receipt keeps, and exits 1 when a stream isn't bundled.\n\nReproducer: test_receipt_streams.py (5 tests), which runs the fixture's controls for real on JDK 21 and 25 and ingests them. It failed before the change and passes after. example-targets-integration.sh exits 0: the contract (16), the targets suite (266), test_build.py (190), test_pipeline.py (33) and build.py --plan. No A8 rerun is needed: verdict rules, without_jbmc.sh and the constructed run paths are unchanged.\n\nJobs: 20261115-050846-example-287-fixed-guard-its-receipt-bund (VF-027's rerun of 287 fixed-guard, then receipt_streams.py --reason on its new receipt) and 20261115-050856-example-105-fix-property-before-its-rece (105 fix-property-before, whose receipt then holds the JVM controls' streams that A5's lacked). Neither changes a claim, expectation or verdict.\n\nOut of date in the brief: The capability-gap packet still lists eight kinds; the schema has nine since review item 4.",
       "log_sha256": "d0cec6dc13ba245dabba5e26ae69acc353ccfa354b8f188e3168a61732bb814f"
@@ -1293,7 +1293,7 @@
     {
       "change_id": "qkqrqyvqotypvtovtzkqqppwlpsqtosw",
       "commit_id": "d7cd0462509cb134c98b995947bc0fde7a388967",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for the review item 5 receipt jobs on examples 287 and 105",
       "body": "Ran 20261115-050846 (example 287 fixed-guard receipt) and 20261115-050856 (example 105 fix-property-before receipt) on vm-1. Both passed: 287's controls were refused as predicted, 105 gave its expected verdict. Collected outputs (receipts with raw streams) applied to the working copy, examples index regenerated. No findings.",
       "log_sha256": "4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684"
@@ -1301,7 +1301,7 @@
     {
       "change_id": "mmlyrukrvvvxpmzvonysowvrzxxptlwm",
       "commit_id": "299a178fe3f387d57172a37b119f87bf8e65a518",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: a receipt fills a refuted property check's replay, names each witness's revision, records the frozen claim key, and the handoff lists the files a claim cites (review item 6)",
       "body": "The user's review item 6 (2026-11-15) fixes the four observations of gate A7's isolated session. (1) A refuted property check's receipt now gives evidence.replay: how its witnesses were run again, reproduced only when every refuted property's was, null when any states none (workflow_ingest.property_replay). (2) Each witness call gains 'revision', the plan's revision its classes are: jvmcontract calls a one-revision proof's classes 'after', whatever the revision (105's before, 287's fixed-release). 'classes' keeps the tool's label. (3) claim.target.claimKey records the frozen source-level key, the one a plan, a handoff, a refusal record and a job name, beside claim.id, the claim bound to the prepared artifacts. The result schema, the ingestion docstring and examples/README.md say to compare the key for the same claim and the id for the same artifacts. (4) The handoff's inputs list, with sha256, every file of the example's folder that the claim file names in its text (workflow_handoff.cited_by_claim), so 105's handoffs now list records/pow-gaps.json. result.schema.json gains the optional typedCall.revision and claim.target.claimKey. Old receipts stay valid.",
       "log_sha256": "8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941"
@@ -1309,7 +1309,7 @@
     {
       "change_id": "xsnuottlxuvpsyttwukottqwmrxttkvs",
       "commit_id": "a5b9748bbdda2d72a8df766aa325420e2fdcd344",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: a source slice's receipt records its published-class match, so 307's says before's BCrypt.class is 5.2.0.M4's (review item 7) (verification pending)",
       "body": "The user's review item 7 of 2026-11-15: 307's replay receipt labelled both revisions extracted-source slices, but the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made only by the preparation, which refuses a mismatch, and was not in the receipt. Ingestion (workflow_ingest.published_matches, called by claim_record) now copies each revision's recorded matches (source.slice.matched) into the claim's target.matched: the class entry, its sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the matches its plan's slice.matches declares is refused, so nothing is published. A revision without matches adds nothing, so 305's and every other route's claims are unchanged. result.schema.json gains the closed claim.target.matched; the ingestion docstring, examples/README.md and a note in 307's example.json say what it means (a class-by-class join to the published build, not an original-bytecode scope).\n\nReproducer: test_runtime_upstream.py's test_a_slice_receipts_claim_records_the_published_class_match_its_preparation_made failed before the change. It prepares a slice with a match on the local stand-ins, binds the claim, validates it against the schema, and checks that a preparation missing the match or recording another hash is refused. example-targets-integration.sh exits 0: the contract (16), the targets suite (271, one new), test_build.py (190), test_pipeline.py (33) and build.py --plan. A8 needs no rerun: verdict rules are unchanged and the field is additive.\n\nJob 20261115-054311-example-307-replay-its-receipt-records-b reruns build.py 307 --task replay unchanged and then exits 1 unless the new receipt's claim.target.matched lists exactly before's class (sha256 0b137406...) in M4's JAR (8871c1fe...). Its check was run on the kept receipt first and correctly reported the match as not recorded. Next is review item 8, the 18-versus-19 count of kqpykqpp's collect.",
       "log_sha256": "51caaf9103abc2502ef4ee89451c39750749357fba8ae2f9156da460cce00e11"
@@ -1317,7 +1317,7 @@
     {
       "change_id": "wtkxwrzkppnspwsvuylvpmnwstmnqkux",
       "commit_id": "28ff049cfa67519cb395941d3e1377158f8c44e8",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for the review item 7 receipt job on example 307",
       "body": "Job 20261115-054311-example-307-replay-its-receipt-records-b passed (2 steps, 5.8s, peak 188 MiB; estimated 15m, 3 GiB): example 307's task replay ran and its new receipt records before's published-class match with Spring Security 5.2.0.M4. collect applied 14 output files (the receipt under examples/307-*/receipts/replay/) with no conflicts. Ran with one loop active (80G, 26 CPUs, 13 workers).",
       "log_sha256": "b88530b44cf357e35982c16a6022ccc89ed584ab432b0a0c301e78eceb8c9f59"
@@ -1325,7 +1325,7 @@
     {
       "change_id": "lttkryqntqovtuzuxvyxplknyvspqulr",
       "commit_id": "3cf847282b62577b0e688b388b67dfc1ac3c19ed",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: pipeline.py collect counted kqpykqpp's 19 applied jobs right, and now prints the totals itself (review item 8)",
       "body": "Review item 8 asked whether pipeline.py collect miscounted when kqpykqpp's commit message said outputs were applied for 18 jobs, though 19 receipts arrived. It didn't. Each of the 23 results' collected.applied lists 4 files for 19 jobs and none for the four preservation jobs of 285, 286, 287 and 306, which declare no output. collect printed one line per job and no total, and the collecting agent's sum of those lines was off by one. So there was no pipeline bug to reproduce.\n\nTo make a repeat less likely, collect's suggested commit message now opens with totals taken from the same lists (collect_totals): outputs applied for N of the M jobs, how many declared or produced none, how many were kept because the job didn't pass, and how many had conflicts. The new test test_collect_counts_the_jobs_whose_outputs_it_applied_for_the_commit_message failed before the change. The run-verification skill's collect step says to quote the totals.\n\nAlso read: item 7's job 20261115-054311-example-307-replay-its-receipt-records-b passed (collected in wtkxwrzk). 307's new replay receipt records before's BCrypt.class 0b137406... in spring-security-crypto 5.2.0.M4 (8871c1fe...) under claim.target.matched.",
       "log_sha256": "57b721e85d909d94932a0264820d43507fa814868607a9dd198ad7eaaa140b53"
@@ -1333,7 +1333,7 @@
     {
       "change_id": "pkkzrrlmyptqylksmszqxwtzwlroouns",
       "commit_id": "1fba4a4bea5fd0f02b5054f0cbc7aeba92bba13d",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets: 287's missing sensitivity control recorded, no mutant claim covers dropping the byte guard for ASCII passwords (review item 10); status done",
       "body": "Review item 10, the last of the user's ten review decisions of 2026-11-15. Example 287's char-count-guard mutant removes hashpw(byte[], String)'s 72-byte guard and guards the String entries by character count instead. Its only claim task, mutant-security, goes through matches, where an ASCII password's characters are its bytes, so it can be refuted only at the multibyte triggers. The dropped guard shows for ASCII only at the unguarded byte entry BCrypt.checkpw(byte[], String), fixed-guard's target, which mutant-replay catches concretely at bytes-73-prefix but no claim task covers. This is now recorded, with no new task, in 287's target.json handoff.next, a dated example.json note and a README paragraph. Each names the control that would close it (claims/overlong-bytes-rejected.json on revision mutant, expected refuted), predicted to stop at fixed-guard's observed string-parameter gap. The index is regenerated, and the gap inventory is unchanged.\n\nVerified: a new test_packets.py test checks that mutant-security is still the only claim task on the mutant, with neither fixed-guard's target nor its claim, and that the handoff, the note and the README name the control. Its text checks fail on the previous files. example-targets-integration.sh exits 0 (contract 16, targets suite 272, test_build.py 190, test_pipeline.py 34, build.py --plan). No job is pending. With Tier A passing, every portfolio row at its readiness, the gap inventory and the for-review list complete, and items 1-10 done, the brief's status is done.\n\nOut of date in the brief, outside Progress: its header still says gate A8's two jobs are to be read (they passed, qswsrqyw), and The capability-gap packet lists eight gap kinds where the schema now has nine (verifier-interface, item 4).",
       "log_sha256": "679a69a8f9ca12d0c575fd81ae251393a1335f56a538a12ac3fee8a148a972fa"
@@ -1341,7 +1341,7 @@
     {
       "change_id": "opxwuqsrzxpkwxmplxonsrqpopztkxql",
       "commit_id": "fc7e27966896a40c5be4a4a4153f23a665a9432b",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets brief: the header and Phase 5 say gate A8's two jobs passed",
       "body": "The brief's header still said gate A8's two jobs were to be read, and Phase 5's status line said A8 waited on them. Both jobs passed on 2026-11-15 (20261115-015944, 49 of 49 steps with JBMC absent; 20261115-020015, 28 of 28 constructed run paths), recorded in qroonxrs, so Tier A (A0-A8) passes and the brief is done (pkkzrrlm). The two lines now say so, at the user's request. Only those two lines changed; Progress already recorded the result. Still out of date, left for the user: The capability-gap packet section lists eight gap kinds, where the schema has nine since review item 4 (verifier-interface).",
       "log_sha256": "daaee24eeee0b92ded3193cf966c572daf9c510a26362f4d09eb3f21857cb04e"
@@ -1349,18 +1349,26 @@
     {
       "change_id": "lwynnpsxrsmrkrmomllxwysyunonpzyv",
       "commit_id": "9ed66d8e50362cb45291ee5505b85294292cc7ca",
-      "immutable": false,
+      "immutable": true,
       "summary": "example-targets brief: the capability-gap packet lists nine kinds, with verifier-interface",
       "body": "The brief's section The capability-gap packet ('Kinds stay apart') listed eight gap kinds. Since the user's review item 4 (lpmxuzzz, 2026-11-15) examples/schema/target.schema.json has nine: verifier-interface, a task the verifier's command line can't express as stated (equivalence's single --classpath for a pair with two dependency closures, the gap of 285, 286, 287 and 306's preservation tasks). The passage now lists it in the schema's order, dated, and says the list is the schema's blocker kind enum. Done at the user's request; only that paragraph changed, and no test reads it. The brief has no other known stale passage.",
       "log_sha256": "60d22d2a4f31ca0a2c62e29f82c8ebb132b5c528b95194d73e9a46a5ede5cd96"
     },
     {
       "change_id": "mzxrtnukmosokkrqowqrvxxqsknpnqns",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "98739b3d15b9277c2d65cb67eb2468f39f613e60",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "7530498319e08ddce2452f5c77166377d83428b8d254252424029a5e592ff03e"
+    },
+    {
+      "change_id": "mmnktupmzkknmpqpptyvvwtpoooxunoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "run-streams status bar: a loop's spend is what its sessions' running totals rose by, not their sum",
+      "body": "The status bar of run-streams.sh added up the dollar figure of every 'turn done' line a loop printed. That figure is Claude Code's total_cost_usd, the session's cost so far: each cycle resumes one session, and a resumed session goes on from its total, so every turn counted all the turns before it again. A forked stream's total also starts at the planning session's, which every stream of a run inherited. On the recorded runs the bar's figures were 15 to 36 times too high, for example example-targets $3,893 against $216 by the new count (still including the four inherited starting totals of $28.32, which the old state files don't mark), and application-core $14,056 against $392.\n\nstreams_status.py tag now marks the figure of a fork's first turn, the turn after feature-loop.sh's 'starting session ... as a fork of ...' line, as '=X' in LABEL.cost, and spend() counts each figure's rise over the one before, a fork's marked figure only as where the rises start, and a figure below the last as a new session counted whole. The fork turn's own cost (one turn without tools) is the only spend left out. The module docstring and run-streams.sh's header say what the figure is. Verified: test_streams_status.py's tests now use running totals as the loops print them, with three new ones (a resumed session across a restart, a fork, a new session after a drop); 8 of its 9 tests fail on the old code and all 9 pass. render on the example-targets run's state prints the bar line, and bash -n passes on run-streams.sh. The state files of past runs, local and ignored by git, are left as they are.",
+      "log_sha256": "b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede"
     }
   ],
   "logs": {
@@ -1651,6 +1659,12 @@
       "lines": 17578,
       "gzip_bytes": 12371227,
       "url": "https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/b88530b44cf357e35982c16a6022ccc89ed584ab432b0a0c301e78eceb8c9f59.jsonl.gz"
+    },
+    "b967c3a7f406a214d4f30fc9bffdc31e87b1f7518675cec7c2919137c6405ede": {
+      "bytes": 60114265,
+      "lines": 18374,
+      "gzip_bytes": 12986802,
+      "url": null
     },
     "bbc1500f1c9b791b6f1845823d8824d71ef3cb87e6d4767672bac31e5f059832": {
       "bytes": 15005228,

@@ -14,9 +14,23 @@ OUTPUT = """[2000-01-01 10:00:00] cycle 1, no limit: the loop runs until stopped
 [2000-01-01 10:20:00] says: working on H1
 [2000-01-01 10:40:00] turn done: success, 80 steps, 40.0 min, $3.25
 [2000-01-01 10:41:00] cycle 1: asking whether to go on
-[2000-01-01 10:42:00] turn done: success, 2 steps, 0.5 min, $0.10
+[2000-01-01 10:42:00] turn done: success, 2 steps, 0.5 min, $3.35
 [2000-01-01 10:43:00] cycle 2
 a line that isn't UTF-8: \xff
+"""
+
+# The same session resumed after a restart of run-streams.sh: its totals go on from 3.35.
+RESUMED = """[2000-01-01 11:00:00] cycle 2, no limit: the loop runs until stopped
+[2000-01-01 11:30:00] turn done: success, 60 steps, 30.0 min, $5.10
+[2000-01-01 11:31:00] turn done: success, 2 steps, 0.5 min, $5.20
+"""
+
+# A stream forked from the planning session, whose total was $28.30 then.
+FORKED = """[2000-01-01 10:00:00] starting session 0000 as a fork of 1111
+[2000-01-01 10:01:00] turn done: success, 1 steps, 0.2 min, $28.32
+[2000-01-01 10:02:00] cycle 1, no limit: the loop runs until stopped
+[2000-01-01 10:40:00] turn done: success, 80 steps, 38.0 min, $31.07
+[2000-01-01 10:41:00] turn done: success, 2 steps, 0.5 min, $31.12
 """
 
 BRIEF = """# Stream brief
@@ -41,15 +55,28 @@ class Tag(unittest.TestCase):
             self.assertEqual(len(lines), len(OUTPUT.splitlines()))
             self.assertTrue(all(line.startswith("[heap] ") for line in lines))
             self.assertAlmostEqual(streams_status.spend(d, "heap"), 3.35)
+            self.assertEqual((Path(d) / "heap.cost").read_text(), "3.25\n3.35\n")
             self.assertEqual((Path(d) / "heap.cycle").read_text().strip(), "2")
             self.assertTrue((Path(d) / "heap.last").read_text().strip().isdigit())
 
-    def test_spend_adds_up_across_restarts(self):
+    def tagged(self, d, *outputs):
+        for output in outputs:
+            subprocess.run([sys.executable, str(HERE / "streams_status.py"), "tag", "heap", d],
+                           input=output.encode("latin-1"), capture_output=True, check=True)
+        return streams_status.spend(d, "heap")
+
+    def test_each_figure_is_the_sessions_total_so_far_so_spend_is_its_rise(self):
         with tempfile.TemporaryDirectory() as d:
-            for _ in range(2):
-                subprocess.run([sys.executable, str(HERE / "streams_status.py"), "tag", "heap", d],
-                               input=OUTPUT.encode("latin-1"), capture_output=True, check=True)
-            self.assertAlmostEqual(streams_status.spend(d, "heap"), 6.70)
+            self.assertAlmostEqual(self.tagged(d, OUTPUT, RESUMED), 5.20)
+
+    def test_a_forks_first_figure_is_its_parents_total_not_spend(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertAlmostEqual(self.tagged(d, FORKED), 2.80)
+            self.assertEqual((Path(d) / "heap.cost").read_text().split()[:2], ["=28.32", "31.07"])
+
+    def test_a_figure_below_the_last_starts_a_new_session_counted_whole(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertAlmostEqual(self.tagged(d, FORKED, OUTPUT), 2.80 + 3.35)
 
 
 class Render(unittest.TestCase):
@@ -66,7 +93,7 @@ class Render(unittest.TestCase):
             (self.ws / "llm-dlc" / "loop-summaries" / name).write_text(
                 "# Run\n\n- cycle 1, 2000-01-01 10:40:00, `abc`: first\n" + ("- cycle 2, x, `d`: second\n" if n else ""))
         (self.ws / "llm-dlc" / "loop-summaries" / "2000-01-01-100000-x-native.md").write_text("- cycle 1, x, `e`: other\n")
-        (self.state / "heap.cost").write_text("3.25\n0.10\n")
+        (self.state / "heap.cost").write_text("3.25\n3.35\n")
         (self.state / "heap.cycle").write_text("2\n")
         (self.state / "heap.last").write_text("1000\n")
 

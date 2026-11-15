@@ -69,7 +69,7 @@ The user reviewed step 5's for-review list with the agent after the loop stopped
 
 ### Record session traces
 
-change `mzxrtnukmoso` · [log `3ec50b10b547`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/3ec50b10b5473d98790e66c5eb6363f98efb5d92f2373109e29559509981b295.jsonl.gz)
+[`98739b3d15b9`](https://github.com/pilifs/in-the-loop/commit/98739b3d15b9277c2d65cb67eb2468f39f613e60) · [log `3ec50b10b547`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/3ec50b10b5473d98790e66c5eb6363f98efb5d92f2373109e29559509981b295.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

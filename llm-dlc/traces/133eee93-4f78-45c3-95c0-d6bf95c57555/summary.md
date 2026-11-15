@@ -26,7 +26,7 @@ Job 20261114-174017-example-targets-runtime-r2-the-upstream passed on vm-1 (2 st
 
 ### Record session traces
 
-change `mzxrtnukmoso` · [log `ddbdaf3ee2fa`](https://terminalvalue.net/raw-traces/133eee93-4f78-45c3-95c0-d6bf95c57555/ddbdaf3ee2fab53ee671b70fc3f825ae6aebf8c17585552332457c6267f29647.jsonl.gz)
+[`98739b3d15b9`](https://github.com/pilifs/in-the-loop/commit/98739b3d15b9277c2d65cb67eb2468f39f613e60) · [log `ddbdaf3ee2fa`](https://terminalvalue.net/raw-traces/133eee93-4f78-45c3-95c0-d6bf95c57555/ddbdaf3ee2fab53ee671b70fc3f825ae6aebf8c17585552332457c6267f29647.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

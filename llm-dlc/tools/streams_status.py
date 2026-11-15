@@ -7,7 +7,9 @@ Two commands, both used by run-streams.sh:
       Copies a loop's output from stdin to stdout, each line prefixed with
       [LABEL], as the script's sed did, and keeps the loop's state in STATE_DIR:
       LABEL.cost gets the dollar figure of every "turn done: ..., $X" line that
-      show_progress (loop-common.sh) prints, LABEL.cycle the latest "cycle N" that
+      show_progress (loop-common.sh) prints (the figure of a fork's first turn,
+      the one after feature-loop.sh's "starting session ... as a fork of ..."
+      line, written "=X"), LABEL.cycle the latest "cycle N" that
       feature-loop.sh logs, and LABEL.last the time of the loop's latest line. It
       ignores Ctrl-C and ends at end of input, so it never closes the pipe on the
       loop it reads.
@@ -24,6 +26,15 @@ Two commands, both used by run-streams.sh:
 
 The state survives a restart of run-streams.sh, so the spend is the brief's
 whole run's, not only this invocation's.
+
+A "turn done" figure is Claude Code's total_cost_usd, the session's cost so far,
+not the turn's: each cycle of a loop resumes one session, and a resumed session
+goes on from the total it had. So a loop's spend is what its figures rose by, and
+a figure below the one before it starts a new session, counted whole. A forked
+session's total starts at its parent's, which the fork didn't spend (the
+planning session's, the same for every stream of a run): its first figure ("=X")
+is only where its rises start. The fork turn's own cost, one turn without tools,
+is lost in that, and only that.
 """
 import argparse
 import re
@@ -34,6 +45,7 @@ from pathlib import Path
 
 TURN_DONE = re.compile(r"turn done: .*\$([0-9]+(?:\.[0-9]+)?)\s*$")
 CYCLE = re.compile(r"\] cycle ([0-9]+)\b")
+FORK = re.compile(r"\] starting session \S+ as a fork of \S+")
 RECORD_CYCLE = re.compile(r"^- cycle [0-9]+,", re.M)
 STATUS = re.compile(r"^[-*] +Status: *(.*)$")
 
@@ -44,6 +56,7 @@ def tag(label, state):
     state.mkdir(parents=True, exist_ok=True)
     prefix = f"[{label}] ".encode()
     last_write = 0.0
+    forking = False
     out = sys.stdout.buffer
     for raw in sys.stdin.buffer:
         try:
@@ -53,10 +66,13 @@ def tag(label, state):
             pass  # keep reading, so the loop never sees its pipe close
         line = raw.decode("utf-8", "replace")
         try:
+            if FORK.search(line):
+                forking = True
             m = TURN_DONE.search(line)
             if m:
                 with open(state / f"{label}.cost", "a") as f:
-                    f.write(m.group(1) + "\n")
+                    f.write(("=" if forking else "") + m.group(1) + "\n")
+                forking = False
             m = CYCLE.search(line)
             if m:
                 (state / f"{label}.cycle").write_text(m.group(1) + "\n")
@@ -80,12 +96,20 @@ def read(path, default=""):
 
 
 def spend(state, label):
-    total = 0.0
+    """What a loop spent, from its sessions' running totals (see the header)."""
+    total, before = 0.0, 0.0
     for line in read(Path(state) / f"{label}.cost").split():
         try:
-            total += float(line)
+            figure = float(line.lstrip("="))
         except ValueError:
-            pass
+            continue
+        if line.startswith("="):
+            pass  # a fork's parent's total: not this loop's
+        elif figure >= before:
+            total += figure - before
+        else:
+            total += figure  # a new session, from nothing
+        before = figure
     return total
 
 

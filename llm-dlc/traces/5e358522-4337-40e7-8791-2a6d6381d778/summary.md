@@ -26,7 +26,7 @@ Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e2663be, v
 
 ### Record session traces
 
-change `mzxrtnukmoso` · [log `0d235ba3de80`](https://terminalvalue.net/raw-traces/5e358522-4337-40e7-8791-2a6d6381d778/0d235ba3de80358d6cd7834a32afa794eb7aef708c4007320d2836aa2f4ecdfa.jsonl.gz)
+[`98739b3d15b9`](https://github.com/pilifs/in-the-loop/commit/98739b3d15b9277c2d65cb67eb2468f39f613e60) · [log `0d235ba3de80`](https://terminalvalue.net/raw-traces/5e358522-4337-40e7-8791-2a6d6381d778/0d235ba3de80358d6cd7834a32afa794eb7aef708c4007320d2836aa2f4ecdfa.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

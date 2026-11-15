@@ -32,7 +32,7 @@ Job 20261114-164239-example-targets-runtime-r3-after-vf-024 (vm-1) passed in 44 
 
 ### Record session traces
 
-change `mzxrtnukmoso` · [log `9e309f00f26d`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/9e309f00f26d69bbf16e1fefea8fb1e77ad21127f3cd4b7ba8762d77fed793d2.jsonl.gz)
+[`98739b3d15b9`](https://github.com/pilifs/in-the-loop/commit/98739b3d15b9277c2d65cb67eb2468f39f613e60) · [log `9e309f00f26d`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/9e309f00f26d69bbf16e1fefea8fb1e77ad21127f3cd4b7ba8762d77fed793d2.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

@@ -26,7 +26,7 @@ Ran 20261115-050846 (example 287 fixed-guard receipt) and 20261115-050856 (examp
 
 ### Record session traces
 
-change `mzxrtnukmoso` · [log `dd7e1b601263`](https://terminalvalue.net/raw-traces/d171101b-61c0-427e-9bfc-9ecd379dfd60/dd7e1b601263164e922e1b6d9f0bb336bb9085a643398fec24dff7ccd028722d.jsonl.gz)
+[`98739b3d15b9`](https://github.com/pilifs/in-the-loop/commit/98739b3d15b9277c2d65cb67eb2468f39f613e60) · [log `dd7e1b601263`](https://terminalvalue.net/raw-traces/d171101b-61c0-427e-9bfc-9ecd379dfd60/dd7e1b601263164e922e1b6d9f0bb336bb9085a643398fec24dff7ccd028722d.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

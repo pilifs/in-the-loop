@@ -99,7 +99,8 @@
 # loop its current cycle, its commits, its spend, its state, and how long since
 # its last output line, and the integration check's last result. The same line
 # is logged every half hour (every quarter hour outside tmux, where there is no
-# bar). Spend is the sum of the "turn done" figures the loops print, kept with
+# bar). Spend is what the "turn done" figures the loops print rose by (each is
+# its session's total so far, a fork's starting at its parent's), kept with
 # the rest of the state in llm-dlc/loop-summaries/run-streams-NAME/, so it
 # survives a restart. llm-dlc/tools/streams_status.py reads and renders it.
 #
