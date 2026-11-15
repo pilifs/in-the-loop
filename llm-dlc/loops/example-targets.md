@@ -2036,6 +2036,27 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   Items 1–7 change code or packets after the A8 jobs were queued. A8's jobs stay the evidence for the tree they ran
   on; whether an item needs a rerun is judged when it is done (none touches `without_jbmc.sh` or the constructed
   run paths). **Next**: item 1, and the A8 jobs when they are collected.
+- 2026-11-15, **A8 passes, so Tier A passes on the merged line.** The verification loop collected both A8 jobs in
+  `qswsrqyw`, each at `uwuktzll` (`22115dcb`), with no outputs applied:
+  - `20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na`: passed, 49 of 49 steps, 20m56s, peak 955 MiB. Each
+    step's log opens with `without_jbmc.sh`'s line "JBMC absent (no runnable jbmc; shutil.which finds none)", once per
+    step, and no other line names `jbmc`. So no hidden JBMC dependency showed. The 17 tasks run through `build.py`
+    came back as expected, the 25 refusals refused as predicted, and the seven native constructed examples (144, 145,
+    149, 151, 161, 172, 190) kept their recorded verdicts (signals `task-as-expected`, `task-refused-as-predicted`,
+    `as-expected`). The runner's first attempt was killed by its session's background limit and the job reran from
+    pending; the collected run is the second.
+  - `20261115-020015-gate-a8-one-constructed-example-per-buil`: passed, 28 of 28 steps, 3m37s, peak 1.3 GiB. Each of
+    build.py's 28 constructed run paths kept its recorded verdict.
+
+  With the offline part (`uwuktzll`), the three parts of A8 hold: existing examples keep their outcomes, the native
+  tasks run with JBMC absent, and the shared tests and acceptance jobs pass, as read in the user's review (the merged
+  line, the 28-path sample, JBMC hidden, 147/148 and cargo not rerun). **Tier A, A0–A8, passes.** The portfolio rows,
+  the gap inventory and the for-review list are as step 5 recorded them.
+  - **Checked**: `test_acceptance.py` (15) passes with the no-JBMC job collected; its A8 test reads each packet task's
+    latest collected step, now this job's.
+  - **Not `done` yet**: the user's ten review items (the entry above) come first; item 9 is done.
+  - **Next**: item 1, a blocked task's handoff `next` names `workflow_refusal.py N T` and its gap id with the
+    inventory's closure test.
 - Status: working
 
 ## Loop settings

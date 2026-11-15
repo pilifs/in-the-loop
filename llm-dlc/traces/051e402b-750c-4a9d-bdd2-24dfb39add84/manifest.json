@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "051e402b-750c-4a9d-bdd2-24dfb39add84",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Work on the brief in `llm-dlc/loops/example-targets.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember ",
   "client": {
@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T02:28:32.009Z",
-  "duration_seconds": 28992,
+  "ended": "2026-11-15T04:14:21.681Z",
+  "duration_seconds": 35341,
   "stats": {
-    "turns": 164,
-    "api_calls": 1389,
-    "tool_calls": 1419,
+    "turns": 166,
+    "api_calls": 1399,
+    "tool_calls": 1429,
     "tool_errors": 27,
     "compactions": 30,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2816,
-      "output_tokens": 914987,
-      "cache_read_input_tokens": 177141618,
-      "cache_creation_input_tokens": 4522923
+      "input_tokens": 2838,
+      "output_tokens": 919903,
+      "cache_read_input_tokens": 178561373,
+      "cache_creation_input_tokens": 4698271
     }
   },
   "tools": {
-    "Bash": 1217,
-    "Read": 92,
+    "Bash": 1224,
+    "Read": 95,
     "Edit": 83,
     "Write": 8,
     "ToolSearch": 7,
@@ -489,24 +489,24 @@
     {
       "index": 30,
       "started": "2026-11-15T02:14:22.325Z",
-      "ended": "2026-11-15T02:28:32.009Z",
-      "turns": 5,
-      "api_calls": 36,
+      "ended": "2026-11-15T04:14:21.681Z",
+      "turns": 7,
+      "api_calls": 46,
       "usage": {
-        "input_tokens": 72,
-        "output_tokens": 29185,
-        "cache_read_input_tokens": 3149662,
-        "cache_creation_input_tokens": 112559
+        "input_tokens": 94,
+        "output_tokens": 34101,
+        "cache_read_input_tokens": 4569417,
+        "cache_creation_input_tokens": 287907
       },
-      "peak_context_tokens": 125745
+      "peak_context_tokens": 187016
     }
   ],
   "log": {
-    "sha256": "c2f934f9a9d2dffd2895fe96207ec250642d3c01a37dcd9a0fe790089e19e32e",
-    "bytes": 44295854,
-    "lines": 14176,
-    "gzip_bytes": 9262512,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/c2f934f9a9d2dffd2895fe96207ec250642d3c01a37dcd9a0fe790089e19e32e.jsonl.gz"
+    "sha256": "428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3",
+    "bytes": 44822959,
+    "lines": 14282,
+    "gzip_bytes": 9412642,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3.jsonl.gz"
   },
   "subagents": [
     {
@@ -1085,6 +1085,22 @@
       "summary": "example-targets: the user's decisions on the for-review list, nine items to do before done; the workflow brief's release-pair rule noted",
       "body": "The user reviewed step 5's for-review list with the agent after the loop stopped. Every reading of a decision is accepted as read, including gate A8's four (the jobs run at the tip of the merged line, the 28-path sample of constructed examples, JBMC hidden with bwrap rather than uninstalled, 147/148 and the cargo suites not rerun), and the streams' packet notes stay notes. Ten items are decided, recorded as a numbered list in the brief's Progress: a blocked task's handoff names workflow_refusal.py; build.py --index-only regenerates the gap inventory; 285-287's prediction summaries get a pointer to the observed blockers; a new gap kind for two-dependency-closures; receipts bundle size-capped raw streams and say why controls didn't start; A7's four receipt and handoff observations fixed; 307's receipt records its published-class match; the 18-versus-19 collect count investigated; 287's missing single-byte sensitivity control recorded; and a dated note in example-targets-workflow.md that the release-pair rule changed at the merge (ykxtqwmt), done in this commit. The brief's status goes back to working. Nothing was run: this commit records decisions and edits two briefs.",
       "log_sha256": "bd966fe3a77333bf27666ea8095418bc280e605aaebea37ac54394b533e15938"
+    },
+    {
+      "change_id": "qswsrqywvwortlwuvtnmqnkuzxzzxurn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: gate A8's 42 target tasks with JBMC absent, and one constructed example per build.py run path, both passed",
+      "body": "20261115-015944 (49 steps, 20m56s, peak 955 MiB): the 42 target tasks and 7 native constructed run paths behave as expected with JBMC absent, including the task refusals predicted. 20261115-020015 (28 steps, 3m37s, peak 1.3 GiB): each build.py run path keeps its recorded verdict at the merged revision. Collect applied no output files. Run with the one-loop budget (80G, 26 CPUs, 13 workers); the first runner was killed by the session's 10 minute background limit and the job re-ran from pending.",
+      "log_sha256": "428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3"
+    },
+    {
+      "change_id": "qroonxrsrozvkvqnnozyspwqqqykluyy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: gate A8 passes on its two collected jobs, so Tier A passes on the merged line",
+      "body": "The verification loop collected gate A8's two jobs in qswsrqyw, both run at uwuktzll. 20261115-015944 passed all 49 steps: the 42 target tasks of 105, 285-287 and 305-307 (17 as expected through build.py, 25 refused as predicted through workflow_refusal.py) and seven native constructed examples, each step inside without_jbmc.sh, whose line 'JBMC absent' opens every log once, with no other mention of jbmc, so no hidden JBMC dependency showed. 20261115-020015 passed all 28 steps: one constructed example per build.py run path keeps its recorded verdict. With A8's offline part, every Tier A gate A0-A8 now passes, as the user's review of the A8 readings accepted. The brief's Progress records it. The status stays working: the user's ten review items come before done, and item 1 (a blocked task's handoff names workflow_refusal.py) is next. Checked: test_acceptance.py (15 tests) passes with the job collected.",
+      "log_sha256": "428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3"
     }
   ],
   "logs": {
@@ -1164,6 +1180,12 @@
       "bytes": 41692907,
       "lines": 13348,
       "gzip_bytes": 8688942,
+      "url": null
+    },
+    "428a018825f5a60851bc9d1700b7a12130660aaeb58b4bd810617e719e0f5de3": {
+      "bytes": 44822959,
+      "lines": 14282,
+      "gzip_bytes": 9412642,
       "url": null
     },
     "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c": {
@@ -1308,12 +1330,6 @@
       "bytes": 44222651,
       "lines": 14147,
       "gzip_bytes": 9250375,
-      "url": null
-    },
-    "c2f934f9a9d2dffd2895fe96207ec250642d3c01a37dcd9a0fe790089e19e32e": {
-      "bytes": 44295854,
-      "lines": 14176,
-      "gzip_bytes": 9262512,
       "url": null
     },
     "c8aa7b9f45698460845095862fdc09ba4ceca5edefccf6d33f6101a7ac1b86c8": {
