@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T01:51:30.660Z",
-  "duration_seconds": 26770,
+  "ended": "2026-11-15T02:06:18.470Z",
+  "duration_seconds": 27658,
   "stats": {
-    "turns": 148,
-    "api_calls": 1234,
-    "tool_calls": 1265,
-    "tool_errors": 23,
-    "compactions": 27,
+    "turns": 153,
+    "api_calls": 1310,
+    "tool_calls": 1343,
+    "tool_errors": 26,
+    "compactions": 28,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2504,
-      "output_tokens": 813510,
-      "cache_read_input_tokens": 159506877,
-      "cache_creation_input_tokens": 4096651
+      "input_tokens": 2658,
+      "output_tokens": 857253,
+      "cache_read_input_tokens": 168423623,
+      "cache_creation_input_tokens": 4247320
     }
   },
   "tools": {
-    "Bash": 1087,
-    "Read": 85,
-    "Edit": 74,
-    "Write": 6,
+    "Bash": 1156,
+    "Read": 88,
+    "Edit": 77,
+    "Write": 8,
+    "ToolSearch": 6,
     "Agent": 5,
-    "ToolSearch": 5,
     "AskUserQuestion": 2,
     "WebFetch": 1
   },
@@ -52,8 +52,10 @@
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_runtime.py",
+    "examples/tools/targets/test_without_jbmc.py",
     "examples/tools/targets/test_workflow.py",
     "examples/tools/targets/test_workflow_refusal.py",
+    "examples/tools/targets/without_jbmc.sh",
     "examples/tools/targets/workflow.py",
     "examples/tools/targets/workflow_handoff.py",
     "examples/tools/targets/workflow_refusal.py",
@@ -445,24 +447,38 @@
     {
       "index": 27,
       "started": "2026-11-15T01:42:14.308Z",
-      "ended": "2026-11-15T01:51:30.660Z",
-      "turns": 4,
-      "api_calls": 42,
+      "ended": "2026-11-15T01:53:05.462Z",
+      "turns": 5,
+      "api_calls": 48,
       "usage": {
-        "input_tokens": 86,
-        "output_tokens": 23896,
-        "cache_read_input_tokens": 5534593,
-        "cache_creation_input_tokens": 162642
+        "input_tokens": 98,
+        "output_tokens": 25832,
+        "cache_read_input_tokens": 6603422,
+        "cache_creation_input_tokens": 169375
       },
-      "peak_context_tokens": 175828
+      "peak_context_tokens": 182561
+    },
+    {
+      "index": 28,
+      "started": "2026-11-15T01:53:50.749Z",
+      "ended": "2026-11-15T02:06:18.470Z",
+      "turns": 4,
+      "api_calls": 70,
+      "usage": {
+        "input_tokens": 142,
+        "output_tokens": 41807,
+        "cache_read_input_tokens": 7847917,
+        "cache_creation_input_tokens": 143936
+      },
+      "peak_context_tokens": 157122
     }
   ],
   "log": {
-    "sha256": "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c",
-    "bytes": 40125571,
-    "lines": 12658,
-    "gzip_bytes": 8401424,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c.jsonl.gz"
+    "sha256": "34ca68cff8212f8c26fc6ee9682b66d83c610fd51b61531a962c57acb76582e1",
+    "bytes": 41692907,
+    "lines": 13348,
+    "gzip_bytes": 8688942,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/34ca68cff8212f8c26fc6ee9682b66d83c610fd51b61531a962c57acb76582e1.jsonl.gz"
   },
   "subagents": [
     {
@@ -1001,6 +1017,14 @@
       "summary": "example-targets: Phase 5 step 4, the v1 gap inventory, published as examples/gap-inventory.md and through find.py --gap; VF-028 closed",
       "body": "The v1 gap inventory (decision 11) is now a page, examples/gap-inventory.md, generated offline by workflow_handoff.py inventory --markdown from the 20 target sidecars, their gap packets and receipts; test_gap_inventory.py checks the committed page equals the rendering. It ranks the five observed capability gaps by distinct families, then blocked obligations: two-dependency-closures (3 families, 4 obligations), receiver-of-several-constructors (2, 8), string-parameter (2, 5), interface-parameter (1, 7) and the StringBuilder constructor under strict (1, 1), 25 blocked obligations in all. Each entry gives the obligations it blocks with their claim keys, the smallest reproducer (the fastest observed attempt, its packet, job, and the workflow_refusal.py check that reruns it), the missing semantics, owner modules and closure test. The 17 predicted groups are kept apart in their own table, unranked against the observed ones. inventory() now gives each group a rank and a reproducer; find.py --gap also takes a gap id or its part before a colon (the projection's JDK suffix dropped), so --gap input-construction:string-parameter finds 287, 306 and 307; examples/README.md links the page.\n\nVF-028's two reruns passed with task-refused-as-predicted (collected in ovvoultp, which closed VF-028); the entry is moved under findings.md's Decided and closed heading beside VF-027. Verified: example-targets-integration.sh exits 0 (contract 16, targets suite 247 with four new tests, test_build 190, test_pipeline 33, build.py --plan), and build.py --index-only gives no diff. For review, in the brief: 285-287's prediction summaries still say no verifier has run on the packet, kept as recorded; the page is regenerated by hand after a sidecar or packet change.",
       "log_sha256": "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c"
+    },
+    {
+      "change_id": "uwuktzllopqqpmutpoxopmtpvwnwmxwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: A8's offline part checked, and its two jobs queued: the 42 target tasks with JBMC absent, and a constructed example per build.py run path (verification pending)",
+      "body": "Gate A8 of llm-dlc/loops/example-targets-acceptance.md requires three things: existing relevant examples keep their outcomes, the new native tasks run with JBMC absent, and the shared tests and acceptance jobs pass at the merged revision.\n\nWhat the collected jobs already show is now checked offline, in a new class A8 in examples/tools/targets/test_acceptance.py. Each of the 42 tasks of 105, 285-287 and 305-307 has a collected pipeline job step, and the latest one passed. The failures are 286's first replay, the 23 first attempts VF-027 recorded and 307's two VF-028 attempts, and each is superseded by a later pass of the same task. A rerun of a refusal passes only at its recorded refusal, so no failure is hidden. The legacy reports 106-109 stay non-executable, with no sidecar or result, and keep their historical labels; 105 keeps its label. lib/ is unchanged since 47358229, where application-core's final job ran the cargo suites and passed.\n\nWhat wasn't shown is queued. Neither job applies outputs back; the per-step log lines are the evidence.\n- 20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na runs all 42 tasks, plus one constructed example per native run path (144, 145, 149, 151, 161, 172, 190), each inside the new examples/tools/targets/without_jbmc.sh. That wrapper covers every jbmc with /dev/null in a private bwrap mount namespace, checks that none can be run or found, and refuses otherwise. test_without_jbmc.py has 3 tests for it.\n- 20261115-020015-gate-a8-one-constructed-example-per-buil reruns the fastest recorded example of each of build.py's 28 constructed run paths. Each is expected to give its recorded verdict, because the wave's build.py and result-schema changes reach every constructed example.\n\nFor review: these jobs run at this commit, not at the merge commit itself, so \"merged revision\" is read as the merged line. The 28 run paths are a sample, not every constructed example. JBMC is made unrunnable rather than uninstalled.",
+      "log_sha256": "34ca68cff8212f8c26fc6ee9682b66d83c610fd51b61531a962c57acb76582e1"
     }
   ],
   "logs": {
@@ -1068,6 +1092,12 @@
       "bytes": 28229246,
       "lines": 8933,
       "gzip_bytes": 5953478,
+      "url": null
+    },
+    "34ca68cff8212f8c26fc6ee9682b66d83c610fd51b61531a962c57acb76582e1": {
+      "bytes": 41692907,
+      "lines": 13348,
+      "gzip_bytes": 8688942,
       "url": null
     },
     "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c": {

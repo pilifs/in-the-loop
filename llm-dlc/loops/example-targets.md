@@ -1728,6 +1728,58 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: A8. Existing relevant examples must keep their outcomes, the native tasks must run with JBMC absent,
     and the shared tests and the queued acceptance jobs must pass at the merged revision. Find what is already shown by
     the jobs collected so far, and queue what isn't, such as a no-JBMC run. Then step 5, the for-review list.
+- 2026-11-15, **A8: what the collected jobs show is checked offline, and the two jobs for the rest are queued**
+  (verification pending).
+  - **What was already shown**:
+    - **The shared tests**: `example-targets-integration.sh` runs them at each commit of this loop.
+    - **The cargo suites**: `lib/` is unchanged from `a7abc155` (before Phase 0) and from `47358229`, where
+      application-core's final job `20261108-214557` ran them and passed. So that run covers this tree's `lib/`;
+      none was rerun.
+    - **The acceptance jobs**: every one of the 42 tasks of 105, 285–287 and 305–307 has a collected job step, and the
+      latest passed. The failed ones are each superseded by a later pass of the same task:
+      - 286's first `replay` (`20261114-214818-…`), by `20261114-223812-…`;
+      - the 23 first attempts VF-027 recorded, by their reruns;
+      - 307's two first attempts (VF-028), by theirs.
+
+      A rerun of a refusal passes only at its recorded refusal, so the failure is superseded, not hidden.
+    - **The legacy reports**: 106–109 still have no sidecar and no result, are still not executable for the old
+      reason, and keep their historical `verdictLabel`. So does 105.
+  - **What was not shown, now queued**:
+    - **The tasks with JBMC absent**, job `20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na`:
+      - each of the 42 tasks, run as its last job ran it: 17 through `build.py N --task T`, expected as expected, and
+        25 through `workflow_refusal.py N T`, expected refused as predicted;
+      - then one constructed example per native run path (144, 145, 149, 151, 161, 172, 190), expected at its
+        recorded verdict.
+
+      Every step runs in the new `examples/tools/targets/without_jbmc.sh`. It covers each `jbmc` (on PATH and in the
+      route's fixed `/usr/local/bin:/usr/bin:/bin`) with `/dev/null` in a private bwrap mount namespace. It checks that
+      none can be run or found, and refuses with exit 2 if one can. The job has 2 CPUs, 4 GiB and 30 minutes.
+    - **Existing examples keep their outcomes**, job `20261115-020015-gate-a8-one-constructed-example-per-buil`. This
+      wave changed:
+      - `build.py`: the `--task` route, `load_example`'s sidecar check and the index's projection;
+      - `result.schema.json`, which `check_result` applies to every published result;
+      - `find.py` and `pipeline.py`.
+
+      So the job reruns one constructed example per distinct run path, the fastest recorded of each: 28 paths, by
+      approach, app, adapter, engine, options and model. Each is expected at its recorded verdict, which is its
+      expected one. 147 and 148 aren't run (VF-002). The job has 2 CPUs, 3 GiB and 20 minutes.
+
+    Neither job declares outputs: the log's per-step lines are the evidence, and no receipt or result is rewritten.
+  - **The tests**:
+    - `test_acceptance.py` gets class A8, with two tests: each packet task's latest collected step passed, and the
+      legacy reports stay historical. It reads the collected results offline, so the no-JBMC job's 42 steps count
+      once it is collected.
+    - `test_without_jbmc.py` (3 tests): inside the wrapper, no `jbmc` is found or runs, and the command's exit code
+      comes back. With its check forced to find one, it refuses (exit 2). It is skipped without bwrap.
+  - **For review**:
+    - A8 has two parts: the offline checks and the queued jobs. Its jobs ran each task at a later commit than the merge.
+      "At the merged revision" is read as the merged line, not the merge commit.
+    - The 28 run paths are a sample, not every constructed example.
+    - JBMC is made unrunnable rather than uninstalled: the file still exists, as `/dev/null`.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (252, five new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`. `pipeline.py validate` finds no problem.
+  - **Next**: step 5, the for-review list, with A8 pending on the two jobs. Read them when they are collected: A8
+    passes if both pass. A failing step that names `jbmc` is a hidden dependency, a finding to fix with a reproducer.
 - Status: working
 
 ## Loop settings

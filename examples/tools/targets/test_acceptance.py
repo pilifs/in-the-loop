@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tier A on the merged packets (Phase 5 step 3 of llm-dlc/loops/example-targets.md): rows A1, A2 and A6 of
+"""Tier A on the merged packets (Phase 5 step 3 of llm-dlc/loops/example-targets.md): rows A1, A2, A6 and A8 of
 llm-dlc/loops/example-targets-acceptance.md, checked on the real sidecars and on the receipts that the pipeline's jobs
 left in the tree, where test_targets_contract.py checks the same rows on Phase 0's fixture. Offline and read-only: it
 reads files, imports the route's modules, and runs nothing.
@@ -17,6 +17,9 @@ reads files, imports the route's modules, and runs nothing.
       execution, conclusion, expectation, scope and replay are separate fields; each is its task's current receipt.
       An unresolved receipt is allowed only at the refusal an observed gap packet recorded for its task, and is never
       as expected; a proof task's controls may be not-started (its adapter doesn't call its target), a replay's never.
+  A8  every task of the deep packets and the calibration has a collected pipeline job step, and its latest passed;
+      the legacy reports 106-109 stay historical and not executable, and 105 keeps its historical label. A8's jobs
+      (the tasks with JBMC absent, a constructed example per run path) are the pipeline's, not this file's.
 """
 
 import contextlib
@@ -32,6 +35,7 @@ from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent.parent
+ROOT = EXAMPLES.parent
 sys.path.insert(0, str(HERE.parent))
 import build  # noqa: E402
 import result_format  # noqa: E402
@@ -346,6 +350,60 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
                     packet = workflow.handoff(folder, example, target, task)
                 self.assertIn(directory.name, [r["attempt"] for r in packet["receipts"]])
                 self.assertEqual(packet["staleReceipts"], [])
+
+
+# A pipeline step that runs one task: `build.py N --task T`, or workflow_refusal.py's rerun of a recorded refusal,
+# either maybe inside without_jbmc.sh.
+TASK_STEP = re.compile(r"(?:build\.py (\d{3}) --task|workflow_refusal\.py (\d{3})) ([\w-]+)")
+LEGACY = ("106", "107", "108", "109")
+
+
+def task_steps():
+    """{(example, task): [(job id, step status), ...]} of every collected job step that ran a task, oldest first."""
+    out = {}
+    for path in sorted((ROOT / "verification/results").glob("*/result.json")):
+        result = json.loads(path.read_text())
+        for step in result.get("steps", []):
+            m = TASK_STEP.search(step.get("run") or "")
+            if m:
+                out.setdefault((m[1] or m[2], m[3]), []).append((result["id"], step["status"]))
+    return out
+
+
+class A8CombinedIntegrationOnTheJobs(unittest.TestCase):
+    """A8's offline part. Its two jobs (the tasks with JBMC absent, a constructed example per run path) are the
+    pipeline's; this checks what their results and the earlier ones left: every task of the deep packets and the
+    calibration has a collected job step, and the latest passed (a refusal rerun passes only at its recorded refusal,
+    so a first attempt that stopped there is superseded, never hidden). And the legacy reports stay historical."""
+
+    def test_each_tasks_latest_collected_job_step_passed(self):
+        steps = task_steps()
+        for folder, example, target in sidecar_examples():
+            if example["id"] not in PACKETS:
+                continue
+            for task in target["tasks"]:
+                with self.subTest(example=example["id"], task=task["id"]):
+                    runs = steps.get((example["id"], task["id"]))
+                    self.assertTrue(runs, "no collected job step ran it")
+                    self.assertEqual(runs[-1][1], "passed", f"its latest job, {runs[-1][0]}")
+
+    def test_the_legacy_reports_stay_historical_and_not_executable(self):
+        index = {e["id"]: e for e in json.loads((EXAMPLES / "index.json").read_text())["examples"]}
+        for number in LEGACY:
+            with self.subTest(example=number):
+                folder = next(EXAMPLES.glob(f"{number}-*"))
+                example = build.load_example(folder)
+                self.assertIsNone(example.get("target"))
+                plan = build.plan(example)
+                self.assertFalse(plan["executable"])
+                self.assertIn("its report is its README.md", plan["notExecuted"])
+                self.assertEqual(index[number]["verdictLabel"], example["verdictLabel"])
+                self.assertIsNone(index[number]["verdict"])
+                self.assertIsNone(index[number]["target"])
+                self.assertFalse((folder / "result.json").exists())
+        example = build.load_example(next(EXAMPLES.glob("105-*")))
+        self.assertEqual(index["105"]["verdictLabel"], example["verdictLabel"], "105's historical label stays")
+        self.assertIn("run one task at a time", build.plan(example)["notExecuted"])
 
 
 if __name__ == "__main__":

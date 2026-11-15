@@ -1,0 +1,303 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na",
+  "title": "gate A8: the 42 target tasks and the 7 native constructed run paths, run with JBMC absent",
+  "description": "Gate A8 of llm-dlc/loops/example-targets-acceptance.md requires the new native tasks to run with JBMC absent (its adversarial row: native execution without JBMC installed works for supported tasks, with no hidden mandatory dependency). Every step runs inside examples/tools/targets/without_jbmc.sh, which covers each jbmc executable (on PATH, and in /usr/local/bin, /usr/bin and /bin, the target route's fixed PATH) with /dev/null in a private bwrap mount namespace, and checks before running anything that no jbmc can be run or found (exit 2 otherwise). Inside it: all 42 tasks of the seven target sidecar examples (105, 285, 286, 287, 305, 306, 307) at this commit. The 14 replays and 105's three proof tasks with verdicts go through build.py N --task T, each expected as expected (a replay: its pair's outcomes; 105 fix-property established, fix-property-before refuted, regression refuted, as their last jobs gave). The 25 tasks blocked by an observed gap (VF-027, VF-028) go through workflow_refusal.py N T, each expected to stop at its recorded refusal under its recorded claim key. Then one constructed example per native run path of build.py (144, 145, 149, 151, 161, 172, 190), each expected to give its recorded verdict. No outputs are applied back: each step's line in the log is the evidence. A step that fails because jbmc is missing is a hidden dependency, a finding for A8.",
+  "kind": "example",
+  "capabilities": [
+    "target:replay",
+    "target:prove",
+    "target:equivalence",
+    "target:predicted-refusal",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/without_jbmc.sh",
+      "llm-dlc/loops/example-targets-acceptance.md",
+      "examples/tools/targets/workflow_refusal.py"
+    ],
+    "examples": [
+      "105",
+      "285",
+      "286",
+      "287",
+      "305",
+      "306",
+      "307"
+    ]
+  },
+  "expected": "every step exits 0: without_jbmc.sh prints 'JBMC absent' before each; the 17 build.py --task steps print 'as expected'; the 25 workflow_refusal.py steps print 'refused as predicted'; the 7 constructed examples print '(as expected)'. A NOT AS EXPECTED, a NOT AS PREDICTED, or any failure that names jbmc fails A8",
+  "submitted": {
+    "at": "2026-11-15T01:59:44+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "maven",
+    "python3",
+    "jvmcontract",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "timeout": "2h",
+    "notes": "the sum of these tasks' last jobs (105 regression 281 s and confined-change 263 s, four 122 s refusals, the rest 2-54 s each) is about 22 minutes, peak 0.89 GB; the seven constructed examples take seconds each"
+  },
+  "steps": [
+    {
+      "name": "example 105 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 105 task fix-property, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task fix-property",
+      "cwd": "."
+    },
+    {
+      "name": "example 105 task fix-property-before, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task fix-property-before",
+      "cwd": "."
+    },
+    {
+      "name": "example 105 task regression, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task regression",
+      "cwd": "."
+    },
+    {
+      "name": "example 105 task confined-change, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+      "cwd": "."
+    },
+    {
+      "name": "example 285 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 285 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 285 task vulnerable-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 vulnerable-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 285 task fixed-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 fixed-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 285 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 285 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 285 --task mutant-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 285 task mutant-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 mutant-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 286 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task vulnerable-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task fixed-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 fixed-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task vulnerable-protected-state-mutation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-protected-state-mutation",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task fixed-protected-state-mutation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 fixed-protected-state-mutation",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 286 --task mutant-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 286 task mutant-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 mutant-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 287 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task vulnerable-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task fixed-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 fixed-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task vulnerable-guard, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-guard",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task fixed-guard, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 287 --task mutant-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 287 task mutant-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 mutant-security",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task m6-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task m6-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task finite-outcome-before, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-before",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task finite-outcome-after, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task mutant-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 305 task mutant-preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 mutant-preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 306 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 306 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 306 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 306 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 306 --task mutant-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 306 task mutant-preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 307 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 307 --task replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 307 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 307 preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 307 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 307 --task mutant-replay",
+      "cwd": "."
+    },
+    {
+      "name": "example 307 task mutant-preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 307 mutant-preservation",
+      "cwd": "."
+    },
+    {
+      "name": "example 144, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 144",
+      "cwd": "."
+    },
+    {
+      "name": "example 145, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 145",
+      "cwd": "."
+    },
+    {
+      "name": "example 149, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 149",
+      "cwd": "."
+    },
+    {
+      "name": "example 151, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 151",
+      "cwd": "."
+    },
+    {
+      "name": "example 161, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 161",
+      "cwd": "."
+    },
+    {
+      "name": "example 172, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 172",
+      "cwd": "."
+    },
+    {
+      "name": "example 190, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 190",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

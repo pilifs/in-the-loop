@@ -1,0 +1,218 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-020015-gate-a8-one-constructed-example-per-buil",
+  "title": "gate A8: one constructed example per build.py run path keeps its recorded verdict at the merged revision",
+  "description": "Gate A8 of llm-dlc/loops/example-targets-acceptance.md requires existing relevant examples to keep their outcomes at the merged revision. The example-targets wave changed build.py (the --task route, the sidecar check in load_example, the index's target projection), result.schema.json (claim.target, pinned dependencies, records/ bundle paths), find.py and pipeline.py; lib/ is unchanged since a7abc155, before the wave. Every constructed example goes through load_example, plan, check_result against the changed schema and the index, so this job reruns one example of each of the 28 distinct run paths of build.py's constructed examples (approach, app, build adapter, engine, options and model: B8, B9 with JBMC and native, B10, B11 with JBMC and advised native, B12 and D1, on boxoffice, crosscut, mica, quorum, deliveries and shop), the fastest recorded of each. Each is expected to give its recorded verdict, which is its expected one for all 28. 147 and 148 are left out, as not run (their advised claims wait on VF-002). No outputs are applied back: build.py's per-example line in the log is the evidence, and the stored results stay as they are.",
+  "kind": "example",
+  "capabilities": [
+    "B8",
+    "B9",
+    "B10",
+    "B11",
+    "B12",
+    "D1"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/build.py",
+      "examples/schema/result.schema.json",
+      "llm-dlc/loops/example-targets-acceptance.md"
+    ],
+    "examples": [
+      "001",
+      "014",
+      "025",
+      "038",
+      "006",
+      "013",
+      "035",
+      "127",
+      "128",
+      "144",
+      "145",
+      "151",
+      "161",
+      "172",
+      "190",
+      "009",
+      "019",
+      "028",
+      "041",
+      "023",
+      "050",
+      "071",
+      "149",
+      "111",
+      "012",
+      "042",
+      "062",
+      "076"
+    ]
+  },
+  "expected": "example 001 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 014 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 038 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 006 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 013 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 035 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 127 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 128 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 144 gives its expected verdict, verified (vacuously): build.py prints 'as expected' and exits 0; example 145 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 151 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 161 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 172 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 190 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 009 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 019 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 028 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 041 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 023 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 050 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 071 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 149 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 111 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 012 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 042 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 062 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 076 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-15T02:00:15+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "jvmcontract",
+    "jbmc",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "timeout": "90m",
+    "notes": "earlier runs of the slowest of these (111 20-116 s, 006 19-35 s, 062 20 s, 012 9-26 s) peak near 1.2 GB; the rest take a few seconds each"
+  },
+  "steps": [
+    {
+      "name": "example 001 (B8)",
+      "run": "python3 examples/tools/build.py 001",
+      "cwd": "."
+    },
+    {
+      "name": "example 014 (B8)",
+      "run": "python3 examples/tools/build.py 014",
+      "cwd": "."
+    },
+    {
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": "."
+    },
+    {
+      "name": "example 038 (B8)",
+      "run": "python3 examples/tools/build.py 038",
+      "cwd": "."
+    },
+    {
+      "name": "example 006 (B9)",
+      "run": "python3 examples/tools/build.py 006",
+      "cwd": "."
+    },
+    {
+      "name": "example 013 (B9)",
+      "run": "python3 examples/tools/build.py 013",
+      "cwd": "."
+    },
+    {
+      "name": "example 035 (B9)",
+      "run": "python3 examples/tools/build.py 035",
+      "cwd": "."
+    },
+    {
+      "name": "example 127 (B9)",
+      "run": "python3 examples/tools/build.py 127",
+      "cwd": "."
+    },
+    {
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": "."
+    },
+    {
+      "name": "example 144 (B9)",
+      "run": "python3 examples/tools/build.py 144",
+      "cwd": "."
+    },
+    {
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": "."
+    },
+    {
+      "name": "example 151 (B9)",
+      "run": "python3 examples/tools/build.py 151",
+      "cwd": "."
+    },
+    {
+      "name": "example 161 (B9)",
+      "run": "python3 examples/tools/build.py 161",
+      "cwd": "."
+    },
+    {
+      "name": "example 172 (B9)",
+      "run": "python3 examples/tools/build.py 172",
+      "cwd": "."
+    },
+    {
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": "."
+    },
+    {
+      "name": "example 009 (B10)",
+      "run": "python3 examples/tools/build.py 009",
+      "cwd": "."
+    },
+    {
+      "name": "example 019 (B10)",
+      "run": "python3 examples/tools/build.py 019",
+      "cwd": "."
+    },
+    {
+      "name": "example 028 (B10)",
+      "run": "python3 examples/tools/build.py 028",
+      "cwd": "."
+    },
+    {
+      "name": "example 041 (B10)",
+      "run": "python3 examples/tools/build.py 041",
+      "cwd": "."
+    },
+    {
+      "name": "example 023 (B11)",
+      "run": "python3 examples/tools/build.py 023",
+      "cwd": "."
+    },
+    {
+      "name": "example 050 (B11)",
+      "run": "python3 examples/tools/build.py 050",
+      "cwd": "."
+    },
+    {
+      "name": "example 071 (B11)",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": "."
+    },
+    {
+      "name": "example 149 (B11)",
+      "run": "python3 examples/tools/build.py 149",
+      "cwd": "."
+    },
+    {
+      "name": "example 111 (B12)",
+      "run": "python3 examples/tools/build.py 111",
+      "cwd": "."
+    },
+    {
+      "name": "example 012 (D1)",
+      "run": "python3 examples/tools/build.py 012",
+      "cwd": "."
+    },
+    {
+      "name": "example 042 (D1)",
+      "run": "python3 examples/tools/build.py 042",
+      "cwd": "."
+    },
+    {
+      "name": "example 062 (D1)",
+      "run": "python3 examples/tools/build.py 062",
+      "cwd": "."
+    },
+    {
+      "name": "example 076 (D1)",
+      "run": "python3 examples/tools/build.py 076",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
