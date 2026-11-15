@@ -38,6 +38,17 @@ The status is now waiting on the two A8 jobs. When both are collected and pass, 
 
 Out of date in the brief, outside Progress: the Streams section's 4 GB per stream predates the 12G caps. Where it starts from is a recount at a7abc155, kept as recorded.
 
+### Allow list: Filip Stankovic approved 345f455a, 71c156ce, 7e48b0a7, f5f8f407
+
+change `pummuplwqvmr` · [log `4c43c1f8d5ea`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)
+
+Filip Stankovic approved 4 value(s) at their terminal with sync.py allow; the command committed the decision itself.
+
+345f455a  long-token  If6…HG (53 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.
+71c156ce  long-token  If6…wA (49 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.
+7e48b0a7  public-ip  9.…8: Not an IP address: the Maven version of net.sourceforge.saxon:saxon in spring-security fb39d9c2's buildSrc/build.gradle (a public upstream file printed while inspecting example 307's build), and this session's mentions of that finding
+f5f8f407  long-token  If6…PO (53 chars): BCrypt hash outputs of example 307's replay probes under the public test salt $2a$06$If6bvum7DFjUnE9p2uDeDu (from upstream Spring Security's BCryptTests), quoted from the mutant-replay summary; the same strings are already in 307's committed receipts (records/execution.json). Public test vectors, not secrets.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz) has every step in between: reasoning, tool calls and their results.
