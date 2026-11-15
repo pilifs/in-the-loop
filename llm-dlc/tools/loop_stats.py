@@ -60,7 +60,7 @@ REASONS = (  # how feature-loop.sh words each ending, first match wins
     ("but the brief's status still says", "status left working"), ("the brief says done", "work done"),
     ("decided the work was done", "work done"), ("the brief says waiting on jobs", "waiting on jobs"),
     ("the brief says blocked", "blocked"), ("the session decided to stop", "decided to stop"),
-    ("no items left", "no items left"), ("made no commit", "no commit"), ("the brief changed", "brief changed"),
+    ("no items left", "no items left"), ("compacted with no commit", "compacted, no commit"), ("made no commit", "no commit"), ("the brief changed", "brief changed"),
     ("gave no clear", "unclear decision"), ("the fork of session", "fork failed"))
 
 # What the script sends besides the instruction, as the transcripts hold it (metrics.py keeps the
