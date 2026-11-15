@@ -1,6 +1,8 @@
 # Brief: example targets, real-world changes as reproducible work packets
 
-**Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08; [Phase 0](#phase-0-interfaces-hooks-and-fixtures) was done on 2026-11-09.** It starts after the [launch prerequisites](#launch-prerequisites).
+**Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08; [Phase 0](#phase-0-interfaces-hooks-and-fixtures) was done on 2026-11-09; the four streams finished and were merged on
+2026-11-14; Phase 5's five steps were done on 2026-11-15, with gate A8's two jobs still to be read.** The state of each
+gate and packet is in [Progress](#progress)'s for-review entry (2026-11-15, Phase 5 step 5).
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). It **scaffolds** external Java changes, Spring CVEs and
 independent upstream changes of the same kinds, as packets a later agent can execute, prove, refute or turn into an
@@ -62,6 +64,19 @@ was recounted [below](#where-it-starts-from).
 
 ## Where it starts from
 
+**This is the launch baseline, kept as recorded.** Since then, at `mwsuupln` (2026-11-15), the rows that changed are:
+- the external-target seam exists (`examples/tools/targets/`, `target.schema.json`). An example with a `target.json`
+  is planned, run and submitted by task (`build.py --plan NNN --task T`, `build.py NNN --task T`,
+  `pipeline.py submit --example NNN --task T`); real-world examples without one keep the refusal;
+- an attempt's dependencies are pinned by sha256 in the packet's `sources.lock.json` and bound into its claim key;
+- 20 examples have a sidecar: 105 (migrated), the three deep negatives 285–287, the 13 catalog entries 288–300, and
+  the three positives 305–307. 106–109 stay historical;
+- the packets' `sources.lock.json` files pin downloads from github.com, Maven Central, repo.spring.io and
+  services.gradle.org ([decision 1](#decisions)); 307's also keeps the withdrawn maven.aliyun.com's hashes, as a record
+  of the lookups;
+- the checker's refusals on the real packets are recorded as five observed gaps in
+  [`examples/gap-inventory.md`](../../examples/gap-inventory.md), not predicted ones.
+
 Recounted 2026-11-08 at `210b9498` against the outside review's claims at `57f04e55`, and **again on 2026-11-09 at
 application-core's final commit, `a7abc155`** ([prerequisite 2](#launch-prerequisites)). Line numbers are
 `a7abc155`'s, before Phase 0's edits (which add a few lines near the top of `build.py`, and the seam this table says
@@ -115,12 +130,14 @@ used where a revision's build or runtime needs it, never by default, selected by
 sdkman's default. Each preparation and replay
 records the JDK it used, from its `release` file and `java -version`; a different JDK is a different identity.
 
-**Downloads** ([decision 1](#decisions)) are allowed in jobs and in loops, from `github.com` and Maven Central
-(`repo.maven.apache.org`) only, and only through hash-pinned acquisition: every fetched file's sha256 is recorded the
+**Downloads** ([decision 1](#decisions), as extended and narrowed since) are allowed in jobs and in loops, from
+`github.com`, Maven Central (`repo.maven.apache.org`), `repo.spring.io`, `services.gradle.org` and `plugins.gradle.org`
+only (`runtime_maven.HOSTS`, with github.com's and repo.spring.io's storage redirects followed), and only through
+hash-pinned acquisition: every fetched file's sha256 is recorded the
 first time and checked on every reuse, and a mutable reference (a branch, a `latest`, a dynamic version) is refused.
-Planning, linting, discovery and handoff inspection stay offline. Until runtime's acquisition is merged, a stream may
-fetch a pinned file by hand to develop a driver, with its sha256 noted; such a run is a note, never evidence, and no
-case folder contains downloader code. Heavy fetches and builds are jobs.
+Planning, linting, discovery and handoff inspection stay offline. Runtime's acquisition is merged
+(`runtime_maven.py`, `runtime_upstream.py`); before that, a stream could fetch a pinned file by hand to develop a
+driver, with its sha256 noted, as a note, never evidence. No case folder contains downloader code. Heavy fetches and builds are jobs.
 
 ### Safety and semantic rules
 
@@ -338,7 +355,7 @@ The planning session, in the default workspace, one step per commit, each with i
   JDK 21 and 25, a recorded `jvmcontract gaps` refusal, and constructed bad runs and receipts.
 - **The contract**: [`examples/tools/test_targets_contract.py`](../../examples/tools/test_targets_contract.py), rows A0,
   A1, A2, A3/A4 and A5 on the fixture, A6 and A7. At Phase 0's end, A0's three tests pass and the other 13 stop at their
-  stream's stub.
+  stream's stub. Since Phase 5's first step, all 16 pass.
 
 ## Streams
 
@@ -349,6 +366,9 @@ The planning session, in the default workspace, one step per commit, each with i
 | `example-targets-positive` | [`example-targets-positive.md`](example-targets-positive.md) | `example-targets-positive` | the three positive packets, their mutation controls, the optional control, and 105's migration data |
 | `example-targets-workflow` | [`example-targets-workflow.md`](example-targets-workflow.md) | `example-targets-workflow` | `examples/tools/targets/workflow*`, the sidecar schema and `sidecar.py` after Phase 0, `test_workflow.py`, `test_sidecar.py` and its other tests |
 | `example-targets` | this brief | `default` | Phase 0, the merge, Phase 5 and the joint acceptance |
+
+The four stream workspaces were forgotten after the merge (2026-11-14); their directories,
+`../in-the-loop-example-targets-*`, are the user's to delete.
 
 **Runtime produces evidence; workflow classifies it.** Case streams write no downloaders or parsers of their own.
 
@@ -362,7 +382,7 @@ tag, one registration) may go in a block marked with the stream's name, anything
 `examples/README.md` and `examples/tags.json` take additions only. Application-core's engine files (`lib/`) belong to
 no stream here: a gap in them is a capability packet, never an edit.
 
-**Example numbers**, after application-core's 230–279:
+**Example numbers**, after application-core's 230–279 (used: 285–300 and 305–307; the rest stay free):
 - this brief, Phase 0 and Phase 5: 280–284 and 325–329;
 - negative 285–304 (the 16 catalog CVEs, the 3 deep packets among them, numbered once);
 - positive 305–314;
@@ -372,8 +392,10 @@ no stream here: a gap in them is a capability packet, never an edit.
 Mutation controls live in their packet's `controls/`, not under numbers of their own. Logical ids in the seed file are
 not example numbers.
 
-**Memory** ([decision 8](#decisions)): four streams at 4 GB each plus the integration check's 3.5 GB come to 19.5 GB of
-the machine's 46, leaving the runner about 24 GB. Upstream builds and acquisitions are jobs, with their own estimates.
+**Memory** ([decision 8](#decisions), as changed on 2026-11-14): the VM has 30 vCPUs and 105 GiB. Each loop's scope is
+capped at 12G (each brief's `- memory:` and the launch command), the integration check's at 6G (`run-streams.sh`), and
+the runner takes the rest after a reserve for the user and the OS. The first plan, 4 GB a stream on a 46 GB machine,
+OOM-killed processes during application-core. Upstream builds and acquisitions are jobs, with their own estimates.
 
 **Each stream can start on its own**: runtime on Phase 0's fixture JARs and one small published upstream method;
 negative and positive on history, tasks, oracles and controls; workflow on the fixtures and genuine existing format-2
@@ -412,6 +434,8 @@ As [`application-core.md`](application-core.md#reconciling) does, for four strea
 
 ### Phases 1–4: the streams
 
+*Done 2026-11-14*: all four streams finished `done`, with no timebox deferral, and were merged (Progress).
+
 Each stream works through its brief's items, one step per cycle, against Phase 0's interfaces and fixtures. Runtime's
 acquisition and replay are real on its branch (it downloads, pinned). The case streams deliver packets ready for
 preparation: source locks checked against upstream, frozen source-level tasks, independent oracles, controls and
@@ -419,6 +443,8 @@ drivers, and expected outcomes per revision. Workflow delivers planning, ingesti
 fixtures and on existing receipts.
 
 ### Phase 5: after the merge (this brief's own loop)
+
+*Steps 1–5 done 2026-11-15*; gate A8 of step 3 waits on its two jobs (Progress).
 
 1. **The packets through the merged path**: each of the six deep packets prepared by runtime's code (jobs), its controls
    replayed in separate JVMs, its claim frozen and bound to the prepared artifacts, and its probe run, each result
@@ -488,7 +514,11 @@ Settled by the user on 2026-11-08:
    17, installed by the planning session on 2026-11-08 beside 21 and 25 ([Where it starts from](#where-it-starts-from)).
    JDKs 25 and 21 are the main targets, as the most relevant for Java development today, and 25 stays the default ([How
    to work through it](#how-to-work-through-it)). The artifact routes are the outside plan's two: a published artifact, or a pinned
-   upstream build.
+   upstream build. **A third since 2026-11-14**, by the user's decisions for P1 (305, 2026-11-14) and P3 (307,
+   2026-11-15), whose exact commits can't be built from the allowed hosts: an extracted source slice, compiled from the
+   exact commits' sources and checked against published classes (305's after against Boot 2.2.0.M6, 307's before
+   byte for byte against Spring Security 5.2.0.M4's `BCrypt.class`). Its scope is labelled a slice, never original
+   bytecode.
 4. **The archived registry** is supplied by the user, and committed with its sha256 checked (prerequisite 3).
 
 Proposed by the planning session and settled by the user on 2026-11-08, as proposed:
@@ -499,6 +529,8 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
    it in that session). That conversation's
    earlier part is application-core's run and loop tooling; `run-streams.sh` compacts it once before forking.
 8. **Memory**: 4 GB per stream scope, about 24 GB for the runner, upstream builds as jobs with their own estimates.
+   **Changed on 2026-11-14**, when the VM was resized to 105 GiB: 12G per loop scope and 6G for the integration check
+   ([Streams](#streams)).
 9. **Model and effort**: `claude-opus-5-5` at high effort for every loop.
 10. **Example numbers 280–329**, as [allocated](#streams).
 11. **The v1 gap inventory** as an explicit Phase 5 output: the user's aim for this wave is to show whether the
@@ -1965,6 +1997,14 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
   - **Next**: read the two A8 jobs when they are collected. If both pass, A8 and Tier A pass, and the status is `done`.
     A failing step that names `jbmc` is a hidden dependency, a finding to fix with a reproducer. Any other failure is
     read as a finding too.
+- 2026-11-15, **the brief brought up to date outside Progress**, at the user's request, after the run stopped. The
+  header gives the phases' dates; Where it starts from opens with the rows that changed since its baseline, which is
+  kept as recorded; How to work through it's downloads name decision 1's current hosts and the merged acquisition;
+  Streams gives the 12G caps and the forgotten workspaces, and the example numbers used; Phase 0's contract note says
+  all 16 tests pass now (checked inline); Phases 1–4 and 5 say what is done; decision 3 records the slice route as a
+  third, and decision 8 its change. This settles step 5's two "out of date in the brief" items. The user approved the
+  four allow-list proposals (`pummuplw`), so `check` reports 0 warnings. Next: the for-review list, with the user;
+  then the A8 jobs, as above.
 - Status: waiting on jobs 20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na 20261115-020015-gate-a8-one-constructed-example-per-buil
 
 ## Loop settings
