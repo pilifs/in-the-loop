@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261115-013518-example-307-preservation-vf-028-rerun-st",
+  "title": "example 307 preservation (VF-028 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+  "description": "VF-028's closing rerun, recorded as VF-027's were by the user's decision of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task preservation of example 307 is resubmitted unchanged in its claim (key 7eb077dac7a25751, expected established, native, strict), predicting the refusal job 20261115-011448-example-307-preservation-phase-5-step-1 observed: a String parameter the check doesn't take. The step runs examples/tools/targets/workflow_refusal.py 307 preservation, which runs python3 examples/tools/build.py 307 --task preservation once (its output indented) and exits 0 only when the claim key is still 7eb077dac7a25751, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/records/refusals/preservation.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+  "kind": "example",
+  "capabilities": [
+    "target:equivalence",
+    "target:predicted-refusal"
+  ],
+  "links": {
+    "paths": [
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/target.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/records/refusals/preservation.json",
+      "examples/tools/targets/workflow_refusal.py"
+    ],
+    "examples": [
+      "307"
+    ]
+  },
+  "expected": "workflow_refusal.py prints 'refused as predicted' for example 307 task preservation and exits 0: the attempt stops at the recorded refusal (a String parameter the check doesn't take) under claim 7eb077dac7a25751; the claim stays unresolved, which is no verdict",
+  "submitted": {
+    "at": "2026-11-15T01:35:18+00:00",
+    "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+    "by": "example-targets loop"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "30m",
+    "notes": "the same preparation and controls as the observed run 20261115-011448-example-307-preservation-phase-5-step-1, which reached the refusal in 7 s; the estimate is that job's"
+  },
+  "steps": [
+    {
+      "name": "example 307 task preservation: the recorded refusal (VF-028)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 307 preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/preservation"
+  ]
+}

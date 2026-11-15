@@ -6,8 +6,9 @@
 extracted-source slice, the user's choice of 2026-11-15 (below). Its replay (job `20261115-003616`) and mutant-replay
 (`20261115-003617`) passed: before's class equals Spring Security 5.2.0.M4's published `BCrypt.class` byte for byte,
 both slices hold the oracle on JDK 21 and 25, and the us-ascii mutant fails at the non-ASCII probes only. Its native
-attempts, `preservation` and `mutant-preservation`, are queued as jobs (`20261115-011448-…`); no proof has run yet, so
-there is no verdict. The work manifest is [`target.json`](target.json); what was checked upstream,
+attempts, `preservation` and `mutant-preservation` (jobs `20261115-011448-…`), were both refused before any proof, at
+the nullable `String` password (VF-028), so there is no verdict: both claims stay unresolved and both tasks are blocked
+(below). The work manifest is [`target.json`](target.json); what was checked upstream,
 and how, is in [`sources.lock.json`](sources.lock.json).
 
 ## The change
@@ -86,7 +87,7 @@ salt, a wrong encoding would show as a lost or gained match.
 ## What a proof needs
 
 Requirements read from the source at both commits, and from the static scan; each is a prediction until an attempt
-reaches it.
+reaches it, and only the nullable password has been reached so far.
 
 - **The conversion.** The changed line is a JDK call that returns an array: `String.getBytes(String)` at before, and
   `String.getBytes(Charset)` with a read of the non-constant field `StandardCharsets.UTF_8` at after. The scan refuses
@@ -102,10 +103,22 @@ reaches it.
 - **Class initialization.** `BCrypt.<clinit>` fills `P_orig`, `S_orig` (1,024 words) and the base64 tables from
   constants. Nothing in it is a gap, but it is large; it is never removed.
 - **Inputs.** Both parameters are Strings and both may be null. The checker takes a String parameter as bounded UTF-16,
-  never null, so a null password or salt is a predicted input-construction refusal. The salt domain is seven fixed
+  never null, so a null password or salt is an input-construction refusal. Observed for the password by both native
+  attempts ([Observed blockers](#observed-blockers)); the salt's is not reached, since the check stops at the first. The salt domain is seven fixed
   strings, stated with `String.equals` in the claim's `assume`.
 - **Compared with the negative** (CVE-2025-22228, whose fix put a 72-byte guard in
   `BCrypt.hashpw(byte[],String,boolean)`, reached through `BCryptPasswordEncoder.matches`): the same conversion and the
   same cyclic 72-byte key, without the encoder, its regex check of the stored hash, or a length policy. This pair adds
   no limit: a 73-byte password hashes like its 72-byte prefix on both revisions, which the probes observe as preserved
   behaviour, not as a defect of this change.
+
+## Observed blockers
+
+Both native attempts (Phase 5, 2026-11-15) stopped before any proof, at the same input-construction gap: in a regression check the checker takes a `String` parameter only as non-null bounded UTF-16, and the claim's domain has a null password (VF-028, the cause VF-027 found for 306 `mutant-preservation` and 287's guard tasks). As the user decided on 2026-11-15 for VF-027, each is recorded as an observed gap, not restated: the claim and its expected conclusions are unchanged, both claims stay unresolved, and both tasks' readiness is blocked. Each packet cites its job and receipt and gives the refusal, the semantics needed, the likely owner module and the closure check. The predicted stop at the conversion (above) is still a prediction: no attempt got that far.
+
+| Task | Refused at | Observed by job | Packet |
+|---|---|---|---|
+| `mutant-preservation` | a nullable `String` parameter (`password`) in a regression check | `20261115-011448-example-307-mutant-preservation-phase-5` | [`records/refusals/mutant-preservation.json`](records/refusals/mutant-preservation.json) |
+| `preservation` | a nullable `String` parameter (`password`) in a regression check | `20261115-011448-example-307-preservation-phase-5-step-1` | [`records/refusals/preservation.json`](records/refusals/preservation.json) |
+
+`python3 examples/tools/targets/workflow_refusal.py 307 TASK` reruns a task and passes only while its recorded refusal recurs under the same claim key; a verdict or another refusal fails it.

@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T01:32:46.622Z",
-  "duration_seconds": 25646,
+  "ended": "2026-11-15T01:40:31.009Z",
+  "duration_seconds": 26111,
   "stats": {
     "turns": 143,
-    "api_calls": 1153,
-    "tool_calls": 1180,
+    "api_calls": 1187,
+    "tool_calls": 1217,
     "tool_errors": 22,
     "compactions": 26,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2338,
-      "output_tokens": 771480,
-      "cache_read_input_tokens": 148667677,
-      "cache_creation_input_tokens": 3818410
+      "input_tokens": 2408,
+      "output_tokens": 787575,
+      "cache_read_input_tokens": 153158951,
+      "cache_creation_input_tokens": 3928006
     }
   },
   "tools": {
-    "Bash": 1016,
-    "Read": 77,
-    "Edit": 71,
+    "Bash": 1048,
+    "Read": 79,
+    "Edit": 73,
     "Agent": 5,
     "Write": 5,
-    "ToolSearch": 3,
+    "ToolSearch": 4,
     "AskUserQuestion": 2,
     "WebFetch": 1
   },
@@ -57,6 +57,7 @@
     "examples/tools/targets/workflow_handoff.py",
     "examples/tools/targets/workflow_refusal.py",
     "llm-dlc/loops/example-targets.md",
+    "verification/findings.md",
     "verification/pipeline.py",
     "verification/test_pipeline.py",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/allowlist-merge-conflicts.md"
@@ -429,24 +430,24 @@
     {
       "index": 26,
       "started": "2026-11-15T01:32:33.196Z",
-      "ended": "2026-11-15T01:32:46.622Z",
+      "ended": "2026-11-15T01:40:31.009Z",
       "turns": 4,
-      "api_calls": 3,
+      "api_calls": 37,
       "usage": {
-        "input_tokens": 6,
-        "output_tokens": 650,
-        "cache_read_input_tokens": 80402,
-        "cache_creation_input_tokens": 37983
+        "input_tokens": 76,
+        "output_tokens": 16745,
+        "cache_read_input_tokens": 4571676,
+        "cache_creation_input_tokens": 147579
       },
-      "peak_context_tokens": 51169
+      "peak_context_tokens": 160765
     }
   ],
   "log": {
-    "sha256": "d003bf3575d52c871d2ce7cdad66c391f537aecc7f9fb0e53af22348af7dfa59",
-    "bytes": 37671867,
-    "lines": 11901,
-    "gzip_bytes": 7881651,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/d003bf3575d52c871d2ce7cdad66c391f537aecc7f9fb0e53af22348af7dfa59.jsonl.gz"
+    "sha256": "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3",
+    "bytes": 38533408,
+    "lines": 12185,
+    "gzip_bytes": 8045678,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3.jsonl.gz"
   },
   "subagents": [
     {
@@ -955,20 +956,20 @@
       "log_sha256": "fd2e69af9eb3b552b1856f29d0c5b62bb8d4796a21d5dc7d99f8aaf8f0942a84"
     },
     {
-      "change_id": "wzzvsymuykqlvwzporsvntsmtyvuytrm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "d003bf3575d52c871d2ce7cdad66c391f537aecc7f9fb0e53af22348af7dfa59"
-    },
-    {
       "change_id": "wtwuqnwzxsnyowqskkxloyzunyutnzrx",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 2 jobs: example 307's preservation and mutant-preservation are refused at --nullable password (VF-028)",
       "body": "The two native strict Phase 5 step 1 jobs for example 307 (BCrypt.hashpw(String,String)) ran 5.6 s each and stopped at the checker's refusal: a String parameter with --nullable is not accepted in a regression check (cause 3 of VF-027). Neither task ran as expected; recorded as VF-028 for the example-targets loop to restate or record as unprovable. Outputs kept, not applied.",
       "log_sha256": "d003bf3575d52c871d2ce7cdad66c391f537aecc7f9fb0e53af22348af7dfa59"
+    },
+    {
+      "change_id": "ymtkuqqqyrktsrmonnkwskslwkszszkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: 307's native attempts refused at the nullable String password (VF-028), recorded as VF-027's were; two reruns predicting the refusal queued (verification pending)",
+      "body": "Example 307's two native strict proof jobs (20261115-011448-example-307-preservation-phase-5-step-1 and -mutant-preservation-phase-5, collected in wtwuqnwz) both stopped before any proof at --nullable password: the checker takes a String parameter of a regression check only as non-null bounded UTF-16, and the frozen claim's domain has a null password. This is VF-027's third cause (input-construction:string-parameter). As the user decided on 2026-11-15 for VF-027, the refusal is recorded, not restated: each task gets an observed gap packet under examples/307-.../records/refusals/ (citing its job, log, receipt and verifier output by sha256, and claim key 7eb077dac7a25751) and an observed blocker with finding VF-028, replacing the target-wide input-construction prediction. Both tasks now read blocked; the claim and its expected conclusions are unchanged. 307's handoff next, README, a note and the index say so, and VF-028's status records it.\n\nQueued, each running workflow_refusal.py 307 TASK, which passes only if the same refusal recurs under the same claim key: 20261115-013518-example-307-preservation-vf-028-rerun-st and 20261115-013518-example-307-mutant-preservation-vf-028-r. VF-028 closes when both pass.",
+      "log_sha256": "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3"
     }
   ],
   "logs": {
@@ -1066,6 +1067,12 @@
       "bytes": 33228430,
       "lines": 10480,
       "gzip_bytes": 6997667,
+      "url": null
+    },
+    "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3": {
+      "bytes": 38533408,
+      "lines": 12185,
+      "gzip_bytes": 8045678,
       "url": null
     },
     "674bb13d5d5612efbf451550f49b688fcfe87cd72f18e5fc0fdcebe6c1dff6db": {

@@ -1,0 +1,114 @@
+{
+  "$comment": "An observed capability gap (VF-028, recorded as VF-027's were, by the user's decision of 2026-11-15: recorded, not restated). The fields are the brief's capability-gap packet (examples/tools/targets/workflow_handoff.py, PACKET_FIELDS); refusal and claimKey are what workflow_refusal.py checks a rerun against.",
+  "schema": "example-target-refusal/v1",
+  "finding": "VF-028",
+  "task": "preservation",
+  "claimKey": "7eb077dac7a25751",
+  "refusal": {
+    "stage": "verifier",
+    "text": "--nullable password: password is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another"
+  },
+  "observed": {
+    "job": "20261115-011448-example-307-preservation-phase-5-step-1",
+    "result": "verification/results/20261115-011448-example-307-preservation-phase-5-step-1/result.json",
+    "log": "verification/results/20261115-011448-example-307-preservation-phase-5-step-1/logs/1-example-307-task-preservation.log",
+    "logSha256": "c6c79ae50c76f6e9a16c0ff2466a042075650d2d55bf658d39db6f52bed96179",
+    "receipt": "verification/results/20261115-011448-example-307-preservation-phase-5-step-1/outputs/examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/preservation/20261115T013209Z-052f6ab0/result.json",
+    "receiptSha256": "40f9d6ed42280696d5c2e069b1173a81ec6087250770eca2c9b27fd16dfed355",
+    "verifierOutput": "verification/results/20261115-011448-example-307-preservation-phase-5-step-1/outputs/examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/receipts/preservation/20261115T013209Z-052f6ab0/records/verifier-output.txt",
+    "verifierOutputSha256": "6cdc8e9b7edce63267a21b3c376a4268333064972ea79683399d4cff064c047f",
+    "attempt": "20261115T013209Z-052f6ab0",
+    "claimId": "6b1d8ee8b9e5b5e4",
+    "status": "unresolved",
+    "execution": "completed",
+    "sourceCommit": "3ec935ff400b069820cacb58d8a69e520f40caff",
+    "seconds": 0.7
+  },
+  "verifier": {
+    "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+    "commit": "3ec935ff400b069820cacb58d8a69e520f40caff",
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS"
+  },
+  "command": [
+    "jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/before",
+    "--after",
+    "verifier/classes/after",
+    "--target",
+    "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String)",
+    "--nullable",
+    "password",
+    "--nullable",
+    "salt",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "513",
+    "--max-array-length",
+    "80",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "artifacts": [
+    {
+      "revision": "after",
+      "path": "slice/after.jar",
+      "sha256": "f6aec1cedaa7c15ff8be5d3db154771e234738559abd662045c043f6196ef09c",
+      "role": "original"
+    },
+    {
+      "revision": "before",
+      "path": "slice/before.jar",
+      "sha256": "ea4dfaa12104f474f2a4acd257e734960c41512238ded5f4342a636a660d89ea",
+      "role": "original"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "input-construction:string-parameter",
+      "kind": "string",
+      "call": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "sites": [],
+      "approximation": null,
+      "message": "--nullable password: password is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 307 preservation",
+    "attempt": "python3 examples/tools/build.py 307 --task preservation",
+    "job": "20261115-011448-example-307-preservation-phase-5-step-1",
+    "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "revision": null,
+    "note": "the task as stated, on its prepared artifacts and frozen claim: no wrapper, narrower subject or simpler signature"
+  },
+  "semantics": "A String parameter outside what the checker takes (BCrypt#hashpw(String, String)'s password, --nullable in a regression check): it takes a String only as a regression check's bounded UTF-16 parameter that is never null (lib/README.md), so a String parameter of a property check, and a nullable one in a regression check, are refused. Needed: the String value adapter (lib/src/values.rs) in property checks, and null as one more value of a String parameter, in the witness and its replay as well.",
+  "why": "the claim (7eb077dac7a25751) is about org.springframework.security.crypto.bcrypt.BCrypt#hashpw(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; as stated; the verifier refuses it before any proof (a String parameter the checker doesn't take there), so the claim stays unresolved, its expected conclusion (established) unchanged, and the refusal is no verdict",
+  "module": {
+    "likely": [
+      "lib/src/values.rs"
+    ],
+    "note": null
+  },
+  "strategies": [
+    {
+      "by": "job 20261115-011448-example-307-preservation-phase-5-step-1",
+      "outcome": "unresolved"
+    },
+    {
+      "by": "not tried, by the user's decision of 2026-11-15",
+      "what": "restating the task over a wrapper, a narrower subject or a simpler signature; extending jvmcontract or the route in this loop"
+    }
+  ]
+}

@@ -1647,6 +1647,39 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     with its reproducer, owner module and closure test, and the predictions kept apart. Then A8, then step 5, the
     for-review list. Read 307's two jobs when they are collected: a refusal becomes an observed gap of the
     inventory, as VF-027's did.
+- 2026-11-15, **307's native attempts refused at the nullable String password (VF-028), recorded as VF-027's were;
+  two reruns queued that predict the refusal.**
+  - **The jobs** (collected in `wtwuqnwz`, which opened VF-028): `20261115-011448-example-307-preservation-phase-5-step-1`
+    and `…-307-mutant-preservation-phase-5`. Each stopped before any proof, at about 6 s. The verifier output is
+    `--nullable password: password is a java.lang.String, and in a regression check only an object parameter made by
+    its constructor may be null or the same as another`. This is VF-027's third cause, `input-construction:string-parameter`,
+    the one 306 `mutant-preservation` and 287's guard tasks hit. Both are unresolved, with no verdict, so neither is as
+    expected.
+  - **Recorded by the user's decision of 2026-11-15**, which VF-028's "Needs" offers as its second branch:
+    - two packets, `records/refusals/preservation.json` and `mutant-preservation.json`, made the way VF-027's were.
+      Each cites the job, log, receipt and verifier output in `verification/results/` with sha256s, and the claim key
+      `7eb077dac7a25751` the jobs ran under (unchanged since);
+    - two observed blockers with finding `VF-028`. They replace the target-wide input-construction prediction (null
+      password and salt), which this attempt reached. The salt was not reached, since the check stops at the password.
+      The java-semantics prediction (`String.getBytes` at the change) stays a prediction;
+    - both tasks read `blocked`, and their `expected` (`established`, `refuted`) is unchanged. Nothing is restated;
+    - 307's `next`, README (state, inputs and a new "Observed blockers" section) and a note say this. The index is
+      regenerated.
+  - **Queued**: `20261115-013518-example-307-preservation-vf-028-rerun-st` and
+    `20261115-013518-example-307-mutant-preservation-vf-028-r`. Each runs `workflow_refusal.py 307 TASK`, with the first
+    jobs' requirements and estimate (2 CPUs, 4 GiB, 30 minutes). VF-028's status says it is recorded and closes when
+    both pass.
+  - **The inventory now**: the same five observed causes, over 25 blocked obligations. `string-parameter` has 5 (287
+    ×2, 306, 307 ×2) in two families, `bcrypt-input-limit` and `spring-data-binding`. Its CVE and positive companion
+    (287 and 307) now share it, which the brief calls especially informative.
+  - **Tests**: `test_workflow_refusal.py` now checks VF-028's two packets beside VF-027's 23 (25), and the
+    inventory's 25 obligations and 5 for `string-parameter`.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (243), `test_build.py`
+    (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: step 4, the v1 gap inventory, from `workflow_handoff.py inventory`: the five observed gaps, ranked by
+    distinct families and blocked obligations, each with its reproducer, owner module and closure test, and the
+    predictions kept apart. Then A8, then step 5, the for-review list. Read the two VF-028 reruns when they are
+    collected.
 - Status: working
 
 ## Loop settings

@@ -1,5 +1,5 @@
 """workflow_refusal.py: a rerun of a task an observed gap blocks passes only at the refusal its packet recorded, and
-the 23 packets of VF-027 state exactly what their jobs observed, under the claims as they are now."""
+the 23 packets of VF-027 and the 2 of VF-028 state exactly what their jobs observed, under the claims as they are now."""
 
 import json
 import sys
@@ -135,18 +135,21 @@ VF027 = {
     "306": ("preservation", "mutant-preservation"),
     "105": ("confined-change",),
 }
+# VF-028's 2 tasks, recorded the same way (example 307's native attempts, collected after VF-027 closed).
+VF028 = {"307": ("preservation", "mutant-preservation")}
+OBSERVED = [("VF-027", VF027), ("VF-028", VF028)]
 
 
 class Vf027PacketsTest(unittest.TestCase):
-    def test_each_of_the_23_tasks_is_blocked_by_its_observed_refusal_as_its_job_recorded_it(self):
+    def test_each_of_the_25_tasks_is_blocked_by_its_observed_refusal_as_its_job_recorded_it(self):
         count = 0
-        for number, tasks in VF027.items():
+        for finding, number, tasks in ((f, n, ts) for f, rows in OBSERVED for n, ts in rows.items()):
             folder, example, target = load(number)
             for task in tasks:
                 with self.subTest(example=number, task=task):
                     count += 1
                     [p] = workflow_refusal.predictions(folder, target, task)
-                    self.assertEqual(p["finding"], "VF-027")
+                    self.assertEqual(p["finding"], finding)
                     packet = json.loads((folder / p["packet"]).read_text())
                     plan = workflow.plan_task(folder, example, target, task)
                     self.assertEqual(packet["claimKey"], plan.claim["key"], "the claim changed since the job")
@@ -171,16 +174,17 @@ class Vf027PacketsTest(unittest.TestCase):
                     self.assertEqual(readiness["summary"], "blocked")
                     t = next(x for x in target["tasks"] if x["id"] == task)
                     self.assertIn(t.get("expected"), ("established", "refuted"), "the expectation is unchanged")
-        self.assertEqual(count, 23)
+        self.assertEqual(count, 25)
 
     def test_the_inventory_ranks_the_five_observed_causes(self):
-        rows = [load(n) for n in VF027]
+        rows = [load(n) for n in (*VF027, *VF028)]
         observed = {g["gap"]: g for g in workflow_handoff.inventory(rows)["gaps"] if g["observed"]}
         self.assertEqual(set(observed), {
             "input-construction:interface-parameter", "input-construction:receiver-of-several-constructors",
             "input-construction:string-parameter", "input-construction:two-dependency-closures",
             "jdk-constructor:java.lang.StringBuilder.<init>()V"})
-        self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 23)
+        self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 25)
+        self.assertEqual(observed["input-construction:string-parameter"]["blockedObligations"], 5)
 
 
 if __name__ == "__main__":

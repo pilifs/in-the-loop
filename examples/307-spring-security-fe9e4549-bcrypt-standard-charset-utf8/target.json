@@ -163,11 +163,22 @@
       },
       {
         "kind": "input-construction",
-        "observed": false,
-        "summary": "Predicted from lib/README.md: the checker takes a String parameter of a regression check as bounded UTF-16 with content, never null, but the claim's domain has a null password (NullPointerException) and a null salt (claims/hashpw-preservation.json); an attempt that can't take them is that refusal, and the claim stays unresolved, never re-read as the non-null domain. The salt domain is seven fixed strings, stated as an assume expression with String.equals."
+        "observed": true,
+        "task": "preservation",
+        "summary": "Observed by job 20261115-011448-example-307-preservation-phase-5-step-1 (VF-028): a String parameter the checker doesn't take there (BCrypt#hashpw(String, String)'s password, --nullable in a regression check). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 307 preservation.",
+        "packet": "records/refusals/preservation.json",
+        "finding": "VF-028"
+      },
+      {
+        "kind": "input-construction",
+        "observed": true,
+        "task": "mutant-preservation",
+        "summary": "Observed by job 20261115-011448-example-307-mutant-preservation-phase-5 (VF-028): a String parameter the checker doesn't take there (BCrypt#hashpw(String, String)'s password, --nullable in a regression check). The verifier refuses the task as stated before any proof, so the claim stays unresolved and its expectation unchanged; recorded, not restated (the user's decision of 2026-11-15). Rerun check: workflow_refusal.py 307 mutant-preservation.",
+        "packet": "records/refusals/mutant-preservation.json",
+        "finding": "VF-028"
       }
     ],
-    "next": "On the source slice (the user's choice of 2026-11-15), a reproducible scaffold: replay (20261115-003616) and mutant-replay (20261115-003617) passed. Before's preparation checked its BCrypt.class against 5.2.0.M4's published one byte for byte, both slices hold the oracle on JDK 21 and 25, and the us-ascii mutant fails at the non-ASCII probes only. The native attempts are queued as ordinary jobs, each expecting its task's conclusion: preservation (20261115-011448-example-307-preservation-phase-5-step-1, established) and mutant-preservation (20261115-011448-example-307-mutant-preservation-phase-5, refuted). Once they are collected, read each receipt: a verdict is recorded as the claim's evidence; a refusal becomes an observed blocker of the task with its gap packet under records/refusals/, as VF-027's were, and the claim and its expectation stay unchanged. The predicted java-semantics and input-construction blockers are then recorded as observed or withdrawn. A conversion lemma bound to the unchanged callee's bytecode is a separate, narrower claim if it is wanted."
+    "next": "On the source slice (the user's choice of 2026-11-15), a reproducible scaffold: replay (20261115-003616) and mutant-replay (20261115-003617) passed. Before's preparation checked its BCrypt.class against 5.2.0.M4's published one byte for byte, both slices hold the oracle on JDK 21 and 25, and the us-ascii mutant fails at the non-ASCII probes only. Both native tasks are blocked by an observed gap (VF-028): their attempts (20261115-011448-example-307-preservation-phase-5-step-1 and -mutant-preservation-phase-5) were refused before any proof at --nullable password, a String parameter the checker doesn't take as nullable in a regression check (packets under records/refusals/). The claim and its expectations are unchanged and stay unresolved; nothing is restated (the user's decision of 2026-11-15). The reruns 20261115-013518-example-307-preservation-vf-028-rerun-st and -mutant-preservation-vf-028-r run workflow_refusal.py 307 TASK and pass only if the same refusal recurs under claim key 7eb077dac7a25751. The gap closes when the checker takes a nullable String in a regression check and the original task, rerun unchanged, reaches a verdict or the next refusal; the predicted stop at the UTF-16 to UTF-8 conversion (String.getBytes) is still a prediction. A conversion lemma bound to the unchanged callee's bytecode is a separate, narrower claim if it is wanted."
   },
   "controls": [
     {
