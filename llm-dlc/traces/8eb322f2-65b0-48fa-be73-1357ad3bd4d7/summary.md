@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result for example 286's replay (passed): VF-026 closed
 
-change `kxzlrsouuzkk` · [log `9d010a91dd85`](https://terminalvalue.net/raw-traces/8eb322f2-65b0-48fa-be73-1357ad3bd4d7/9d010a91dd85c69b9a7e950c0ea4c0f1cad37910bddee7dbba51a9ec7793eb88.jsonl.gz)
+[`c6974317144e`](https://github.com/pilifs/in-the-loop/commit/c6974317144eafdb70a2c1012ca2389671ea9337) · [log `9d010a91dd85`](https://terminalvalue.net/raw-traces/8eb322f2-65b0-48fa-be73-1357ad3bd4d7/9d010a91dd85c69b9a7e950c0ea4c0f1cad37910bddee7dbba51a9ec7793eb88.jsonl.gz)
 
 Job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 ran on vm-1 after the adapter check fix: 1 step passed in 4.0 s, task-as-expected, receipt under examples/286-*/receipts/replay. Collect applied its 4 outputs; findings.md VF-026 marked closed by this job.
 
 ### example-targets Phase 5: maven.aliyun.com allowed for Spring's plugin repository only (decision 1's second extension); A3 passes on 285-287
 
-change `zwyoumxmwmuu` · [log `2138830cab37`](https://terminalvalue.net/raw-traces/8eb322f2-65b0-48fa-be73-1357ad3bd4d7/2138830cab373ee38f42a31dbb2b3fea5a470c3f2db1a3a05485873e52879024.jsonl.gz)
+[`d61960db270b`](https://github.com/pilifs/in-the-loop/commit/d61960db270ba28843ab602a29f65943e5e912c0) · [log `2138830cab37`](https://terminalvalue.net/raw-traces/8eb322f2-65b0-48fa-be73-1357ad3bd4d7/2138830cab373ee38f42a31dbb2b3fea5a470c3f2db1a3a05485873e52879024.jsonl.gz)
 
 runtime_maven.py's HOSTS gains maven.aliyun.com, held by a new PATH_PREFIXES to /repository/spring-plugin/, the mirror the user allowed on 2026-11-14 for P3's (307) Spring Gradle plugins, which no anonymous upstream repository serves. A path leaving the prefix by a dot segment or a percent-encoding is refused, since a server would resolve it after the check. Every download and redirect goes through allowed(), so the rule covers them all. HOST_NAMES and the docstrings of runtime.py and runtime_upstream.py name it. Reproducer: test_runtime.py's test_the_aliyun_mirror_is_allowed_for_springs_plugin_repository_only, which failed on nrxvrqpx. It also checks the refusals: the mirror's other repositories, dot segments, %2e%2e, http, user names, ports, look-alike hosts and a SNAPSHOT. example-targets-integration.sh exits 0: contract 16, targets suite 210 (one new), test_build.py 190, test_pipeline.py 32 and build.py --plan.
 

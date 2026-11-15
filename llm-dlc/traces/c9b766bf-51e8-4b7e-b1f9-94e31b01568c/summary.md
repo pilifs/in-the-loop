@@ -20,15 +20,21 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### example-targets decision 1 extended: repo.spring.io, services.gradle.org and plugins.gradle.org allowed, hash-pinned
 
-change `ylkxyuvywuxu` · [log `2795ec8d0150`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/2795ec8d0150d11a08e72feb442a43e6772979b76ff837c7e061e39b736374ed.jsonl.gz)
+[`37f89ea33677`](https://github.com/pilifs/in-the-loop/commit/37f89ea33677fd26e33c32645ea79570debdc4c3) · [log `2795ec8d0150`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/2795ec8d0150d11a08e72feb442a43e6772979b76ff837c7e061e39b736374ed.jsonl.gz)
 
 The positive stream stopped done with one question for the user: P1 (305) and P3 (307) can't be prepared from Maven Central and github.com alone. The user chose its option (a): the three hosts are allowed under the same hash-pinned acquisition, SNAPSHOTs still refused. That gives P3 its pinned upstream build; P1 stays blocked, since both its commits pin SNAPSHOT versions. Recorded under Decisions in the main brief (default workspace, read by the merge loop, which hasn't started; each stream loop hashes only its own brief in its own workspace, so none is stopped), with a Progress item for the merge: widen runtime_maven.py's HOSTS and REDIRECT_HOSTS, test that other hosts are still refused, then prepare P3 by a job.
 
 ### Record verification results: R3 run_verifier calibration passes, VF-024 closed
 
-change `plxytuvuslny` · [log `afbc015de245`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/afbc015de245e68ce48572346ae4637ea6b30e528556be3670c1a221eb4ad1b8.jsonl.gz)
+[`c73e7f01c900`](https://github.com/pilifs/in-the-loop/commit/c73e7f01c9002a34506b222dff6af7f825592018) · [log `afbc015de245`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/afbc015de245e68ce48572346ae4637ea6b30e528556be3670c1a221eb4ad1b8.jsonl.gz)
 
 Job 20261114-164239-example-targets-runtime-r3-after-vf-024 (vm-1) passed in 44 s: the five runtime-calibration tasks give their expected verdicts (regex-probe's unverifiable is the expected unresolved) and the integration contract runs 16 tests, 8 skipped. Collect applied the 211 calibration outputs under runtime-calibration/. VF-024 is closed in verification/findings.md.
+
+### Record session traces
+
+change `mzxrtnukmoso` · [log `9e309f00f26d`](https://terminalvalue.net/raw-traces/c9b766bf-51e8-4b7e-b1f9-94e31b01568c/9e309f00f26d69bbf16e1fefea8fb1e77ad21127f3cd4b7ba8762d77fed793d2.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

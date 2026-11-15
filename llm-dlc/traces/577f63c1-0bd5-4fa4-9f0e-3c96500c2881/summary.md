@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 3 job(s): example 305's slice replay, its Boot 2.2.0.M6 check and its mutation control pass
 
-change `xoqmqynmltox` · [log `35ff9984f485`](https://terminalvalue.net/raw-traces/577f63c1-0bd5-4fa4-9f0e-3c96500c2881/35ff9984f485f9faf131537324090a6f8f0466ce8743ffab13eab93cb12ff045.jsonl.gz)
+[`92097fb48ab7`](https://github.com/pilifs/in-the-loop/commit/92097fb48ab7cb6daec982cec6770285c9d93dc6) · [log `35ff9984f485`](https://terminalvalue.net/raw-traces/577f63c1-0bd5-4fa4-9f0e-3c96500c2881/35ff9984f485f9faf131537324090a6f8f0466ce8743ffab13eab93cb12ff045.jsonl.gz)
 
 The three jobs queued by 6f0e54a8 ran on vm-1 (38G/18 CPUs/9 workers, the streams row) and passed in 6-8 s each, with the example task as expected. Their outputs (the three receipts under example 305, the regenerated examples index) were applied. No findings opened or closed.
 
 ### example-targets Phase 5: 305's slice replays read (all pass, a reproducible scaffold at the slice's scope); 285-287 mutant-replay and 105 replay queued (verification pending)
 
-change `rxzozluxtzyv` · [log `f87a5358ad81`](https://terminalvalue.net/raw-traces/577f63c1-0bd5-4fa4-9f0e-3c96500c2881/f87a5358ad8110c60637f87f97094de6f28c4e06d39b2ae636fbc7a0373cbffc.jsonl.gz)
+[`c12dc3bd5659`](https://github.com/pilifs/in-the-loop/commit/c12dc3bd5659e452ce26882b6db578c3c2c43100) · [log `f87a5358ad81`](https://terminalvalue.net/raw-traces/577f63c1-0bd5-4fa4-9f0e-3c96500c2881/f87a5358ad8110c60637f87f97094de6f28c4e06d39b2ae636fbc7a0373cbffc.jsonl.gz)
 
 Example 305's three source-slice jobs, collected in xoqmqynm, all pass on JDK 21 and 25: both slices of WebMvcTags/Outcome hold the packet's oracle (replay), the after slice and Boot 2.2.0.M6's published actuator JAR give the same observations (m6-replay, the correspondence the user asked for), and the status-200 mutant fails at 200 alone while after holds (mutant-replay). Each receipt labels its scopes (extracted-source-slice, original-bytecode for M6, constructed-mutation-of-a-slice). 305's README state, handoff next and a note record this, and the regenerated index gives it 'scaffolded'. No proof was attempted.
 

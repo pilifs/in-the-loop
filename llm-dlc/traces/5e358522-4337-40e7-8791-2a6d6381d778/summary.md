@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: example-targets runtime R2 constructed-mutant route passes
 
-change `msotkvrvkvkt` · [log `c7eac68e60bd`](https://terminalvalue.net/raw-traces/5e358522-4337-40e7-8791-2a6d6381d778/c7eac68e60bde07719249ac4229191d5fd3965314abc3600f77f472427ffc7ae.jsonl.gz)
+[`52c54bd6129e`](https://github.com/pilifs/in-the-loop/commit/52c54bd6129e1b818354e9661bf1c8d9c65ca4f9) · [log `c7eac68e60bd`](https://terminalvalue.net/raw-traces/5e358522-4337-40e7-8791-2a6d6381d778/c7eac68e60bde07719249ac4229191d5fd3965314abc3600f77f472427ffc7ae.jsonl.gz)
 
 Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e2663be, vm-1) passed in 6.2 s: the published-artifact route prepared spring-core 5.3.19's simpleMatch mutant, and both revisions ran on JDK 21 and 25 with the expected oracle problems. 54 outputs applied under runtime-mutant/; three 1.4 MiB spring-core JARs are over jj's snapshot limit and left out of the commit (VF-025, open).
+
+### Record session traces
+
+change `mzxrtnukmoso` · [log `0d235ba3de80`](https://terminalvalue.net/raw-traces/5e358522-4337-40e7-8791-2a6d6381d778/0d235ba3de80358d6cd7834a32afa794eb7aef708c4007320d2836aa2f4ecdfa.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### example-targets: the user withdraws maven.aliyun.com, and VF-027's causes are recorded as gaps, not restated
 
-change `ryszmlnrrzol` · [log `30278d47a88a`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/30278d47a88ab6b53874002af024fcaabe243ba3848fc99f44f2b76c04ee8bc9.jsonl.gz)
+[`24c11e1d7458`](https://github.com/pilifs/in-the-loop/commit/24c11e1d74581d5c9fc4c39fc673b9e1f20fbb30) · [log `30278d47a88a`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/30278d47a88ab6b53874002af024fcaabe243ba3848fc99f44f2b76c04ee8bc9.jsonl.gz)
 
 Two decisions for the loop's next cycle, recorded in the brief's Progress on this session's recommendation.
 
@@ -32,13 +32,13 @@ Committed with a path-limited jj commit while the loop was stopped.
 
 ### Record verification results for 1 job: example 105's fix-property-before calibration prove passes
 
-change `olumqtlxopqu` · [log `30278d47a88a`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/30278d47a88ab6b53874002af024fcaabe243ba3848fc99f44f2b76c04ee8bc9.jsonl.gz)
+[`8fa81dc696b7`](https://github.com/pilifs/in-the-loop/commit/8fa81dc696b7f7662b6bcd7604406ddfee3c824d) · [log `30278d47a88a`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/30278d47a88ab6b53874002af024fcaabe243ba3848fc99f44f2b76c04ee8bc9.jsonl.gz)
 
 Job 20261114-235737-example-105-task-fix-property-before-the (the calibration prove of ArithmeticUtils#pow(II)I) passed in 31s, peak 780 MiB (estimated 15m, 3 GiB). Its 4 outputs, the task's receipt under example 105, were applied; no conflicts. No verdicts or errors needing a person; no findings.md changes.
 
 ### example-targets: maven.aliyun.com withdrawn from the download hosts; A7 passes on its isolated session's job
 
-change `vwrqwqqyosrt` · [log `f5312e5c0bda`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/f5312e5c0bda6b0f36ec871e657e77c68622db2ec735bd469ddc845eb19279cb.jsonl.gz)
+[`79fd5d8dc348`](https://github.com/pilifs/in-the-loop/commit/79fd5d8dc3489dd126c39e0d5895214fad5d5dce) · [log `f5312e5c0bda`](https://terminalvalue.net/raw-traces/ddfa720f-c19b-4983-be85-637c5ae723b2/f5312e5c0bda6b0f36ec871e657e77c68622db2ec735bd469ddc845eb19279cb.jsonl.gz)
 
 The user withdrew decision 1's second extension on 2026-11-15, once P3 (307) took the source slice: no route needs Alibaba Cloud's mirror of Spring's plugin repository. runtime_maven.HOSTS and HOST_NAMES are back to Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. The PATH_PREFIXES mechanism held only the mirror, so it went too, and allowed() is the plain host check again. The docstrings of runtime_maven.py, runtime.py and runtime_upstream.py say so. 307's sources.lock.json keeps the mirror's hashes as a record of the lookups; nothing fetches them.
 

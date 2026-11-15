@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028
 
-change `ovvoultportr` · [log `ba69158c77e2`](https://terminalvalue.net/raw-traces/bd59e87b-a013-4704-9c5c-cdab7fe9dd65/ba69158c77e2f776ad8df4cb65e37945256ad997e3e2e35b0e2d5f1ff96b68e0.jsonl.gz)
+[`275c3691c2fc`](https://github.com/pilifs/in-the-loop/commit/275c3691c2fcc3e6a176c1ebfa85e24eda77afec) · [log `ba69158c77e2`](https://terminalvalue.net/raw-traces/bd59e87b-a013-4704-9c5c-cdab7fe9dd65/ba69158c77e2f776ad8df4cb65e37945256ad997e3e2e35b0e2d5f1ff96b68e0.jsonl.gz)
 
 Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task &lt;T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.
 
 ### example-targets: Phase 5 step 4, the v1 gap inventory, published as examples/gap-inventory.md and through find.py --gap; VF-028 closed
 
-change `tupmvorkvlos` · [log `34350549e131`](https://terminalvalue.net/raw-traces/bd59e87b-a013-4704-9c5c-cdab7fe9dd65/34350549e13136e034483f09959d4c237cfb0329f51c517e287e67a13b667a4d.jsonl.gz)
+[`e861e37b5e2c`](https://github.com/pilifs/in-the-loop/commit/e861e37b5e2c6a7a0deaca0ff7228fc672425100) · [log `34350549e131`](https://terminalvalue.net/raw-traces/bd59e87b-a013-4704-9c5c-cdab7fe9dd65/34350549e13136e034483f09959d4c237cfb0329f51c517e287e67a13b667a4d.jsonl.gz)
 
 The v1 gap inventory (decision 11) is now a page, examples/gap-inventory.md, generated offline by workflow_handoff.py inventory --markdown from the 20 target sidecars, their gap packets and receipts; test_gap_inventory.py checks the committed page equals the rendering. It ranks the five observed capability gaps by distinct families, then blocked obligations: two-dependency-closures (3 families, 4 obligations), receiver-of-several-constructors (2, 8), string-parameter (2, 5), interface-parameter (1, 7) and the StringBuilder constructor under strict (1, 1), 25 blocked obligations in all. Each entry gives the obligations it blocks with their claim keys, the smallest reproducer (the fastest observed attempt, its packet, job, and the workflow_refusal.py check that reruns it), the missing semantics, owner modules and closure test. The 17 predicted groups are kept apart in their own table, unranked against the observed ones. inventory() now gives each group a rank and a reproducer; find.py --gap also takes a gap id or its part before a colon (the projection's JDK suffix dropped), so --gap input-construction:string-parameter finds 287, 306 and 307; examples/README.md links the page.
 

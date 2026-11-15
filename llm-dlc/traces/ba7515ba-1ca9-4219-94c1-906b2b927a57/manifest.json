@@ -59,7 +59,7 @@
   "commits": [
     {
       "change_id": "vzlqyvunwtwqsuwkwowquxsslmvywpvn",
-      "commit_id": null,
+      "commit_id": "38e53288c9bee833dac1535d973c693ef9496d34",
       "immutable": false,
       "summary": "Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass",
       "body": "Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.",
@@ -67,7 +67,7 @@
     },
     {
       "change_id": "srxlxttrlxmvwoknnxmknzqyyrsuqxmk",
-      "commit_id": null,
+      "commit_id": "71b9a38622d114ecbec861cbcc2e893d552ed6da",
       "immutable": false,
       "summary": "example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)",
       "body": "As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.<init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.\n\nbuild.py exits 1 both for a refusal and for an unexpected verdict, so the new examples/tools/targets/workflow_refusal.py ID TASK runs it once and passes only when the task plans under the recorded claim key, build.py exits 1, and the attempt gives either one new unresolved receipt with the recorded problem or, at the route's stage, no receipt and the recorded not-executed reason. A verdict, another refusal, a changed claim or a closed gap prints NOT AS PREDICTED. pipeline.py has signals for both lines. 307's two source-slice replays, collected in vzlqyvun, pass, so 307 is a reproducible scaffold at the slice's scope. Its receipt doesn't carry the byte match with 5.2.0.M4 (the preparation would have refused a mismatch), which goes on the for-review list. test_acceptance.py's A2 test, which still expected 307 to have no receipts, is updated.\n\nVerified: test_workflow_refusal.py (the judgement, the predictions, the check on 285 and 286, and the 23 packets against their job records and the inventory) and test_pipeline.py's new signal test. Both fail on vzlqyvun by construction. llm-dlc/tools/example-targets-integration.sh exits 0: the contract (16), the targets suite (243), test_build.py (190), test_pipeline.py (33) and build.py --plan.\n\nQueued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20261115-005926-example-105-confined-change-vf-027-rerun to 20261115-005928-example-306-preservation-vf-027-rerun-st (verification/jobs/20261115-00592*). When they pass, VF-027 closes as its Closes-when allows.",
@@ -79,13 +79,13 @@
       "bytes": 313456,
       "lines": 66,
       "gzip_bytes": 76944,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/ba7515ba-1ca9-4219-94c1-906b2b927a57/208b66897097723bd468c458c7f95078b73a9b8d47751a5e2e03a2eeec49da9b.jsonl.gz"
     },
     "82d4ac73c715e6a29d843206e7e6acac1bcd4332183b4ad7079b9baab6b72660": {
       "bytes": 328516,
       "lines": 76,
       "gzip_bytes": 79342,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/ba7515ba-1ca9-4219-94c1-906b2b927a57/82d4ac73c715e6a29d843206e7e6acac1bcd4332183b4ad7079b9baab6b72660.jsonl.gz"
     }
   },
   "redaction_policy": 4,

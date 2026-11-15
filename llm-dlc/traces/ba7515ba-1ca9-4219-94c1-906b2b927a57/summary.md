@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass
 
-change `vzlqyvunwtwq` · [log `208b66897097`](https://terminalvalue.net/raw-traces/ba7515ba-1ca9-4219-94c1-906b2b927a57/208b66897097723bd468c458c7f95078b73a9b8d47751a5e2e03a2eeec49da9b.jsonl.gz)
+[`38e53288c9be`](https://github.com/pilifs/in-the-loop/commit/38e53288c9bee833dac1535d973c693ef9496d34) · [log `208b66897097`](https://terminalvalue.net/raw-traces/ba7515ba-1ca9-4219-94c1-906b2b927a57/208b66897097723bd468c458c7f95078b73a9b8d47751a5e2e03a2eeec49da9b.jsonl.gz)
 
 Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.
 
 ### example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)
 
-change `srxlxttrlxmv` · [log `82d4ac73c715`](https://terminalvalue.net/raw-traces/ba7515ba-1ca9-4219-94c1-906b2b927a57/82d4ac73c715e6a29d843206e7e6acac1bcd4332183b4ad7079b9baab6b72660.jsonl.gz)
+[`71b9a38622d1`](https://github.com/pilifs/in-the-loop/commit/71b9a38622d114ecbec861cbcc2e893d552ed6da) · [log `82d4ac73c715`](https://terminalvalue.net/raw-traces/ba7515ba-1ca9-4219-94c1-906b2b927a57/82d4ac73c715e6a29d843206e7e6acac1bcd4332183b4ad7079b9baab6b72660.jsonl.gz)
 
 As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.&lt;init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.
 

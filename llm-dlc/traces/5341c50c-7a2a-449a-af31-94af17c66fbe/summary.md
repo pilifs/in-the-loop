@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### example-targets: Phase 5 step 5, the for-review list; A0-A7 pass and A8 waits on its two jobs
 
-change `mwsuuplnzqyq` · [log `4c43c1f8d5ea`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)
+[`6879573bef52`](https://github.com/pilifs/in-the-loop/commit/6879573bef5284bccb6e6ba46b45f545f1be2343) · [log `4c43c1f8d5ea`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)
 
 The brief's Progress gains the for-review list Phase 5 step 5 asks for, at uwuktzll.
 
@@ -40,7 +40,7 @@ Out of date in the brief, outside Progress: the Streams section's 4 GB per strea
 
 ### Allow list: Filip Stankovic approved 345f455a, 71c156ce, 7e48b0a7, f5f8f407
 
-change `pummuplwqvmr` · [log `4c43c1f8d5ea`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)
+[`f7ac5c6ab16b`](https://github.com/pilifs/in-the-loop/commit/f7ac5c6ab16b30917605beff0e8318f36ef8ba49) · [log `4c43c1f8d5ea`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/4c43c1f8d5eaba80b0775a21dceb070f03634d327426f0543b7c195bb0165fc5.jsonl.gz)
 
 Filip Stankovic approved 4 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -51,21 +51,27 @@ f5f8f407  long-token  If6…PO (53 chars): BCrypt hash outputs of example 307's 
 
 ### example-targets: the brief brought up to date outside Progress
 
-change `pynmtoxmwzrm` · [log `1a2ff5a25807`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/1a2ff5a25807ca0bd4fbbbd6da22d659bdd689ff93f931cc07df17ab1c35b9fe.jsonl.gz)
+[`29fc3387fa94`](https://github.com/pilifs/in-the-loop/commit/29fc3387fa941778be93d05dad085a3045ea534a) · [log `1a2ff5a25807`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/1a2ff5a25807ca0bd4fbbbd6da22d659bdd689ff93f931cc07df17ab1c35b9fe.jsonl.gz)
 
 At the user's request, after the loop stopped waiting on gate A8's two jobs, the parts of llm-dlc/loops/example-targets.md outside Progress that the for-review list called out of date were updated. The header now gives the dates of Phase 0, the merge and Phase 5. Where it starts from opens with the rows that changed since its launch baseline (the external-target seam, pinned dependencies, the 20 sidecars, the hosts the locks pin from, the observed gaps), and keeps the recount itself as recorded. The downloads paragraph names decision 1's current hosts (github.com, Central, repo.spring.io and the two Gradle hosts, maven.aliyun.com withdrawn) and says runtime's acquisition is merged. Streams gives the 12G loop caps and 6G integration scope that replaced 4 GB a stream, the forgotten workspaces and the example numbers used. Phases 1-4 and 5 carry done markers. Decision 3 records the extracted source slice as a third artifact route (305 and 307, by the user's decisions), and decision 8 its 2026-11-14 change. Checked: test_targets_contract.py passes all 16 tests inline, the hosts against runtime_maven.HOSTS and the packets' sources.lock.json files, and sync.py check reports 0 warnings now that the user approved the four allow-list proposals.
 
 ### example-targets: the user's decisions on the for-review list, nine items to do before done; the workflow brief's release-pair rule noted
 
-change `zpsktlxztnsp` · [log `af4fe749acec`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/af4fe749acec77d0ad6ad2d7695ced2f12f81b32d4477fd2c9c061eb4d575f1f.jsonl.gz)
+[`16a75e36c043`](https://github.com/pilifs/in-the-loop/commit/16a75e36c04320e893f9456755621a6579851cc8) · [log `af4fe749acec`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/af4fe749acec77d0ad6ad2d7695ced2f12f81b32d4477fd2c9c061eb4d575f1f.jsonl.gz)
 
 The user reviewed step 5's for-review list with the agent after the loop stopped. Every reading of a decision is accepted as read, including gate A8's four (the jobs run at the tip of the merged line, the 28-path sample of constructed examples, JBMC hidden with bwrap rather than uninstalled, 147/148 and the cargo suites not rerun), and the streams' packet notes stay notes. Ten items are decided, recorded as a numbered list in the brief's Progress: a blocked task's handoff names workflow_refusal.py; build.py --index-only regenerates the gap inventory; 285-287's prediction summaries get a pointer to the observed blockers; a new gap kind for two-dependency-closures; receipts bundle size-capped raw streams and say why controls didn't start; A7's four receipt and handoff observations fixed; 307's receipt records its published-class match; the 18-versus-19 collect count investigated; 287's missing single-byte sensitivity control recorded; and a dated note in example-targets-workflow.md that the release-pair rule changed at the merge (ykxtqwmt), done in this commit. The brief's status goes back to working. Nothing was run: this commit records decisions and edits two briefs.
 
 ### Record verification results for 2 jobs: gate A8's 42 target tasks with JBMC absent, and one constructed example per build.py run path, both passed
 
-change `qswsrqywvwor` · [log `22aa9c89432f`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/22aa9c89432f0f448ef47970bcc4e633737d83e5f3c2b999f1565485f706f066.jsonl.gz)
+[`acbc80e43e3d`](https://github.com/pilifs/in-the-loop/commit/acbc80e43e3dad69912bf154373b0a4608231d18) · [log `22aa9c89432f`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/22aa9c89432f0f448ef47970bcc4e633737d83e5f3c2b999f1565485f706f066.jsonl.gz)
 
 20261115-015944 (49 steps, 20m56s, peak 955 MiB): the 42 target tasks and 7 native constructed run paths behave as expected with JBMC absent, including the task refusals predicted. 20261115-020015 (28 steps, 3m37s, peak 1.3 GiB): each build.py run path keeps its recorded verdict at the merged revision. Collect applied no output files. Run with the one-loop budget (80G, 26 CPUs, 13 workers); the first runner was killed by the session's 10 minute background limit and the job re-ran from pending.
+
+### Record session traces
+
+change `mzxrtnukmoso` · [log `3ec50b10b547`](https://terminalvalue.net/raw-traces/5341c50c-7a2a-449a-af31-94af17c66fbe/3ec50b10b5473d98790e66c5eb6363f98efb5d92f2373109e29559509981b295.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

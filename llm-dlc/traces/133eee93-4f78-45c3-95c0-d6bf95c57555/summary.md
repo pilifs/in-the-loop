@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: example-targets runtime R2 upstream-build route rerun passes
 
-change `tlmknmszwupw` · [log `883e30575035`](https://terminalvalue.net/raw-traces/133eee93-4f78-45c3-95c0-d6bf95c57555/883e30575035b0c7b54d7a6cff9ad685010748279795f54d94ef3d7181f0b5f4.jsonl.gz)
+[`b54f703c97fb`](https://github.com/pilifs/in-the-loop/commit/b54f703c97fb2b89b2f90dfacf700dd7dba82f6d) · [log `883e30575035`](https://terminalvalue.net/raw-traces/133eee93-4f78-45c3-95c0-d6bf95c57555/883e30575035b0c7b54d7a6cff9ad685010748279795f54d94ef3d7181f0b5f4.jsonl.gz)
 
 Job 20261114-174017-example-targets-runtime-r2-the-upstream passed on vm-1 (2 steps, 57.5 s, peak 783 MiB against an estimate of 10 min and 3 GiB): the upstream-build route rerun on example 105's two commons-numbers commits with the runtime classpath scope filter applied. 22 outputs under runtime-upstream/ were applied; 45 were not, because they changed since the job's commit. Two maven/resolution.json files are 1.07 MB, just over jj's 1 MiB snapshot limit, so they were snapshotted with snapshot.max-new-file-size raised for that command only. No findings opened or closed. The report also lists older failed jobs already recorded in findings.md.
+
+### Record session traces
+
+change `mzxrtnukmoso` · [log `ddbdaf3ee2fa`](https://terminalvalue.net/raw-traces/133eee93-4f78-45c3-95c0-d6bf95c57555/ddbdaf3ee2fab53ee671b70fc3f825ae6aebf8c17585552332457c6267f29647.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

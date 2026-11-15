@@ -44,49 +44,49 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Record the R3 run_verifier calibration result: failed, VF-024
 
-change `orwvprtsppyz` · [log `b182480b8e89`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b182480b8e89d74fc9f2a9007918bb14c1d6222ce474e7b8a6be56432ea2d85f.jsonl.gz)
+[`395ed19a11ff`](https://github.com/pilifs/in-the-loop/commit/395ed19a11ff9c846e642e73c99b3af7439a3e5f) · [log `b182480b8e89`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b182480b8e89d74fc9f2a9007918bb14c1d6222ce474e7b8a6be56432ea2d85f.jsonl.gz)
 
 Job 20261114-162937-example-targets-runtime-r3-run-verifier (at b397033c198f, vm-1) failed in 45 s: the fixture's property uses the parameter name 'code' where the compiled class has arg0 (three security tasks unverifiable), jvmcontract equivalence exits 2 with 'Not a directory' on the preservation task, and regex-probe is unverifiable on a String parameter. Recorded as VF-024 for the runtime loop; no results were edited and nothing applied.
 
 ### example-targets decision 1 extended: repo.spring.io, services.gradle.org and plugins.gradle.org allowed, hash-pinned
 
-change `ylkxyuvywuxu` · [log `a929c03017ed`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/a929c03017ed461f2c4f7ffc663326860c12c4333dd99b007a0648c763bb5b05.jsonl.gz)
+[`37f89ea33677`](https://github.com/pilifs/in-the-loop/commit/37f89ea33677fd26e33c32645ea79570debdc4c3) · [log `a929c03017ed`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/a929c03017ed461f2c4f7ffc663326860c12c4333dd99b007a0648c763bb5b05.jsonl.gz)
 
 The positive stream stopped done with one question for the user: P1 (305) and P3 (307) can't be prepared from Maven Central and github.com alone. The user chose its option (a): the three hosts are allowed under the same hash-pinned acquisition, SNAPSHOTs still refused. That gives P3 its pinned upstream build; P1 stays blocked, since both its commits pin SNAPSHOT versions. Recorded under Decisions in the main brief (default workspace, read by the merge loop, which hasn't started; each stream loop hashes only its own brief in its own workspace, so none is stopped), with a Progress item for the merge: widen runtime_maven.py's HOSTS and REDIRECT_HOSTS, test that other hosts are still refused, then prepare P3 by a job.
 
 ### Record verification results: R3 run_verifier calibration passes, VF-024 closed
 
-change `plxytuvuslny` · [log `d401a43af68c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/d401a43af68ceb9600b2f536d107981b60518f423becfa548cfcb8c494d25e76.jsonl.gz)
+[`c73e7f01c900`](https://github.com/pilifs/in-the-loop/commit/c73e7f01c9002a34506b222dff6af7f825592018) · [log `d401a43af68c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/d401a43af68ceb9600b2f536d107981b60518f423becfa548cfcb8c494d25e76.jsonl.gz)
 
 Job 20261114-164239-example-targets-runtime-r3-after-vf-024 (vm-1) passed in 44 s: the five runtime-calibration tasks give their expected verdicts (regex-probe's unverifiable is the expected unresolved) and the integration contract runs 16 tests, 8 skipped. Collect applied the 211 calibration outputs under runtime-calibration/. VF-024 is closed in verification/findings.md.
 
 ### Merged streams: regenerate the generated trace files, and check only the history of @
 
-change `xyootzvmznrn` · [log `2af5eb5489d0`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2af5eb5489d00ef60f80e2c564b9ff3dad95af78964c921868610e3ea3b7c97a.jsonl.gz)
+[`b329944f431f`](https://github.com/pilifs/in-the-loop/commit/b329944f431f47df3ea9376de60b26c7b1f918f6) · [log `2af5eb5489d0`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2af5eb5489d00ef60f80e2c564b9ff3dad95af78964c921868610e3ea3b7c97a.jsonl.gz)
 
 Two false flags stopped work whenever feature-loop streams ran in parallel. First, every sync.py commit rewrites llm-dlc/index.json, traces/README.md, traces/metrics.json and README.md's session table, so once two streams had committed, run-streams.sh's integration check found the merge in conflict and never ran its script again (foundations, cleanup, application-core and example-targets all hit this; in foundations it hid a real serde bug until the merge), and every merge loop resolved the four files by hand. The new sync.py regenerate rewrites them from the per-session manifests and metrics, which sit in a directory per session and merge cleanly; it leaves and lists any other conflict, including one in README.md outside its index table, refuses if a session file itself conflicts, and exits 1 while anything is left. run-streams.sh's integration check now runs the merged tree's regenerate before deciding, and names what it regenerated in its report (installed by rename, so the running example-targets run keeps its old copy). The merge steps in engine-priorities.md (the worked example) and example-targets.md, and llm-dlc/README.md, now say to run it. Second, check_trailers read every commit in the repository with an LLM-Trace line, including other workspaces' lines, against this tree's manifests, so each stream's commits were reported as 'session ... has no manifest' everywhere else (26 errors today). It now reads ::@ only: a stream's commits are checked by its own commit in its workspace, and here once merged. Verified: new llm-dlc/tools/test_workspaces.py (7 tests, real jj repos with two workspaces: off-line commits not flagged, a bad trailer in this history still flagged, both lines checked after the merge, the four files settled, a README prose conflict and a session-file conflict reported; the off-line test fails with the old revset); test_review, test_runs, test_performance (103) and test_metrics pass. On real data, a scratch workspace merging the default line with the four example-targets streams' @- had all four files 5-sided in conflict; regenerate settled them (91 sessions), check then reported 0 errors once the streams' logs were copied in, as the reconcile does; and the integration script ran on the merge for the first time since the streams began committing (contract 14 pass, 2 skipped for want of a built jvmcontract; test_build, test_pipeline and build.py --plan pass), finding 3 runtime x workflow test errors described in the session. check in the default workspace now reports 0 errors (was 26).
 
 ### Record verification results: example-targets runtime R2 upstream-build route passes
 
-change `mpqzpuvoqkxn` · [log `bee5bfe520a7`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/bee5bfe520a7c4844426f64db013daeeabb8112628ad94a98b4de8c7dfbe7330.jsonl.gz)
+[`c21ead4fdbee`](https://github.com/pilifs/in-the-loop/commit/c21ead4fdbee2fd6d69728e36d24dd06be48babd) · [log `bee5bfe520a7`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/bee5bfe520a7c4844426f64db013daeeabb8112628ad94a98b4de8c7dfbe7330.jsonl.gz)
 
 Job 20261114-170353-example-targets-runtime-r2-the-upstream passed on vm-1 (2 steps, 58.7 s, peak 858 MiB against an estimate of 15 min and 3 GiB): example 105's two pinned commons-numbers commits were built by Maven and replayed on JDK 21 and 25; before shows the expected [-2, 31] disagreement, after none, and the JDKs agree. Its 85 declared outputs under runtime-upstream/ (7 MB; checkouts removed by step 2) were applied. Two maven/resolution.json files are 1.07 MB, just over jj's 1 MiB snapshot limit, so they were snapshotted once with snapshot.max-new-file-size raised for that command only; the repo setting is unchanged. No findings opened or closed.
 
 ### Draft the stream-conductor brief: coordinate parallel streams during the run, not only at the merge
 
-change `uprxtowpoyor` · [log `31fd64c56716`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/31fd64c56716b465955a1ffc6d81f3c404b282cbef000f24b4c1b5f7d88f82b9.jsonl.gz)
+[`dc2da1c6e953`](https://github.com/pilifs/in-the-loop/commit/dc2da1c6e953883fd5e0b186194184000ff8e906) · [log `31fd64c56716`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/31fd64c56716b465955a1ffc6d81f3c404b282cbef000f24b4c1b5f7d88f82b9.jsonl.gz)
 
 A design for after example-targets is done: a fifth loop beside the streams that keeps a rolling, tested integration line (sync.py regenerate plus the integration script on every stream commit), routes integration failures and interface answers to per-stream inboxes instead of brief edits, settles decisions the brief delegates and queues the rest for the user with options and a recommendation, merges each stream as it finishes so its Phase 5 work starts at once, and takes over upkeep the user does today (clean-stop restarts, collecting warnings and allow-list proposals, telling a stream when a finding about it opens or closes). It is grounded in what the last four runs left for the end (foundations' hidden serde bug, cleanup's review session, application-core's seven interface requests and two late decisions, example-targets' build-route question and runtime x workflow disagreements), lists six implementation steps and five open decisions for the user, and is marked draft so nothing starts while the current loop runs. No code changed.
 
 ### stream-conductor brief: the user's decisions folded in, with an act-first decision record
 
-change `kszkkvmxosmz` · [log `36c490253cc7`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/36c490253cc731c90209918fdaa8d151460e4886d0a8ba9a23f1c233d9005233.jsonl.gz)
+[`6c07b98172c5`](https://github.com/pilifs/in-the-loop/commit/6c07b98172c5c2747807d6cea1d674c1a18f749c) · [log `36c490253cc7`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/36c490253cc731c90209918fdaa8d151460e4886d0a8ba9a23f1c233d9005233.jsonl.gz)
 
 The user settled the five open decisions directionally. The conductor decides when confident and when a decision is cheap to recover from or redo, and the user reviews afterwards rather than approving first. Design 3 now gives the test (confidence with a named basis; recovery cost cheap, costly or irreversible; a table of what to do with each pair; a never-delegated list; re-flagging as a decision's dependents grow, since recovery cost rises over time; an overturn flow that applies the recorded undo) and its tradeoffs. Notifications are deferred in favour of the data, so Design 4 defines one committed, append-only decision record per run (llm-dlc/decisions/NAME.jsonl, a schema checked by check) with generated projections: a review view, status-bar counts, inbox items and the merge loop's for-review list; the user reviews and answers by id through a small decisions.py. Early merge of a finished stream is a contextual judgement with stated criteria, never distracting the running streams; inboxes carry only what a stream has to act on; no rebase onto the integration line for now. The plan now starts with the decision record. Still a draft, to implement after example-targets is done; no code changed.
 
 ### example-targets positive: the three positive packets source-locked (305, 306, 307)
 
-change `rzvwqpqtuumn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`a5b892bc0f8b`](https://github.com/pilifs/in-the-loop/commit/a5b892bc0f8ba24ac736f30cc914f8e7193648ee) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 New real-world examples 305 (Spring Boot e8de5a6d, the Outcome enum behind WebMvcTags.outcome), 306 (Spring Framework db9a10bf, PatternMatchUtils.simpleMatch's prefix check as startsWith) and 307 (Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8), the positive stream's P1-P3 of llm-dlc/loops/example-targets.md. Each has example.json, a target.json sidecar (identity, history, preparation route, named tasks with native strict engines and expected outcomes, handoff), a sources.lock.json and a README. No build, replay or proof ran; claim files, oracles, drivers, probes and mutants come next.
 
@@ -94,13 +94,13 @@ Every commit and parent was checked against github.com by a shallow fetch by SHA
 
 ### example-targets positive P2: 306's claim, oracle, driver, probes and dropped-prefix mutant
 
-change `xlxqqpyrozos` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`72950c016797`](https://github.com/pilifs/in-the-loop/commit/72950c016797dce99084c56b580f8bd0b659754e) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 306 (Spring Framework db9a10bf, simpleMatch's prefix check rewritten as startsWith) now has a frozen claim and its concrete controls. claims/simple-match-preservation.json uses the claim format of workflow's W1 (example-target-claim/v1, not yet merged). Its domain: decision preservation over a pattern and a string, each null or at most 6 UTF-16 code units of any value (maxArrayLength 6, unwind 16), with the boolean and the exception observed. replay/probes.json has 40 probes: the brief's nine, the star shapes, a prefix mismatch, non-ASCII, a surrogate pair, half a pair and isolated surrogates. controls/oracle.py decides each glob independently, by dynamic programming over code units, and checks each revision's driver lines against that and against each other. replay/driver prints one JSON line per probe. controls/drop-prefix.patch is the mutant: release-after with the prefix condition dropped. target.json lists all four as controls and records two predicted blockers: seven JDK String methods the native checker approximates, and null String parameters.
 
 ### example-targets positive P1: 305's claims, oracle, driver, probes and 200-boundary mutant
 
-change `kyzpskvsmxlx` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`efc77ec93c3d`](https://github.com/pilifs/in-the-loop/commit/efc77ec93c3d9bca1a50a498a92d70e8993db598) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 305 (Spring Boot e8de5a6d, the Outcome enum behind WebMvcTags.outcome) gets the packet the positive brief's P1 asks for. Two claims in workflow W1's example-target-claim/v1 format:
 - claims/outcome-preservation.json, for the preservation task: a null response, or a carrier whose getStatus() returns any int. It observes the tag's key and value by value, never identity, since the patch moves the tags' caching, and the exception.
@@ -125,7 +125,7 @@ The brief is out of date in one respect: P1 says the outcome tests are upstream'
 
 ### example-targets positive P3: 307's claim, oracle, driver, probes and US-ASCII mutant
 
-change `umpplsnuslkn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`533d1e5908cb`](https://github.com/pilifs/in-the-loop/commit/533d1e5908cb8c3673a6e8fbba87dc8069f1a38b) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 307 (Spring Security fe9e4549, BCrypt.hashpw(String,String) moving from getBytes("UTF-8") to getBytes(StandardCharsets.UTF_8)) gets its packet. claims/hashpw-preservation.json, in workflow W1's example-target-claim/v1 format, freezes the domain. The password is null or at most 80 UTF-16 code units of any values. The salt is one of seven fixed strings from upstream's BCryptTests: the 'abc' test vector's cost-6 salt and its stored hash, the $2$05$ salt, and null, empty, cost-03 and too-short salts. The claim observes the returned String or the exception's class. The brief's three domain decisions are explicit: a null password (NullPointerException), malformed surrogates (encoded as '?', as String.getBytes specifies) and invalid salts (IllegalArgumentException) are all in the domain. Exception messages are excluded, because since JDK 14 an NPE's message names the method the patch changes.
 
@@ -135,13 +135,13 @@ Verified by hand, as notes, not evidence. Each commit's BCrypt.java was compiled
 
 ### example-targets positive: propose upstream BCrypt test vectors for the allow list
 
-change `vwsxyvlrttlq` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`7959bfb3e768`](https://github.com/pilifs/in-the-loop/commit/7959bfb3e7685d78f266c085118c951a1f05956c) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 P3's commit warned about 15 long-token findings in this session's log. Each was checked with review show (masked): every one is an expected hash from the public test_vectors table of Spring Security's BCryptTests.java (blob dc242a49), printed while choosing example 307's fixed salt. That is published upstream test data, not a credential. Each is proposed with sync.py allow propose and stays a warning until the user approves it. Progress records this for the user, and brings the coordinator's list of cross-workspace 'no manifest' errors to eleven changes, all other streams'.
 
 ### example-targets positive P5: 105 migrated, with its A5 obligation, oracle, driver, probes and the 105-109 inventory
 
-change `xopqylpxvzsy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`b1804e11b379`](https://github.com/pilifs/in-the-loop/commit/b1804e11b379224f0027455e8af5dd56c007af7a) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 105 (apache/commons-numbers#223, ArithmeticUtils.pow) gets a target.json sidecar and its packet; its handwritten README, summary and verdict label stay as the historical report. Revisions were resolved afresh from github.com: before e7c172d2 (the squash merge's only parent), after 8cfc04e8 (the merge), and the pull request head 79aa4643, whose ArithmeticUtils.java is after's. Maven Central's commons-numbers-core 1.3 carries before's file and the same bytecode as that file compiled alone; no release carries after's, so the route is the upstream Maven build of each commit (JDK 11, Central only by its POMs), not yet run.
 
@@ -151,19 +151,19 @@ Verified: controls/oracle.py, written from the Javadoc alone, checks a hand repl
 
 ### example-targets positive: record the two new cross-workspace manifest errors for the coordinator
 
-change `uzxpwmkuyytm` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`5c89d196bf8c`](https://github.com/pilifs/in-the-loop/commit/5c89d196bf8c9397b30a8cad26edfbe9836be2f1) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 P5's commit check reported 13 'session ... has no manifest' ERRORs, all on other streams' changes. Two are new since P3's commit: qyzrtrwr (the workflow session) and kwzmplxt (the negative session). The Progress entry for the coordinator now lists all thirteen. Nothing in this stream's files caused them, and nothing was changed for them; the 15 long-token warnings are the BCrypt test vectors already proposed for the allow list, now in more copies of this session's log.
 
 ### example-targets runtime R1: source locks and the fixture route's preparation
 
-change `muqvuqyqpwyz` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`b9f6125899b6`](https://github.com/pilifs/in-the-loop/commit/b9f6125899b6f3d6bfbacf9564d35d13a624bc98) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 The runtime stream's first piece (llm-dlc/loops/example-targets-runtime.md, R1). runtime.lock(plan, revision) is new and offline: it returns a PreparedTarget at source-locked, with every selected source, adapter, driver and oracle path inside the example's folder (symlinks included) and hashed, and nothing fetched or built. runtime.prepare() now implements the fixture route: it compiles with build_fixtures.py's recipe (--release 21, a fixed JAR date, sorted entries) using the JDK build_fixtures.py would use, resolved to its real home, so the original JAR is byte for byte build_fixtures.py's. It records the original, adapter, driver and oracle by sha256, the ordered classpath, the JDK identity (release file and java -version), the loaded target's origin, and writes prepared.json to the work directory. It returns failed, with its stage, diagnostic and whatever artifacts exist, for a class held by more than one classpath entry (shadowing), a target method the original doesn't declare, an adapter that never references the target method, a compile failure, sources changed between lock and build, and a work directory that isn't an earlier preparation's (left alone). The published-artifact and upstream-build routes return Unsupported until R2. New modules runtime_jdk.py (installed JDKs by full path) and runtime_jar.py (a small class-file reader).
 
 ### example-targets runtime R4: each fixture revision's controls in its own JVM, per JDK
 
-change `tvvqulnktmut` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`1a3a7736c436`](https://github.com/pilifs/in-the-loop/commit/1a3a7736c4368dfa1f4bf48a5f7782bce98d7406) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 runtime.run_controls() replaces Phase 0's stub. Each revision's driver runs in its own JVM on its prepared classpath, on each JDK the artifact entry names (21 and 25 for the fixture), selected by full path, with the oracle's PROBES as inputs. The JVM gets a fixed environment (C.UTF-8, UTC, en-US, UTF-8 streams) and inherits nothing from the caller, JAVA_TOOL_OPTIONS and CLASSPATH included. Each raw ExecutionRecord names the JDK (java -version, home, release file), the commit, each classpath entry's sha256 and role, the driver, the inputs' source and hash, and whether this is original-JVM or model replay. Before any JVM starts, the classpath bytes are rechecked against the preparation. A revision that is unprepared, failed or stale, a missing JDK, or a JDK too old for the class files gives a not-started record, never a skipped one. A kill, a timeout, malformed output, or inputs missing or out of order give no observations; exit 1 with complete output stays raw. Nothing here applies the oracle.
 
@@ -173,13 +173,13 @@ Brief note: PreparedTarget carries no work directory. run_controls therefore fin
 
 ### example-targets runtime R2: the published-artifact route, hash-pinned acquisition and a rechecked cache
 
-change `uoztsmtquttr` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`15ffbc068b3e`](https://github.com/pilifs/in-the-loop/commit/15ffbc068b3ed9957c77dfd6a722e259036d9c67) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 runtime.lock() and prepare() now take route: published-artifact. The lock stays offline. It records the revision's commit as unchecked release linkage, and the JAR and each declared dependency (in classpath order) by fixed coordinates, an allowed URL and a recorded sha256. A dynamic version, a missing hash, a host other than Maven Central or github.com, and a Central URL naming another file are lock blockers. The new runtime_maven.py (stdlib only, so it runs under python3 -I) acquires each JAR from a content-addressed cache that rechecks every restore and moves a corrupt entry aside. On a miss it fetches into a new empty directory and checks the bytes against the lock before caching or using them. A mismatch fails at acquire and is never cached or rebuilt. It fetches only when the plan's network flag allows. The cache log stays out of the PreparedTarget, so a cache hit is reuse, not identity. Every failed preparation now carries source.blocker (stage, command, diagnostic, needed semantics, next action). A missing hash points at 'runtime_maven.py pin G:A:V', which records it after checking Maven Central's .sha1.
 
 ### example-targets runtime R5: the vertical slice on PatternMatchUtils.simpleMatch from published spring-core
 
-change `zuzrkvturtxk` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`3087a627defc`](https://github.com/pilifs/in-the-loop/commit/3087a627defc2e8c53a4192f695757ac432005f8) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 runtime_slice.py takes one small published upstream method end to end, with runtime_simplematch/ as its case folder (not an example and not in the router; its plan uses 315, from the runtime range). The method is org.springframework.util.PatternMatchUtils#simpleMatch(String,String) from spring-core 5.3.18 and 5.3.19. The sidecar is a valid example-target/v1. It names the release tags by full commit, checked with git ls-remote on github.com. It pins each release's spring-core JAR and spring-jcl (spring-core's one compile dependency, per its POM at that version) by Maven Central URL and sha256. runtime_maven.py pin recorded each sha256 and checked it against Central's .sha1. The adapter only calls the method. The driver reads each input as a JSON pair of strings or nulls and prints the raw outcome. The oracle is written from the Javadoc, not the code: 45 probes over nulls, every pattern style, adjacent stars, backtracking, case, a line break, regex metacharacters and a non-BMP character.
 
@@ -191,7 +191,7 @@ Progress also records two things for review. First, PatternMatchUtils.class is b
 
 ### example-targets runtime R3: run_verifier, jvmcontract on the prepared original artifacts (verification pending)
 
-change `qktukqzvvsyx` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`4f2ba8aa4904`](https://github.com/pilifs/in-the-loop/commit/4f2ba8aa49045253f9e43808a80e62629cde18d1) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 runtime.run_verifier replaces Phase 0's stub. A prove task runs jvmcontract prove on its revision's original JAR, with its dependencies in classpath order and the claim's assume, assert, throws, nullable and may-alias. An equivalence task runs jvmcontract equivalence between the pair's originals, --unchanged-unless the allowed change. Both get the plan's explicit --engine and --gaps, the claim's bounds, its plan and contracts files (rechecked by sha256) and --json. The run uses a fixed environment with JDK 25 by full path. The result is one raw verifier ExecutionRecord. Its identities record the jvmcontract digest, the JDK, each revision's classpath and commit, a scope label with the loaded class and its origin, models and assumptions, and a capability probe (jvmcontract gaps, a static scan). A one-sided pair, stale bytes or a preparation that isn't ready gives a not-started record. A kill, a timeout or output that isn't the --json outcome gives no observations. What can't be attempted as stated is Unsupported: a replay task, a missing engine, claim models, a changed claim file, differing dependency closures, or no jvmcontract.
 
@@ -199,7 +199,7 @@ Found while dry-running: the fixture's regex-probe failed preparation, because i
 
 ### example-targets runtime: accept workflow W1's published JAR list in the published-artifact lock
 
-change `qlvsxysynnks` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`c62155b1a442`](https://github.com/pilifs/in-the-loop/commit/c62155b1a442ef1ee618803894d275cebc1867f1) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 A published revision's TaskPlan entry may now carry its JARs the way workflow's W1 artifact_sources gives them on its branch: a published list in classpath order, the original first and then its dependencies, with a lone item's coordinates/url/sha256 copied up. The earlier shape (the original's keys on the entry, dependencies beside them) still locks, to an identical lock. The lock refuses both lists at once, an empty or malformed list, and a copied-up key that disagrees with the list's first item, rather than silently preferring one. runtime_slice.py now builds W1's shape.
 
@@ -207,7 +207,7 @@ Verified: test_runtime.py 52 tests pass (one new, covering both shapes, a lone i
 
 ### example-targets runtime: VF-024, equivalence on class directories, recorded parameter names, the fixture recipe's flags (verification pending)
 
-change `okmwswxnonkr` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`e5bf713b6454`](https://github.com/pilifs/in-the-loop/commit/e5bf713b6454c025da8ec8c2bbb3a60344b5eda8) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Job 20261114-162937-example-targets-runtime-r3-run-verifier (VF-024) got no expected verdict from the fixture's five proof tasks. The causes, and the changes: (1) Phase 0's build_fixtures.py compiles without -parameters or -g, so jvmcontract names Gate.allowed's parameter arg0, while Phase 0's sidecar and workflow's claim files say code (and RegexGate's say field). That is an inconsistency in Phase 0 that runtime can't fix alone, because the fixture route must reproduce build_fixtures.py byte for byte (contract A2). Runtime now takes an optional JAVAC_FLAGS from build_fixtures.py for every javac of the route. Progress asks the coordinator for JAVAC_FLAGS = ('-parameters',), and notes that until then contract A5's fixture rows will fail the same way at the merge. The verifier's scope now records the target's parameter names as the loaded class has them, and where they come from (new runtime_jar.parameter_names, reading MethodParameters, then the LocalVariableTable, as jvmcontract does). (2) jvmcontract equivalence takes directories of classes, not JARs: run_verifier extracts each side's original JAR into verifier/classes/&lt;revision>, records the extraction, and refuses an entry outside the JAR's root. (3) regex-probe's strict proof stops at its String parameter before it reaches java.util.regex. The capability probe names the regex calls, and runtime_calibrate.py now reports the refusal's and the probe's naming apart.
 
@@ -215,7 +215,7 @@ Rerun queued as job 20261114-164239-example-targets-runtime-r3-after-vf-024. Its
 
 ### example-targets runtime R2: the upstream-build route, the pinned commit checked out and built by its own Maven (verification pending)
 
-change `npvxmlwzpwmk` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`0d1f0e03f2aa`](https://github.com/pilifs/in-the-loop/commit/0d1f0e03f2aa51a2b3de8ceeda3d20f075f154a2) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 runtime.py's lock() and prepare() now take route: upstream-build, through the new runtime_upstream.py, so every route of the sidecar schema is implemented. The lock is offline: a github.com repository, the full commit and its recorded parent, and the build recipe (tool, argv starting with that tool's command, JDK by feature), refusing an argv that sets its own settings, local repository or offline mode. Preparation fetches the exact commit by full SHA into an isolated checkout (https only, no tags, hooks, submodules or user configuration), records its tree and parents (a recorded parent the commit doesn't have is a history blocker), runs the recorded argv with the revision's JDK and Maven by full path, with Maven Central as the one repository, a fresh local repository, strict checksums and no inherited environment, refuses a build that changes tracked sources, takes the one produced non-auxiliary JAR holding the target class as the original, resolves the module's runtime classpath with maven-dependency-plugin 3.9.0 (pinned), and hashes every produced JAR and every file the build resolved (maven/resolution.json, version lookups named). A Maven wrapper's distribution is fetched from Maven Central by sha256 (its properties' own, or Central's .sha1 checked through the new runtime_maven.pin_file) and run directly; Gradle is a toolchain blocker naming the distribution it would need, since services.gradle.org is outside the downloads policy (307 needs the user's decision on that).
 
@@ -225,7 +225,7 @@ The acceptance's real pinned revision is queued as job 20261114-170353-example-t
 
 ### example-targets runtime: receipts under the case folder's copy, as route.run puts them; W1's shipped claims tolerated
 
-change `pvwsoqrklqmy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`009b893982cf`](https://github.com/pilifs/in-the-loop/commit/009b893982cf6ca3b3927fbaf6f89f2ca6b4842e) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 The integration report of 2026-11-14 17:13 (runtime and workflow merged in scratch) found three failures in runtime's tests. Workflow's W2 publish records a receipt relative to the plan's folder, as route.run assumes (it ingests into &lt;folder>/receipts/&lt;task>), while runtime_slice.py and runtime_calibrate.py ingested beside the folder. Each now copies its case folder into the attempt (ATTEMPT/case, ATTEMPT/fixture) and ingests under the copy, so no run writes into the repository's case folder; the lock hashes every selected file, so the copy locks the same. A verifier test no longer fails on the fixtures/claims/ folder W1 ships. A new test holds both callers to W2's rule with a stand-in ingest that refuses an out outside the plan's folder. No interface request is needed.
 
@@ -233,7 +233,7 @@ Verified: test_runtime.py 56 tests; the integration script exits 0 (contract 8 p
 
 ### example-targets negative N0: the Spring CVE catalog, 285-300, with every revision checked upstream
 
-change `pomrmppunkzt` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`1871088c7137`](https://github.com/pilifs/in-the-loop/commit/1871088c713718aacbeb8afabf03df06323c547b) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Imports the archived research registry's 15 Spring CVEs and the seed file's CVE-2025-22234 as real-world examples 285-300, each with example.json, a target.json sidecar (example-target/v1) and a hand-written README. CVE-2023-34055 (285), CVE-2022-22968 (286) and CVE-2025-22228 (287) are promoted in place with role negative and no tasks yet (N1-N3 add them); the other 13 are catalog entries with no preparation, tasks or verdict, whose missing prerequisites are the registry's model blockers, recorded as predicted handoff blockers. 300 is research only, linked to 287, with its vendor-attributed introduction and no timing oracle.
 
@@ -241,7 +241,7 @@ Every revision was checked against upstream on github.com, so each sidecar says 
 
 ### example-targets negative N1: the CVE-2023-34055 method-label packet (285), source-locked with frozen claims, oracle, carrier, driver and mutant
 
-change `mkwpnurukopq` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`a66feddf5046`](https://github.com/pilifs/in-the-loop/commit/a66feddf5046d3221a0b22587bbdf80e7751c055) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 285 (Spring Boot WebMvcTags.method, CVE-2023-34055) becomes a deep negative packet ready for Phase 5's preparation. The release pair 2.7.17 -> 2.7.18 is selected, on the published-artifact route: the exact-fix pair 7ad6e447 -> 5490e739 has no published JAR, and each release's WebMvcTags.java is that pair's blob (also in the sources JARs), with Tag, ImmutableTag and HttpMethod byte-identical across the two releases' closures. sources.lock.json records the blobs, the managed versions, each release's seven-JAR class path with sha256 (sha1 checked against Maven Central) and what javap shows of the method, its class initializer and its callees.
 
@@ -251,7 +251,7 @@ Verified: the integration script passes (contract 3 pass and 13 stubs, targets 4
 
 ### example-targets negative N2: the CVE-2022-22968 binder packet (286), source-locked, with the decision lemma, preservation and protected-state claims, oracle, driver and mutant
 
-change `kwzmplxtmktn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`98bc49cda67c`](https://github.com/pilifs/in-the-loop/commit/98bc49cda67caf9425bd5d9b2709fb52f61f0c34) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 286 is now a deep negative packet. It selects the release pair (Spring Framework 5.3.18 -> 5.3.19, published JARs). Each release's DataBinder.java is the exact-fix pair's blob (612dfc56, 8ee5e43b), and the decision's helpers are byte-identical across the closures. Two CachedIntrospectionResults commits in the release window filter properties the probe bean doesn't have, and the driver prints the resolved properties on every run. sources.lock.json records the tags, commits, blobs, ancestry, the other commits between the releases, the JARs' sha1 against Maven Central with their sha256, and the javap facts.
 
@@ -265,7 +265,7 @@ Where the brief is out of date: N2 asks for the upstream 'changed wildcard and m
 
 ### example-targets negative N3: the CVE-2025-22228 BCrypt packet (287), source-locked, with the public matches claim, preservation, a byte-array guard lemma, oracle, independent stored hashes, driver and mutant
 
-change `mpmuuzlyovxn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`91b14fa3014c`](https://github.com/pilifs/in-the-loop/commit/91b14fa3014c56621835caf2a34a0aab12e250cb) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 287 is now a deep negative packet ready for Phase 5's preparation. The release pair (Security 6.3.7 -> 6.3.8, published artifacts: spring-security-crypto, then each release's spring-jcl) is the execution pair. It carries the exact fix 36ea1b11 -> 46f0dc6d faithfully: both releases' BCrypt.java and BCryptPasswordEncoder.java are that pair's blobs, also in the sources JARs, and in the class files only BCrypt.hashpw(byte[], String, boolean) differs (compared method by method; sources.lock.json).
 
@@ -279,7 +279,7 @@ For review, in the brief's Progress: lone surrogates match a hash of '?'s on eve
 
 ### example-targets negative N4: CVE-2025-22234 (300) research-only with the 6.3.9 policy as a proposed contract and a source lock; handoffs and acceptance checked
 
-change `zuoknplnoqpy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`0b3fd22f6c64`](https://github.com/pilifs/in-the-loop/commit/0b3fd22f6c6441750443a9613877fd4ad95602da) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Example 300 (CVE-2025-22234) stays research only and linked to 287. It now keeps three properties apart: 287's blanket rejection of passwords over 72 UTF-8 bytes; the 6.3.9 functional policy of the repair c1aa99fd (encode refuses more than 72 bytes; matching against a valid stored hash never refuses by length and depends only on the first 72 bytes), recorded as a proposed contract, not frozen, in target.json and the README rather than in claims/, where a claim file counts as frozen; and the DaoAuthenticationProvider timing mitigation. No output or call-log equality establishes timing noninterference, and a cost model is outside this wave. A new sources.lock.json records BCrypt.java's blobs at eb013944 -> c1aa99fd and 6.3.8 -> 6.3.9, that c1aa99fd is the only commit in the release window touching crypto's main sources or the provider's package, that the provider, its parent and the delegating encoder are unchanged from 6.3.7 to 6.3.9, and that only BCrypt.hashpw(byte[], String, boolean) differs between the 6.3.8 and 6.3.9 JARs.
 
@@ -289,7 +289,7 @@ Handoffs and acceptance: no blocker was attempted in this stream (no verifier or
 
 ### Record session traces
 
-change `mqnnxzktpvvk` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`2f1845c306ca`](https://github.com/pilifs/in-the-loop/commit/2f1845c306ca7f0e53bdebaffd7281cb1a40441e) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the negative stream's last turns, after its last commit zuoknpln, recorded on its branch before the merge. The stream ended done: N1-N4, with 285-287 ready for Phase 5's preparation and 300 research only.
 
@@ -297,7 +297,7 @@ Also committed: the stream's 8 allow-list proposals in llm-dlc/allowlist.json (l
 
 ### example-targets W1: pure task planning from the sidecar and a frozen claim file
 
-change `wqsyopqlqlno` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`4bece4b53f06`](https://github.com/pilifs/in-the-loop/commit/4bece4b53f06cc81422c7f62632bed6cfbba6ecd) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 workflow.plan_task() replaces Phase 0's stub: it resolves a named task of a target.json sidecar into a TaskPlan from local metadata alone (no network, process or write), with its revisions, per-revision artifact sources, tools (never JBMC for a native task), explicit engine and gap mode, expected outcome, prerequisites and outputs. The source-level claim comes from a new claim file format, example-target-claim/v1 (examples/schema/target-claim.schema.json): the property, its domain, observations, assumptions, bounds and models. Planning resolves the tool's default bounds, hashes every referenced file and control, and computes a canonical key that tasks sharing a claim file share (the vulnerable, fixed and mutant security tasks), while ingestion will bind it to artifacts. Catalogued cases, incomplete routes, proof tasks without an explicit engine or gap mode, prove tasks without a claim file, invalid or mismatched claim files, replays without an oracle and driver, and unjustified introduction tasks are refused by name, which build.py --plan shows as notExecuted.
 
@@ -305,7 +305,7 @@ The fixture gains claims/ (gate-security, gate-preservation, regex-probe) and th
 
 ### example-targets W1: constructed mutant revisions, one patch from a base and kept constructed
 
-change `zvnrtxsunllx` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`a776fca07c02`](https://github.com/pilifs/in-the-loop/commit/a776fca07c02dd625f9327744a269154db26f111) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 The sidecar schema (example-target/v1, additive) gains a third kind of revision, a constructed mutant: its base revision, a patch file in the example's folder, the patch's sha256 and the mutation in words, for any role, so a positive or negative packet can declare its mutation control with its own provenance. sidecar.py keeps it constructed: one patch from a commit or fixture revision, no upstream parent, tag or release, never named by a published artifact, and compared only as the after of a mutation pair against its own base; a mutation pair's after is never an upstream commit.
 
@@ -315,13 +315,13 @@ Verified: test_sidecar.py 18 (3 new) and test_workflow.py 29 (5 new) pass; the o
 
 ### example-targets workflow: record the check errors that are other streams' commits
 
-change `nrpqnlolqstu` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`d724d5aba08f`](https://github.com/pilifs/in-the-loop/commit/d724d5aba08f5b142f6e4187cecdabc4b8c876fa) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 sync.py check now reports 'session ... has no manifest' for the runtime, negative and positive streams' commits (muqvuqyqpwyz, pomrmppunkzt, rzvwqpqtuumn): it sees them in the shared jj repository, while their trace manifests are only in their own workspaces' trees. The W1 mutant commit zvnrtxsunllx has no error of its own. Recorded under the stream brief's Progress for review, as the cleanup and foundations streams did; the errors clear at the merge. Nothing else changed.
 
 ### example-targets W1: readiness milestones per task, and the summaries derived from them
 
-change `onssronowxlk` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`10058ba48479`](https://github.com/pilifs/in-the-loop/commit/10058ba48479f82efe2b801a6c0ebdb1bc91faf3) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 workflow.readiness() and task_readiness() derive, offline and read-only, each task's six readiness milestones (provenance locked, artifacts prepared, oracle replay validated, claim frozen, capability probed, attempt recorded), each reached, not reached or not applicable with its evidence, from the sidecar, its files and the receipts in the example's folder, and a summary per task and per target: catalogued, partial, scaffolded, executable or blocked. None reads a conclusion as a verdict. A receipt counts only beside a plan.json (workflow.plan_record(): the plan, its attempt inputs and their key), so a changed claim file, control, adapter, artifact source or bound leaves earlier receipts stale, listed and never counted; an unreadable, non-format-2 or misfiled receipt is listed as unreadable. A predicted blocker is no probe; an observed build, provenance, oracle or replay blocker leaves the scaffold partial; an observed capability gap on a sound scaffold blocks the task. On the fixture every task is partial today, as no receipt exists yet.
 
@@ -329,7 +329,7 @@ Verified: test_workflow.py 37 tests (8 new) pass; llm-dlc/tools/example-targets-
 
 ### example-targets W2: attempt ingestion, one format-2 receipt per task and attempt bound to the prepared artifacts
 
-change `monsvovyynrm` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`22a69b6a848a`](https://github.com/pilifs/in-the-loop/commit/22a69b6a848a36ca137c3be57f020d833f11261c) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 workflow.ingest() (examples/tools/targets/workflow_ingest.py, new) replaces Phase 0's stub. It binds one attempt's raw execution records to runtime's PreparedTargets and publishes receipts/&lt;task>/&lt;attempt>/result.json with plan.json beside it and the evidence under records/ (the records with what the oracle read, and the console output), listed by sha256 in the bundle. Earlier attempts are kept, and nothing is published before build.py's check_result() passes. The claim is build.py's format-1 claim with claim.target: the sidecar's sha256, each revision's identity, every classpath entry per revision in order with role and sha256, the JDKs, and the claim, control, adapter, patch and oracle files. Its id stays the same across attempts and engines, and differs between the vulnerable and fixed tasks of one property and after any changed input. A fixture revision, which has no commit, is identified by the git tree id of its sources (git rev-parse reproduces it; tested), and a mutant by its base's.
 
@@ -341,7 +341,7 @@ Out of date in the brief set, recorded as interface requests under Progress: res
 
 ### example-targets W3: the handoff packet and the gap inventory, offline, with the observed gap's packet
 
-change `qyzrtrwrwwlo` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`2a03a28a7ba5`](https://github.com/pilifs/in-the-loop/commit/2a03a28a7ba57c46965d59987385f19c8479d347) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 workflow.handoff() (targets/workflow_handoff.py, new) exports one task's packet without running or writing anything: its immutable inputs by path, role and sha256 (sidecar, claim, controls, adapters, fixture sources, gap packets and the records they cite), the exact commands (the offline plan, then a replay inline or a proof through pipeline.py submit), its current receipts with stale ones apart, its readiness, its prerequisites and the first unsatisfied one, one recommended next command with its reason, its gaps and the rules a continuing agent keeps (the claim key stays frozen; a narrower kernel is a separate task). Observed and predicted gaps stay apart, and a build, provenance, oracle or replay blocker (scaffold) stays apart from a library limit (capability). An observed gap carries the brief's capability-gap packet, derived from a recorded jvmcontract gaps run: command, diagnostic ids, verifier and artifact identities, reproducer with its call path, the Java semantics needed, why, needs, likely module, closure check and strategies tried, with whatever can't be derived listed as missing. inventory() groups many targets' gaps by gap id and ranks them by observed, distinct families, then blocked obligations; workflow_handoff.py handoff NNN TASK and inventory print both.
 
@@ -349,7 +349,7 @@ Verified: test_workflow.py 53 tests pass (7 new, among them an isolated copy of 
 
 ### example-targets W4: the index projection for find.py, claim statuses from current receipts and historical labels apart
 
-change `nqztmpwynrtr` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`ddb80474bbde`](https://github.com/pilifs/in-the-loop/commit/ddb80474bbde992bd37f0501eca71473519d9c7d) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 workflow.project() (examples/tools/targets/workflow_discovery.py, new) gives the index's target row that find.py's --family, --role, --readiness, --claim-status and --gap read, offline and read-only: each task's derived readiness and authored expectation, each proof task's conclusion in its latest current receipt (None without one; replays decide no claim), stale and unreadable receipts listed apart, observed gaps with their recorded gap ids kept apart from unevidenced and predicted ones, and the example's authored verdictLabel as historical context from which no claim status is derived (the 105-109 rule). The target's readiness summary is derived but held at None in the index behind workflow_discovery.READINESS_IN_INDEX, because the coordinator's test_route.py:132 asserts Phase 0's None; the merge flips the flag and changes that line to "catalogued" (recorded as an interface request under Progress).
 
@@ -361,7 +361,7 @@ Out of date in the brief: its Starting evidence still says project() states only
 
 ### example-targets runtime R2: the upstream build's dependency classpath filtered to the runtime scope (verification pending)
 
-change `nptowlpnxuzn` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`6736f9629961`](https://github.com/pilifs/in-the-loop/commit/6736f96299614ae63b5b9602346e5b80a017814e) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 The first upstream-build job (20261114-170353, passed) recorded test-scope JARs, JUnit 5.14.4, opentest4j, apiguardian and commons-rng 1.7, as commons-numbers-core's runtime dependencies. runtime_upstream.py passed -Dmdep.includeScope=runtime to maven-dependency-plugin 3.9.0's build-classpath, but the plugin's descriptor (META-INF/maven/plugin.xml, from the JAR fetched from Maven Central and checked against its .sha1) reads that filter from ${includeScope}. Only the output file is ${mdep.outputFile}. The unknown property was ignored, and the listing was the test classpath. It now passes -DincludeScope=runtime, records the scope, and never passes the plugin's own options through from the recipe. The replay's result stood, since no class was shadowed, but the record misnamed the classpath.
 
@@ -369,7 +369,7 @@ Verified: the test's stand-in Maven now filters by scope as the plugin does, and
 
 ### example-targets runtime R2: constructed mutants prepared on all three routes, their base patched with git apply, then built (verification pending)
 
-change `wkkwovlzqrns` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`267ad27e1b0a`](https://github.com/pilifs/in-the-loop/commit/267ad27e1b0a1d4bdfbfc59403f98565f8ea3441) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 A W1 mutant entry (a base revision, a patch by path and sha256, the mutation in words) was Unsupported in lock. Now it locks offline: the patch is rehashed against its recorded sha256, the files it modifies are read from it (modifications of existing text files only, hunk lines counted), and the base is locked by its own route. Its identity is mutant:&lt;base>+&lt;patch sha256>, with the scope constructed-mutation. Preparation applies the patch with git apply (checked first, each file's bytes recorded before and after, no enclosing repository consulted) and is never the base unpatched. The fixture route patches a copy of the base fixture, then runs the recipe. The upstream-build route patches the base commit's checkout and builds it, and the build must leave the checkout as patched. The published-artifact route checks out the base commit, compiles the patched Java files against the base's published JARs with the base classes' --release and debugging flags, and puts the classes in place of the base JAR's own in a copy of it. It refuses a signed JAR, release-specific copies of a patched class, a stale nested class and differing debug attributes, and it records an unpatched recompile to show the compiler's share of the difference.
 
@@ -379,7 +379,7 @@ Job 20261114-180443-example-targets-runtime-r2-a-constructed runs the published 
 
 ### example-targets runtime: the constructed-mutant job passed, R1-R5 and the acceptance done; VF-025's JARs needn't be in the history
 
-change `qrsyzzwuqwrx` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`0ec6885a607a`](https://github.com/pilifs/in-the-loop/commit/0ec6885a607afe019eb5cbe2cb05683e89faa8ba) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e26, collected as msotkvrv) passed. It ran the published-artifact route on real bytes: spring-core 5.3.19's PatternMatchUtils was recompiled from the v5.3.19 commit with suffix-anywhere.patch applied, using javac 25 with --release 8 -g -parameters read off the published class, into a copy of the JAR. On JDK 21 and 25, 5.3.19 agrees with the Javadoc oracle on all 45 probes, and the mutant disagrees at exactly the three predicted inputs. The unpatched recompile isn't byte-identical to the published class, and the record says so.
 
@@ -389,19 +389,19 @@ The brief's Progress records the result and the acceptance evidence row by row, 
 
 ### Record verification results: example-targets runtime R2 upstream-build route rerun passes
 
-change `tlmknmszwupw` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`b54f703c97fb`](https://github.com/pilifs/in-the-loop/commit/b54f703c97fb2b89b2f90dfacf700dd7dba82f6d) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Job 20261114-174017-example-targets-runtime-r2-the-upstream passed on vm-1 (2 steps, 57.5 s, peak 783 MiB against an estimate of 10 min and 3 GiB): the upstream-build route rerun on example 105's two commons-numbers commits with the runtime classpath scope filter applied. 22 outputs under runtime-upstream/ were applied; 45 were not, because they changed since the job's commit. Two maven/resolution.json files are 1.07 MB, just over jj's 1 MiB snapshot limit, so they were snapshotted with snapshot.max-new-file-size raised for that command only. No findings opened or closed. The report also lists older failed jobs already recorded in findings.md.
 
 ### Record verification results: example-targets runtime R2 constructed-mutant route passes
 
-change `msotkvrvkvkt` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`52c54bd6129e`](https://github.com/pilifs/in-the-loop/commit/52c54bd6129e1b818354e9661bf1c8d9c65ca4f9) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Job 20261114-180443-example-targets-runtime-r2-a-constructed (at b5e28e2663be, vm-1) passed in 6.2 s: the published-artifact route prepared spring-core 5.3.19's simpleMatch mutant, and both revisions ran on JDK 21 and 25 with the expected oracle problems. 54 outputs applied under runtime-mutant/; three 1.4 MiB spring-core JARs are over jj's snapshot limit and left out of the commit (VF-025, open).
 
 ### example-targets reconcile: streams' traces recorded and logs copied; the merge blocked on an allow-list conflict only the user may resolve
 
-change `nuzqkkvuqqyy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`4a2e30b4a165`](https://github.com/pilifs/in-the-loop/commit/4a2e30b4a165ffcddcc34969b45cde697e681caa) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Reconcile steps 1-3 of llm-dlc/loops/example-targets.md. All four streams finished done (runtime qrsyzzwu, negative zuoknpln, positive uzxpwmku, workflow nqztmpwy), and no stream or integration scope was active, nor any job pending. Each stream's last turns are recorded on its own branch (Record session traces: xvvuxmqs, mqnnxzkt, kxqozyus, svrtnrlo; negative's also carries the 8 allow-list proposals its last turn left uncommitted), and the 35 gitignored logs not yet in the default workspace were copied in. Those commits ran the workspaces' old sync.py, so their checks reported only the cross-workspace 'session ... has no manifest' errors that xyootzvm ends at the merge.
 
@@ -411,29 +411,29 @@ Before backing out, example-targets-integration.sh ran on the merged tree: every
 
 ### Record session traces
 
-change `kxqozyuslzvr` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`89fc1ef6eacf`](https://github.com/pilifs/in-the-loop/commit/89fc1ef6eacf1fa27f5bf049cb38fba2f42fe19d) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the positive stream's last turns, after its last commit uzxpwmku, recorded on its branch before the merge. The stream ended done; P3's upstream build route waits for the merge (decision 1's extension).
 
 ### Record session traces
 
-change `xvvuxmqsstpt` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`f8e6e30455e0`](https://github.com/pilifs/in-the-loop/commit/f8e6e30455e0b2ff71ff5f26108cb50074c5cd41) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the runtime stream's last turns, after its last commit qrsyzzwu, recorded on its branch before the merge. The stream ended done: R1-R5 and its acceptance.
 
 ### Record session traces
 
-change `svrtnrloymnp` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`ef6d30dd0ce4`](https://github.com/pilifs/in-the-loop/commit/ef6d30dd0ce4589b10b56ee19e743a6f9fb38960) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 The example-targets reconcile (llm-dlc/loops/example-targets.md, step 3): the workflow stream's last turns, after its last commit nqztmpwy, recorded on its branch before the merge. The stream ended done: W1-W4.
 
 ### example-targets reconcile step 4: streams merged, allow-list conflict resolved
 
-change `ptyqvxxlyvsk` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`fb401a6a996d`](https://github.com/pilifs/in-the-loop/commit/fb401a6a996d1bac8043fc34a853ed443903f2ca) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 ### Allow list: Filip Stankovic approved 043a3764, 1061814e, 12d09d6e, 155db487, 262bb771, 2f3c997d, 36f507b2, 385129c1, 3e9d926e, 541a7555, 54c32c6b, 5609d615, 587e045b, 7400292c, 748b6704, 7789bb63, 7ff05194, 815d7484, 981d7f81, dd2fcadc, e798f19e, f054d7e5, fcbc71d7
 
-change `lpkzkttsonks` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`0f774d2cfa61`](https://github.com/pilifs/in-the-loop/commit/0f774d2cfa6197105ce3e2dc875787f25503cc49) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Filip Stankovic approved 23 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -463,7 +463,7 @@ fcbc71d7  long-token  Nlg…a2 (53 chars): A bcrypt hash from the public test_ve
 
 ### example-targets reconcile steps 5-6: the four streams' Progress folded into the brief, their workspaces forgotten
 
-change `zvlkvmyxvvtk` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`95de04638489`](https://github.com/pilifs/in-the-loop/commit/95de04638489a119f76fd340a71039683dd8a995) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 Folds the runtime, negative, positive and workflow streams' Progress into llm-dlc/loops/example-targets.md, as its reconcile step 5 asks. No stream had a timebox deferral. The one item deferred for the user, P1's and P3's upstream build route, was answered by decision 1's extension. Eleven groups of interface requests waited for the merge and are now Phase 5 step 1's ordered work list, grouped by file owner. They are: the fixture recipe's -parameters (contract A5's fix), the widened download hosts in runtime_maven.py (then P3), the six packets' mutants rewritten as W1 mutant revisions, the router regenerated for 285-300 and 305-307, readiness in the index, companion links, PreparedTarget's workdir and blocker fields, the result schema's existingTests for target receipts, a driver's invocation convention, smaller requests, and VF-025's .gitignore. Also recorded: the case packets' state at the merge (all source-locked, none prepared by a job), the runtime stream's five jobs, and the streams' for-review findings.
 
@@ -471,7 +471,7 @@ Each request was checked against the merged code: HOSTS still lists only Central
 
 ### example-targets Phase 5 step 1: the fixture recipe compiles with -parameters, so contract A5 passes
 
-change `nrtqqxqxzurn` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`ec2f27d48872`](https://github.com/pilifs/in-the-loop/commit/ec2f27d488729a38390598b6b3e61e8956de1ae2) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 Phase 0's fixture recipe (examples/tools/targets/fixtures/build_fixtures.py) compiled the Gate classes without parameter names, so the verifier called the claims' `code` arg0, and every fixture proof task of contract A5 came back unresolved on the merged streams (VF-024's first point). The recipe now has JAVAC_FLAGS = ("-parameters",), which runtime's fixture route already read, and records the flags in its manifest. Runtime's toolchain record lists the recipe's flags too. make_records.py remade records/: every fixture JAR's sha256 changed, but the controls' outputs, the oracle's verdicts on JDK 21 and 25, and the gap scan's three regex calls did not.
 
@@ -479,7 +479,7 @@ Three runtime tests pinned the old bytes and were updated: the verifier's scope 
 
 ### example-targets Phase 5 step 1: the download hosts widened to repo.spring.io and services/plugins.gradle.org; P3's build plugin needs credentials
 
-change `owpostsymrqn` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`ae5f70ca7491`](https://github.com/pilifs/in-the-loop/commit/ae5f70ca7491a4d5fe9642e103cb0469d7597f4b) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 runtime_maven.HOSTS now holds decision 1's extended hosts: Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. A new test, which failed first, checks that they are allowed and that the rest stays refused: other hosts and look-alikes, the Gradle CDNs as hosts or redirects, http, a user name or port, and a SNAPSHOT on repo.spring.io. Refusal messages name the five hosts.
 
@@ -489,13 +489,13 @@ Brief out of date: Progress's request 2 said 'Runtime's Gradle toolchain blocker
 
 ### example-targets Phase 5 step 1: the six packets' mutation controls become W1 mutant revisions, with tasks of their own
 
-change `lllrnmuoqwvs` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`ab3db300a32a`](https://github.com/pilifs/in-the-loop/commit/ab3db300a32aff59a43169da7ed205069c3734d0) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 Each deep packet (285, 286, 287, 305, 306, 307) declared its constructed mutant only as a controls entry of kind mutation on its base revision, which no task prepared. Each patch is now workflow W1's revision mutant (base fixed-release, after or release-after; the patch's sha256 unchanged; the mutation described in words), the after of a new mutation pair. Each packet gains a mutant-replay task (the concrete controls on that pair: base holds, mutant fails) and a claim task expected refuted: mutant-security, fixed-security's claim on the mutant (285-287), or mutant-preservation, preservation's claim over the mutation pair (305-307; 306's is gate A4's nearby mutation). The mutation control now names the revision mutant, as the fixture's does. Side effect: the patch is no longer among fixed-security's or replay's controls, so those plans' input keys changed (and replay's claim key for 305-307); no packet has a receipt, so nothing went stale. Runtime's slice runtime_simplematch/mutation.json moved into its target.json unchanged, and runtime_slice.py no longer merges it. The READMEs, example.json notes and the slice README say so.
 
 ### example-targets Phase 5 step 1: the router regenerated, so index.json and examples/README.md list 285-300 and 305-307
 
-change `vrzlzssrqxqv` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`3a536700d311`](https://github.com/pilifs/in-the-loop/commit/3a536700d311e065d42db8e3a461a6499acb2600) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 Request 4 of the merge's interface requests (llm-dlc/loops/example-targets.md, Progress). The streams couldn't write the coordinator's generated files, so examples/index.json and examples/README.md had none of the 19 new folders, and find.py couldn't reach the catalog or the positive packets. A new test, examples/tools/targets/test_packets.py's RouterTest, failed for those 19 folders. It checks that the committed router lists every numbered folder and gives each sidecar example a target projection. python3 examples/tools/build.py --index-only regenerated both files. The 19 folders gained rows, tag links and index entries. Example 105's entry gained its migration notes and its target projection (role calibration), and its historical verdictLabel is unchanged. No other entry changed.
 
@@ -503,19 +503,19 @@ Verified: llm-dlc/tools/example-targets-integration.sh exits 0 (contract 16, tar
 
 ### example-targets Phase 5 step 1: the index carries each target's readiness, so find.py --readiness reaches 288-300 (catalogued) and the packets (partial)
 
-change `ymrtzmlsytuy` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`61808c509a4c`](https://github.com/pilifs/in-the-loop/commit/61808c509a4c379d2eff288538f8a6b0d78c0c16) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Request 5 of the brief's merge-time interface requests. workflow_discovery.READINESS_IN_INDEX is now True. Phase 0's test_route.py IndexAndFindTest expects the stub sidecar's readiness to be 'catalogued', and that find.py --readiness catalogued finds it. test_workflow.py's two tests that assumed the flag was off now treat projected readiness as the default and keep the hold as the flag-off case. build.py --index-only regenerated examples/index.json; only each target's readiness changed, and the 'unsupported' hold line went.
 
 ### example-targets Phase 5 step 1: 305-307 name 285-287 as companions, and the sidecar examples carry external-target and their family's domain tag
 
-change `krnmkrsmnqpr` · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
+[`7cd5348a9298`](https://github.com/pilifs/in-the-loop/commit/7cd5348a9298bb725253aaf07d67117e54acfcca) · [log `fb89607d25fe`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/fb89607d25fe6eb85a58744cece27cd6c3240a10c7ee865031271b097da25396.jsonl.gz)
 
 Request 6 of Phase 5 step 1 in llm-dlc/loops/example-targets.md (the positive stream's request 3). Each family's CVE packet already named its positive, but the positives 305, 306 and 307 named no companion. Their target.json identities now name 285, 286 and 287, and each matching text gives that number. Tags: 105 and 305-307 gain external-target, which until now covered only 285-300 though all four have a sidecar. 305 gains metrics and 307 password-hashing, their families' domain tags. 306's request-binding, a defect tag for handler parameters that can't bind, becomes data-binding, the domain of DataBinder's field checks, which call PatternMatchUtils. Each example.json has a note, and build.py --index-only regenerated examples/README.md and index.json.
 
 ### example-targets Phase 5 step 1: PreparedTarget names its work directory and its blocker, so the controls and the verifier stop relying on route.py's layout
 
-change `ptnszuvlzszx` · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
+[`8d29c6f7fdd9`](https://github.com/pilifs/in-the-loop/commit/8d29c6f7fdd90886884899f56cd8a2404ad9b64a) · [log `79587680b743`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/79587680b743c1871543079f1e7b505920fcd94235af9f0461b25a3349e0eb63.jsonl.gz)
 
 Request 7 of the example-targets brief's Phase 5 step 1. interfaces.py appends two optional fields to PreparedTarget, workdir and blocker, both None by default, an additive change. runtime.prepare() now records the preparation's absolute directory in workdir, on every preparation made once that directory exists, failed ones included, and writes it to prepared.json. A failed preparation's blocker (stage, command, diagnostic, needs, next) moves out of source, which claims are bound to, into its own field, and runtime_slice.py reads it there. run_controls and run_verifier find a preparation by its workdir, still only if its prepared.json matches; one without a directory is a not-started record, never run.
 
@@ -525,13 +525,13 @@ The brief is out of date on one point. Its request 7 says workdir would let inge
 
 ### example-targets Phase 5 step 1: a target receipt's existingTests is null, not a test run that didn't pass
 
-change `vukqmmvomypq` · [log `853206ddf69e`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/853206ddf69e65d6bf9d7205f710cf7fa4ae8e3053040b89716d19619497337a.jsonl.gz)
+[`2dd8cc394e92`](https://github.com/pilifs/in-the-loop/commit/2dd8cc394e92a86db79b30c686869e5e3cebbbb8) · [log `853206ddf69e`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/853206ddf69e65d6bf9d7205f710cf7fa4ae8e3053040b89716d19619497337a.jsonl.gz)
 
 Request 8 of the interface requests folded at the merge. result.schema.json lets existingTests, before and after be null, and only in a result whose claim has a target (a top-level if/then keeps them objects otherwise, so constructed and format-1 results are unchanged). claim.target.revisions' description now says a fixture revision's identity is its source directory's git tree id and a mutant's is its base's. workflow_ingest.publish writes existingTests: null instead of the 'none: ...' placeholder with passed: false, and before: null for a task on one revision instead of repeating after.
 
 ### example-targets Phase 5 step 1: one oracle convention, so the runner can drive the seven packets' controls and ingestion reads them right
 
-change `kmqzoyplqrxk` · [log `ec41901b2caa`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/ec41901b2caad786b75e70bd8f759df7fb4b78ecede8a21ff65c9dee031834fa.jsonl.gz)
+[`5861db9702dc`](https://github.com/pilifs/in-the-loop/commit/5861db9702dca5afd74b26b06435a7eeafee75d9) · [log `ec41901b2caa`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/ec41901b2caad786b75e70bd8f759df7fb4b78ecede8a21ff65c9dee031834fa.jsonl.gz)
 
 Request 9 of llm-dlc/loops/example-targets.md's Phase 5 step 1. The merged runner (runtime.run_controls) took a driver's inputs from the oracle's PROBES list and expected one echoed 'input' line per argument; ingestion read each revision with check(lines) as (input, problem) pairs. None of the seven packets (105, 285-287, 305-307) followed that: they define argv() and check() with other signatures, their drivers print an identity line or take two arguments per probe, the preparation copied oracle.py without the probes file it reads, and 285-287's check() returns a dict that ingestion read as character pairs, so a fixed release would have counted as violating. 105's PROBES was a Path, which would have raised a TypeError instead of a refusal.
 
@@ -539,7 +539,7 @@ The convention, in runtime.py's docstring: an oracle's driver_args() gives the d
 
 ### example-targets Phase 5 step 1: a verifier record names the lib/ commit and tree its jvmcontract was built from; no adapter entry-point key
 
-change `qpynptrqvmqq` · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
+[`2d7ebb64c07e`](https://github.com/pilifs/in-the-loop/commit/2d7ebb64c07ef743bda194b7a0ed6be71bff712b) · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
 
 Request 10 of the merge's interface requests. A pipeline job that requires jvmcontract now gets JVMCONTRACT_LIB_TREE, the git tree id of the lib/ its binary was built from, and drops one inherited from the runner. runtime.run_verifier records identities.commit (the job's VERIFY_SOURCE_COMMIT) and identities.libTree, only when $JVMCONTRACT is the binary that ran and both are 40 hex digits; a developer build names neither, never a guess. The handoff's gap packet keeps libTree with its verifier, and still lists verifier.commit as missing when it is null (the fixture's developer-built gap record does). verification/README.md documents the variable.
 
@@ -547,7 +547,7 @@ The adapter entry-point claim key is left a gap, as the request allowed: all 41 
 
 ### example-targets Phase 5 step 1: VF-025 closed; the spring-core JARs were committed by sync.py's 100 MiB snapshot, so no ignore rule
 
-change `wxmnlqpyqnqv` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`928ea9104ba4`](https://github.com/pilifs/in-the-loop/commit/928ea9104ba474f7391e3ea61eabf8fda52553b2) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 Request 11, the last of the interface requests that waited for the merge, asked to gitignore runtime-mutant/**/spring-core-5.3.19.jar, the three 1.4 MiB JARs of the runtime stream's job 20261114-180443 that VF-025 said jj's 1 MiB snapshot limit had left out of the commit. They are in fact in the history: the collect commit msotkvrv lists all three, and jj st shows no refused file. The reason is that sync.py runs every jj command with snapshot.max-new-file-size=100MiB, so a sync.py commit takes a file a plain jj command refuses. That also explains VF-020's two diffs that 'got past the limit'. An ignore rule does nothing to tracked files, so none was added. The brief's request 11 (and its Next line) was out of date on this point.
 
@@ -555,7 +555,7 @@ VF-025 moves to findings.md's closed entries, with a correction under its origin
 
 ### example-targets Phase 5 step 1: the replay jobs of gates A3 and A4 queued, after fixing build.py's exit and ingestion's release-pair expectation (verification pending)
 
-change `ykxtqwmtypxy` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`a437ddb47de7`](https://github.com/pilifs/in-the-loop/commit/a437ddb47de7f3baa47f882f86d6d917d56d8d81) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 build.py NNN --task T compared the receipt's status with the task's expected, but a replay decides no claim (status always None, no expected), so every replay job would have exited 1, a reproduced one included. It now exits 0 exactly when the receipt's matchesExpected is true, as its docstring already said; this also stops a vacuous established proof from passing. test_route.py has the reproducer. The pipeline's expected text for a replay job now says what it must show, and scan_signals picks up a target task's 'as expected' and 'NOT AS EXPECTED' lines (new test_pipeline.py test); verification/README.md and examples/README.md say so.
 
@@ -565,7 +565,7 @@ Queued, each python3 examples/tools/build.py NNN --task T on the published-artif
 
 ### example-targets Phase 5 step 2: the 105 calibration's two proof jobs queued for gate A5, after the runner learned where Maven is (verification pending)
 
-change `xkmosovtkkkt` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`b2126e33fdf6`](https://github.com/pilifs/in-the-loop/commit/b2126e33fdf654e1dabacb02aca0a60ef1223d56) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 The runner refused every upstream-build task's job before running it: build.py's plan for example 105 requires 'maven' (workflow.BUILD_TOOLS), and verification/pipeline.py's missing_tools looked that name up on PATH, where no executable is called maven. So both A5 jobs would have ended as 'missing on this machine: maven'. Runtime builds with the highest Maven under $TARGETS_MAVEN_CANDIDATES (sdkman's candidates) by full path, and missing_tools now asks installed_maven() the same question. The job schema's requires description and --requires' help name maven. Reproducer: test_pipeline.py's MissingToolsTest, which failed on the parent and passes now; it also checks that an empty candidates directory, or only a 'current' link, counts as missing.
 
@@ -573,7 +573,7 @@ Queued: 20261114-215343-example-105-fix-property-gate-a5-arithme (fix-property o
 
 ### example-targets: the user's decisions on four for-review items; 307 loses the authentication tag
 
-change `vxwvxmtwrvxx` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`74289a2e07fd`](https://github.com/pilifs/in-the-loop/commit/74289a2e07fdcf74cf496260258ac21328c200db) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 In a review after the feature loop stopped, the user decided four items, recorded in llm-dlc/loops/example-targets.md's Progress. P3 (307) gets its upstream build: spring-build-conventions 0.0.23.RELEASE, which repo.spring.io serves only after a login, is on Alibaba Cloud's anonymous mirror maven.aliyun.com/repository/spring-plugin (sha256 65b65633..., its META-INF dated the minute of upstream's release commit f373956f). No independent hash exists: repo.spring.io's checksums answer 401 and the Wayback Machine has no copy. Building it from its tag doesn't help, since three of its own dependencies are also only on the mirror. So the download hosts gain maven.aliyun.com, hash-pinned, and the build job compares the before BCrypt.class it builds with Spring Security 5.2.0.M4's published one, which has the same source. P1 (305) takes the narrower slice: the SNAPSHOTs its commits resolved in 2019-09 are gone (repo.spring.io/snapshot keeps only each one's last builds). Boot 2.2.0.M6's published actuator has after's exact WebMvcTags.java and Outcome.java by git blob id, so the slice of each commit, compiled against spring-web 5.2.0.RC2, micrometer 1.2.0 and servlet-api 4.0.1, is checked by replaying M6's classes beside the after slice. The msotkvrv JARs are published as they are. 307's authentication tag goes, because the vocabulary entry means tokens; 300 keeps it.
 
@@ -581,13 +581,13 @@ Done here: 307's example.json (the tag and a note) and the router regenerated wi
 
 ### Propose the asciidoctor plugin's version 1.5.8.1 for the allow list
 
-change `vwuvypskvkrs` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`669382656c35`](https://github.com/pilifs/in-the-loop/commit/669382656c35240dc6c0eb2d9babfd56a8bc5306) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 This session's log tripped the public-ip rule on '1.5.8.1', the version of org.asciidoctor:asciidoctor-gradle-plugin, printed while checking where example 307's build plugin and its dependencies can be downloaded. It is not an address. The proposal (finding 531caa54) stays a warning until the user approves it.
 
 ### Allow list: Filip Stankovic approved 531caa54
 
-change `nosxmsrxykox` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`ee9e524a8fc5`](https://github.com/pilifs/in-the-loop/commit/ee9e524a8fc53fa083d6f2a6074577a72010ef87) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -595,13 +595,13 @@ Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the co
 
 ### Record verification results for 7 example-targets jobs (6 passed, 1 failed: 286 replay)
 
-change `kkppnnuympxq` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`327f84708ade`](https://github.com/pilifs/in-the-loop/commit/327f84708ade6fa7024d723b2a23c8d748921607) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 Run on vm-1 with the whole 92G/28-CPU budget (no feature loop, no streams). Passed as expected: 285 and 287 replay (gate A3), 306 replay and mutant-replay (gate A4), and 105's fix-property and fix-property-before (gate A5); their receipts and outputs were applied. 286's replay was not executed: revision vulnerable-release (Framework 5.3.18) failed to prepare. Recorded as VF-026 for the example-targets loop; nothing in the job was changed.
 
 ### example-targets Phase 5: gates A3, A4 and A5 pass on the seven jobs' receipts; 286's adapter check fixed and its replay resubmitted (verification pending)
 
-change `nrxvrqpxlxwr` · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
+[`5fdb08263823`](https://github.com/pilifs/in-the-loop/commit/5fdb08263823eee86d6a5599141f08e7e9345780) · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
 
 The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as expected. A3 passes on 285 (Boot 2.7.17 violates the frozen method-label set at five triggers, 2.7.18 holds with its legitimate labels kept) and 287 (Security 6.3.7 violates at 12 overlong triggers, 6.3.8 holds), each on the original pinned JARs on JDK 21 and 25. A4 passes on 306 (spring-core 5.3.6 and 5.3.7 both hold; the drop-prefix mutant violates). A5 passes on 105: fix-property on commons-numbers 8cfc04e8 is established and not vacuous, and fix-property-before on e7c172d2 is refuted with the witness pow(-2, 31), replayed in the interpreter, both native and strict through the upstream-build route. For review: the proof receipts don't record what their JVM controls observed, since ingestion bundles no raw streams.
 
@@ -609,13 +609,13 @@ The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as
 
 ### Record verification result for example 286's replay (passed): VF-026 closed
 
-change `kxzlrsouuzkk` · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
+[`c6974317144e`](https://github.com/pilifs/in-the-loop/commit/c6974317144eafdb70a2c1012ca2389671ea9337) · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
 
 Job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 ran on vm-1 after the adapter check fix: 1 step passed in 4.0 s, task-as-expected, receipt under examples/286-*/receipts/replay. Collect applied its 4 outputs; findings.md VF-026 marked closed by this job.
 
 ### example-targets Phase 5: maven.aliyun.com allowed for Spring's plugin repository only (decision 1's second extension); A3 passes on 285-287
 
-change `zwyoumxmwmuu` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`d61960db270b`](https://github.com/pilifs/in-the-loop/commit/d61960db270ba28843ab602a29f65943e5e912c0) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 runtime_maven.py's HOSTS gains maven.aliyun.com, held by a new PATH_PREFIXES to /repository/spring-plugin/, the mirror the user allowed on 2026-11-14 for P3's (307) Spring Gradle plugins, which no anonymous upstream repository serves. A path leaving the prefix by a dot segment or a percent-encoding is refused, since a server would resolve it after the check. Every download and redirect goes through allowed(), so the rule covers them all. HOST_NAMES and the docstrings of runtime.py and runtime_upstream.py name it. Reproducer: test_runtime.py's test_the_aliyun_mirror_is_allowed_for_springs_plugin_repository_only, which failed on nrxvrqpx. It also checks the refusals: the mirror's other repositories, dot segments, %2e%2e, http, user names, ports, look-alike hosts and a SNAPSHOT. example-targets-integration.sh exits 0: contract 16, targets suite 210 (one new), test_build.py 190, test_pipeline.py 32 and build.py --plan.
 
@@ -623,7 +623,7 @@ The brief's Progress also records that 286's resubmitted replay passed (collecte
 
 ### Verification findings: VF-026 moved to Decided and closed, and a stray sentence dropped from its Status
 
-change `ylkruvtnqryk` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`a03fca9aa1f5`](https://github.com/pilifs/in-the-loop/commit/a03fca9aa1f571d22f948dcc7bed734de45c4ffc) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 kxzlrsou closed VF-026 (example 286's replay; job 20261114-223812-example-286-replay-gate-a3-cve-2022-2296 passed) but left the entry under Open, with "(Entry moved below is not done; it stays here with its history.)" added to its Status line. The managing agent's own report named the slip. The entry now heads Decided and closed, as findings.md's ordering asks, with that sentence removed. No other text changed.
 
@@ -631,7 +631,7 @@ Committed with a path-limited jj commit, because the example-targets loop has un
 
 ### example-targets Phase 5: 307's decided Gradle build can't resolve its buildscript (JCenter-only modules, the plugin portal's content host); route not built, the user's choice recorded
 
-change `trtnqwqyzuwx` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`66777432137e`](https://github.com/pilifs/in-the-loop/commit/66777432137ebed8c1cf24e75230db3c83032297) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 307 (Spring Security fe9e4549, BCrypt UTF-8) was to be built upstream with Gradle 5.5.1, with Spring's four build plugins from maven.aliyun.com's spring-plugin mirror (the user's decision of 2026-11-14). Lookups on 2026-11-14 (HEAD requests and pinned fetches, recorded in 307's sources.lock.json under buildRoute) show the buildscript's closure is still out of reach. plugins.gradle.org serves the plugins it hosts by redirect to plugins-artifacts.gradle.org, which the download policy doesn't follow. At least org.gretty:gretty-core:2.2.0 and org.jfrog.buildinfo:build-info-extractor:2.11.3 were JCenter-only: JCenter now redirects to Maven Central, which lacks them, and only maven.aliyun.com's JCenter mirror serves them. The four plugins (sha1 agreeing) and the 5.5.1 distribution (Gradle's published checksum) are pinned for later. The Gradle route wasn't built, since its only user can't run it.
 
@@ -641,7 +641,7 @@ The brief is out of date in one place: decision 1's second extension says the mi
 
 ### example-targets Phase 5: the source-slice route, and 305's slice replays with the Boot 2.2.0.M6 check queued (verification pending)
 
-change `xovopusrktnw` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`9f5a22bc270b`](https://github.com/pilifs/in-the-loop/commit/9f5a22bc270b928eb9aed16ee68fbacdaccc440d) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 P1 (example 305) can't be built from its exact commits, whose builds pin SNAPSHOTs that are gone, so the user decided on a narrower, separately labelled scope: each commit's WebMvcTags.java (and after's Outcome.java) compiled alone against Framework 5.2.0.RC2, micrometer-core 1.2.0 and javax.servlet-api 4.0.1, with Boot 2.2.0.M6's published classes replayed beside the after slice. A hand compile (a note) found that javac 8 with -g -parameters -source 1.8 -target 1.8 makes the after slice's two classes byte-identical to M6's published ones.
 
@@ -657,13 +657,13 @@ Out of date in the brief, outside Progress: the Downloads paragraph and decision
 
 ### Record verification results for 3 job(s): example 305's slice replay, its Boot 2.2.0.M6 check and its mutation control pass
 
-change `xoqmqynmltox` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`92097fb48ab7`](https://github.com/pilifs/in-the-loop/commit/92097fb48ab7cb6daec982cec6770285c9d93dc6) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 The three jobs queued by 6f0e54a8 ran on vm-1 (38G/18 CPUs/9 workers, the streams row) and passed in 6-8 s each, with the example task as expected. Their outputs (the three receipts under example 305, the regenerated examples index) were applied. No findings opened or closed.
 
 ### example-targets Phase 5: 305's slice replays read (all pass, a reproducible scaffold at the slice's scope); 285-287 mutant-replay and 105 replay queued (verification pending)
 
-change `rxzozluxtzyv` · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
+[`c12dc3bd5659`](https://github.com/pilifs/in-the-loop/commit/c12dc3bd5659e452ce26882b6db578c3c2c43100) · [log `f483c0c7e05c`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f483c0c7e05ce70b9107fe5573ce4564bd8e68bfd72fd150d43e0f95201d8ca2.jsonl.gz)
 
 Example 305's three source-slice jobs, collected in xoqmqynm, all pass on JDK 21 and 25: both slices of WebMvcTags/Outcome hold the packet's oracle (replay), the after slice and Boot 2.2.0.M6's published actuator JAR give the same observations (m6-replay, the correspondence the user asked for), and the status-200 mutant fails at 200 alone while after holds (mutant-replay). Each receipt labels its scopes (extracted-source-slice, original-bytecode for M6, constructed-mutation-of-a-slice). 305's README state, handoff next and a note record this, and the regenerated index gives it 'scaffolded'. No proof was attempted.
 
@@ -671,7 +671,7 @@ The remaining replays of the brief's Phase 5 step 1 are queued, each a build.py 
 
 ### example-targets Phase 5 step 1: every claim task of 285-287, 305 and 306, and 105's two preservation tasks, queued as native strict proof jobs (verification pending)
 
-change `wnywrrutntnk` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`5757e329e94a`](https://github.com/pilifs/in-the-loop/commit/5757e329e94a292119ecee58ccc5c860de59ed6b) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 Step 1 of Phase 5 attempts each deep packet's claim tasks once through the merged path. All 25 claim plans were checked offline with build.py --plan NNN --task T and are executable; 24 jobs are queued: 285's four (vulnerable/fixed security on Boot 2.7.17/2.7.18's WebMvcTags.method, preservation, the mutant), 286's six (DataBinder.isAllowed and bind on Framework 5.3.18/5.3.19, preservation, the mutant), 287's six (BCryptPasswordEncoder.matches and the BCrypt.checkpw byte guard on Security 6.3.7/6.3.8, preservation, the mutant), 305's four on the user's source slice, 306's preservation and mutant-preservation on spring-core 5.3.6/5.3.7, and 105's regression and confined-change. 307's preservation is not queued: its plan is executable but its preparation stops at the Gradle route the user still has to choose. Each job states its expected conclusion and the stop this loop predicts (library-interface arguments for 285 and 305, the DataBinder receiver for 286, String conversion and the encoder receiver for 287); a capability refusal exits 1 with an unresolved receipt and is read as an observed gap, never a pass. The four replays queued last cycle have finished as passed and await collection.
 
@@ -679,19 +679,19 @@ Jobs: 20261114-234211-example-285-vulnerable-security-phase-5, 20261114-234211-e
 
 ### Record verification results for 4 job(s): example 105's replay and the 285-287 mutant replays pass
 
-change `mtvwvktkzotp` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`b8000880042e`](https://github.com/pilifs/in-the-loop/commit/b8000880042e8e44c2252df999d3593d3772e363) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 Jobs 20261114-233239 example-105 replay and example-285/286/287 mutant-replay all passed (one step each, 6-54 s, peaks under 1 GiB against 3 GiB estimated; estimates far high). Each task result was as expected; the receipts and results were applied. Run on vm-1 with the streams row (38G, 18 CPUs, 9 workers). No findings.
 
 ### Record verification results for 24 job(s): 105's regression passes; 23 Phase 5 proof jobs give no verdict (VF-027)
 
-change `ynvtsvxsskom` · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
+[`f216afbd036a`](https://github.com/pilifs/in-the-loop/commit/f216afbd036a4c3c6d225ea96c93c93178843239) · [log `5c3028cff545`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/5c3028cff545d159e72e9c4ab831109c5cd0e927a23d441b76bb3cd382841fbb.jsonl.gz)
 
 Jobs 20261114-234211..234214 (285, 286, 287, 305, 306 and 105, queued at 72a1337a1529 by the example-targets loop) ran on vm-1. 20261114-234214-example-105-regression passed (refuted, as expected; outputs applied). The other 23 failed without a verdict: the task subjects are interfaces, receivers or String parameters the checker cannot build, the four preservation tasks have different before/after dependency closures, and 105's confined-change meets a StringBuilder gap under --gaps strict. Recorded as VF-027 for the example-targets loop; nothing was changed or resubmitted.
 
 ### example-targets Phase 5 step 3: A1, A2 and A6 pass on the real packets; a target's blockers reach every task's handoff; A7's isolated session queued its job (verification pending)
 
-change `ssyppxlvwpov` · [log `b9514ad1b9de`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b9514ad1b9de4f45cb63985a6830d673fbc6509d6e1559c1d07b2a8660b51333.jsonl.gz)
+[`4440d82bc061`](https://github.com/pilifs/in-the-loop/commit/4440d82bc061ab813700f97f187f081166263bc7) · [log `b9514ad1b9de`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/b9514ad1b9de4f45cb63985a6830d673fbc6509d6e1559c1d07b2a8660b51333.jsonl.gz)
 
 The joint acceptance on the merged revision, from the receipts already in the tree. A new offline test, examples/tools/targets/test_acceptance.py (13 tests), checks three rows over the 20 sidecar examples and the 15 receipts. A1: every task plans and hands off with no network, process or write, and discovery equals the committed index. A2: every receipt names its commits, its JDK release files and the classpath in order, the same in the claim and in each JVM record, on JDK 21 and 25, with each published JAR a sidecar pin. A6: every receipt passes check_result, attempts and claims stay distinct, and execution, conclusion, expectation, scope and replay stay separate fields. The four replays collected in mtvwvktk (105 replay, 285-287 mutant-replay) were read, and all are as expected.
 
@@ -701,7 +701,7 @@ A7: an isolated subagent was given only 105 fix-property-before's exported hando
 
 ### example-targets: the user chooses the slice, option (b), for 307's route
 
-change `qkrttquvwlwz` · [log `520f88a8afad`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/520f88a8afad7df96828833495ee2e161e31103f717cdf4fde410919bbbe117d.jsonl.gz)
+[`2c6135dc571f`](https://github.com/pilifs/in-the-loop/commit/2c6135dc571ffed7a1df9081fcb00700c6a3ad36) · [log `520f88a8afad`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/520f88a8afad7df96828833495ee2e161e31103f717cdf4fde410919bbbe117d.jsonl.gz)
 
 The 307 lookups (trtnqwqy) found that the upstream Gradle build decided for P3 on 2026-11-14 can't resolve its buildscript: plugins.gradle.org redirects to plugins-artifacts.gradle.org, and at least two modules exist only on JCenter, now served only by maven.aliyun.com's JCenter mirror. The loop offered (a) allowing those hosts or (b) a source slice, and recommended (b), since before's BCrypt.java compiled with javac 8 -g is byte-identical to Spring Security 5.2.0.M4's published BCrypt.class.
 
@@ -711,7 +711,7 @@ Committed with a path-limited jj commit while the loop's brief had no uncommitte
 
 ### example-targets: the user withdraws maven.aliyun.com, and VF-027's causes are recorded as gaps, not restated
 
-change `ryszmlnrrzol` · [log `520f88a8afad`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/520f88a8afad7df96828833495ee2e161e31103f717cdf4fde410919bbbe117d.jsonl.gz)
+[`24c11e1d7458`](https://github.com/pilifs/in-the-loop/commit/24c11e1d74581d5c9fc4c39fc673b9e1f20fbb30) · [log `520f88a8afad`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/520f88a8afad7df96828833495ee2e161e31103f717cdf4fde410919bbbe117d.jsonl.gz)
 
 Two decisions for the loop's next cycle, recorded in the brief's Progress on this session's recommendation.
 
@@ -723,13 +723,13 @@ Committed with a path-limited jj commit while the loop was stopped.
 
 ### Record verification results for 1 job: example 105's fix-property-before calibration prove passes
 
-change `olumqtlxopqu` · [log `520f88a8afad`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/520f88a8afad7df96828833495ee2e161e31103f717cdf4fde410919bbbe117d.jsonl.gz)
+[`8fa81dc696b7`](https://github.com/pilifs/in-the-loop/commit/8fa81dc696b7f7662b6bcd7604406ddfee3c824d) · [log `520f88a8afad`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/520f88a8afad7df96828833495ee2e161e31103f717cdf4fde410919bbbe117d.jsonl.gz)
 
 Job 20261114-235737-example-105-task-fix-property-before-the (the calibration prove of ArithmeticUtils#pow(II)I) passed in 31s, peak 780 MiB (estimated 15m, 3 GiB). Its 4 outputs, the task's receipt under example 105, were applied; no conflicts. No verdicts or errors needing a person; no findings.md changes.
 
 ### example-targets: maven.aliyun.com withdrawn from the download hosts; A7 passes on its isolated session's job
 
-change `vwrqwqqyosrt` · [log `f99634833885`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f9963483388561f52411424beabc2a82ba03c4d8f5ae7c75cf929f4e49edad11.jsonl.gz)
+[`79fd5d8dc348`](https://github.com/pilifs/in-the-loop/commit/79fd5d8dc3489dd126c39e0d5895214fad5d5dce) · [log `f99634833885`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/f9963483388561f52411424beabc2a82ba03c4d8f5ae7c75cf929f4e49edad11.jsonl.gz)
 
 The user withdrew decision 1's second extension on 2026-11-15, once P3 (307) took the source slice: no route needs Alibaba Cloud's mirror of Spring's plugin repository. runtime_maven.HOSTS and HOST_NAMES are back to Maven Central, github.com, repo.spring.io, services.gradle.org and plugins.gradle.org. The PATH_PREFIXES mechanism held only the mirror, so it went too, and allowed() is the plain host check again. The docstrings of runtime_maven.py, runtime.py and runtime_upstream.py say so. 307's sources.lock.json keeps the mirror's hashes as a record of the lookups; nothing fetches them.
 
@@ -739,7 +739,7 @@ A7 (agent continuation) passes: the isolated session's job 20261114-235737-examp
 
 ### example-targets: 307 on the source slice, before's BCrypt.class checked against 5.2.0.M4's in every preparation; its replay and mutant-replay queued (verification pending)
 
-change `pulkwwwvssqm` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`239db0e29fcd`](https://github.com/pilifs/in-the-loop/commit/239db0e29fcd6caa9a9042574bda84accd8926d5) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 The user chose the extracted-source slice for P3 (example 307, Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) on 2026-11-15, because the commits' own Gradle builds can't resolve their buildscript from the allowed hosts. The decision asks that before's compiled class be checked byte for byte against Spring Security 5.2.0.M4's published BCrypt.class, with a mismatch recorded as a blocker. The source-slice route had no such check, so it gained one: preparation.slice.matches names, per compiled revision, the published classes the slice must reproduce. Each match gives the class entry, its sha256 in the published JAR, and the JAR pinned by sha256. Changes are in target.schema.json, sidecar.py, the workflow planner (a mutant's base inherits no match) and runtime.py (_slice_matches at lock and _match_published at preparation). The preparation fetches the JAR into reference/, off the classpath, checks the entry's recorded sha256, and compares bytes with what javac wrote. A difference fails the preparation at build with a blocker. 305 names no match, so its plans, claim keys and receipts are unchanged.
 
@@ -747,13 +747,13 @@ The user chose the extracted-source slice for P3 (example 307, Spring Security f
 
 ### Record verification results for 2 jobs: example 307's replay and mutant-replay on the source slice pass
 
-change `vzlqyvunwtwq` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`38e53288c9be`](https://github.com/pilifs/in-the-loop/commit/38e53288c9bee833dac1535d973c693ef9496d34) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 Jobs 20261115-003616 (replay) and 20261115-003617 (mutant-replay) passed in about 6 s each on the vm-1 runner (estimated 20 m): both exit as expected. Receipts for example 307 and the regenerated index were applied; no finding to record.
 
 ### example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)
 
-change `srxlxttrlxmv` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`71b9a38622d1`](https://github.com/pilifs/in-the-loop/commit/71b9a38622d114ecbec861cbcc2e893d552ed6da) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.&lt;init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.
 
@@ -765,13 +765,13 @@ Queued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20
 
 ### Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted
 
-change `kqpykqppqumt` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`e4b98e922e84`](https://github.com/pilifs/in-the-loop/commit/e4b98e922e8462e8e4462a349bdda45be18e34aa) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 &lt;noreply@anthropic.com>
 
 ### example-targets: 307's native attempts queued; the 23 VF-027 reruns read, all refused as predicted, and VF-027 closed (verification pending)
 
-change `zkqwwplutwpu` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`c2ab5dc47852`](https://github.com/pilifs/in-the-loop/commit/c2ab5dc47852cff03fece4fdb0987f27cd921529) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 The verification loop collected the 23 VF-027 reruns in kqpykqpp: each passed with example:task-refused-as-predicted, stopping at the refusal its gap packet records, under the claim key it records. 19 left an unresolved receipt in their example (the collect's message says 18 jobs had outputs applied); the four preservation reruns of 285, 286, 287 and 306 stop before the verifier and leave none. VF-027 moves to findings.md's closed entries by the second branch of its Closes when, as the user decided on 2026-11-15: each task is recorded as unprovable by this route (an observed blocker, its packet, readiness blocked, claim and expected unchanged) and each rerun's prediction matched. The collect had kept it open, reading Closes when as needing task-as-expected.
 
@@ -781,7 +781,7 @@ Those receipts broke this loop's examples/tools/targets/test_acceptance.py on kq
 
 ### example-targets: 307's native attempts refused at the nullable String password (VF-028), recorded as VF-027's were; two reruns predicting the refusal queued (verification pending)
 
-change `ymtkuqqqyrkt` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`2125e68855d3`](https://github.com/pilifs/in-the-loop/commit/2125e68855d332c7846049b87454fc224c062575) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 Example 307's two native strict proof jobs (20261115-011448-example-307-preservation-phase-5-step-1 and -mutant-preservation-phase-5, collected in wtwuqnwz) both stopped before any proof at --nullable password: the checker takes a String parameter of a regression check only as non-null bounded UTF-16, and the frozen claim's domain has a null password. This is VF-027's third cause (input-construction:string-parameter). As the user decided on 2026-11-15 for VF-027, the refusal is recorded, not restated: each task gets an observed gap packet under examples/307-.../records/refusals/ (citing its job, log, receipt and verifier output by sha256, and claim key 7eb077dac7a25751) and an observed blocker with finding VF-028, replacing the target-wide input-construction prediction. Both tasks now read blocked; the claim and its expected conclusions are unchanged. 307's handoff next, README, a note and the index say so, and VF-028's status records it.
 
@@ -789,25 +789,25 @@ Queued, each running workflow_refusal.py 307 TASK, which passes only if the same
 
 ### Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028
 
-change `ovvoultportr` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`275c3691c2fc`](https://github.com/pilifs/in-the-loop/commit/275c3691c2fcc3e6a176c1ebfa85e24eda77afec) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task &lt;T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.
 
 ### Record verification results for 2 jobs: gate A8's 42 target tasks with JBMC absent, and one constructed example per build.py run path, both passed
 
-change `qswsrqywvwor` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`acbc80e43e3d`](https://github.com/pilifs/in-the-loop/commit/acbc80e43e3dad69912bf154373b0a4608231d18) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 20261115-015944 (49 steps, 20m56s, peak 955 MiB): the 42 target tasks and 7 native constructed run paths behave as expected with JBMC absent, including the task refusals predicted. 20261115-020015 (28 steps, 3m37s, peak 1.3 GiB): each build.py run path keeps its recorded verdict at the merged revision. Collect applied no output files. Run with the one-loop budget (80G, 26 CPUs, 13 workers); the first runner was killed by the session's 10 minute background limit and the job re-ran from pending.
 
 ### example-targets: build.py --index-only and --render-only rewrite the gap inventory with the router (review item 2)
 
-change `wvulozulrrlu` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`7cd987aaccc1`](https://github.com/pilifs/in-the-loop/commit/7cd987aaccc1da5b121a0f4db569547a30be3265) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 examples/gap-inventory.md used to be regenerated by hand with workflow_handoff.py inventory --markdown, so it could fall behind the index. build.py's render_index() now ends with render_gap_inventory(), which loads the sidecars of the examples it was given and writes the same rendering, so every mode that rewrites the router (--index-only, --render-only, a run) rewrites the page too. Reproducer: test_gap_inventory.py's test_index_only_and_render_only_rewrite_the_page_with_the_router, which captures every write and failed for both modes before the change. The usage line, docstrings, the page's header, examples/README.md and the test's hint for a stale page say so; the page changed only in its header line, and inventory --markdown gives the same bytes. No A8 rerun is needed: the change adds one file write and changes no verdict, receipt or plan. Checked: example-targets-integration.sh exits 0 (contract 16, targets suite 254 with one new, test_build.py 190, test_pipeline.py 33, build.py --plan).
 
 ### example-targets: a source slice's receipt records its published-class match, so 307's says before's BCrypt.class is 5.2.0.M4's (review item 7) (verification pending)
 
-change `xsnuottlxuvp` · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
+[`a5b9748bbdda`](https://github.com/pilifs/in-the-loop/commit/a5b9748bbdda2d72a8df766aa325420e2fdcd344) · [log `2e74dcd805eb`](https://terminalvalue.net/raw-traces/d34058d5-39ed-426b-a9ff-d538463f39cc/2e74dcd805eb3ec9760fe6aebe989e8ce4e960074343f4d148803857cf57d986.jsonl.gz)
 
 The user's review item 7 of 2026-11-15: 307's replay receipt labelled both revisions extracted-source slices, but the check that before's BCrypt.class equals Spring Security 5.2.0.M4's published class was made only by the preparation, which refuses a mismatch, and was not in the receipt. Ingestion (workflow_ingest.published_matches, called by claim_record) now copies each revision's recorded matches (source.slice.matched) into the claim's target.matched: the class entry, its sha256, and the published JAR by coordinates, URL and sha256. A preparation that doesn't record exactly the matches its plan's slice.matches declares is refused, so nothing is published. A revision without matches adds nothing, so 305's and every other route's claims are unchanged. result.schema.json gains the closed claim.target.matched; the ingestion docstring, examples/README.md and a note in 307's example.json say what it means (a class-by-class join to the published build, not an original-bytecode scope).
 

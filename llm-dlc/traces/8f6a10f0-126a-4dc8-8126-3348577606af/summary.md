@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for the review item 7 receipt job on example 307
 
-change `wtkxwrzkppns` · [log `0e923a6147a8`](https://terminalvalue.net/raw-traces/8f6a10f0-126a-4dc8-8126-3348577606af/0e923a6147a832bd465b38c904762537c9d8f186c51e3c03de413f374285b901.jsonl.gz)
+[`28ff049cfa67`](https://github.com/pilifs/in-the-loop/commit/28ff049cfa67519cb395941d3e1377158f8c44e8) · [log `0e923a6147a8`](https://terminalvalue.net/raw-traces/8f6a10f0-126a-4dc8-8126-3348577606af/0e923a6147a832bd465b38c904762537c9d8f186c51e3c03de413f374285b901.jsonl.gz)
 
 Job 20261115-054311-example-307-replay-its-receipt-records-b passed (2 steps, 5.8s, peak 188 MiB; estimated 15m, 3 GiB): example 307's task replay ran and its new receipt records before's published-class match with Spring Security 5.2.0.M4. collect applied 14 output files (the receipt under examples/307-*/receipts/replay/) with no conflicts. Ran with one loop active (80G, 26 CPUs, 13 workers).
 
 ### example-targets: pipeline.py collect counted kqpykqpp's 19 applied jobs right, and now prints the totals itself (review item 8)
 
-change `lttkryqntqov` · [log `93aca53f21dd`](https://terminalvalue.net/raw-traces/8f6a10f0-126a-4dc8-8126-3348577606af/93aca53f21dd5f4a0e52ffb7b103be2aef5e975d786ecad6128094ea1ff79afe.jsonl.gz)
+[`3cf847282b62`](https://github.com/pilifs/in-the-loop/commit/3cf847282b62577b0e688b388b67dfc1ac3c19ed) · [log `93aca53f21dd`](https://terminalvalue.net/raw-traces/8f6a10f0-126a-4dc8-8126-3348577606af/93aca53f21dd5f4a0e52ffb7b103be2aef5e975d786ecad6128094ea1ff79afe.jsonl.gz)
 
 Review item 8 asked whether pipeline.py collect miscounted when kqpykqpp's commit message said outputs were applied for 18 jobs, though 19 receipts arrived. It didn't. Each of the 23 results' collected.applied lists 4 files for 19 jobs and none for the four preservation jobs of 285, 286, 287 and 306, which declare no output. collect printed one line per job and no total, and the collecting agent's sum of those lines was off by one. So there was no pipeline bug to reproduce.
 

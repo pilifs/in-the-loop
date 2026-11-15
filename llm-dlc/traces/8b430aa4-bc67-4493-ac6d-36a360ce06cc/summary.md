@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record the R3 run_verifier calibration result: failed, VF-024
 
-change `orwvprtsppyz` · [log `f589ebdb1fbc`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/f589ebdb1fbc4ba35d7307ea9a69d408d2e8a02e822ed1741445352f52cfa0c0.jsonl.gz)
+[`395ed19a11ff`](https://github.com/pilifs/in-the-loop/commit/395ed19a11ff9c846e642e73c99b3af7439a3e5f) · [log `f589ebdb1fbc`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/f589ebdb1fbc4ba35d7307ea9a69d408d2e8a02e822ed1741445352f52cfa0c0.jsonl.gz)
 
 Job 20261114-162937-example-targets-runtime-r3-run-verifier (at b397033c198f, vm-1) failed in 45 s: the fixture's property uses the parameter name 'code' where the compiled class has arg0 (three security tasks unverifiable), jvmcontract equivalence exits 2 with 'Not a directory' on the preservation task, and regex-probe is unverifiable on a String parameter. Recorded as VF-024 for the runtime loop; no results were edited and nothing applied.
 
 ### example-targets runtime: accept workflow W1's published JAR list in the published-artifact lock
 
-change `qlvsxysynnks` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
+[`c62155b1a442`](https://github.com/pilifs/in-the-loop/commit/c62155b1a442ef1ee618803894d275cebc1867f1) · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
 
 A published revision's TaskPlan entry may now carry its JARs the way workflow's W1 artifact_sources gives them on its branch: a published list in classpath order, the original first and then its dependencies, with a lone item's coordinates/url/sha256 copied up. The earlier shape (the original's keys on the entry, dependencies beside them) still locks, to an identical lock. The lock refuses both lists at once, an empty or malformed list, and a copied-up key that disagrees with the list's first item, rather than silently preferring one. runtime_slice.py now builds W1's shape.
 
@@ -34,7 +34,7 @@ Verified: test_runtime.py 52 tests pass (one new, covering both shapes, a lone i
 
 ### example-targets negative N3: the CVE-2025-22228 BCrypt packet (287), source-locked, with the public matches claim, preservation, a byte-array guard lemma, oracle, independent stored hashes, driver and mutant
 
-change `mpmuuzlyovxn` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
+[`91b14fa3014c`](https://github.com/pilifs/in-the-loop/commit/91b14fa3014c56621835caf2a34a0aab12e250cb) · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
 
 Example 287 is now a deep negative packet ready for Phase 5's preparation. The release pair (Security 6.3.7 -> 6.3.8, published artifacts: spring-security-crypto, then each release's spring-jcl) is the execution pair. It carries the exact fix 36ea1b11 -> 46f0dc6d faithfully: both releases' BCrypt.java and BCryptPasswordEncoder.java are that pair's blobs, also in the sources JARs, and in the class files only BCrypt.hashpw(byte[], String, boolean) differs (compared method by method; sources.lock.json).
 
@@ -48,7 +48,7 @@ For review, in the brief's Progress: lone surrogates match a hash of '?'s on eve
 
 ### example-targets negative N4: CVE-2025-22234 (300) research-only with the 6.3.9 policy as a proposed contract and a source lock; handoffs and acceptance checked
 
-change `zuoknplnoqpy` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
+[`0b3fd22f6c64`](https://github.com/pilifs/in-the-loop/commit/0b3fd22f6c6441750443a9613877fd4ad95602da) · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
 
 Example 300 (CVE-2025-22234) stays research only and linked to 287. It now keeps three properties apart: 287's blanket rejection of passwords over 72 UTF-8 bytes; the 6.3.9 functional policy of the repair c1aa99fd (encode refuses more than 72 bytes; matching against a valid stored hash never refuses by length and depends only on the first 72 bytes), recorded as a proposed contract, not frozen, in target.json and the README rather than in claims/, where a claim file counts as frozen; and the DaoAuthenticationProvider timing mitigation. No output or call-log equality establishes timing noninterference, and a cost model is outside this wave. A new sources.lock.json records BCrypt.java's blobs at eb013944 -> c1aa99fd and 6.3.8 -> 6.3.9, that c1aa99fd is the only commit in the release window touching crypto's main sources or the provider's package, that the provider, its parent and the delegating encoder are unchanged from 6.3.7 to 6.3.9, and that only BCrypt.hashpw(byte[], String, boolean) differs between the 6.3.8 and 6.3.9 JARs.
 
@@ -58,7 +58,7 @@ Handoffs and acceptance: no blocker was attempted in this stream (no verifier or
 
 ### example-targets W4: the index projection for find.py, claim statuses from current receipts and historical labels apart
 
-change `nqztmpwynrtr` · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
+[`ddb80474bbde`](https://github.com/pilifs/in-the-loop/commit/ddb80474bbde992bd37f0501eca71473519d9c7d) · [log `cd802556d392`](https://terminalvalue.net/raw-traces/8b430aa4-bc67-4493-ac6d-36a360ce06cc/cd802556d3922a030dfde8eb9ac6e8fb7556d1c55fd9eb03dafe778af5c7e1bc.jsonl.gz)
 
 workflow.project() (examples/tools/targets/workflow_discovery.py, new) gives the index's target row that find.py's --family, --role, --readiness, --claim-status and --gap read, offline and read-only: each task's derived readiness and authored expectation, each proof task's conclusion in its latest current receipt (None without one; replays decide no claim), stale and unreadable receipts listed apart, observed gaps with their recorded gap ids kept apart from unevidenced and predicted ones, and the example's authored verdictLabel as historical context from which no claim status is derived (the 105-109 rule). The target's readiness summary is derived but held at None in the index behind workflow_discovery.READINESS_IN_INDEX, because the coordinator's test_route.py:132 asserts Phase 0's None; the merge flips the flag and changes that line to "catalogued" (recorded as an interface request under Progress).
 

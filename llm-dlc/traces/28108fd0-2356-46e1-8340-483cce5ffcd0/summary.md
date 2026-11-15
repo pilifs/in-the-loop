@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted
 
-change `kqpykqppqumt` · [log `4b3ddb45804d`](https://terminalvalue.net/raw-traces/28108fd0-2356-46e1-8340-483cce5ffcd0/4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c.jsonl.gz)
+[`e4b98e922e84`](https://github.com/pilifs/in-the-loop/commit/e4b98e922e8462e8e4462a349bdda45be18e34aa) · [log `4b3ddb45804d`](https://terminalvalue.net/raw-traces/28108fd0-2356-46e1-8340-483cce5ffcd0/4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c.jsonl.gz)
 
 Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 &lt;noreply@anthropic.com>
 
 ### example-targets: 307's native attempts queued; the 23 VF-027 reruns read, all refused as predicted, and VF-027 closed (verification pending)
 
-change `zkqwwplutwpu` · [log `2b3e36ba2ef2`](https://terminalvalue.net/raw-traces/28108fd0-2356-46e1-8340-483cce5ffcd0/2b3e36ba2ef20a551d7a84d002dd5dad2ecca9e13b0d0992035ae48e7f10b178.jsonl.gz)
+[`c2ab5dc47852`](https://github.com/pilifs/in-the-loop/commit/c2ab5dc47852cff03fece4fdb0987f27cd921529) · [log `2b3e36ba2ef2`](https://terminalvalue.net/raw-traces/28108fd0-2356-46e1-8340-483cce5ffcd0/2b3e36ba2ef20a551d7a84d002dd5dad2ecca9e13b0d0992035ae48e7f10b178.jsonl.gz)
 
 The verification loop collected the 23 VF-027 reruns in kqpykqpp: each passed with example:task-refused-as-predicted, stopping at the refusal its gap packet records, under the claim key it records. 19 left an unresolved receipt in their example (the collect's message says 18 jobs had outputs applied); the four preservation reruns of 285, 286, 287 and 306 stop before the verifier and leave none. VF-027 moves to findings.md's closed entries by the second branch of its Closes when, as the user decided on 2026-11-15: each task is recorded as unprovable by this route (an observed blocker, its packet, readiness blocked, claim and expected unchanged) and each rerun's prediction matched. The collect had kept it open, reading Closes when as needing task-as-expected.
 

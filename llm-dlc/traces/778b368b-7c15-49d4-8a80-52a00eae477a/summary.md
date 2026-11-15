@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 7 example-targets jobs (6 passed, 1 failed: 286 replay)
 
-change `kkppnnuympxq` · [log `dc725083a4b1`](https://terminalvalue.net/raw-traces/778b368b-7c15-49d4-8a80-52a00eae477a/dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70.jsonl.gz)
+[`327f84708ade`](https://github.com/pilifs/in-the-loop/commit/327f84708ade6fa7024d723b2a23c8d748921607) · [log `dc725083a4b1`](https://terminalvalue.net/raw-traces/778b368b-7c15-49d4-8a80-52a00eae477a/dc725083a4b1117b0fa10da580b56a2732d521a944d193cce9775d107e6ffe70.jsonl.gz)
 
 Run on vm-1 with the whole 92G/28-CPU budget (no feature loop, no streams). Passed as expected: 285 and 287 replay (gate A3), 306 replay and mutant-replay (gate A4), and 105's fix-property and fix-property-before (gate A5); their receipts and outputs were applied. 286's replay was not executed: revision vulnerable-release (Framework 5.3.18) failed to prepare. Recorded as VF-026 for the example-targets loop; nothing in the job was changed.
 
 ### example-targets Phase 5: gates A3, A4 and A5 pass on the seven jobs' receipts; 286's adapter check fixed and its replay resubmitted (verification pending)
 
-change `nrxvrqpxlxwr` · [log `614c725d7625`](https://terminalvalue.net/raw-traces/778b368b-7c15-49d4-8a80-52a00eae477a/614c725d7625d2da517d95956ff598ceed16971574561cd5ebed555e1ca101ca.jsonl.gz)
+[`5fdb08263823`](https://github.com/pilifs/in-the-loop/commit/5fdb08263823eee86d6a5599141f08e7e9345780) · [log `614c725d7625`](https://terminalvalue.net/raw-traces/778b368b-7c15-49d4-8a80-52a00eae477a/614c725d7625d2da517d95956ff598ceed16971574561cd5ebed555e1ca101ca.jsonl.gz)
 
 The verification loop collected the seven Phase 5 jobs (kkppnnuy); six passed as expected. A3 passes on 285 (Boot 2.7.17 violates the frozen method-label set at five triggers, 2.7.18 holds with its legitimate labels kept) and 287 (Security 6.3.7 violates at 12 overlong triggers, 6.3.8 holds), each on the original pinned JARs on JDK 21 and 25. A4 passes on 306 (spring-core 5.3.6 and 5.3.7 both hold; the drop-prefix mutant violates). A5 passes on 105: fix-property on commons-numbers 8cfc04e8 is established and not vacuous, and fix-property-before on e7c172d2 is refuted with the witness pow(-2, 31), replayed in the interpreter, both native and strict through the upstream-build route. For review: the proof receipts don't record what their JVM controls observed, since ingestion bundles no raw streams.
 

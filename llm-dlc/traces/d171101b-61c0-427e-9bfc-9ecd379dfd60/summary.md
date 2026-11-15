@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for the review item 5 receipt jobs on examples 287 and 105
 
-change `qkqrqyvqotyp` · [log `48415a59cc1c`](https://terminalvalue.net/raw-traces/d171101b-61c0-427e-9bfc-9ecd379dfd60/48415a59cc1c74f332d51c268786b6502d895034d12c83459ac06707d15e873a.jsonl.gz)
+[`d7cd0462509c`](https://github.com/pilifs/in-the-loop/commit/d7cd0462509cb134c98b995947bc0fde7a388967) · [log `48415a59cc1c`](https://terminalvalue.net/raw-traces/d171101b-61c0-427e-9bfc-9ecd379dfd60/48415a59cc1c74f332d51c268786b6502d895034d12c83459ac06707d15e873a.jsonl.gz)
 
 Ran 20261115-050846 (example 287 fixed-guard receipt) and 20261115-050856 (example 105 fix-property-before receipt) on vm-1. Both passed: 287's controls were refused as predicted, 105 gave its expected verdict. Collected outputs (receipts with raw streams) applied to the working copy, examples index regenerated. No findings.
+
+### Record session traces
+
+change `mzxrtnukmoso` · [log `dd7e1b601263`](https://terminalvalue.net/raw-traces/d171101b-61c0-427e-9bfc-9ecd379dfd60/dd7e1b601263164e922e1b6d9f0bb336bb9085a643398fec24dff7ccd028722d.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

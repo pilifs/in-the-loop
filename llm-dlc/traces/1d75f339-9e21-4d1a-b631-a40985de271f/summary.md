@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### example-targets Phase 5 step 1: every claim task of 285-287, 305 and 306, and 105's two preservation tasks, queued as native strict proof jobs (verification pending)
 
-change `wnywrrutntnk` · [log `4740cf116913`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4.jsonl.gz)
+[`5757e329e94a`](https://github.com/pilifs/in-the-loop/commit/5757e329e94a292119ecee58ccc5c860de59ed6b) · [log `4740cf116913`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/4740cf116913c722a9cd570abcd37a64d1f52ee4fe31fe9215b320773b0e59f4.jsonl.gz)
 
 Step 1 of Phase 5 attempts each deep packet's claim tasks once through the merged path. All 25 claim plans were checked offline with build.py --plan NNN --task T and are executable; 24 jobs are queued: 285's four (vulnerable/fixed security on Boot 2.7.17/2.7.18's WebMvcTags.method, preservation, the mutant), 286's six (DataBinder.isAllowed and bind on Framework 5.3.18/5.3.19, preservation, the mutant), 287's six (BCryptPasswordEncoder.matches and the BCrypt.checkpw byte guard on Security 6.3.7/6.3.8, preservation, the mutant), 305's four on the user's source slice, 306's preservation and mutant-preservation on spring-core 5.3.6/5.3.7, and 105's regression and confined-change. 307's preservation is not queued: its plan is executable but its preparation stops at the Gradle route the user still has to choose. Each job states its expected conclusion and the stop this loop predicts (library-interface arguments for 285 and 305, the DataBinder receiver for 286, String conversion and the encoder receiver for 287); a capability refusal exits 1 with an unresolved receipt and is read as an observed gap, never a pass. The four replays queued last cycle have finished as passed and await collection.
 
@@ -28,19 +28,19 @@ Jobs: 20261114-234211-example-285-vulnerable-security-phase-5, 20261114-234211-e
 
 ### Record verification results for 4 job(s): example 105's replay and the 285-287 mutant replays pass
 
-change `mtvwvktkzotp` · [log `561721e1e83a`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/561721e1e83a31c1e8fe044431668d9ec4b4f1743a0091a763fa86f60e3d608a.jsonl.gz)
+[`b8000880042e`](https://github.com/pilifs/in-the-loop/commit/b8000880042e8e44c2252df999d3593d3772e363) · [log `561721e1e83a`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/561721e1e83a31c1e8fe044431668d9ec4b4f1743a0091a763fa86f60e3d608a.jsonl.gz)
 
 Jobs 20261114-233239 example-105 replay and example-285/286/287 mutant-replay all passed (one step each, 6-54 s, peaks under 1 GiB against 3 GiB estimated; estimates far high). Each task result was as expected; the receipts and results were applied. Run on vm-1 with the streams row (38G, 18 CPUs, 9 workers). No findings.
 
 ### Record verification results for 24 job(s): 105's regression passes; 23 Phase 5 proof jobs give no verdict (VF-027)
 
-change `ynvtsvxsskom` · [log `d6c7832eceab`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc.jsonl.gz)
+[`f216afbd036a`](https://github.com/pilifs/in-the-loop/commit/f216afbd036a4c3c6d225ea96c93c93178843239) · [log `d6c7832eceab`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/d6c7832eceab73dd953142c8d5ae9986037be9a8ef98d90087831285202c16cc.jsonl.gz)
 
 Jobs 20261114-234211..234214 (285, 286, 287, 305, 306 and 105, queued at 72a1337a1529 by the example-targets loop) ran on vm-1. 20261114-234214-example-105-regression passed (refuted, as expected; outputs applied). The other 23 failed without a verdict: the task subjects are interfaces, receivers or String parameters the checker cannot build, the four preservation tasks have different before/after dependency closures, and 105's confined-change meets a StringBuilder gap under --gaps strict. Recorded as VF-027 for the example-targets loop; nothing was changed or resubmitted.
 
 ### example-targets Phase 5 step 3: A1, A2 and A6 pass on the real packets; a target's blockers reach every task's handoff; A7's isolated session queued its job (verification pending)
 
-change `ssyppxlvwpov` · [log `95ae5cc1e455`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/95ae5cc1e455a53e55a21e8030db20577757fc736f18aca034bf5dcd2d5e8727.jsonl.gz)
+[`4440d82bc061`](https://github.com/pilifs/in-the-loop/commit/4440d82bc061ab813700f97f187f081166263bc7) · [log `95ae5cc1e455`](https://terminalvalue.net/raw-traces/1d75f339-9e21-4d1a-b631-a40985de271f/95ae5cc1e455a53e55a21e8030db20577757fc736f18aca034bf5dcd2d5e8727.jsonl.gz)
 
 The joint acceptance on the merged revision, from the receipts already in the tree. A new offline test, examples/tools/targets/test_acceptance.py (13 tests), checks three rows over the 20 sidecar examples and the 15 receipts. A1: every task plans and hands off with no network, process or write, and discovery equals the committed index. A2: every receipt names its commits, its JDK release files and the classpath in order, the same in the claim and in each JVM record, on JDK 21 and 25, with each published JAR a sidecar pin. A6: every receipt passes check_result, attempts and claims stay distinct, and execution, conclusion, expectation, scope and replay stay separate fields. The four replays collected in mtvwvktk (105 replay, 285-287 mutant-replay) were read, and all are as expected.
 

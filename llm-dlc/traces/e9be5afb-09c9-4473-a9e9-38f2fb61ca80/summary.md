@@ -374,6 +374,12 @@ examples/README.md records that 280-329 are reserved for the example-targets str
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
+### Record session traces
+
+change `mzxrtnukmoso` · [log `1411eb2904f8`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/1411eb2904f87976dd84e58a963d9f8cd3d39bba6dc18ed0b05f569d65768b4b.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/1411eb2904f87976dd84e58a963d9f8cd3d39bba6dc18ed0b05f569d65768b4b.jsonl.gz) has every step in between: reasoning, tool calls and their results.
