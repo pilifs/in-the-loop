@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T01:10:14.749Z",
-  "duration_seconds": 24294,
+  "ended": "2026-11-15T01:15:23.220Z",
+  "duration_seconds": 24603,
   "stats": {
-    "turns": 133,
-    "api_calls": 1089,
-    "tool_calls": 1118,
+    "turns": 138,
+    "api_calls": 1118,
+    "tool_calls": 1146,
     "tool_errors": 22,
-    "compactions": 24,
+    "compactions": 25,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2208,
-      "output_tokens": 741125,
-      "cache_read_input_tokens": 138909169,
-      "cache_creation_input_tokens": 3596830
+      "input_tokens": 2266,
+      "output_tokens": 754390,
+      "cache_read_input_tokens": 143262368,
+      "cache_creation_input_tokens": 3732956
     }
   },
   "tools": {
-    "Bash": 963,
+    "Bash": 987,
+    "Read": 74,
     "Edit": 70,
-    "Read": 70,
     "Agent": 5,
     "Write": 5,
     "AskUserQuestion": 2,
@@ -401,24 +401,38 @@
     {
       "index": 24,
       "started": "2026-11-15T00:47:34.082Z",
-      "ended": "2026-11-15T01:10:14.749Z",
-      "turns": 4,
-      "api_calls": 82,
+      "ended": "2026-11-15T01:12:22.287Z",
+      "turns": 5,
+      "api_calls": 92,
       "usage": {
-        "input_tokens": 164,
-        "output_tokens": 68450,
-        "cache_read_input_tokens": 13440115,
-        "cache_creation_input_tokens": 225715
+        "input_tokens": 184,
+        "output_tokens": 72512,
+        "cache_read_input_tokens": 15863055,
+        "cache_creation_input_tokens": 235127
       },
-      "peak_context_tokens": 238901
+      "peak_context_tokens": 248313
+    },
+    {
+      "index": 25,
+      "started": "2026-11-15T01:13:13.919Z",
+      "ended": "2026-11-15T01:15:23.220Z",
+      "turns": 4,
+      "api_calls": 19,
+      "usage": {
+        "input_tokens": 38,
+        "output_tokens": 9203,
+        "cache_read_input_tokens": 1930259,
+        "cache_creation_input_tokens": 126714
+      },
+      "peak_context_tokens": 139900
     }
   ],
   "log": {
-    "sha256": "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02",
-    "bytes": 35263391,
-    "lines": 11214,
-    "gzip_bytes": 7333549,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02.jsonl.gz"
+    "sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a",
+    "bytes": 36522412,
+    "lines": 11533,
+    "gzip_bytes": 7635621,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a.jsonl.gz"
   },
   "subagents": [
     {
@@ -909,6 +923,22 @@
       "summary": "example-targets: VF-027 recorded as 23 observed gaps, each task blocked, and 23 reruns queued that predict the recorded refusals (verification pending)",
       "body": "As the user decided on 2026-11-15, the 23 native strict proof tasks that gave no verdict in Phase 5 (examples 285, 286, 287, 305, 306 and 105) are recorded, not restated. Each task now has an observed capability blocker in its target.json (finding VF-027) and a gap packet, records/refusals/TASK.json. The packet cites the job that observed the refusal, its log, receipt and verifier output (with sha256s), the verifier's identity, the command, the artifacts, the refusal text, the claim key, the semantics needed, the likely owner module and the strategies. So the task's readiness is blocked. Its claim and expected conclusion are unchanged, and nothing is restated over a wrapper or a simpler signature. The five causes are five gap ids in workflow_handoff.py's inventory: a library-interface parameter (7 tasks), a receiver of several constructors with no construction plan from the route (8), a String parameter the check doesn't take (3), before and after with different dependency closures for equivalence's one classpath (4, not executed), and StringBuilder.<init>() under strict (1). All 23 claim keys are the ones the jobs ran under. Two predictions these runs confirmed (285 fixed-security's and 305's interface parameter) are replaced by the observed blockers. The handoff next of the six sidecars, their notes, and the READMEs of 285 to 287, 305 and 306 are updated. 105's README is historical and unchanged.\n\nbuild.py exits 1 both for a refusal and for an unexpected verdict, so the new examples/tools/targets/workflow_refusal.py ID TASK runs it once and passes only when the task plans under the recorded claim key, build.py exits 1, and the attempt gives either one new unresolved receipt with the recorded problem or, at the route's stage, no receipt and the recorded not-executed reason. A verdict, another refusal, a changed claim or a closed gap prints NOT AS PREDICTED. pipeline.py has signals for both lines. 307's two source-slice replays, collected in vzlqyvun, pass, so 307 is a reproducible scaffold at the slice's scope. Its receipt doesn't carry the byte match with 5.2.0.M4 (the preparation would have refused a mismatch), which goes on the for-review list. test_acceptance.py's A2 test, which still expected 307 to have no receipts, is updated.\n\nVerified: test_workflow_refusal.py (the judgement, the predictions, the check on 285 and 286, and the 23 packets against their job records and the inventory) and test_pipeline.py's new signal test. Both fail on vzlqyvun by construction. llm-dlc/tools/example-targets-integration.sh exits 0: the contract (16), the targets suite (243), test_build.py (190), test_pipeline.py (33) and build.py --plan.\n\nQueued, each python3 examples/tools/targets/workflow_refusal.py N T: 23 jobs, 20261115-005926-example-105-confined-change-vf-027-rerun to 20261115-005928-example-306-preservation-vf-027-rerun-st (verification/jobs/20261115-00592*). When they pass, VF-027 closes as its Closes-when allows.",
       "log_sha256": "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02"
+    },
+    {
+      "change_id": "rxwxlwxxxxnmyvnyylqowmruxtozpwwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a"
+    },
+    {
+      "change_id": "kqpykqppqumtqrvyornwworzkwkvvpwu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted",
+      "body": "Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>",
+      "log_sha256": "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a"
     }
   ],
   "logs": {
@@ -958,6 +988,12 @@
       "bytes": 256222,
       "lines": 43,
       "gzip_bytes": 71301,
+      "url": null
+    },
+    "2d70d265960cec2c125d435b166acfba73ca56acd3f83c687b98b9051264143a": {
+      "bytes": 36522412,
+      "lines": 11533,
+      "gzip_bytes": 7635621,
       "url": null
     },
     "300ed9efc44c6bcd1355792dfc1869174b406d7be49393acf69e043f3fd17d02": {

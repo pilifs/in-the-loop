@@ -1,0 +1,2493 @@
+--- /dev/null
++++ b/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/plan.json
+@@ -0,0 +1,445 @@
++{
++  "plan": {
++    "example": "305",
++    "task": "preservation",
++    "kind": "equivalence",
++    "relation": "preservation",
++    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++    "revisions": [
++      "before",
++      "after"
++    ],
++    "claim": {
++      "task": "preservation",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++      "file": "claims/outcome-preservation.json",
++      "sha256": "1f5db90c01ae8c674b2257a25caf28067ed2dd99c82707cdcbb7c56484dd315b",
++      "property": "mvc-outcome-tag-preserved",
++      "claimKind": "preservation",
++      "statement": "Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it.",
++      "assume": null,
++      "assert": null,
++      "throws": [],
++      "nullable": [
++        "response"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
++          "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
++        },
++        {
++          "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
++          "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
++        },
++        {
++          "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
++          "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
++        },
++        {
++          "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
++          "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "explicitBounds": {
++        "unwind": 16
++      },
++      "defaultBounds": [
++        "maxArrayLength"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "outcome-oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++        },
++        {
++          "id": "outcome-driver",
++          "kind": "driver",
++          "path": "replay/driver/inloop/p305/OutcomeDriver.java",
++          "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
++        },
++        {
++          "id": "outcome-probes",
++          "kind": "probe",
++          "path": "replay/probes.json",
++          "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
++        }
++      ],
++      "key": "98f4a389c1ccd7ff"
++    },
++    "prerequisites": [
++      "replay"
++    ],
++    "artifacts": [
++      {
++        "revision": "before",
++        "route": "source-slice",
++        "repository": "https://github.com/spring-projects/spring-boot",
++        "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
++          },
++          {
++            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
++          },
++          {
++            "coordinates": "io.micrometer:micrometer-core:1.2.0",
++            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
++          },
++          {
++            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
++            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++          }
++        ],
++        "slice": {
++          "files": [
++            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java"
++          ],
++          "jdk": "8",
++          "flags": [
++            "-g",
++            "-parameters",
++            "-source",
++            "1.8",
++            "-target",
++            "1.8",
++            "-encoding",
++            "UTF-8"
++          ]
++        },
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      },
++      {
++        "revision": "after",
++        "route": "source-slice",
++        "repository": "https://github.com/spring-projects/spring-boot",
++        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
++        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
++          },
++          {
++            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
++          },
++          {
++            "coordinates": "io.micrometer:micrometer-core:1.2.0",
++            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
++          },
++          {
++            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
++            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++          }
++        ],
++        "slice": {
++          "files": [
++            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
++            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
++          ],
++          "jdk": "8",
++          "flags": [
++            "-g",
++            "-parameters",
++            "-source",
++            "1.8",
++            "-target",
++            "1.8",
++            "-encoding",
++            "UTF-8"
++          ]
++        },
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac",
++        "git",
++        "python3",
++        "jvmcontract"
++      ],
++      "optional": []
++    },
++    "engine": "native",
++    "gaps": "strict",
++    "expected": "established",
++    "outputs": {
++      "receipts": "receipts/preservation"
++    },
++    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005928-example-305-preservation-vf-027-rerun-st/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags",
++    "network": true
++  },
++  "inputs": {
++    "example": "305",
++    "task": "preservation",
++    "kind": "equivalence",
++    "relation": "preservation",
++    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++    "revisions": [
++      "before",
++      "after"
++    ],
++    "claim": {
++      "task": "preservation",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++      "file": "claims/outcome-preservation.json",
++      "sha256": "1f5db90c01ae8c674b2257a25caf28067ed2dd99c82707cdcbb7c56484dd315b",
++      "property": "mvc-outcome-tag-preserved",
++      "claimKind": "preservation",
++      "statement": "Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it.",
++      "assume": null,
++      "assert": null,
++      "throws": [],
++      "nullable": [
++        "response"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
++          "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
++        },
++        {
++          "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
++          "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
++        },
++        {
++          "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
++          "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
++        },
++        {
++          "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
++          "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "explicitBounds": {
++        "unwind": 16
++      },
++      "defaultBounds": [
++        "maxArrayLength"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "outcome-oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++        },
++        {
++          "id": "outcome-driver",
++          "kind": "driver",
++          "path": "replay/driver/inloop/p305/OutcomeDriver.java",
++          "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
++        },
++        {
++          "id": "outcome-probes",
++          "kind": "probe",
++          "path": "replay/probes.json",
++          "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
++        }
++      ],
++      "key": "98f4a389c1ccd7ff"
++    },
++    "artifacts": [
++      {
++        "revision": "before",
++        "route": "source-slice",
++        "repository": "https://github.com/spring-projects/spring-boot",
++        "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
++          },
++          {
++            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
++          },
++          {
++            "coordinates": "io.micrometer:micrometer-core:1.2.0",
++            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
++          },
++          {
++            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
++            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++          }
++        ],
++        "slice": {
++          "files": [
++            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java"
++          ],
++          "jdk": "8",
++          "flags": [
++            "-g",
++            "-parameters",
++            "-source",
++            "1.8",
++            "-target",
++            "1.8",
++            "-encoding",
++            "UTF-8"
++          ]
++        },
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      },
++      {
++        "revision": "after",
++        "route": "source-slice",
++        "repository": "https://github.com/spring-projects/spring-boot",
++        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
++        "parent": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-web:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-web/5.2.0.RC2/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b"
++          },
++          {
++            "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-webmvc/5.2.0.RC2/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-core/5.2.0.RC2/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.2.0.RC2",
++            "url": "https://repo.spring.io/milestone/org/springframework/spring-jcl/5.2.0.RC2/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a"
++          },
++          {
++            "coordinates": "io.micrometer:micrometer-core:1.2.0",
++            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.2.0/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7"
++          },
++          {
++            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
++            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++          }
++        ],
++        "slice": {
++          "files": [
++            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java",
++            "spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java"
++          ],
++          "jdk": "8",
++          "flags": [
++            "-g",
++            "-parameters",
++            "-source",
++            "1.8",
++            "-target",
++            "1.8",
++            "-encoding",
++            "UTF-8"
++          ]
++        },
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "adapters": []
++  },
++  "key": "fd59002cddc097ff5c1c10d2e6341552d9cbd5d1430933d55229f8fde97d0d77"
++}
+--- /dev/null
++++ b/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/records/execution.json
+@@ -0,0 +1,1630 @@
++{
++  "task": "preservation",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "before",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:slice/before.jar:lib/org.springframework/spring-web-5.2.0.RC2.jar:lib/org.springframework/spring-webmvc-5.2.0.RC2.jar:lib/org.springframework/spring-core-5.2.0.RC2.jar:lib/org.springframework/spring-jcl-5.2.0.RC2.jar:lib/io.micrometer/micrometer-core-1.2.0.jar:lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "inloop.p305.OutcomeDriver",
++        "null",
++        "99",
++        "100",
++        "199",
++        "200",
++        "299",
++        "300",
++        "399",
++        "400",
++        "499",
++        "500",
++        "599",
++        "600",
++        "-2147483648",
++        "2147483647",
++        "0",
++        "-1",
++        "-99",
++        "-100",
++        "-199",
++        "-200",
++        "-599",
++        "1000",
++        "1200",
++        "1999",
++        "2000",
++        "20000"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.114,
++      "stdout": "controls/control-before-jdk21.stdout",
++      "stderr": "controls/control-before-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "62a3f06842fb7de77ecb15c146c3e2f2e4a6f59d22f3f6539b22da021043f027",
++            "role": "driver"
++          },
++          {
++            "path": "slice/before.jar",
++            "sha256": "1faf5dd1c5d4c934392578d4554ba3cf9057e225790f4aea7961489e4d7ca820",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "outcome-driver",
++          "main": "inloop.p305.OutcomeDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "probe": "null",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": null
++        },
++        {
++          "probe": "99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "299",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "300",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "399",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "400",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "499",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "500",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "600",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-2147483648",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2147483647",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "0",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-1",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1999",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "20000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        }
++      ],
++      "control": "outcome-driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "before",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:slice/before.jar:lib/org.springframework/spring-web-5.2.0.RC2.jar:lib/org.springframework/spring-webmvc-5.2.0.RC2.jar:lib/org.springframework/spring-core-5.2.0.RC2.jar:lib/org.springframework/spring-jcl-5.2.0.RC2.jar:lib/io.micrometer/micrometer-core-1.2.0.jar:lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "inloop.p305.OutcomeDriver",
++        "null",
++        "99",
++        "100",
++        "199",
++        "200",
++        "299",
++        "300",
++        "399",
++        "400",
++        "499",
++        "500",
++        "599",
++        "600",
++        "-2147483648",
++        "2147483647",
++        "0",
++        "-1",
++        "-99",
++        "-100",
++        "-199",
++        "-200",
++        "-599",
++        "1000",
++        "1200",
++        "1999",
++        "2000",
++        "20000"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.114,
++      "stdout": "controls/control-before-jdk25.stdout",
++      "stderr": "controls/control-before-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "62a3f06842fb7de77ecb15c146c3e2f2e4a6f59d22f3f6539b22da021043f027",
++            "role": "driver"
++          },
++          {
++            "path": "slice/before.jar",
++            "sha256": "1faf5dd1c5d4c934392578d4554ba3cf9057e225790f4aea7961489e4d7ca820",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "outcome-driver",
++          "main": "inloop.p305.OutcomeDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "probe": "null",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": null
++        },
++        {
++          "probe": "99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "299",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "300",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "399",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "400",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "499",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "500",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "600",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-2147483648",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2147483647",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "0",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-1",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1999",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "20000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        }
++      ],
++      "control": "outcome-driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "after",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:slice/after.jar:lib/org.springframework/spring-web-5.2.0.RC2.jar:lib/org.springframework/spring-webmvc-5.2.0.RC2.jar:lib/org.springframework/spring-core-5.2.0.RC2.jar:lib/org.springframework/spring-jcl-5.2.0.RC2.jar:lib/io.micrometer/micrometer-core-1.2.0.jar:lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "inloop.p305.OutcomeDriver",
++        "null",
++        "99",
++        "100",
++        "199",
++        "200",
++        "299",
++        "300",
++        "399",
++        "400",
++        "499",
++        "500",
++        "599",
++        "600",
++        "-2147483648",
++        "2147483647",
++        "0",
++        "-1",
++        "-99",
++        "-100",
++        "-199",
++        "-200",
++        "-599",
++        "1000",
++        "1200",
++        "1999",
++        "2000",
++        "20000"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.115,
++      "stdout": "controls/control-after-jdk21.stdout",
++      "stderr": "controls/control-after-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "62a3f06842fb7de77ecb15c146c3e2f2e4a6f59d22f3f6539b22da021043f027",
++            "role": "driver"
++          },
++          {
++            "path": "slice/after.jar",
++            "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "outcome-driver",
++          "main": "inloop.p305.OutcomeDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "probe": "null",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": null
++        },
++        {
++          "probe": "99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "299",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "300",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "399",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "400",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "499",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "500",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "600",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-2147483648",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2147483647",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "0",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-1",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1999",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "20000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        }
++      ],
++      "control": "outcome-driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "after",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:slice/after.jar:lib/org.springframework/spring-web-5.2.0.RC2.jar:lib/org.springframework/spring-webmvc-5.2.0.RC2.jar:lib/org.springframework/spring-core-5.2.0.RC2.jar:lib/org.springframework/spring-jcl-5.2.0.RC2.jar:lib/io.micrometer/micrometer-core-1.2.0.jar:lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "inloop.p305.OutcomeDriver",
++        "null",
++        "99",
++        "100",
++        "199",
++        "200",
++        "299",
++        "300",
++        "399",
++        "400",
++        "499",
++        "500",
++        "599",
++        "600",
++        "-2147483648",
++        "2147483647",
++        "0",
++        "-1",
++        "-99",
++        "-100",
++        "-199",
++        "-200",
++        "-599",
++        "1000",
++        "1200",
++        "1999",
++        "2000",
++        "20000"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.114,
++      "stdout": "controls/control-after-jdk25.stdout",
++      "stderr": "controls/control-after-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "62a3f06842fb7de77ecb15c146c3e2f2e4a6f59d22f3f6539b22da021043f027",
++            "role": "driver"
++          },
++          {
++            "path": "slice/after.jar",
++            "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
++            "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++            "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
++            "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++            "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
++            "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "outcome-driver",
++          "main": "inloop.p305.OutcomeDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "probe": "null",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": null
++        },
++        {
++          "probe": "99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "INFORMATIONAL",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "299",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SUCCESS",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "300",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "399",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "REDIRECTION",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "400",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "499",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "CLIENT_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "500",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "SERVER_ERROR",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "600",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-2147483648",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2147483647",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "0",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-1",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-99",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-100",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-199",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "-599",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1200",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "1999",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "2000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        },
++        {
++          "probe": "20000",
++          "outcome": "returned",
++          "key": "outcome",
++          "value": "UNKNOWN",
++          "getStatusCalls": 1
++        }
++      ],
++      "control": "outcome-driver"
++    },
++    {
++      "kind": "verifier",
++      "revision": null,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "equivalence",
++        "--before",
++        "verifier/classes/before",
++        "--after",
++        "verifier/classes/after",
++        "--target",
++        "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
++        "--classpath",
++        "prepare/after/lib/org.springframework/spring-web-5.2.0.RC2.jar",
++        "--classpath",
++        "prepare/after/lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++        "--classpath",
++        "prepare/after/lib/org.springframework/spring-core-5.2.0.RC2.jar",
++        "--classpath",
++        "prepare/after/lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++        "--classpath",
++        "prepare/after/lib/io.micrometer/micrometer-core-1.2.0.jar",
++        "--classpath",
++        "prepare/after/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "--nullable",
++        "response",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.008,
++      "stdout": "verifier/verifier.stdout",
++      "stderr": "verifier/verifier.stderr",
++      "identities": {
++        "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++        "commit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++        "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
++        "command": "equivalence",
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "engine": "native",
++        "gaps": "strict",
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 8
++        },
++        "timeout": 600,
++        "scope": {
++          "label": "extracted-source-slice",
++          "meaning": "an extracted source slice: the named files of the exact commit compiled alone against pinned published JARs, not the commit's own build; a claim about it is about those classes, and reaches the commit's build only through a recorded correspondence",
++          "method": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++          "revisions": {
++            "before": {
++              "commit": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++              "loadedFrom": "slice/before.jar",
++              "classSha256": "49b77d26cdd8777686cf581471020d6c7d6a543e51f34b2edc0e4b354ce8a5db",
++              "origin": "an extracted source slice of 9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca: spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java, compiled by JDK 8 with -g -parameters -source 1.8 -target 1.8 -encoding UTF-8",
++              "parameters": {
++                "names": [
++                  "response"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            },
++            "after": {
++              "commit": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
++              "loadedFrom": "slice/after.jar",
++              "classSha256": "1a737c8eec60888c8c256d0499cf7e0fc31621aab1abec3949cf7af34abed9d0",
++              "origin": "an extracted source slice of e8de5a6d95ffb45cd532c2a863e6a726e159b7e3: spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/web/servlet/WebMvcTags.java, spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/http/Outcome.java, compiled by JDK 8 with -g -parameters -source 1.8 -target 1.8 -encoding UTF-8",
++              "parameters": {
++                "names": [
++                  "response"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            }
++          },
++          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++          "models": [],
++          "assumptions": [
++            {
++              "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
++              "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
++            },
++            {
++              "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
++              "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
++            },
++            {
++              "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
++              "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
++            },
++            {
++              "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
++              "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
++            }
++          ]
++        },
++        "classpath": {
++          "before": [
++            {
++              "path": "slice/before.jar",
++              "sha256": "1faf5dd1c5d4c934392578d4554ba3cf9057e225790f4aea7961489e4d7ca820",
++              "role": "original"
++            },
++            {
++              "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
++              "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++              "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
++              "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++              "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
++              "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++              "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++              "role": "dependency"
++            }
++          ],
++          "after": [
++            {
++              "path": "slice/after.jar",
++              "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0",
++              "role": "original"
++            },
++            {
++              "path": "lib/org.springframework/spring-web-5.2.0.RC2.jar",
++              "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++              "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-core-5.2.0.RC2.jar",
++              "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++              "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/io.micrometer/micrometer-core-1.2.0.jar",
++              "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++              "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++              "role": "dependency"
++            }
++          ]
++        },
++        "commits": {
++          "before": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++          "after": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC",
++          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++          "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
++          "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m"
++        },
++        "cwd": "the attempt directory",
++        "classes": {
++          "before": {
++            "dir": "verifier/classes/before",
++            "from": "prepare/before/slice/before.jar",
++            "sha256": "1faf5dd1c5d4c934392578d4554ba3cf9057e225790f4aea7961489e4d7ca820",
++            "entries": 2
++          },
++          "after": {
++            "dir": "verifier/classes/after",
++            "from": "prepare/after/slice/after.jar",
++            "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0",
++            "entries": 2
++          }
++        },
++        "probe": {
++          "before": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
++              "--classes",
++              "prepare/before/slice/before.jar",
++              "--classpath",
++              "prepare/before/lib/org.springframework/spring-web-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/before/lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/before/lib/org.springframework/spring-core-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/before/lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/before/lib/io.micrometer/micrometer-core-1.2.0.jar",
++              "--classpath",
++              "prepare/before/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.164,
++            "stdout": "verifier/probe-before.stdout",
++            "stderr": "verifier/probe-before.stderr",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.util.Objects.requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.Objects.requireNonNull(java.lang.Object)",
++                "sites": [
++                  "io.micrometer.core.instrument.ImmutableTag.<init>:34",
++                  "io.micrometer.core.instrument.ImmutableTag.<init>:35"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.regex.Pattern.compile(java.lang.String)",
++                "sites": [
++                  "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:71",
++                  "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:73"
++                ]
++              }
++            ]
++          },
++          "after": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
++              "--classes",
++              "prepare/after/slice/after.jar",
++              "--classpath",
++              "prepare/after/lib/org.springframework/spring-web-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/after/lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/after/lib/org.springframework/spring-core-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/after/lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++              "--classpath",
++              "prepare/after/lib/io.micrometer/micrometer-core-1.2.0.jar",
++              "--classpath",
++              "prepare/after/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.165,
++            "stdout": "verifier/probe-after.stdout",
++            "stderr": "verifier/probe-after.stderr",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.util.Objects.requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.Objects.requireNonNull(java.lang.Object)",
++                "sites": [
++                  "io.micrometer.core.instrument.ImmutableTag.<init>:34",
++                  "io.micrometer.core.instrument.ImmutableTag.<init>:35"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.regex.Pattern.compile(java.lang.String)",
++                "sites": [
++                  "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:60",
++                  "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:62"
++                ]
++              }
++            ]
++          }
++        }
++      },
++      "observations": [
++        {
++          "verdict": "unverifiable",
++          "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
++          "domain": null,
++          "counterexample": null,
++          "proof": null,
++          "problem": "parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is",
++          "statement": null,
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse) cannot be verified: parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is",
++              "uri": null,
++              "line": 166
++            }
++          ],
++          "output": "✗ org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse) cannot be verified: parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is\n",
++          "work": "verifier/work"
++        }
++      ],
++      "control": null
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/records/verifier-output.txt
+@@ -0,0 +1 @@
++✗ org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse) cannot be verified: parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is
+--- /dev/null
++++ b/examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/result.json
+@@ -0,0 +1,405 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "192385a41f7ee08f",
++    "format": 1,
++    "example": "305",
++    "statement": {
++      "approach": "target",
++      "task": "preservation",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++      "revisions": [
++        "before",
++        "after"
++      ],
++      "expected": "established",
++      "gaps": "strict",
++      "claim": {
++        "task": "preservation",
++        "kind": "equivalence",
++        "relation": "preservation",
++        "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(Ljavax/servlet/http/HttpServletResponse;)Lio/micrometer/core/instrument/Tag;",
++        "file": "claims/outcome-preservation.json",
++        "sha256": "1f5db90c01ae8c674b2257a25caf28067ed2dd99c82707cdcbb7c56484dd315b",
++        "property": "mvc-outcome-tag-preserved",
++        "claimKind": "preservation",
++        "statement": "Tag-value preservation of WebMvcTags.outcome(HttpServletResponse response) between Boot's commits 9b8decf9 (before) and e8de5a6d (after): for a null response, and for a response whose getStatus() returns any int (all 2^32 values, negative ones and both extremes included), both revisions return a Tag with the same key and the same value, or throw the same exception class. The tags are compared by value, their key and value Strings, never by reference: the patch moves the six tags' allocation from WebMvcTags's static fields to Outcome's constants, so identity is meant to change. No allowed-change region: the patch is meant to change no label of this entry. Only this MVC entry is claimed; the patch's client and WebFlux tag factories, and the removed client exception catch, are outside it.",
++        "assume": null,
++        "assert": null,
++        "throws": [],
++        "nullable": [
++          "response"
++        ],
++        "mayAlias": [],
++        "observations": [
++          "result",
++          "exception"
++        ],
++        "assumptions": [
++          {
++            "text": "A non-null response is a carrier whose getStatus() returns one fixed int, with no other effect, and whose other methods are never called by either revision; the claim ranges over that int.",
++            "basis": "Read from the source at both commits: before calls response.getStatus() once and passes it to HttpStatus.Series.resolve; after calls it once and passes it to Outcome.forStatus. Neither calls another method of the response. A response whose getStatus() throws or differs between calls is a different domain, outside this claim; the replay's carrier (replay/driver) throws UnsupportedOperationException from any other method, so a call to one would show as an exception, not be hidden."
++          },
++          {
++            "text": "The result is observed by value: its getKey() and getValue() Strings, compared with String.equals. A null result is its own observation.",
++            "basis": "The brief's observation decision (llm-dlc/loops/example-targets-positive.md, P1, and the seed's observation_decision): reference identity is excluded on purpose, because the patch changes which class owns the cached tags. Tag is micrometer's interface; both revisions build their tags with Tag.of(String, String) from micrometer-core, the same dependency at both commits (1.2.0)."
++          },
++          {
++            "text": "Class initialization runs as on the JVM, never removed: WebMvcTags's static initializer (its cached Tags and the two Pattern.compile calls) on both sides, before's switch-map class WebMvcTags$1 and HttpStatus.Series, and after's Outcome enum, whose constructor calls Tag.of(\"outcome\", name()) six times.",
++            "basis": "The brief's safety rules: class initialization is part of the target's semantics. An initializer the checker can't run is a refusal of the attempt, not an assumption."
++          },
++          {
++            "text": "unwind 16 leaves the domain unbounded: the only loop either revision runs is before's for-each over HttpStatus.Series.values(), five iterations; after has none. No String or array is an input.",
++            "basis": "Read from the source at both commits and at Spring Framework v5.2.0.RC2 (HttpStatus.java blob 466ad8dd, the same blob as v5.2.0.RELEASE), the version both commits pin. An unwinding the check can't complete leaves the attempt unresolved, never established."
++          }
++        ],
++        "allowedChange": null,
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 8
++        },
++        "explicitBounds": {
++          "unwind": 16
++        },
++        "defaultBounds": [
++          "maxArrayLength"
++        ],
++        "models": [],
++        "plan": null,
++        "contracts": null,
++        "gaps": "strict",
++        "parent": null,
++        "controls": [
++          {
++            "id": "outcome-oracle",
++            "kind": "oracle",
++            "path": "controls/oracle.py",
++            "sha256": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e"
++          },
++          {
++            "id": "outcome-driver",
++            "kind": "driver",
++            "path": "replay/driver/inloop/p305/OutcomeDriver.java",
++            "sha256": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503"
++          },
++          {
++            "id": "outcome-probes",
++            "kind": "probe",
++            "path": "replay/probes.json",
++            "sha256": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
++          }
++        ],
++        "key": "98f4a389c1ccd7ff"
++      }
++    },
++    "scope": {
++      "maxArrayLength": 8,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": null,
++      "before": null,
++      "after": null,
++      "dependencies": "pinned in target.dependencies"
++    },
++    "target": {
++      "task": "preservation",
++      "sidecar": "f38180546c2825e2a3fd70fe2d1a453dd1d8f381cc468595002038875df383ea",
++      "revisions": {
++        "before": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
++        "after": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3"
++      },
++      "dependencies": [
++        {
++          "revision": "before",
++          "position": 0,
++          "role": "driver",
++          "sha256": "62a3f06842fb7de77ecb15c146c3e2f2e4a6f59d22f3f6539b22da021043f027"
++        },
++        {
++          "revision": "before",
++          "position": 1,
++          "role": "original",
++          "sha256": "1faf5dd1c5d4c934392578d4554ba3cf9057e225790f4aea7961489e4d7ca820"
++        },
++        {
++          "revision": "before",
++          "position": 2,
++          "role": "dependency",
++          "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++          "coordinates": "org.springframework:spring-web:5.2.0.RC2"
++        },
++        {
++          "revision": "before",
++          "position": 3,
++          "role": "dependency",
++          "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++          "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2"
++        },
++        {
++          "revision": "before",
++          "position": 4,
++          "role": "dependency",
++          "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++          "coordinates": "org.springframework:spring-core:5.2.0.RC2"
++        },
++        {
++          "revision": "before",
++          "position": 5,
++          "role": "dependency",
++          "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++          "coordinates": "org.springframework:spring-jcl:5.2.0.RC2"
++        },
++        {
++          "revision": "before",
++          "position": 6,
++          "role": "dependency",
++          "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++          "coordinates": "io.micrometer:micrometer-core:1.2.0"
++        },
++        {
++          "revision": "before",
++          "position": 7,
++          "role": "dependency",
++          "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++          "coordinates": "javax.servlet:javax.servlet-api:4.0.1"
++        },
++        {
++          "revision": "after",
++          "position": 0,
++          "role": "driver",
++          "sha256": "62a3f06842fb7de77ecb15c146c3e2f2e4a6f59d22f3f6539b22da021043f027"
++        },
++        {
++          "revision": "after",
++          "position": 1,
++          "role": "original",
++          "sha256": "3aaf4ee17fa9d08cf64d6b49f0c023b7ad1783e486b2a849787d13f2cb0517c0"
++        },
++        {
++          "revision": "after",
++          "position": 2,
++          "role": "dependency",
++          "sha256": "e0a96d0bdd7fe67468d05e5b0808e8d549557c55dd7dc0b8404ffe2d3680a30b",
++          "coordinates": "org.springframework:spring-web:5.2.0.RC2"
++        },
++        {
++          "revision": "after",
++          "position": 3,
++          "role": "dependency",
++          "sha256": "f53bd9b8bfc0e6beb9978f7b8533ffb9ed288367b5356fe713874f4396e6fb68",
++          "coordinates": "org.springframework:spring-webmvc:5.2.0.RC2"
++        },
++        {
++          "revision": "after",
++          "position": 4,
++          "role": "dependency",
++          "sha256": "d8bf5bec2f19e33e3b9afdfe145d34922139720592c5ad394af97ce4e8796e71",
++          "coordinates": "org.springframework:spring-core:5.2.0.RC2"
++        },
++        {
++          "revision": "after",
++          "position": 5,
++          "role": "dependency",
++          "sha256": "d8fbac5cac0b1b157c3b68aa0027cc83c343b218acd4b4dbb716402facd76e9a",
++          "coordinates": "org.springframework:spring-jcl:5.2.0.RC2"
++        },
++        {
++          "revision": "after",
++          "position": 6,
++          "role": "dependency",
++          "sha256": "9aacd657e0904f0b9c2f5bccbc92456b73debd2106cf0232b33f86dea57ab1c7",
++          "coordinates": "io.micrometer:micrometer-core:1.2.0"
++        },
++        {
++          "revision": "after",
++          "position": 7,
++          "role": "dependency",
++          "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++          "coordinates": "javax.servlet:javax.servlet-api:4.0.1"
++        }
++      ],
++      "jdks": [
++        "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "openjdk version \"25.0.5\" 2026-10-20 LTS"
++      ],
++      "files": {
++        "claims/outcome-preservation.json": "1f5db90c01ae8c674b2257a25caf28067ed2dd99c82707cdcbb7c56484dd315b",
++        "controls/oracle.py": "effd936ce306464a00209d8279d069fff78ac8b19b202edf6aa9963e0485174e",
++        "replay/driver/inloop/p305/OutcomeDriver.java": "d6c8b6512109746d99760cc31fbf65fc9249c299ca69b0fb9ae6883f35e39503",
++        "replay/probes.json": "676be54c19557e4ece72202876677120a2b2b62aa4f578e7846a0f530469d087"
++      },
++      "scopes": {
++        "before": "extracted-source-slice",
++        "after": "extracted-source-slice"
++      }
++    }
++  },
++  "attempt": {
++    "id": "20261115T011234Z-4a17179d",
++    "claim": "192385a41f7ee08f",
++    "startedAt": "2026-11-15T01:12:34+00:00",
++    "seconds": 0.5,
++    "engine": "native",
++    "options": [
++      "equivalence",
++      "--before",
++      "verifier/classes/before",
++      "--after",
++      "verifier/classes/after",
++      "--target",
++      "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(javax.servlet.http.HttpServletResponse)",
++      "--classpath",
++      "prepare/after/lib/org.springframework/spring-web-5.2.0.RC2.jar",
++      "--classpath",
++      "prepare/after/lib/org.springframework/spring-webmvc-5.2.0.RC2.jar",
++      "--classpath",
++      "prepare/after/lib/org.springframework/spring-core-5.2.0.RC2.jar",
++      "--classpath",
++      "prepare/after/lib/org.springframework/spring-jcl-5.2.0.RC2.jar",
++      "--classpath",
++      "prepare/after/lib/io.micrometer/micrometer-core-1.2.0.jar",
++      "--classpath",
++      "prepare/after/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++      "--nullable",
++      "response",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "tools": {
++      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "784fac1699c9081b7988fc0e65184abf537deb910e4bd4a357afe4668325f443",
++        "files": 1
++      },
++      "after": {
++        "sha256": "68946eb4d1b5cf055980faf8e9c7b149292704f04676ae0b0d22bbeadd80a4af",
++        "files": 1
++      }
++    },
++    "pipeline": {
++      "jobId": "20261115-005928-example-305-preservation-vf-027-rerun-st",
++      "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005928-example-305-preservation-vf-027-rerun-st"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "jvm-control before on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.114,
++        "stdout": "controls/control-before-jdk21.stdout",
++        "stderr": "controls/control-before-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control before on JDK 25",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.114,
++        "stdout": "controls/control-before-jdk25.stdout",
++        "stderr": "controls/control-before-jdk25.stderr"
++      },
++      {
++        "name": "jvm-control after on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.115,
++        "stdout": "controls/control-after-jdk21.stdout",
++        "stderr": "controls/control-after-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control after on JDK 25",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.114,
++        "stdout": "controls/control-after-jdk25.stdout",
++        "stderr": "controls/control-after-jdk25.stderr"
++      },
++      {
++        "name": "verifier pair on JDK 25",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.008,
++        "stdout": "verifier/verifier.stdout",
++        "stderr": "verifier/verifier.stderr"
++      }
++    ],
++    "workspace": null,
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "192385a41f7ee08f",
++    "attempt": "20261115T011234Z-4a17179d",
++    "status": "unresolved",
++    "vacuous": false,
++    "expectation": "no",
++    "obligations": [],
++    "label": "⚠ Unverifiable",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": null,
++    "before": {
++      "file": "target.json",
++      "startLine": 15,
++      "code": "\"before\": {"
++    },
++    "after": {
++      "file": "target.json",
++      "startLine": 19,
++      "code": "\"after\": {"
++    },
++    "casesTotal": null,
++    "purityViolations": [],
++    "trustedCalls": [],
++    "sarif": null,
++    "output": "records/verifier-output.txt",
++    "statement": null,
++    "counterexamples": [],
++    "proof": null,
++    "problem": "parameter response has type javax.servlet.http.HttpServletResponse, which is outside the objects a regression check makes: javax.servlet.http.HttpServletResponse is an interface; only a concrete class made by its constructor is",
++    "domain": null,
++    "replay": null
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "records/execution.json",
++        "sha256": "393d861b1a8f9806ef4f76385208dedb9c2b8dddbc217415a8586e6e64132d78",
++        "bytes": 53726
++      },
++      {
++        "path": "records/verifier-output.txt",
++        "sha256": "6867e320e32baef09b9115492d291b585f9ac9256e24419cd386d30363682d2e",
++        "bytes": 364
++      }
++    ]
++  }
++}

@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005928-example-306-preservation-vf-027-rerun-st",
+  "title": "example 306 preservation (VF-027 rerun): stops at its recorded refusal, two dependency closures for one equivalence classpath",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.2s, peak 136.1 MiB (estimated 20m00s, 3.0 GiB); signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005928-example-306-preservation-vf-027-rerun-st.json",
+    "sha256": "0471a34c99916f8c51dd300780accfb2719fc528d498124efdad0e915be3acbf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005928-example-306-preservation-vf-027-rerun-st",
+      "title": "example 306 preservation (VF-027 rerun): stops at its recorded refusal, two dependency closures for one equivalence classpath",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task preservation of example 306 is resubmitted unchanged in its claim (key 51d7f1127b4df870, expected established, native, strict), predicting the refusal job 20261114-234213-example-306-preservation-phase-5-step-1 observed: two dependency closures for one equivalence classpath. The step runs examples/tools/targets/workflow_refusal.py 306 preservation, which runs python3 examples/tools/build.py 306 --task preservation once (its output indented) and exits 0 only when the claim key is still 51d7f1127b4df870, build.py exits 1, and the attempt gives no receipt, the route's not-executed line naming the recorded refusal, the text recorded in examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/records/refusals/preservation.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/target.json",
+          "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/claims/simple-match-preservation.json",
+          "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/records/refusals/preservation.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "306"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 306 task preservation and exits 0: the attempt stops at the recorded refusal (two dependency closures for one equivalence classpath) under claim 51d7f1127b4df870; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:28+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "the same preparation and controls as the observed run 20261114-234213-example-306-preservation-phase-5-step-1, which reached the refusal in 4 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 306 task preservation: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:12:35+00:00",
+  "finishedAt": "2026-11-15T01:12:38+00:00",
+  "wallSeconds": 3.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234213-example-306-preservation-phase-5-step-1, which reached the refusal in 4 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 142741504,
+    "wallSeconds": 2.2,
+    "cpuSeconds": 3.1,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 306 task preservation: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 2.204,
+      "cpuSeconds": 3.082,
+      "cpuThrottledSeconds": 0.152,
+      "peakMemoryBytes": 142741504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-306-task-preservation.log",
+        "lines": 4,
+        "bytes": 721,
+        "sha256": "c6175be9d362d5e02aa0afae946e10e21ba32f0be169b0abbd210bf2f426bca0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal",
+          "groups": [
+            "306",
+            "preservation",
+            "VF-027",
+            "run-verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task preservation (target route)",
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classp",
+        "  build.py | Not executed: 306-spring-framework-db9a10bf-pattern-match-prefix-startswith",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  }
+}

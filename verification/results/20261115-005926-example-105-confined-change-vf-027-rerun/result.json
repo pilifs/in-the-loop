@@ -1,0 +1,222 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005926-example-105-confined-change-vf-027-rerun",
+  "title": "example 105 confined-change (VF-027 rerun): stops at its recorded refusal, StringBuilder.<init>() refused under strict",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m23s, peak 846.7 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005926-example-105-confined-change-vf-027-rerun.json",
+    "sha256": "1c18bb76483cae1ec643bae8fbc79d5df6a9836e9945e661b41c7aca5fe17b0c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005926-example-105-confined-change-vf-027-rerun",
+      "title": "example 105 confined-change (VF-027 rerun): stops at its recorded refusal, StringBuilder.<init>() refused under strict",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task confined-change of example 105 is resubmitted unchanged in its claim (key 6bef0dff1140dc6d, expected established, native, strict), predicting the refusal job 20261114-234214-example-105-confined-change-phase-5-step observed: StringBuilder.<init>() refused under strict. The step runs examples/tools/targets/workflow_refusal.py 105 confined-change, which runs python3 examples/tools/build.py 105 --task confined-change once (its output indented) and exits 0 only when the claim key is still 6bef0dff1140dc6d, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/records/refusals/confined-change.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/target.json",
+          "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/claims/pow-preservation.json",
+          "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/records/refusals/confined-change.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "105"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 105 task confined-change and exits 0: the attempt stops at the recorded refusal (StringBuilder.<init>() refused under strict) under claim 6bef0dff1140dc6d; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:26+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "the same preparation and controls as the observed run 20261114-234214-example-105-confined-change-phase-5-step, which reached the refusal in 278 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 105 task confined-change: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:11:18+00:00",
+  "finishedAt": "2026-11-15T01:15:44+00:00",
+  "wallSeconds": 266.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234214-example-105-confined-change-phase-5-step, which reached the refusal in 278 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 887808000,
+    "wallSeconds": 263.4,
+    "cpuSeconds": 290.5,
+    "memoryOfEstimate": 0.28,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task confined-change: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 263.384,
+      "cpuSeconds": 290.457,
+      "cpuThrottledSeconds": 9.84,
+      "peakMemoryBytes": 887808000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-confined-chan.log",
+        "lines": 3,
+        "bytes": 571,
+        "sha256": "145f16180157c53db971327245e68e7b19c19606edfd618aae8cc7ea964ff35b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task confined-change: refused as predicted (VF-027; verifier; records/refusals/confined-change.json): unresolved at the recorded refusal, receipt receipts/confined-change/20261115T011544Z-71dbed5b",
+          "groups": [
+            "105",
+            "confined-change",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 105-commons-numbers-223-pow-of-minus-two-to-the-31: running task confined-change (target route)",
+        "  build.py | 105-commons-numbers-223-pow-of-minus-two-to-the-31: task confined-change: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/confined-change/20261115T011544Z-71dbed5b/result.json",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task confined-change: refused as predicted (VF-027; verifier; records/refusals/confined-change.json): unresolved at the recorded refusal, receipt receipts/confined-change/20261115T011544Z-71dbed5b"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/plan.json",
+      "change": "added",
+      "bytes": 11492,
+      "sha256": "10a697c3bcfeecda98cc41a77fb3a7fe50bedc4b0ea753a29cc0b4f623cd5868",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/records/execution.json",
+      "change": "added",
+      "bytes": 74109,
+      "sha256": "98207ab2771fca60a20ecf9ac787d2047437247e99f54030dd3226d5abff0b9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "d89008f765da4df1524893ef2a8f3082a900d05c8cf758fd6f27dcd08445c03b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/result.json",
+      "change": "added",
+      "bytes": 10305,
+      "sha256": "93bf8427a490d8cea965f5d46bf6d0bc367cb8ff9f73479e301c5a9e700b13f6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/plan.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/records/execution.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/records/verifier-output.txt",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/confined-change/20261115T011544Z-71dbed5b/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

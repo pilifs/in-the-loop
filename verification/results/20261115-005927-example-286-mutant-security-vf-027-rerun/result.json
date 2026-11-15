@@ -1,0 +1,221 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005927-example-286-mutant-security-vf-027-rerun",
+  "title": "example 286 mutant-security (VF-027 rerun): stops at its recorded refusal, a receiver of several constructors with no construction plan",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.8s, peak 270.4 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005927-example-286-mutant-security-vf-027-rerun.json",
+    "sha256": "11447ebd0223f9e29ae08d919793ba6f983bce3466e61374193721c37f49e170",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005927-example-286-mutant-security-vf-027-rerun",
+      "title": "example 286 mutant-security (VF-027 rerun): stops at its recorded refusal, a receiver of several constructors with no construction plan",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task mutant-security of example 286 is resubmitted unchanged in its claim (key d28be1f2f6e9edcd, expected refuted, native, strict), predicting the refusal job 20261114-234212-example-286-mutant-security-phase-5-step observed: a receiver of several constructors with no construction plan. The step runs examples/tools/targets/workflow_refusal.py 286 mutant-security, which runs python3 examples/tools/build.py 286 --task mutant-security once (its output indented) and exits 0 only when the claim key is still d28be1f2f6e9edcd, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/records/refusals/mutant-security.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/target.json",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/disallowed-field-denied-ignoring-case.json",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/records/refusals/mutant-security.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "286"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 286 task mutant-security and exits 0: the attempt stops at the recorded refusal (a receiver of several constructors with no construction plan) under claim d28be1f2f6e9edcd; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:27+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the same preparation and controls as the observed run 20261114-234212-example-286-mutant-security-phase-5-step, which reached the refusal in 8 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 286 task mutant-security: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 286 mutant-security",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:11:26+00:00",
+  "finishedAt": "2026-11-15T01:11:34+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234212-example-286-mutant-security-phase-5-step, which reached the refusal in 8 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 283496448,
+    "wallSeconds": 6.8,
+    "cpuSeconds": 7.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 286 task mutant-security: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 286 mutant-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.812,
+      "cpuSeconds": 7.949,
+      "cpuThrottledSeconds": 0.795,
+      "peakMemoryBytes": 283496448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-286-task-mutant-securi.log",
+        "lines": 3,
+        "bytes": 621,
+        "sha256": "6462fbf2069edac8b1d3f484811350401e067deef679784a715d0478b7143a9f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T011134Z-2f989fe2",
+          "groups": [
+            "286",
+            "mutant-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task mutant-security (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261115T011134Z-2f989fe2/result.json",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T011134Z-2f989fe2"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/plan.json",
+      "change": "added",
+      "bytes": 20041,
+      "sha256": "427e80e9e13e1415377eef3a36cd5e18f7ef0e8c6b884d7bfd988528b0c2b3ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/records/execution.json",
+      "change": "added",
+      "bytes": 80106,
+      "sha256": "6e91e51222029420ef598b8fde385762a93c0508644423a69050ec2a21845e3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 399,
+      "sha256": "480de09ee26adea41c4cda914dca581a93662adcea0cf0dde32884b810ffe499",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/result.json",
+      "change": "added",
+      "bytes": 18037,
+      "sha256": "417e850de8b123a8eb5cee7e82f96e3ac3ef35c469778673fdfbd599855cb1df",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/plan.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/records/execution.json",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/records/verifier-output.txt",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/mutant-security/20261115T011134Z-2f989fe2/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

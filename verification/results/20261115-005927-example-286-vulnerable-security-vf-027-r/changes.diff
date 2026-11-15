@@ -1,0 +1,3036 @@
+--- /dev/null
++++ b/examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261115T011138Z-a521216c/plan.json
+@@ -0,0 +1,297 @@
++{
++  "plan": {
++    "example": "286",
++    "task": "vulnerable-security",
++    "kind": "prove",
++    "relation": "security",
++    "target": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++    "revisions": [
++      "vulnerable-release"
++    ],
++    "claim": {
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "relation": "security",
++      "target": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++      "file": "claims/disallowed-field-denied-ignoring-case.json",
++      "sha256": "1da0be590804016ec54d23da6dea98dd030faf008037ce8b93796363f9e84abf",
++      "property": "disallowed-field-denied-ignoring-case",
++      "claimKind": "property",
++      "statement": "With a DataBinder configured through setAllowedFields(allowedPatterns) and setDisallowedFields(disallowedPatterns), isAllowed(field) returns false, and throws nothing, whenever some disallowed pattern, in its canonical form, matches field ignoring ASCII case, a '*' in the pattern matching any sequence (possibly empty) and every other character itself: the documented contract of 5.3.19 (matching against disallowed field patterns is case-insensitive) and the advisory's intent (a disallowed field is protected whatever the case of its characters). For ASCII names and patterns under the root locale. One property and one domain for the vulnerable release (expected refuted: the upstream regression, AGE disallowed, age allowed) and the fixed release (expected established). It is the decision lemma only: that a denied name can't change the bean is the separate protected-state claim (claims/protected-age-not-mutated.json), and nested property paths through a nested bean are a further obligation.",
++      "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++      "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++      "throws": [],
++      "nullable": [
++        "allowedPatterns",
++        "disallowedPatterns"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "the parameters are those of the adapter entry example286.adapter.BinderDecisionAdapter#allowed([Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Z: a binder (a subclass, ExposedDataBinder, whose decide(field) is one invokevirtual of the original protected isAllowed, overriding nothing) made with a fresh ProtectedBean target, configured by the original public setAllowedFields(allowedPatterns) then setDisallowedFields(disallowedPatterns), then asked isAllowed(field)",
++          "basis": "the brief (a subclass exposing the protected predicate delegates to the original bytecode) and both releases' bytecode, where isAllowed reads only getAllowedFields() and getDisallowedFields() (sources.lock.json)"
++        },
++        {
++          "text": "the default locale is Locale.ROOT throughout",
++          "basis": "the brief (pin the default locale explicitly): 5.3.19 lower-cases with String.toLowerCase(), the default locale's; the driver pins Locale.ROOT before any Spring class loads and prints it, and the oracle refuses a run without it. Another locale is another property: locale invariance is example 288's (CVE-2024-38820), and the probe upper-colour-turkish shows 5.3.19 failing this statement's alias under tr-TR"
++        },
++        {
++          "text": "field and every pattern are ASCII (U+0000 to U+007F), and field is canonical (PropertyAccessorUtils.canonicalPropertyName leaves it unchanged), as DataBinder.checkAllowedFields passes every name it asks isAllowed about; the arrays and their elements may be null",
++          "basis": "the advisory's alias is ASCII case (the first character of a field and of each nested field); the domain is fixed before any attempt. Outside it the statement's 'ignoring case' has no single meaning (String.toLowerCase is context-sensitive: the probe sigma-exact shows 5.3.19 allowing a non-ASCII field that 5.3.18 denies by exact match), which this packet records as a finding for review, not as part of this claim"
++        },
++        {
++          "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts: spring-context, spring-beans, spring-core, spring-jcl), and DataBinder's class initializer runs as written (LogFactory.getLog, whose LogAdapter probes for logging libraries with Class.forName)",
++          "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "explicitBounds": {
++        "maxArrayLength": 8
++      },
++      "defaultBounds": [
++        "unwind"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "driver",
++          "kind": "driver",
++          "path": "replay/driver/example286/driver/BinderDriver.java",
++          "sha256": "5632c9cd86b5d425ffa0dd811c96267da0b01d5afae41229cb14a360c9d469c1"
++        },
++        {
++          "id": "oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "04c11223a02b60d33af7fce5bd824d7a4615c9dd511d458cf4a9de1c743690fa"
++        },
++        {
++          "id": "probes",
++          "kind": "probe",
++          "path": "controls/probes.json",
++          "sha256": "db8c9b46d8f6162d63ba2817121f586aefd5bd2eee9117bd6a3c6dac06a6e5ac"
++        }
++      ],
++      "key": "d28be1f2f6e9edcd"
++    },
++    "prerequisites": [
++      "replay"
++    ],
++    "artifacts": [
++      {
++        "revision": "vulnerable-release",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-context:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-context/5.3.18/spring-context-5.3.18.jar",
++            "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c"
++          },
++          {
++            "coordinates": "org.springframework:spring-beans:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-beans/5.3.18/spring-beans-5.3.18.jar",
++            "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.18/spring-core-5.3.18.jar",
++            "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.18/spring-jcl-5.3.18.jar",
++            "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e"
++          }
++        ],
++        "adapters": [
++          "replay/adapter/example286/adapter/ProtectedBean.java",
++          "replay/adapter/example286/adapter/ExposedDataBinder.java",
++          "replay/adapter/example286/adapter/BinderDecisionAdapter.java",
++          "replay/adapter/example286/adapter/BindingAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac",
++        "python3",
++        "jvmcontract"
++      ],
++      "optional": []
++    },
++    "engine": "native",
++    "gaps": "strict",
++    "expected": "refuted",
++    "outputs": {
++      "receipts": "receipts/vulnerable-security"
++    },
++    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005927-example-286-vulnerable-security-vf-027-r/examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields",
++    "network": true
++  },
++  "inputs": {
++    "example": "286",
++    "task": "vulnerable-security",
++    "kind": "prove",
++    "relation": "security",
++    "target": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++    "revisions": [
++      "vulnerable-release"
++    ],
++    "claim": {
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "relation": "security",
++      "target": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++      "file": "claims/disallowed-field-denied-ignoring-case.json",
++      "sha256": "1da0be590804016ec54d23da6dea98dd030faf008037ce8b93796363f9e84abf",
++      "property": "disallowed-field-denied-ignoring-case",
++      "claimKind": "property",
++      "statement": "With a DataBinder configured through setAllowedFields(allowedPatterns) and setDisallowedFields(disallowedPatterns), isAllowed(field) returns false, and throws nothing, whenever some disallowed pattern, in its canonical form, matches field ignoring ASCII case, a '*' in the pattern matching any sequence (possibly empty) and every other character itself: the documented contract of 5.3.19 (matching against disallowed field patterns is case-insensitive) and the advisory's intent (a disallowed field is protected whatever the case of its characters). For ASCII names and patterns under the root locale. One property and one domain for the vulnerable release (expected refuted: the upstream regression, AGE disallowed, age allowed) and the fixed release (expected established). It is the decision lemma only: that a denied name can't change the bean is the separate protected-state claim (claims/protected-age-not-mutated.json), and nested property paths through a nested bean are a further obligation.",
++      "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++      "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++      "throws": [],
++      "nullable": [
++        "allowedPatterns",
++        "disallowedPatterns"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "the parameters are those of the adapter entry example286.adapter.BinderDecisionAdapter#allowed([Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Z: a binder (a subclass, ExposedDataBinder, whose decide(field) is one invokevirtual of the original protected isAllowed, overriding nothing) made with a fresh ProtectedBean target, configured by the original public setAllowedFields(allowedPatterns) then setDisallowedFields(disallowedPatterns), then asked isAllowed(field)",
++          "basis": "the brief (a subclass exposing the protected predicate delegates to the original bytecode) and both releases' bytecode, where isAllowed reads only getAllowedFields() and getDisallowedFields() (sources.lock.json)"
++        },
++        {
++          "text": "the default locale is Locale.ROOT throughout",
++          "basis": "the brief (pin the default locale explicitly): 5.3.19 lower-cases with String.toLowerCase(), the default locale's; the driver pins Locale.ROOT before any Spring class loads and prints it, and the oracle refuses a run without it. Another locale is another property: locale invariance is example 288's (CVE-2024-38820), and the probe upper-colour-turkish shows 5.3.19 failing this statement's alias under tr-TR"
++        },
++        {
++          "text": "field and every pattern are ASCII (U+0000 to U+007F), and field is canonical (PropertyAccessorUtils.canonicalPropertyName leaves it unchanged), as DataBinder.checkAllowedFields passes every name it asks isAllowed about; the arrays and their elements may be null",
++          "basis": "the advisory's alias is ASCII case (the first character of a field and of each nested field); the domain is fixed before any attempt. Outside it the statement's 'ignoring case' has no single meaning (String.toLowerCase is context-sensitive: the probe sigma-exact shows 5.3.19 allowing a non-ASCII field that 5.3.18 denies by exact match), which this packet records as a finding for review, not as part of this claim"
++        },
++        {
++          "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts: spring-context, spring-beans, spring-core, spring-jcl), and DataBinder's class initializer runs as written (LogFactory.getLog, whose LogAdapter probes for logging libraries with Class.forName)",
++          "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "explicitBounds": {
++        "maxArrayLength": 8
++      },
++      "defaultBounds": [
++        "unwind"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "driver",
++          "kind": "driver",
++          "path": "replay/driver/example286/driver/BinderDriver.java",
++          "sha256": "5632c9cd86b5d425ffa0dd811c96267da0b01d5afae41229cb14a360c9d469c1"
++        },
++        {
++          "id": "oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "04c11223a02b60d33af7fce5bd824d7a4615c9dd511d458cf4a9de1c743690fa"
++        },
++        {
++          "id": "probes",
++          "kind": "probe",
++          "path": "controls/probes.json",
++          "sha256": "db8c9b46d8f6162d63ba2817121f586aefd5bd2eee9117bd6a3c6dac06a6e5ac"
++        }
++      ],
++      "key": "d28be1f2f6e9edcd"
++    },
++    "artifacts": [
++      {
++        "revision": "vulnerable-release",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-context:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-context/5.3.18/spring-context-5.3.18.jar",
++            "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c"
++          },
++          {
++            "coordinates": "org.springframework:spring-beans:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-beans/5.3.18/spring-beans-5.3.18.jar",
++            "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.18/spring-core-5.3.18.jar",
++            "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.18",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.18/spring-jcl-5.3.18.jar",
++            "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e"
++          }
++        ],
++        "adapters": [
++          "replay/adapter/example286/adapter/ProtectedBean.java",
++          "replay/adapter/example286/adapter/ExposedDataBinder.java",
++          "replay/adapter/example286/adapter/BinderDecisionAdapter.java",
++          "replay/adapter/example286/adapter/BindingAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "adapters": [
++      {
++        "path": "replay/adapter/example286/adapter/BinderDecisionAdapter.java",
++        "sha256": "3c751a2c1a30171944022746cd321990f98c0b3b2be16d4960f2f83433a98975"
++      },
++      {
++        "path": "replay/adapter/example286/adapter/BindingAdapter.java",
++        "sha256": "708dd4126be7b4051ddde0ac44bdecd5b65f5513179a55573de60a580b40aaf5"
++      },
++      {
++        "path": "replay/adapter/example286/adapter/ExposedDataBinder.java",
++        "sha256": "7078b9eeab977262bbddf456a5a98a31051e5f320c6c6b21fdb98ccaceab2621"
++      },
++      {
++        "path": "replay/adapter/example286/adapter/ProtectedBean.java",
++        "sha256": "cd7f42dec19cc30e12dc287f9282cabc2997762fc8ee010d3cb486cf2d6550c9"
++      }
++    ]
++  },
++  "key": "8ba031629fd16893d446d1aea51b8566e06b4f9411b2efc3646c07cd5e534a37"
++}
+--- /dev/null
++++ b/examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261115T011138Z-a521216c/records/execution.json
+@@ -0,0 +1,2390 @@
++{
++  "task": "vulnerable-security",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-vulnerable-release.jar:lib/org.springframework/spring-context-5.3.18.jar:lib/org.springframework/spring-beans-5.3.18.jar:lib/org.springframework/spring-core-5.3.18.jar:lib/org.springframework/spring-jcl-5.3.18.jar",
++        "example286.driver.BinderDriver",
++        "decide;overlap-name;und;x6e616d65,x616765;x414745;x6e616d65",
++        "decide;overlap-age;und;x6e616d65,x616765;x414745;x616765",
++        "decide;overlap-upper-age;und;x6e616d65,x616765;x414745;x414745",
++        "decide;overlap-capital-name;und;x6e616d65,x616765;x414745;x4e616d65",
++        "decide;list-name;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6e616d65",
++        "decide;list-age;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x616765",
++        "decide;list-colour;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6661766f7572697465436f6c6f7572",
++        "decide;list-capital-colour;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x4661766f7572697465436f6c6f7572",
++        "decide;list-blank;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x20",
++        "decide;list-touchy;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x746f75636879",
++        "decide;both-name;und;x6e616d65,x6d79706172616d;x616765;x6e616d65",
++        "decide;both-myparam;und;x6e616d65,x6d79706172616d;x616765;x6d79706172616d",
++        "decide;both-age;und;x6e616d65,x6d79706172616d;x616765;x616765",
++        "decide;asterisks-name;und;x6e616d2a,x2a6f75636879;-;x6e616d65",
++        "decide;asterisks-touchy;und;x6e616d2a,x2a6f75636879;-;x746f75636879",
++        "decide;asterisks-age;und;x6e616d2a,x2a6f75636879;-;x616765",
++        "decide;asterisks-capital-name;und;x6e616d2a,x2a6f75636879;-;x4e616d65",
++        "decide;map-key1;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579315d",
++        "decide;map-key2;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579325d",
++        "decide;map-key3;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579335d",
++        "decide;map-key4;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579345d",
++        "decide;advisory-capital-age;und;-;x616765;x416765",
++        "decide;advisory-upper-age;und;-;x616765;x414745",
++        "decide;advisory-age;und;-;x616765;x616765",
++        "decide;advisory-name;und;-;x616765;x6e616d65",
++        "decide;wildcard-touchy;und;-;x544f5543482a;x746f75636879",
++        "decide;wildcard-capital-touchy;und;-;x544f5543482a;x546f75636879",
++        "decide;wildcard-upper-touchy;und;-;x544f5543482a;x544f55434859",
++        "decide;wildcard-name;und;-;x544f5543482a;x6e616d65",
++        "decide;map-only-key3;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b6b6579335d",
++        "decide;map-only-upper-key3;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b4b4559335d",
++        "decide;map-only-key1;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b6b6579315d",
++        "decide;upper-colour-root;und;-;x4641564f5552495445434f4c4f5552;x6661766f7572697465436f6c6f7572",
++        "decide;upper-colour-turkish;tr-TR;-;x4641564f5552495445434f4c4f5552;x6661766f7572697465436f6c6f7572",
++        "decide;sigma-exact;und;-;x64617461cea32a;x64617461cea378",
++        "bind;bind-overlap-upstream;und;x6e616d65,x616765;x414745;x6e616d65=x526f64,x616765=x333278",
++        "bind;bind-overlap-mutation;und;x6e616d65,x616765;x414745;x6e616d65=x526f64,x616765=x3332",
++        "bind;bind-list-upstream;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6e616d65=x526f64,x616765=x333278,x6661766f7572697465436f6c6f7572=x424c5545",
++        "bind;bind-list-capital-colour;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6e616d65=x526f64,x4661766f7572697465436f6c6f7572=x424c5545",
++        "bind;bind-both-upstream;und;x6e616d65,x6d79706172616d;x616765;x6e616d65=x526f64,x616765=x333278",
++        "bind;bind-asterisks-upstream;und;x6e616d2a,x2a6f75636879;-;x6e616d65=x526f64,x746f75636879=x526f64,x616765=x333278",
++        "bind;bind-map-upstream;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579315d=x76616c756531,x736f6d654d61705b276b657932275d=x76616c756532,x736f6d654d61705b6b6579335d=x76616c756533,x736f6d654d61705b276b657934275d=x76616c756534",
++        "bind;bind-advisory-alias;und;-;x616765;x6e616d65=x526f64,x416765=x3332",
++        "bind;bind-map-alias;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b6b6579335d=x76616c756533,x736f6d654d61705b6b6579315d=x76616c756531",
++        "bind;bind-permitted;und;x6e616d2a,x2a6f75636879;-;x6e616d65=x526f64",
++        "bind;bind-indexed-alias;und;-;x616765;x4167655b305d=x3332"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.165,
++      "stdout": "controls/control-vulnerable-release-jdk21.stdout",
++      "stderr": "controls/control-vulnerable-release-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "c3dd338fad3cc9c7d7f213f3d32c6b5dc2f5b15363d72b6dc2936f0772e2e236",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-vulnerable-release.jar",
++            "sha256": "edb03ac1e3a17aa13589c58355bc5eaec7aa951d7b07ae62e8521aad6b26e43c",
++            "role": "adapter"
++          },
++          {
++            "path": "lib/org.springframework/spring-context-5.3.18.jar",
++            "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-beans-5.3.18.jar",
++            "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.18.jar",
++            "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.18.jar",
++            "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "driver",
++          "main": "example286.driver.BinderDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "04c11223a02b60d33af7fce5bd824d7a4615c9dd511d458cf4a9de1c743690fa"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "jvm": {
++            "version": "21.0.13",
++            "vendor": "Eclipse Adoptium",
++            "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem"
++          },
++          "locale": {
++            "initial": "en-US",
++            "pinned": "und"
++          },
++          "beanProperties": [
++            "age",
++            "class",
++            "favouriteColour",
++            "name",
++            "someMap",
++            "touchy"
++          ]
++        },
++        {
++          "probe": "overlap-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "overlap-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "overlap-upper-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "AGE",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "overlap-capital-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "Name",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "list-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-colour",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "favouriteColour",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-capital-colour",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "FavouriteColour",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "list-blank",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": " ",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "both-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "both-myparam",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "myparam",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "both-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "asterisks-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "asterisks-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "asterisks-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "asterisks-capital-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "Name",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "map-key1",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key1]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-key2",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key2]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-key3",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key3]",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "map-key4",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key4]",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "advisory-capital-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "Age",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "advisory-upper-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "AGE",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "advisory-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "advisory-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "wildcard-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "wildcard-capital-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "Touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "wildcard-upper-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "TOUCHY",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "wildcard-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-only-key3",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "field": "someMap[key3]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-only-upper-key3",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "field": "someMap[KEY3]",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "map-only-key1",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "field": "someMap[key1]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "upper-colour-root",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "FAVOURITECOLOUR"
++          ],
++          "field": "favouriteColour",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "upper-colour-turkish",
++          "kind": "decide",
++          "locale": "tr-TR",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "FAVOURITECOLOUR"
++          ],
++          "field": "favouriteColour",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "sigma-exact",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "dataΣ*"
++          ],
++          "field": "dataΣx",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "bind-overlap-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [
++            {
++              "field": "age",
++              "code": "typeMismatch"
++            }
++          ],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-overlap-mutation",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 32,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-list-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ],
++            [
++              "favouriteColour",
++              "BLUE"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [
++            "favouriteColour",
++            "age"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-list-capital-colour",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "FavouriteColour",
++              "BLUE"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": "BLUE",
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-both-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [
++            "age"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-asterisks-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "touchy",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": "Rod",
++            "someMap": {}
++          },
++          "suppressed": [
++            "age"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-map-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "values": [
++            [
++              "someMap[key1]",
++              "value1"
++            ],
++            [
++              "someMap['key2']",
++              "value2"
++            ],
++            [
++              "someMap[key3]",
++              "value3"
++            ],
++            [
++              "someMap['key4']",
++              "value4"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": null,
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {
++              "key1": "java.lang.String:value1",
++              "key2": "java.lang.String:value2"
++            }
++          },
++          "suppressed": [
++            "someMap[key3]",
++            "someMap[key4]"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-advisory-alias",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "Age",
++              "32"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 32,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-map-alias",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "values": [
++            [
++              "someMap[key3]",
++              "value3"
++            ],
++            [
++              "someMap[key1]",
++              "value1"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": null,
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {
++              "key1": "java.lang.String:value1",
++              "key3": "java.lang.String:value3"
++            }
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-permitted",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "values": [
++            [
++              "name",
++              "Rod"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-indexed-alias",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "values": [
++            [
++              "Age[0]",
++              "32"
++            ]
++          ],
++          "outcome": "threw",
++          "exception": "org.springframework.beans.InvalidPropertyException",
++          "message": "Invalid property 'Age[0]' of bean class [example286.adapter.ProtectedBean]: Property referenced in indexed property path 'Age[0]' is neither an array nor a List nor a Map; returned value was [0]"
++        }
++      ],
++      "control": "driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-vulnerable-release.jar:lib/org.springframework/spring-context-5.3.18.jar:lib/org.springframework/spring-beans-5.3.18.jar:lib/org.springframework/spring-core-5.3.18.jar:lib/org.springframework/spring-jcl-5.3.18.jar",
++        "example286.driver.BinderDriver",
++        "decide;overlap-name;und;x6e616d65,x616765;x414745;x6e616d65",
++        "decide;overlap-age;und;x6e616d65,x616765;x414745;x616765",
++        "decide;overlap-upper-age;und;x6e616d65,x616765;x414745;x414745",
++        "decide;overlap-capital-name;und;x6e616d65,x616765;x414745;x4e616d65",
++        "decide;list-name;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6e616d65",
++        "decide;list-age;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x616765",
++        "decide;list-colour;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6661766f7572697465436f6c6f7572",
++        "decide;list-capital-colour;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x4661766f7572697465436f6c6f7572",
++        "decide;list-blank;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x20",
++        "decide;list-touchy;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x746f75636879",
++        "decide;both-name;und;x6e616d65,x6d79706172616d;x616765;x6e616d65",
++        "decide;both-myparam;und;x6e616d65,x6d79706172616d;x616765;x6d79706172616d",
++        "decide;both-age;und;x6e616d65,x6d79706172616d;x616765;x616765",
++        "decide;asterisks-name;und;x6e616d2a,x2a6f75636879;-;x6e616d65",
++        "decide;asterisks-touchy;und;x6e616d2a,x2a6f75636879;-;x746f75636879",
++        "decide;asterisks-age;und;x6e616d2a,x2a6f75636879;-;x616765",
++        "decide;asterisks-capital-name;und;x6e616d2a,x2a6f75636879;-;x4e616d65",
++        "decide;map-key1;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579315d",
++        "decide;map-key2;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579325d",
++        "decide;map-key3;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579335d",
++        "decide;map-key4;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579345d",
++        "decide;advisory-capital-age;und;-;x616765;x416765",
++        "decide;advisory-upper-age;und;-;x616765;x414745",
++        "decide;advisory-age;und;-;x616765;x616765",
++        "decide;advisory-name;und;-;x616765;x6e616d65",
++        "decide;wildcard-touchy;und;-;x544f5543482a;x746f75636879",
++        "decide;wildcard-capital-touchy;und;-;x544f5543482a;x546f75636879",
++        "decide;wildcard-upper-touchy;und;-;x544f5543482a;x544f55434859",
++        "decide;wildcard-name;und;-;x544f5543482a;x6e616d65",
++        "decide;map-only-key3;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b6b6579335d",
++        "decide;map-only-upper-key3;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b4b4559335d",
++        "decide;map-only-key1;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b6b6579315d",
++        "decide;upper-colour-root;und;-;x4641564f5552495445434f4c4f5552;x6661766f7572697465436f6c6f7572",
++        "decide;upper-colour-turkish;tr-TR;-;x4641564f5552495445434f4c4f5552;x6661766f7572697465436f6c6f7572",
++        "decide;sigma-exact;und;-;x64617461cea32a;x64617461cea378",
++        "bind;bind-overlap-upstream;und;x6e616d65,x616765;x414745;x6e616d65=x526f64,x616765=x333278",
++        "bind;bind-overlap-mutation;und;x6e616d65,x616765;x414745;x6e616d65=x526f64,x616765=x3332",
++        "bind;bind-list-upstream;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6e616d65=x526f64,x616765=x333278,x6661766f7572697465436f6c6f7572=x424c5545",
++        "bind;bind-list-capital-colour;und;-;x20,x09,x6661766f7572697465436f6c6f7572,-,x616765;x6e616d65=x526f64,x4661766f7572697465436f6c6f7572=x424c5545",
++        "bind;bind-both-upstream;und;x6e616d65,x6d79706172616d;x616765;x6e616d65=x526f64,x616765=x333278",
++        "bind;bind-asterisks-upstream;und;x6e616d2a,x2a6f75636879;-;x6e616d65=x526f64,x746f75636879=x526f64,x616765=x333278",
++        "bind;bind-map-upstream;und;x736f6d654d61705b6b6579315d,x736f6d654d61705b6b6579325d;x736f6d654d61705b274b455933275d,x536f6d654d61705b6b6579345d;x736f6d654d61705b6b6579315d=x76616c756531,x736f6d654d61705b276b657932275d=x76616c756532,x736f6d654d61705b6b6579335d=x76616c756533,x736f6d654d61705b276b657934275d=x76616c756534",
++        "bind;bind-advisory-alias;und;-;x616765;x6e616d65=x526f64,x416765=x3332",
++        "bind;bind-map-alias;und;-;x736f6d654d61705b274b455933275d;x736f6d654d61705b6b6579335d=x76616c756533,x736f6d654d61705b6b6579315d=x76616c756531",
++        "bind;bind-permitted;und;x6e616d2a,x2a6f75636879;-;x6e616d65=x526f64",
++        "bind;bind-indexed-alias;und;-;x616765;x4167655b305d=x3332"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.164,
++      "stdout": "controls/control-vulnerable-release-jdk25.stdout",
++      "stderr": "controls/control-vulnerable-release-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "c3dd338fad3cc9c7d7f213f3d32c6b5dc2f5b15363d72b6dc2936f0772e2e236",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-vulnerable-release.jar",
++            "sha256": "edb03ac1e3a17aa13589c58355bc5eaec7aa951d7b07ae62e8521aad6b26e43c",
++            "role": "adapter"
++          },
++          {
++            "path": "lib/org.springframework/spring-context-5.3.18.jar",
++            "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-beans-5.3.18.jar",
++            "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.18.jar",
++            "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.18.jar",
++            "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "driver",
++          "main": "example286.driver.BinderDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "04c11223a02b60d33af7fce5bd824d7a4615c9dd511d458cf4a9de1c743690fa"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "jvm": {
++            "version": "25.0.5",
++            "vendor": "Eclipse Adoptium",
++            "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem"
++          },
++          "locale": {
++            "initial": "en-US",
++            "pinned": "und"
++          },
++          "beanProperties": [
++            "age",
++            "class",
++            "favouriteColour",
++            "name",
++            "someMap",
++            "touchy"
++          ]
++        },
++        {
++          "probe": "overlap-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "overlap-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "overlap-upper-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "AGE",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "overlap-capital-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "field": "Name",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "list-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-colour",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "favouriteColour",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-capital-colour",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "FavouriteColour",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "list-blank",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": " ",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "list-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "field": "touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "both-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "both-myparam",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "myparam",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "both-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "asterisks-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "asterisks-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "asterisks-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "asterisks-capital-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "field": "Name",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "map-key1",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key1]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-key2",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key2]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-key3",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key3]",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "map-key4",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "field": "someMap[key4]",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "advisory-capital-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "Age",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "advisory-upper-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "AGE",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "advisory-age",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "age",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "advisory-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "wildcard-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "wildcard-capital-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "Touchy",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "wildcard-upper-touchy",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "TOUCHY",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "wildcard-name",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "TOUCH*"
++          ],
++          "field": "name",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-only-key3",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "field": "someMap[key3]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "map-only-upper-key3",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "field": "someMap[KEY3]",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "map-only-key1",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "field": "someMap[key1]",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "upper-colour-root",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "FAVOURITECOLOUR"
++          ],
++          "field": "favouriteColour",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "upper-colour-turkish",
++          "kind": "decide",
++          "locale": "tr-TR",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "FAVOURITECOLOUR"
++          ],
++          "field": "favouriteColour",
++          "outcome": "returned",
++          "allowed": true
++        },
++        {
++          "probe": "sigma-exact",
++          "kind": "decide",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "dataΣ*"
++          ],
++          "field": "dataΣx",
++          "outcome": "returned",
++          "allowed": false
++        },
++        {
++          "probe": "bind-overlap-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [
++            {
++              "field": "age",
++              "code": "typeMismatch"
++            }
++          ],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-overlap-mutation",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "age"
++          ],
++          "disallowedPatterns": [
++            "AGE"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 32,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-list-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ],
++            [
++              "favouriteColour",
++              "BLUE"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [
++            "favouriteColour",
++            "age"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-list-capital-colour",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            " ",
++            "\t",
++            "favouriteColour",
++            null,
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "FavouriteColour",
++              "BLUE"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": "BLUE",
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-both-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "name",
++            "myparam"
++          ],
++          "disallowedPatterns": [
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [
++            "age"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-asterisks-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "touchy",
++              "Rod"
++            ],
++            [
++              "age",
++              "32x"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": "Rod",
++            "someMap": {}
++          },
++          "suppressed": [
++            "age"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-map-upstream",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "someMap[key1]",
++            "someMap[key2]"
++          ],
++          "disallowedPatterns": [
++            "someMap['KEY3']",
++            "SomeMap[key4]"
++          ],
++          "values": [
++            [
++              "someMap[key1]",
++              "value1"
++            ],
++            [
++              "someMap['key2']",
++              "value2"
++            ],
++            [
++              "someMap[key3]",
++              "value3"
++            ],
++            [
++              "someMap['key4']",
++              "value4"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": null,
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {
++              "key1": "java.lang.String:value1",
++              "key2": "java.lang.String:value2"
++            }
++          },
++          "suppressed": [
++            "someMap[key3]",
++            "someMap[key4]"
++          ],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-advisory-alias",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "values": [
++            [
++              "name",
++              "Rod"
++            ],
++            [
++              "Age",
++              "32"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 32,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-map-alias",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "someMap['KEY3']"
++          ],
++          "values": [
++            [
++              "someMap[key3]",
++              "value3"
++            ],
++            [
++              "someMap[key1]",
++              "value1"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": null,
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {
++              "key1": "java.lang.String:value1",
++              "key3": "java.lang.String:value3"
++            }
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-permitted",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": [
++            "nam*",
++            "*ouchy"
++          ],
++          "disallowedPatterns": null,
++          "values": [
++            [
++              "name",
++              "Rod"
++            ]
++          ],
++          "outcome": "returned",
++          "state": {
++            "name": "Rod",
++            "age": 0,
++            "favouriteColour": null,
++            "touchy": null,
++            "someMap": {}
++          },
++          "suppressed": [],
++          "errors": [],
++          "globalErrors": 0
++        },
++        {
++          "probe": "bind-indexed-alias",
++          "kind": "bind",
++          "locale": "und",
++          "allowedPatterns": null,
++          "disallowedPatterns": [
++            "age"
++          ],
++          "values": [
++            [
++              "Age[0]",
++              "32"
++            ]
++          ],
++          "outcome": "threw",
++          "exception": "org.springframework.beans.InvalidPropertyException",
++          "message": "Invalid property 'Age[0]' of bean class [example286.adapter.ProtectedBean]: Property referenced in indexed property path 'Age[0]' is neither an array nor a List nor a Map; returned value was [0]"
++        }
++      ],
++      "control": "driver"
++    },
++    {
++      "kind": "verifier",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "org.springframework.validation.DataBinder#isAllowed(java.lang.String)",
++        "--classes",
++        "prepare/vulnerable-release/lib/org.springframework/spring-context-5.3.18.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-beans-5.3.18.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-core-5.3.18.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-jcl-5.3.18.jar",
++        "--assume",
++        "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++        "--assert",
++        "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++        "--nullable",
++        "allowedPatterns",
++        "--nullable",
++        "disallowedPatterns",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.008,
++      "stdout": "verifier/verifier.stdout",
++      "stderr": "verifier/verifier.stderr",
++      "identities": {
++        "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++        "commit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++        "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
++        "command": "prove",
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "engine": "native",
++        "gaps": "strict",
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 8
++        },
++        "timeout": 600,
++        "scope": {
++          "label": "original-bytecode",
++          "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
++          "method": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++          "revisions": {
++            "vulnerable-release": {
++              "commit": "707a24c48b21fc35e8be715afc80f020a24a9714",
++              "loadedFrom": "lib/org.springframework/spring-context-5.3.18.jar",
++              "classSha256": "07a432c9c0976911b7fdd1e10a93ab20a87f1e469c9a6c8b467baacacf72395e",
++              "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-context/5.3.18/spring-context-5.3.18.jar",
++              "parameters": {
++                "names": [
++                  "field"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            }
++          },
++          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++          "models": [],
++          "assumptions": [
++            {
++              "text": "the parameters are those of the adapter entry example286.adapter.BinderDecisionAdapter#allowed([Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Z: a binder (a subclass, ExposedDataBinder, whose decide(field) is one invokevirtual of the original protected isAllowed, overriding nothing) made with a fresh ProtectedBean target, configured by the original public setAllowedFields(allowedPatterns) then setDisallowedFields(disallowedPatterns), then asked isAllowed(field)",
++              "basis": "the brief (a subclass exposing the protected predicate delegates to the original bytecode) and both releases' bytecode, where isAllowed reads only getAllowedFields() and getDisallowedFields() (sources.lock.json)"
++            },
++            {
++              "text": "the default locale is Locale.ROOT throughout",
++              "basis": "the brief (pin the default locale explicitly): 5.3.19 lower-cases with String.toLowerCase(), the default locale's; the driver pins Locale.ROOT before any Spring class loads and prints it, and the oracle refuses a run without it. Another locale is another property: locale invariance is example 288's (CVE-2024-38820), and the probe upper-colour-turkish shows 5.3.19 failing this statement's alias under tr-TR"
++            },
++            {
++              "text": "field and every pattern are ASCII (U+0000 to U+007F), and field is canonical (PropertyAccessorUtils.canonicalPropertyName leaves it unchanged), as DataBinder.checkAllowedFields passes every name it asks isAllowed about; the arrays and their elements may be null",
++              "basis": "the advisory's alias is ASCII case (the first character of a field and of each nested field); the domain is fixed before any attempt. Outside it the statement's 'ignoring case' has no single meaning (String.toLowerCase is context-sensitive: the probe sigma-exact shows 5.3.19 allowing a non-ASCII field that 5.3.18 denies by exact match), which this packet records as a finding for review, not as part of this claim"
++            },
++            {
++              "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts: spring-context, spring-beans, spring-core, spring-jcl), and DataBinder's class initializer runs as written (LogFactory.getLog, whose LogAdapter probes for logging libraries with Class.forName)",
++              "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++            }
++          ]
++        },
++        "classpath": {
++          "vulnerable-release": [
++            {
++              "path": "lib/org.springframework/spring-context-5.3.18.jar",
++              "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c",
++              "role": "original"
++            },
++            {
++              "path": "lib/org.springframework/spring-beans-5.3.18.jar",
++              "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-core-5.3.18.jar",
++              "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-5.3.18.jar",
++              "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e",
++              "role": "dependency"
++            }
++          ]
++        },
++        "commits": {
++          "vulnerable-release": "707a24c48b21fc35e8be715afc80f020a24a9714"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC",
++          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++          "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
++          "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m"
++        },
++        "cwd": "the attempt directory",
++        "probe": {
++          "vulnerable-release": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.validation.DataBinder#isAllowed(java.lang.String)",
++              "--classes",
++              "prepare/vulnerable-release/lib/org.springframework/spring-context-5.3.18.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-beans-5.3.18.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-core-5.3.18.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-jcl-5.3.18.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.165,
++            "stdout": "verifier/probe-vulnerable-release.stdout",
++            "stderr": "verifier/probe-vulnerable-release.stderr",
++            "gaps": [
++              {
++                "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-25.0.5",
++                "kind": "jdk-constructor",
++                "call": "java.util.ArrayList.<init>()",
++                "sites": [
++                  "org.springframework.validation.DataBinder.<init>:162"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.Class.getClassLoader()Ljava/lang/ClassLoader;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.Class.getClassLoader()",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter.isPresent:107",
++                  "org.apache.commons.logging.LogAdapter$Log4jLog.<clinit>:155",
++                  "org.apache.commons.logging.LogAdapter$Log4jLog.<init>:163"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.Class.getName()Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.Class.getName()",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter$Log4jLog.<clinit>:152",
++                  "org.apache.commons.logging.LogAdapter$Slf4jLocationAwareLog.<clinit>:407",
++                  "org.apache.commons.logging.LogFactory.getLog:59"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:54",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:58",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:62",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:72"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:56",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:71"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.util.Optional.get()Ljava/lang/Object;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.util.Optional.get()",
++                "sites": [
++                  "org.springframework.util.ObjectUtils.unwrapOptional:173"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:org.apache.logging.log4j.spi.LoggerContext.getLogger(Ljava/lang/String;)Lorg/apache/logging/log4j/spi/ExtendedLogger;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "org.apache.logging.log4j.spi.LoggerContext.getLogger(java.lang.String)",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter$Log4jLog.<init>:165"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:org.slf4j.Logger.getName()Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "org.slf4j.Logger.getName()",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter$Slf4jLog.<init>:284"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.endsWith(Ljava/lang/String;)Z@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.endsWith(java.lang.String)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:54"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(I)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:43"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(II)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(int, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:52"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(java.lang.String)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:60"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;I)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(java.lang.String, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:65"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.util.Optional.isPresent()Z@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.util.Optional.isPresent()",
++                "sites": [
++                  "org.springframework.util.ObjectUtils.unwrapOptional:170"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.lang.Class.forName(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.lang.Class.forName(java.lang.String, boolean, java.lang.ClassLoader)",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter.isPresent:107"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.util.logging.Logger.getLogger(Ljava/lang/String;)Ljava/util/logging/Logger;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.logging.Logger.getLogger(java.lang.String)",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter$JavaUtilLog.<init>:509"
++                ]
++              },
++              {
++                "id": "jdk-static-method:org.apache.logging.log4j.LogManager.getContext(Ljava/lang/ClassLoader;Z)Lorg/apache/logging/log4j/spi/LoggerContext;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "org.apache.logging.log4j.LogManager.getContext(java.lang.ClassLoader, boolean)",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter$Log4jLog.<clinit>:155",
++                  "org.apache.commons.logging.LogAdapter$Log4jLog.<init>:163"
++                ]
++              },
++              {
++                "id": "jdk-static-method:org.slf4j.LoggerFactory.getLogger(Ljava/lang/String;)Lorg/slf4j/Logger;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "org.slf4j.LoggerFactory.getLogger(java.lang.String)",
++                "sites": [
++                  "org.apache.commons.logging.LogAdapter$Slf4jAdapter.createLocationAwareLog:130",
++                  "org.apache.commons.logging.LogAdapter$Slf4jAdapter.createLog:136"
++                ]
++              }
++            ]
++          }
++        }
++      },
++      "observations": [
++        {
++          "verdict": "unverifiable",
++          "target": "org.springframework.validation.DataBinder#isAllowed(java.lang.String)",
++          "domain": null,
++          "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++          "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "isAllowed is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of org.springframework.validation.DataBinder made by its constructor: org.springframework.validation.DataBinder has 2 constructors; an object made by one of several is not supported yet",
++          "statement": null,
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "org.springframework.validation.DataBinder#isAllowed(java.lang.String) cannot be verified: isAllowed is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of org.springframework.validation.DataBinder made by its constructor: org.springframework.validation.DataBinder has 2 constructors; an object made by one of several is not supported yet",
++              "uri": null,
++              "line": 792
++            }
++          ],
++          "output": "✗ org.springframework.validation.DataBinder#isAllowed(java.lang.String) cannot be verified: isAllowed is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of org.springframework.validation.DataBinder made by its constructor: org.springframework.validation.DataBinder has 2 constructors; an object made by one of several is not supported yet\n",
++          "work": "verifier/work"
++        }
++      ],
++      "control": null
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261115T011138Z-a521216c/records/verifier-output.txt
+@@ -0,0 +1 @@
++✗ org.springframework.validation.DataBinder#isAllowed(java.lang.String) cannot be verified: isAllowed is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of org.springframework.validation.DataBinder made by its constructor: org.springframework.validation.DataBinder has 2 constructors; an object made by one of several is not supported yet
+--- /dev/null
++++ b/examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/receipts/vulnerable-security/20261115T011138Z-a521216c/result.json
+@@ -0,0 +1,336 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "6e92dbd0fac380a6",
++    "format": 1,
++    "example": "286",
++    "statement": {
++      "approach": "target",
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "relation": "security",
++      "target": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++      "revisions": [
++        "vulnerable-release"
++      ],
++      "expected": "refuted",
++      "gaps": "strict",
++      "claim": {
++        "task": "vulnerable-security",
++        "kind": "prove",
++        "relation": "security",
++        "target": "org.springframework.validation.DataBinder#isAllowed(Ljava/lang/String;)Z",
++        "file": "claims/disallowed-field-denied-ignoring-case.json",
++        "sha256": "1da0be590804016ec54d23da6dea98dd030faf008037ce8b93796363f9e84abf",
++        "property": "disallowed-field-denied-ignoring-case",
++        "claimKind": "property",
++        "statement": "With a DataBinder configured through setAllowedFields(allowedPatterns) and setDisallowedFields(disallowedPatterns), isAllowed(field) returns false, and throws nothing, whenever some disallowed pattern, in its canonical form, matches field ignoring ASCII case, a '*' in the pattern matching any sequence (possibly empty) and every other character itself: the documented contract of 5.3.19 (matching against disallowed field patterns is case-insensitive) and the advisory's intent (a disallowed field is protected whatever the case of its characters). For ASCII names and patterns under the root locale. One property and one domain for the vulnerable release (expected refuted: the upstream regression, AGE disallowed, age allowed) and the fixed release (expected established). It is the decision lemma only: that a denied name can't change the bean is the separate protected-state claim (claims/protected-age-not-mutated.json), and nested property paths through a nested bean are a further obligation.",
++        "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++        "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++        "throws": [],
++        "nullable": [
++          "allowedPatterns",
++          "disallowedPatterns"
++        ],
++        "mayAlias": [],
++        "observations": [
++          "result",
++          "exception"
++        ],
++        "assumptions": [
++          {
++            "text": "the parameters are those of the adapter entry example286.adapter.BinderDecisionAdapter#allowed([Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Z: a binder (a subclass, ExposedDataBinder, whose decide(field) is one invokevirtual of the original protected isAllowed, overriding nothing) made with a fresh ProtectedBean target, configured by the original public setAllowedFields(allowedPatterns) then setDisallowedFields(disallowedPatterns), then asked isAllowed(field)",
++            "basis": "the brief (a subclass exposing the protected predicate delegates to the original bytecode) and both releases' bytecode, where isAllowed reads only getAllowedFields() and getDisallowedFields() (sources.lock.json)"
++          },
++          {
++            "text": "the default locale is Locale.ROOT throughout",
++            "basis": "the brief (pin the default locale explicitly): 5.3.19 lower-cases with String.toLowerCase(), the default locale's; the driver pins Locale.ROOT before any Spring class loads and prints it, and the oracle refuses a run without it. Another locale is another property: locale invariance is example 288's (CVE-2024-38820), and the probe upper-colour-turkish shows 5.3.19 failing this statement's alias under tr-TR"
++          },
++          {
++            "text": "field and every pattern are ASCII (U+0000 to U+007F), and field is canonical (PropertyAccessorUtils.canonicalPropertyName leaves it unchanged), as DataBinder.checkAllowedFields passes every name it asks isAllowed about; the arrays and their elements may be null",
++            "basis": "the advisory's alias is ASCII case (the first character of a field and of each nested field); the domain is fixed before any attempt. Outside it the statement's 'ignoring case' has no single meaning (String.toLowerCase is context-sensitive: the probe sigma-exact shows 5.3.19 allowing a non-ASCII field that 5.3.18 denies by exact match), which this packet records as a finding for review, not as part of this claim"
++          },
++          {
++            "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts: spring-context, spring-beans, spring-core, spring-jcl), and DataBinder's class initializer runs as written (LogFactory.getLog, whose LogAdapter probes for logging libraries with Class.forName)",
++            "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++          }
++        ],
++        "allowedChange": null,
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 8
++        },
++        "explicitBounds": {
++          "maxArrayLength": 8
++        },
++        "defaultBounds": [
++          "unwind"
++        ],
++        "models": [],
++        "plan": null,
++        "contracts": null,
++        "gaps": "strict",
++        "parent": null,
++        "controls": [
++          {
++            "id": "driver",
++            "kind": "driver",
++            "path": "replay/driver/example286/driver/BinderDriver.java",
++            "sha256": "5632c9cd86b5d425ffa0dd811c96267da0b01d5afae41229cb14a360c9d469c1"
++          },
++          {
++            "id": "oracle",
++            "kind": "oracle",
++            "path": "controls/oracle.py",
++            "sha256": "04c11223a02b60d33af7fce5bd824d7a4615c9dd511d458cf4a9de1c743690fa"
++          },
++          {
++            "id": "probes",
++            "kind": "probe",
++            "path": "controls/probes.json",
++            "sha256": "db8c9b46d8f6162d63ba2817121f586aefd5bd2eee9117bd6a3c6dac06a6e5ac"
++          }
++        ],
++        "key": "d28be1f2f6e9edcd"
++      }
++    },
++    "scope": {
++      "maxArrayLength": 8
++    },
++    "inputs": {
++      "patch": null,
++      "before": null,
++      "after": null,
++      "dependencies": "pinned in target.dependencies"
++    },
++    "target": {
++      "task": "vulnerable-security",
++      "sidecar": "9f8c22e359cb5705c87d7ae31708c04f938cb048a5c6e180733702432e57943d",
++      "revisions": {
++        "vulnerable-release": "707a24c48b21fc35e8be715afc80f020a24a9714"
++      },
++      "dependencies": [
++        {
++          "revision": "vulnerable-release",
++          "position": 0,
++          "role": "driver",
++          "sha256": "c3dd338fad3cc9c7d7f213f3d32c6b5dc2f5b15363d72b6dc2936f0772e2e236"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 1,
++          "role": "adapter",
++          "sha256": "edb03ac1e3a17aa13589c58355bc5eaec7aa951d7b07ae62e8521aad6b26e43c"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 2,
++          "role": "original",
++          "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c",
++          "coordinates": "org.springframework:spring-context:5.3.18"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 3,
++          "role": "dependency",
++          "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d",
++          "coordinates": "org.springframework:spring-beans:5.3.18"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 4,
++          "role": "dependency",
++          "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361",
++          "coordinates": "org.springframework:spring-core:5.3.18"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 5,
++          "role": "dependency",
++          "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e",
++          "coordinates": "org.springframework:spring-jcl:5.3.18"
++        }
++      ],
++      "jdks": [
++        "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "openjdk version \"25.0.5\" 2026-10-20 LTS"
++      ],
++      "files": {
++        "claims/disallowed-field-denied-ignoring-case.json": "1da0be590804016ec54d23da6dea98dd030faf008037ce8b93796363f9e84abf",
++        "controls/oracle.py": "04c11223a02b60d33af7fce5bd824d7a4615c9dd511d458cf4a9de1c743690fa",
++        "controls/probes.json": "db8c9b46d8f6162d63ba2817121f586aefd5bd2eee9117bd6a3c6dac06a6e5ac",
++        "replay/adapter/example286/adapter/BinderDecisionAdapter.java": "3c751a2c1a30171944022746cd321990f98c0b3b2be16d4960f2f83433a98975",
++        "replay/adapter/example286/adapter/BindingAdapter.java": "708dd4126be7b4051ddde0ac44bdecd5b65f5513179a55573de60a580b40aaf5",
++        "replay/adapter/example286/adapter/ExposedDataBinder.java": "7078b9eeab977262bbddf456a5a98a31051e5f320c6c6b21fdb98ccaceab2621",
++        "replay/adapter/example286/adapter/ProtectedBean.java": "cd7f42dec19cc30e12dc287f9282cabc2997762fc8ee010d3cb486cf2d6550c9",
++        "replay/driver/example286/driver/BinderDriver.java": "5632c9cd86b5d425ffa0dd811c96267da0b01d5afae41229cb14a360c9d469c1"
++      }
++    }
++  },
++  "attempt": {
++    "id": "20261115T011138Z-a521216c",
++    "claim": "6e92dbd0fac380a6",
++    "startedAt": "2026-11-15T01:11:38+00:00",
++    "seconds": 0.3,
++    "engine": "native",
++    "options": [
++      "prove",
++      "org.springframework.validation.DataBinder#isAllowed(java.lang.String)",
++      "--classes",
++      "prepare/vulnerable-release/lib/org.springframework/spring-context-5.3.18.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-beans-5.3.18.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-core-5.3.18.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-jcl-5.3.18.jar",
++      "--assume",
++      "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++      "--assert",
++      "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++      "--nullable",
++      "allowedPatterns",
++      "--nullable",
++      "disallowedPatterns",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "tools": {
++      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "71aff94533b32429aa316a7ad963cb94d69f0492975ecea89b00654971d7ccce",
++        "files": 1
++      }
++    },
++    "pipeline": {
++      "jobId": "20261115-005927-example-286-vulnerable-security-vf-027-r",
++      "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005927-example-286-vulnerable-security-vf-027-r"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "jvm-control vulnerable-release on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.165,
++        "stdout": "controls/control-vulnerable-release-jdk21.stdout",
++        "stderr": "controls/control-vulnerable-release-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control vulnerable-release on JDK 25",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.164,
++        "stdout": "controls/control-vulnerable-release-jdk25.stdout",
++        "stderr": "controls/control-vulnerable-release-jdk25.stderr"
++      },
++      {
++        "name": "verifier vulnerable-release on JDK 25",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.008,
++        "stdout": "verifier/verifier.stdout",
++        "stderr": "verifier/verifier.stderr"
++      }
++    ],
++    "workspace": null,
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "6e92dbd0fac380a6",
++    "attempt": "20261115T011138Z-a521216c",
++    "status": "unresolved",
++    "vacuous": false,
++    "expectation": "no",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++        "status": "unresolved",
++        "evidence": {
++          "harness": null,
++          "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++          "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++          "verdict": "unverifiable",
++          "domain": null,
++          "proof": null,
++          "problem": "isAllowed is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of org.springframework.validation.DataBinder made by its constructor: org.springframework.validation.DataBinder has 2 constructors; an object made by one of several is not supported yet",
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": null,
++          "replay": null
++        }
++      }
++    ],
++    "label": "⚠ Unverifiable",
++    "obligationKeys": {
++      "property": "properties"
++    }
++  },
++  "evidence": {
++    "existingTests": null,
++    "before": null,
++    "after": {
++      "file": "target.json",
++      "startLine": 21,
++      "code": "\"vulnerable-release\": {"
++    },
++    "casesTotal": null,
++    "purityViolations": [],
++    "trustedCalls": [],
++    "sarif": null,
++    "output": "records/verifier-output.txt",
++    "statement": null,
++    "counterexamples": [],
++    "proof": null,
++    "problem": "isAllowed is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of org.springframework.validation.DataBinder made by its constructor: org.springframework.validation.DataBinder has 2 constructors; an object made by one of several is not supported yet",
++    "domain": null,
++    "replay": null,
++    "property": {
++      "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++      "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))"
++    }
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "records/execution.json",
++        "sha256": "54a44cd4382f8bf8ad3d7a88f325dbb69b9226b4e9122b6b62b7d88159cc2981",
++        "bytes": 78665
++      },
++      {
++        "path": "records/verifier-output.txt",
++        "sha256": "480de09ee26adea41c4cda914dca581a93662adcea0cf0dde32884b810ffe499",
++        "bytes": 399
++      }
++    ]
++  }
++}

@@ -1,0 +1,221 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005928-example-305-finite-outcome-before-vf-027",
+  "title": "example 305 finite-outcome-before (VF-027 rerun): stops at its recorded refusal, a library-interface parameter",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.4s, peak 199.9 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005928-example-305-finite-outcome-before-vf-027.json",
+    "sha256": "1afdb3ef0fc49814f2a7a810265657fceecbcf3a842d7ece9158586acce1343b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005928-example-305-finite-outcome-before-vf-027",
+      "title": "example 305 finite-outcome-before (VF-027 rerun): stops at its recorded refusal, a library-interface parameter",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task finite-outcome-before of example 305 is resubmitted unchanged in its claim (key 46b0bb5f1f51a112, expected established, native, strict), predicting the refusal job 20261114-234213-example-305-finite-outcome-before-phase observed: a library-interface parameter. The step runs examples/tools/targets/workflow_refusal.py 305 finite-outcome-before, which runs python3 examples/tools/build.py 305 --task finite-outcome-before once (its output indented) and exits 0 only when the claim key is still 46b0bb5f1f51a112, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/records/refusals/finite-outcome-before.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/claims/finite-outcome.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/records/refusals/finite-outcome-before.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 305 task finite-outcome-before and exits 0: the attempt stops at the recorded refusal (a library-interface parameter) under claim 46b0bb5f1f51a112; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:28+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the same preparation and controls as the observed run 20261114-234213-example-305-finite-outcome-before-phase, which reached the refusal in 5 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 305 task finite-outcome-before: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-before",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:12:11+00:00",
+  "finishedAt": "2026-11-15T01:12:16+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234213-example-305-finite-outcome-before-phase, which reached the refusal in 5 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 209629184,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 4.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task finite-outcome-before: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-before",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.409,
+      "cpuSeconds": 3.979,
+      "cpuThrottledSeconds": 0.158,
+      "peakMemoryBytes": 209629184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-finite-outcom.log",
+        "lines": 3,
+        "bytes": 637,
+        "sha256": "43b4a694b212fec1a497264fd2903439a0abcc9f3be2af43effa6eceef220aaa",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: refused as predicted (VF-027; verifier; records/refusals/finite-outcome-before.json): unresolved at the recorded refusal, receipt receipts/finite-outcome-before/20261115T011216Z-6b224471",
+          "groups": [
+            "305",
+            "finite-outcome-before",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task finite-outcome-before (target route)",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/finite-outcome-before/20261115T011216Z-6b224471/result.json",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: refused as predicted (VF-027; verifier; records/refusals/finite-outcome-before.json): unresolved at the recorded refusal, receipt receipts/finite-outcome-before/20261115T011216Z-6b224471"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/plan.json",
+      "change": "added",
+      "bytes": 14021,
+      "sha256": "3465d0bc9bf46ffb06fcecd36c2e883484983b4d7c69e8f1f2929f7635f953b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/records/execution.json",
+      "change": "added",
+      "bytes": 29734,
+      "sha256": "b10bc8a949eed394e0149cf479f56cff024af75aea51b3f34ddd75a9d5ee0a29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 362,
+      "sha256": "966ed3f7c045469822bd505f553c09bf00336bfc1153f10a1a9371895a2d3d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/result.json",
+      "change": "added",
+      "bytes": 13850,
+      "sha256": "5405449bc95c1e94f74095e3372124d834460ec50052c69d6309e090affbf8f0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/records/verifier-output.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/finite-outcome-before/20261115T011216Z-6b224471/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

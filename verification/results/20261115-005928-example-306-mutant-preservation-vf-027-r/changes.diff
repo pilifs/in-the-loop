@@ -1,0 +1,2622 @@
+--- /dev/null
++++ b/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/plan.json
+@@ -0,0 +1,321 @@
++{
++  "plan": {
++    "example": "306",
++    "task": "mutant-preservation",
++    "kind": "equivalence",
++    "relation": "preservation",
++    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++    "revisions": [
++      "release-after",
++      "mutant"
++    ],
++    "claim": {
++      "task": "mutant-preservation",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++      "file": "claims/simple-match-preservation.json",
++      "sha256": "a1687c4fcd05a1a1a47b8d0ef383c4490e1e247c2d673cca7c12f84ec3d17073",
++      "property": "simple-match-decision-preserved",
++      "claimKind": "preservation",
++      "statement": "Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim.",
++      "assume": null,
++      "assert": null,
++      "throws": [],
++      "nullable": [
++        "pattern",
++        "str"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
++          "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
++        },
++        {
++          "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
++          "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
++        },
++        {
++          "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
++          "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 6
++      },
++      "explicitBounds": {
++        "maxArrayLength": 6,
++        "unwind": 16
++      },
++      "defaultBounds": [],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "glob-oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++        },
++        {
++          "id": "simple-match-driver",
++          "kind": "driver",
++          "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
++          "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
++        },
++        {
++          "id": "simple-match-probes",
++          "kind": "probe",
++          "path": "replay/probes.json",
++          "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
++        },
++        {
++          "id": "drop-prefix-mutant",
++          "kind": "mutation",
++          "path": "controls/drop-prefix.patch",
++          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++        }
++      ],
++      "key": "51d7f1127b4df870"
++    },
++    "prerequisites": [
++      "mutant-replay"
++    ],
++    "artifacts": [
++      {
++        "revision": "release-after",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-core:5.3.7",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
++            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.7",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
++            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
++          }
++        ],
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      },
++      {
++        "revision": "mutant",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "mutant": {
++          "base": {
++            "revision": "release-after",
++            "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++            "published": [
++              {
++                "coordinates": "org.springframework:spring-core:5.3.7",
++                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
++                "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
++              },
++              {
++                "coordinates": "org.springframework:spring-jcl:5.3.7",
++                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
++                "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
++              }
++            ]
++          },
++          "patch": {
++            "path": "controls/drop-prefix.patch",
++            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++          },
++          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
++        },
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac",
++        "git",
++        "python3",
++        "jvmcontract"
++      ],
++      "optional": []
++    },
++    "engine": "native",
++    "gaps": "strict",
++    "expected": "refuted",
++    "outputs": {
++      "receipts": "receipts/mutant-preservation"
++    },
++    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005928-example-306-mutant-preservation-vf-027-r/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith",
++    "network": true
++  },
++  "inputs": {
++    "example": "306",
++    "task": "mutant-preservation",
++    "kind": "equivalence",
++    "relation": "preservation",
++    "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++    "revisions": [
++      "release-after",
++      "mutant"
++    ],
++    "claim": {
++      "task": "mutant-preservation",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++      "file": "claims/simple-match-preservation.json",
++      "sha256": "a1687c4fcd05a1a1a47b8d0ef383c4490e1e247c2d673cca7c12f84ec3d17073",
++      "property": "simple-match-decision-preserved",
++      "claimKind": "preservation",
++      "statement": "Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim.",
++      "assume": null,
++      "assert": null,
++      "throws": [],
++      "nullable": [
++        "pattern",
++        "str"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
++          "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
++        },
++        {
++          "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
++          "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
++        },
++        {
++          "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
++          "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 6
++      },
++      "explicitBounds": {
++        "maxArrayLength": 6,
++        "unwind": 16
++      },
++      "defaultBounds": [],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "glob-oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++        },
++        {
++          "id": "simple-match-driver",
++          "kind": "driver",
++          "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
++          "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
++        },
++        {
++          "id": "simple-match-probes",
++          "kind": "probe",
++          "path": "replay/probes.json",
++          "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
++        },
++        {
++          "id": "drop-prefix-mutant",
++          "kind": "mutation",
++          "path": "controls/drop-prefix.patch",
++          "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++        }
++      ],
++      "key": "51d7f1127b4df870"
++    },
++    "artifacts": [
++      {
++        "revision": "release-after",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++        "published": [
++          {
++            "coordinates": "org.springframework:spring-core:5.3.7",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
++            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.7",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
++            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
++          }
++        ],
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      },
++      {
++        "revision": "mutant",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-framework",
++        "mutant": {
++          "base": {
++            "revision": "release-after",
++            "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++            "published": [
++              {
++                "coordinates": "org.springframework:spring-core:5.3.7",
++                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
++                "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8"
++              },
++              {
++                "coordinates": "org.springframework:spring-jcl:5.3.7",
++                "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.7/spring-jcl-5.3.7.jar",
++                "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa"
++              }
++            ]
++          },
++          "patch": {
++            "path": "controls/drop-prefix.patch",
++            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++          },
++          "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
++        },
++        "adapters": [],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "adapters": []
++  },
++  "key": "0a5b26dd0822d2601b2b395b7169018cd96f66e888c16b7d9b24c1dc0e24c8cb"
++}
+--- /dev/null
++++ b/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/records/execution.json
+@@ -0,0 +1,1961 @@
++{
++  "task": "mutant-preservation",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "release-after",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:lib/org.springframework/spring-core-5.3.7.jar:lib/org.springframework/spring-jcl-5.3.7.jar",
++        "inloop.p306.SimpleMatchDriver",
++        "null",
++        "u0078",
++        "u002a",
++        "u",
++        "u0061,0062,0063,002a",
++        "u0061,0062",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "u0061,0062,0063,002a",
++        "u0078,0062,0063,0064,0065,0066",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0063",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0064",
++        "u0061,002a,002a,0063",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u00e9,0078",
++        "u0078",
++        "null",
++        "null",
++        "null",
++        "u",
++        "u",
++        "u",
++        "u0061",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0064",
++        "u0061,0062,0063",
++        "u0061,0062",
++        "u002a,0063",
++        "u0061,0062,0063",
++        "u002a,0063",
++        "u0061,0062,0064",
++        "u002a",
++        "u0061,006e,0079,0074,0068,0069,006e,0067",
++        "u0061,002a,0063",
++        "u0061,0063",
++        "u0061,0062,002a",
++        "u0061,0062",
++        "u0061,002a",
++        "u",
++        "u0061,002a",
++        "u0061,002a",
++        "u002a,002a",
++        "u",
++        "u002a,0062,002a",
++        "u0061,0062,0063",
++        "u002a,0062,002a",
++        "u0061,0063,0064",
++        "u002a,0062,0063,002a",
++        "u0061,0062,0078,0062,0063,0078",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0063",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u0065,0078",
++        "u00e9,002a",
++        "u00c9,0078",
++        "u0041,0042,0043,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "ud83d,de00,002a",
++        "ud83d,de00,0021",
++        "ud83d,002a",
++        "ud83d,de00",
++        "ud800,002a",
++        "ud800,0078",
++        "ud800,002a",
++        "udc00,0078",
++        "u0000,002a",
++        "u0000",
++        "u002a,00e9",
++        "u0078,00e9"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-release-after-jdk21.stdout",
++      "stderr": "controls/control-release-after-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "e86c2ba709619d343f8fadf3c3d0212cab2f59cc8c262e8034c037ea385d5656",
++            "role": "driver"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.7.jar",
++            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.7.jar",
++            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "inloop.p306.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "pattern": "null",
++          "str": "u0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0078,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a,002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00e9,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0078",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "null",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u",
++          "str": "u0061",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u0061,006e,0079,0074,0068,0069,006e,0067",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u0061,002a",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0063,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0062,0063,002a",
++          "str": "u0061,0062,0078,0062,0063,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u0065,0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00c9,0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0041,0042,0043,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "ud83d,de00,002a",
++          "str": "ud83d,de00,0021",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud83d,002a",
++          "str": "ud83d,de00",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "ud800,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "udc00,0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0000,002a",
++          "str": "u0000",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,00e9",
++          "str": "u0078,00e9",
++          "outcome": "returned",
++          "value": true
++        }
++      ],
++      "control": "simple-match-driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "release-after",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:lib/org.springframework/spring-core-5.3.7.jar:lib/org.springframework/spring-jcl-5.3.7.jar",
++        "inloop.p306.SimpleMatchDriver",
++        "null",
++        "u0078",
++        "u002a",
++        "u",
++        "u0061,0062,0063,002a",
++        "u0061,0062",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "u0061,0062,0063,002a",
++        "u0078,0062,0063,0064,0065,0066",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0063",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0064",
++        "u0061,002a,002a,0063",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u00e9,0078",
++        "u0078",
++        "null",
++        "null",
++        "null",
++        "u",
++        "u",
++        "u",
++        "u0061",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0064",
++        "u0061,0062,0063",
++        "u0061,0062",
++        "u002a,0063",
++        "u0061,0062,0063",
++        "u002a,0063",
++        "u0061,0062,0064",
++        "u002a",
++        "u0061,006e,0079,0074,0068,0069,006e,0067",
++        "u0061,002a,0063",
++        "u0061,0063",
++        "u0061,0062,002a",
++        "u0061,0062",
++        "u0061,002a",
++        "u",
++        "u0061,002a",
++        "u0061,002a",
++        "u002a,002a",
++        "u",
++        "u002a,0062,002a",
++        "u0061,0062,0063",
++        "u002a,0062,002a",
++        "u0061,0063,0064",
++        "u002a,0062,0063,002a",
++        "u0061,0062,0078,0062,0063,0078",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0063",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u0065,0078",
++        "u00e9,002a",
++        "u00c9,0078",
++        "u0041,0042,0043,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "ud83d,de00,002a",
++        "ud83d,de00,0021",
++        "ud83d,002a",
++        "ud83d,de00",
++        "ud800,002a",
++        "ud800,0078",
++        "ud800,002a",
++        "udc00,0078",
++        "u0000,002a",
++        "u0000",
++        "u002a,00e9",
++        "u0078,00e9"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-release-after-jdk25.stdout",
++      "stderr": "controls/control-release-after-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "e86c2ba709619d343f8fadf3c3d0212cab2f59cc8c262e8034c037ea385d5656",
++            "role": "driver"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.7.jar",
++            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.7.jar",
++            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "inloop.p306.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "pattern": "null",
++          "str": "u0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0078,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a,002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00e9,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0078",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "null",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u",
++          "str": "u0061",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u0061,006e,0079,0074,0068,0069,006e,0067",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u0061,002a",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0063,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0062,0063,002a",
++          "str": "u0061,0062,0078,0062,0063,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u0065,0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00c9,0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0041,0042,0043,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "ud83d,de00,002a",
++          "str": "ud83d,de00,0021",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud83d,002a",
++          "str": "ud83d,de00",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "ud800,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "udc00,0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0000,002a",
++          "str": "u0000",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,00e9",
++          "str": "u0078,00e9",
++          "outcome": "returned",
++          "value": true
++        }
++      ],
++      "control": "simple-match-driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "mutant",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:mutant/spring-core-5.3.7.jar:lib/org.springframework/spring-jcl-5.3.7.jar",
++        "inloop.p306.SimpleMatchDriver",
++        "null",
++        "u0078",
++        "u002a",
++        "u",
++        "u0061,0062,0063,002a",
++        "u0061,0062",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "u0061,0062,0063,002a",
++        "u0078,0062,0063,0064,0065,0066",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0063",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0064",
++        "u0061,002a,002a,0063",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u00e9,0078",
++        "u0078",
++        "null",
++        "null",
++        "null",
++        "u",
++        "u",
++        "u",
++        "u0061",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0064",
++        "u0061,0062,0063",
++        "u0061,0062",
++        "u002a,0063",
++        "u0061,0062,0063",
++        "u002a,0063",
++        "u0061,0062,0064",
++        "u002a",
++        "u0061,006e,0079,0074,0068,0069,006e,0067",
++        "u0061,002a,0063",
++        "u0061,0063",
++        "u0061,0062,002a",
++        "u0061,0062",
++        "u0061,002a",
++        "u",
++        "u0061,002a",
++        "u0061,002a",
++        "u002a,002a",
++        "u",
++        "u002a,0062,002a",
++        "u0061,0062,0063",
++        "u002a,0062,002a",
++        "u0061,0063,0064",
++        "u002a,0062,0063,002a",
++        "u0061,0062,0078,0062,0063,0078",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0063",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u0065,0078",
++        "u00e9,002a",
++        "u00c9,0078",
++        "u0041,0042,0043,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "ud83d,de00,002a",
++        "ud83d,de00,0021",
++        "ud83d,002a",
++        "ud83d,de00",
++        "ud800,002a",
++        "ud800,0078",
++        "ud800,002a",
++        "udc00,0078",
++        "u0000,002a",
++        "u0000",
++        "u002a,00e9",
++        "u0078,00e9"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-mutant-jdk21.stdout",
++      "stderr": "controls/control-mutant-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "mutant:b1280ffeaaa3d666606fbe92f34219303fa5bbd7+f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "e86c2ba709619d343f8fadf3c3d0212cab2f59cc8c262e8034c037ea385d5656",
++            "role": "driver"
++          },
++          {
++            "path": "mutant/spring-core-5.3.7.jar",
++            "sha256": "329cbf4b83b1e7601a6bc57a160d4ef2e4cfa7c113c3e93d3d79145725545ff2",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.7.jar",
++            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "inloop.p306.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "pattern": "null",
++          "str": "u0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0078,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a,002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00e9,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0078",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "null",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u",
++          "str": "u0061",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u0061,006e,0079,0074,0068,0069,006e,0067",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u0061,002a",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0063,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0062,0063,002a",
++          "str": "u0061,0062,0078,0062,0063,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u0065,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00c9,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0041,0042,0043,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud83d,de00,002a",
++          "str": "ud83d,de00,0021",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud83d,002a",
++          "str": "ud83d,de00",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "ud800,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "udc00,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0000,002a",
++          "str": "u0000",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,00e9",
++          "str": "u0078,00e9",
++          "outcome": "returned",
++          "value": true
++        }
++      ],
++      "control": "simple-match-driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "mutant",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:mutant/spring-core-5.3.7.jar:lib/org.springframework/spring-jcl-5.3.7.jar",
++        "inloop.p306.SimpleMatchDriver",
++        "null",
++        "u0078",
++        "u002a",
++        "u",
++        "u0061,0062,0063,002a",
++        "u0061,0062",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "u0061,0062,0063,002a",
++        "u0078,0062,0063,0064,0065,0066",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0063",
++        "u0061,002a,0063",
++        "u0061,0062,0062,0062,0064",
++        "u0061,002a,002a,0063",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u00e9,0078",
++        "u0078",
++        "null",
++        "null",
++        "null",
++        "u",
++        "u",
++        "u",
++        "u0061",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0063",
++        "u0061,0062,0064",
++        "u0061,0062,0063",
++        "u0061,0062",
++        "u002a,0063",
++        "u0061,0062,0063",
++        "u002a,0063",
++        "u0061,0062,0064",
++        "u002a",
++        "u0061,006e,0079,0074,0068,0069,006e,0067",
++        "u0061,002a,0063",
++        "u0061,0063",
++        "u0061,0062,002a",
++        "u0061,0062",
++        "u0061,002a",
++        "u",
++        "u0061,002a",
++        "u0061,002a",
++        "u002a,002a",
++        "u",
++        "u002a,0062,002a",
++        "u0061,0062,0063",
++        "u002a,0062,002a",
++        "u0061,0063,0064",
++        "u002a,0062,0063,002a",
++        "u0061,0062,0078,0062,0063,0078",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0063",
++        "u0061,002a,0062,002a,0063",
++        "u0061,0078,0062,0079,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0064",
++        "u0061,0062,0063,002a",
++        "u0061,0062,0063",
++        "u00e9,002a",
++        "u0065,0078",
++        "u00e9,002a",
++        "u00c9,0078",
++        "u0041,0042,0043,002a",
++        "u0061,0062,0063,0064,0065,0066",
++        "ud83d,de00,002a",
++        "ud83d,de00,0021",
++        "ud83d,002a",
++        "ud83d,de00",
++        "ud800,002a",
++        "ud800,0078",
++        "ud800,002a",
++        "udc00,0078",
++        "u0000,002a",
++        "u0000",
++        "u002a,00e9",
++        "u0078,00e9"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-mutant-jdk25.stdout",
++      "stderr": "controls/control-mutant-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "mutant:b1280ffeaaa3d666606fbe92f34219303fa5bbd7+f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "e86c2ba709619d343f8fadf3c3d0212cab2f59cc8c262e8034c037ea385d5656",
++            "role": "driver"
++          },
++          {
++            "path": "mutant/spring-core-5.3.7.jar",
++            "sha256": "329cbf4b83b1e7601a6bc57a160d4ef2e4cfa7c113c3e93d3d79145725545ff2",
++            "role": "original"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.7.jar",
++            "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "simple-match-driver",
++          "main": "inloop.p306.SimpleMatchDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "pattern": "null",
++          "str": "u0078",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0078,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0062,0062,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a,002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00e9,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0078",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "null",
++          "str": "null",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u",
++          "str": "u0061",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0063",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a",
++          "str": "u0061,006e,0079,0074,0068,0069,006e,0067",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0063",
++          "str": "u0061,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,002a",
++          "str": "u0061,0062",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,002a",
++          "str": "u0061,002a",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,002a",
++          "str": "u",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,0062,002a",
++          "str": "u0061,0063,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u002a,0062,0063,002a",
++          "str": "u0061,0062,0078,0062,0063,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,002a,0062,002a,0063",
++          "str": "u0061,0078,0062,0079,0064",
++          "outcome": "returned",
++          "value": false
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0064",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0061,0062,0063,002a",
++          "str": "u0061,0062,0063",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u0065,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u00e9,002a",
++          "str": "u00c9,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0041,0042,0043,002a",
++          "str": "u0061,0062,0063,0064,0065,0066",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud83d,de00,002a",
++          "str": "ud83d,de00,0021",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud83d,002a",
++          "str": "ud83d,de00",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "ud800,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "ud800,002a",
++          "str": "udc00,0078",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u0000,002a",
++          "str": "u0000",
++          "outcome": "returned",
++          "value": true
++        },
++        {
++          "pattern": "u002a,00e9",
++          "str": "u0078,00e9",
++          "outcome": "returned",
++          "value": true
++        }
++      ],
++      "control": "simple-match-driver"
++    },
++    {
++      "kind": "verifier",
++      "revision": null,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "equivalence",
++        "--before",
++        "verifier/classes/release-after",
++        "--after",
++        "verifier/classes/mutant",
++        "--target",
++        "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)",
++        "--classpath",
++        "prepare/mutant/lib/org.springframework/spring-jcl-5.3.7.jar",
++        "--nullable",
++        "pattern",
++        "--nullable",
++        "str",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "6",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.064,
++      "stdout": "verifier/verifier.stdout",
++      "stderr": "verifier/verifier.stderr",
++      "identities": {
++        "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++        "commit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++        "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
++        "command": "equivalence",
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "engine": "native",
++        "gaps": "strict",
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 6
++        },
++        "timeout": 600,
++        "scope": {
++          "label": "constructed-mutation",
++          "meaning": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
++          "method": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++          "revisions": {
++            "release-after": {
++              "commit": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++              "loadedFrom": "lib/org.springframework/spring-core-5.3.7.jar",
++              "classSha256": "0c1ac5ea56849798dbfaab8947e77be665eb44add955001e3b8fa1bec7ade442",
++              "origin": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.7/spring-core-5.3.7.jar",
++              "parameters": {
++                "names": [
++                  "pattern",
++                  "str"
++                ],
++                "recordedIn": "LocalVariableTable"
++              }
++            },
++            "mutant": {
++              "commit": "mutant:b1280ffeaaa3d666606fbe92f34219303fa5bbd7+f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734",
++              "loadedFrom": "mutant/spring-core-5.3.7.jar",
++              "classSha256": "babd4927653818eaf1a423e81adeddd0e3a73098db457e1e164b4bda768bac19",
++              "origin": "constructed: lib/org.springframework/spring-core-5.3.7.jar with 1 class(es) recompiled from spring-core/src/main/java/org/springframework/util/PatternMatchUtils.java at b1280ffeaaa3d666606fbe92f34219303fa5bbd7, after the patch controls/drop-prefix.patch (sha256 f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734)",
++              "parameters": {
++                "names": [
++                  "pattern",
++                  "str"
++                ],
++                "recordedIn": "LocalVariableTable"
++              },
++              "mutant": {
++                "base": {
++                  "revision": "release-after",
++                  "identity": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++                  "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from"
++                },
++                "patch": {
++                  "path": "controls/drop-prefix.patch",
++                  "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++                },
++                "description": "simpleMatch's leading-literal check (pattern.startsWith(str.substring(0, firstIndex))) is dropped, so a pattern whose literal prefix differs from the string's matches when the rest does. It breaks decision preservation and the Javadoc oracle at \"abc*\" against \"xbcdef\"."
++              }
++            }
++          },
++          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++          "models": [],
++          "assumptions": [
++            {
++              "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
++              "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
++            },
++            {
++              "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
++              "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
++            },
++            {
++              "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
++              "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
++            }
++          ]
++        },
++        "classpath": {
++          "release-after": [
++            {
++              "path": "lib/org.springframework/spring-core-5.3.7.jar",
++              "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8",
++              "role": "original"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-5.3.7.jar",
++              "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++              "role": "dependency"
++            }
++          ],
++          "mutant": [
++            {
++              "path": "mutant/spring-core-5.3.7.jar",
++              "sha256": "329cbf4b83b1e7601a6bc57a160d4ef2e4cfa7c113c3e93d3d79145725545ff2",
++              "role": "original"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-5.3.7.jar",
++              "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++              "role": "dependency"
++            }
++          ]
++        },
++        "commits": {
++          "release-after": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++          "mutant": "mutant:b1280ffeaaa3d666606fbe92f34219303fa5bbd7+f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC",
++          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++          "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
++          "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m"
++        },
++        "cwd": "the attempt directory",
++        "classes": {
++          "release-after": {
++            "dir": "verifier/classes/release-after",
++            "from": "prepare/release-after/lib/org.springframework/spring-core-5.3.7.jar",
++            "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8",
++            "entries": 987
++          },
++          "mutant": {
++            "dir": "verifier/classes/mutant",
++            "from": "prepare/mutant/mutant/spring-core-5.3.7.jar",
++            "sha256": "329cbf4b83b1e7601a6bc57a160d4ef2e4cfa7c113c3e93d3d79145725545ff2",
++            "entries": 987
++          }
++        },
++        "probe": {
++          "release-after": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)",
++              "--classes",
++              "prepare/release-after/lib/org.springframework/spring-core-5.3.7.jar",
++              "--classpath",
++              "prepare/release-after/lib/org.springframework/spring-jcl-5.3.7.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.064,
++            "stdout": "verifier/probe-release-after.stdout",
++            "stderr": "verifier/probe-release-after.stderr",
++            "gaps": [
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:54",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:58",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:62",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:72"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:56",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:71"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.endsWith(Ljava/lang/String;)Z@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.endsWith(java.lang.String)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:54"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(I)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:43"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(II)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(int, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:52"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(java.lang.String)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:60"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;I)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(java.lang.String, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:65"
++                ]
++              }
++            ]
++          },
++          "mutant": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)",
++              "--classes",
++              "prepare/mutant/mutant/spring-core-5.3.7.jar",
++              "--classpath",
++              "prepare/mutant/lib/org.springframework/spring-jcl-5.3.7.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.064,
++            "stdout": "verifier/probe-mutant.stdout",
++            "stderr": "verifier/probe-mutant.stderr",
++            "gaps": [
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(I)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:54",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:58",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:62",
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:71"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:56"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.endsWith(Ljava/lang/String;)Z@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.endsWith(java.lang.String)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:54"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(I)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:43"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(II)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(int, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:52"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(java.lang.String)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:60"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.String.indexOf(Ljava/lang/String;I)I@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.String.indexOf(java.lang.String, int)",
++                "sites": [
++                  "org.springframework.util.PatternMatchUtils.simpleMatch:65"
++                ]
++              }
++            ]
++          }
++        }
++      },
++      "observations": [
++        {
++          "verdict": "unverifiable",
++          "target": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)",
++          "domain": null,
++          "counterexample": null,
++          "proof": null,
++          "problem": "--nullable pattern: pattern is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another",
++          "statement": null,
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String) cannot be verified: --nullable pattern: pattern is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another",
++              "uri": null,
++              "line": 39
++            }
++          ],
++          "output": "✗ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String) cannot be verified: --nullable pattern: pattern is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another\n",
++          "work": "verifier/work"
++        }
++      ],
++      "control": null
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/records/verifier-output.txt
+@@ -0,0 +1 @@
++✗ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String) cannot be verified: --nullable pattern: pattern is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another
+--- /dev/null
++++ b/examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/result.json
+@@ -0,0 +1,327 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "50ed039d2aac18c2",
++    "format": 1,
++    "example": "306",
++    "statement": {
++      "approach": "target",
++      "task": "mutant-preservation",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++      "revisions": [
++        "release-after",
++        "mutant"
++      ],
++      "expected": "refuted",
++      "gaps": "strict",
++      "claim": {
++        "task": "mutant-preservation",
++        "kind": "equivalence",
++        "relation": "preservation",
++        "target": "org.springframework.util.PatternMatchUtils#simpleMatch(Ljava/lang/String;Ljava/lang/String;)Z",
++        "file": "claims/simple-match-preservation.json",
++        "sha256": "a1687c4fcd05a1a1a47b8d0ef383c4490e1e247c2d673cca7c12f84ec3d17073",
++        "property": "simple-match-decision-preserved",
++        "claimKind": "preservation",
++        "statement": "Decision preservation of PatternMatchUtils.simpleMatch(String pattern, String str) between spring-core 5.3.6 and 5.3.7 (the commits 27bfcbbc and db9a10bf, whose PatternMatchUtils.java the two releases carry unchanged): for every pattern and every str, each null or a String of at most 6 UTF-16 code units, every code unit any of the 65,536 values (an isolated surrogate, a NUL and '*' included), both revisions return the same boolean, or throw the same exception class. No allowed-change region: the patch is meant to change no decision. Nothing about case, locale or Unicode normalization is claimed; the method compares code units, and so does the claim.",
++        "assume": null,
++        "assert": null,
++        "throws": [],
++        "nullable": [
++          "pattern",
++          "str"
++        ],
++        "mayAlias": [],
++        "observations": [
++          "result",
++          "exception"
++        ],
++        "assumptions": [
++          {
++            "text": "maxArrayLength bounds each String's length in UTF-16 code units, as the tool's own checker reads it for a String parameter (lib/README.md: a String of at most the check's bound of code units, never cut to it).",
++            "basis": "The bound is part of the claim, frozen here before any attempt. 6 holds every probe shape of the brief except abcdef and xbcdef (replay only): a prefix of 3 before a star and 3 after it, two stars, and a supplementary character's surrogate pair beside a star. A proof over unbounded strings, by induction, is a separate and stronger claim."
++          },
++          {
++            "text": "unwind 16 covers the loop and the recursion at this bound: each recursive call drops at least one code unit of pattern (the prefix branch drops firstIndex >= 1, the leading-star branches drop the star or more), so the recursion is at most 7 deep, and the while loop over str.indexOf(part) runs at most 7 times per call.",
++            "basis": "Read from the method's source at both revisions (the recursion and loop structure is identical: the patch changes one expression). An unwinding the check can't complete leaves the attempt unresolved, never established."
++          },
++          {
++            "text": "The JDK's String methods simpleMatch calls (indexOf, substring, startsWith, endsWith, equals, length, isEmpty) behave as java.lang.String specifies, on the JDK each attempt names.",
++            "basis": "Both revisions call the same JDK; the claim compares them, and needs no model of these methods beyond what the checker states it reproduces, models or refuses (a gap under gaps strict is a refusal, not an assumption)."
++          }
++        ],
++        "allowedChange": null,
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 6
++        },
++        "explicitBounds": {
++          "maxArrayLength": 6,
++          "unwind": 16
++        },
++        "defaultBounds": [],
++        "models": [],
++        "plan": null,
++        "contracts": null,
++        "gaps": "strict",
++        "parent": null,
++        "controls": [
++          {
++            "id": "glob-oracle",
++            "kind": "oracle",
++            "path": "controls/oracle.py",
++            "sha256": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e"
++          },
++          {
++            "id": "simple-match-driver",
++            "kind": "driver",
++            "path": "replay/driver/inloop/p306/SimpleMatchDriver.java",
++            "sha256": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d"
++          },
++          {
++            "id": "simple-match-probes",
++            "kind": "probe",
++            "path": "replay/probes.json",
++            "sha256": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
++          },
++          {
++            "id": "drop-prefix-mutant",
++            "kind": "mutation",
++            "path": "controls/drop-prefix.patch",
++            "sha256": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734"
++          }
++        ],
++        "key": "51d7f1127b4df870"
++      }
++    },
++    "scope": {
++      "maxArrayLength": 6,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": null,
++      "before": null,
++      "after": null,
++      "dependencies": "pinned in target.dependencies"
++    },
++    "target": {
++      "task": "mutant-preservation",
++      "sidecar": "c01ff2205da2d8537d46fcaec02358a09b2005948caf6e6ba08b5c38e74f3d18",
++      "revisions": {
++        "release-after": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7",
++        "mutant": "b1280ffeaaa3d666606fbe92f34219303fa5bbd7"
++      },
++      "dependencies": [
++        {
++          "revision": "release-after",
++          "position": 0,
++          "role": "driver",
++          "sha256": "e86c2ba709619d343f8fadf3c3d0212cab2f59cc8c262e8034c037ea385d5656"
++        },
++        {
++          "revision": "release-after",
++          "position": 1,
++          "role": "original",
++          "sha256": "cfb42af01d4796e567f0e64be439712551e0909f576ecae61dacf502f6b1a3e8",
++          "coordinates": "org.springframework:spring-core:5.3.7"
++        },
++        {
++          "revision": "release-after",
++          "position": 2,
++          "role": "dependency",
++          "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++          "coordinates": "org.springframework:spring-jcl:5.3.7"
++        },
++        {
++          "revision": "mutant",
++          "position": 0,
++          "role": "driver",
++          "sha256": "e86c2ba709619d343f8fadf3c3d0212cab2f59cc8c262e8034c037ea385d5656"
++        },
++        {
++          "revision": "mutant",
++          "position": 1,
++          "role": "original",
++          "sha256": "329cbf4b83b1e7601a6bc57a160d4ef2e4cfa7c113c3e93d3d79145725545ff2"
++        },
++        {
++          "revision": "mutant",
++          "position": 2,
++          "role": "dependency",
++          "sha256": "f7422de77287703879f04ad32df4fe8e24eee882654da34cd10121aaca1ef6aa",
++          "coordinates": "org.springframework:spring-jcl:5.3.7"
++        }
++      ],
++      "jdks": [
++        "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "openjdk version \"25.0.5\" 2026-10-20 LTS"
++      ],
++      "files": {
++        "claims/simple-match-preservation.json": "a1687c4fcd05a1a1a47b8d0ef383c4490e1e247c2d673cca7c12f84ec3d17073",
++        "controls/drop-prefix.patch": "f80139f3d9096689d7ea56b439ea5b192f6366355c5b3389f29a858697aa4734",
++        "controls/oracle.py": "3d05048ef5ecbb6ed83027eafe55484f689454bbc33fd847f673e3984054ef6e",
++        "replay/driver/inloop/p306/SimpleMatchDriver.java": "10a3b5ab4d540c53c88016650bde0a55b085d254f3422a1d03e92aa4f957ee5d",
++        "replay/probes.json": "8b93ee3749c64689adece5462e7bb24e191f3e861152e02bc7ce903678264218"
++      }
++    }
++  },
++  "attempt": {
++    "id": "20261115T011241Z-e01b9c5c",
++    "claim": "50ed039d2aac18c2",
++    "startedAt": "2026-11-15T01:12:41+00:00",
++    "seconds": 0.3,
++    "engine": "native",
++    "options": [
++      "equivalence",
++      "--before",
++      "verifier/classes/release-after",
++      "--after",
++      "verifier/classes/mutant",
++      "--target",
++      "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String, java.lang.String)",
++      "--classpath",
++      "prepare/mutant/lib/org.springframework/spring-jcl-5.3.7.jar",
++      "--nullable",
++      "pattern",
++      "--nullable",
++      "str",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "6",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "tools": {
++      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "f566d535cea67dea486f525e582e6aa864efeb5c07d3f3fe0924dde4d41dddf4",
++        "files": 1
++      },
++      "after": {
++        "sha256": "5ef859edc989e11e9c4fb57606774cc36121145af7097da427697a83da10463e",
++        "files": 1
++      }
++    },
++    "pipeline": {
++      "jobId": "20261115-005928-example-306-mutant-preservation-vf-027-r",
++      "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005928-example-306-mutant-preservation-vf-027-r"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "jvm-control release-after on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "controls/control-release-after-jdk21.stdout",
++        "stderr": "controls/control-release-after-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control release-after on JDK 25",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "controls/control-release-after-jdk25.stdout",
++        "stderr": "controls/control-release-after-jdk25.stderr"
++      },
++      {
++        "name": "jvm-control mutant on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "controls/control-mutant-jdk21.stdout",
++        "stderr": "controls/control-mutant-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control mutant on JDK 25",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "controls/control-mutant-jdk25.stdout",
++        "stderr": "controls/control-mutant-jdk25.stderr"
++      },
++      {
++        "name": "verifier pair on JDK 25",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.064,
++        "stdout": "verifier/verifier.stdout",
++        "stderr": "verifier/verifier.stderr"
++      }
++    ],
++    "workspace": null,
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 6,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "50ed039d2aac18c2",
++    "attempt": "20261115T011241Z-e01b9c5c",
++    "status": "unresolved",
++    "vacuous": false,
++    "expectation": "no",
++    "obligations": [],
++    "label": "⚠ Unverifiable",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": null,
++    "before": {
++      "file": "target.json",
++      "startLine": 30,
++      "code": "\"release-after\": {"
++    },
++    "after": {
++      "file": "target.json",
++      "startLine": 36,
++      "code": "\"mutant\": {"
++    },
++    "casesTotal": null,
++    "purityViolations": [],
++    "trustedCalls": [],
++    "sarif": null,
++    "output": "records/verifier-output.txt",
++    "statement": null,
++    "counterexamples": [],
++    "proof": null,
++    "problem": "--nullable pattern: pattern is a java.lang.String, and in a regression check only an object parameter made by its constructor may be null or the same as another",
++    "domain": null,
++    "replay": null
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "records/execution.json",
++        "sha256": "89b93bf66c34a37247cb495d439750e9ff878c29b6d859ee8130e5302501c204",
++        "bytes": 60707
++      },
++      {
++        "path": "records/verifier-output.txt",
++        "sha256": "6f82f8984a64c65af3753d41674a353379e87840d44dc55ffeeaff1a1c33d192",
++        "bytes": 276
++      }
++    ]
++  }
++}

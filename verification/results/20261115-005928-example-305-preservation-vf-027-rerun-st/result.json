@@ -1,0 +1,221 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005928-example-305-preservation-vf-027-rerun-st",
+  "title": "example 305 preservation (VF-027 rerun): stops at its recorded refusal, a library-interface parameter",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.2s, peak 265.6 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005928-example-305-preservation-vf-027-rerun-st.json",
+    "sha256": "6ace88d139ac5fbac7a529b39367982deeb34352872c3a1e70c394fe63e743c6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005928-example-305-preservation-vf-027-rerun-st",
+      "title": "example 305 preservation (VF-027 rerun): stops at its recorded refusal, a library-interface parameter",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task preservation of example 305 is resubmitted unchanged in its claim (key 98f4a389c1ccd7ff, expected established, native, strict), predicting the refusal job 20261114-234213-example-305-preservation-phase-5-step-1 observed: a library-interface parameter. The step runs examples/tools/targets/workflow_refusal.py 305 preservation, which runs python3 examples/tools/build.py 305 --task preservation once (its output indented) and exits 0 only when the claim key is still 98f4a389c1ccd7ff, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/records/refusals/preservation.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/target.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/claims/outcome-preservation.json",
+          "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/records/refusals/preservation.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "305"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 305 task preservation and exits 0: the attempt stops at the recorded refusal (a library-interface parameter) under claim 98f4a389c1ccd7ff; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:28+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the same preparation and controls as the observed run 20261114-234213-example-305-preservation-phase-5-step-1, which reached the refusal in 9 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 305 task preservation: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 305 preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:12:26+00:00",
+  "finishedAt": "2026-11-15T01:12:34+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234213-example-305-preservation-phase-5-step-1, which reached the refusal in 9 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 278458368,
+    "wallSeconds": 7.2,
+    "cpuSeconds": 7.5,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 305 task preservation: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 305 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 7.216,
+      "cpuSeconds": 7.461,
+      "cpuThrottledSeconds": 0.386,
+      "peakMemoryBytes": 278458368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-305-task-preservation.log",
+        "lines": 3,
+        "bytes": 583,
+        "sha256": "1c11b89ea0d45317be2ce2716c8f1748b3c9d2769ee67fd4f71e4c134a387350",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: refused as predicted (VF-027; verifier; records/refusals/preservation.json): unresolved at the recorded refusal, receipt receipts/preservation/20261115T011234Z-4a17179d",
+          "groups": [
+            "305",
+            "preservation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task preservation (target route)",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation/20261115T011234Z-4a17179d/result.json",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: refused as predicted (VF-027; verifier; records/refusals/preservation.json): unresolved at the recorded refusal, receipt receipts/preservation/20261115T011234Z-4a17179d"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/plan.json",
+      "change": "added",
+      "bytes": 22144,
+      "sha256": "60d11e4442fed7165133b05574a607d002f96def3cc1ace481b1d947fed3ea3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/records/execution.json",
+      "change": "added",
+      "bytes": 53726,
+      "sha256": "393d861b1a8f9806ef4f76385208dedb9c2b8dddbc217415a8586e6e64132d78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 364,
+      "sha256": "6867e320e32baef09b9115492d291b585f9ac9256e24419cd386d30363682d2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/result.json",
+      "change": "added",
+      "bytes": 15846,
+      "sha256": "582951ec0c5ee8ff54a97b0dae0d7328c463aef8bdfa1b5f30199b0974e7302b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/plan.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/records/execution.json",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/records/verifier-output.txt",
+      "examples/305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/receipts/preservation/20261115T011234Z-4a17179d/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005926-example-285-fixed-security-vf-027-rerun",
+  "title": "example 285 fixed-security (VF-027 rerun): stops at its recorded refusal, a library-interface parameter",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m02s, peak 194.1 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005926-example-285-fixed-security-vf-027-rerun.json",
+    "sha256": "bdfc0c94450b77510420af0393fadb6282f7bfddcf3cc397d0cf0895418d25e8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005926-example-285-fixed-security-vf-027-rerun",
+      "title": "example 285 fixed-security (VF-027 rerun): stops at its recorded refusal, a library-interface parameter",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task fixed-security of example 285 is resubmitted unchanged in its claim (key 196346d46d4d81fb, expected established, native, strict), predicting the refusal job 20261114-234211-example-285-fixed-security-phase-5-step observed: a library-interface parameter. The step runs examples/tools/targets/workflow_refusal.py 285 fixed-security, which runs python3 examples/tools/build.py 285 --task fixed-security once (its output indented) and exits 0 only when the claim key is still 196346d46d4d81fb, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/records/refusals/fixed-security.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/target.json",
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/claims/bounded-method-label.json",
+          "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/records/refusals/fixed-security.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "285"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 285 task fixed-security and exits 0: the attempt stops at the recorded refusal (a library-interface parameter) under claim 196346d46d4d81fb; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:26+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the same preparation and controls as the observed run 20261114-234211-example-285-fixed-security-phase-5-step, which reached the refusal in 124 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 285 task fixed-security: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 285 fixed-security",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:11:18+00:00",
+  "finishedAt": "2026-11-15T01:13:23+00:00",
+  "wallSeconds": 125.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234211-example-285-fixed-security-phase-5-step, which reached the refusal in 124 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 203534336,
+    "wallSeconds": 122.5,
+    "cpuSeconds": 123.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 285 task fixed-security: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 285 fixed-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 122.505,
+      "cpuSeconds": 123.909,
+      "cpuThrottledSeconds": 0.231,
+      "peakMemoryBytes": 203534336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-fixed-securit.log",
+        "lines": 3,
+        "bytes": 592,
+        "sha256": "1604d8fcfbc124f572c95eccbee44d8979bde135bed96823e1c1c606b59baefe",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T011323Z-8397d6ef",
+          "groups": [
+            "285",
+            "fixed-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task fixed-security (target route)",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-security/20261115T011323Z-8397d6ef/result.json",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T011323Z-8397d6ef"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/plan.json",
+      "change": "added",
+      "bytes": 15480,
+      "sha256": "211bf2b196aeddaf3cead04c92a5f7d5c8e27912a6ed9c5fbef76adb20dbaa81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/records/execution.json",
+      "change": "added",
+      "bytes": 31810,
+      "sha256": "576d2b28fb85af0aae453196e89c98d5ca4d0c5e910dcf2ee1c28ee3c5cf5ff1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 357,
+      "sha256": "814347b9151a8a65de308c56d4aba5f6d35b3832092dc402b0cf361181f6c343",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/result.json",
+      "change": "added",
+      "bytes": 15352,
+      "sha256": "2e26bc7262cf67a52d0247a1b2d122f487e2105be7c585b51d39745103146291",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/plan.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/records/execution.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/records/verifier-output.txt",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/fixed-security/20261115T011323Z-8397d6ef/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

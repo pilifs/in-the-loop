@@ -1,0 +1,886 @@
+--- /dev/null
++++ b/examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261115T011200Z-d9162074/plan.json
+@@ -0,0 +1,257 @@
++{
++  "plan": {
++    "example": "287",
++    "task": "vulnerable-guard",
++    "kind": "prove",
++    "relation": "diagnostic",
++    "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++    "revisions": [
++      "vulnerable-release"
++    ],
++    "claim": {
++      "task": "vulnerable-guard",
++      "kind": "prove",
++      "relation": "diagnostic",
++      "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++      "file": "claims/overlong-bytes-rejected.json",
++      "sha256": "1a9bef694f07b8007954b2d6ee3e17b820110c4827b7aff1823ee22bfb79d101",
++      "property": "overlong-bytes-rejected",
++      "claimKind": "property",
++      "statement": "The byte-array guard lemma, narrower than the public claim and kept apart from it: for a valid stored bcrypt hash and a non-null byte array, BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes, and never returns true for such an array. No UTF-8 conversion and no encoder pattern check are on this path; it says nothing about BCryptPasswordEncoder.matches, whose String candidates reach it through String.getBytes, and it can't stand in for claims/overlong-candidate-rejected.json without that connection checked. One property and one domain for the vulnerable release (expected refuted) and the fixed release (expected established).",
++      "assume": "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++      "assert": "!result || passwordb.length <= 72",
++      "throws": [
++        "java.lang.IllegalArgumentException when passwordb.length > 72"
++      ],
++      "nullable": [],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "the parameters are the original public static BCrypt#checkpw([BLjava/lang/String;)Z's own (named passwordb and hashed in the class files' LocalVariableTable); no adapter",
++          "basis": "the brief (a byte-array guard lemma is narrower); both releases' bytecode"
++        },
++        {
++          "text": "the stored hash is otherwise valid: minor a, b or y, a two-digit cost from 04 to 30, then 53 characters of bcrypt's base64 alphabet (22 of salt, 31 of hash). This entry runs no pattern check; the domain is fixed before any attempt",
++          "basis": "the brief (an otherwise valid stored hash, provided independently of the overlong check). Left out: minor-less $2$ (the encoder never writes it, BCryptVersion has 2a, 2y and 2b); a cost below 04, which BCrypt refuses for a new hash (Bad number of rounds) and accepts for checking only as the legacy 00 (probe cost-00-upstream); and cost 31, whose rounds loop in crypt_raw counts with an int against a long 2^31 and so never ends for an in-range candidate (read from both releases' bytecode, not run). Outside the domain the probes record what each release does (probes marked domain false)"
++        },
++        {
++          "text": "the class path is the revision's pinned closure (spring-security-crypto, then spring-jcl, sources.lock.json), and BCrypt's class initializer (its S-box and P-array tables) runs as written",
++          "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++        },
++        {
++          "text": "no cryptographic summary: the target's Blowfish key schedule, 2^cost rounds and base64 run as the bytecode says; for the claim only their outcome matters (the re-encoded hash compared with MessageDigest.isEqual), and only the hashpw(byte[], String, boolean) method differs between the releases, by the guard",
++          "basis": "the brief (pin any cryptographic summary; without unchanged-callee reasoning, record the precise gap). A proof that needs to summarize crypt_raw is a different claim with that summary as a declared assumption, or a capability gap; target.json's handoff records it"
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 80
++      },
++      "explicitBounds": {
++        "maxArrayLength": 80
++      },
++      "defaultBounds": [
++        "unwind"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": "vulnerable-security",
++      "controls": [
++        {
++          "id": "driver",
++          "kind": "driver",
++          "path": "replay/driver/example287/driver/BCryptDriver.java",
++          "sha256": "fa5fc20424be234b02c6161115908662ca6274605c3c21dc8ef0e46059877172"
++        },
++        {
++          "id": "oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "bb7c8d50ae4924d24036dbcdb84c7cb749b7bfab1d5302c7809843031e3d923e"
++        },
++        {
++          "id": "probes",
++          "kind": "probe",
++          "path": "controls/probes.json",
++          "sha256": "52510f237f0c24a02c002229ecf1dc00f9747f01ee756ea33045b355b2d82ecc"
++        }
++      ],
++      "key": "da7512fb3d0a6e45"
++    },
++    "prerequisites": [
++      "replay"
++    ],
++    "artifacts": [
++      {
++        "revision": "vulnerable-release",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-security",
++        "commit": "77892d571f2a90866faf6c1ac1b78a41bb0eef28",
++        "published": [
++          {
++            "coordinates": "org.springframework.security:spring-security-crypto:6.3.7",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/security/spring-security-crypto/6.3.7/spring-security-crypto-6.3.7.jar",
++            "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:6.1.17",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/6.1.17/spring-jcl-6.1.17.jar",
++            "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f"
++          }
++        ],
++        "adapters": [
++          "replay/adapter/example287/adapter/PasswordMatchAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac",
++        "python3",
++        "jvmcontract"
++      ],
++      "optional": []
++    },
++    "engine": "native",
++    "gaps": "strict",
++    "expected": "refuted",
++    "outputs": {
++      "receipts": "receipts/vulnerable-guard"
++    },
++    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005928-example-287-vulnerable-guard-vf-027-reru/examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72",
++    "network": true
++  },
++  "inputs": {
++    "example": "287",
++    "task": "vulnerable-guard",
++    "kind": "prove",
++    "relation": "diagnostic",
++    "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++    "revisions": [
++      "vulnerable-release"
++    ],
++    "claim": {
++      "task": "vulnerable-guard",
++      "kind": "prove",
++      "relation": "diagnostic",
++      "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++      "file": "claims/overlong-bytes-rejected.json",
++      "sha256": "1a9bef694f07b8007954b2d6ee3e17b820110c4827b7aff1823ee22bfb79d101",
++      "property": "overlong-bytes-rejected",
++      "claimKind": "property",
++      "statement": "The byte-array guard lemma, narrower than the public claim and kept apart from it: for a valid stored bcrypt hash and a non-null byte array, BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes, and never returns true for such an array. No UTF-8 conversion and no encoder pattern check are on this path; it says nothing about BCryptPasswordEncoder.matches, whose String candidates reach it through String.getBytes, and it can't stand in for claims/overlong-candidate-rejected.json without that connection checked. One property and one domain for the vulnerable release (expected refuted) and the fixed release (expected established).",
++      "assume": "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++      "assert": "!result || passwordb.length <= 72",
++      "throws": [
++        "java.lang.IllegalArgumentException when passwordb.length > 72"
++      ],
++      "nullable": [],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "the parameters are the original public static BCrypt#checkpw([BLjava/lang/String;)Z's own (named passwordb and hashed in the class files' LocalVariableTable); no adapter",
++          "basis": "the brief (a byte-array guard lemma is narrower); both releases' bytecode"
++        },
++        {
++          "text": "the stored hash is otherwise valid: minor a, b or y, a two-digit cost from 04 to 30, then 53 characters of bcrypt's base64 alphabet (22 of salt, 31 of hash). This entry runs no pattern check; the domain is fixed before any attempt",
++          "basis": "the brief (an otherwise valid stored hash, provided independently of the overlong check). Left out: minor-less $2$ (the encoder never writes it, BCryptVersion has 2a, 2y and 2b); a cost below 04, which BCrypt refuses for a new hash (Bad number of rounds) and accepts for checking only as the legacy 00 (probe cost-00-upstream); and cost 31, whose rounds loop in crypt_raw counts with an int against a long 2^31 and so never ends for an in-range candidate (read from both releases' bytecode, not run). Outside the domain the probes record what each release does (probes marked domain false)"
++        },
++        {
++          "text": "the class path is the revision's pinned closure (spring-security-crypto, then spring-jcl, sources.lock.json), and BCrypt's class initializer (its S-box and P-array tables) runs as written",
++          "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++        },
++        {
++          "text": "no cryptographic summary: the target's Blowfish key schedule, 2^cost rounds and base64 run as the bytecode says; for the claim only their outcome matters (the re-encoded hash compared with MessageDigest.isEqual), and only the hashpw(byte[], String, boolean) method differs between the releases, by the guard",
++          "basis": "the brief (pin any cryptographic summary; without unchanged-callee reasoning, record the precise gap). A proof that needs to summarize crypt_raw is a different claim with that summary as a declared assumption, or a capability gap; target.json's handoff records it"
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 80
++      },
++      "explicitBounds": {
++        "maxArrayLength": 80
++      },
++      "defaultBounds": [
++        "unwind"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": "vulnerable-security",
++      "controls": [
++        {
++          "id": "driver",
++          "kind": "driver",
++          "path": "replay/driver/example287/driver/BCryptDriver.java",
++          "sha256": "fa5fc20424be234b02c6161115908662ca6274605c3c21dc8ef0e46059877172"
++        },
++        {
++          "id": "oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "bb7c8d50ae4924d24036dbcdb84c7cb749b7bfab1d5302c7809843031e3d923e"
++        },
++        {
++          "id": "probes",
++          "kind": "probe",
++          "path": "controls/probes.json",
++          "sha256": "52510f237f0c24a02c002229ecf1dc00f9747f01ee756ea33045b355b2d82ecc"
++        }
++      ],
++      "key": "da7512fb3d0a6e45"
++    },
++    "artifacts": [
++      {
++        "revision": "vulnerable-release",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-security",
++        "commit": "77892d571f2a90866faf6c1ac1b78a41bb0eef28",
++        "published": [
++          {
++            "coordinates": "org.springframework.security:spring-security-crypto:6.3.7",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/security/spring-security-crypto/6.3.7/spring-security-crypto-6.3.7.jar",
++            "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:6.1.17",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/6.1.17/spring-jcl-6.1.17.jar",
++            "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f"
++          }
++        ],
++        "adapters": [
++          "replay/adapter/example287/adapter/PasswordMatchAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "adapters": [
++      {
++        "path": "replay/adapter/example287/adapter/PasswordMatchAdapter.java",
++        "sha256": "e662bf6e324a3c80fa565cf6a9e8b786e918ae015898ec67746ff1ddf482cf99"
++      }
++    ]
++  },
++  "key": "be5741cf64b1c9514e459b6de0ffed9bf7e0cbb1e1ffbfe1f62030adde750b6a"
++}
+--- /dev/null
++++ b/examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261115T011200Z-d9162074/records/execution.json
+@@ -0,0 +1,299 @@
++{
++  "task": "vulnerable-guard",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "vulnerable-release",
++      "argv": [],
++      "status": "not-started",
++      "exitCode": null,
++      "seconds": 0.0,
++      "stdout": "controls/control-vulnerable-release-jdk21.stdout",
++      "stderr": "controls/control-vulnerable-release-jdk21.stderr",
++      "identities": {
++        "feature": "21"
++      },
++      "observations": null,
++      "control": "driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "vulnerable-release",
++      "argv": [],
++      "status": "not-started",
++      "exitCode": null,
++      "seconds": 0.0,
++      "stdout": "controls/control-vulnerable-release-jdk25.stdout",
++      "stderr": "controls/control-vulnerable-release-jdk25.stderr",
++      "identities": {
++        "feature": "25"
++      },
++      "observations": null,
++      "control": "driver"
++    },
++    {
++      "kind": "verifier",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String)",
++        "--classes",
++        "prepare/vulnerable-release/lib/org.springframework.security/spring-security-crypto-6.3.7.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-jcl-6.1.17.jar",
++        "--assume",
++        "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++        "--assert",
++        "!result || passwordb.length <= 72",
++        "--throws",
++        "java.lang.IllegalArgumentException when passwordb.length > 72",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "80",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.004,
++      "stdout": "verifier/verifier.stdout",
++      "stderr": "verifier/verifier.stderr",
++      "identities": {
++        "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++        "commit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++        "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
++        "command": "prove",
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "engine": "native",
++        "gaps": "strict",
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 80
++        },
++        "timeout": 600,
++        "scope": {
++          "label": "original-bytecode",
++          "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
++          "method": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++          "revisions": {
++            "vulnerable-release": {
++              "commit": "77892d571f2a90866faf6c1ac1b78a41bb0eef28",
++              "loadedFrom": "lib/org.springframework.security/spring-security-crypto-6.3.7.jar",
++              "classSha256": "4270fba503b2289c4f39d5bff26cd872a38d64155021667ac1cc5355987773cf",
++              "origin": "https://repo.maven.apache.org/maven2/org/springframework/security/spring-security-crypto/6.3.7/spring-security-crypto-6.3.7.jar",
++              "parameters": {
++                "names": [
++                  "passwordb",
++                  "hashed"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            }
++          },
++          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++          "models": [],
++          "assumptions": [
++            {
++              "text": "the parameters are the original public static BCrypt#checkpw([BLjava/lang/String;)Z's own (named passwordb and hashed in the class files' LocalVariableTable); no adapter",
++              "basis": "the brief (a byte-array guard lemma is narrower); both releases' bytecode"
++            },
++            {
++              "text": "the stored hash is otherwise valid: minor a, b or y, a two-digit cost from 04 to 30, then 53 characters of bcrypt's base64 alphabet (22 of salt, 31 of hash). This entry runs no pattern check; the domain is fixed before any attempt",
++              "basis": "the brief (an otherwise valid stored hash, provided independently of the overlong check). Left out: minor-less $2$ (the encoder never writes it, BCryptVersion has 2a, 2y and 2b); a cost below 04, which BCrypt refuses for a new hash (Bad number of rounds) and accepts for checking only as the legacy 00 (probe cost-00-upstream); and cost 31, whose rounds loop in crypt_raw counts with an int against a long 2^31 and so never ends for an in-range candidate (read from both releases' bytecode, not run). Outside the domain the probes record what each release does (probes marked domain false)"
++            },
++            {
++              "text": "the class path is the revision's pinned closure (spring-security-crypto, then spring-jcl, sources.lock.json), and BCrypt's class initializer (its S-box and P-array tables) runs as written",
++              "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++            },
++            {
++              "text": "no cryptographic summary: the target's Blowfish key schedule, 2^cost rounds and base64 run as the bytecode says; for the claim only their outcome matters (the re-encoded hash compared with MessageDigest.isEqual), and only the hashpw(byte[], String, boolean) method differs between the releases, by the guard",
++              "basis": "the brief (pin any cryptographic summary; without unchanged-callee reasoning, record the precise gap). A proof that needs to summarize crypt_raw is a different claim with that summary as a declared assumption, or a capability gap; target.json's handoff records it"
++            }
++          ]
++        },
++        "classpath": {
++          "vulnerable-release": [
++            {
++              "path": "lib/org.springframework.security/spring-security-crypto-6.3.7.jar",
++              "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226",
++              "role": "original"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-6.1.17.jar",
++              "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f",
++              "role": "dependency"
++            }
++          ]
++        },
++        "commits": {
++          "vulnerable-release": "77892d571f2a90866faf6c1ac1b78a41bb0eef28"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC",
++          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++          "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
++          "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m"
++        },
++        "cwd": "the attempt directory",
++        "probe": {
++          "vulnerable-release": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String)",
++              "--classes",
++              "prepare/vulnerable-release/lib/org.springframework.security/spring-security-crypto-6.3.7.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-jcl-6.1.17.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.016,
++            "stdout": "verifier/probe-vulnerable-release.stdout",
++            "stderr": "verifier/probe-vulnerable-release.stderr",
++            "gaps": [
++              {
++                "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
++                "kind": "jdk-constructor",
++                "call": "java.lang.StringBuilder.<init>()",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:279",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:612"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.String.substring(II)Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.String.substring(int, int)",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:646",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:648"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.StringBuilder.append(C)Ljava/lang/StringBuilder;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.StringBuilder.append(char)",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:296",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:306",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:313",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:236",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:239",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:244",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:247",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:252",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.encode_base64:253",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:660"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.StringBuilder.append(int)",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:666"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.StringBuilder.append(java.lang.String)",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:658",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:662",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:664",
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:667"
++                ]
++              },
++              {
++                "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
++                "kind": "jdk-reference-method",
++                "call": "java.lang.StringBuilder.toString()",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:670"
++                ]
++              },
++              {
++                "id": "jdk-primitive-method:java.lang.StringBuilder.charAt(I)C@jdk-25.0.5",
++                "kind": "jdk-primitive-method",
++                "call": "java.lang.StringBuilder.charAt(int)",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.decode_base64:319"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.lang.Integer.parseInt(java.lang.String)",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.hashpw:646"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.security.MessageDigest.isEqual([B[B)Z@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.security.MessageDigest.isEqual(byte[], byte[])",
++                "sites": [
++                  "org.springframework.security.crypto.bcrypt.BCrypt.equalsNoEarlyReturn:779"
++                ]
++              }
++            ]
++          }
++        }
++      },
++      "observations": [
++        {
++          "verdict": "unverifiable",
++          "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String)",
++          "domain": null,
++          "assume": "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++          "assert": "!result || passwordb.length <= 72",
++          "throws": [
++            "java.lang.IllegalArgumentException when passwordb.length > 72"
++          ],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "parameter hashed has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++          "statement": null,
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String) cannot be verified: parameter hashed has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++              "uri": null,
++              "line": 775
++            }
++          ],
++          "output": "✗ org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String) cannot be verified: parameter hashed has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)\n",
++          "work": "verifier/work"
++        }
++      ],
++      "control": null
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261115T011200Z-d9162074/records/verifier-output.txt
+@@ -0,0 +1 @@
++✗ org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String) cannot be verified: parameter hashed has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)
+--- /dev/null
++++ b/examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261115T011200Z-d9162074/result.json
+@@ -0,0 +1,317 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "b9979a62a0d414ec",
++    "format": 1,
++    "example": "287",
++    "statement": {
++      "approach": "target",
++      "task": "vulnerable-guard",
++      "kind": "prove",
++      "relation": "diagnostic",
++      "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++      "revisions": [
++        "vulnerable-release"
++      ],
++      "expected": "refuted",
++      "gaps": "strict",
++      "claim": {
++        "task": "vulnerable-guard",
++        "kind": "prove",
++        "relation": "diagnostic",
++        "target": "org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z",
++        "file": "claims/overlong-bytes-rejected.json",
++        "sha256": "1a9bef694f07b8007954b2d6ee3e17b820110c4827b7aff1823ee22bfb79d101",
++        "property": "overlong-bytes-rejected",
++        "claimKind": "property",
++        "statement": "The byte-array guard lemma, narrower than the public claim and kept apart from it: for a valid stored bcrypt hash and a non-null byte array, BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes, and never returns true for such an array. No UTF-8 conversion and no encoder pattern check are on this path; it says nothing about BCryptPasswordEncoder.matches, whose String candidates reach it through String.getBytes, and it can't stand in for claims/overlong-candidate-rejected.json without that connection checked. One property and one domain for the vulnerable release (expected refuted) and the fixed release (expected established).",
++        "assume": "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++        "assert": "!result || passwordb.length <= 72",
++        "throws": [
++          "java.lang.IllegalArgumentException when passwordb.length > 72"
++        ],
++        "nullable": [],
++        "mayAlias": [],
++        "observations": [
++          "result",
++          "exception"
++        ],
++        "assumptions": [
++          {
++            "text": "the parameters are the original public static BCrypt#checkpw([BLjava/lang/String;)Z's own (named passwordb and hashed in the class files' LocalVariableTable); no adapter",
++            "basis": "the brief (a byte-array guard lemma is narrower); both releases' bytecode"
++          },
++          {
++            "text": "the stored hash is otherwise valid: minor a, b or y, a two-digit cost from 04 to 30, then 53 characters of bcrypt's base64 alphabet (22 of salt, 31 of hash). This entry runs no pattern check; the domain is fixed before any attempt",
++            "basis": "the brief (an otherwise valid stored hash, provided independently of the overlong check). Left out: minor-less $2$ (the encoder never writes it, BCryptVersion has 2a, 2y and 2b); a cost below 04, which BCrypt refuses for a new hash (Bad number of rounds) and accepts for checking only as the legacy 00 (probe cost-00-upstream); and cost 31, whose rounds loop in crypt_raw counts with an int against a long 2^31 and so never ends for an in-range candidate (read from both releases' bytecode, not run). Outside the domain the probes record what each release does (probes marked domain false)"
++          },
++          {
++            "text": "the class path is the revision's pinned closure (spring-security-crypto, then spring-jcl, sources.lock.json), and BCrypt's class initializer (its S-box and P-array tables) runs as written",
++            "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++          },
++          {
++            "text": "no cryptographic summary: the target's Blowfish key schedule, 2^cost rounds and base64 run as the bytecode says; for the claim only their outcome matters (the re-encoded hash compared with MessageDigest.isEqual), and only the hashpw(byte[], String, boolean) method differs between the releases, by the guard",
++            "basis": "the brief (pin any cryptographic summary; without unchanged-callee reasoning, record the precise gap). A proof that needs to summarize crypt_raw is a different claim with that summary as a declared assumption, or a capability gap; target.json's handoff records it"
++          }
++        ],
++        "allowedChange": null,
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 80
++        },
++        "explicitBounds": {
++          "maxArrayLength": 80
++        },
++        "defaultBounds": [
++          "unwind"
++        ],
++        "models": [],
++        "plan": null,
++        "contracts": null,
++        "gaps": "strict",
++        "parent": "vulnerable-security",
++        "controls": [
++          {
++            "id": "driver",
++            "kind": "driver",
++            "path": "replay/driver/example287/driver/BCryptDriver.java",
++            "sha256": "fa5fc20424be234b02c6161115908662ca6274605c3c21dc8ef0e46059877172"
++          },
++          {
++            "id": "oracle",
++            "kind": "oracle",
++            "path": "controls/oracle.py",
++            "sha256": "bb7c8d50ae4924d24036dbcdb84c7cb749b7bfab1d5302c7809843031e3d923e"
++          },
++          {
++            "id": "probes",
++            "kind": "probe",
++            "path": "controls/probes.json",
++            "sha256": "52510f237f0c24a02c002229ecf1dc00f9747f01ee756ea33045b355b2d82ecc"
++          }
++        ],
++        "key": "da7512fb3d0a6e45"
++      }
++    },
++    "scope": {
++      "maxArrayLength": 80
++    },
++    "inputs": {
++      "patch": null,
++      "before": null,
++      "after": null,
++      "dependencies": "pinned in target.dependencies"
++    },
++    "target": {
++      "task": "vulnerable-guard",
++      "sidecar": "2f52b42ae6e8b5032b230eb2d8b2a83d0e1a7518cc02aaae0e7280bfb3a38f6a",
++      "revisions": {
++        "vulnerable-release": "77892d571f2a90866faf6c1ac1b78a41bb0eef28"
++      },
++      "dependencies": [
++        {
++          "revision": "vulnerable-release",
++          "position": 0,
++          "role": "driver",
++          "sha256": "59b0cf0ef5e6be5193d468d7fdec5095200cee544e898fbd8e6fed2def5ee013"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 1,
++          "role": "adapter",
++          "sha256": "c2b5e2e8cbdc4693ecad4c5faffbc6c0428c971396e3c909f232bdccfa51fb84"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 2,
++          "role": "original",
++          "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226",
++          "coordinates": "org.springframework.security:spring-security-crypto:6.3.7"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 3,
++          "role": "dependency",
++          "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f",
++          "coordinates": "org.springframework:spring-jcl:6.1.17"
++        }
++      ],
++      "jdks": [
++        "openjdk version \"25.0.5\" 2026-10-20 LTS"
++      ],
++      "files": {
++        "claims/overlong-bytes-rejected.json": "1a9bef694f07b8007954b2d6ee3e17b820110c4827b7aff1823ee22bfb79d101",
++        "controls/oracle.py": "bb7c8d50ae4924d24036dbcdb84c7cb749b7bfab1d5302c7809843031e3d923e",
++        "controls/probes.json": "52510f237f0c24a02c002229ecf1dc00f9747f01ee756ea33045b355b2d82ecc",
++        "replay/adapter/example287/adapter/PasswordMatchAdapter.java": "e662bf6e324a3c80fa565cf6a9e8b786e918ae015898ec67746ff1ddf482cf99",
++        "replay/driver/example287/driver/BCryptDriver.java": "fa5fc20424be234b02c6161115908662ca6274605c3c21dc8ef0e46059877172"
++      }
++    }
++  },
++  "attempt": {
++    "id": "20261115T011200Z-d9162074",
++    "claim": "b9979a62a0d414ec",
++    "startedAt": "2026-11-15T01:12:00+00:00",
++    "seconds": 0.0,
++    "engine": "native",
++    "options": [
++      "prove",
++      "org.springframework.security.crypto.bcrypt.BCrypt#checkpw(byte[], java.lang.String)",
++      "--classes",
++      "prepare/vulnerable-release/lib/org.springframework.security/spring-security-crypto-6.3.7.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-jcl-6.1.17.jar",
++      "--assume",
++      "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++      "--assert",
++      "!result || passwordb.length <= 72",
++      "--throws",
++      "java.lang.IllegalArgumentException when passwordb.length > 72",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "80",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "d410c5408bcd0a98cf2396e6f158d728e36fe1840e15ea621f646a734c14a84b",
++        "files": 1
++      }
++    },
++    "pipeline": {
++      "jobId": "20261115-005928-example-287-vulnerable-guard-vf-027-reru",
++      "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005928-example-287-vulnerable-guard-vf-027-reru"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "jvm-control vulnerable-release",
++        "status": "not-started",
++        "exitCode": null,
++        "seconds": 0.0,
++        "stdout": "controls/control-vulnerable-release-jdk21.stdout",
++        "stderr": "controls/control-vulnerable-release-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control vulnerable-release",
++        "status": "not-started",
++        "exitCode": null,
++        "seconds": 0.0,
++        "stdout": "controls/control-vulnerable-release-jdk25.stdout",
++        "stderr": "controls/control-vulnerable-release-jdk25.stderr"
++      },
++      {
++        "name": "verifier vulnerable-release on JDK 25",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.004,
++        "stdout": "verifier/verifier.stdout",
++        "stderr": "verifier/verifier.stderr"
++      }
++    ],
++    "workspace": null,
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 80,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "b9979a62a0d414ec",
++    "attempt": "20261115T011200Z-d9162074",
++    "status": "unresolved",
++    "vacuous": false,
++    "expectation": "no",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "!result || passwordb.length <= 72",
++        "status": "unresolved",
++        "evidence": {
++          "harness": null,
++          "assert": "!result || passwordb.length <= 72",
++          "assume": "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++          "throws": [
++            "java.lang.IllegalArgumentException when passwordb.length > 72"
++          ],
++          "verdict": "unverifiable",
++          "domain": null,
++          "proof": null,
++          "problem": "parameter hashed has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": null,
++          "replay": null
++        }
++      }
++    ],
++    "label": "⚠ Unverifiable",
++    "obligationKeys": {
++      "property": "properties"
++    }
++  },
++  "evidence": {
++    "existingTests": null,
++    "before": null,
++    "after": {
++      "file": "target.json",
++      "startLine": 20,
++      "code": "\"vulnerable-release\": {"
++    },
++    "casesTotal": null,
++    "purityViolations": [],
++    "trustedCalls": [],
++    "sarif": null,
++    "output": "records/verifier-output.txt",
++    "statement": null,
++    "counterexamples": [],
++    "proof": null,
++    "problem": "parameter hashed has type java.lang.String; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts. (a value adapter is built for it, but this check doesn't take one yet)",
++    "domain": null,
++    "replay": null,
++    "property": {
++      "assert": "!result || passwordb.length <= 72",
++      "assume": "passwordb != null && hashed != null && hashed.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\")",
++      "throws": [
++        "java.lang.IllegalArgumentException when passwordb.length > 72"
++      ]
++    }
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "records/execution.json",
++        "sha256": "d0c8e60148f7f011a857f971b74755b338443075c1b7ff6629165d5c3ed78332",
++        "bytes": 15375
++      },
++      {
++        "path": "records/verifier-output.txt",
++        "sha256": "522cae910059736f1c380552512477c9fb4c847e0e81c07e63688a662514aae2",
++        "bytes": 446
++      }
++    ]
++  }
++}

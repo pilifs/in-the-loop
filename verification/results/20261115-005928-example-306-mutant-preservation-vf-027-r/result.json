@@ -1,0 +1,221 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005928-example-306-mutant-preservation-vf-027-r",
+  "title": "example 306 mutant-preservation (VF-027 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.8s, peak 240.0 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005928-example-306-mutant-preservation-vf-027-r.json",
+    "sha256": "482809da0f5329b055e8ac199e0dc71850fe507f187dd3807715d6d58215a2c1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005928-example-306-mutant-preservation-vf-027-r",
+      "title": "example 306 mutant-preservation (VF-027 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task mutant-preservation of example 306 is resubmitted unchanged in its claim (key 51d7f1127b4df870, expected refuted, native, strict), predicting the refusal job 20261114-234214-example-306-mutant-preservation-phase-5 observed: a String parameter the check doesn't take. The step runs examples/tools/targets/workflow_refusal.py 306 mutant-preservation, which runs python3 examples/tools/build.py 306 --task mutant-preservation once (its output indented) and exits 0 only when the claim key is still 51d7f1127b4df870, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/records/refusals/mutant-preservation.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:equivalence",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/target.json",
+          "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/claims/simple-match-preservation.json",
+          "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/records/refusals/mutant-preservation.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "306"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 306 task mutant-preservation and exits 0: the attempt stops at the recorded refusal (a String parameter the check doesn't take) under claim 51d7f1127b4df870; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:28+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "notes": "the same preparation and controls as the observed run 20261114-234214-example-306-mutant-preservation-phase-5, which reached the refusal in 7 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 306 task mutant-preservation: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:12:35+00:00",
+  "finishedAt": "2026-11-15T01:12:42+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234214-example-306-mutant-preservation-phase-5, which reached the refusal in 7 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 251637760,
+    "wallSeconds": 5.8,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 306 task mutant-preservation: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 5.811,
+      "cpuSeconds": 6.255,
+      "cpuThrottledSeconds": 0.213,
+      "peakMemoryBytes": 251637760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-306-task-mutant-preser.log",
+        "lines": 3,
+        "bytes": 624,
+        "sha256": "fcb298c1c5b26ee474621810f5e6abefdf2cbb0d02b156cf1510af7f40b6fc37",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-preservation: refused as predicted (VF-027; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T011241Z-e01b9c5c",
+          "groups": [
+            "306",
+            "mutant-preservation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task mutant-preservation (target route)",
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T011241Z-e01b9c5c/result.json",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-preservation: refused as predicted (VF-027; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T011241Z-e01b9c5c"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/plan.json",
+      "change": "added",
+      "bytes": 15073,
+      "sha256": "c976c81340c70636bc490fba900cf6a652c40de8a29bdfe33b3cc3e6a45d25a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/records/execution.json",
+      "change": "added",
+      "bytes": 60707,
+      "sha256": "89b93bf66c34a37247cb495d439750e9ff878c29b6d859ee8130e5302501c204",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 276,
+      "sha256": "6f82f8984a64c65af3753d41674a353379e87840d44dc55ffeeaff1a1c33d192",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/result.json",
+      "change": "added",
+      "bytes": 12184,
+      "sha256": "c7d36179ba8927b9b3c1fb84ff56442af05b26eec8a631eca6802b884c30daa7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/plan.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/records/execution.json",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/records/verifier-output.txt",
+      "examples/306-spring-framework-db9a10bf-pattern-match-prefix-startswith/receipts/mutant-preservation/20261115T011241Z-e01b9c5c/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

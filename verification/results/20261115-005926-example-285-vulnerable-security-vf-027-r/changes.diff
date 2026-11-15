@@ -1,0 +1,1581 @@
+--- /dev/null
++++ b/examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T011123Z-cf8a51ec/plan.json
+@@ -0,0 +1,305 @@
++{
++  "plan": {
++    "example": "285",
++    "task": "vulnerable-security",
++    "kind": "prove",
++    "relation": "security",
++    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++    "revisions": [
++      "vulnerable-release"
++    ],
++    "claim": {
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "relation": "security",
++      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++      "file": "claims/bounded-method-label.json",
++      "sha256": "07307d2449ed98797d73580d9c0556443a00c8cc5b1909b376d9c18a2b3ec9a1",
++      "property": "bounded-method-label",
++      "claimKind": "property",
++      "statement": "For a null request, or a request whose getMethod() returns any non-null String, WebMvcTags.method(request) returns a tag whose key is \"method\" and whose value is one of GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE and UNKNOWN, and throws nothing. The set is version-specific and frozen: the constants of Spring Framework 5.3's HttpMethod (5.3.30 and 5.3.31, the same source) and the UNKNOWN sentinel. One property and one domain for the vulnerable release (expected refuted: it emits the raw token, XSCF among the probes) and the fixed release (expected established). It bounds one label dimension of one metric entry point: it says nothing of the uri, status, outcome or exception tags, of WebFluxTags.method, of total metric cardinality or of the application's availability.",
++      "assume": null,
++      "assert": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++      "throws": [],
++      "nullable": [
++        "request"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "request is null, or an HttpServletRequest whose getMethod() returns one non-null String of any content (bounded by maxArrayLength UTF-16 code units in a proof), the same on every call; nothing else of the request is read",
++          "basis": "the Servlet 4.0 API (getMethod: the name of the HTTP method the request was made with), the advisory (the token is the client's), and both revisions' bytecode, which reads getMethod() only (sources.lock.json); the replay carrier MethodOnlyRequest throws from every other method, so a revision that reads more is seen to"
++        },
++        {
++          "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts): spring-web's HttpMethod, micrometer-core's Tag and ImmutableTag, and the servlet API as each release manages them",
++          "basis": "the fixed revision's classifier is HttpMethod.resolve in spring-web; its source is one blob in both releases' Framework versions"
++        },
++        {
++          "text": "WebMvcTags's class initializer runs as written, its two Pattern.compile calls included",
++          "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "explicitBounds": {
++        "maxArrayLength": 8
++      },
++      "defaultBounds": [
++        "unwind"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "driver",
++          "kind": "driver",
++          "path": "replay/driver/example285/driver/MethodTagDriver.java",
++          "sha256": "9f35b2781ea0ce22535e966573a91cbbe2a96f2a3ff88561115284bf830b7c42"
++        },
++        {
++          "id": "oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "d6d4f21fbbbc96d642ad68a422963efead1dbafa94a08b5fe8061c58fdb6a268"
++        },
++        {
++          "id": "probes",
++          "kind": "probe",
++          "path": "controls/probes.json",
++          "sha256": "a58c95f0b8471d64f1e9f8054079de4c866e6dba83a4edc88c452671bd3c7aca"
++        }
++      ],
++      "key": "196346d46d4d81fb"
++    },
++    "prerequisites": [
++      "replay"
++    ],
++    "artifacts": [
++      {
++        "revision": "vulnerable-release",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-boot",
++        "commit": "2caabd06bc52fbdf1e94a43c15016c94cc69d480",
++        "published": [
++          {
++            "coordinates": "org.springframework.boot:spring-boot-actuator:2.7.17",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-actuator/2.7.17/spring-boot-actuator-2.7.17.jar",
++            "sha256": "d8225b87132c075db221f7125bb9677340af0c72cac142cf55b79465341657df"
++          },
++          {
++            "coordinates": "io.micrometer:micrometer-core:1.9.16",
++            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.9.16/micrometer-core-1.9.16.jar",
++            "sha256": "29f2bb4bb5f59d314e4d237ed0a13bbd5e252887a11523480d3cd99dc8661004"
++          },
++          {
++            "coordinates": "org.springframework:spring-web:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-web/5.3.30/spring-web-5.3.30.jar",
++            "sha256": "9ac48b8a9a84f7edf023c3b241c70f9e1edf1200f75b4201749d3b7931331c47"
++          },
++          {
++            "coordinates": "org.springframework:spring-webmvc:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-webmvc/5.3.30/spring-webmvc-5.3.30.jar",
++            "sha256": "6e0a9fad4ec1ed8e53b9f6484b942329b87c4238dc40cf433f6a666b3fdc302a"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.30/spring-core-5.3.30.jar",
++            "sha256": "b0f0cd351aa2f2af13c8de630544deccdda366f50fe90df5b5944743bf5b0be3"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.30/spring-jcl-5.3.30.jar",
++            "sha256": "3ee25f60caf0b2b43898d77f6e5d7663466ef65306d43e359cefc891b2a98cbf"
++          },
++          {
++            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
++            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++          }
++        ],
++        "adapters": [
++          "replay/carrier/example285/carrier/MethodOnlyRequest.java",
++          "replay/adapter/example285/adapter/MethodTagAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac",
++        "python3",
++        "jvmcontract"
++      ],
++      "optional": []
++    },
++    "engine": "native",
++    "gaps": "strict",
++    "expected": "refuted",
++    "outputs": {
++      "receipts": "receipts/vulnerable-security"
++    },
++    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005926-example-285-vulnerable-security-vf-027-r/examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels",
++    "network": true
++  },
++  "inputs": {
++    "example": "285",
++    "task": "vulnerable-security",
++    "kind": "prove",
++    "relation": "security",
++    "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++    "revisions": [
++      "vulnerable-release"
++    ],
++    "claim": {
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "relation": "security",
++      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++      "file": "claims/bounded-method-label.json",
++      "sha256": "07307d2449ed98797d73580d9c0556443a00c8cc5b1909b376d9c18a2b3ec9a1",
++      "property": "bounded-method-label",
++      "claimKind": "property",
++      "statement": "For a null request, or a request whose getMethod() returns any non-null String, WebMvcTags.method(request) returns a tag whose key is \"method\" and whose value is one of GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE and UNKNOWN, and throws nothing. The set is version-specific and frozen: the constants of Spring Framework 5.3's HttpMethod (5.3.30 and 5.3.31, the same source) and the UNKNOWN sentinel. One property and one domain for the vulnerable release (expected refuted: it emits the raw token, XSCF among the probes) and the fixed release (expected established). It bounds one label dimension of one metric entry point: it says nothing of the uri, status, outcome or exception tags, of WebFluxTags.method, of total metric cardinality or of the application's availability.",
++      "assume": null,
++      "assert": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++      "throws": [],
++      "nullable": [
++        "request"
++      ],
++      "mayAlias": [],
++      "observations": [
++        "result",
++        "exception"
++      ],
++      "assumptions": [
++        {
++          "text": "request is null, or an HttpServletRequest whose getMethod() returns one non-null String of any content (bounded by maxArrayLength UTF-16 code units in a proof), the same on every call; nothing else of the request is read",
++          "basis": "the Servlet 4.0 API (getMethod: the name of the HTTP method the request was made with), the advisory (the token is the client's), and both revisions' bytecode, which reads getMethod() only (sources.lock.json); the replay carrier MethodOnlyRequest throws from every other method, so a revision that reads more is seen to"
++        },
++        {
++          "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts): spring-web's HttpMethod, micrometer-core's Tag and ImmutableTag, and the servlet API as each release manages them",
++          "basis": "the fixed revision's classifier is HttpMethod.resolve in spring-web; its source is one blob in both releases' Framework versions"
++        },
++        {
++          "text": "WebMvcTags's class initializer runs as written, its two Pattern.compile calls included",
++          "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++        }
++      ],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "explicitBounds": {
++        "maxArrayLength": 8
++      },
++      "defaultBounds": [
++        "unwind"
++      ],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "driver",
++          "kind": "driver",
++          "path": "replay/driver/example285/driver/MethodTagDriver.java",
++          "sha256": "9f35b2781ea0ce22535e966573a91cbbe2a96f2a3ff88561115284bf830b7c42"
++        },
++        {
++          "id": "oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "d6d4f21fbbbc96d642ad68a422963efead1dbafa94a08b5fe8061c58fdb6a268"
++        },
++        {
++          "id": "probes",
++          "kind": "probe",
++          "path": "controls/probes.json",
++          "sha256": "a58c95f0b8471d64f1e9f8054079de4c866e6dba83a4edc88c452671bd3c7aca"
++        }
++      ],
++      "key": "196346d46d4d81fb"
++    },
++    "artifacts": [
++      {
++        "revision": "vulnerable-release",
++        "route": "published-artifact",
++        "repository": "https://github.com/spring-projects/spring-boot",
++        "commit": "2caabd06bc52fbdf1e94a43c15016c94cc69d480",
++        "published": [
++          {
++            "coordinates": "org.springframework.boot:spring-boot-actuator:2.7.17",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-actuator/2.7.17/spring-boot-actuator-2.7.17.jar",
++            "sha256": "d8225b87132c075db221f7125bb9677340af0c72cac142cf55b79465341657df"
++          },
++          {
++            "coordinates": "io.micrometer:micrometer-core:1.9.16",
++            "url": "https://repo.maven.apache.org/maven2/io/micrometer/micrometer-core/1.9.16/micrometer-core-1.9.16.jar",
++            "sha256": "29f2bb4bb5f59d314e4d237ed0a13bbd5e252887a11523480d3cd99dc8661004"
++          },
++          {
++            "coordinates": "org.springframework:spring-web:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-web/5.3.30/spring-web-5.3.30.jar",
++            "sha256": "9ac48b8a9a84f7edf023c3b241c70f9e1edf1200f75b4201749d3b7931331c47"
++          },
++          {
++            "coordinates": "org.springframework:spring-webmvc:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-webmvc/5.3.30/spring-webmvc-5.3.30.jar",
++            "sha256": "6e0a9fad4ec1ed8e53b9f6484b942329b87c4238dc40cf433f6a666b3fdc302a"
++          },
++          {
++            "coordinates": "org.springframework:spring-core:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.30/spring-core-5.3.30.jar",
++            "sha256": "b0f0cd351aa2f2af13c8de630544deccdda366f50fe90df5b5944743bf5b0be3"
++          },
++          {
++            "coordinates": "org.springframework:spring-jcl:5.3.30",
++            "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-jcl/5.3.30/spring-jcl-5.3.30.jar",
++            "sha256": "3ee25f60caf0b2b43898d77f6e5d7663466ef65306d43e359cefc891b2a98cbf"
++          },
++          {
++            "coordinates": "javax.servlet:javax.servlet-api:4.0.1",
++            "url": "https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++          }
++        ],
++        "adapters": [
++          "replay/carrier/example285/carrier/MethodOnlyRequest.java",
++          "replay/adapter/example285/adapter/MethodTagAdapter.java"
++        ],
++        "jdks": [
++          "21",
++          "25"
++        ]
++      }
++    ],
++    "adapters": [
++      {
++        "path": "replay/adapter/example285/adapter/MethodTagAdapter.java",
++        "sha256": "30fc09994144404c3620cea4dd1fe8b129d953200c12c90ff89a8214c6ac9fa6"
++      },
++      {
++        "path": "replay/carrier/example285/carrier/MethodOnlyRequest.java",
++        "sha256": "7d681d3375c7d929b9d49110299570147bc3a2c3d9c039d1510b4841eee24e71"
++      }
++    ]
++  },
++  "key": "73d65b1ee3b7e36aa03ea187bc7d9e36607e93e3b65f5f403890f8ac2ac28015"
++}
+--- /dev/null
++++ b/examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T011123Z-cf8a51ec/records/execution.json
+@@ -0,0 +1,911 @@
++{
++  "task": "vulnerable-security",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-vulnerable-release.jar:lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar:lib/io.micrometer/micrometer-core-1.9.16.jar:lib/org.springframework/spring-web-5.3.30.jar:lib/org.springframework/spring-webmvc-5.3.30.jar:lib/org.springframework/spring-core-5.3.30.jar:lib/org.springframework/spring-jcl-5.3.30.jar:lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "example285.driver.MethodTagDriver",
++        "get=GET",
++        "post=POST",
++        "head=HEAD",
++        "put=PUT",
++        "patch=PATCH",
++        "delete=DELETE",
++        "options=OPTIONS",
++        "trace=TRACE",
++        "null-request",
++        "xscf=XSCF",
++        "lowercase-get=get",
++        "empty-token=",
++        "long-token=XSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCF",
++        "connect=CONNECT",
++        "unknown-token=UNKNOWN"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-vulnerable-release-jdk21.stdout",
++      "stderr": "controls/control-vulnerable-release-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "2caabd06bc52fbdf1e94a43c15016c94cc69d480",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "79822f396c284264de0d2d5bb77c9ebcfa9d180a11ab3f507eb047fb69d8d408",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-vulnerable-release.jar",
++            "sha256": "636308448d2fd51c166724676e68a39b85cf13c549afaa84c8ecf55954815788",
++            "role": "adapter"
++          },
++          {
++            "path": "lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++            "sha256": "d8225b87132c075db221f7125bb9677340af0c72cac142cf55b79465341657df",
++            "role": "original"
++          },
++          {
++            "path": "lib/io.micrometer/micrometer-core-1.9.16.jar",
++            "sha256": "29f2bb4bb5f59d314e4d237ed0a13bbd5e252887a11523480d3cd99dc8661004",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-web-5.3.30.jar",
++            "sha256": "9ac48b8a9a84f7edf023c3b241c70f9e1edf1200f75b4201749d3b7931331c47",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-webmvc-5.3.30.jar",
++            "sha256": "6e0a9fad4ec1ed8e53b9f6484b942329b87c4238dc40cf433f6a666b3fdc302a",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.30.jar",
++            "sha256": "b0f0cd351aa2f2af13c8de630544deccdda366f50fe90df5b5944743bf5b0be3",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.30.jar",
++            "sha256": "3ee25f60caf0b2b43898d77f6e5d7663466ef65306d43e359cefc891b2a98cbf",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "driver",
++          "main": "example285.driver.MethodTagDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "d6d4f21fbbbc96d642ad68a422963efead1dbafa94a08b5fe8061c58fdb6a268"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "jvm": {
++            "version": "21.0.13",
++            "vendor": "Eclipse Adoptium",
++            "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem"
++          }
++        },
++        {
++          "probe": "get",
++          "request": {
++            "method": "GET"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "GET",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "post",
++          "request": {
++            "method": "POST"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "POST",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "head",
++          "request": {
++            "method": "HEAD"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "HEAD",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "put",
++          "request": {
++            "method": "PUT"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "PUT",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "patch",
++          "request": {
++            "method": "PATCH"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "PATCH",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "delete",
++          "request": {
++            "method": "DELETE"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "DELETE",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "options",
++          "request": {
++            "method": "OPTIONS"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "OPTIONS",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "trace",
++          "request": {
++            "method": "TRACE"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "TRACE",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "null-request",
++          "request": null,
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "UNKNOWN",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          }
++        },
++        {
++          "probe": "xscf",
++          "request": {
++            "method": "XSCF"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "XSCF",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "lowercase-get",
++          "request": {
++            "method": "get"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "get",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "empty-token",
++          "request": {
++            "method": ""
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "long-token",
++          "request": {
++            "method": "XSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCF"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "XSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCF",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "connect",
++          "request": {
++            "method": "CONNECT"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "CONNECT",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "unknown-token",
++          "request": {
++            "method": "UNKNOWN"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "UNKNOWN",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        }
++      ],
++      "control": "driver"
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:adapter-vulnerable-release.jar:lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar:lib/io.micrometer/micrometer-core-1.9.16.jar:lib/org.springframework/spring-web-5.3.30.jar:lib/org.springframework/spring-webmvc-5.3.30.jar:lib/org.springframework/spring-core-5.3.30.jar:lib/org.springframework/spring-jcl-5.3.30.jar:lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "example285.driver.MethodTagDriver",
++        "get=GET",
++        "post=POST",
++        "head=HEAD",
++        "put=PUT",
++        "patch=PATCH",
++        "delete=DELETE",
++        "options=OPTIONS",
++        "trace=TRACE",
++        "null-request",
++        "xscf=XSCF",
++        "lowercase-get=get",
++        "empty-token=",
++        "long-token=XSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCF",
++        "connect=CONNECT",
++        "unknown-token=UNKNOWN"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-vulnerable-release-jdk25.stdout",
++      "stderr": "controls/control-vulnerable-release-jdk25.stderr",
++      "identities": {
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "2caabd06bc52fbdf1e94a43c15016c94cc69d480",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "79822f396c284264de0d2d5bb77c9ebcfa9d180a11ab3f507eb047fb69d8d408",
++            "role": "driver"
++          },
++          {
++            "path": "adapter-vulnerable-release.jar",
++            "sha256": "636308448d2fd51c166724676e68a39b85cf13c549afaa84c8ecf55954815788",
++            "role": "adapter"
++          },
++          {
++            "path": "lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++            "sha256": "d8225b87132c075db221f7125bb9677340af0c72cac142cf55b79465341657df",
++            "role": "original"
++          },
++          {
++            "path": "lib/io.micrometer/micrometer-core-1.9.16.jar",
++            "sha256": "29f2bb4bb5f59d314e4d237ed0a13bbd5e252887a11523480d3cd99dc8661004",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-web-5.3.30.jar",
++            "sha256": "9ac48b8a9a84f7edf023c3b241c70f9e1edf1200f75b4201749d3b7931331c47",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-webmvc-5.3.30.jar",
++            "sha256": "6e0a9fad4ec1ed8e53b9f6484b942329b87c4238dc40cf433f6a666b3fdc302a",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-core-5.3.30.jar",
++            "sha256": "b0f0cd351aa2f2af13c8de630544deccdda366f50fe90df5b5944743bf5b0be3",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/org.springframework/spring-jcl-5.3.30.jar",
++            "sha256": "3ee25f60caf0b2b43898d77f6e5d7663466ef65306d43e359cefc891b2a98cbf",
++            "role": "dependency"
++          },
++          {
++            "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++            "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++            "role": "dependency"
++          }
++        ],
++        "driver": {
++          "control": "driver",
++          "main": "example285.driver.MethodTagDriver"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "d6d4f21fbbbc96d642ad68a422963efead1dbafa94a08b5fe8061c58fdb6a268"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "jvm": {
++            "version": "25.0.5",
++            "vendor": "Eclipse Adoptium",
++            "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem"
++          }
++        },
++        {
++          "probe": "get",
++          "request": {
++            "method": "GET"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "GET",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "post",
++          "request": {
++            "method": "POST"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "POST",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "head",
++          "request": {
++            "method": "HEAD"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "HEAD",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "put",
++          "request": {
++            "method": "PUT"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "PUT",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "patch",
++          "request": {
++            "method": "PATCH"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "PATCH",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "delete",
++          "request": {
++            "method": "DELETE"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "DELETE",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "options",
++          "request": {
++            "method": "OPTIONS"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "OPTIONS",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "trace",
++          "request": {
++            "method": "TRACE"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "TRACE",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "null-request",
++          "request": null,
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "UNKNOWN",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          }
++        },
++        {
++          "probe": "xscf",
++          "request": {
++            "method": "XSCF"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "XSCF",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "lowercase-get",
++          "request": {
++            "method": "get"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "get",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "empty-token",
++          "request": {
++            "method": ""
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "long-token",
++          "request": {
++            "method": "XSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCF"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "XSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCFXSCF",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "connect",
++          "request": {
++            "method": "CONNECT"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "CONNECT",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        },
++        {
++          "probe": "unknown-token",
++          "request": {
++            "method": "UNKNOWN"
++          },
++          "outcome": "returned",
++          "tag": {
++            "key": "method",
++            "value": "UNKNOWN",
++            "class": "io.micrometer.core.instrument.ImmutableTag"
++          },
++          "methodReads": 1,
++          "unreached": null
++        }
++      ],
++      "control": "driver"
++    },
++    {
++      "kind": "verifier",
++      "revision": "vulnerable-release",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++        "prove",
++        "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest)",
++        "--classes",
++        "prepare/vulnerable-release/lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/io.micrometer/micrometer-core-1.9.16.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-web-5.3.30.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-webmvc-5.3.30.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-core-5.3.30.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/org.springframework/spring-jcl-5.3.30.jar",
++        "--classpath",
++        "prepare/vulnerable-release/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++        "--assert",
++        "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++        "--nullable",
++        "request",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "16",
++        "--max-array-length",
++        "8",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "status": "exited",
++      "exitCode": 1,
++      "seconds": 0.008,
++      "stdout": "verifier/verifier.stdout",
++      "stderr": "verifier/verifier.stderr",
++      "identities": {
++        "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
++        "commit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++        "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
++        "command": "prove",
++        "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "jdkFeature": "25",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        },
++        "engine": "native",
++        "gaps": "strict",
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 8
++        },
++        "timeout": 600,
++        "scope": {
++          "label": "original-bytecode",
++          "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
++          "method": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++          "revisions": {
++            "vulnerable-release": {
++              "commit": "2caabd06bc52fbdf1e94a43c15016c94cc69d480",
++              "loadedFrom": "lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++              "classSha256": "ee69a9af7edc1c50d2ba68d0c5203499cbd3ff108ed2a84e260771ce1b4329eb",
++              "origin": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-actuator/2.7.17/spring-boot-actuator-2.7.17.jar",
++              "parameters": {
++                "names": [
++                  "request"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            }
++          },
++          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++          "models": [],
++          "assumptions": [
++            {
++              "text": "request is null, or an HttpServletRequest whose getMethod() returns one non-null String of any content (bounded by maxArrayLength UTF-16 code units in a proof), the same on every call; nothing else of the request is read",
++              "basis": "the Servlet 4.0 API (getMethod: the name of the HTTP method the request was made with), the advisory (the token is the client's), and both revisions' bytecode, which reads getMethod() only (sources.lock.json); the replay carrier MethodOnlyRequest throws from every other method, so a revision that reads more is seen to"
++            },
++            {
++              "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts): spring-web's HttpMethod, micrometer-core's Tag and ImmutableTag, and the servlet API as each release manages them",
++              "basis": "the fixed revision's classifier is HttpMethod.resolve in spring-web; its source is one blob in both releases' Framework versions"
++            },
++            {
++              "text": "WebMvcTags's class initializer runs as written, its two Pattern.compile calls included",
++              "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++            }
++          ]
++        },
++        "classpath": {
++          "vulnerable-release": [
++            {
++              "path": "lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++              "sha256": "d8225b87132c075db221f7125bb9677340af0c72cac142cf55b79465341657df",
++              "role": "original"
++            },
++            {
++              "path": "lib/io.micrometer/micrometer-core-1.9.16.jar",
++              "sha256": "29f2bb4bb5f59d314e4d237ed0a13bbd5e252887a11523480d3cd99dc8661004",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-web-5.3.30.jar",
++              "sha256": "9ac48b8a9a84f7edf023c3b241c70f9e1edf1200f75b4201749d3b7931331c47",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-webmvc-5.3.30.jar",
++              "sha256": "6e0a9fad4ec1ed8e53b9f6484b942329b87c4238dc40cf433f6a666b3fdc302a",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-core-5.3.30.jar",
++              "sha256": "b0f0cd351aa2f2af13c8de630544deccdda366f50fe90df5b5944743bf5b0be3",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/org.springframework/spring-jcl-5.3.30.jar",
++              "sha256": "3ee25f60caf0b2b43898d77f6e5d7663466ef65306d43e359cefc891b2a98cbf",
++              "role": "dependency"
++            },
++            {
++              "path": "lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++              "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++              "role": "dependency"
++            }
++          ]
++        },
++        "commits": {
++          "vulnerable-release": "2caabd06bc52fbdf1e94a43c15016c94cc69d480"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC",
++          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++          "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
++          "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m"
++        },
++        "cwd": "the attempt directory",
++        "probe": {
++          "vulnerable-release": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
++              "gaps",
++              "--target",
++              "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest)",
++              "--classes",
++              "prepare/vulnerable-release/lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/io.micrometer/micrometer-core-1.9.16.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-web-5.3.30.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-webmvc-5.3.30.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-core-5.3.30.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/org.springframework/spring-jcl-5.3.30.jar",
++              "--classpath",
++              "prepare/vulnerable-release/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.265,
++            "stdout": "verifier/probe-vulnerable-release.stdout",
++            "stderr": "verifier/probe-vulnerable-release.stderr",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.util.Objects.requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.Objects.requireNonNull(java.lang.Object)",
++                "sites": [
++                  "io.micrometer.core.instrument.ImmutableTag.<init>:36",
++                  "io.micrometer.core.instrument.ImmutableTag.<init>:37"
++                ]
++              },
++              {
++                "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-25.0.5",
++                "kind": "jdk-static-method",
++                "call": "java.util.regex.Pattern.compile(java.lang.String)",
++                "sites": [
++                  "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:60",
++                  "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags.<clinit>:62"
++                ]
++              }
++            ]
++          }
++        }
++      },
++      "observations": [
++        {
++          "verdict": "unverifiable",
++          "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest)",
++          "domain": null,
++          "assume": null,
++          "assert": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "parameter request has type javax.servlet.http.HttpServletRequest, which is outside the objects a property check makes: javax.servlet.http.HttpServletRequest is an interface; only a concrete class made by its constructor is",
++          "statement": null,
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest) cannot be verified: parameter request has type javax.servlet.http.HttpServletRequest, which is outside the objects a property check makes: javax.servlet.http.HttpServletRequest is an interface; only a concrete class made by its constructor is",
++              "uri": null,
++              "line": 74
++            }
++          ],
++          "output": "✗ org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest) cannot be verified: parameter request has type javax.servlet.http.HttpServletRequest, which is outside the objects a property check makes: javax.servlet.http.HttpServletRequest is an interface; only a concrete class made by its constructor is\n",
++          "work": "verifier/work"
++        }
++      ],
++      "control": null
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T011123Z-cf8a51ec/records/verifier-output.txt
+@@ -0,0 +1 @@
++✗ org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest) cannot be verified: parameter request has type javax.servlet.http.HttpServletRequest, which is outside the objects a property check makes: javax.servlet.http.HttpServletRequest is an interface; only a concrete class made by its constructor is
+--- /dev/null
++++ b/examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T011123Z-cf8a51ec/result.json
+@@ -0,0 +1,352 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "f70146e5f4f72739",
++    "format": 1,
++    "example": "285",
++    "statement": {
++      "approach": "target",
++      "task": "vulnerable-security",
++      "kind": "prove",
++      "relation": "security",
++      "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++      "revisions": [
++        "vulnerable-release"
++      ],
++      "expected": "refuted",
++      "gaps": "strict",
++      "claim": {
++        "task": "vulnerable-security",
++        "kind": "prove",
++        "relation": "security",
++        "target": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(Ljavax/servlet/http/HttpServletRequest;)Lio/micrometer/core/instrument/Tag;",
++        "file": "claims/bounded-method-label.json",
++        "sha256": "07307d2449ed98797d73580d9c0556443a00c8cc5b1909b376d9c18a2b3ec9a1",
++        "property": "bounded-method-label",
++        "claimKind": "property",
++        "statement": "For a null request, or a request whose getMethod() returns any non-null String, WebMvcTags.method(request) returns a tag whose key is \"method\" and whose value is one of GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE and UNKNOWN, and throws nothing. The set is version-specific and frozen: the constants of Spring Framework 5.3's HttpMethod (5.3.30 and 5.3.31, the same source) and the UNKNOWN sentinel. One property and one domain for the vulnerable release (expected refuted: it emits the raw token, XSCF among the probes) and the fixed release (expected established). It bounds one label dimension of one metric entry point: it says nothing of the uri, status, outcome or exception tags, of WebFluxTags.method, of total metric cardinality or of the application's availability.",
++        "assume": null,
++        "assert": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++        "throws": [],
++        "nullable": [
++          "request"
++        ],
++        "mayAlias": [],
++        "observations": [
++          "result",
++          "exception"
++        ],
++        "assumptions": [
++          {
++            "text": "request is null, or an HttpServletRequest whose getMethod() returns one non-null String of any content (bounded by maxArrayLength UTF-16 code units in a proof), the same on every call; nothing else of the request is read",
++            "basis": "the Servlet 4.0 API (getMethod: the name of the HTTP method the request was made with), the advisory (the token is the client's), and both revisions' bytecode, which reads getMethod() only (sources.lock.json); the replay carrier MethodOnlyRequest throws from every other method, so a revision that reads more is seen to"
++          },
++          {
++            "text": "the class path is the revision's pinned closure (sources.lock.json's artifacts): spring-web's HttpMethod, micrometer-core's Tag and ImmutableTag, and the servlet API as each release manages them",
++            "basis": "the fixed revision's classifier is HttpMethod.resolve in spring-web; its source is one blob in both releases' Framework versions"
++          },
++          {
++            "text": "WebMvcTags's class initializer runs as written, its two Pattern.compile calls included",
++            "basis": "the original bytecode is the target; class initialization is never removed (example-targets.md, Safety and semantic rules)"
++          }
++        ],
++        "allowedChange": null,
++        "bounds": {
++          "unwind": 16,
++          "maxArrayLength": 8
++        },
++        "explicitBounds": {
++          "maxArrayLength": 8
++        },
++        "defaultBounds": [
++          "unwind"
++        ],
++        "models": [],
++        "plan": null,
++        "contracts": null,
++        "gaps": "strict",
++        "parent": null,
++        "controls": [
++          {
++            "id": "driver",
++            "kind": "driver",
++            "path": "replay/driver/example285/driver/MethodTagDriver.java",
++            "sha256": "9f35b2781ea0ce22535e966573a91cbbe2a96f2a3ff88561115284bf830b7c42"
++          },
++          {
++            "id": "oracle",
++            "kind": "oracle",
++            "path": "controls/oracle.py",
++            "sha256": "d6d4f21fbbbc96d642ad68a422963efead1dbafa94a08b5fe8061c58fdb6a268"
++          },
++          {
++            "id": "probes",
++            "kind": "probe",
++            "path": "controls/probes.json",
++            "sha256": "a58c95f0b8471d64f1e9f8054079de4c866e6dba83a4edc88c452671bd3c7aca"
++          }
++        ],
++        "key": "196346d46d4d81fb"
++      }
++    },
++    "scope": {
++      "maxArrayLength": 8
++    },
++    "inputs": {
++      "patch": null,
++      "before": null,
++      "after": null,
++      "dependencies": "pinned in target.dependencies"
++    },
++    "target": {
++      "task": "vulnerable-security",
++      "sidecar": "a7ef7db1e14c424b5534f173abcbade444317a26afb399b4985bab846a08d4a3",
++      "revisions": {
++        "vulnerable-release": "2caabd06bc52fbdf1e94a43c15016c94cc69d480"
++      },
++      "dependencies": [
++        {
++          "revision": "vulnerable-release",
++          "position": 0,
++          "role": "driver",
++          "sha256": "79822f396c284264de0d2d5bb77c9ebcfa9d180a11ab3f507eb047fb69d8d408"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 1,
++          "role": "adapter",
++          "sha256": "636308448d2fd51c166724676e68a39b85cf13c549afaa84c8ecf55954815788"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 2,
++          "role": "original",
++          "sha256": "d8225b87132c075db221f7125bb9677340af0c72cac142cf55b79465341657df",
++          "coordinates": "org.springframework.boot:spring-boot-actuator:2.7.17"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 3,
++          "role": "dependency",
++          "sha256": "29f2bb4bb5f59d314e4d237ed0a13bbd5e252887a11523480d3cd99dc8661004",
++          "coordinates": "io.micrometer:micrometer-core:1.9.16"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 4,
++          "role": "dependency",
++          "sha256": "9ac48b8a9a84f7edf023c3b241c70f9e1edf1200f75b4201749d3b7931331c47",
++          "coordinates": "org.springframework:spring-web:5.3.30"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 5,
++          "role": "dependency",
++          "sha256": "6e0a9fad4ec1ed8e53b9f6484b942329b87c4238dc40cf433f6a666b3fdc302a",
++          "coordinates": "org.springframework:spring-webmvc:5.3.30"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 6,
++          "role": "dependency",
++          "sha256": "b0f0cd351aa2f2af13c8de630544deccdda366f50fe90df5b5944743bf5b0be3",
++          "coordinates": "org.springframework:spring-core:5.3.30"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 7,
++          "role": "dependency",
++          "sha256": "3ee25f60caf0b2b43898d77f6e5d7663466ef65306d43e359cefc891b2a98cbf",
++          "coordinates": "org.springframework:spring-jcl:5.3.30"
++        },
++        {
++          "revision": "vulnerable-release",
++          "position": 8,
++          "role": "dependency",
++          "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60",
++          "coordinates": "javax.servlet:javax.servlet-api:4.0.1"
++        }
++      ],
++      "jdks": [
++        "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "openjdk version \"25.0.5\" 2026-10-20 LTS"
++      ],
++      "files": {
++        "claims/bounded-method-label.json": "07307d2449ed98797d73580d9c0556443a00c8cc5b1909b376d9c18a2b3ec9a1",
++        "controls/oracle.py": "d6d4f21fbbbc96d642ad68a422963efead1dbafa94a08b5fe8061c58fdb6a268",
++        "controls/probes.json": "a58c95f0b8471d64f1e9f8054079de4c866e6dba83a4edc88c452671bd3c7aca",
++        "replay/adapter/example285/adapter/MethodTagAdapter.java": "30fc09994144404c3620cea4dd1fe8b129d953200c12c90ff89a8214c6ac9fa6",
++        "replay/carrier/example285/carrier/MethodOnlyRequest.java": "7d681d3375c7d929b9d49110299570147bc3a2c3d9c039d1510b4841eee24e71",
++        "replay/driver/example285/driver/MethodTagDriver.java": "9f35b2781ea0ce22535e966573a91cbbe2a96f2a3ff88561115284bf830b7c42"
++      }
++    }
++  },
++  "attempt": {
++    "id": "20261115T011123Z-cf8a51ec",
++    "claim": "f70146e5f4f72739",
++    "startedAt": "2026-11-15T01:11:23+00:00",
++    "seconds": 0.1,
++    "engine": "native",
++    "options": [
++      "prove",
++      "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(javax.servlet.http.HttpServletRequest)",
++      "--classes",
++      "prepare/vulnerable-release/lib/org.springframework.boot/spring-boot-actuator-2.7.17.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/io.micrometer/micrometer-core-1.9.16.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-web-5.3.30.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-webmvc-5.3.30.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-core-5.3.30.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/org.springframework/spring-jcl-5.3.30.jar",
++      "--classpath",
++      "prepare/vulnerable-release/lib/javax.servlet/javax.servlet-api-4.0.1.jar",
++      "--assert",
++      "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++      "--nullable",
++      "request",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "16",
++      "--max-array-length",
++      "8",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "tools": {
++      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "8eef3cef9d10387ffcc5d407953a09e92042a8e5efff0cdd8d651d9595369016",
++        "files": 1
++      }
++    },
++    "pipeline": {
++      "jobId": "20261115-005926-example-285-vulnerable-security-vf-027-r",
++      "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-005926-example-285-vulnerable-security-vf-027-r"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "jvm-control vulnerable-release on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "controls/control-vulnerable-release-jdk21.stdout",
++        "stderr": "controls/control-vulnerable-release-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control vulnerable-release on JDK 25",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "controls/control-vulnerable-release-jdk25.stdout",
++        "stderr": "controls/control-vulnerable-release-jdk25.stderr"
++      },
++      {
++        "name": "verifier vulnerable-release on JDK 25",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.008,
++        "stdout": "verifier/verifier.stdout",
++        "stderr": "verifier/verifier.stderr"
++      }
++    ],
++    "workspace": null,
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "f70146e5f4f72739",
++    "attempt": "20261115T011123Z-cf8a51ec",
++    "status": "unresolved",
++    "vacuous": false,
++    "expectation": "no",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++        "status": "unresolved",
++        "evidence": {
++          "harness": null,
++          "assert": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++          "assume": null,
++          "verdict": "unverifiable",
++          "domain": null,
++          "proof": null,
++          "problem": "parameter request has type javax.servlet.http.HttpServletRequest, which is outside the objects a property check makes: javax.servlet.http.HttpServletRequest is an interface; only a concrete class made by its constructor is",
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": null,
++          "replay": null
++        }
++      }
++    ],
++    "label": "⚠ Unverifiable",
++    "obligationKeys": {
++      "property": "properties"
++    }
++  },
++  "evidence": {
++    "existingTests": null,
++    "before": null,
++    "after": {
++      "file": "target.json",
++      "startLine": 19,
++      "code": "\"vulnerable-release\": {"
++    },
++    "casesTotal": null,
++    "purityViolations": [],
++    "trustedCalls": [],
++    "sarif": null,
++    "output": "records/verifier-output.txt",
++    "statement": null,
++    "counterexamples": [],
++    "proof": null,
++    "problem": "parameter request has type javax.servlet.http.HttpServletRequest, which is outside the objects a property check makes: javax.servlet.http.HttpServletRequest is an interface; only a concrete class made by its constructor is",
++    "domain": null,
++    "replay": null,
++    "property": {
++      "assert": "result != null && result.getKey().equals(\"method\") && (result.getValue().equals(\"GET\") || result.getValue().equals(\"HEAD\") || result.getValue().equals(\"POST\") || result.getValue().equals(\"PUT\") || result.getValue().equals(\"PATCH\") || result.getValue().equals(\"DELETE\") || result.getValue().equals(\"OPTIONS\") || result.getValue().equals(\"TRACE\") || result.getValue().equals(\"UNKNOWN\"))",
++      "assume": null
++    }
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "records/execution.json",
++        "sha256": "30cb5f94763bad903901df59ea1c0edf81efc84736bd4de51bcf4ede2d7b31fe",
++        "bytes": 33055
++      },
++      {
++        "path": "records/verifier-output.txt",
++        "sha256": "814347b9151a8a65de308c56d4aba5f6d35b3832092dc402b0cf361181f6c343",
++        "bytes": 357
++      }
++    ]
++  }
++}

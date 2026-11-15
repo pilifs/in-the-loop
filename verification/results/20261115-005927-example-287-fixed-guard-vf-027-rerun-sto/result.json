@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-005927-example-287-fixed-guard-vf-027-rerun-sto",
+  "title": "example 287 fixed-guard (VF-027 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.0s, peak 134.7 MiB (estimated 30m00s, 4.0 GiB); 4 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-005927-example-287-fixed-guard-vf-027-rerun-sto.json",
+    "sha256": "973848f4d1ad1bb1ae0dabd0d3e726b3e6eb52bf51fe40107a3ad7a0594d21d5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-005927-example-287-fixed-guard-vf-027-rerun-sto",
+      "title": "example 287 fixed-guard (VF-027 rerun): stops at its recorded refusal, a String parameter the check doesn't take",
+      "description": "VF-027's closing rerun, as the user decided on 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): task fixed-guard of example 287 is resubmitted unchanged in its claim (key 2fc462942f0992af, expected established, native, strict), predicting the refusal job 20261114-234213-example-287-fixed-guard-phase-5-step-1-b observed: a String parameter the check doesn't take. The step runs examples/tools/targets/workflow_refusal.py 287 fixed-guard, which runs python3 examples/tools/build.py 287 --task fixed-guard once (its output indented) and exits 0 only when the claim key is still 2fc462942f0992af, build.py exits 1, and the attempt gives an unresolved receipt whose problem is the recorded refusal, the text recorded in examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/fixed-guard.json. A verdict (established or refuted), another refusal, a kill or a crash fails the job and is reported as NOT AS PREDICTED. The task's readiness is blocked by that observed gap; its claim stays unresolved, its expected conclusion unchanged; nothing is restated over a wrapper or a simpler signature, and neither jvmcontract nor the route is extended in this loop.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/target.json",
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/overlong-bytes-rejected.json",
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/fixed-guard.json",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "expected": "workflow_refusal.py prints 'refused as predicted' for example 287 task fixed-guard and exits 0: the attempt stops at the recorded refusal (a String parameter the check doesn't take) under claim 2fc462942f0992af; the claim stays unresolved, which is no verdict",
+      "submitted": {
+        "at": "2026-11-15T00:59:27+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "notes": "the same preparation and controls as the observed run 20261114-234213-example-287-fixed-guard-phase-5-step-1-b, which reached the refusal in 3 s; the estimate is that job's"
+      },
+      "steps": [
+        {
+          "name": "example 287 task fixed-guard: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard"
+      ]
+    }
+  },
+  "sourceCommit": "6e9a99ee0d856b844d21cf8f42254604e456e874",
+  "startedAt": "2026-11-15T01:11:39+00:00",
+  "finishedAt": "2026-11-15T01:11:42+00:00",
+  "wallSeconds": 3.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3499860,
+    "workers": 9,
+    "cpus": 18.0,
+    "memoryBudgetBytes": 40802189312,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the same preparation and controls as the observed run 20261114-234213-example-287-fixed-guard-phase-5-step-1-b, which reached the refusal in 3 s; the estimate is that job's"
+  },
+  "usage": {
+    "peakMemoryBytes": 141242368,
+    "wallSeconds": 2.0,
+    "cpuSeconds": 3.1,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 287 task fixed-guard: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 3.074,
+      "cpuThrottledSeconds": 0.118,
+      "peakMemoryBytes": 141242368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-287-task-fixed-guard-t.log",
+        "lines": 3,
+        "bytes": 586,
+        "sha256": "04e0f59d6d7563fda894ecf59be2906298d48ac6d252fc9e598ea5c9812f5293",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: refused as predicted (VF-027; verifier; records/refusals/fixed-guard.json): unresolved at the recorded refusal, receipt receipts/fixed-guard/20261115T011141Z-db953afd",
+          "groups": [
+            "287",
+            "fixed-guard",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task fixed-guard (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-guard/20261115T011141Z-db953afd/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: refused as predicted (VF-027; verifier; records/refusals/fixed-guard.json): unresolved at the recorded refusal, receipt receipts/fixed-guard/20261115T011141Z-db953afd"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/plan.json",
+      "change": "added",
+      "bytes": 13200,
+      "sha256": "bc06a1a6e21605baa0922de198eecd1ba92615c1470a5f8a90a2479bf277d08a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/records/execution.json",
+      "change": "added",
+      "bytes": 15285,
+      "sha256": "7509cebb0f64f1061bbc5af914b23299d83fb1ec1d934011312865d219eb8a8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 446,
+      "sha256": "522cae910059736f1c380552512477c9fb4c847e0e81c07e63688a662514aae2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/result.json",
+      "change": "added",
+      "bytes": 13171,
+      "sha256": "0a4de89b2b15626c167a2d3471356d87e0b4288955271264b6ea3a40955efc52",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T01:16:34+00:00",
+    "applied": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/plan.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/records/execution.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/records/verifier-output.txt",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T011141Z-db953afd/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "28108fd0-2356-46e1-8340-483cce5ffcd0",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-15T01:10:54.545Z",
+  "ended": "2026-11-15T01:16:58.683Z",
+  "duration_seconds": 364,
+  "stats": {
+    "turns": 1,
+    "api_calls": 7,
+    "tool_calls": 7,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 45714,
+    "usage": {
+      "input_tokens": 14,
+      "output_tokens": 2117,
+      "cache_read_input_tokens": 229302,
+      "cache_creation_input_tokens": 34342
+    }
+  },
+  "tools": {
+    "Bash": 7
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-15T01:10:54.545Z",
+      "ended": "2026-11-15T01:16:58.683Z",
+      "turns": 1,
+      "api_calls": 7,
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 2117,
+        "cache_read_input_tokens": 229302,
+        "cache_creation_input_tokens": 34342
+      },
+      "peak_context_tokens": 45714
+    }
+  ],
+  "log": {
+    "sha256": "4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c",
+    "bytes": 364457,
+    "lines": 82,
+    "gzip_bytes": 82062,
+    "path": "llm-dlc/traces/28108fd0-2356-46e1-8340-483cce5ffcd0/logs/4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "rxwxlwxxxxnmyvnyylqowmruxtozpwwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c"
+    },
+    {
+      "change_id": "kqpykqppqumtqrvyornwworzkwkvvpwu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 23 jobs: the VF-027 reruns each stop at their recorded refusal, as predicted",
+      "body": "Ran the 23 reruns queued at 6e9a99ee (examples 105, 285, 286, 287, 305, 306) on vm-1 with the streams-row budget. All 23 passed with example:task-refused-as-predicted (2 s to 4 min each), which confirms the observed gaps of VF-027; no task ran as expected, so VF-027 stays open and has an update line. Outputs applied for 18 jobs; the four preservation jobs produce none. Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>",
+      "log_sha256": "4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c"
+    }
+  ],
+  "logs": {
+    "4b3ddb45804d2ea6a291bea2e9ce86c0166ac4de527310784e20ea98e0133d2c": {
+      "bytes": 364457,
+      "lines": 82,
+      "gzip_bytes": 82062,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
