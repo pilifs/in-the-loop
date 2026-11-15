@@ -1,0 +1,203 @@
+[
+  {
+    "verdict": "violation",
+    "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+    "domain": "k: int × e: int",
+    "assume": "k == -2 && e >= 0 && e <= 31",
+    "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "pow(k=-2, e=31)",
+      "outcome": "throws ArithmeticException(\"integer overflow\")",
+      "values": [
+        "-2",
+        "31"
+      ],
+      "shrink_runs": 8,
+      "inputs": [
+        {
+          "name": "k",
+          "type": "int",
+          "value": -2
+        },
+        {
+          "name": "e",
+          "type": "int",
+          "value": 31
+        }
+      ],
+      "call": {
+        "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+        "class_file": "org/apache/commons/numbers/core/ArithmeticUtils.class",
+        "classes": "after",
+        "method": "pow",
+        "descriptor": "(II)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "k",
+            "type": "int",
+            "value": -2,
+            "from": "k"
+          },
+          {
+            "name": "e",
+            "type": "int",
+            "value": 31,
+            "from": "e"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 2.6 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int) violated: `result == ((e & 1) == 0 ? 1 << e : -(1 << e))` where k == -2 && e >= 0 && e <= 31:\n  pow(k=-2, e=31)\n    outcome: throws ArithmeticException(\"integer overflow\")",
+        "uri": null,
+        "line": 281
+      }
+    ],
+    "output": "✗ Property of org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int) violated: `result == ((e & 1) == 0 ? 1 << e : -(1 << e))` where k == -2 && e >= 0 && e <= 31:\n  pow(k=-2, e=31)\n    outcome: throws ArithmeticException(\"integer overflow\")\n  (found by jvmcontract's own checker (CaDiCaL) in 2.6 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 2.609272487,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": "[-100000:100000]",
+      "native": {
+        "paths": 35,
+        "merges": 0,
+        "solver_calls": 170,
+        "solving_seconds": 2.207744169,
+        "gates_evaluated": 680622,
+        "evaluating_seconds": 0.011435599,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 281308,
+        "clauses": 947831,
+        "seconds": 2.54737174,
+        "loading_seconds": 0.000327251,
+        "decoding_seconds": 0.000014969,
+        "encoding_seconds": 0.317501404,
+        "witness_seconds": 0.000599049
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 2.547,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.021,
+            "encoding": 0.318,
+            "solving": 2.208,
+            "trace": 0.001,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 281308,
+            "clauses": 947831
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 2.618,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 2.547,
+        "replay": 0.001,
+        "jvm": 0.0,
+        "other": 0.069
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "k",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "e",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "k: int × e: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "k == -2 && e >= 0 && e <= 31",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+        "classes": 17,
+        "jdk": "25.0.5"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

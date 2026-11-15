@@ -1,0 +1,342 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-050856-example-105-fix-property-before-its-rece",
+  "title": "example 105 fix-property-before: its receipt bundles the JVM controls' and the verifier's raw streams (review item 5)",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 31.5s, peak 759.8 MiB (estimated 15m00s, 3.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-050856-example-105-fix-property-before-its-rece.json",
+    "sha256": "4b26da61481bcba698edf9805e134ae1770fcea5482fedd446984e860efe2426",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-050856-example-105-fix-property-before-its-rece",
+      "title": "example 105 fix-property-before: its receipt bundles the JVM controls' and the verifier's raw streams (review item 5)",
+      "description": "The user's review item 5 of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): ingestion now copies each record's stdout and stderr and the runner's controls.json and verifier.json into the receipt's records/, each cut to 512 KiB, with records/streams.json giving every one's source, whole size and sha256. The for-review list found that gate A5's receipts didn't hold what the JVM controls observed, so the JVM side of the witness was the job's, not the receipt's. Step 1 reruns task fix-property-before of example 105 unchanged (build.py 105 --task fix-property-before: claim 8a4071f6a417d239, upstream Maven build on JDK 11, native, strict, expected refuted with the witness pow(-2, 31)), adding a third receipt beside the two kept. Step 2 reads the new receipt offline with examples/tools/targets/receipt_streams.py and exits 1 unless every stage's stdout and stderr (the controls on JDK 21 and 25, and the verifier), records/controls.json and records/verifier.json are in its bundle. No claim, expectation or verdict changes.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove"
+      ],
+      "links": {
+        "examples": [
+          "105"
+        ],
+        "paths": [
+          "examples/tools/targets/workflow_ingest.py",
+          "examples/tools/targets/receipt_streams.py"
+        ]
+      },
+      "expected": "Step 1 prints 'as expected' and exits 0: refuted under key 8a4071f6a417d239 with the witness pow(-2, 31), replayed; step 2 prints 'receipt streams bundled', the control stages exited with their stdout bundled",
+      "submitted": {
+        "at": "2026-11-15T05:08:56+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "the same task as gate A7's job 20261114-235737-example-105-task-fix-property-before-the, which passed in 31 s; step 2 is offline"
+      },
+      "steps": [
+        {
+          "name": "example 105 task fix-property-before (prove)",
+          "run": "python3 examples/tools/build.py 105 --task fix-property-before",
+          "cwd": "."
+        },
+        {
+          "name": "the new receipt keeps its raw streams",
+          "run": "python3 examples/tools/targets/receipt_streams.py examples/105-commons-numbers-223-pow-of-minus-two-to-the-31 fix-property-before",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before"
+      ]
+    }
+  },
+  "sourceCommit": "710afb5b31747baac9c93f6281c34035a78cfeaa",
+  "startedAt": "2026-11-15T05:14:49+00:00",
+  "finishedAt": "2026-11-15T05:15:22+00:00",
+  "wallSeconds": 33.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 767575,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "the same task as gate A7's job 20261114-235737-example-105-task-fix-property-before-the, which passed in 31 s; step 2 is offline"
+  },
+  "usage": {
+    "peakMemoryBytes": 796704768,
+    "wallSeconds": 31.5,
+    "cpuSeconds": 39.8,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task fix-property-before (prove)",
+      "run": "python3 examples/tools/build.py 105 --task fix-property-before",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 31.272,
+      "cpuSeconds": 39.715,
+      "cpuThrottledSeconds": 4.234,
+      "peakMemoryBytes": 796704768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-fix-property.log",
+        "lines": 2,
+        "bytes": 287,
+        "sha256": "bc21e28ccf2bc6eb73570a49bdfcba7dba6fe28c4dbfdb1d97bbea0ca7864642",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property-before: refuted (completed; as expected), receipt receipts/fix-property-before/20261115T051521Z-a8b91f86/result.json",
+          "groups": [
+            "105",
+            "fix-property-before",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task fix-property-before (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property-before: refuted (completed; as expected), receipt receipts/fix-property-before/20261115T051521Z-a8b91f86/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the new receipt keeps its raw streams",
+      "run": "python3 examples/tools/targets/receipt_streams.py examples/105-commons-numbers-223-pow-of-minus-two-to-the-31 fix-property-before",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.045,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 9236480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-new-receipt-keeps-its-raw.log",
+        "lines": 13,
+        "bytes": 691,
+        "sha256": "d153bf33d355a01baf4c5e4402c53e4103fb83c7e403dacf0f7fad4ab26a9663",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86: 3 stages",
+        "  jvm-control before on JDK 21: exited (exit 0)",
+        "    stdout: records/control-before-jdk21.stdout, 4451 bytes",
+        "    stderr: records/control-before-jdk21.stderr, 0 bytes",
+        "  jvm-control before on JDK 25: exited (exit 0)",
+        "    stdout: records/control-before-jdk25.stdout, 4451 bytes",
+        "    stderr: records/control-before-jdk25.stderr, 0 bytes",
+        "  verifier before on JDK 25: exited (exit 1)",
+        "    stdout: records/verifier.stdout, 6522 bytes",
+        "    stderr: records/verifier.stderr, 0 bytes",
+        "  records/controls.json: 28883 bytes",
+        "  records/verifier.json: 14570 bytes",
+        "receipt streams bundled"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/plan.json",
+      "change": "added",
+      "bytes": 10160,
+      "sha256": "26ae582bd6e574f1d1ae8fccade94e2a7f73412ff9b64e1a962f877af4b49204",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk21.stdout",
+      "change": "added",
+      "bytes": 4451,
+      "sha256": "6a03c12fa4059c9ada83acdc7b800ac2f65d637f97d47f4925e44fc4a05c8f25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk25.stdout",
+      "change": "added",
+      "bytes": 4451,
+      "sha256": "6a03c12fa4059c9ada83acdc7b800ac2f65d637f97d47f4925e44fc4a05c8f25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/controls.json",
+      "change": "added",
+      "bytes": 28883,
+      "sha256": "ffca1847de853fe570649b5ec2ef0b01ceb6fda20491fbb0cb826a78992064aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/execution.json",
+      "change": "added",
+      "bytes": 42914,
+      "sha256": "2263b69d16b635c0e037345c06f6edcbb03b2e12332c42a4d14ea8739c697a54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/streams.json",
+      "change": "added",
+      "bytes": 2663,
+      "sha256": "4a4f2345177332f1530c2c3fcaf9ea644e730b63b3de0c6e0431479b309956f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 644,
+      "sha256": "3c054b6ca8b012ec159eb5108050029c464f61c5f54d2f2d466c21e5acc3529d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier.json",
+      "change": "added",
+      "bytes": 14570,
+      "sha256": "60effa9b7890bbd6a6f7b5cfa2fd33a85ab026ef23e9faa71bdbaf198f957db7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6522,
+      "sha256": "4a91687431c308511e5492468b3d8ed1332617a28f1f1b5e9ebad0ab02dc8cbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/result.json",
+      "change": "added",
+      "bytes": 18518,
+      "sha256": "fde40932a286dca67ed179b7f0314124250aba99838e38d4dad9c856e2193ea6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T05:15:25+00:00",
+    "applied": [
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/plan.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk21.stderr",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk21.stdout",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk25.stderr",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/control-before-jdk25.stdout",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/controls.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/execution.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/streams.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier-output.txt",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier.json",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier.stderr",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/records/verifier.stdout",
+      "examples/105-commons-numbers-223-pow-of-minus-two-to-the-31/receipts/fix-property-before/20261115T051521Z-a8b91f86/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

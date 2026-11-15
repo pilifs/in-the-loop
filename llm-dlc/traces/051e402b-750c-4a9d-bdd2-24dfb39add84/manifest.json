@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T05:14:09.835Z",
-  "duration_seconds": 38929,
+  "ended": "2026-11-15T05:15:39.706Z",
+  "duration_seconds": 39019,
   "stats": {
-    "turns": 191,
-    "api_calls": 1575,
-    "tool_calls": 1611,
+    "turns": 196,
+    "api_calls": 1581,
+    "tool_calls": 1615,
     "tool_errors": 28,
-    "compactions": 35,
+    "compactions": 36,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3190,
-      "output_tokens": 1028411,
-      "cache_read_input_tokens": 204341694,
-      "cache_creation_input_tokens": 5531003
+      "input_tokens": 3202,
+      "output_tokens": 1030248,
+      "cache_read_input_tokens": 205109112,
+      "cache_creation_input_tokens": 5596817
     }
   },
   "tools": {
-    "Bash": 1381,
-    "Read": 114,
+    "Bash": 1383,
+    "Read": 116,
     "Edit": 87,
     "Write": 10,
     "ToolSearch": 7,
@@ -563,24 +563,38 @@
     {
       "index": 35,
       "started": "2026-11-15T04:55:41.790Z",
-      "ended": "2026-11-15T05:14:09.835Z",
-      "turns": 4,
-      "api_calls": 54,
+      "ended": "2026-11-15T05:14:36.549Z",
+      "turns": 5,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 42280,
-        "cache_read_input_tokens": 9129484,
-        "cache_creation_input_tokens": 206735
+        "input_tokens": 114,
+        "output_tokens": 43655,
+        "cache_read_input_tokens": 9791767,
+        "cache_creation_input_tokens": 211145
       },
-      "peak_context_tokens": 219921
+      "peak_context_tokens": 224331
+    },
+    {
+      "index": 36,
+      "started": "2026-11-15T05:15:27.762Z",
+      "ended": "2026-11-15T05:15:39.706Z",
+      "turns": 4,
+      "api_calls": 3,
+      "usage": {
+        "input_tokens": 6,
+        "output_tokens": 462,
+        "cache_read_input_tokens": 105135,
+        "cache_creation_input_tokens": 61404
+      },
+      "peak_context_tokens": 74590
     }
   ],
   "log": {
-    "sha256": "d0cec6dc13ba245dabba5e26ae69acc353ccfa354b8f188e3168a61732bb814f",
-    "bytes": 52727504,
-    "lines": 16180,
-    "gzip_bytes": 11306600,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/d0cec6dc13ba245dabba5e26ae69acc353ccfa354b8f188e3168a61732bb814f.jsonl.gz"
+    "sha256": "4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684",
+    "bytes": 53493747,
+    "lines": 16308,
+    "gzip_bytes": 11527022,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684.jsonl.gz"
   },
   "subagents": [
     {
@@ -1215,6 +1229,14 @@
       "summary": "example-targets: a target receipt keeps the attempt's raw streams and says why a stage didn't start (review item 5) (verification pending)",
       "body": "The user's review item 5 of 2026-11-15. Ingestion now copies each control's and the verifier's stdout and stderr, and the runner's controls.json and verifier.json, into the receipt's records/, each cut to 512 KiB. records/streams.json gives every copy's source, whole size and sha256, and whether it was cut, or why nothing was kept. attempt.stages points at the copies, and a not-started stage gives its reason: for example 287's guard tasks, whose adapter doesn't call their target. To make this possible, ExecutionRecord gains three additive fields with defaults: the attempt's directory (a temporary path, kept out of the receipt), the runner's record file, and the not-started reason. runtime.run_controls and run_verifier set them. ingest's frozen signature is unchanged. result.schema.json allows the stage's optional reason, and old receipts stay valid. A new examples/tools/targets/receipt_streams.py lists what a receipt keeps, and exits 1 when a stream isn't bundled.\n\nReproducer: test_receipt_streams.py (5 tests), which runs the fixture's controls for real on JDK 21 and 25 and ingests them. It failed before the change and passes after. example-targets-integration.sh exits 0: the contract (16), the targets suite (266), test_build.py (190), test_pipeline.py (33) and build.py --plan. No A8 rerun is needed: verdict rules, without_jbmc.sh and the constructed run paths are unchanged.\n\nJobs: 20261115-050846-example-287-fixed-guard-its-receipt-bund (VF-027's rerun of 287 fixed-guard, then receipt_streams.py --reason on its new receipt) and 20261115-050856-example-105-fix-property-before-its-rece (105 fix-property-before, whose receipt then holds the JVM controls' streams that A5's lacked). Neither changes a claim, expectation or verdict.\n\nOut of date in the brief: The capability-gap packet still lists eight kinds; the schema has nine since review item 4.",
       "log_sha256": "d0cec6dc13ba245dabba5e26ae69acc353ccfa354b8f188e3168a61732bb814f"
+    },
+    {
+      "change_id": "qkqrqyvqotypvtovtzkqqppwlpsqtosw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the review item 5 receipt jobs on examples 287 and 105",
+      "body": "Ran 20261115-050846 (example 287 fixed-guard receipt) and 20261115-050856 (example 105 fix-property-before receipt) on vm-1. Both passed: 287's controls were refused as predicted, 105 gave its expected verdict. Collected outputs (receipts with raw streams) applied to the working copy, examples index regenerated. No findings.",
+      "log_sha256": "4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684"
     }
   ],
   "logs": {
@@ -1324,6 +1346,12 @@
       "bytes": 25740380,
       "lines": 8240,
       "gzip_bytes": 5383773,
+      "url": null
+    },
+    "4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684": {
+      "bytes": 53493747,
+      "lines": 16308,
+      "gzip_bytes": 11527022,
       "url": null
     },
     "4e42210a85bf4bb3cb443776f249fb082547c8136797b18760876e1343c6df9a": {

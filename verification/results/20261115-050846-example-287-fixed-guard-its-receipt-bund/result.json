@@ -1,0 +1,344 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-050846-example-287-fixed-guard-its-receipt-bund",
+  "title": "example 287 fixed-guard: its receipt bundles the raw streams and says why its controls didn't start (review item 5)",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1.8s, peak 136.8 MiB (estimated 15m00s, 4.0 GiB); 13 output file(s) changed; signals: example:task-refused-as-predicted×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-050846-example-287-fixed-guard-its-receipt-bund.json",
+    "sha256": "2e1e51cd9f8fc1638fab87270720c085f01e4524ab595d5074092312c29ec74f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-050846-example-287-fixed-guard-its-receipt-bund",
+      "title": "example 287 fixed-guard: its receipt bundles the raw streams and says why its controls didn't start (review item 5)",
+      "description": "The user's review item 5 of 2026-11-15 (llm-dlc/loops/example-targets.md, Progress): ingestion now copies each record's stdout and stderr and the runner's controls.json and verifier.json into the receipt's records/, each cut to 512 KiB, with records/streams.json giving every one's source, whole size and sha256, and a not-started stage gives its reason. Task fixed-guard of example 287 is the case the item names: its adapter doesn't call its target BCrypt.checkpw(byte[], String), so runtime runs no controls for it, and its receipts so far didn't say why. Step 1 is VF-027's unchanged rerun (workflow_refusal.py 287 fixed-guard: claim 2fc462942f0992af, native, strict, expected established, refused as predicted at the String parameter), which leaves one unresolved receipt. Step 2 reads that receipt offline with examples/tools/targets/receipt_streams.py and exits 1 unless every stage's stdout and stderr, records/controls.json and records/verifier.json are in its bundle and each not-started control stage's reason names the adapter not calling the target. No claim, expectation or verdict changes.",
+      "kind": "example",
+      "capabilities": [
+        "target:prove",
+        "target:predicted-refusal"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/tools/targets/workflow_ingest.py",
+          "examples/tools/targets/receipt_streams.py",
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/fixed-guard.json"
+        ]
+      },
+      "expected": "Step 1 prints 'refused as predicted' and exits 0 (the claim stays unresolved under key 2fc462942f0992af); step 2 prints 'receipt streams bundled', with each jvm-control stage not-started and its reason saying the adapter doesn't call the task's target",
+      "submitted": {
+        "at": "2026-11-15T05:08:46+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "notes": "the same preparation as VF-027's rerun 20261115-005927-example-287-fixed-guard-vf-027-rerun-sto, which took seconds; step 2 is offline"
+      },
+      "steps": [
+        {
+          "name": "example 287 task fixed-guard: the recorded refusal (VF-027)",
+          "run": "python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+          "cwd": "."
+        },
+        {
+          "name": "the new receipt keeps its raw streams and the controls' reason",
+          "run": "python3 examples/tools/targets/receipt_streams.py examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72 fixed-guard --reason \"doesn't call the task's target\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard"
+      ]
+    }
+  },
+  "sourceCommit": "710afb5b31747baac9c93f6281c34035a78cfeaa",
+  "startedAt": "2026-11-15T05:14:49+00:00",
+  "finishedAt": "2026-11-15T05:14:52+00:00",
+  "wallSeconds": 3.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 767575,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": "the same preparation as VF-027's rerun 20261115-005927-example-287-fixed-guard-vf-027-rerun-sto, which took seconds; step 2 is offline"
+  },
+  "usage": {
+    "peakMemoryBytes": 143454208,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 2.5,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 287 task fixed-guard: the recorded refusal (VF-027)",
+      "run": "python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 1.604,
+      "cpuSeconds": 2.453,
+      "cpuThrottledSeconds": 0.117,
+      "peakMemoryBytes": 143454208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-287-task-fixed-guard-t.log",
+        "lines": 3,
+        "bytes": 586,
+        "sha256": "486e2ec75b03d09ec1cf816437905c44972eb86536c5ab199ea2faf17250ec59",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 3,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: refused as predicted (VF-027; verifier; records/refusals/fixed-guard.json): unresolved at the recorded refusal, receipt receipts/fixed-guard/20261115T051452Z-0a6e6503",
+          "groups": [
+            "287",
+            "fixed-guard",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task fixed-guard (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-guard/20261115T051452Z-0a6e6503/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: refused as predicted (VF-027; verifier; records/refusals/fixed-guard.json): unresolved at the recorded refusal, receipt receipts/fixed-guard/20261115T051452Z-0a6e6503"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the new receipt keeps its raw streams and the controls' reason",
+      "run": "python3 examples/tools/targets/receipt_streams.py examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72 fixed-guard --reason \"doesn't call the task's target\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.037,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 9228288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-new-receipt-keeps-its-raw.log",
+        "lines": 13,
+        "bytes": 1092,
+        "sha256": "916c26deacb5ea8edfd3bd2b20aae5010271476988747a3dd5c52579179f0200",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503: 3 stages",
+        "  jvm-control fixed-release: not-started: revision fixed-release's adapter doesn't call the task's target org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z: its controls are not this task's evidence",
+        "    stdout: records/control-fixed-release-jdk21.stdout, 0 bytes",
+        "    stderr: records/control-fixed-release-jdk21.stderr, 210 bytes",
+        "  jvm-control fixed-release: not-started: revision fixed-release's adapter doesn't call the task's target org.springframework.security.crypto.bcrypt.BCrypt#checkpw([BLjava/lang/String;)Z: its controls are not this task's evidence",
+        "    stdout: records/control-fixed-release-jdk25.stdout, 0 bytes",
+        "    stderr: records/control-fixed-release-jdk25.stderr, 210 bytes",
+        "  verifier fixed-release on JDK 25: exited (exit 1)",
+        "    stdout: records/verifier.stdout, 1970 bytes",
+        "    stderr: records/verifier.stderr, 0 bytes",
+        "  records/controls.json: 2195 bytes",
+        "  records/verifier.json: 14369 bytes",
+        "receipt streams bundled"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/plan.json",
+      "change": "added",
+      "bytes": 13200,
+      "sha256": "59688769639b2351b9a0d6a28b9339ebacb33a64602dd1ab4248b5a4936b9c2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "7d14cac776d1dea2cb53f3ac5c37ad885bdc354bf4b02fbaa123bba7b3f752c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk25.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "7d14cac776d1dea2cb53f3ac5c37ad885bdc354bf4b02fbaa123bba7b3f752c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk25.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/controls.json",
+      "change": "added",
+      "bytes": 2195,
+      "sha256": "b34d4f6a0701162ed59d3a84d77122ed43885d374203a85c8afc4214b95020da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/execution.json",
+      "change": "added",
+      "bytes": 15847,
+      "sha256": "7360c9474f4eec0cf650c5674594d6a3309680629b3aad3ce7bac99d58cbf69d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/streams.json",
+      "change": "added",
+      "bytes": 2715,
+      "sha256": "d9b21793267acda71b9ea10053938757fcfcaed8b17faf432de0cafca20e198f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 446,
+      "sha256": "522cae910059736f1c380552512477c9fb4c847e0e81c07e63688a662514aae2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier.json",
+      "change": "added",
+      "bytes": 14369,
+      "sha256": "8787d02cf6a150fbfc5b44f37908e42cf02ed7602df35401be7fb16ea00cdc81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier.stdout",
+      "change": "added",
+      "bytes": 1970,
+      "sha256": "ee9ac745c712e2cef5508de73db7328c09ab5372c394ca8c47bd41f341b6d1b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/result.json",
+      "change": "added",
+      "bytes": 15154,
+      "sha256": "a9c8a6f533c01cf161ce1347a06ca032dc1550924a286e23a32187379b304a90",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T05:15:25+00:00",
+    "applied": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/plan.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk21.stderr",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk21.stdout",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk25.stderr",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/control-fixed-release-jdk25.stdout",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/controls.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/execution.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/streams.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier-output.txt",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier.stderr",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/records/verifier.stdout",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/20261115T051452Z-0a6e6503/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

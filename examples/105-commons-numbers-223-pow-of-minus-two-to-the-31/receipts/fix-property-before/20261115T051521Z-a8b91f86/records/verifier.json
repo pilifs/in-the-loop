@@ -1,0 +1,376 @@
+{
+  "task": "fix-property-before",
+  "record": {
+    "kind": "verifier",
+    "revision": "before",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+      "prove",
+      "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+      "--classes",
+      "prepare/before/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+      "--assume",
+      "k == -2 && e >= 0 && e <= 31",
+      "--assert",
+      "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 2.673,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea",
+      "commit": "710afb5b31747baac9c93f6281c34035a78cfeaa",
+      "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+      "command": "prove",
+      "jdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jdkFeature": "25",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "25.0.5",
+        "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "original-bytecode",
+        "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
+        "method": "org.apache.commons.numbers.core.ArithmeticUtils#pow(II)I",
+        "revisions": {
+          "before": {
+            "commit": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91",
+            "loadedFrom": "built/commons-numbers-core-1.4-SNAPSHOT.jar",
+            "classSha256": "a3d2ff2c371ff3d4b7d10cdfe7be41409128e54fc34b86a44d4883006061e341",
+            "origin": "built by maven from https://github.com/apache/commons-numbers at e7c172d2f4c7d171fed9060e77b5f91a20c36c91: commons-numbers-core/target/commons-numbers-core-1.4-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "k",
+                "e"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": [
+          {
+            "text": "The assertion is evaluated in Java int arithmetic, and states (-2)^e exactly on the whole domain: 1 << e is 2^e for e <= 30, and at e = 31 both 1 << 31 and its negation are Integer.MIN_VALUE, which is -2^31 = (-2)^31.",
+            "basis": "JLS 15.19 (a shift uses the low five bits of e, here e itself) and 15.15.4 (negating Integer.MIN_VALUE gives Integer.MIN_VALUE). controls/oracle.py computes (-2)^e with unbounded integers instead, and the replay checks every point of the domain against it."
+          },
+          {
+            "text": "unwind 16 completes the method's only loop on this domain: the square-and-multiply loop runs once per bit of e, at most 5 times for e <= 31.",
+            "basis": "Read from pow(int,int)'s bytecode at both revisions (exp >>= 1 until exp == 0; records/pow-gaps.json lists the classes read). A bound the check can't complete leaves the attempt unresolved, never established."
+          }
+        ]
+      },
+      "classpath": {
+        "before": [
+          {
+            "path": "built/commons-numbers-core-1.4-SNAPSHOT.jar",
+            "sha256": "e3a1b00d529d504cf8fdff8c3fb2d2150df154c98687b204aac49a35d33f9bcc",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "before": "e7c172d2f4c7d171fed9060e77b5f91a20c36c91"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "before": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+            "gaps",
+            "--target",
+            "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+            "--classes",
+            "prepare/before/built/commons-numbers-core-1.4-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-before.stdout",
+          "stderr": "verifier/probe-before.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.StringBuilder.<init>()V@jdk-25.0.5",
+              "kind": "jdk-constructor",
+              "call": "java.lang.StringBuilder.<init>()",
+              "sites": [
+                "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;@jdk-25.0.5",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(int)",
+              "sites": [
+                "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.5",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(java.lang.String)",
+              "sites": [
+                "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.toString()Ljava/lang/String;@jdk-25.0.5",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.toString()",
+              "sites": [
+                "org.apache.commons.numbers.core.ArithmeticUtils.pow:282"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "violation",
+        "target": "org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int)",
+        "domain": "k: int × e: int",
+        "assume": "k == -2 && e >= 0 && e <= 31",
+        "assert": "result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": {
+          "input": "pow(k=-2, e=31)",
+          "outcome": "throws ArithmeticException(\"integer overflow\")",
+          "values": [
+            "-2",
+            "31"
+          ],
+          "shrink_runs": 8,
+          "inputs": [
+            {
+              "name": "k",
+              "type": "int",
+              "value": -2
+            },
+            {
+              "name": "e",
+              "type": "int",
+              "value": 31
+            }
+          ],
+          "call": {
+            "class": "org.apache.commons.numbers.core.ArithmeticUtils",
+            "class_file": "org/apache/commons/numbers/core/ArithmeticUtils.class",
+            "classes": "after",
+            "method": "pow",
+            "descriptor": "(II)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "k",
+                "type": "int",
+                "value": -2,
+                "from": "k"
+              },
+              {
+                "name": "e",
+                "type": "int",
+                "value": 31,
+                "from": "e"
+              }
+            ]
+          }
+        },
+        "proof": "found by jvmcontract's own checker (CaDiCaL) in 2.6 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "property-violated",
+            "message": "Property of org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int) violated: `result == ((e & 1) == 0 ? 1 << e : -(1 << e))` where k == -2 && e >= 0 && e <= 31:\n  pow(k=-2, e=31)\n    outcome: throws ArithmeticException(\"integer overflow\")",
+            "uri": null,
+            "line": 281
+          }
+        ],
+        "output": "✗ Property of org.apache.commons.numbers.core.ArithmeticUtils#pow(int, int) violated: `result == ((e & 1) == 0 ? 1 << e : -(1 << e))` where k == -2 && e >= 0 && e <= 31:\n  pow(k=-2, e=31)\n    outcome: throws ArithmeticException(\"integer overflow\")\n  (found by jvmcontract's own checker (CaDiCaL) in 2.6 s searching inputs in [-100000:100000], replayed in the interpreter; domain k: int × e: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 2.609272487,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": "[-100000:100000]",
+          "native": {
+            "paths": 35,
+            "merges": 0,
+            "solver_calls": 170,
+            "solving_seconds": 2.207744169,
+            "gates_evaluated": 680622,
+            "evaluating_seconds": 0.011435599,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 281308,
+            "clauses": 947831,
+            "seconds": 2.54737174,
+            "loading_seconds": 0.000327251,
+            "decoding_seconds": 1.4969e-05,
+            "encoding_seconds": 0.317501404,
+            "witness_seconds": 0.000599049
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 600.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 600.0,
+              "seconds": 2.547,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.021,
+                "encoding": 0.318,
+                "solving": 2.208,
+                "trace": 0.001,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 281308,
+                "clauses": 947831
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 2.618,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 2.547,
+            "replay": 0.001,
+            "jvm": 0.0,
+            "other": 0.069
+          }
+        },
+        "replay": {
+          "by": "interpreter",
+          "reproduced": true
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "k",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "e",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "k: int × e: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "k == -2 && e >= 0 && e <= 31",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == ((e & 1) == 0 ? 1 << e : -(1 << e))",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+            "classes": 17,
+            "jdk": "25.0.5"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261115-050856-example-105-fix-property-before-its-rece/.build-py/examples-_7ms3wah/targets/105/fix-property-before",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261115-050856-example-105-fix-property-before-its-rece/.build-py/examples-_7ms3wah/targets/105/fix-property-before"
+  }
+}
