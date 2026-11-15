@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T01:42:37.135Z",
-  "duration_seconds": 26237,
+  "ended": "2026-11-15T01:51:30.660Z",
+  "duration_seconds": 26770,
   "stats": {
     "turns": 148,
-    "api_calls": 1198,
-    "tool_calls": 1229,
+    "api_calls": 1234,
+    "tool_calls": 1265,
     "tool_errors": 23,
     "compactions": 27,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 2430,
-      "output_tokens": 790849,
-      "cache_read_input_tokens": 154285635,
-      "cache_creation_input_tokens": 4029719
+      "input_tokens": 2504,
+      "output_tokens": 813510,
+      "cache_read_input_tokens": 159506877,
+      "cache_creation_input_tokens": 4096651
     }
   },
   "tools": {
-    "Bash": 1054,
+    "Bash": 1087,
     "Read": 85,
-    "Edit": 73,
+    "Edit": 74,
+    "Write": 6,
     "Agent": 5,
-    "Write": 5,
-    "ToolSearch": 4,
+    "ToolSearch": 5,
     "AskUserQuestion": 2,
     "WebFetch": 1
   },
@@ -48,6 +48,7 @@
     "examples/tools/targets/runtime_upstream.py",
     "examples/tools/targets/sidecar.py",
     "examples/tools/targets/test_acceptance.py",
+    "examples/tools/targets/test_gap_inventory.py",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/test_route.py",
     "examples/tools/targets/test_runtime.py",
@@ -444,24 +445,24 @@
     {
       "index": 27,
       "started": "2026-11-15T01:42:14.308Z",
-      "ended": "2026-11-15T01:42:37.135Z",
+      "ended": "2026-11-15T01:51:30.660Z",
       "turns": 4,
-      "api_calls": 6,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 12,
-        "output_tokens": 1235,
-        "cache_read_input_tokens": 313351,
-        "cache_creation_input_tokens": 95710
+        "input_tokens": 86,
+        "output_tokens": 23896,
+        "cache_read_input_tokens": 5534593,
+        "cache_creation_input_tokens": 162642
       },
-      "peak_context_tokens": 108896
+      "peak_context_tokens": 175828
     }
   ],
   "log": {
-    "sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550",
-    "bytes": 39447605,
-    "lines": 12346,
-    "gzip_bytes": 8311061,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550.jsonl.gz"
+    "sha256": "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c",
+    "bytes": 40125571,
+    "lines": 12658,
+    "gzip_bytes": 8401424,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c.jsonl.gz"
   },
   "subagents": [
     {
@@ -986,20 +987,20 @@
       "log_sha256": "5aef489fe0c77d2164171e1338e898bcc0ac358a59e8630beff646573bafbeb3"
     },
     {
-      "change_id": "qnnzopqqmmtkxmlnwpxlopqytvvvksrm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550"
-    },
-    {
       "change_id": "ovvoultportryproopplkqyuzvwmtxqs",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 2 jobs: example 307's two reruns stop at the recorded nullable-String refusal, closing VF-028",
       "body": "Jobs 20261115-013518-example-307-preservation-vf-028-rerun-st and ...-mutant-preservation-vf-028-r passed at 45fd8612b5d1 on vm-1 (about 6 s each) with example:task-refused-as-predicted: build.py 307 --task <T> refuses BCrypt#hashpw(String,String) at --nullable password, as recorded. Their receipts were applied and VF-028 is closed in verification/findings.md. Neither task ran as established/refuted; that needs the checker to accept nullable Strings in a regression check.",
       "log_sha256": "d9faeebf0fc7d2da81405b6026733ddcb4a2b54e68f1ea7767d099d277532550"
+    },
+    {
+      "change_id": "tupmvorkvloswskyklmxsknxryxkkrrz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: Phase 5 step 4, the v1 gap inventory, published as examples/gap-inventory.md and through find.py --gap; VF-028 closed",
+      "body": "The v1 gap inventory (decision 11) is now a page, examples/gap-inventory.md, generated offline by workflow_handoff.py inventory --markdown from the 20 target sidecars, their gap packets and receipts; test_gap_inventory.py checks the committed page equals the rendering. It ranks the five observed capability gaps by distinct families, then blocked obligations: two-dependency-closures (3 families, 4 obligations), receiver-of-several-constructors (2, 8), string-parameter (2, 5), interface-parameter (1, 7) and the StringBuilder constructor under strict (1, 1), 25 blocked obligations in all. Each entry gives the obligations it blocks with their claim keys, the smallest reproducer (the fastest observed attempt, its packet, job, and the workflow_refusal.py check that reruns it), the missing semantics, owner modules and closure test. The 17 predicted groups are kept apart in their own table, unranked against the observed ones. inventory() now gives each group a rank and a reproducer; find.py --gap also takes a gap id or its part before a colon (the projection's JDK suffix dropped), so --gap input-construction:string-parameter finds 287, 306 and 307; examples/README.md links the page.\n\nVF-028's two reruns passed with task-refused-as-predicted (collected in ovvoultp, which closed VF-028); the entry is moved under findings.md's Decided and closed heading beside VF-027. Verified: example-targets-integration.sh exits 0 (contract 16, targets suite 247 with four new tests, test_build 190, test_pipeline 33, build.py --plan), and build.py --index-only gives no diff. For review, in the brief: 285-287's prediction summaries still say no verifier has run on the packet, kept as recorded; the page is regenerated by hand after a sidecar or packet change.",
+      "log_sha256": "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c"
     }
   ],
   "logs": {
@@ -1067,6 +1068,12 @@
       "bytes": 28229246,
       "lines": 8933,
       "gzip_bytes": 5953478,
+      "url": null
+    },
+    "488e91647b9c04da2ab8e0a02f4973afbf73175990f8aeb1bef9b36812c10e0c": {
+      "bytes": 40125571,
+      "lines": 12658,
+      "gzip_bytes": 8401424,
       "url": null
     },
     "4b17e594bdd8d9858f50d95db4440638adf95e29288663052fd137fba87d8ff4": {

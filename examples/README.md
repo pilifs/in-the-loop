@@ -525,7 +525,9 @@ receipt exits 0 only when the receipt's `matchesExpected` is true: ingestion com
 the task's `expected`, and a replay, which decides no claim, compares each revision's controls with what its pair's
 kind expects. Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
 it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
-`--role`, `--readiness`, `--claim-status` and `--gap` filter on.
+`--role`, `--readiness`, `--claim-status` and `--gap` filter on. [`gap-inventory.md`](gap-inventory.md) ranks the
+observed capability gaps across these targets, by distinct families and blocked obligations, each with its smallest
+reproducer, owner module and closure test, and keeps the predicted ones apart; `find.py --gap` takes its gap ids.
 
 Before it reads a verdict, `build.py` decides how the verifier's run ended, and records it in `result.json` as
 `execution`: `completed`, `timed-out`, `killed`, `invalid-output` or `tool-error`, with the exit code and the

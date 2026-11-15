@@ -24,7 +24,7 @@ JDK suffix dropped, else the blocker's kind and summary), ranked by the distinct
 (case, task and claim) each blocks, never by raw case counts. A priority is an engineering aid, not evidence.
 
 Run as a script: `workflow_handoff.py handoff NNN TASK` prints one packet, `workflow_handoff.py inventory` the
-inventory of every example with a target sidecar.
+inventory of every example with a target sidecar, and `inventory --markdown` the page examples/gap-inventory.md.
 """
 
 import hashlib
@@ -485,11 +485,48 @@ def packet(folder, example, target, task):
 # -- the inventory
 
 
+def observed_run(folder, example, t, packet_):
+    """What an observed obligation's packet file records of the run that observed it: the job, the seconds its
+    attempt took, the semantics it says are missing, its closure check, and, when the packet states the refusal, the
+    check that reruns the task predicting it (workflow_refusal.py). Empty for a packet that records no run."""
+    name = packet_.get("file")
+    if not name or not packet_.get("present"):
+        return {}
+    try:
+        document = read_json(workflow.inside(Path(folder), name))
+    except (workflow.ClaimError, OSError, ValueError):
+        return {}
+    if not isinstance(document, dict):
+        return {}
+    seen = document.get("observed") if isinstance(document.get("observed"), dict) else {}
+    out = {"packet": name, "job": seen.get("job"), "seconds": seen.get("seconds"),
+           "semantics": packet_.get("semantics") if isinstance(packet_.get("semantics"), str) else None,
+           "closure": (packet_.get("closure") or {}).get("check")}
+    if isinstance(document.get("refusal"), dict):
+        out["check"] = f"python3 examples/tools/targets/workflow_refusal.py {example['id']} {t['id']}"
+    return out
+
+
+def reproducer(obligations):
+    """A gap's smallest reproducer: of its observed obligations whose packet states the refusal, the one whose
+    recorded attempt took the fewest seconds (one that records none comes last), then by example and task. None
+    when no observed obligation has a rerun check."""
+    runs = [o for o in obligations if o["observed"] and o.get("check")]
+    if not runs:
+        return None
+    best = min(runs, key=lambda o: (o.get("seconds") is None, o.get("seconds") or 0, o["example"], o["task"]))
+    return {k: best.get(k) for k in ("example", "task", "claim", "packet", "job", "seconds", "check", "semantics",
+                                     "closure")}
+
+
 def inventory(rows):
     """The gaps of many targets, grouped and ranked for Phase 5's v1 list. `rows` are (folder, example, target)
     triples. Each group: its gap id (or the blocker's kind and summary), kind and class, whether any target observed
     it, the families, cases and blocked obligations (example, case, task, claim key, observed), and the likely modules
-    and closure checks of its packets. Observed groups first, then by distinct families, then blocked obligations."""
+    and closure checks of its packets. Observed groups first, then by distinct families, then blocked obligations;
+    `rank` is that order, from 1, and `reproducer` the smallest rerun of an observed obligation (reproducer()). An
+    observed obligation also names its packet, the job that observed it and, when the packet states the refusal, the
+    check that reruns it (observed_run())."""
     groups = {}
     for folder, example, target in rows:
         identity = target["identity"]
@@ -509,10 +546,11 @@ def inventory(rows):
                     g["families"].add(identity["family"])
                     g["cases"].add(identity["case"])
                     g["roles"].add(identity["role"])
+                    packet_ = gap.get("packet") or {}
                     g["obligations"].append({"example": example["id"], "case": identity["case"], "task": t["id"],
                                              "claim": (p["plan"].get("claim") or {}).get("key"),
-                                             "observed": counted})
-                    packet_ = gap.get("packet") or {}
+                                             "observed": counted,
+                                             **(observed_run(folder, example, t, packet_) if counted else {})})
                     g["modules"].update((packet_.get("module") or {}).get("likely") or [])
                     if packet_.get("closure"):
                         g["closures"].append(packet_["closure"])
@@ -530,10 +568,97 @@ def inventory(rows):
                     "obligations": g["obligations"], "modules": sorted(g["modules"]),
                     "closures": g["closures"], "findings": sorted(g["findings"])})
     out.sort(key=lambda g: (not g["observed"], -len(g["families"]), -g["blockedObligations"], g["gap"]))
+    for rank, g in enumerate(out, 1):
+        g["rank"] = rank
+        g["reproducer"] = reproducer(g["obligations"])
     return {"schema": INVENTORY_SCHEMA,
             "note": "ranked by observed first, distinct families, then blocked obligations; an engineering aid, not "
                     "evidence, and a predicted gap is a hypothesis until a probe reaches it",
             "gaps": out}
+
+
+def first_sentence(text, limit=240):
+    """A predicted gap's summary, cut at its first sentence (or `limit` characters) for the page's table."""
+    text = " ".join(str(text).split())
+    m = re.search(r"(?<=[a-z0-9)])\. (?=[A-Z])", text)
+    cut = text[:m.start() + 1] if m else text
+    return cut if len(cut) <= limit else cut[:limit - 1].rstrip() + "…"
+
+
+def cell(text):
+    return str(text).replace("|", "\\|").replace("\n", " ")
+
+
+def inventory_markdown(value, folders):
+    """examples/gap-inventory.md: the inventory as a page, observed gaps ranked with each one's blocked obligations,
+    smallest reproducer, missing semantics, owner modules and closure test, then the predicted gaps apart. `folders`
+    maps an example id to its folder's name, for links."""
+    def link(example, path=None):
+        folder = folders.get(example)
+        if not folder:
+            return example
+        return f"[{example}]({folder}/{path or 'README.md'})"
+
+    observed = [g for g in value["gaps"] if g["observed"]]
+    predicted = [g for g in value["gaps"] if not g["observed"]]
+    lines = [
+        "# The v1 gap inventory of the example targets",
+        "",
+        "Generated from every example with a target sidecar by `python3 examples/tools/targets/workflow_handoff.py "
+        "inventory --markdown`, offline, from the sidecars, their gap packets and the receipts in the tree. Don't edit "
+        "it by hand: `test_gap_inventory.py` checks that it equals the rendering. The JSON form, without `--markdown`, "
+        f"has every field (`{value['schema']}`).",
+        "",
+        "Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (decision 11): every observed "
+        "capability gap of the portfolio, ranked by observed first, then distinct families, then blocked "
+        "obligations (example, task and claim), never by raw case counts. A rank is an engineering aid, not "
+        "evidence. Each observed obligation's claim stays unresolved with its `expected` conclusion unchanged, and a "
+        "gap closes only when that claim, rerun unchanged with the extended implementation, decides it. "
+        "`find.py --gap GAP` finds the examples a gap blocks.",
+        "",
+        "## Observed gaps, ranked",
+        "",
+        "| Rank | Gap | Kind | Families | Blocked obligations | CVE and positive | Owner modules | Findings |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for g in observed:
+        lines.append(f"| {g['rank']} | `{cell(g['gap'])}` | {g['kind']} | {len(g['families'])}: "
+                     f"{', '.join(g['families'])} | {g['blockedObligations']} | "
+                     f"{'yes' if g['negativeAndPositive'] else 'no'} | {cell('; '.join(g['modules']))} | "
+                     f"{', '.join(g['findings'])} |")
+    for g in observed:
+        lines += ["", f"### {g['rank']}. `{g['gap']}`", ""]
+        tasks = {}
+        for o in g["obligations"]:
+            if o["observed"]:
+                tasks.setdefault(o["example"], []).append(f"`{o['task']}` ({o['claim']})")
+        lines.append("- **Blocks**: " + "; ".join(f"{link(e)} {', '.join(ts)}" for e, ts in tasks.items()) + ".")
+        r = g.get("reproducer")
+        if r:
+            took = f", {r['seconds']} s" if r.get("seconds") is not None else ""
+            lines.append(f"- **Smallest reproducer**: {link(r['example'], r['packet'])} `{r['task']}`, observed by "
+                         f"job `{r['job']}`{took}. Rerun it, predicting the refusal: `{r['check']}`.")
+            if r.get("semantics"):
+                lines.append(f"- **Missing semantics** (from that packet): {r['semantics']}")
+        lines.append(f"- **Owner modules**: {'; '.join(g['modules']) or 'not named'}.")
+        if r and r.get("closure"):
+            lines.append(f"- **Closure test** (each obligation's, here the reproducer's): {r['closure']}.")
+    lines += [
+        "",
+        "## Predicted gaps, kept apart",
+        "",
+        "Each is a hypothesis from a static scan, the build files or the docs, until a probe or attempt reaches it. "
+        "None blocks a task's readiness, and none is ranked against the observed gaps.",
+        "",
+        "| Kind | Class | Obligations | Examples | Prediction |",
+        "|---|---|---|---|---|",
+    ]
+    for g in predicted:
+        examples = sorted({o["example"] for o in g["obligations"]})
+        summary = g["gap"].split(": ", 1)[1] if g["gap"].startswith(g["kind"] + ": ") else g["gap"]
+        lines.append(f"| {g['kind']} | {g['class']} | {g['predictedObligations']} | "
+                     f"{', '.join(link(e) for e in examples)} | {cell(first_sentence(summary))} |")
+    return "\n".join(lines) + "\n"
 
 
 def main(argv=None):
@@ -543,7 +668,8 @@ def main(argv=None):
     h = sub.add_parser("handoff", help="one task's handoff packet")
     h.add_argument("example")
     h.add_argument("task")
-    sub.add_parser("inventory", help="the gap inventory of every example with a target sidecar")
+    i = sub.add_parser("inventory", help="the gap inventory of every example with a target sidecar")
+    i.add_argument("--markdown", action="store_true", help="as examples/gap-inventory.md, the page")
     args = parser.parse_args(argv)
     import build
     from targets import sidecar
@@ -568,6 +694,9 @@ def main(argv=None):
             if json.loads((folder / "example.json").read_text()).get("target"):
                 rows.append(load(folder))
         value = inventory(r for r in rows if r[2] is not None)
+        if args.markdown:
+            sys.stdout.write(inventory_markdown(value, {e["id"]: f.name for f, e, _ in rows}))
+            return
     print(json.dumps(value, indent=2, ensure_ascii=False))
 
 
