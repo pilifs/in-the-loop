@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (ended) |
+| Session | `65eb1a9c-093d-4394-b067-5a27e634424e` (open) |
 | When | 2026-11-14 17:31 UTC to 2026-11-15 01:04 UTC (453 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.325 |
@@ -435,6 +435,12 @@ change `ymtkuqqqyrkt` · [log `eff74a3c8d4b`](https://terminalvalue.net/raw-trac
 Example 307's two native strict proof jobs (20261115-011448-example-307-preservation-phase-5-step-1 and -mutant-preservation-phase-5, collected in wtwuqnwz) both stopped before any proof at --nullable password: the checker takes a String parameter of a regression check only as non-null bounded UTF-16, and the frozen claim's domain has a null password. This is VF-027's third cause (input-construction:string-parameter). As the user decided on 2026-11-15 for VF-027, the refusal is recorded, not restated: each task gets an observed gap packet under examples/307-.../records/refusals/ (citing its job, log, receipt and verifier output by sha256, and claim key 7eb077dac7a25751) and an observed blocker with finding VF-028, replacing the target-wide input-construction prediction. Both tasks now read blocked; the claim and its expected conclusions are unchanged. 307's handoff next, README, a note and the index say so, and VF-028's status records it.
 
 Queued, each running workflow_refusal.py 307 TASK, which passes only if the same refusal recurs under the same claim key: 20261115-013518-example-307-preservation-vf-028-rerun-st and 20261115-013518-example-307-mutant-preservation-vf-028-r. VF-028 closes when both pass.
+
+### Record verification results for 2 jobs: gate A8's 42 target tasks with JBMC absent, and one constructed example per build.py run path, both passed
+
+change `qswsrqywvwor` · [log `eff74a3c8d4b`](https://terminalvalue.net/raw-traces/65eb1a9c-093d-4394-b067-5a27e634424e/eff74a3c8d4bc0f7874341d16ef40f04655193ecc81f8367b02aced641a10ea5.jsonl.gz)
+
+20261115-015944 (49 steps, 20m56s, peak 955 MiB): the 42 target tasks and 7 native constructed run paths behave as expected with JBMC absent, including the task refusals predicted. 20261115-020015 (28 steps, 3m37s, peak 1.3 GiB): each build.py run path keeps its recorded verdict at the merged revision. Collect applied no output files. Run with the one-loop budget (80G, 26 CPUs, 13 workers); the first runner was killed by the session's 10 minute background limit and the job re-ran from pending.
 
 ## Conversation
 

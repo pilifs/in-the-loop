@@ -1,0 +1,3101 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na",
+  "title": "gate A8: the 42 target tasks and the 7 native constructed run paths, run with JBMC absent",
+  "status": "passed",
+  "summary": "passed: 49 passed step(s) in 20m56s, peak 955.3 MiB (estimated 30m00s, 4.0 GiB); signals: example:task-as-expected×1; example:task-refused-as-predicted×1; example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na.json",
+    "sha256": "95af788bf0cad1705099d5649aa600558b696d5ed98bb4c98a981d994acfebb5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-015944-gate-a8-the-42-target-tasks-and-the-7-na",
+      "title": "gate A8: the 42 target tasks and the 7 native constructed run paths, run with JBMC absent",
+      "description": "Gate A8 of llm-dlc/loops/example-targets-acceptance.md requires the new native tasks to run with JBMC absent (its adversarial row: native execution without JBMC installed works for supported tasks, with no hidden mandatory dependency). Every step runs inside examples/tools/targets/without_jbmc.sh, which covers each jbmc executable (on PATH, and in /usr/local/bin, /usr/bin and /bin, the target route's fixed PATH) with /dev/null in a private bwrap mount namespace, and checks before running anything that no jbmc can be run or found (exit 2 otherwise). Inside it: all 42 tasks of the seven target sidecar examples (105, 285, 286, 287, 305, 306, 307) at this commit. The 14 replays and 105's three proof tasks with verdicts go through build.py N --task T, each expected as expected (a replay: its pair's outcomes; 105 fix-property established, fix-property-before refuted, regression refuted, as their last jobs gave). The 25 tasks blocked by an observed gap (VF-027, VF-028) go through workflow_refusal.py N T, each expected to stop at its recorded refusal under its recorded claim key. Then one constructed example per native run path of build.py (144, 145, 149, 151, 161, 172, 190), each expected to give its recorded verdict. No outputs are applied back: each step's line in the log is the evidence. A step that fails because jbmc is missing is a hidden dependency, a finding for A8.",
+      "kind": "example",
+      "capabilities": [
+        "target:replay",
+        "target:prove",
+        "target:equivalence",
+        "target:predicted-refusal",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/without_jbmc.sh",
+          "llm-dlc/loops/example-targets-acceptance.md",
+          "examples/tools/targets/workflow_refusal.py"
+        ],
+        "examples": [
+          "105",
+          "285",
+          "286",
+          "287",
+          "305",
+          "306",
+          "307"
+        ]
+      },
+      "expected": "every step exits 0: without_jbmc.sh prints 'JBMC absent' before each; the 17 build.py --task steps print 'as expected'; the 25 workflow_refusal.py steps print 'refused as predicted'; the 7 constructed examples print '(as expected)'. A NOT AS EXPECTED, a NOT AS PREDICTED, or any failure that names jbmc fails A8",
+      "submitted": {
+        "at": "2026-11-15T01:59:44+00:00",
+        "session": "051e402b-750c-4a9d-bdd2-24dfb39add84",
+        "by": "example-targets loop"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "30m",
+        "timeout": "2h",
+        "notes": "the sum of these tasks' last jobs (105 regression 281 s and confined-change 263 s, four 122 s refusals, the rest 2-54 s each) is about 22 minutes, peak 0.89 GB; the seven constructed examples take seconds each"
+      },
+      "steps": [
+        {
+          "name": "example 105 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 105 task fix-property, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task fix-property",
+          "cwd": "."
+        },
+        {
+          "name": "example 105 task fix-property-before, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task fix-property-before",
+          "cwd": "."
+        },
+        {
+          "name": "example 105 task regression, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task regression",
+          "cwd": "."
+        },
+        {
+          "name": "example 105 task confined-change, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+          "cwd": "."
+        },
+        {
+          "name": "example 285 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 285 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 285 task vulnerable-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 vulnerable-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 285 task fixed-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 fixed-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 285 task preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 285 task mutant-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 285 --task mutant-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 285 task mutant-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 mutant-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 286 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task vulnerable-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task fixed-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 fixed-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task vulnerable-protected-state-mutation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-protected-state-mutation",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task fixed-protected-state-mutation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 fixed-protected-state-mutation",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task mutant-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 286 --task mutant-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 286 task mutant-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 mutant-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 287 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task vulnerable-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task fixed-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 fixed-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task vulnerable-guard, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-guard",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task fixed-guard, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task mutant-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 287 --task mutant-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 287 task mutant-security, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 mutant-security",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task m6-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task m6-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task finite-outcome-before, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-before",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task finite-outcome-after, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task mutant-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task mutant-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 305 task mutant-preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 mutant-preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 306 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 306 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 306 task preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 306 task mutant-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 306 --task mutant-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 306 task mutant-preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 307 task replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 307 --task replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 307 task preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 307 preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 307 task mutant-replay, JBMC absent: as expected",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 307 --task mutant-replay",
+          "cwd": "."
+        },
+        {
+          "name": "example 307 task mutant-preservation, JBMC absent: its recorded refusal",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 307 mutant-preservation",
+          "cwd": "."
+        },
+        {
+          "name": "example 144, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 144",
+          "cwd": "."
+        },
+        {
+          "name": "example 145, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 145",
+          "cwd": "."
+        },
+        {
+          "name": "example 149, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 149",
+          "cwd": "."
+        },
+        {
+          "name": "example 151, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 151",
+          "cwd": "."
+        },
+        {
+          "name": "example 161, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 161",
+          "cwd": "."
+        },
+        {
+          "name": "example 172, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 172",
+          "cwd": "."
+        },
+        {
+          "name": "example 190, JBMC absent: its recorded verdict",
+          "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 190",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "22115dcb860625180eebca39c56d4a143ee2b6ab",
+  "startedAt": "2026-11-15T02:17:24+00:00",
+  "finishedAt": "2026-11-15T02:38:22+00:00",
+  "wallSeconds": 1258.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4053973,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": "the sum of these tasks' last jobs (105 regression 281 s and confined-change 263 s, four 122 s refusals, the rest 2-54 s each) is about 22 minutes, peak 0.89 GB; the seven constructed examples take seconds each"
+  },
+  "usage": {
+    "peakMemoryBytes": 1001730048,
+    "wallSeconds": 1256.6,
+    "cpuSeconds": 1364.0,
+    "memoryOfEstimate": 0.23,
+    "durationOfEstimate": 0.7
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 105 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 58.517,
+      "cpuSeconds": 73.574,
+      "cpuThrottledSeconds": 7.132,
+      "peakMemoryBytes": 1001730048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-105-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 369,
+        "sha256": "1221380ed20a0d877d6411b2533059718859d57d7bfcf2d7cf43e1b2195bdd82",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task replay: none (completed; as expected), receipt receipts/replay/20261115T021823Z-7c3a5060/result.json",
+          "groups": [
+            "105",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 105 --task replay",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task replay (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task replay: none (completed; as expected), receipt receipts/replay/20261115T021823Z-7c3a5060/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 105 task fix-property, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task fix-property",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 30.071,
+      "cpuSeconds": 39.602,
+      "cpuThrottledSeconds": 3.475,
+      "peakMemoryBytes": 837910528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-105-task-fix-property.log",
+        "lines": 3,
+        "bytes": 400,
+        "sha256": "e57eb66382ab5adc2ca94051527c7fc25e135d68330be54b33114c749b9693a2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property: established (completed; as expected), receipt receipts/fix-property/20261115T021853Z-753bd679/result.json",
+          "groups": [
+            "105",
+            "fix-property",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 105 --task fix-property",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task fix-property (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property: established (completed; as expected), receipt receipts/fix-property/20261115T021853Z-753bd679/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 105 task fix-property-before, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task fix-property-before",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 31.66,
+      "cpuSeconds": 40.204,
+      "cpuThrottledSeconds": 3.714,
+      "peakMemoryBytes": 860917760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-105-task-fix-property.log",
+        "lines": 3,
+        "bytes": 424,
+        "sha256": "90aa72fa1d3fce0145c7333cf60a88dd381f34235afdbf67687c91071a00cd0c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property-before: refuted (completed; as expected), receipt receipts/fix-property-before/20261115T021925Z-39d1d4b5/result.json",
+          "groups": [
+            "105",
+            "fix-property-before",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 105 --task fix-property-before",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task fix-property-before (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task fix-property-before: refuted (completed; as expected), receipt receipts/fix-property-before/20261115T021925Z-39d1d4b5/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 105 task regression, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 105 --task regression",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 242.935,
+      "cpuSeconds": 258.055,
+      "cpuThrottledSeconds": 8.306,
+      "peakMemoryBytes": 855789568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-105-task-regression-jb.log",
+        "lines": 3,
+        "bytes": 388,
+        "sha256": "1331fb55f162a7303934cc636e6bb2fc430825719e1a73663757ba7c143e72c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task regression: refuted (completed; as expected), receipt receipts/regression/20261115T022328Z-36b3511a/result.json",
+          "groups": [
+            "105",
+            "regression",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 105 --task regression",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: running task regression (target route)",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task regression: refuted (completed; as expected), receipt receipts/regression/20261115T022328Z-36b3511a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 105 task confined-change, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 227.94,
+      "cpuSeconds": 244.614,
+      "cpuThrottledSeconds": 7.176,
+      "peakMemoryBytes": 943755264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-105-task-confined-chan.log",
+        "lines": 4,
+        "bytes": 716,
+        "sha256": "1a9c0b5b4262e7e262f4ed074f4650ecfb72c138438dceeb83d7adcf11c92e0c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "105-commons-numbers-223-pow-of-minus-two-to-the-31: task confined-change: refused as predicted (VF-027; verifier; records/refusals/confined-change.json): unresolved at the recorded refusal, receipt receipts/confined-change/20261115T022716Z-223fdeb0",
+          "groups": [
+            "105",
+            "confined-change",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 105 confined-change",
+        "  build.py | 105-commons-numbers-223-pow-of-minus-two-to-the-31: running task confined-change (target route)",
+        "  build.py | 105-commons-numbers-223-pow-of-minus-two-to-the-31: task confined-change: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/confined-change/20261115T022716Z-223fdeb0/result.json",
+        "105-commons-numbers-223-pow-of-minus-two-to-the-31: task confined-change: refused as predicted (VF-027; verifier; records/refusals/confined-change.json): unresolved at the recorded refusal, receipt receipts/confined-change/20261115T022716Z-223fdeb0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 285 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 285 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.807,
+      "cpuSeconds": 5.944,
+      "cpuThrottledSeconds": 0.493,
+      "peakMemoryBytes": 138436608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-285-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 387,
+        "sha256": "e5982bb7fd450de1a06263f53082083b9c97036c08ad5ac9df67e887dd372a66",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task replay: none (completed; as expected), receipt receipts/replay/20261115T022719Z-eb543e58/result.json",
+          "groups": [
+            "285",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 285 --task replay",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task replay (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task replay: none (completed; as expected), receipt receipts/replay/20261115T022719Z-eb543e58/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 285 task vulnerable-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 vulnerable-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.404,
+      "cpuSeconds": 3.335,
+      "cpuThrottledSeconds": 0.237,
+      "peakMemoryBytes": 150343680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-285-task-vulnerable-se.log",
+        "lines": 4,
+        "bytes": 767,
+        "sha256": "00488d12b0e2670041b977a57abbf13885fd57ef79c10acfba0fc255a68594e8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task vulnerable-security: refused as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded refusal, receipt receipts/vulnerable-security/20261115T022722Z-40ccdddc",
+          "groups": [
+            "285",
+            "vulnerable-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 285 vulnerable-security",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task vulnerable-security (target route)",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task vulnerable-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-security/20261115T022722Z-40ccdddc/result.json",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task vulnerable-security: refused as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded refusal, receipt receipts/vulnerable-security/20261115T022722Z-40ccdddc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "example 285 task fixed-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 fixed-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 122.239,
+      "cpuSeconds": 123.34,
+      "cpuThrottledSeconds": 0.19,
+      "peakMemoryBytes": 206139392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-example-285-task-fixed-securit.log",
+        "lines": 4,
+        "bytes": 736,
+        "sha256": "b94e6041ce86a6381d42c9aa99b175fa8d11e369b1a74c7ac96473e88c8cf13a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T022924Z-86750086",
+          "groups": [
+            "285",
+            "fixed-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 285 fixed-security",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task fixed-security (target route)",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-security/20261115T022924Z-86750086/result.json",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T022924Z-86750086"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 9,
+      "name": "example 285 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.607,
+      "cpuSeconds": 5.841,
+      "cpuThrottledSeconds": 0.422,
+      "peakMemoryBytes": 152584192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/9-example-285-task-preservation.log",
+        "lines": 5,
+        "bytes": 855,
+        "sha256": "5bf52b9de7963e0fb3cf3803b650176195baa14fe0c3ca31b4e27b7935155adb",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 5,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal",
+          "groups": [
+            "285",
+            "preservation",
+            "VF-027",
+            "run-verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 285 preservation",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task preservation (target route)",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classpat",
+        "  build.py | Not executed: 285-spring-boot-cve-2023-34055-unbounded-http-method-labels",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 10,
+      "name": "example 285 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 285 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.815,
+      "cpuSeconds": 8.357,
+      "cpuThrottledSeconds": 0.669,
+      "peakMemoryBytes": 226918400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/10-example-285-task-mutant-replay.log",
+        "lines": 3,
+        "bytes": 415,
+        "sha256": "35a8201850365f9390b5149883dc175a072ffaad656f9234e3147e5a2541c6d7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T022935Z-121c5030/result.json",
+          "groups": [
+            "285",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 285 --task mutant-replay",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task mutant-replay (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T022935Z-121c5030/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 11,
+      "name": "example 285 task mutant-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 285 mutant-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 125.436,
+      "cpuSeconds": 125.891,
+      "cpuThrottledSeconds": 0.411,
+      "peakMemoryBytes": 305876992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/11-example-285-task-mutant-securi.log",
+        "lines": 4,
+        "bytes": 739,
+        "sha256": "b0321bfdbbb21f2eacabd43b0b6e3aed7b4fa2d27e26c56519f08df63d40c5be",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T023140Z-5ed57b59",
+          "groups": [
+            "285",
+            "mutant-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 285 mutant-security",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task mutant-security (target route)",
+        "  build.py | 285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261115T023140Z-5ed57b59/result.json",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T023140Z-5ed57b59"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 12,
+      "name": "example 286 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 286 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.81,
+      "cpuSeconds": 6.032,
+      "cpuThrottledSeconds": 0.41,
+      "peakMemoryBytes": 139948032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/12-example-286-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 405,
+        "sha256": "fccfb2aa4687108399a07ffde232194ba1324bd50c6d5ae7b984bf776ac3fe8a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task replay: none (completed; as expected), receipt receipts/replay/20261115T023144Z-507d6dfd/result.json",
+          "groups": [
+            "286",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 286 --task replay",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task replay (target route)",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task replay: none (completed; as expected), receipt receipts/replay/20261115T023144Z-507d6dfd/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 13,
+      "name": "example 286 task vulnerable-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 3.314,
+      "cpuThrottledSeconds": 0.126,
+      "peakMemoryBytes": 140513280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/13-example-286-task-vulnerable-se.log",
+        "lines": 4,
+        "bytes": 794,
+        "sha256": "50ad2e7e296a35c6f8c5c6d05ab02a5db783f50b083fd578928b3b8992b2bb5f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-security: refused as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded refusal, receipt receipts/vulnerable-security/20261115T023146Z-9a9d3fd2",
+          "groups": [
+            "286",
+            "vulnerable-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-security",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task vulnerable-security (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-security/20261115T023146Z-9a9d3fd2/result.json",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-security: refused as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded refusal, receipt receipts/vulnerable-security/20261115T023146Z-9a9d3fd2"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 14,
+      "name": "example 286 task fixed-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 fixed-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.408,
+      "cpuSeconds": 3.47,
+      "cpuThrottledSeconds": 0.208,
+      "peakMemoryBytes": 151793664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/14-example-286-task-fixed-securit.log",
+        "lines": 4,
+        "bytes": 763,
+        "sha256": "4738e8f193f5f8a8140ac1dc05590bb9f42c6fc97a522f15affdd3622af8ab2a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T023149Z-28c07009",
+          "groups": [
+            "286",
+            "fixed-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 286 fixed-security",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task fixed-security (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-security: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-security/20261115T023149Z-28c07009/result.json",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T023149Z-28c07009"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 15,
+      "name": "example 286 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.011,
+      "cpuSeconds": 6.452,
+      "cpuThrottledSeconds": 0.486,
+      "peakMemoryBytes": 160014336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/15-example-286-task-preservation.log",
+        "lines": 5,
+        "bytes": 891,
+        "sha256": "8c5d76b6e999e6d99bf66569d1b130d3a7e9f2b4f6ee33799be92e9ae4e8fb3b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 5,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal",
+          "groups": [
+            "286",
+            "preservation",
+            "VF-027",
+            "run-verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 286 preservation",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task preservation (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one",
+        "  build.py | Not executed: 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 16,
+      "name": "example 286 task vulnerable-protected-state-mutation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-protected-state-mutation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 122.225,
+      "cpuSeconds": 123.485,
+      "cpuThrottledSeconds": 0.266,
+      "peakMemoryBytes": 190144512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/16-example-286-task-vulnerable-pr.log",
+        "lines": 4,
+        "bytes": 906,
+        "sha256": "ea5b63cac7f65daf3c3ada46b0df75a4db3daae55690e7db794fb105338634fa",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-protected-state-mutation: refused as predicted (VF-027; verifier; records/refusals/vulnerable-protected-state-mutation.json): unresolved at the recorded refusal, receipt receipts/vulnerable-protected-state-mutation",
+          "groups": [
+            "286",
+            "vulnerable-protected-state-mutation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 286 vulnerable-protected-state-mutation",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task vulnerable-protected-state-mutation (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-protected-state-mutation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-protected-state-mutation/20261115T023355Z-63b3c081/result.json",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task vulnerable-protected-state-mutation: refused as predicted (VF-027; verifier; records/refusals/vulnerable-protected-state-mutation.json): unresolved at the recorded refusal, receipt receipts/vulnerable-protected-state-mutation"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 17,
+      "name": "example 286 task fixed-protected-state-mutation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 fixed-protected-state-mutation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 122.421,
+      "cpuSeconds": 123.732,
+      "cpuThrottledSeconds": 0.292,
+      "peakMemoryBytes": 190570496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/17-example-286-task-fixed-protect.log",
+        "lines": 4,
+        "bytes": 875,
+        "sha256": "003fe63c729391abe10829eb61e22690ca81e85782b8434f976c0b01181b4042",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-protected-state-mutation: refused as predicted (VF-027; verifier; records/refusals/fixed-protected-state-mutation.json): unresolved at the recorded refusal, receipt receipts/fixed-protected-state-mutation/20261115T02355",
+          "groups": [
+            "286",
+            "fixed-protected-state-mutation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 286 fixed-protected-state-mutation",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task fixed-protected-state-mutation (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-protected-state-mutation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-protected-state-mutation/20261115T023557Z-cc65886f/result.json",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task fixed-protected-state-mutation: refused as predicted (VF-027; verifier; records/refusals/fixed-protected-state-mutation.json): unresolved at the recorded refusal, receipt receipts/fixed-protected-state-mutation/20261115T02355"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 18,
+      "name": "example 286 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 286 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 7.62,
+      "cpuSeconds": 9.603,
+      "cpuThrottledSeconds": 0.727,
+      "peakMemoryBytes": 260276224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/18-example-286-task-mutant-replay.log",
+        "lines": 3,
+        "bytes": 433,
+        "sha256": "9be2b06d857af755373756ef390bab223d257f7b72486623ec98a9f5ebf47f6d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023605Z-7d0ded2c/result.json",
+          "groups": [
+            "286",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 286 --task mutant-replay",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task mutant-replay (target route)",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023605Z-7d0ded2c/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 19,
+      "name": "example 286 task mutant-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 286 mutant-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.011,
+      "cpuSeconds": 6.809,
+      "cpuThrottledSeconds": 0.597,
+      "peakMemoryBytes": 268734464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/19-example-286-task-mutant-securi.log",
+        "lines": 4,
+        "bytes": 766,
+        "sha256": "dfcabd3da775d398b9f91da8f813a394a03ecbb9a1a1c8a43b4d02dbd56f6639",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T023611Z-78653a90",
+          "groups": [
+            "286",
+            "mutant-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 286 mutant-security",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: running task mutant-security (target route)",
+        "  build.py | 286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261115T023611Z-78653a90/result.json",
+        "286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T023611Z-78653a90"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 20,
+      "name": "example 287 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 287 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.006,
+      "cpuSeconds": 5.018,
+      "cpuThrottledSeconds": 0.297,
+      "peakMemoryBytes": 112427008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/20-example-287-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 395,
+        "sha256": "3ea1039fcde5e5f4d33a90d9a9e20bcb2a688b548d98fffbcca98807c5405883",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task replay: none (completed; as expected), receipt receipts/replay/20261115T023614Z-804c91d2/result.json",
+          "groups": [
+            "287",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 287 --task replay",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task replay (target route)",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task replay: none (completed; as expected), receipt receipts/replay/20261115T023614Z-804c91d2/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 21,
+      "name": "example 287 task vulnerable-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1.803,
+      "cpuSeconds": 2.795,
+      "cpuThrottledSeconds": 0.21,
+      "peakMemoryBytes": 131399680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/21-example-287-task-vulnerable-se.log",
+        "lines": 4,
+        "bytes": 779,
+        "sha256": "d54c4170969be276fa0b493bb7ec6fa2b171ba7c809557bada4c9ff796042b48",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-security: refused as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded refusal, receipt receipts/vulnerable-security/20261115T023616Z-46395979",
+          "groups": [
+            "287",
+            "vulnerable-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-security",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task vulnerable-security (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-security/20261115T023616Z-46395979/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-security: refused as predicted (VF-027; verifier; records/refusals/vulnerable-security.json): unresolved at the recorded refusal, receipt receipts/vulnerable-security/20261115T023616Z-46395979"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 22,
+      "name": "example 287 task fixed-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 fixed-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1.804,
+      "cpuSeconds": 2.698,
+      "cpuThrottledSeconds": 0.136,
+      "peakMemoryBytes": 129777664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/22-example-287-task-fixed-securit.log",
+        "lines": 4,
+        "bytes": 748,
+        "sha256": "fc04e42530eac09f51ccf7034d85a1f08c4559e43fd3beacc21f1e519a94c900",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T023618Z-17e3921c",
+          "groups": [
+            "287",
+            "fixed-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 287 fixed-security",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task fixed-security (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-security: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-security/20261115T023618Z-17e3921c/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-security: refused as predicted (VF-027; verifier; records/refusals/fixed-security.json): unresolved at the recorded refusal, receipt receipts/fixed-security/20261115T023618Z-17e3921c"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 23,
+      "name": "example 287 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.005,
+      "cpuSeconds": 4.831,
+      "cpuThrottledSeconds": 0.267,
+      "peakMemoryBytes": 131096576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/23-example-287-task-preservation.log",
+        "lines": 5,
+        "bytes": 871,
+        "sha256": "88f6e56e83990bfbdf67c3b9351bab32dfcdb7f0fec858a4bf43387e1bba4337",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 5,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal",
+          "groups": [
+            "287",
+            "preservation",
+            "VF-027",
+            "run-verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 287 preservation",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task preservation (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one clas",
+        "  build.py | Not executed: 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 24,
+      "name": "example 287 task vulnerable-guard, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-guard",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1.603,
+      "cpuSeconds": 2.368,
+      "cpuThrottledSeconds": 0.127,
+      "peakMemoryBytes": 137908224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/24-example-287-task-vulnerable-gu.log",
+        "lines": 4,
+        "bytes": 758,
+        "sha256": "596a79aadbe838fd395d4cadfcfa546715183e7f5ca31bb44efe9f2d15c83bc0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-guard: refused as predicted (VF-027; verifier; records/refusals/vulnerable-guard.json): unresolved at the recorded refusal, receipt receipts/vulnerable-guard/20261115T023622Z-9d952f45",
+          "groups": [
+            "287",
+            "vulnerable-guard",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 287 vulnerable-guard",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task vulnerable-guard (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-guard: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/vulnerable-guard/20261115T023622Z-9d952f45/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-guard: refused as predicted (VF-027; verifier; records/refusals/vulnerable-guard.json): unresolved at the recorded refusal, receipt receipts/vulnerable-guard/20261115T023622Z-9d952f45"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 25,
+      "name": "example 287 task fixed-guard, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1.603,
+      "cpuSeconds": 2.429,
+      "cpuThrottledSeconds": 0.111,
+      "peakMemoryBytes": 129839104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/25-example-287-task-fixed-guard-j.log",
+        "lines": 4,
+        "bytes": 727,
+        "sha256": "8df75de476fc47678c8db5c7c7ac30e29698a0400a814d4d7bb6fd83ec9675e9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: refused as predicted (VF-027; verifier; records/refusals/fixed-guard.json): unresolved at the recorded refusal, receipt receipts/fixed-guard/20261115T023624Z-4a9dcef0",
+          "groups": [
+            "287",
+            "fixed-guard",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task fixed-guard (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/fixed-guard/20261115T023624Z-4a9dcef0/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task fixed-guard: refused as predicted (VF-027; verifier; records/refusals/fixed-guard.json): unresolved at the recorded refusal, receipt receipts/fixed-guard/20261115T023624Z-4a9dcef0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 26,
+      "name": "example 287 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 287 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.81,
+      "cpuSeconds": 7.589,
+      "cpuThrottledSeconds": 0.506,
+      "peakMemoryBytes": 186245120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/26-example-287-task-mutant-replay.log",
+        "lines": 3,
+        "bytes": 423,
+        "sha256": "7d19205fed88055f1b084da73ee4fd242fcfefc0419a7889e16925a74a6c2778",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023630Z-157f68fa/result.json",
+          "groups": [
+            "287",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 287 --task mutant-replay",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task mutant-replay (target route)",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023630Z-157f68fa/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 27,
+      "name": "example 287 task mutant-security, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 287 mutant-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.608,
+      "cpuSeconds": 5.507,
+      "cpuThrottledSeconds": 0.372,
+      "peakMemoryBytes": 205144064,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/27-example-287-task-mutant-securi.log",
+        "lines": 4,
+        "bytes": 751,
+        "sha256": "80257dd46351a71d36a48074db38121ad34c1ae4a684787c8cdc644ce782958b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T023634Z-b31ede0e",
+          "groups": [
+            "287",
+            "mutant-security",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 287 mutant-security",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task mutant-security (target route)",
+        "  build.py | 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-security: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-security/20261115T023634Z-b31ede0e/result.json",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task mutant-security: refused as predicted (VF-027; verifier; records/refusals/mutant-security.json): unresolved at the recorded refusal, receipt receipts/mutant-security/20261115T023634Z-b31ede0e"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 28,
+      "name": "example 305 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.809,
+      "cpuSeconds": 5.664,
+      "cpuThrottledSeconds": 0.233,
+      "peakMemoryBytes": 269217792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/28-example-305-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 389,
+        "sha256": "fdda821e9b79335eb0687b5217ccc0fb54b038690ab3c9da4ce48d8d154dffb5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task replay: none (completed; as expected), receipt receipts/replay/20261115T023640Z-9afa748b/result.json",
+          "groups": [
+            "305",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 305 --task replay",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task replay (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task replay: none (completed; as expected), receipt receipts/replay/20261115T023640Z-9afa748b/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 29,
+      "name": "example 305 task m6-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task m6-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.008,
+      "cpuSeconds": 4.362,
+      "cpuThrottledSeconds": 0.277,
+      "peakMemoryBytes": 205492224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/29-example-305-task-m6-replay-jbm.log",
+        "lines": 3,
+        "bytes": 401,
+        "sha256": "5afb0c10b8ea25198068683066d1b793694890a6dcde64469474ca6ed06b3c3b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task m6-replay: none (completed; as expected), receipt receipts/m6-replay/20261115T023644Z-90fc8b1a/result.json",
+          "groups": [
+            "305",
+            "m6-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 305 --task m6-replay",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task m6-replay (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task m6-replay: none (completed; as expected), receipt receipts/m6-replay/20261115T023644Z-90fc8b1a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 30,
+      "name": "example 305 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.213,
+      "cpuSeconds": 6.071,
+      "cpuThrottledSeconds": 0.217,
+      "peakMemoryBytes": 302895104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/30-example-305-task-preservation.log",
+        "lines": 4,
+        "bytes": 725,
+        "sha256": "558345accf6b6f1a7b864d31695874679d07414fce89c09f73e5e647a87efc64",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: refused as predicted (VF-027; verifier; records/refusals/preservation.json): unresolved at the recorded refusal, receipt receipts/preservation/20261115T023650Z-b883f60a",
+          "groups": [
+            "305",
+            "preservation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 305 preservation",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task preservation (target route)",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation/20261115T023650Z-b883f60a/result.json",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task preservation: refused as predicted (VF-027; verifier; records/refusals/preservation.json): unresolved at the recorded refusal, receipt receipts/preservation/20261115T023650Z-b883f60a"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 31,
+      "name": "example 305 task finite-outcome-before, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-before",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.41,
+      "cpuSeconds": 3.265,
+      "cpuThrottledSeconds": 0.225,
+      "peakMemoryBytes": 220901376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/31-example-305-task-finite-outcom.log",
+        "lines": 4,
+        "bytes": 788,
+        "sha256": "2d34846fa1ee80430e8aa41f97fb7fa35d21ee82c9ac01597e23369430e67181",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: refused as predicted (VF-027; verifier; records/refusals/finite-outcome-before.json): unresolved at the recorded refusal, receipt receipts/finite-outcome-before/20261115T023654Z-2add26b9",
+          "groups": [
+            "305",
+            "finite-outcome-before",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-before",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task finite-outcome-before (target route)",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/finite-outcome-before/20261115T023654Z-2add26b9/result.json",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-before: refused as predicted (VF-027; verifier; records/refusals/finite-outcome-before.json): unresolved at the recorded refusal, receipt receipts/finite-outcome-before/20261115T023654Z-2add26b9"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 32,
+      "name": "example 305 task finite-outcome-after, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.416,
+      "cpuSeconds": 3.214,
+      "cpuThrottledSeconds": 0.122,
+      "peakMemoryBytes": 217649152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/32-example-305-task-finite-outcom.log",
+        "lines": 4,
+        "bytes": 781,
+        "sha256": "e28a4ef385f38f6ed98d6639deb8b5058e73371775f382f11551ce8e186e610d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-after: refused as predicted (VF-027; verifier; records/refusals/finite-outcome-after.json): unresolved at the recorded refusal, receipt receipts/finite-outcome-after/20261115T023657Z-a562c09d",
+          "groups": [
+            "305",
+            "finite-outcome-after",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task finite-outcome-after (target route)",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-after: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/finite-outcome-after/20261115T023657Z-a562c09d/result.json",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task finite-outcome-after: refused as predicted (VF-027; verifier; records/refusals/finite-outcome-after.json): unresolved at the recorded refusal, receipt receipts/finite-outcome-after/20261115T023657Z-a562c09d"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 33,
+      "name": "example 305 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 305 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.211,
+      "cpuSeconds": 5.755,
+      "cpuThrottledSeconds": 0.272,
+      "peakMemoryBytes": 279031808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/33-example-305-task-mutant-replay.log",
+        "lines": 3,
+        "bytes": 417,
+        "sha256": "c53f7b3b8146e95c33972fa7092b2074c668c59c1cba9d9c6671aa1f4ebb7c6c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023703Z-cafc3a03/result.json",
+          "groups": [
+            "305",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 305 --task mutant-replay",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task mutant-replay (target route)",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023703Z-cafc3a03/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 34,
+      "name": "example 305 task mutant-preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 305 mutant-preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.411,
+      "cpuSeconds": 6.067,
+      "cpuThrottledSeconds": 0.281,
+      "peakMemoryBytes": 303480832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/34-example-305-task-mutant-preser.log",
+        "lines": 4,
+        "bytes": 770,
+        "sha256": "7d92b1cf01750ba9ebaddd2259c2d622c05ea9d4d85dac773e670b782e976b73",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-preservation: refused as predicted (VF-027; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T023710Z-3b45edd0",
+          "groups": [
+            "305",
+            "mutant-preservation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 305 mutant-preservation",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: running task mutant-preservation (target route)",
+        "  build.py | 305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T023710Z-3b45edd0/result.json",
+        "305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags: task mutant-preservation: refused as predicted (VF-027; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T023710Z-3b45edd0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 35,
+      "name": "example 306 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 306 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1.803,
+      "cpuSeconds": 2.677,
+      "cpuThrottledSeconds": 0.105,
+      "peakMemoryBytes": 114753536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/35-example-306-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 391,
+        "sha256": "e4d6c0822179a1a298c948ae921d60108a65f9539fa8bcd6f696793259e02cdb",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task replay: none (completed; as expected), receipt receipts/replay/20261115T023712Z-1e96141a/result.json",
+          "groups": [
+            "306",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 306 --task replay",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task replay (target route)",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task replay: none (completed; as expected), receipt receipts/replay/20261115T023712Z-1e96141a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 36,
+      "name": "example 306 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 2.827,
+      "cpuThrottledSeconds": 0.102,
+      "peakMemoryBytes": 133398528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/36-example-306-task-preservation.log",
+        "lines": 5,
+        "bytes": 863,
+        "sha256": "4eafe403f85623339827d3acc09fded1d0a560f68fe5df9d04ea9405ff915f45",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 5,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal",
+          "groups": [
+            "306",
+            "preservation",
+            "VF-027",
+            "run-verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 306 preservation",
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task preservation (target route)",
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: not-executed (task preservation: unsupported: run-verifier (example-targets-runtime): the task can't be attempted as stated: before and after have different dependency closures, and jvmcontract's equivalence takes one classp",
+        "  build.py | Not executed: 306-spring-framework-db9a10bf-pattern-match-prefix-startswith",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task preservation: refused as predicted (VF-027; run-verifier; records/refusals/preservation.json): not executed, at the recorded refusal"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 37,
+      "name": "example 306 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 306 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.009,
+      "cpuSeconds": 5.296,
+      "cpuThrottledSeconds": 0.136,
+      "peakMemoryBytes": 234295296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/37-example-306-task-mutant-replay.log",
+        "lines": 3,
+        "bytes": 419,
+        "sha256": "f11f9213fbe0dac8af6e1a1d48f8cdd47a44a960acd2eceab8bb911f5d703366",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023719Z-097ba638/result.json",
+          "groups": [
+            "306",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 306 --task mutant-replay",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task mutant-replay (target route)",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023719Z-097ba638/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 38,
+      "name": "example 306 task mutant-preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.41,
+      "cpuSeconds": 5.59,
+      "cpuThrottledSeconds": 0.173,
+      "peakMemoryBytes": 250486784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/38-example-306-task-mutant-preser.log",
+        "lines": 4,
+        "bytes": 773,
+        "sha256": "1da1b23237e8c63710c7303d7dc44ded57c8599d9143f6c3c61cde2d5ed322e3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-preservation: refused as predicted (VF-027; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T023724Z-9515fcba",
+          "groups": [
+            "306",
+            "mutant-preservation",
+            "VF-027",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation",
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: running task mutant-preservation (target route)",
+        "  build.py | 306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T023724Z-9515fcba/result.json",
+        "306-spring-framework-db9a10bf-pattern-match-prefix-startswith: task mutant-preservation: refused as predicted (VF-027; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T023724Z-9515fcba"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 39,
+      "name": "example 307 task replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 307 --task replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.611,
+      "cpuSeconds": 5.492,
+      "cpuThrottledSeconds": 0.307,
+      "peakMemoryBytes": 206417920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/39-example-307-task-replay-jbmc-a.log",
+        "lines": 3,
+        "bytes": 383,
+        "sha256": "7d6864aa4653642f98610ed317a5a0e42e3385582b6fc554a3c4f2d520f3008f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task replay: none (completed; as expected), receipt receipts/replay/20261115T023730Z-125b05e8/result.json",
+          "groups": [
+            "307",
+            "replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 307 --task replay",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task replay (target route)",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task replay: none (completed; as expected), receipt receipts/replay/20261115T023730Z-125b05e8/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 40,
+      "name": "example 307 task preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 307 preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.811,
+      "cpuSeconds": 5.701,
+      "cpuThrottledSeconds": 0.311,
+      "peakMemoryBytes": 230408192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/40-example-307-task-preservation.log",
+        "lines": 4,
+        "bytes": 716,
+        "sha256": "8297d0d38c536d25e7654379ef60c859b7c82141cebf0c00dcf6db203a513d10",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task preservation: refused as predicted (VF-028; verifier; records/refusals/preservation.json): unresolved at the recorded refusal, receipt receipts/preservation/20261115T023735Z-dc3e7910",
+          "groups": [
+            "307",
+            "preservation",
+            "VF-028",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 307 preservation",
+        "  build.py | 307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task preservation (target route)",
+        "  build.py | 307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task preservation: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation/20261115T023735Z-dc3e7910/result.json",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task preservation: refused as predicted (VF-028; verifier; records/refusals/preservation.json): unresolved at the recorded refusal, receipt receipts/preservation/20261115T023735Z-dc3e7910"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 41,
+      "name": "example 307 task mutant-replay, JBMC absent: as expected",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 307 --task mutant-replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.61,
+      "cpuSeconds": 5.591,
+      "cpuThrottledSeconds": 0.348,
+      "peakMemoryBytes": 206544896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/41-example-307-task-mutant-replay.log",
+        "lines": 3,
+        "bytes": 411,
+        "sha256": "5763f283b0c24db4ab198e29f187441dbd64e07e42ef51ac8983b2548f0045fe",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023741Z-9a09a8d0/result.json",
+          "groups": [
+            "307",
+            "mutant-replay",
+            "none"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 307 --task mutant-replay",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task mutant-replay (target route)",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-replay: none (completed; as expected), receipt receipts/mutant-replay/20261115T023741Z-9a09a8d0/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 42,
+      "name": "example 307 task mutant-preservation, JBMC absent: its recorded refusal",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/targets/workflow_refusal.py 307 mutant-preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 7.218,
+      "cpuSeconds": 6.179,
+      "cpuThrottledSeconds": 0.372,
+      "peakMemoryBytes": 227028992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/42-example-307-task-mutant-preser.log",
+        "lines": 4,
+        "bytes": 761,
+        "sha256": "f6fd6976e9fd8ca8c11c3b7119fdcb3f8250f46272f852799a97af542b89c41b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-refused-as-predicted": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-refused-as-predicted",
+          "line": 4,
+          "text": "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: refused as predicted (VF-028; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T023748Z-df59966f",
+          "groups": [
+            "307",
+            "mutant-preservation",
+            "VF-028",
+            "verifier"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/targets/workflow_refusal.py 307 mutant-preservation",
+        "  build.py | 307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: running task mutant-preservation (target route)",
+        "  build.py | 307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/mutant-preservation/20261115T023748Z-df59966f/result.json",
+        "307-spring-security-fe9e4549-bcrypt-standard-charset-utf8: task mutant-preservation: refused as predicted (VF-028; verifier; records/refusals/mutant-preservation.json): unresolved at the recorded refusal, receipt receipts/mutant-preservation/20261115T023748Z-df59966f"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 43,
+      "name": "example 144, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 144",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.407,
+      "cpuSeconds": 6.202,
+      "cpuThrottledSeconds": 0.701,
+      "peakMemoryBytes": 120889344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/43-example-144-jbmc-absent-its-re.log",
+        "lines": 19,
+        "bytes": 898,
+        "sha256": "f1f1e8d6640a322fe09d235063d1f1290ebeac3f46ec238e8d3f9ea7c0baf36a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 19,
+          "text": "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)",
+          "groups": [
+            "144",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 144",
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched mica main",
+        "  · javac patched mica main: exited 0, 0.6 s",
+        "  · javac patched mica tests",
+        "  · javac patched mica tests: exited 0, 0.7 s",
+        "  · the mica tests",
+        "  · the mica tests: exited 0, 0.1 s",
+        "  · javac unpatched mica main",
+        "  · javac unpatched mica main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 44,
+      "name": "example 145, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 145",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.813,
+      "cpuSeconds": 8.556,
+      "cpuThrottledSeconds": 0.659,
+      "peakMemoryBytes": 121950208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/44-example-145-jbmc-absent-its-re.log",
+        "lines": 19,
+        "bytes": 896,
+        "sha256": "ee0124a4c036e03fdda04010fa6dcb68da216ada6287fd5b78d8dc7036338b7f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 19,
+          "text": "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)",
+          "groups": [
+            "145",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 145",
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched mica main",
+        "  · javac patched mica main: exited 0, 0.6 s",
+        "  · javac patched mica tests",
+        "  · javac patched mica tests: exited 0, 0.7 s",
+        "  · the mica tests",
+        "  · the mica tests: exited 0, 0.1 s",
+        "  · javac unpatched mica main",
+        "  · javac unpatched mica main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 2.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 45,
+      "name": "example 149, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 149",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.607,
+      "cpuSeconds": 4.866,
+      "cpuThrottledSeconds": 0.553,
+      "peakMemoryBytes": 120201216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/45-example-149-jbmc-absent-its-re.log",
+        "lines": 17,
+        "bytes": 830,
+        "sha256": "1de8963b4724b89567f7bfd3b59069dab988543b7f2476bc5040571ef2fb375c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 17,
+          "text": "149-full-jitter-proved-on-the-contract-library-s-contracts-alone-checked-once-and-not-again-by-the-run: verified (as expected)",
+          "groups": [
+            "149",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 149",
+        "149-full-jitter-proved-on-the-contract-library-s-contracts-alone-checked-once-and-not-again-by-the-run: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.6 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · jvmcontract prove",
+        "  · jvmcontract prove: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "149-full-jitter-proved-on-the-contract-library-s-contracts-alone-checked-once-and-not-again-by-the-run: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 46,
+      "name": "example 151, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 151",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.209,
+      "cpuSeconds": 6.006,
+      "cpuThrottledSeconds": 0.478,
+      "peakMemoryBytes": 118030336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/46-example-151-jbmc-absent-its-re.log",
+        "lines": 19,
+        "bytes": 931,
+        "sha256": "b9ae14c0cd8c078095b3953b4e7184a15570d351cf4c15d96c9be19359eaeb50",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 19,
+          "text": "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: violation (as expected)",
+          "groups": [
+            "151",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 151",
+        "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.6 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 47,
+      "name": "example 161, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 161",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.408,
+      "cpuSeconds": 6.199,
+      "cpuThrottledSeconds": 0.605,
+      "peakMemoryBytes": 121851904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/47-example-161-jbmc-absent-its-re.log",
+        "lines": 19,
+        "bytes": 929,
+        "sha256": "85953d122a7feb3e2a8ae1f1212d991555ab8a24dbba56328237a31726c58c77",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 19,
+          "text": "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: violation (as expected)",
+          "groups": [
+            "161",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 161",
+        "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.6 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 48,
+      "name": "example 172, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 172",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.209,
+      "cpuSeconds": 7.418,
+      "cpuThrottledSeconds": 0.566,
+      "peakMemoryBytes": 128917504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/48-example-172-jbmc-absent-its-re.log",
+        "lines": 25,
+        "bytes": 1128,
+        "sha256": "234e36f7f9975d0efe75ecf98a90380a15e4efe50d4784a1bf9a4213c2b87792",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 25,
+          "text": "172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice: violation (as expected)",
+          "groups": [
+            "172",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 172",
+        "172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.3 s",
+        "  · javac patched deliveries main",
+        "  · javac patched deliveries main: exited 0, 0.6 s",
+        "  · javac patched deliveries tests",
+        "  · javac patched deliveries tests: exited 0, 0.5 s",
+        "  · the deliveries tests",
+        "  · the deliveries tests: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.3 s",
+        "  · javac unpatched deliveries main",
+        "  · javac unpatched deliveries main: exited 0, 0.6 s",
+        "  · jvmcontract effects",
+        "  · jvmcontract effects: exited 1, 0.1 s",
+        "  · jvmcontract effects --json",
+        "  · jvmcontract effects --json: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 49,
+      "name": "example 190, JBMC absent: its recorded verdict",
+      "run": "examples/tools/targets/without_jbmc.sh python3 examples/tools/build.py 190",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.409,
+      "cpuSeconds": 6.153,
+      "cpuThrottledSeconds": 0.42,
+      "peakMemoryBytes": 101052416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/49-example-190-jbmc-absent-its-re.log",
+        "lines": 25,
+        "bytes": 1141,
+        "sha256": "1276f3f7170c75ad982cd236647ffcfb07c447841308cc1ec0cc2ec447e0e6ad",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 25,
+          "text": "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)",
+          "groups": [
+            "190",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "without_jbmc.sh: JBMC absent (no runnable jbmc; shutil.which finds none): python3 examples/tools/build.py 190",
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.1 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-15T02:39:10+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9aba16ef0e602255da377a7c2596b362f43db3dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9aba16ef0e602255da377a7c2596b362f43db3dd/jvmcontract",
+    "built": false
+  }
+}
