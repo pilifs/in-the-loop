@@ -162,6 +162,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   makes it hard. **Needs**: the next triage is on what the 77k clauses are (JBMC's output with `--show-vcc`, or
   which equations of the correspondence are arithmetic that a SAT solver finds hard), and then fewer objects or
   the equations as assumptions, as the entry's plan says; the cleanup loop's jbmc stream. Still open.
+- **Rerun** 2026-11-15 on `vm-1`: job `20261115-173209-object-comparisons-under-jbmc-and-auto-c` (at `18cfa9e637ef`,
+  the proof tier of `lib/tests/heap.rs` under `--engine jbmc` and `auto --confirm`, 600 s JBMC limit) failed again in
+  50m12s (peak 1.9 GiB): 5 passed, 4 failed (`the_computed_equations_…`, `the_other_object_reads_…`,
+  `the_output_relations_…`, `the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm`), e.g.
+  `objects.Kernel#price` and `lines.Lines#reprice` with "JBMC did not finish within 600 s". The same four as before,
+  so nothing from the harness changes since has made them tractable. Log:
+  `verification/results/20261115-173209-object-comparisons-under-jbmc-and-auto-c/logs/1-heap-proof-tier.log`. The
+  moonshot (prove-examples loop) plans to diagnose it. Still open.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 
@@ -257,6 +265,17 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+### VF-029: job `20261115-181435-object-comparisons-under-jbmc-and-auto-c` cancelled, not recorded
+
+- **Status**: decided
+- **Raised**: 2026-11-15 on `vm-1`. The runner started the job (at `4dc3c5d1b982`) at 18:25; the prove-examples
+  moonshot then withdrew it (deleted its job file) because the harness classes are byte for byte the same as in
+  `20261115-173209-object-comparisons-under-jbmc-and-auto-c`, which already runs that proof tier. It ran on, and its
+  scope was stopped at the user's request (about 33 minutes in).
+- **Decision**: its leftover result was moved to `verification/.state/set-aside/20261115-181435-object-comparisons-cancelled`
+  and not collected or triaged. It says nothing about the change. Nothing to rerun: VF-018 is the open entry for the
+  same tests.
 
 ### VF-028: example 307 Phase 5 step 1: `BCrypt.hashpw(String,String)` preservation and mutant-preservation refused at `--nullable password`, so neither is as expected
 

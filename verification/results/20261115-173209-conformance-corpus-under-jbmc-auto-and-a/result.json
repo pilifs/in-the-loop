@@ -1,0 +1,270 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-173209-conformance-corpus-under-jbmc-auto-and-a",
+  "title": "Conformance corpus under JBMC, auto and auto --confirm after the HashMap model and the interface-parameter change",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 34m22s, peak 1.8 GiB (estimated 40m00s, 4.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-173209-conformance-corpus-under-jbmc-auto-and-a.json",
+    "sha256": "dec95113ef3b28381c7901e9d34a3a148379bec73ac8bfd67214673f1b682bac",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-173209-conformance-corpus-under-jbmc-auto-and-a",
+      "title": "Conformance corpus under JBMC, auto and auto --confirm after the HashMap model and the interface-parameter change",
+      "description": "The proof tier of lib/tests/conformance.rs, whose corpus and models this change touched: HashMap(int) is no longer a gap (the corpus's mapCapacity claims are now decided, by a model of java.util.HashMap that JBMC runs too), the corpus class gained an interface and two methods for the refusal of a given implementation under JBMC, and the gap scan follows calls into the classes of the objects made. Both ignored tests run JBMC on every claim of the corpus and compare each verdict with a JVM; a disagreement fails.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/models/java/util/HashMap.java"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-15T17:32:09+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "jbmc",
+        "cargo",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "40m",
+        "notes": "lib/tests/costs.json: 651 s and 1226 s run alone, plus the release build of the tests"
+      },
+      "steps": [
+        {
+          "name": "conformance under jbmc and auto",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored",
+          "cwd": "."
+        },
+        {
+          "name": "conformance under auto --confirm",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "18cfa9e637ef5207a4603f48c08a36be4b52d491",
+  "startedAt": "2026-11-15T17:34:24+00:00",
+  "finishedAt": "2026-11-15T18:08:48+00:00",
+  "wallSeconds": 2064.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3910058,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 9600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 2400.0,
+    "notes": "lib/tests/costs.json: 651 s and 1226 s run alone, plus the release build of the tests"
+  },
+  "usage": {
+    "peakMemoryBytes": 1981341696,
+    "wallSeconds": 2062.8,
+    "cpuSeconds": 2133.6,
+    "memoryOfEstimate": 0.46,
+    "durationOfEstimate": 0.86
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance under jbmc and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 836.681,
+      "cpuSeconds": 911.595,
+      "cpuThrottledSeconds": 1.042,
+      "peakMemoryBytes": 1981341696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-under-jbmc-and-aut.log",
+        "lines": 64,
+        "bytes": 2268,
+        "sha256": "289656110d0d853efbd971b820103fd1b572c49fe9a06c2375c12a4ee149ad6b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 63,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 653.02s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling heck v0.5.0",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261115-173209-conformance-corpus-under-jbmc-auto-and-a/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 03s",
+        "     Running tests/conformance.rs (target/release/deps/conformance-3836de857774f2d6)",
+        "",
+        "running 1 test",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto has been running for over 60 seconds",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 653.02s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "conformance under auto --confirm",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 1226.167,
+      "cpuSeconds": 1222.039,
+      "cpuThrottledSeconds": 0.369,
+      "peakMemoryBytes": 296185856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-conformance-under-auto-confirm.log",
+        "lines": 9,
+        "bytes": 417,
+        "sha256": "16c3fbe9dfc566b8d18df1f3f5de232cd970ae8b296dc9493274000d486fd7e5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 8,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1225.94s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.02s",
+        "     Running tests/conformance.rs (target/release/deps/conformance-3836de857774f2d6)",
+        "",
+        "running 1 test",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm has been running for over 60 seconds",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1225.94s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-15T18:45:09+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

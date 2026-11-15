@@ -1,0 +1,320 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-173146-example-285-vulnerable-security-the-boun",
+  "title": "Example 285 vulnerable-security: the bounded method label decided as stated, expected refuted",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.8s, peak 163.5 MiB (estimated 10m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-173146-example-285-vulnerable-security-the-boun.json",
+    "sha256": "2317c09d0694d8cbe99bf875e0148c41c00cb4d5719a21b31a1398e500fda1ed",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-173146-example-285-vulnerable-security-the-boun",
+      "title": "Example 285 vulnerable-security: the bounded method label decided as stated, expected refuted",
+      "description": "The frozen claim claims/bounded-method-label.json (key 196346d46d4d81fb) on the task's pinned closure, by jvmcontract's own checker under strict gaps, as the task states it: no wrapper and no narrower subject. Until this change the task was refused before any proof (input-construction:interface-parameter, VF-027), because WebMvcTags#method takes a javax.servlet.http.HttpServletRequest. jvmcontract now gives a parameter of an interface type an implementation of the accessors the target calls (here getMethod(), any String of up to 8 code units), reads the Tag result through getKey() and getValue() with Strings compared by content, and runs HttpMethod's map of names through a HashMap model. This run is the gap packet's closure test: the unchanged claim on the same artifacts. Spring Boot 2.7.17 passes the request's raw method on as the label; expected refuted, with a witness (a request whose method is no known verb) replayed in the interpreter and run on a JVM.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/given.rs"
+        ],
+        "examples": [
+          "285"
+        ]
+      },
+      "expected": "example 285 task vulnerable-security gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-15T17:31:46+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "the earlier attempts of this task took 122 s and 0.2 GB, of which 120 s was the gap scan running into its limit; the scan now takes 0.04 s and the proof 0.1 s in a debug build, so the time is the acquisition, the two JVM control runs and the release build of lib/ if its tree isn't cached"
+      },
+      "steps": [
+        {
+          "name": "example 285 task vulnerable-security (prove)",
+          "run": "python3 examples/tools/build.py 285 --task vulnerable-security",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security"
+      ]
+    }
+  },
+  "sourceCommit": "18cfa9e637ef5207a4603f48c08a36be4b52d491",
+  "startedAt": "2026-11-15T17:34:24+00:00",
+  "finishedAt": "2026-11-15T17:36:58+00:00",
+  "wallSeconds": 154.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3910058,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "the earlier attempts of this task took 122 s and 0.2 GB, of which 120 s was the gap scan running into its limit; the scan now takes 0.04 s and the proof 0.1 s in a debug build, so the time is the acquisition, the two JVM control runs and the release build of lib/ if its tree isn't cached"
+  },
+  "usage": {
+    "peakMemoryBytes": 171401216,
+    "wallSeconds": 2.8,
+    "cpuSeconds": 3.9,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 150.535,
+      "cpuSeconds": 150.668,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1767538688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "4507e2dc8d85ac21d302c268bdd15979ded37c4566deba52d28b1da4b804cdc1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261115-173146-example-285-vulnerable-security-the-boun/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 30s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 285 task vulnerable-security (prove)",
+      "run": "python3 examples/tools/build.py 285 --task vulnerable-security",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 2.806,
+      "cpuSeconds": 3.868,
+      "cpuThrottledSeconds": 0.273,
+      "peakMemoryBytes": 171401216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-vulnerable-se.log",
+        "lines": 2,
+        "bytes": 305,
+        "sha256": "fc0d3d0eb5b6b7685d6f932235d1e153d67566212ab2f4421c2521c1f86f8b7a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task vulnerable-security: refuted (completed; as expected), receipt receipts/vulnerable-security/20261115T173658Z-74de8985/result.json",
+          "groups": [
+            "285",
+            "vulnerable-security",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task vulnerable-security (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task vulnerable-security: refuted (completed; as expected), receipt receipts/vulnerable-security/20261115T173658Z-74de8985/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/plan.json",
+      "change": "added",
+      "bytes": 15522,
+      "sha256": "6c68f8df590a99acf4aff0e841714498cf1225a1a9e12ce9b8ce4a29afe3f4fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 3105,
+      "sha256": "7964a948a271804a7b528bacbf739f9b8cd43cd971ef7d64b8a895f248b0e593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk25.stdout",
+      "change": "added",
+      "bytes": 3103,
+      "sha256": "223bf27298f7dbf29175a215fd452e1711178e928d50c850b8eb662990ccb582",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/controls.json",
+      "change": "added",
+      "bytes": 21771,
+      "sha256": "4cfb730d35c19ab09b882545dee24bd1fe9666b12c0a60794264ad57751fca32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/execution.json",
+      "change": "added",
+      "bytes": 43135,
+      "sha256": "0c92701f6b84f3634aec6fa8b392b5f0051ce13d3f27b82c6cf9dbce9550b827",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/streams.json",
+      "change": "added",
+      "bytes": 2833,
+      "sha256": "a6e64bcc4bb11c9a66ed414afe0e7584991a6980ca1c386598086a6dca3c58df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1375,
+      "sha256": "994bac3c7016ae564c1acb485ac7a70c566863525f066bd059a661351bf6029d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier.json",
+      "change": "added",
+      "bytes": 21793,
+      "sha256": "0c6d9f6e09baf93550e22bb52d7646dfae0d158b5570e19c7b94d43fdfd0a2c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11456,
+      "sha256": "5f815fe87760f01e2fdea717e90332ed03177f37d463a56532fa80737e89bc8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/result.json",
+      "change": "added",
+      "bytes": 30000,
+      "sha256": "527fe699e23f619920a112fb19a4cd541e246ad3f78c74b0d62720c61982a409",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T18:45:09+00:00",
+    "applied": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/plan.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk21.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk21.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk25.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/control-vulnerable-release-jdk25.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/controls.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/execution.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/streams.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier-output.txt",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/records/verifier.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/vulnerable-security/20261115T173658Z-74de8985/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5669dd10abddccec376f58bf1efd223a98570432",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5669dd10abddccec376f58bf1efd223a98570432/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

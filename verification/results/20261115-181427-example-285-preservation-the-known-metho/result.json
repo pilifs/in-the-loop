@@ -1,0 +1,357 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-181427-example-285-preservation-the-known-metho",
+  "title": "Example 285 preservation: the known method labels preserved between 2.7.17 and 2.7.18, each release on its own closure, expected established",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.4s, peak 128.6 MiB (estimated 10m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-181427-example-285-preservation-the-known-metho.json",
+    "sha256": "0d99a645008053a49c44b2662fa5e2225e4a60581acc91035f783752572ad046",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-181427-example-285-preservation-the-known-metho",
+      "title": "Example 285 preservation: the known method labels preserved between 2.7.17 and 2.7.18, each release on its own closure, expected established",
+      "description": "The frozen claim claims/known-method-labels-preserved.json on the release pair as the task states it: jvmcontract's regression check (own checker, strict gaps) of WebMvcTags#method between Spring Boot 2.7.17 and 2.7.18, outside the declared change (a non-null request whose method is none of the eight known names), with --nullable request. Until this change the task was not executed: the two releases' dependency closures have other bytes (micrometer 1.9.16 and 1.9.17, Spring Framework 5.3.30 and 5.3.31), and the route refused the pair because jvmcontract's equivalence took one class path for both (verifier-interface:two-dependency-closures, VF-027). Now the route passes the previous release's dependencies as --before-classpath, and jvmcontract relocates the previous release's build together with the classes of its closure it names, so each release runs on its own pinned closure in one program; both are given an implementation of HttpServletRequest answering getMethod() with the same String of up to 8 code units; the two Tag results, objects of two classes, are compared through Tag's accessors getKey() and getValue(), Strings by content; and the declared change is read of the given request as Java reads it. This run is the gap packet's closure test: the unchanged claim on the same artifacts. Inline on the cached JARs the claim was proved in 0.1 s (0.8 s wall), and with no change declared it was refuted on getMethod()=\"\" (2.7.17 labels the raw method, 2.7.18 UNKNOWN), run on a JVM.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "target:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/relocate.rs",
+          "lib/src/equivalence.rs",
+          "examples/tools/targets/runtime.py"
+        ],
+        "examples": [
+          "285"
+        ]
+      },
+      "expected": "example 285 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-15T18:14:27+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "the three security tasks of this example took 2 to 6 s and 0.25 GB each as jobs once the lib tree was built; this one relocates 1,593 classes of the 2.7.17 closure (9 MB) and proves in 0.1 s; the rest is acquisition, the control runs and the release build of lib/ if its tree isn't cached"
+      },
+      "steps": [
+        {
+          "name": "example 285 task preservation (equivalence)",
+          "run": "python3 examples/tools/build.py 285 --task preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation"
+      ]
+    }
+  },
+  "sourceCommit": "4dc3c5d1b982626551dca659f4633aff0ba3382d",
+  "startedAt": "2026-11-15T18:25:38+00:00",
+  "finishedAt": "2026-11-15T18:28:18+00:00",
+  "wallSeconds": 160.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 408889,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "the three security tasks of this example took 2 to 6 s and 0.25 GB each as jobs once the lib tree was built; this one relocates 1,593 classes of the 2.7.17 closure (9 MB) and proves in 0.1 s; the rest is acquisition, the control runs and the release build of lib/ if its tree isn't cached"
+  },
+  "usage": {
+    "peakMemoryBytes": 134811648,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 154.532,
+      "cpuSeconds": 154.756,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1838190592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 5,
+        "bytes": 368,
+        "sha256": "e8c068f854a1132d8b2cf00f1e9b7d3b686ece77010d2f15ff60ea791ab33e4d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Blocking waiting for file lock on package cache",
+        "    Blocking waiting for file lock on package cache",
+        "    Blocking waiting for file lock on package cache",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261115-181427-example-285-preservation-the-known-metho/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 34s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 285 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 285 --task preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 4.409,
+      "cpuSeconds": 6.568,
+      "cpuThrottledSeconds": 0.307,
+      "peakMemoryBytes": 134811648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-285-task-preservation.log",
+        "lines": 2,
+        "bytes": 288,
+        "sha256": "154973e1e021904d881631e489cd8f7c07234599f1d3aaff843bae769d58e3f7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task preservation: established (completed; as expected), receipt receipts/preservation/20261115T182818Z-0c932520/result.json",
+          "groups": [
+            "285",
+            "preservation",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: running task preservation (target route)",
+        "285-spring-boot-cve-2023-34055-unbounded-http-method-labels: task preservation: established (completed; as expected), receipt receipts/preservation/20261115T182818Z-0c932520/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/plan.json",
+      "change": "added",
+      "bytes": 18355,
+      "sha256": "be7b488c1df19705b0ecc6a9089431050b9c529c14652553b479f56135278268",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 3062,
+      "sha256": "8750a74322baf3f3b65729d096f12c88a6c9755c5be513adb63982b15dab3b92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk25.stdout",
+      "change": "added",
+      "bytes": 3060,
+      "sha256": "e1c0f6530dd675878cb7645170a1fd446db3229c443205ac55d434952fcfa3e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 3105,
+      "sha256": "7964a948a271804a7b528bacbf739f9b8cd43cd971ef7d64b8a895f248b0e593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk25.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk25.stdout",
+      "change": "added",
+      "bytes": 3103,
+      "sha256": "223bf27298f7dbf29175a215fd452e1711178e928d50c850b8eb662990ccb582",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/controls.json",
+      "change": "added",
+      "bytes": 43278,
+      "sha256": "f7e274082809da9423c2736cb09f7346ae2b4d14df5471a69b790b93a7052553",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/execution.json",
+      "change": "added",
+      "bytes": 66525,
+      "sha256": "0a8372267e3b4744cef1ebb134f95df76e10bdd3ab894cbc7b1f59ad8945577c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/streams.json",
+      "change": "added",
+      "bytes": 4275,
+      "sha256": "6067645f32d0eca0249707eea9439b05bc2445e14f88b4459ac993cce991483b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 844,
+      "sha256": "28bc57d392972d07761111eb250d8a2adb02dc024e9fc7082e9474e587c5d9ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier.json",
+      "change": "added",
+      "bytes": 24289,
+      "sha256": "2016648ab499fbedd3050d5f11d1af8ccc9fed8173061cbb65a3acfb456b3d80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8521,
+      "sha256": "8f26d8ef10d7455341407247a7cc8fd3ce1d5ad89b532164cb008f169c1d6e80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/result.json",
+      "change": "added",
+      "bytes": 18936,
+      "sha256": "530b6b59bfefafa9aeb2f6af0dcbae16689b3eff430a4ad0616922b003a3174d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-15T18:45:09+00:00",
+    "applied": [
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/plan.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk21.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk21.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk25.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-fixed-release-jdk25.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk21.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk21.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk25.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/control-vulnerable-release-jdk25.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/controls.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/execution.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/streams.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier-output.txt",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier.json",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier.stderr",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/records/verifier.stdout",
+      "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/receipts/preservation/20261115T182818Z-0c932520/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9eaba457a95e893a45536764f8cab48ba2129705",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9eaba457a95e893a45536764f8cab48ba2129705/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

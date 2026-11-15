@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-15T18:44:27.327Z",
-  "duration_seconds": 9075,
+  "ended": "2026-11-15T18:56:09.427Z",
+  "duration_seconds": 9777,
   "stats": {
     "turns": 3,
-    "api_calls": 433,
-    "tool_calls": 443,
+    "api_calls": 450,
+    "tool_calls": 460,
     "tool_errors": 2,
     "compactions": 2,
     "peak_context_tokens": 466839,
     "usage": {
-      "input_tokens": 866,
-      "output_tokens": 433403,
-      "cache_read_input_tokens": 110655822,
-      "cache_creation_input_tokens": 1235707
+      "input_tokens": 900,
+      "output_tokens": 440966,
+      "cache_read_input_tokens": 116680900,
+      "cache_creation_input_tokens": 1258574
     }
   },
   "tools": {
-    "Bash": 426,
+    "Bash": 443,
     "Read": 7,
     "Write": 5,
     "Monitor": 3,
@@ -74,24 +74,24 @@
     {
       "index": 2,
       "started": "2026-11-15T17:35:29.508Z",
-      "ended": "2026-11-15T18:44:27.327Z",
+      "ended": "2026-11-15T18:56:09.427Z",
       "turns": 1,
-      "api_calls": 145,
+      "api_calls": 162,
       "usage": {
-        "input_tokens": 290,
-        "output_tokens": 120897,
-        "cache_read_input_tokens": 32917140,
-        "cache_creation_input_tokens": 329509
+        "input_tokens": 324,
+        "output_tokens": 128460,
+        "cache_read_input_tokens": 38942218,
+        "cache_creation_input_tokens": 352376
       },
-      "peak_context_tokens": 344169
+      "peak_context_tokens": 367036
     }
   ],
   "log": {
-    "sha256": "a08bc2ca85f637d4d7768fb8e221dfcb77cb6e18691fd0590b5412f35e6dc164",
-    "bytes": 9532853,
-    "lines": 3393,
-    "gzip_bytes": 1414456,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/a08bc2ca85f637d4d7768fb8e221dfcb77cb6e18691fd0590b5412f35e6dc164.jsonl.gz"
+    "sha256": "0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07",
+    "bytes": 9754990,
+    "lines": 3513,
+    "gzip_bytes": 1437271,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -118,9 +118,23 @@
       "summary": "jvmcontract: under auto, JBMC is no fallback for a given implementation or a closure of the previous version's own",
       "body": "The regression check refused --engine jbmc and --confirm over a parameter given an implementation of its interface, and over a previous version on a dependency closure of its own (--before-classpath), but under --engine auto a run where the own checker had no verdict (out of time) would still have gone on to JBMC, which is given neither. It now stops there with a note, as it does for a String parameter: 'the tool's own checker gave no verdict, and JBMC is not asked: it takes an implementation of an interface the check gives, which only the own checker is given'. The assertions are in conformance.rs's test of the domains JBMC is not given (a looping method of the fixture, sourceTriangle, and a deadline of zero, for both cases); lib/tools' lint keeps a test that names JBMC out of the tool tier, which is why they are not in interface_regression.rs.\n\nThe second run of lib/tests/heap.rs's proof tier under JBMC, queued with the previous commit (20261115-181435-object-comparisons-under-jbmc-and-auto-c, about three hours), is withdrawn before it started: its job file is removed. It was to check that the regression harness is unchanged for inputs with no interface parameter and one class path. That is now shown directly: the 70 harness classes the heap tests' tool-tier proxies generate (57 regression, 13 property) are byte for byte the same at commit lvvpsuxl and at this one (a scratch build of that commit's lib/, sha256 of every harness class under target/tmp/heap*), and JBMC is running the proof tier on those bytes at lvvpsuxl (job 20261115-173209-object-comparisons-under-jbmc-and-auto-c). Withdrawing it also lets the pipeline collect example 285's preservation result (job 20261115-181427-example-285-preservation-the-known-metho, still pending) without waiting for three more hours of JBMC in the same run.\n\nVerified by: the default run after the change passed 33 of 34, the one failure being the lint on where the new assertions first were (interface_regression.rs); after moving them, conformance.rs (10 passed, the changed test four times over), interface_regression.rs, interface_parameters.rs, values.rs, the unit tests and lib/tools' three lint suites were run again and pass.",
       "log_sha256": "a08bc2ca85f637d4d7768fb8e221dfcb77cb6e18691fd0590b5412f35e6dc164"
+    },
+    {
+      "change_id": "xkplwmyzxklurtuwtwmqpxrxrtrwsxpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verification results for 6 jobs: example 285's four receipts pass, the conformance corpus passes, the object comparisons fail as in VF-018",
+      "body": "Ran 20261115-173146 (example 285 fixed, mutant, vulnerable: expected verdicts, outputs applied), 20261115-181427 (example 285 preservation, passed, outputs applied) and 20261115-173209-conformance (passed: JBMC and auto --confirm, 34m). 20261115-173209-object-comparisons (heap proof tier at 18cfa9e6) failed again on the same four tests as VF-018 (JBMC did not finish within 600 s), recorded there. 20261115-181435-object-comparisons was withdrawn by its submitter after it started and stopped; its leftover result was set aside, not collected (VF-029). Verified by pipeline.py status: nothing pending, running or uncollected.",
+      "log_sha256": "0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07"
     }
   ],
   "logs": {
+    "0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07": {
+      "bytes": 9754990,
+      "lines": 3513,
+      "gzip_bytes": 1437271,
+      "url": null
+    },
     "4adea8f9f6ca4d6a267f087d6cba9d30115b44f18669bdaf07dce773a9a50ff0": {
       "bytes": 9172326,
       "lines": 3189,
