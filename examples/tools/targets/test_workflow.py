@@ -775,6 +775,76 @@ class IngestTest(Fixture):
         vacuous = self.ingest("fixed-security", (self.verifier([outcome("verified", vacuous="no input reaches the call")], 0, revision="after"),))
         self.assertEqual(self.receipt(vacuous)["conclusion"]["expectation"], "no", "a vacuous proof isn't the expected one")
 
+    def witness(self, code=97, classes="after", previous=False, replay=None):
+        """A refuted property's counterexample as jvmcontract's --json gives it (105's job, reduced to the fixture)."""
+        def call(side):
+            return {"class": "fixture.Gate", "class_file": "fixture/Gate.class", "classes": side, "method": "allowed",
+                    "descriptor": "(I)Z", "static": True,
+                    "arguments": [{"name": "code", "type": "int", "value": code, "from": "code"}]}
+        c = {"input": f"allowed(code={code})", "outcome": "returned true", "shrink_runs": 0,
+             "inputs": [{"name": "code", "type": "int", "value": code}], "call": call(classes)}
+        if previous:
+            c["previous_call"] = call("before")
+        return c
+
+    def test_a_property_checks_receipt_says_how_its_witness_was_replayed(self):
+        """The user's review item 6 (2026-11-15), A7's first observation: a refuted property check's receipt gave
+        `evidence.replay: null`, its replay stated only in the proof text, though each property's own was kept."""
+        interpreter = {"by": "interpreter", "reproduced": True}
+        refuted = self.receipt(self.ingest("vulnerable-security", (self.verifier(
+            [outcome("violation", self.witness(), replay=interpreter)], 1),)))
+        self.assertEqual(refuted["conclusion"]["obligations"][0]["evidence"]["replay"], interpreter)
+        self.assertEqual(refuted["evidence"]["replay"], interpreter, "the headline property's replay")
+        two = self.receipt(self.ingest("vulnerable-security", (self.verifier(
+            [outcome("violation", self.witness(), replay=interpreter),
+             outcome("violation", self.witness(65), replay={"by": "interpreter", "reproduced": False})], 1),)))
+        self.assertEqual(two["evidence"]["replay"], {"by": "interpreter", "reproduced": False},
+                         "reproduced only when every refuted property's witness was")
+        unstated = self.receipt(self.ingest("vulnerable-security", (self.verifier(
+            [outcome("violation", self.witness(), replay=interpreter), outcome("violation", self.witness(65))], 1),)))
+        self.assertIsNone(unstated["evidence"]["replay"], "a refuted property with no replay leaves it unstated")
+        holds = self.receipt(self.ingest("fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),)))
+        self.assertIsNone(holds["evidence"]["replay"], "no witness, nothing replayed")
+
+    def test_a_witness_names_the_revision_its_classes_are(self):
+        """Item 6, A7's second observation: jvmcontract's prove runs on one set of classes and calls it `after`, so a
+        one-revision task's witness named `after` whatever its revision (105's `before`, 287's `fixed-release`)."""
+        vulnerable = self.receipt(self.ingest("vulnerable-security", (self.verifier(
+            [outcome("violation", self.witness())], 1),)))
+        call = vulnerable["evidence"]["counterexamples"][0]["witness"]["call"]
+        self.assertEqual((call["classes"], call["revision"]), ("after", "before"), "the tool's label, and the revision")
+        obligation = vulnerable["conclusion"]["obligations"][0]["evidence"]["counterexample"]["witness"]["call"]
+        self.assertEqual(obligation["revision"], "before")
+        mutant = self.receipt(self.ingest("mutant-security", (self.verifier(
+            [outcome("violation", self.witness(65))], 1, revision="mutant"),)))
+        self.assertEqual(mutant["evidence"]["counterexamples"][0]["witness"]["call"]["revision"], "mutant")
+        pair = self.receipt(self.ingest("preservation", (self.verifier([{
+            "verdict": "violation", "output": "jvmcontract equivalence: ...\n", "domain": "code: int",
+            "counterexample": {**self.witness(previous=True), "before": "returned false", "after": "returned true"},
+            "replay": {"by": "interpreter", "reproduced": True}}], 1, revision=None),)))
+        witness = pair["evidence"]["counterexamples"][0]["witness"]
+        self.assertEqual((witness["call"]["revision"], witness["previousCall"]["revision"]), ("after", "before"),
+                         "a pair's sides, by the plan's revisions")
+
+    def test_a_receipt_records_the_frozen_claim_key_beside_its_claim_id(self):
+        """Item 6, A7's third observation: the receipt's `claim.id` is the executed claim's, bound to the prepared
+        bytes, not the frozen source-level key a packet, plan or refusal names, and nothing said which one a reader
+        compares. claim.target.claimKey is the frozen key; the schema says what each is compared for."""
+        fixed = self.receipt(self.ingest("fixed-security", (self.verifier([outcome("verified")], 0, revision="after"),)))
+        vulnerable = self.receipt(self.ingest("vulnerable-security", (self.verifier(
+            [outcome("violation", self.witness())], 1),)))
+        key = self.planned("fixed-security").claim["key"]
+        self.assertEqual(self.planned("vulnerable-security").claim["key"], key, "one property, one frozen key")
+        for document in (fixed, vulnerable):
+            self.assertEqual(document["claim"]["target"]["claimKey"], key)
+            self.assertEqual(document["claim"]["statement"]["claim"]["key"], key)
+        self.assertNotEqual(fixed["claim"]["id"], vulnerable["claim"]["id"], "two artifact-bound identities")
+        schema = json.loads((HERE.parents[1] / "schema" / "result.schema.json").read_text())["properties"]["claim"]
+        said = schema["properties"]["target"]["properties"]["claimKey"]["description"]
+        for words in ("frozen", "claim.id", "compare"):
+            self.assertIn(words, said)
+        self.assertIn("claimKey", schema["properties"]["id"]["description"])
+
     def test_a_target_receipt_runs_no_module_tests_and_has_no_patch_excerpt(self):
         """Phase 5's request 8: a target task's attempt runs no module tests, so its receipt says none (null) rather
         than a test run that didn't pass; one revision has no `before`. Only a target claim may leave them null."""
@@ -857,6 +927,28 @@ class HandoffTest(Fixture):
         target = copy.deepcopy(target or self.target)
         target["handoff"]["blockers"] += [dict(b) for b in blockers]
         return target
+
+    def test_the_inputs_list_the_files_a_claim_cites(self):
+        """Item 6, A7's fourth observation: 105's claim cites records/pow-gaps.json in an assumption's basis, and the
+        handoff didn't list it, so an isolated session had a cited file with no sha256. A path the claim file names
+        that is a file in the example's folder is an input; a repository path or a missing file is not."""
+        claim = self.folder / "claims/gate-security.json"
+        stated = json.loads(claim.read_text())
+        stated["assumptions"] = [{"text": "allowed(int) has no loop.", "basis": "records/regex-gate-gaps.json lists "
+                                  "the classes read; see also lib/README.md and records/missing.json."}]
+        claim.write_text(json.dumps(stated, indent=2) + "\n")
+        roles = {i["path"]: (i["role"], i["sha256"]) for i in self.handoff("fixed-security")["inputs"]}
+        self.assertEqual(roles["records/regex-gate-gaps.json"],
+                         ("cited by the claim", workflow.file_sha256(self.folder / "records/regex-gate-gaps.json")))
+        self.assertEqual(roles["gate/oracle.py"][0], "control: oracle", "a cited control keeps its role")
+        self.assertNotIn("lib/README.md", roles)
+        self.assertNotIn("records/missing.json", roles)
+        real = HERE.parents[1] / "105-commons-numbers-223-pow-of-minus-two-to-the-31"
+        example = json.loads((real / "example.json").read_text())
+        with offline():
+            packet = workflow.handoff(real, example, sidecar.load(real, example), "fix-property-before")
+        inputs = {i["path"]: i for i in packet["inputs"]}
+        self.assertEqual(inputs["records/pow-gaps.json"]["sha256"], workflow.file_sha256(real / "records/pow-gaps.json"))
 
     def test_the_regex_probe_packet_carries_its_observed_gap_packet(self):
         from targets import workflow_handoff

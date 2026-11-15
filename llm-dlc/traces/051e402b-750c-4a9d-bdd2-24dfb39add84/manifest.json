@@ -12,30 +12,31 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-14T18:25:20.503Z",
-  "ended": "2026-11-15T05:15:39.706Z",
-  "duration_seconds": 39019,
+  "ended": "2026-11-15T05:32:24.192Z",
+  "duration_seconds": 40024,
   "stats": {
-    "turns": 196,
-    "api_calls": 1581,
-    "tool_calls": 1615,
-    "tool_errors": 28,
+    "turns": 197,
+    "api_calls": 1653,
+    "tool_calls": 1690,
+    "tool_errors": 30,
     "compactions": 36,
     "peak_context_tokens": 313393,
     "usage": {
-      "input_tokens": 3202,
-      "output_tokens": 1030248,
-      "cache_read_input_tokens": 205109112,
-      "cache_creation_input_tokens": 5596817
+      "input_tokens": 3348,
+      "output_tokens": 1068138,
+      "cache_read_input_tokens": 217652779,
+      "cache_creation_input_tokens": 5737910
     }
   },
   "tools": {
-    "Bash": 1383,
-    "Read": 116,
-    "Edit": 87,
+    "Bash": 1449,
+    "Read": 118,
+    "Edit": 91,
     "Write": 10,
     "ToolSearch": 7,
     "AskUserQuestion": 6,
     "Agent": 5,
+    "Monitor": 3,
     "WebFetch": 1
   },
   "files_touched": [
@@ -577,24 +578,24 @@
     {
       "index": 36,
       "started": "2026-11-15T05:15:27.762Z",
-      "ended": "2026-11-15T05:15:39.706Z",
-      "turns": 4,
-      "api_calls": 3,
+      "ended": "2026-11-15T05:32:24.192Z",
+      "turns": 5,
+      "api_calls": 75,
       "usage": {
-        "input_tokens": 6,
-        "output_tokens": 462,
-        "cache_read_input_tokens": 105135,
-        "cache_creation_input_tokens": 61404
+        "input_tokens": 152,
+        "output_tokens": 38352,
+        "cache_read_input_tokens": 12648802,
+        "cache_creation_input_tokens": 202497
       },
-      "peak_context_tokens": 74590
+      "peak_context_tokens": 215683
     }
   ],
   "log": {
-    "sha256": "4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684",
-    "bytes": 53493747,
-    "lines": 16308,
-    "gzip_bytes": 11527022,
-    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684.jsonl.gz"
+    "sha256": "8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941",
+    "bytes": 54664428,
+    "lines": 16880,
+    "gzip_bytes": 11684309,
+    "path": "llm-dlc/traces/051e402b-750c-4a9d-bdd2-24dfb39add84/logs/8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941.jsonl.gz"
   },
   "subagents": [
     {
@@ -1237,6 +1238,14 @@
       "summary": "Record verification results for the review item 5 receipt jobs on examples 287 and 105",
       "body": "Ran 20261115-050846 (example 287 fixed-guard receipt) and 20261115-050856 (example 105 fix-property-before receipt) on vm-1. Both passed: 287's controls were refused as predicted, 105 gave its expected verdict. Collected outputs (receipts with raw streams) applied to the working copy, examples index regenerated. No findings.",
       "log_sha256": "4c4772d7c7018baf1662103897c005db25bbca8e59ea8a9df70547cd1d21b684"
+    },
+    {
+      "change_id": "mmlyrukrvvvxpmzvonysowvrzxxptlwm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "example-targets: a receipt fills a refuted property check's replay, names each witness's revision, records the frozen claim key, and the handoff lists the files a claim cites (review item 6)",
+      "body": "The user's review item 6 (2026-11-15) fixes the four observations of gate A7's isolated session. (1) A refuted property check's receipt now gives evidence.replay: how its witnesses were run again, reproduced only when every refuted property's was, null when any states none (workflow_ingest.property_replay). (2) Each witness call gains 'revision', the plan's revision its classes are: jvmcontract calls a one-revision proof's classes 'after', whatever the revision (105's before, 287's fixed-release). 'classes' keeps the tool's label. (3) claim.target.claimKey records the frozen source-level key, the one a plan, a handoff, a refusal record and a job name, beside claim.id, the claim bound to the prepared artifacts. The result schema, the ingestion docstring and examples/README.md say to compare the key for the same claim and the id for the same artifacts. (4) The handoff's inputs list, with sha256, every file of the example's folder that the claim file names in its text (workflow_handoff.cited_by_claim), so 105's handoffs now list records/pow-gaps.json. result.schema.json gains the optional typedCall.revision and claim.target.claimKey. Old receipts stay valid.",
+      "log_sha256": "8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941"
     }
   ],
   "logs": {
@@ -1442,6 +1451,12 @@
       "bytes": 1015508,
       "lines": 344,
       "gzip_bytes": 202131,
+      "url": null
+    },
+    "8d30c93ae3c99ae2062425a4455c3388115bce5303ba1ecaf697136bbd238941": {
+      "bytes": 54664428,
+      "lines": 16880,
+      "gzip_bytes": 11684309,
       "url": null
     },
     "8e7551d437bd66101264e6c4b640740a6f04ea5ab43f5a8b697e9a4ba92bbffd": {

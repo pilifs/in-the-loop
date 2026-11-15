@@ -525,7 +525,12 @@ receipt exits 0 only when the receipt's `matchesExpected` is true: ingestion com
 the task's `expected`, and a replay, which decides no claim, compares each revision's controls with what its pair's
 kind expects. The receipt's `records/` keeps the attempt's raw evidence: each control's and the verifier's stdout
 and stderr and the runner's `controls.json` and `verifier.json`, each cut to 512 KiB, with `streams.json` giving every
-one's whole size and sha256; a stage that didn't start says why. Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
+one's whole size and sha256; a stage that didn't start says why. The receipt's `claim.id` is the claim bound to
+the prepared artifacts, so two receipts with one id ran one claim on the same bytes; `claim.target.claimKey` is the
+frozen source-level key that plans, handoffs, refusal records and jobs name, shared by the tasks stating one property
+on several revisions. Compare the key for "the same claim", the id for "on the same artifacts". A witness call
+names the revision its classes are (`revision`), since the verifier calls a one-revision proof's classes `after`.
+Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
 it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
 `--role`, `--readiness`, `--claim-status` and `--gap` filter on. [`gap-inventory.md`](gap-inventory.md) ranks the
 observed capability gaps across these targets, by distinct families and blocked obligations, each with its smallest

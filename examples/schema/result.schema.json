@@ -129,7 +129,8 @@
         "class": { "type": "string", "description": "The class declaring the method, as Java names it, in that version's classes." },
         "classFile": { "type": "string", "description": "The class file the method was read from, relative to the root of that version's classes." },
         "classFileSha256": { "type": ["string", "null"], "description": "The SHA-256 of that class file as the run built it; null when the runner could not find it." },
-        "classes": { "enum": ["after", "before"], "description": "Which classes: the patched version (`after`) or the previous one (`before`)." },
+        "classes": { "enum": ["after", "before"], "description": "Which classes: the patched version (`after`) or the previous one (`before`). jvmcontract's label: a proof on one set of classes calls them `after`, so for a target task `revision` names them." },
+        "revision": { "type": "string", "description": "For a target task's receipt (since 2026-11-15): the sidecar revision whose classes these are, by its name in target.json. A one-revision task's call is always `classes: after`, whatever its revision (105's `before`, 287's `fixed-release`); a pair's `after` and `before` are its second and first revision." },
         "method": { "type": "string" },
         "descriptor": { "type": "string", "description": "The method's descriptor, as in the class file." },
         "static": { "type": "boolean" },
@@ -1030,7 +1031,7 @@
       }
     },
     "replay": {
-      "description": "For a regression proof's violation: where the checker's witness was run again on both versions, which a page says rather than assumes; for a property proof, each refuted property's own, under `properties`, the witness run on the method. Null otherwise; absent in results written before 2026-11-05, whose proof line says where.",
+      "description": "For a regression proof's violation: where the checker's witness was run again on both versions, which a page says rather than assumes; for a property proof, each refuted property's own, under `properties`, the witness run on the method; a target task's refuted property check also gives it here (since 2026-11-15): the means its witnesses were run by, `reproduced` only when every refuted property's was, null when any states none. Null otherwise; absent in results written before 2026-11-05, whose proof line says where.",
       "type": ["object", "null"],
       "required": ["by", "reproduced"],
       "additionalProperties": false,
@@ -1250,7 +1251,7 @@
       "required": ["id", "format", "example", "statement", "scope", "inputs"],
       "additionalProperties": false,
       "properties": {
-        "id": { "description": "The first 16 hex digits of the SHA-256 of the rest of the claim, canonical JSON.", "type": "string", "pattern": "^[0-9a-f]{16}$" },
+        "id": { "description": "The first 16 hex digits of the SHA-256 of the rest of the claim, canonical JSON. For a target task, the executed claim: the source-level claim bound to the prepared bytes, classpath, JDKs and files, so two receipts with one id ran one claim on the same artifacts (another attempt at it); a vulnerable and a fixed task stating one property have two ids. It is not the frozen source-level key a packet, a plan, a refusal record or a job names, which is `target.claimKey` (since 2026-11-15).", "type": "string", "pattern": "^[0-9a-f]{16}$" },
         "format": { "const": 1 },
         "example": { "type": "string", "pattern": "^\\d{3}$" },
         "statement": { "description": "What is checked, as build.py's plan() states it: the approach, the target and its file, behaviourChangeIntended, and for B9 the intended inputs, previous symbol and arguments, and result relation.", "type": "object" },
@@ -1283,6 +1284,7 @@
             },
             "jdks": { "description": "Each JDK the attempt ran on, by its `java -version` first line: a different JDK is a different identity.", "type": "array", "minItems": 1, "items": { "type": "string" } },
             "files": { "description": "Adapter, oracle, model and claim files from the example's folder, by path, with their SHA-256.", "type": "object", "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" } },
+            "claimKey": { "description": "The frozen source-level claim key (workflow.claim_key(), also `statement.claim.key`): what is checked and over what, without the revisions or their artifacts, so the tasks stating one property on several revisions share it. Compare it to tell whether two receipts, a handoff packet (`plan.claim.key`), `build.py --plan`, a refusal record (`claimKey`) or a job are about the same claim; compare `claim.id` to tell whether they ran it on the same artifacts. A receipt stays current while its plan's inputs key (plan.json beside it) is the task's, which neither decides alone. Absent in receipts written before 2026-11-15, where `statement.claim.key` has it.", "type": "string", "pattern": "^[0-9a-f]{16}$" },
             "scopes": { "description": "Written when a revision is an extracted source slice (the source-slice route, or a mutant of one): each revision's artifact scope, so a slice's claim is never read as one about the commit's own build.", "type": "object", "minProperties": 1, "additionalProperties": { "enum": ["original-bytecode", "extracted-source-slice", "constructed-mutation-of-a-slice", "constructed-mutation", "constructed-fixture"] } }
           }
         },
@@ -1316,7 +1318,7 @@
         "options": { "description": "The flags jvmcontract's proof was given (plan()'s options).", "type": "array", "items": { "type": "string" } },
         "tools": { "description": "Each tool the plan names, by its identity: Java, javac and JBMC by the first line of their version, Gradle by the wrapper's distribution, jvmcontract and TLC by the SHA-256 of the executable or jar. Null for one that could not be asked.", "type": "object", "additionalProperties": { "type": ["string", "null"] } },
         "bytecode": {
-          "description": "The classes the attempt built from the claim's sources, by content: `after`, the patched app's main classes; `before`, the unpatched ones a B9 run compares them with (null for the other approaches).",
+          "description": "The classes the attempt built from the claim's sources, by content: `after`, the patched app's main classes; `before`, the unpatched ones a B9 run compares them with (null for the other approaches). For a target task, the original classes of its revisions: a pair's second and first, and a one-revision task's under `after` whatever its name (`claim.statement.revisions` names it).",
           "type": "object",
           "required": ["before", "after"],
           "additionalProperties": false,

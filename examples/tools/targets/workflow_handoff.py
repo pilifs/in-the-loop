@@ -5,9 +5,9 @@ files it names and the folder's receipts, and runs nothing.
 
 packet(folder, example, target, task) is workflow.handoff()'s dict:
   inputs        every immutable file the task rests on, by path, role and sha256: the sidecar, the claim file, the
-                controls, models, plan and contracts it froze, the adapters, a mutant's patch, each fixture revision's
-                sources (the sha256 of their listing, with their git tree id), and the gap packets with the records
-                they cite
+                controls, models, plan and contracts it froze, the files of the folder its claim file cites in its
+                text (cited_by_claim()), the adapters, a mutant's patch, each fixture revision's sources (the sha256
+                of their listing, with their git tree id), and the gap packets with the records they cite
   commands      the exact commands: the offline plan, then the attempt (a replay runs inline, a proof is queued)
   receipts      the current receipts of the task's claim and inputs (stale and unreadable ones apart)
   prerequisites each prerequisite task, satisfied or not, and nextPrerequisite, the first that isn't
@@ -145,6 +145,42 @@ def attempt_command(example, t, key=None):
 # -- inputs and receipts
 
 
+CITED = re.compile(r"(?<![\w./-])((?:[\w.-]+/)+[\w.-]+\.[A-Za-z0-9]+)")  # a relative path with a directory and an extension
+
+
+def cited_by_claim(folder, name):
+    """The files of the example's folder the claim file names in its text (a statement, an assumption's basis, a
+    note: 105's `records/pow-gaps.json`), sorted: the user's review item 6 (2026-11-15), so a session handed the
+    packet has each by sha256. A path that isn't a file inside the folder (a repository page such as lib/README.md)
+    is no input of the task. `$schema` is the claim's format, not something it rests on."""
+    try:
+        stated = json.loads(workflow.inside(folder, name).read_text())
+    except (workflow.ClaimError, OSError, ValueError):
+        return []
+    if isinstance(stated, dict):
+        stated.pop("$schema", None)
+
+    def strings(value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for v in value.values():
+                yield from strings(v)
+        elif isinstance(value, list):
+            for v in value:
+                yield from strings(v)
+
+    found = set()
+    for text in strings(stated):
+        for path in CITED.findall(text):
+            try:
+                workflow.inside(folder, path)
+            except workflow.ClaimError:
+                continue
+            found.add(path)
+    return sorted(found - {name})
+
+
 def inputs_of(folder, example, target, t, plan):
     """The task's immutable inputs, each {path, role, sha256}, sorted by path."""
     folder = Path(folder)
@@ -174,6 +210,9 @@ def inputs_of(folder, example, target, t, plan):
     for key in ("plan", "contracts"):
         if claim.get(key):
             add(claim[key]["path"], key, claim[key]["sha256"])
+    if claim.get("file"):
+        for name in cited_by_claim(folder, claim["file"]):
+            add(name, "cited by the claim", workflow.file_sha256(folder / name))
     defined = target["history"]["revisions"]
     for entry in plan.artifacts:
         patch = entry.get("mutant", {}).get("patch")

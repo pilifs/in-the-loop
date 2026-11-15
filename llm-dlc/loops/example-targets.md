@@ -2205,6 +2205,59 @@ Proposed by the planning session and settled by the user on 2026-11-08, as propo
     - the handoff lists the files a claim cites.
 
     Read the two jobs above when they are collected.
+- 2026-11-15, **review item 6 done: A7's four observations fixed.** Item 5's two jobs passed.
+  - **Item 5's jobs** (collected in `qkqrqyvq`): both passed, and each printed "receipt streams bundled".
+    - `20261115-050846-…-287-fixed-guard-…` was refused as predicted under `2fc462942f0992af`. Its new receipt keeps
+      both controls' streams, and each controls stage gives its reason: "revision fixed-release's adapter doesn't call
+      the task's target …". It also keeps `controls.json` and `verifier.json`.
+    - `20261115-050856-…-105-fix-property-before-…` was refuted at `pow(-2, 31)`. Its receipt now holds the JVM
+      controls' streams on JDK 21 and 25 (4451 bytes each), which A5's receipts lacked.
+  - **Reproducers**: four new tests, each failing on `vmuvwopu`:
+    - `test_workflow.py`'s `test_a_property_checks_receipt_says_how_its_witness_was_replayed`. `evidence.replay` was
+      null for a refuted property check;
+    - `test_a_witness_names_the_revision_its_classes_are`. The call had only jvmcontract's `classes: after`;
+    - `test_a_receipt_records_the_frozen_claim_key_beside_its_claim_id`. There was no `claim.target.claimKey`;
+    - `test_the_inputs_list_the_files_a_claim_cites`. The handoff left out a file the claim's assumption cites, on the
+      fixture and on 105 (`records/pow-gaps.json`).
+  - **The change**:
+    1. **Replay** (`workflow_ingest.property_replay`): a refuted property check's flat `replay` is how its witnesses
+       were run again. `reproduced` is true only when every refuted property's witness was. It is null when any
+       refuted property states no replay, or when they were run by different means. Each property keeps its own, as
+       before. An equivalence is unchanged.
+    2. **Revision** (`name_revisions`): each witness call gains `revision`, the plan's revision its classes are.
+       `classes` keeps jvmcontract's label, which is `after` for a proof on one set of classes. A pair's `after` and
+       `before` map to its second and first revisions. `attempt.bytecode`'s description now says a one-revision
+       task's classes sit under `after`, and `claim.statement.revisions` names them.
+    3. **Claim key**: `claim.target.claimKey` is the frozen source-level key (`statement.claim.key`). It is what a
+       plan, a handoff, a refusal record and a job name. The schema's `claim.id` and `claimKey` descriptions, the
+       ingestion docstring and `examples/README.md` say which to compare:
+       - the key, to tell whether two receipts are about one claim;
+       - the id, to tell whether they ran it on the same artifacts.
+
+       Staleness is still plan.json's inputs key. A plan whose claim has no key (the contract's hand-made one) records
+       no `claimKey`. The first integration run failed at contract A6 on a `null` there.
+    4. **Cited files** (`workflow_handoff.cited_by_claim`): a path the claim file's text names is listed under
+       `inputs` with role "cited by the claim" and its sha256, if it is a file inside the example's folder. A
+       repository page (`lib/README.md`, `llm-dlc/...`) or a missing file is not listed. A file the handoff already
+       lists keeps its role. 105's handoffs now list `records/pow-gaps.json`.
+
+    `result.schema.json` gains the optional `typedCall.revision` and `claim.target.claimKey`, and its `replay`
+    description is updated. Old receipts stay valid (A6 checks all of them).
+  - **Checked on the real outcome**: 105's new receipt's verifier record, re-read offline by the changed ingestion,
+    gives `replay` `{"by": "interpreter", "reproduced": true}`, a call with `classes: after` and `revision: before`,
+    and key `8a4071f6a417d239`. No job was queued, because no verifier needs to run for this.
+  - **A defect in this loop's acceptance test**, found with item 5's receipts in the working copy: A6 required one
+    claim id per task. 105 `fix-property-before`'s new attempt has a new id (`d1bb93e6…`, after `bb2955ce…`), and
+    the only difference is `claim.target.sidecar`. Item 1 rewrote 105's handoff text in `target.json`, and the
+    claim binds the sidecar's sha256. A6 now requires one frozen key per task, and `claimKey` to equal
+    `statement.claim.key` where it is present. **For review**: an edit to a sidecar's handoff prose changes every
+    claim id of that example, though no claim changed.
+  - **A8**: no rerun. The verdict rules are unchanged, and the new fields are additive. `build.py`,
+    `without_jbmc.sh` and the constructed run paths are untouched.
+  - **Checked**: `example-targets-integration.sh` exits 0: the contract (16), the targets suite (270, four new),
+    `test_build.py` (190), `test_pipeline.py` (33) and `build.py --plan`.
+  - **Next**: item 7. 307's receipt records the slice's published-class match (entry, sha256, JAR), from the
+    preparation's `source.slice.matched`.
 - Status: working
 
 ## Loop settings

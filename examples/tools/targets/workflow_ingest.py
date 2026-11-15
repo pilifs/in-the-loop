@@ -22,7 +22,10 @@ The claim is bound before anything is read as a result: the task's source-level 
 sha256, each revision's identity, every classpath entry of each revision in order with its role and sha256, the JDKs,
 and the claim, control, adapter and patch files by sha256. Its id is build.py's (canonical digest, 16 hex digits), so
 the same task on the same inputs keeps its id across attempts, a vulnerable and a fixed task sharing a claim file get
-different ids (their artifacts differ), and another engine or timeout is another attempt at the same claim.
+different ids (their artifacts differ), and another engine or timeout is another attempt at the same claim. The
+frozen source-level key the plan, the handoff, a refusal record and a job name (workflow.claim_key()) is recorded beside
+it as claim.target.claimKey (the user's review item 6, 2026-11-15): compare the key to tell whether two receipts are
+about one claim, and the id to tell whether they ran it on the same artifacts.
 
 A revision's identity is its full commit SHA. A fixture revision has no commit: its identity is the git tree id of
 its source directory, which `git rev-parse <commit>:<path>` reproduces from any commit holding the folder unchanged.
@@ -39,7 +42,9 @@ what the task expects (expectation), what it is about (scope) and whether its co
   - A proof task's conclusion is the verifier's, read from its `--json` outcome (ExecutionRecord.observations: the
     list `prove --json` prints, or the one outcome of `equivalence --json`), with build.py's rules: an exit code the
     outcome contradicts, a missing or unreadable outcome, or a violation without a witness is invalid output, never a
-    violation; a refusal is unresolved; a kill or timeout has no verdict.
+    violation; a refusal is unresolved; a kill or timeout has no verdict. A refuted property check's flat `replay`
+    is its witnesses' (property_replay()), beside each property's own. Each witness call names the plan's revision
+    its classes are (`revision`, name_revisions()), since jvmcontract calls a one-revision proof's classes `after`.
 """
 
 import hashlib
@@ -283,7 +288,8 @@ def claim_record(plan, target_path, bound, records, oracle):
             "target": {"task": plan.task, "sidecar": workflow.file_sha256(target_path),
                        "revisions": {revision: identity for revision, (_, _, identity) in bound.items()},
                        "dependencies": dependencies, "jdks": jdks_of(bound, records),
-                       "files": claim_files(plan, oracle)}}
+                       "files": claim_files(plan, oracle),
+                       **({"claimKey": plan.claim["key"]} if plan.claim.get("key") else {})}}
     scopes = artifact_scopes(bound)
     if scopes:
         body["target"]["scopes"] = scopes
@@ -492,6 +498,7 @@ def verifier_outcome(plan, bound, records):
                 lead = next(r for want in ("violation", "unverifiable", "verified") for r in props if r["verdict"] == want)
                 fields.update({"properties": props, "counterexamples": witnesses, "domain": lead["domain"],
                                "proof": lead["proof"], "problem": lead["problem"],
+                               "replay": property_replay(props) if verdict == "violation" else None,
                                "property": {"assert": lead["assert"], "assume": lead["assume"],
                                             **({"throws": lead["throws"]} if lead.get("throws") else {})}})
         else:
@@ -503,6 +510,7 @@ def verifier_outcome(plan, bound, records):
                 fields.update({"counterexamples": witnesses if verdict == "violation" else [], "domain": outcome.get("domain"),
                                "proof": outcome.get("proof"), "problem": outcome.get("problem"),
                                "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None})
+    name_revisions(plan, fields["counterexamples"])
     vacuous = verdict == "verified" and any((r or {}).get("vacuous") for r in (fields["properties"] or []))
     if vacuous:
         fields["coverage"] = {"vacuous": True, "reason": next(r["vacuous"] for r in fields["properties"] if r.get("vacuous"))}
@@ -516,6 +524,30 @@ def verifier_outcome(plan, bound, records):
     if fields["problem"] is None and execution["status"] != "completed":
         fields["problem"] = execution["reason"]
     return fields, [entry_of(r) for r in records], output
+
+
+def property_replay(props):
+    """A refuted property check's flat `replay` (the user's review item 6, 2026-11-15): where its witnesses were run
+    again, `reproduced` only when every refuted property's was, and None when any refuted property states no replay or
+    they were run by different means. Each property keeps its own under `properties`."""
+    replays = [r.get("replay") for r in props if r["verdict"] == "violation"]
+    if not replays or not all(replays) or len({r["by"] for r in replays}) != 1:
+        return None
+    return {"by": replays[0]["by"], "reproduced": all(r["reproduced"] for r in replays)}
+
+
+def name_revisions(plan, counterexamples):
+    """Give each witness call the plan's revision its classes are (item 6): jvmcontract labels a call's classes
+    `after` or `before`, the sides of the run it was given, so a one-revision prove calls its only classes `after`,
+    whatever the revision (105's `before`, 287's `fixed-release`). The tool's label stays in `classes`."""
+    names = list(plan.revisions)
+    sides = {"after": names[-1], "before": names[0] if len(names) > 1 else None}
+    for c in counterexamples or []:
+        witness = (c or {}).get("witness") or {}
+        for key in ("call", "previousCall"):
+            call = witness.get(key)
+            if call and sides.get(call.get("classes")):
+                call["revision"] = sides[call["classes"]]
 
 
 def excerpt(target_path, revision):

@@ -299,7 +299,16 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
             self.assertEqual(doc["conclusion"]["attempt"], doc["attempt"]["id"])
             claims.setdefault(doc["claim"]["id"], set()).add((folder.name[:3], task))
         self.assertTrue(all(len(v) == 1 for v in claims.values()), "one claim id, one example's task")
-        self.assertEqual(len(claims), len({(f.name[:3], t) for f, t, _, _ in self.receipts}))
+        # A task keeps one frozen source-level key across its attempts. Its claim id, bound to the sidecar's sha256 and
+        # the prepared artifacts, changes when they do: 105 fix-property-before's attempt of 2026-11-15 05:15 has
+        # another id than A7's, after review item 1 edited 105's target.json (the user's review item 6 says which to
+        # compare: claim.target.claimKey for the claim, claim.id for the artifacts it ran on).
+        keys = {}
+        for folder, task, _, doc in self.receipts:
+            key = doc["claim"]["statement"]["claim"]["key"]
+            self.assertEqual(doc["claim"]["target"].get("claimKey", key), key, f"{folder.name} {task}")
+            keys.setdefault((folder.name[:3], task), set()).add(key)
+        self.assertEqual({k: v for k, v in keys.items() if len(v) != 1}, {}, "one frozen key per task")
 
     def test_execution_conclusion_expectation_scope_and_replay_stay_apart(self):
         for folder, task, directory, doc in self.receipts:
