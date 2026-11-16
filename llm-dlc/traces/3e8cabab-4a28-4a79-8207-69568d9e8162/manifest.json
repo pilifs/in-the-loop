@@ -12,8 +12,8 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-16T14:09:57.497Z",
-  "duration_seconds": 67556,
+  "ended": "2026-11-16T14:10:35.621Z",
+  "duration_seconds": 67594,
   "stats": {
     "turns": 18,
     "api_calls": 514,
@@ -130,7 +130,7 @@
     {
       "index": 4,
       "started": "2026-11-16T10:01:30.718Z",
-      "ended": "2026-11-16T14:09:57.497Z",
+      "ended": "2026-11-16T14:10:35.621Z",
       "turns": 3,
       "api_calls": 70,
       "usage": {
@@ -143,11 +143,11 @@
     }
   ],
   "log": {
-    "sha256": "6a8845142534333726d76c01764cd7850772f22c0b790db3c7c1140aefe5e103",
-    "bytes": 13896109,
-    "lines": 4683,
-    "gzip_bytes": 2364791,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/6a8845142534333726d76c01764cd7850772f22c0b790db3c7c1140aefe5e103.jsonl.gz"
+    "sha256": "a15b6a2f3e3ddc0757a5cd4e5051a6c1d96c77f95d0fda1e2507e21ef14722ec",
+    "bytes": 13904508,
+    "lines": 4687,
+    "gzip_bytes": 2365481,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/a15b6a2f3e3ddc0757a5cd4e5051a6c1d96c77f95d0fda1e2507e21ef14722ec.jsonl.gz"
   },
   "subagents": [
     {
@@ -525,6 +525,14 @@
       "summary": "/prove-java-change: catalog entries are set up first, answers given beside the route count, and the watcher's verdicts go to the decision record",
       "body": "Five decisions the user took on 2026-11-16, asked one at a time, and what each became.\n\n1. A claim decided beside the route. Examples 286 and 287 had claims decided by a script of their own (proofs/prove.py) run as verification jobs, which leaves no route receipt, so changes.py listed them as open. A task in target.json may now carry besideRoute (answer, job, by, recorded; examples/schema/target.schema.json). changes.py counts such an answer only while the job's result is in the checkout, passed, and the job names the example; a route receipt outranks it. 286 and 287 have their six records. Both still list as prepared: each has other claims open, and an open claim now carries 'blocked', the kinds of observed verifier gaps its task stops at. Whether such an example is done stays the watcher's judgement.\n\n2. Catalog entries. Examples 288 to 300 have pinned revisions and no task. changes.py gives them a state of their own, catalogued, and watch.py preflight lists them under toSetUp, apart from prepared examples that lack something (toRepair, one repair, else abort, as before). The watcher has each entry set up by a setup session before the loop starts (runtime.md, 'A catalog entry's brief'), checks again with --after-setup, which leaves out an entry that is still not prepared without stopping the others, and shows the user every claim once before a proof starts (new: watch.py claims).\n\n3. Continuing 288 onwards in the old prove-examples session needs no code: the request names the session and the watcher runs watch.py session --use.\n\n4. The watcher's verdicts are decisions. conductor.py decide also appends each verdict given in time to llm-dlc/decisions/NAME.jsonl (local-NAME in a runtime checkout), with the question, its answers, the reason and how it is taken back; --confidence medium flags it for review. The watcher's summary names decisions the user overturned. A record that can't be written never holds a verdict back. The stream conductor's brief gains Design 8, a proposal to make the watcher the conductor of parallel streams in place of plan step 4; it is for the user to read and nothing of it is built.\n\n5. Housekeeping: watch.py no longer takes a shell that only mentions verification-loop.sh (the window a loop ended in) for a running loop.\n\nVerified by the default test run (Rust, and 46 of 46 Python files), with new tests in test_changes.py, test_watch.py and test_conductor.py; changes.py and watch.py preflight and claims were also run on examples 285 to 288 of this checkout. No model has run any of it: the setup of a catalog entry, the claims confirmation and the recorded verdicts are tested against stand-ins and fixtures only.",
       "log_sha256": "6a8845142534333726d76c01764cd7850772f22c0b790db3c7c1140aefe5e103"
+    },
+    {
+      "change_id": "rnoqllmozsomlxnylmrzpqstykxpovkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.9.0 of /prove-java-change",
+      "body": "The skill at 0.9.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (8e12835a4ed91d536d070210d0cadc92d24c8e8e2b6835c9288218a229825b9f, 5530 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Examples named by number may be catalog entries: each is set up by a setup session before the loop starts, and the user confirms every claim once. Answers given beside the route (a sidecar's besideRoute, confirmed by a passed verification job) count as decided. The watcher's answers to the loop are recorded as decisions the user can review (llm-dlc/decisions/).",
+      "log_sha256": "a15b6a2f3e3ddc0757a5cd4e5051a6c1d96c77f95d0fda1e2507e21ef14722ec"
     }
   ],
   "logs": {
@@ -575,6 +583,12 @@
       "lines": 117,
       "gzip_bytes": 365251,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/9cc15e3610fc132808b207c292613eef18b92a4c93090809a0ec37d39921a08e.jsonl.gz"
+    },
+    "a15b6a2f3e3ddc0757a5cd4e5051a6c1d96c77f95d0fda1e2507e21ef14722ec": {
+      "bytes": 13904508,
+      "lines": 4687,
+      "gzip_bytes": 2365481,
+      "url": null
     },
     "a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db": {
       "bytes": 11492168,
