@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
-# Prove examples in a moonshot loop of their own: step 3 of /prove-java-change
+# Prove examples in a moonshot loop of their own: the last stage of /prove-java-change
 # (llm-dlc/runtime.md#the-proof-loop), in a development or a runtime checkout.
 #
-# Usage: llm-dlc/tools/prove-loop.sh [--fork SESSION] [--cycles N] [--memory SIZE]
-#                                    [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]
+# Usage: llm-dlc/tools/prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE]
+#                                    [--wait-for-proofs] [--no-verification] [--no-isolation]
+#                                    EXAMPLE [EXAMPLE ...]
 #
-# It gives each example, one per cycle, to feature-loop.sh's `prove-change`
-# moonshot: "Formally prove example {} as elegantly and efficiently as
-# possible", on Fable 5.2 at high effort, the instruction and nothing else.
+# It gives each example to feature-loop.sh's `prove-change` moonshot: "Formally
+# prove example {} as elegantly and efficiently as possible", on Fable 5.2 at high
+# effort, the instruction and nothing else. An example keeps the loop for as many
+# cycles as it takes: after each one the watcher (the loop's conductor) says
+# whether it is finished, goes on, or only waits on the verification jobs it
+# queued. In that last case the loop takes the next example meanwhile, and comes
+# back to the earliest one whose jobs are in before it starts another.
 #
+#   --session SESSION  the loop continues that session: the one that evaluated the
+#                    changes (watch.py's fixed session), so it proves what it planned.
+#   --wait-for-proofs  stay on an example while its verification jobs run, instead
+#                    of taking the next one meanwhile
 #   --fork SESSION   the loop's session starts as a fork of that one: the session
 #                    that prepared the example hands on what it learned. The fork is
 #                    made in one turn without tools, then compacted, and the cycles
 #                    follow in it; the parent goes on untouched, and may be mid-turn.
 #                    Without it the loop starts a fresh session.
-#   --cycles N       at most N cycles (by default one per example)
+#   --cycles N       at most N cycles (by default as many as the examples take)
 #   --memory SIZE    the loop's memory cap (FEATURE_LOOP_MEMORY_MAX; doctor.py's
 #                    budget proposes one for this machine)
 #   --no-verification  don't start verification-loop.sh for the jobs the loop queues.
@@ -31,7 +40,9 @@
 # The run's state is in llm-dlc/loop-summaries/prove-change/ (gitignored):
 #   lock            held while a run is under way: one at a time in a checkout
 #   run.json        the session, the examples, the record, how it ended
-#   events.jsonl    what the loop asks its conductor (conductor.py), and its end
+#   events.jsonl    where the loop is and what it asks its conductor (conductor.py), and its end
+#   commands        lines the conductor leaves for the loop (conductor.py command)
+#   merge-queue     workspaces the watcher is to merge between two examples (watch.py merge)
 #   verification.log  the verification loop's output, when this script started it
 # feature-loop.sh keeps the run's record beside it, as for every loop.
 #
@@ -40,21 +51,34 @@
 
 set -uo pipefail
 
+# Run from a private copy, as feature-loop.sh does: a merge between two examples may rewrite this file.
+if [[ "${PROVE_LOOP_COPY:-}" != "$0" ]]; then
+  PROVE_LOOP_SELF=$(realpath "${BASH_SOURCE[0]}") || exit 1
+  PROVE_LOOP_COPY=$(mktemp "${TMPDIR:-/tmp}/prove-loop.XXXXXX") || exit 1
+  cp -- "$PROVE_LOOP_SELF" "$PROVE_LOOP_COPY" || exit 1
+  export PROVE_LOOP_SELF PROVE_LOOP_COPY
+  exec "$BASH" "$PROVE_LOOP_COPY" "$@"
+fi
+trap 'rm -f "$PROVE_LOOP_COPY"' EXIT
+
 MODEL=claude-fable-5-2
 EFFORT=high
 FORK=
+CONTINUE=
 CYCLES=
 VERIFY=1
 EXAMPLES=()
 
 usage() {
-  echo "usage: prove-loop.sh [--fork SESSION] [--cycles N] [--memory SIZE] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
+  echo "usage: prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE] [--wait-for-proofs] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
   exit 2
 }
 
 while (( $# )); do
   case "$1" in
     --fork) [[ $# -ge 2 ]] || usage; FORK=$2; shift 2 ;;
+    --session) [[ $# -ge 2 ]] || usage; CONTINUE=$2; shift 2 ;;
+    --wait-for-proofs) export FEATURE_LOOP_CONTINUE_WHILE_PROVING=0; shift ;;
     --cycles) [[ $# -ge 2 && "$2" =~ ^[1-9][0-9]*$ ]] || usage; CYCLES=$2; shift 2 ;;
     --memory) [[ $# -ge 2 ]] || usage; export FEATURE_LOOP_MEMORY_MAX=$2; shift 2 ;;
     --no-verification) VERIFY=; shift ;;
@@ -66,8 +90,10 @@ done
 (( ${#EXAMPLES[@]} )) || usage
 UUID='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 [[ -z "$FORK" || "$FORK" =~ $UUID ]] || { echo "prove-loop.sh: not a session id: $FORK" >&2; exit 2; }
+[[ -z "$CONTINUE" || "$CONTINUE" =~ $UUID ]] || { echo "prove-loop.sh: not a session id: $CONTINUE" >&2; exit 2; }
+[[ -z "$FORK" || -z "$CONTINUE" ]] || { echo "prove-loop.sh: --session continues a session and --fork starts from a copy of one: give one of them" >&2; exit 2; }
 
-ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
+ROOT=$(cd "$(dirname "$PROVE_LOOP_SELF")/../.." && pwd) || exit 1
 cd "$ROOT" || exit 1
 source llm-dlc/tools/loop-common.sh
 isolation || exit 1
@@ -91,13 +117,14 @@ if ! flock -n 8; then
   log "a prove-change loop is already running in this checkout ($RUN/lock is held)"
   exit 1
 fi
-rm -f "$RUN"/events.jsonl "$RUN"/verdict-*.json "$RUN"/ended.seen "$RUN"/run.json
+rm -f "$RUN"/events.jsonl "$RUN"/verdict-*.json "$RUN"/ended.seen "$RUN"/run.json "$RUN"/commands "$RUN"/commands.taken
 
 PROJECTS=${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects
 project_dir() { printf '%s/%s' "$PROJECTS" "$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"; }
 
-SESSION=$(python3 -c 'import uuid; print(uuid.uuid4())') || exit 1
+SESSION=${CONTINUE:-$(python3 -c 'import uuid; print(uuid.uuid4())')} || exit 1
 export FEATURE_LOOP_SESSION=$SESSION
+[[ -n "$CONTINUE" ]] && log "the loop continues session $SESSION"
 
 # The fork: Claude Code resumes a session it finds under the directory it runs in,
 # and the parent may have run anywhere (the user's own project), so its transcript
@@ -133,10 +160,10 @@ if [[ -n "$FORK" ]]; then
   (( PIPESTATUS[0] == 0 )) || { log "the compact failed; nothing started"; exit 1; }
 fi
 
-python3 - "$RUN/run.json" "$SESSION" "$FORK" "${EXAMPLES[@]}" <<'EOF' || exit 1
+python3 - "$RUN/run.json" "$SESSION" "$FORK" "$$" "${EXAMPLES[@]}" <<'EOF' || exit 1
 import json, sys, time
-path, session, fork, *examples = sys.argv[1:]
-json.dump({"session": session, "forkedFrom": fork or None, "examples": examples,
+path, session, fork, pid, *examples = sys.argv[1:]
+json.dump({"session": session, "forkedFrom": fork or None, "pid": int(pid), "examples": examples,
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "ended": None}, open(path, "w"), indent=1)
 EOF
 

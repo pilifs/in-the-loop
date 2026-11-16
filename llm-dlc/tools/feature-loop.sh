@@ -68,8 +68,26 @@
 # FEATURE_LOOP_ITEM_CYCLES caps the cycles one item may take in a run (no cap by default),
 # and FEATURE_LOOP_ITEM_JUDGE=0 gives each item exactly one cycle, with no judge.
 #
+# With a conductor (LOOP_CONDUCTOR, a directory: llm-dlc/tools/conductor.py, which
+# prove-loop.sh sets for its watcher) the conductor is the judge: the loop asks it
+# after each commit and waits FEATURE_LOOP_JUDGE_WAIT seconds (300) before it falls
+# back on the judge above. The loop also tells it where it is (an event when a
+# cycle starts and when an item changes state), takes its command lines as if they
+# were typed in the terminal, and asks it between two items whether to stop there
+# (FEATURE_LOOP_EXAMPLE_WAIT seconds, 120; FEATURE_LOOP_MERGE_WAIT, 7200, while the
+# conductor has a workspace to merge first). No answer in time means go on.
+#
+# A third answer, "ITEM: waiting", is for an item with nothing left to do but act
+# on the results of verification jobs it queued. The loop then leaves it and takes
+# the next item meanwhile. Whenever it leaves an item it first comes back to the
+# earliest waiting one whose jobs are in, and only then starts another; when
+# nothing but waiting items is left it waits for the first to come in
+# (FEATURE_LOOP_PROOF_WAIT seconds at most, a day). An answer of waiting with no
+# job outstanding is another cycle. FEATURE_LOOP_CONTINUE_WHILE_PROVING=0 turns
+# this off: the item keeps the loop while its jobs run.
+#
 # An item is done once an earlier run's record (llm-dlc/loop-summaries/*-NAME.md)
-# lists a commit for it, unless the judge's last word on it there was "continues",
+# lists a commit for it, unless the last word on it there was "continues" or "waiting",
 # so a run starts at the first item not done, and ends when the list does; CYCLES
 # still caps it. A cycle that makes no commit stops the loop as usual, and leaves
 # its item for the next run. prove-change is the exception: it takes whichever
@@ -133,6 +151,18 @@
 
 set -uo pipefail
 
+# Run from a private copy. bash reads a script as it runs it, and between two items
+# a watcher may merge a workspace into this checkout (llm-dlc/runtime.md), which can
+# rewrite this file under the loop.
+if [[ "${FEATURE_LOOP_COPY:-}" != "$0" ]]; then
+  FEATURE_LOOP_SELF=$(realpath "${BASH_SOURCE[0]}") || exit 1
+  FEATURE_LOOP_COPY=$(mktemp "${TMPDIR:-/tmp}/feature-loop.XXXXXX") || exit 1
+  cp -- "$FEATURE_LOOP_SELF" "$FEATURE_LOOP_COPY" || exit 1
+  export FEATURE_LOOP_SELF FEATURE_LOOP_COPY
+  exec "$BASH" "$FEATURE_LOOP_COPY" "$@"
+fi
+trap 'rm -f "$FEATURE_LOOP_COPY"' EXIT
+
 SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
@@ -160,7 +190,7 @@ elif (( $# == 2 )); then
   if is_count "$2"; then CYCLES=$2; else UNTIL=$2; fi
 fi
 [[ -z "$UNTIL" || -n "${UNTIL//[[:space:]]/}" ]] || usage
-ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
+ROOT=$(cd "$(dirname "$FEATURE_LOOP_SELF")/../.." && pwd) || exit 1
 BRIEF=
 # Names for briefs: the brief's own Loop settings (session, model, effort) and Loop until apply.
 case "$PROMPT" in
@@ -269,6 +299,14 @@ JUDGE=
 [[ -n "$TEMPLATE" && "${FEATURE_LOOP_ITEM_JUDGE:-1}" != 0 ]] && JUDGE=1
 JUDGE_MODEL=${FEATURE_LOOP_JUDGE_MODEL:-claude-sonnet-5-5}
 ITEM_CYCLES=${FEATURE_LOOP_ITEM_CYCLES:-}
+# An item that only waits on queued verification jobs: the loop takes another meanwhile and comes back.
+CONTINUE_PROVING=
+[[ -n "$JUDGE" && "${FEATURE_LOOP_CONTINUE_WHILE_PROVING:-1}" != 0 ]] && CONTINUE_PROVING=1
+JUDGE_WAIT=${FEATURE_LOOP_JUDGE_WAIT:-300}
+EXAMPLE_WAIT=${FEATURE_LOOP_EXAMPLE_WAIT:-120}
+MERGE_WAIT=${FEATURE_LOOP_MERGE_WAIT:-7200}
+PROOF_WAIT=${FEATURE_LOOP_PROOF_WAIT:-86400}
+PROOF_POLL=${FEATURE_LOOP_PROOF_POLL:-30}
 [[ -z "$ITEM_CYCLES" || "$ITEM_CYCLES" =~ ^[1-9][0-9]*$ ]] || {
   echo "feature-loop.sh: FEATURE_LOOP_ITEM_CYCLES is not a count: $ITEM_CYCLES" >&2
   exit 2
@@ -286,6 +324,9 @@ cd "$ROOT" || exit 1
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
 isolation || exit 1
+# The judge reads no settings of the repo, so that its hooks don't trace it: the user's only, or none of theirs.
+JUDGE_SOURCES=(--setting-sources user)
+(( ${#ISOLATION[@]} )) && JUDGE_SOURCES=("${ISOLATION[@]}")
 
 # A brief for a stream of parallel work names its jj workspace: run anywhere else,
 # its commits would land on another stream's branch. The script runs from the
@@ -338,7 +379,7 @@ contain() {
   log "starting in $SCOPE.scope with a $MEMORY_MAX cap"
   exec systemd-run --user --scope --quiet --collect --unit="$SCOPE" \
     -p MemoryMax="$MEMORY_MAX" -p MemorySwapMax=0 -p OOMPolicy=continue -p CPUWeight=50 \
-    "$BASH" llm-dlc/tools/feature-loop.sh "$@"
+    "$BASH" "$0" "$@"
 }
 contain "$@"
 
@@ -355,7 +396,7 @@ SUMMARY=$SUMMARIES/$(date -u +%F-%H%M%S)-$PROMPT.md
 done_items() {
   cat "$SUMMARIES"/*-"$PROMPT".md 2>/dev/null | awk '
     /^- cycle [0-9]+, item [^,]+,/ { line = $0; sub(/^- cycle [0-9]+, item /, "", line); sub(/,.*/, "", line); state[line] = 1; next }
-    /^  - item [^ ]+ continues/ { state[$3] = 0; next }
+    /^  - item [^ ]+ (continues|waiting)/ { state[$3] = 0; next }
     /^  - item [^ ]+ (finished|left after)/ { state[$3] = 1 }
     END { for (i in state) if (state[i]) print i }'
 }
@@ -536,7 +577,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.item-stop"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.item-stop" "$FEATURE_LOOP_COPY"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -656,33 +697,155 @@ close_status() {
   note "  - recorded the status \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $status"
 }
 
-# After a committed cycle of a templated moonshot: a judge outside the session
-# reads the cycle's final report and commit messages and says whether the item is
-# finished. A claude -p of its own, with no tools, none of the repo's settings or
-# hooks and no transcript, so nothing reaches the moonshot's session or is traced.
-# Sets $item_done, and records the verdict under the cycle's commit line.
+# After a committed cycle of a templated moonshot: is the item finished, does it
+# take another cycle, or does it only wait on verification jobs it queued? A
+# conductor is asked first (LOOP_CONDUCTOR: conductor.py's `cycle` question).
+# Without one, or without its verdict in $JUDGE_WAIT seconds, a judge of the loop's
+# own answers: a claude -p with no tools, none of the repo's settings or hooks and
+# no transcript, which reads the cycle's final report and commit messages. Either
+# way nothing reaches the moonshot's session. Sets $item_verdict (finished,
+# continue or waiting) and $item_reason.
 judge_item() {
-  local report commits reply verdict reason question
+  local report commits reply reason question asked answers=finished,continue
+  local outside="or only waits on something outside the session, such as queued verification jobs, whose results are collected without it"
+  local third="" ending="ITEM: finished or ITEM: continue"
+  if [[ -n "$CONTINUE_PROVING" ]]; then
+    answers=finished,continue,waiting
+    outside="or waits on something outside the session other than its own verification jobs"
+    third=" Answer waiting if all that is left for the session on this item is to act on the results of verification jobs it has queued and that are not in yet: the loop takes another item meanwhile, and gives this one a cycle again once they are in."
+    ending="ITEM: finished, ITEM: continue or ITEM: waiting"
+  fi
+  item_verdict=finished item_reason=
+  if [[ -n "${LOOP_CONDUCTOR:-}" ]]; then
+    asked=$(python3 llm-dlc/tools/conductor.py ask "$LOOP_CONDUCTOR" cycle --answers "$answers" --wait "$JUDGE_WAIT" \
+      "cycle=$cycle" "item=$item" "itemCycle=$item_turns" "session=$SESSION_ID" "turn=$STATE.turn" \
+      "commit=$(jj log --no-graph -r @- -T 'change_id.short()')") || asked=none
+    if [[ -n "$asked" && "$asked" != none ]]; then
+      item_verdict=${asked%%$'\t'*}
+      item_reason="the conductor: ${asked#*$'\t'}"
+      return
+    fi
+    log "cycle $cycle: no verdict from the conductor in ${JUDGE_WAIT}s: asking the judge ($JUDGE_MODEL)"
+  fi
   report=$(result_text "$STATE.turn") || report="(The cycle's turn left no final report.)"
   commits=$(jj log --no-graph -r "$before..@-" -T 'description ++ "\n"' | grep -v '^LLM-Trace' | head -c 20000)
-  question="You judge, from outside it, a loop that works through a list of items, giving a Claude Code session one instruction per item. For this item the instruction is: \"$INSTRUCTION\". The session has just finished cycle $item_turns on item $item. Its final report and the messages of the commits it made in this cycle are on standard input. Decide whether the loop moves on to the next item or gives this one another cycle, with the same instruction. Answer finished if the instruction's goal is met for this item, or if what is left can't be done by the session alone: it needs a person (a decision, credentials, access) or only waits on something outside the session, such as queued verification jobs, whose results are collected without it. Answer continue if the report shows work on this item that the session itself can still do and that another cycle would make real progress on. Polish, wider reuse, and follow-ups the report calls optional don't count. Say why in one or two sentences, then end with exactly one line: ITEM: finished or ITEM: continue."
+  question="You judge, from outside it, a loop that works through a list of items, giving a Claude Code session one instruction per item. For this item the instruction is: \"$INSTRUCTION\". The session has just finished cycle $item_turns on item $item. Its final report and the messages of the commits it made in this cycle are on standard input. Decide whether the loop moves on to the next item or gives this one another cycle, with the same instruction. Answer finished if the instruction's goal is met for this item, or if what is left can't be done by the session alone: it needs a person (a decision, credentials, access) $outside. Answer continue if the report shows work on this item that the session itself can still do and that another cycle would make real progress on. Polish, wider reuse, and follow-ups the report calls optional don't count.$third Say why in one or two sentences, then end with exactly one line: $ending."
   reply=$(printf '## Final report\n\n%s\n\n## Commit messages\n\n%s\n' "${report:0:30000}" "$commits" |
-    claude -p "$question" --model "$JUDGE_MODEL" --effort low --setting-sources user --tools "" \
+    claude -p "$question" --model "$JUDGE_MODEL" --effort low "${JUDGE_SOURCES[@]}" --tools "" \
       --no-session-persistence --output-format text 2>/dev/null) || reply=
-  verdict=$(grep -oE 'ITEM: *(finished|continue)' <<<"$reply" | tail -n 1 | sed 's/.*: *//')
-  reason=$(grep -vE 'ITEM: *(finished|continue)' <<<"$reply" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
+  item_verdict=$(grep -oE 'ITEM: *(finished|continue|waiting)' <<<"$reply" | tail -n 1 | sed 's/.*: *//')
+  reason=$(grep -vE 'ITEM: *(finished|continue|waiting)' <<<"$reply" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
   (( ${#reason} > 400 )) && reason="${reason:0:400}..."
-  case "$verdict" in
+  item_reason=$reason
+  [[ "$item_verdict" == waiting && -z "$CONTINUE_PROVING" ]] && item_verdict=
+  if [[ -z "$item_verdict" ]]; then
+    item_verdict=finished
+    item_reason="the judge gave no clear answer, so the loop moves on"
+  fi
+}
+
+# The conductor's command lines (conductor.py command), applied as if typed in the terminal.
+apply_commands() {
+  [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
+  local line
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && with_state apply "$line"
+  done < <(python3 llm-dlc/tools/conductor.py commands "$LOOP_CONDUCTOR" 2>/dev/null)
+}
+
+# Tell whoever watches where the loop is (conductor.py note): an event that asks nothing.
+tell() {
+  [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
+  python3 llm-dlc/tools/conductor.py note "$LOOP_CONDUCTOR" "$@" 2>/dev/null
+  return 0
+}
+
+# A templated moonshot's items. `current` is the one under way, next_idx the first
+# of PENDING not started, WAITING the ones that only wait on verification jobs, in
+# the order the loop left them, and TURNS the cycles each has had in this run.
+current=
+next_idx=0
+WAITING=()
+declare -A TURNS=()
+
+# The earliest item of WAITING whose verification jobs are all in: sets $ready and takes it off the list.
+proof_ready() {
+  (( ${#WAITING[@]} )) || return 1
+  local unfinished i
+  unfinished=$(python3 llm-dlc/tools/conductor.py unfinished "${WAITING[@]}") || return 1
+  for i in "${!WAITING[@]}"; do
+    if ! grep -qxF -- "${WAITING[i]}" <<<"$unfinished"; then
+      ready=${WAITING[i]}
+      unset 'WAITING[i]'
+      WAITING=("${WAITING[@]}")
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Sets $item for the next cycle: the item under way; else the earliest that waited
+# on verification jobs now in; else the next not started; else, when only waiting
+# ones are left, the first whose jobs come in. Fails, with $no_item saying why,
+# when there is none.
+choose_item() {
+  local ready= until left first
+  no_item="no items left"
+  if [[ -n "$current" ]]; then item=$current; return 0; fi
+  if proof_ready; then
+    item=$ready
+  elif (( next_idx < ${#PENDING[@]} )); then
+    item=${PENDING[next_idx]}
+    next_idx=$(( next_idx + 1 ))
+    current=$item
+    return 0
+  elif (( ${#WAITING[@]} )); then
+    log "the items left only wait on verification jobs (${WAITING[*]}): waiting for the first to come in"
+    tell proofs "waiting=${WAITING[*]}"
+    until=$(( SECONDS + PROOF_WAIT ))
+    read -r _ first <"$STATE"
+    while ! proof_ready; do
+      apply_commands
+      read -r _ left <"$STATE"
+      if [[ -e "$STATE.item-stop" || ( "$left" == 0 && "$first" != 0 ) ]]; then
+        no_item="stopped, as asked, while waiting on the verification jobs of ${WAITING[*]}"
+        return 1
+      fi
+      if (( SECONDS >= until )); then
+        no_item="the verification jobs of ${WAITING[*]} did not come in within ${PROOF_WAIT}s"
+        return 1
+      fi
+      sleep "$PROOF_POLL"
+    done
+    item=$ready
+  else
+    return 1
+  fi
+  log "the verification jobs of item $item are in: back to it"
+  note "  - item $item taken up again: its verification jobs are in"
+  tell item "item=$item" state=resumed
+  current=$item
+}
+
+# Between two items, with a conductor: it may stop the loop here, and it merges
+# first whatever workspace it has been asked to (DIR/merge-queue, which makes the
+# loop wait longer). Sets $between to stop when the loop is to end here.
+between_items() {
+  between=
+  [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
+  local wait=$EXAMPLE_WAIT asked
+  if [[ -s "$LOOP_CONDUCTOR/merge-queue" ]]; then
+    wait=$MERGE_WAIT
+    log "between items, with a workspace queued to merge: waiting up to ${wait}s for the conductor"
+  fi
+  asked=$(python3 llm-dlc/tools/conductor.py ask "$LOOP_CONDUCTOR" example --answers continue,stop --wait "$wait" \
+    "cycle=$cycle" "item=$item" "left=$item_verdict" "waiting=${WAITING[*]}") || asked=none
+  case "${asked%%$'\t'*}" in
+    stop)
+      between=stop
+      note "  - the conductor stops the loop after item $item: ${asked#*$'\t'}" ;;
     continue)
-      item_done=
-      log "cycle $cycle: the judge says item $item continues: $reason"
-      note "  - item $item continues: $reason" ;;
-    finished)
-      log "cycle $cycle: the judge says item $item is finished: $reason"
-      note "  - item $item finished: $reason" ;;
-    *)
-      log "cycle $cycle: the judge gave no clear answer, so the loop moves on from item $item"
-      note "  - item $item finished: the judge gave no clear answer, so the loop moves on" ;;
+      note "  - between items, the conductor: ${asked#*$'\t'}" ;;
   esac
 }
 
@@ -739,10 +902,9 @@ else
 fi
 with_state standing
 
-# The item under way, as an index into PENDING, and how many cycles it has had.
-item_idx=0
 item_turns=0
 while :; do
+  apply_commands
   with_state next_cycle
   before=$(last_change) || exit 1
   if [[ -n "$BRIEF" && "$(brief_hash)" != "$BRIEF_HASH" ]]; then
@@ -754,16 +916,17 @@ while :; do
   item=
   if [[ -n "$TEMPLATE" ]]; then
     # Without the judge, only a count raised while it runs (+N, inf) gets past the end of the list.
-    if (( item_idx >= ${#PENDING[@]} )); then
+    if ! choose_item; then
       cycle=$(( cycle - 1 ))
-      log "no items left: stopping after cycle $cycle"
+      log "$no_item: stopping after cycle $cycle"
       summarize
-      note; note "Ended $(stamp) after $cycle cycle(s): no items left."
+      note; note "Ended $(stamp) after $cycle cycle(s): $no_item.${WAITING[*]:+ Still waiting on verification jobs: ${WAITING[*]}.}"
       log "record of the run: $SUMMARY"
       exit 0
     fi
-    item=${PENDING[item_idx]}
-    item_turns=$(( item_turns + 1 ))
+    TURNS[$item]=$(( ${TURNS[$item]:-0} + 1 ))
+    item_turns=${TURNS[$item]}
+    tell cycle-start "cycle=$cycle" "item=$item" "itemCycle=$item_turns" "turn=$STATE.turn"
     INSTRUCTION=${TEMPLATE//\{\}/$item}
     if (( item_turns > 1 )); then
       log "cycle $cycle: $PROMPT, item $item, its cycle $item_turns"
@@ -804,20 +967,41 @@ while :; do
     while IFS= read -r line; do note "  - $line"; done <"$STATE.notes"
   fi
 
-  # A templated moonshot moves on from its item once the judge finds it finished,
-  # or at once without the judge, or when the item has had its cap of cycles.
+  # A templated moonshot leaves its item once it is finished (at once without the
+  # judge), when it only waits on its verification jobs, or at its cap of cycles.
   item_done=
+  item_verdict=
   if [[ -n "$TEMPLATE" ]]; then
-    item_done=1
+    item_verdict=finished item_reason=
     [[ -n "$JUDGE" ]] && judge_item
-    if [[ -z "$item_done" && -n "$ITEM_CYCLES" ]] && (( item_turns >= ITEM_CYCLES )); then
-      item_done=1
-      log "cycle $cycle: item $item has had its $ITEM_CYCLES cycles, so the loop moves on"
-      note "  - item $item left after $item_turns cycles, its cap (FEATURE_LOOP_ITEM_CYCLES)"
+    if [[ "$item_verdict" == waiting && -z "$(python3 llm-dlc/tools/conductor.py unfinished "$item")" ]]; then
+      item_verdict=continue
+      item_reason="$item_reason (its verification jobs are in already, so it takes its next cycle now)"
     fi
-    if [[ -n "$item_done" ]]; then
-      item_idx=$(( item_idx + 1 ))
-      item_turns=0
+    if [[ "$item_verdict" == continue && -n "$ITEM_CYCLES" ]] && (( item_turns >= ITEM_CYCLES )); then
+      item_verdict=capped
+    fi
+    case "$item_verdict" in
+      continue)
+        log "cycle $cycle: item $item continues: $item_reason"
+        note "  - item $item continues: $item_reason" ;;
+      waiting)
+        log "cycle $cycle: item $item waits on its verification jobs, and the loop takes another meanwhile: $item_reason"
+        note "  - item $item waiting: $item_reason"
+        WAITING+=("$item") ;;
+      capped)
+        log "cycle $cycle: item $item has had its $ITEM_CYCLES cycles, so the loop moves on"
+        note "  - item $item left after $item_turns cycles, its cap (FEATURE_LOOP_ITEM_CYCLES)" ;;
+      *)
+        if [[ -n "$JUDGE" ]]; then
+          log "cycle $cycle: item $item is finished: $item_reason"
+          note "  - item $item finished: $item_reason"
+        fi ;;
+    esac
+    tell item "item=$item" "state=$item_verdict" "cycle=$cycle" "reason=$item_reason"
+    if [[ "$item_verdict" != continue ]]; then
+      item_done=1
+      current=
     fi
   fi
 
@@ -838,13 +1022,21 @@ while :; do
   log "cycle $cycle: compact"
   run_claude "/compact" || log "cycle $cycle: compact exited with status $?"
 
+  apply_commands
   read -r cycle remaining <"$STATE"
-  if [[ -n "$item_done" && -e "$STATE.item-stop" && "$decision" != stop ]]; then
-    log "item $item is finished: stopping after cycle $cycle, as asked"
-    summarize
-    note; note "Ended $(stamp) after $cycle cycle(s): stopped once item $item was finished, as asked."
-    log "record of the run: $SUMMARY"
-    exit 0
+  if [[ -n "$item_done" && "$decision" != stop ]]; then
+    between=
+    # Nothing to ask when the loop ends here anyway: the count is used up, or no item is left.
+    if [[ "$remaining" != 0 && ! -e "$STATE.item-stop" ]] && (( next_idx < ${#PENDING[@]} || ${#WAITING[@]} )); then
+      between_items
+    fi
+    if [[ -e "$STATE.item-stop" || "$between" == stop ]]; then
+      log "the loop has left item $item: stopping after cycle $cycle, as asked"
+      summarize
+      note; note "Ended $(stamp) after $cycle cycle(s): stopped once item $item was ${item_verdict/capped/left}, as asked.${WAITING[*]:+ Still waiting on verification jobs: ${WAITING[*]}.}"
+      log "record of the run: $SUMMARY"
+      exit 0
+    fi
   fi
   if [[ "$decision" == stop ]]; then
     log "the session decided to stop: stopping after cycle $cycle"

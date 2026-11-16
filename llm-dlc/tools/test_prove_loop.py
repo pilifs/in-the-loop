@@ -41,9 +41,19 @@ call = {"args": args, "cwd": os.getcwd()}
 
 def commit():
     Path("proof.txt").write_text("proved at %s\n" % time.time())
-    subprocess.run(["jj", "--quiet", "describe", "-m", "Prove example 901"], check=True)
+    subprocess.run(["jj", "--quiet", "describe", "-m", "Prove " + prompt.split(" as ")[0].split("prove ")[-1]], check=True)
     subprocess.run(["jj", "--quiet", "new"], check=True)
 
+if prompt.startswith("You judge"):
+    # The loop's own judge: its answers come one per call from $STANDIN_JUDGE (the last one repeats).
+    answers = os.environ.get("STANDIN_JUDGE", "finished").split(",")
+    count = Path(os.environ["STANDIN_LOG"] + ".judged")
+    n = int(count.read_text()) if count.exists() else 0
+    count.write_text(str(n + 1))
+    with open(os.environ["STANDIN_LOG"] + ".judge", "a") as f:
+        f.write(json.dumps(call) + "\n")
+    print("The stand-in judge has read the report.\nITEM: " + answers[min(n, len(answers) - 1)])
+    sys.exit(0)
 if "--fork-session" in args:
     call["parentVisible"] = (projects / (value("--resume") + ".jsonl")).is_file()
     projects.mkdir(parents=True, exist_ok=True)
@@ -79,6 +89,11 @@ class ProveLoopTest(unittest.TestCase):
         (self.root / "examples/901-a-made-up-change").mkdir(parents=True)
         (self.root / "examples/901-a-made-up-change/example.json").write_text("{}\n")
         (self.root / ".gitignore").write_text("llm-dlc/loop-summaries/\n")
+        # The queue, as conductor.py reads it: the jobs not in yet are the lines of a file the test writes.
+        (self.root / "verification").mkdir()
+        (self.root / "verification/pipeline.py").write_text(
+            "import json, os\nrows = open(os.environ['STANDIN_JOBS']).read().split('\\n') if os.path.exists(os.environ['STANDIN_JOBS']) else []\n"
+            "print(json.dumps({'pending': [r for r in rows if r], 'running': [], 'finished, not collected': []}))\n")
         bin = self.tmp / "bin"
         bin.mkdir()
         (bin / "claude").write_text(STANDIN)
@@ -86,13 +101,17 @@ class ProveLoopTest(unittest.TestCase):
         self.config = self.tmp / "claude-config"
         (self.config / "projects/-somewhere-else").mkdir(parents=True)
         (self.config / "projects/-somewhere-else" / f"{PARENT}.jsonl").write_text("{}\n")
-        self.log, self.go = self.tmp / "standin.jsonl", self.tmp / "go"
+        self.log, self.go, self.jobs = self.tmp / "standin.jsonl", self.tmp / "go", self.tmp / "jobs"
         self.env = {**os.environ, "PATH": f"{bin}:{os.environ['PATH']}", "CLAUDE_CONFIG_DIR": str(self.config),
-                    "STANDIN_LOG": str(self.log), "STANDIN_GO": str(self.go), "FEATURE_LOOP_UNCAPPED": "1",
+                    "STANDIN_LOG": str(self.log), "STANDIN_GO": str(self.go), "STANDIN_JOBS": str(self.jobs),
+                    "FEATURE_LOOP_UNCAPPED": "1", "FEATURE_LOOP_JUDGE_WAIT": "1", "FEATURE_LOOP_EXAMPLE_WAIT": "1",
+                    "FEATURE_LOOP_PROOF_POLL": "1",
                     "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
         for name in ("FEATURE_LOOP_SESSION", "FEATURE_LOOP_ITEMS", "FEATURE_LOOP_MODEL", "FEATURE_LOOP_EFFORT",
                      "FEATURE_LOOP_AUTOCOMPACT", "FEATURE_LOOP_MEMORY_MAX", "FEATURE_LOOP_STOP_ON_COMPACT",
-                     "FEATURE_LOOP_CONDUCTOR_WAIT", "LOOP_CONDUCTOR", "IN_THE_LOOP_MODE"):
+                     "FEATURE_LOOP_CONDUCTOR_WAIT", "LOOP_CONDUCTOR", "IN_THE_LOOP_MODE", "FEATURE_LOOP_ITEM_JUDGE",
+                     "FEATURE_LOOP_ITEM_CYCLES", "FEATURE_LOOP_CONTINUE_WHILE_PROVING", "FEATURE_LOOP_COPY",
+                     "PROVE_LOOP_COPY", "STANDIN_JUDGE"):
             self.env.pop(name, None)
         subprocess.run(["jj", "--quiet", "git", "init", str(self.root)], env=self.env, check=True, capture_output=True)
         subprocess.run(["jj", "--quiet", "describe", "-m", "The made-up checkout"], cwd=self.root, env=self.env, check=True)
@@ -104,7 +123,15 @@ class ProveLoopTest(unittest.TestCase):
                               env={**self.env, "STANDIN_MODE": mode, **env}, capture_output=True, text=True, timeout=120)
 
     def calls(self):
+        """The turns of the loop's session, in order. The loop's judge is a session of its own: judged()."""
         return [json.loads(line) for line in self.log.read_text().splitlines()] if self.log.exists() else []
+
+    def judged(self):
+        log = Path(str(self.log) + ".judge")
+        return [json.loads(line) for line in log.read_text().splitlines()] if log.exists() else []
+
+    def events(self, kind):
+        return [e for e in conductor.read_events(self.run_dir) if e.get("type") == kind]
 
     def record(self):
         return sorted((self.root / "llm-dlc/loop-summaries").glob("*-prove-change.md"))[-1].read_text()
@@ -237,7 +264,7 @@ class ProveLoopTest(unittest.TestCase):
         self.go.write_text("go\n")  # the stand-in commits straight after it compacts: nobody answers, nobody needs to
         r = self.loop("901", mode="compact")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        asked, withdrawn, ended = conductor.read_events(self.run_dir)
+        (asked,), (withdrawn,), (ended,) = self.events("compaction"), self.events("withdrawn"), self.events("ended")
         self.assertEqual((asked["needsVerdict"], withdrawn["type"], withdrawn["event"], ended["status"]),
                          (True, "withdrawn", asked["n"], 0))
         self.assertNotIn("conductor", self.record())
@@ -311,6 +338,194 @@ class ProveLoopTest(unittest.TestCase):
             for call in others:
                 self.assertNotIn("--setting-sources", call["args"])
                 self.assertNotIn("--strict-mcp-config", call["args"])
+
+    def answer(self, *verdicts):
+        """Answer the loop's questions of the kinds named, in turn, from another thread, as a watcher would:
+        ("cycle", "continue", "why"), ... Each is answered as it is asked; later questions of a kind get none."""
+        todo = list(verdicts)
+        self.answered = []
+
+        def run():
+            until = time.time() + 90
+            while todo and time.time() < until:
+                event = conductor.pending(self.run_dir)
+                if event is not None and event.get("needsVerdict") and event["type"] == todo[0][0]:
+                    kind, verdict, reason = todo.pop(0)
+                    conductor.cmd_decide(self.run_dir, event["n"], verdict, reason)
+                    self.answered.append(event)
+                time.sleep(0.05)
+        thread = threading.Thread(target=run, daemon=True)
+        thread.start()
+        return thread
+
+    @cost("tool")
+    def test_the_watcher_is_asked_after_each_cycle_and_its_verdict_keeps_or_ends_the_example(self):
+        thread = self.answer(("cycle", "continue", "one claim still has no answer"), ("cycle", "finished", "every claim has its answer"))
+        r = self.loop("901", FEATURE_LOOP_JUDGE_WAIT="30")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION, INSTRUCTION])
+        first, second = self.answered
+        self.assertEqual((first["item"], first["itemCycle"], second["itemCycle"], first["answers"]),
+                         ("901", 1, 2, ["finished", "continue", "waiting"]))
+        record = self.record()
+        self.assertIn("  - item 901 continues: the conductor: one claim still has no answer", record)
+        self.assertIn("  - item 901 finished: the conductor: every claim has its answer", record)
+        self.assertEqual(self.judged(), [], "the watcher answered, so the loop's own judge was not asked")
+        self.assertEqual([e["state"] for e in self.events("item")], ["continue", "finished"])
+
+    @cost("tool")
+    def test_without_a_watchers_verdict_the_loops_own_judge_answers(self):
+        r = self.loop("901", STANDIN_JUDGE="continue,finished")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION, INSTRUCTION])
+        judge = self.judged()[0]["args"]
+        self.assertIn("ITEM: finished, ITEM: continue or ITEM: waiting", judge[judge.index("-p") + 1])
+        self.assertEqual((judge[judge.index("--model") + 1], judge[judge.index("--setting-sources") + 1]),
+                         ("claude-sonnet-5-5", "user"))
+        self.assertIn("  - item 901 continues: The stand-in judge has read the report.", self.record())
+
+    @cost("tool")
+    def test_an_example_that_waits_on_its_proof_lets_the_next_one_start_and_is_taken_up_again_when_it_is_in(self):
+        self.more_examples("902", "903")
+        self.jobs.write_text("20260101-000000-example-901-the-final-proof  Example 901: the final proof\n")
+
+        def proof_comes_in():  # while 902 is under way
+            until = time.time() + 60
+            while time.time() < until and len(self.instructions()) < 2:
+                time.sleep(0.05)
+            self.jobs.write_text("")
+        thread = threading.Thread(target=proof_comes_in, daemon=True)
+        thread.start()
+        r = self.loop("901", "902", "903", STANDIN_JUDGE="waiting,finished")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION.replace("901", n) for n in ("901", "902", "901", "903")])
+        record = self.record()
+        for line in ("  - item 901 waiting: ", "  - item 901 taken up again: its verification jobs are in",
+                     "- cycle 3, item 901, ", "- cycle 4, item 903, "):
+            self.assertIn(line, record)
+        self.assertEqual([(e["item"], e["state"]) for e in self.events("item")],
+                         [("901", "waiting"), ("902", "finished"), ("901", "resumed"), ("901", "finished"), ("903", "finished")])
+
+    @cost("tool")
+    def test_when_only_waiting_examples_are_left_the_loop_waits_for_the_first_proof(self):
+        self.jobs.write_text("20260101-000000-example-901-the-final-proof  Example 901: the final proof\n")
+
+        def proof_comes_in():
+            until = time.time() + 60
+            while time.time() < until and not self.events("proofs"):
+                time.sleep(0.05)
+            time.sleep(1.5)
+            self.jobs.write_text("")
+        thread = threading.Thread(target=proof_comes_in, daemon=True)
+        thread.start()
+        r = self.loop("901", STANDIN_JUDGE="waiting,finished")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION, INSTRUCTION])
+        self.assertIn("the items left only wait on verification jobs (901)", r.stdout)
+        self.assertEqual(self.events("proofs")[0]["waiting"], "901")
+
+    @cost("tool")
+    def test_waiting_with_no_job_left_to_wait_for_is_another_cycle(self):
+        r = self.loop("901", STANDIN_JUDGE="waiting,finished")  # the queue is empty
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION, INSTRUCTION])
+        self.assertIn("its verification jobs are in already", self.record())
+
+    @cost("tool")
+    def test_wait_for_proofs_keeps_the_loop_on_the_example(self):
+        self.more_examples("902")
+        self.jobs.write_text("20260101-000000-example-901-the-final-proof  Example 901: the final proof\n")
+        thread = self.answer(("cycle", "continue", "its proof is still running"), ("cycle", "finished", "done"))
+        r = self.loop("--wait-for-proofs", "--cycles", "2", "901", "902", FEATURE_LOOP_JUDGE_WAIT="30", STANDIN_JUDGE="waiting")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION, INSTRUCTION])
+        self.assertEqual(self.answered[0]["answers"], ["finished", "continue"], "waiting is not an answer here")
+
+    @cost("tool")
+    def test_between_two_examples_the_watcher_may_stop_the_loop(self):
+        self.more_examples("902")
+        thread = self.answer(("example", "stop", "the user asked to stop after this example"))
+        r = self.loop("901", "902", FEATURE_LOOP_EXAMPLE_WAIT="30")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION])
+        asked = self.answered[0]
+        self.assertEqual((asked["item"], asked["left"], asked["answers"]), ("901", "finished", ["continue", "stop"]))
+        record = self.record()
+        self.assertIn("  - the conductor stops the loop after item 901: the user asked to stop after this example", record)
+        self.assertIn("stopped once item 901 was finished, as asked", record)
+
+    @cost("tool")
+    def test_between_two_examples_the_loop_waits_longer_while_a_workspace_is_queued_to_merge(self):
+        self.more_examples("902")
+        self.run_dir.mkdir(parents=True)
+        (self.run_dir / "merge-queue").write_text("a-made-up-workspace\n")
+        thread = self.answer(("example", "continue", "merged a-made-up-workspace"))
+        r = self.loop("901", "902", FEATURE_LOOP_MERGE_WAIT="30")  # FEATURE_LOOP_EXAMPLE_WAIT is 1 s here
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(len(self.instructions()), 2)
+        self.assertIn("with a workspace queued to merge: waiting up to 30s", r.stdout)
+        self.assertIn("  - between items, the conductor: merged a-made-up-workspace", self.record())
+        self.assertEqual(len(self.events("example")), 1, "nothing is asked after the last example")
+
+    @cost("tool")
+    def test_a_command_left_for_the_loop_is_applied_as_if_typed(self):
+        self.more_examples("902")
+        self.run_dir.mkdir(parents=True)
+
+        def leave():  # once the loop has cleared the last run's state and started
+            until = time.time() + 60
+            while time.time() < until and not self.events("cycle-start"):
+                time.sleep(0.05)
+            conductor.cmd_command(self.run_dir, "item")
+        thread = threading.Thread(target=leave, daemon=True)
+        thread.start()
+        r = self.loop("901", "902")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION])
+        self.assertIn("stopped once item 901 was finished, as asked", self.record())
+
+    @cost("tool")
+    def test_session_continues_the_session_that_evaluated_the_changes(self):
+        fixed = "1a1a1a1a-2222-4333-8444-555566667777"
+        here = self.config / "projects" / str(self.root).replace("/", "-").replace(".", "-").replace("_", "-")
+        here.mkdir(parents=True)
+        (here / f"{fixed}.jsonl").write_text("{}\n")
+        r = self.loop("--session", fixed, "901")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        calls = self.calls()
+        self.assertFalse(any("--fork-session" in c["args"] for c in calls))
+        for call in calls:
+            self.assertEqual(call["args"][call["args"].index("--resume") + 1], fixed)
+        state = json.loads((self.run_dir / "run.json").read_text())
+        self.assertEqual((state["session"], state["forkedFrom"]), (fixed, None))
+        both = self.loop("--session", fixed, "--fork", PARENT, "901")
+        self.assertEqual(both.returncode, 2)
+
+    @cost("tool")
+    def test_the_loop_runs_from_a_copy_of_its_scripts(self):
+        marker = self.tmp / "ran-the-new-text"
+        script = self.root / "llm-dlc/tools/feature-loop.sh"
+
+        def rewrite():  # what a merge between two examples may do
+            until = time.time() + 60
+            while time.time() < until and not self.events("cycle-start"):
+                time.sleep(0.05)
+            script.write_text(f"#!/usr/bin/env bash\ntouch {marker}\nexit 7\n" + script.read_text())
+        thread = threading.Thread(target=rewrite, daemon=True)
+        thread.start()
+        self.more_examples("902")
+        r = self.loop("901", "902")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(len(self.instructions()), 2)
+        self.assertFalse(marker.exists())
 
     @cost("tool")
     def test_an_example_that_is_not_there_starts_nothing(self):

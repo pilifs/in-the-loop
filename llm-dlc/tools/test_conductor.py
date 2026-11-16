@@ -89,6 +89,54 @@ class ConductorTest(unittest.TestCase):
         _, out, _ = call("events", self.dir)
         self.assertEqual(json.loads(out.splitlines()[0])["verdict"]["verdict"], "stop")
 
+    def test_a_question_takes_only_its_own_answers(self):
+        conductor.append_event(self.dir, type="cycle", item="007", needsVerdict=True, deadline=time.time() + 600,
+                               answers=["finished", "continue", "waiting"])
+        status, out, _ = call("wait", self.dir, "--timeout", 0)
+        self.assertIn("finished|continue|waiting", json.loads(out)["answer"])
+        status, _, err = call("decide", self.dir, 1, "stop", "--reason", "made up")
+        self.assertEqual(status, 2)
+        self.assertIn("takes finished or continue or waiting, not stop", err)
+        self.assertEqual(call("decide", self.dir, 1, "waiting", "--reason", "its last proof is queued")[0], 0)
+        self.ask()  # a compaction names no answers: continue or stop
+        self.assertEqual(call("decide", self.dir, 2, "finished", "--reason", "made up")[0], 2)
+
+    def test_ask_prints_the_verdict_and_its_reason_or_none_after_the_deadline(self):
+        import threading
+        answer = threading.Timer(0.5, lambda: conductor.cmd_decide(self.dir, 1, "waiting", "its last proof  is queued"))
+        answer.start()
+        status, out, _ = call("ask", self.dir, "cycle", "--answers", "finished,continue,waiting", "--wait", 30,
+                              "cycle=3", "item=007", "itemCycle=2")
+        answer.join()
+        self.assertEqual((status, out.splitlines()[-1]), (0, "waiting\tits last proof is queued"))  # decide printed too
+        asked = conductor.read_events(self.dir)[0]
+        self.assertEqual((asked["cycle"], asked["item"], asked["itemCycle"]), (3, "007", 2), "an item stays text")
+        self.assertEqual(call("ask", self.dir, "example", "--answers", "continue,stop", "--wait", 0.2)[1], "none\n")
+
+    def test_a_note_asks_nothing(self):
+        call("note", self.dir, "cycle-start", "cycle=1", "item=901", "itemCycle=1")
+        self.assertEqual(call("wait", self.dir, "--timeout", 0)[0], 3)
+        self.assertEqual(conductor.read_events(self.dir)[0]["type"], "cycle-start")
+
+    def test_command_lines_are_handed_to_the_loop_once(self):
+        call("command", self.dir, "item")
+        call("command", self.dir, "+", "2")
+        self.assertEqual(call("commands", self.dir)[1], "item\n+ 2\n")
+        self.assertEqual(call("commands", self.dir)[1], "")
+
+    def test_unfinished_jobs_are_matched_to_examples_by_their_outputs_or_their_title(self):
+        root = self.dir.parent / "checkout"
+        (root / "verification/jobs").mkdir(parents=True)
+        (root / "verification/jobs/20260101-000000-a-made-up-proof.json").write_text(
+            json.dumps({"outputs": ["examples/901-a-made-up-change/receipts/prove"]}))
+        rows = {"pending": ["20260101-000000-a-made-up-proof  A made-up proof  (2 CPU)",
+                            "20260101-000001-example-902-elsewhere  Example 902, committed in another workspace",
+                            "20260101-000002-example-903-too-big  Example 903  (64 CPU; cannot run here: needs 64 CPUs)"],
+                "running": [], "finished, not collected": ["20260101-000003-example-904-done  Example 904  [passed]"],
+                "collected": ["20260101-000004-example-905-in  Example 905  [passed]"]}
+        (root / "verification/pipeline.py").write_text(f"print({json.dumps(json.dumps(rows))})\n")
+        self.assertEqual({k: len(v) for k, v in conductor.unfinished_jobs(root).items()}, {"901": 1, "902": 1, "904": 1})
+
 
 if __name__ == "__main__":
     unittest.main()
