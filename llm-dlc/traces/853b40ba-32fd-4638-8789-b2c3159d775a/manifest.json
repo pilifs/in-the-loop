@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-16T23:20:56.965Z",
-  "ended": "2026-11-16T23:26:44.519Z",
-  "duration_seconds": 348,
+  "ended": "2026-11-16T23:45:53.810Z",
+  "duration_seconds": 1497,
   "stats": {
     "turns": 1,
-    "api_calls": 5,
-    "tool_calls": 6,
+    "api_calls": 11,
+    "tool_calls": 12,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 37975,
+    "peak_context_tokens": 41342,
     "usage": {
-      "input_tokens": 10,
-      "output_tokens": 934,
-      "cache_read_input_tokens": 146761,
-      "cache_creation_input_tokens": 24662
+      "input_tokens": 22,
+      "output_tokens": 1938,
+      "cache_read_input_tokens": 385827,
+      "cache_creation_input_tokens": 28029
     }
   },
   "tools": {
-    "Bash": 6
+    "Bash": 12
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-16T23:20:56.965Z",
-      "ended": "2026-11-16T23:26:44.519Z",
+      "ended": "2026-11-16T23:45:53.810Z",
       "turns": 1,
-      "api_calls": 5,
+      "api_calls": 11,
       "usage": {
-        "input_tokens": 10,
-        "output_tokens": 934,
-        "cache_read_input_tokens": 146761,
-        "cache_creation_input_tokens": 24662
+        "input_tokens": 22,
+        "output_tokens": 1938,
+        "cache_read_input_tokens": 385827,
+        "cache_creation_input_tokens": 28029
       },
-      "peak_context_tokens": 37975
+      "peak_context_tokens": 41342
     }
   ],
   "log": {
-    "sha256": "3e47ff599455f52e65237ce43adcec5f04b83c7c34742a2f131fd0da1ac95872",
-    "bytes": 316840,
-    "lines": 55,
-    "gzip_bytes": 81204,
-    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/3e47ff599455f52e65237ce43adcec5f04b83c7c34742a2f131fd0da1ac95872.jsonl.gz"
+    "sha256": "8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f",
+    "bytes": 383279,
+    "lines": 91,
+    "gzip_bytes": 89562,
+    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -72,6 +72,14 @@
       "summary": "Record verification results: example 290 mutant-security passed",
       "body": "Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.",
       "log_sha256": "3e47ff599455f52e65237ce43adcec5f04b83c7c34742a2f131fd0da1ac95872"
+    },
+    {
+      "change_id": "snpkzvoozwwvwoyouxlpsxvmqmxxwwkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: mutant-security is refuted beside the route at the frozen bound, on a servlet registered before the DispatcherServlet",
+      "body": "Job 20261116-231724-example-290-mutant-security-through-the passed: the frozen security claim of example 290 (CVE-2023-34035) is refuted on the constructed mutant of Spring Security 5.8.5, which looks at the first registration only, in 5.9 s (708 paths, 15,905 variables, 190 MiB). The witness is select(servlets=[1, 0], method=0, patterns={}), which returns 0 and throws nothing, run in the harness on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. target.json records it as the task's besideRoute answer, and the page, the verdict label and the notes say two of the four proof tasks are decided: the claim established on 5.8.5 and refuted on the mutant, both through the adapter entry, beside the route. vulnerable-security (no verdict: the checker has no model of ArrayList, which 5.8.4 collects its matchers in) and preservation (not attempted) stay open, as the page and target.json's handoff describe.\n\nVerified by: validate_example.py 290 (passed); changes.py 290 (the example stays listed as to prove); and the default test run on the state of the previous commit plus these files: default tier, 48 of 48 passed. The proof tier after this cycle's engine changes (20261116-231725-the-proof-tier-after-example-290-s-engin) is still running.",
+      "log_sha256": "8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f"
     }
   ],
   "logs": {
@@ -79,6 +87,12 @@
       "bytes": 316840,
       "lines": 55,
       "gzip_bytes": 81204,
+      "url": null
+    },
+    "8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f": {
+      "bytes": 383279,
+      "lines": 91,
+      "gzip_bytes": 89562,
       "url": null
     },
     "e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468": {

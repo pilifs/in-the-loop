@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T23:26:47.194Z",
-  "duration_seconds": 112415,
+  "ended": "2026-11-16T23:45:51.415Z",
+  "duration_seconds": 113559,
   "stats": {
     "turns": 33,
-    "api_calls": 1820,
-    "tool_calls": 1869,
+    "api_calls": 1824,
+    "tool_calls": 1874,
     "tool_errors": 17,
     "compactions": 12,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3640,
-      "output_tokens": 2237289,
-      "cache_read_input_tokens": 482096688,
-      "cache_creation_input_tokens": 5343936
+      "input_tokens": 3648,
+      "output_tokens": 2241188,
+      "cache_read_input_tokens": 484187262,
+      "cache_creation_input_tokens": 5349416
     }
   },
   "tools": {
-    "Bash": 1798,
+    "Bash": 1803,
     "Read": 38,
     "Write": 22,
     "ToolSearch": 5,
@@ -231,24 +231,24 @@
     {
       "index": 12,
       "started": "2026-11-16T22:12:26.174Z",
-      "ended": "2026-11-16T23:26:47.194Z",
+      "ended": "2026-11-16T23:45:51.415Z",
       "turns": 4,
-      "api_calls": 163,
+      "api_calls": 167,
       "usage": {
-        "input_tokens": 326,
-        "output_tokens": 216814,
-        "cache_read_input_tokens": 51256981,
-        "cache_creation_input_tokens": 509578
+        "input_tokens": 334,
+        "output_tokens": 220713,
+        "cache_read_input_tokens": 53347555,
+        "cache_creation_input_tokens": 515058
       },
-      "peak_context_tokens": 520950
+      "peak_context_tokens": 526430
     }
   ],
   "log": {
-    "sha256": "19e36c7df532195c1bc32400ffe662947083925e49f6ae997e82150766560e0c",
-    "bytes": 40265502,
-    "lines": 15163,
-    "gzip_bytes": 6077415,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/19e36c7df532195c1bc32400ffe662947083925e49f6ae997e82150766560e0c.jsonl.gz"
+    "sha256": "110762e70f305e9a1c53fa50b934545293df849dcb60fd17a435374d9e219062",
+    "bytes": 40323865,
+    "lines": 15195,
+    "gzip_bytes": 6084859,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/110762e70f305e9a1c53fa50b934545293df849dcb60fd17a435374d9e219062.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -731,6 +731,14 @@
       "summary": "Record verification results: example 290 mutant-security passed",
       "body": "Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.",
       "log_sha256": "19e36c7df532195c1bc32400ffe662947083925e49f6ae997e82150766560e0c"
+    },
+    {
+      "change_id": "snpkzvoozwwvwoyouxlpsxvmqmxxwwkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: mutant-security is refuted beside the route at the frozen bound, on a servlet registered before the DispatcherServlet",
+      "body": "Job 20261116-231724-example-290-mutant-security-through-the passed: the frozen security claim of example 290 (CVE-2023-34035) is refuted on the constructed mutant of Spring Security 5.8.5, which looks at the first registration only, in 5.9 s (708 paths, 15,905 variables, 190 MiB). The witness is select(servlets=[1, 0], method=0, patterns={}), which returns 0 and throws nothing, run in the harness on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. target.json records it as the task's besideRoute answer, and the page, the verdict label and the notes say two of the four proof tasks are decided: the claim established on 5.8.5 and refuted on the mutant, both through the adapter entry, beside the route. vulnerable-security (no verdict: the checker has no model of ArrayList, which 5.8.4 collects its matchers in) and preservation (not attempted) stay open, as the page and target.json's handoff describe.\n\nVerified by: validate_example.py 290 (passed); changes.py 290 (the example stays listed as to prove); and the default test run on the state of the previous commit plus these files: default tier, 48 of 48 passed. The proof tier after this cycle's engine changes (20261116-231725-the-proof-tier-after-example-290-s-engin) is still running.",
+      "log_sha256": "110762e70f305e9a1c53fa50b934545293df849dcb60fd17a435374d9e219062"
     }
   ],
   "logs": {
@@ -739,6 +747,12 @@
       "lines": 3513,
       "gzip_bytes": 1437271,
       "url": "https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07.jsonl.gz"
+    },
+    "110762e70f305e9a1c53fa50b934545293df849dcb60fd17a435374d9e219062": {
+      "bytes": 40323865,
+      "lines": 15195,
+      "gzip_bytes": 6084859,
+      "url": null
     },
     "19e36c7df532195c1bc32400ffe662947083925e49f6ae997e82150766560e0c": {
       "bytes": 40265502,
