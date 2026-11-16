@@ -1196,8 +1196,10 @@ class VerifierTest(FixtureCopy):
         exe.write_text(FAKE_JVMCONTRACT.format(python=sys.executable))
         exe.chmod(0o755)
         self.answer(prove={"stdout": json.dumps(PROVE_OUT), "exit": 1})
+        # Both variables the verifier passes through are set here, so the run's own environment (a pipeline job
+        # sets JVMCONTRACT_JBMC_MEMORY_MB) doesn't decide what the test sees: VF-032.
         patch = mock.patch.dict(os.environ, {"JVMCONTRACT": str(exe), "JAVA_TOOL_OPTIONS": "-Dinherited=yes",
-                                             "JVMCONTRACT_JAVA_OPTS": "-Xmx300m"})
+                                             "JVMCONTRACT_JAVA_OPTS": "-Xmx300m", "JVMCONTRACT_JBMC_MEMORY_MB": "512"})
         patch.start()
         self.addCleanup(patch.stop)
 
@@ -1274,10 +1276,11 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(Path(prove["cwd"]), self.attempt.resolve(), "paths are relative to the attempt directory")
         jdk = runtime_jdk.identity(runtime_jdk.home("25"))
         self.assertEqual(set(prove["env"]) - {"LC_CTYPE"},  # LC_CTYPE: Python's own locale coercion, if any
-                         {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAVA_OPTS"})
+                         {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAVA_OPTS", "JVMCONTRACT_JBMC_MEMORY_MB"})
         self.assertNotIn("JAVA_TOOL_OPTIONS", prove["env"], "the verifier inherited the caller's JVM options")
         self.assertEqual(prove["env"]["JAVA_HOME"], jdk["home"])
         self.assertEqual(prove["env"]["JVMCONTRACT_JAVA_OPTS"], "-Xmx300m", "the runner's memory setting passes through")
+        self.assertEqual(prove["env"]["JVMCONTRACT_JBMC_MEMORY_MB"], "512", "and so does JBMC's")
         ids = record.identities
         self.assertEqual(ids["jvmcontract"], runtime.sha256(self.tool / "jvmcontract"))
         self.assertEqual((ids["jdkFeature"], ids["engine"], ids["gaps"]), ("25", "native", "strict"))
