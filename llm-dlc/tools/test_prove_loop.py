@@ -248,6 +248,38 @@ class ProveLoopTest(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
         self.assertIn("cycle 1 (item 901) made no commit", self.record())
 
+    def more_examples(self, *numbers):
+        for number in numbers:
+            (self.root / f"examples/{number}-another-made-up-change").mkdir()
+            (self.root / f"examples/{number}-another-made-up-change/example.json").write_text("{}\n")
+
+    def instructions(self):
+        prompts = [call["args"][call["args"].index("-p") + 1] for call in self.calls()]
+        return [p for p in prompts if p.startswith("Formally prove example")]
+
+    @cost("tool")
+    def test_several_examples_are_proved_one_per_cycle_in_the_order_given_in_one_session(self):
+        self.more_examples("900", "902")
+        r = self.loop("902", "900", "901")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION.replace("901", n) for n in ("902", "900", "901")])
+        state = json.loads((self.run_dir / "run.json").read_text())
+        self.assertEqual((state["examples"], state["status"]), (["902", "900", "901"], 0))
+        sessions = {call["args"][call["args"].index(flag) + 1] for call in self.calls()
+                    for flag in ("--resume", "--session-id") if flag in call["args"]}
+        self.assertEqual(sessions, {state["session"]})
+        record = self.record()
+        self.assertLess(record.index("cycle 1, item 902"), record.index("cycle 2, item 900"))
+        self.assertIn("cycle 3, item 901", record)
+
+    @cost("tool")
+    def test_a_cycle_with_no_commit_leaves_the_examples_after_it_untouched(self):
+        self.more_examples("902")
+        r = self.loop("901", "902", mode="nothing")
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION])
+        self.assertEqual(conductor.read_events(self.run_dir)[-1]["status"], 1)
+
     @cost("tool")
     def test_an_example_that_is_not_there_starts_nothing(self):
         r = self.loop("902")

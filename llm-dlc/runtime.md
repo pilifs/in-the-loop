@@ -18,18 +18,20 @@ skill that sets it up, the proof loop, contributions and releases.
 
 ## `/prove-java-change`
 
-The skill ([`SKILL.md`](../plugins/in-the-loop/skills/prove-java-change/SKILL.md)) proves a change to Java code on a
-user's machine, in four steps, orchestrated by Fable 5.2 at high effort. It is short on purpose: it says what each
-step is for and when to stop, and this repository holds what the steps stand on.
+The skill ([`SKILL.md`](../plugins/in-the-loop/skills/prove-java-change/SKILL.md)) proves a change to Java code, or
+[a list of changes](#many-changes-and-preparing-without-proving), on a user's machine, in four steps, orchestrated
+by Fable 5.2 at high effort. It is short on purpose: it says what each step is for and when to stop, and this
+repository holds what the steps stand on.
 
 | Step | Runs in | Stands on |
 |---|---|---|
 | 1. Set up, verify and measure the machine | a subagent on Opus, only when something needs setting up | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough) |
-| 2. Assess the change and set the example up | the orchestrating session | what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for one change. [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task |
+| 2. Assess the changes and set the examples up | the orchestrating session | what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for each change. [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task. [`changes.py`](#many-changes-and-preparing-without-proving) says what is already prepared |
 | 3. Prove it | a fork of that session, in a moonshot loop it conducts | [the proof loop](#the-proof-loop) |
 | 4. Report, and offer to contribute | the orchestrating session | [contributing back](#contributing-back) |
 
-The user confirms after steps 1 and 2, and a blocker is settled before the next step starts.
+The user confirms after steps 1 and 2, and a blocker is settled before the next step starts. With `--scaffold-only`
+the skill stops after step 2.
 
 **GitHub only.** The official plugin proves changes whose revisions are commits on github.com, with dependencies
 from the allowed hosts (Maven Central, repo.spring.io, the Gradle hosts), and nothing else: the routes that prepare a
@@ -39,13 +41,56 @@ on GitHub. The user decided this on 2026-11-15; a local or private source could 
 this repository with its own release.
 
 **In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
-plugin, so `/prove-java-change NNN` runs the copy being worked on. The bootstrap answers `development`, steps 1 and 2
-don't apply (the checkout is the home, its machine is known and the example exists), and the skill goes straight to
-step 3 on the examples named, with traces as for any loop here, and reports as in step 4.
+plugin, so `/prove-java-change NNN [NNN ...]` runs the copy being worked on. The bootstrap answers `development`,
+steps 1 and 2 don't apply (the checkout is the home, its machine is known and the examples exist), and the skill goes
+straight to step 3 on the examples named, in the order given, with traces as for any loop here, and reports as in
+step 4.
 
 **Installed.** A user adds this repository as a plugin marketplace and installs the plugin `in-the-loop`; the skill
 is then `/in-the-loop:prove-java-change`. The plugin carries only the skill's folder: the skill, its bootstrap and
 its pin.
+
+### Many changes, and preparing without proving
+
+```
+/in-the-loop:prove-java-change [--scaffold-only] <one change, or a list of them, each with what to prove about it>
+```
+
+- **A list.** Step 2 understands and sizes every change before it adds an example for any. Then it orders them, the
+  most accessible first: a proof that lands early can extend the verifier under the later ones, and a hard one first
+  can use up the run. The order is the skill's judgement, from the same reading that sizes each change, and it says
+  why. A change that can't be prepared is set aside with its reason, and the others go on.
+- **The numbers carry the order.** The examples are added in that order on the next free numbers from 900, so the
+  order needs no record of its own. Each example's `provenance` is the request it was prepared from, and its notes
+  hold what the preparation learned and why it sits where it does, since its proof may start in a session that never
+  saw the preparation.
+- **`--scaffold-only`** ends the skill after step 2: every example is a reproducible scaffold (its revisions
+  materialize, the change has run once on a JVM, its claims are frozen), committed, and no proof has started. It is
+  the readiness the examples' index calls `scaffolded`
+  ([`examples/README.md`](../examples/README.md#run-an-example)).
+- **The same request again, without the flag,** proves what was prepared. Nothing remembers a request: step 2 finds
+  each change's example by its source and revisions, keeps it, and prepares only what has none. So a list can also
+  grow between runs, and a run that was interrupted is picked up the same way.
+- **One run or one at a time.** One run of the [proof loop](#the-proof-loop) takes the examples one after another,
+  one per cycle, in one session. One at a time is one example per run, with its report and the user's word before
+  the next.
+
+[`changes.py`](tools/changes.py) is what the skill reads for all of this. It derives each example's state from its
+folder alone (its sidecar, its claims and its receipts), so nothing is kept in step by hand:
+
+```bash
+python3 llm-dlc/tools/changes.py [NNN ...]             # each example: its state, its change, the request it came from
+python3 llm-dlc/tools/changes.py --pending [NNN ...]   # the numbers still to prove, in order: prove-loop.sh's arguments
+```
+
+| State | What it means | A proof loop |
+|---|---|---|
+| `unprepared` | The scaffold is incomplete, and `why` says where: a revision that does not materialize, no replay, a claim that is not frozen, no proof task | leaves it out |
+| `prepared` | The scaffold is complete and at least one claim has no answer yet, or was left open | takes it |
+| `decided` | Every claim is established or refuted by a current receipt. A refuted claim decides: it is a finding, not work left | leaves it out |
+| `unknown` | No target sidecar (a constructed example, named in a development checkout) | takes it when it is named |
+
+Without numbers it lists the checkout's own examples, 900 to 999, by number; with numbers, those, in the order given.
 
 ## Where things are
 
@@ -56,6 +101,7 @@ its pin.
 | `.claude/skills/prove-java-change` | A link to the skill's folder, which makes it a project skill in this repository |
 | [`tools/mode.py`](tools/mode.py) | Which [mode](#runtime-mode-and-prove-java-change) a checkout is in; `sync.py` asks it |
 | [`tools/doctor.py`](tools/doctor.py) | [Whether the machine is enough](#is-the-machine-enough), and a budget for it |
+| [`tools/changes.py`](tools/changes.py) | [Which examples are prepared, decided or still to prove](#many-changes-and-preparing-without-proving) |
 | [`tools/prove-loop.sh`](tools/prove-loop.sh), [`tools/feature-loop.sh`](tools/feature-loop.sh) | [The proof loop](#the-proof-loop), and the loop under it |
 | [`tools/conductor.py`](tools/conductor.py) | [The conductor's](#the-conductor) side of that loop |
 | [`tools/contribute.py`](tools/contribute.py) | [What can go upstream](#contributing-back), and a check of a prepared pull request |
@@ -79,7 +125,7 @@ else in `CLAUDE.md` holds: verification jobs are queued, tests have tiers, examp
   and the hooks do nothing. Don't push to any remote. The one exception is a contribution upstream, after the user
   agrees to it.
 - **A new example takes a number from 900 to 999**, which no release uses, so that an update never brings an example
-  with the same number. A contribution renumbers it.
+  with the same number. A contribution renumbers it. Among them the numbers are the order they are proved in.
 - **The work is the user's.** It lives as commits on top of the release commit, and an update moves them onto the next
   release. Don't rewrite or abandon the release commit or anything below it.
 
@@ -139,6 +185,10 @@ llm-dlc/tools/prove-loop.sh --fork SESSION --memory SIZE NNN [NNN ...]
 the examples it is given, one per cycle: "Formally prove example NNN as elegantly and efficiently as possible", on
 Fable 5.2 at high effort, the instruction and nothing else. It works the same in both modes.
 
+- **The order** is the order of its arguments, and every example it is given gets a cycle, decided or not:
+  `changes.py --pending` gives the ones still to prove. A cycle that makes no commit ends the run, as in every loop,
+  and leaves the examples after it untouched. The conductor then reads why in the run's record and starts a run on
+  what is left, with the example it stopped on last, unless what stopped it would stop the others too.
 - **The fork.** With `--fork`, the loop's session starts as a fork of the session that prepared the example, made in
   one turn without tools and then compacted, so the loop begins knowing what the preparation learned and needs no
   brief. The parent goes on untouched and may be mid-turn. Without `--fork` the loop starts a fresh session.

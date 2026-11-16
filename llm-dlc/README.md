@@ -40,6 +40,9 @@ llm-dlc/
                                     sync.py does in a runtime one
   tools/doctor.py                   whether a machine can prove a change here: hardware, operating system and tools, what
                                     blocks and what only limits, and a budget for it; test_doctor.py tests it
+  tools/changes.py                  the examples a checkout holds for /prove-java-change, each unprepared, prepared or
+                                    decided from its own folder, and the ones still to prove, in order
+                                    (runtime.md#many-changes-and-preparing-without-proving); test_changes.py tests it
   tools/prove-loop.sh               proves examples in a moonshot loop forked from the session that prepared them: step 3
                                     of /prove-java-change (runtime.md#the-proof-loop); test_prove_loop.py runs it, and
                                     the loop under it, against a stand-in claude
