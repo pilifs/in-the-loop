@@ -140,6 +140,21 @@ class ConductorTest(unittest.TestCase):
         (root / "verification/pipeline.py").write_text(f"print({json.dumps(json.dumps(rows))})\n")
         self.assertEqual({k: len(v) for k, v in conductor.unfinished_jobs(root).items()}, {"901": 1, "902": 1, "904": 1})
 
+    def test_a_queue_that_cant_be_read_is_never_taken_for_no_jobs(self):
+        # Seen in the run of 2026-11-16: pipeline.py status printed nothing once, and the empty answer read as "every
+        # job in", which would send the loop back to an example whose proof was still running.
+        root = self.dir.parent / "checkout"
+        (root / "verification").mkdir(parents=True)
+        (root / "verification/pipeline.py").write_text("import sys\nsys.exit(1)\n")
+        with mock.patch.object(conductor.time, "sleep"):
+            with self.assertRaises(conductor.QueueUnreadable):
+                conductor.unfinished_jobs(root)
+            out, err = io.StringIO(), io.StringIO()
+            with mock.patch.object(conductor, "REPO", root), contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                self.assertEqual(conductor.cmd_unfinished(["288", "289"]), 1)
+        self.assertEqual(out.getvalue().split(), ["288", "289"], "each one counts as unfinished")
+        self.assertIn("could not be read", err.getvalue().replace("gave nothing to read", "could not be read"))
+
 
 class DecisionRecordTest(unittest.TestCase):
     """A verdict is also a decision: in a checkout, it goes into the run's decision record (decisions.py)."""

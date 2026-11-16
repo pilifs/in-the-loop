@@ -150,7 +150,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-16 17:51 UTC | [91a38d39-abe7-456b-bc6b-2e4d71420275](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | ended | 42 min | `claude-opus-5-5` | 2 | 80 | 80 | 1 | 0 | 226,627 | 2 |
 | 2026-11-16 19:29 UTC | [722674dd-f1af-42c9-a55d-4febdb90b0f1](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | ended | 10 min | `claude-opus-5-5` | 1 | 56 | 57 | 1 | 0 | 134,314 | 2 |
 | 2026-11-16 19:42 UTC | [515f8415-55b4-4a47-8fbe-978fc5054ac2](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | ended | 8 min | `claude-opus-5-5` | 1 | 45 | 45 | 1 | 0 | 142,236 | 1 |
-| 2026-11-16 19:50 UTC | [4bd65c9c-5e21-441c-aef9-b9f46ff56d94](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | open | 17 min | `claude-opus-5-5` | 1 | 81 | 81 | 3 | 0 | 260,820 | 3 |
+| 2026-11-16 19:50 UTC | [4bd65c9c-5e21-441c-aef9-b9f46ff56d94](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | ended | 17 min | `claude-opus-5-5` | 1 | 81 | 81 | 3 | 0 | 260,820 | 3 |
 | 2026-11-16 20:48 UTC | [a6490df0-ff44-40c1-b34e-d0de7394edeb](a6490df0-ff44-40c1-b34e-d0de7394edeb/summary.md) | open | 1 h 21 min | `claude-sonnet-5-5` | 1 | 24 | 26 | 0 | 0 | 53,195 | 5 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
