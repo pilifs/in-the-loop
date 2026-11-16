@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T23:46:05.921Z",
-  "duration_seconds": 113574,
+  "ended": "2026-11-17T00:07:09.527Z",
+  "duration_seconds": 114837,
   "stats": {
-    "turns": 33,
-    "api_calls": 1824,
-    "tool_calls": 1874,
+    "turns": 37,
+    "api_calls": 1872,
+    "tool_calls": 1925,
     "tool_errors": 17,
-    "compactions": 12,
+    "compactions": 13,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3648,
-      "output_tokens": 2241188,
-      "cache_read_input_tokens": 484187262,
-      "cache_creation_input_tokens": 5349416
+      "input_tokens": 3744,
+      "output_tokens": 2300606,
+      "cache_read_input_tokens": 490836296,
+      "cache_creation_input_tokens": 5534000
     }
   },
   "tools": {
-    "Bash": 1803,
-    "Read": 38,
-    "Write": 22,
+    "Bash": 1852,
+    "Read": 39,
+    "Write": 23,
     "ToolSearch": 5,
     "Monitor": 4,
     "TaskStop": 2
@@ -47,6 +47,7 @@
     "/tmp/e290/gen/plan_rev.py",
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
     "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
+    "lib/models/java/util/lists/ArrayList.java",
     "lib/src/bmc/bytes.rs",
     "lib/src/bmc/locale.rs",
     "lib/src/bmc/loops.rs",
@@ -231,24 +232,38 @@
     {
       "index": 12,
       "started": "2026-11-16T22:12:26.174Z",
-      "ended": "2026-11-16T23:46:05.921Z",
+      "ended": "2026-11-16T23:46:36.324Z",
       "turns": 4,
-      "api_calls": 167,
+      "api_calls": 169,
       "usage": {
-        "input_tokens": 334,
-        "output_tokens": 220713,
-        "cache_read_input_tokens": 53347555,
-        "cache_creation_input_tokens": 515058
+        "input_tokens": 338,
+        "output_tokens": 222800,
+        "cache_read_input_tokens": 54401249,
+        "cache_creation_input_tokens": 516654
       },
-      "peak_context_tokens": 526430
+      "peak_context_tokens": 528026
+    },
+    {
+      "index": 13,
+      "started": "2026-11-16T23:48:03.278Z",
+      "ended": "2026-11-17T00:07:09.527Z",
+      "turns": 4,
+      "api_calls": 46,
+      "usage": {
+        "input_tokens": 92,
+        "output_tokens": 57331,
+        "cache_read_input_tokens": 5595340,
+        "cache_creation_input_tokens": 182988
+      },
+      "peak_context_tokens": 194447
     }
   ],
   "log": {
-    "sha256": "545993ea65f8ba76e194e9cd3f5a9b155ae0a223369b842555d42a0bdd9b3295",
-    "bytes": 40330733,
-    "lines": 15200,
-    "gzip_bytes": 6085435,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/545993ea65f8ba76e194e9cd3f5a9b155ae0a223369b842555d42a0bdd9b3295.jsonl.gz"
+    "sha256": "4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3",
+    "bytes": 41749579,
+    "lines": 15686,
+    "gzip_bytes": 6332305,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -613,22 +628,6 @@
       "log_sha256": "5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7"
     },
     {
-      "change_id": "qqoppoklvroomtmulqpylmksxznkluyv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)",
-      "body": "Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.\n\nExample 288's proofs/prove.py runs each frozen claim, unchanged, through the adapter entry its first assumption names, beside the route (which has no adapter entry), with the simpleMatch lemma of example 286 and, for preservation, a lemma for each release's simpleMatch. Inline probes at smaller bounds gave every expected verdict: fixed-security established at 2 and 5 (47 s); vulnerable-security and mutant-security refuted at 3 in 8 s and 5 s, each witness decided under tr-TR with a capital I and run on a JVM; preservation established at 2, 3 and 4 (48 s), and refuted at 2 when given no allowed change. The frozen bound, 8, is queued: jobs 20261116-201436-example-288-fixed-security-through-the-a, 20261116-201436-example-288-vulnerable-security-through, 20261116-201436-example-288-mutant-security-through-the and 20261116-203637-example-288-preservation-through-the-ada; and, because the checker's array read changed under nearly every proof-tier test, 20261116-203933-the-proof-tier-after-example-288-s-engin. The example's target.json, example.json and README record the queued state and close the four predicted blockers outside the route; no verdict label changes until the jobs report.",
-      "log_sha256": "5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7"
-    },
-    {
-      "change_id": "krmvzrytnpwvqpsrlnwsnttrtwvprvtm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "The watcher's decisions on the run of 288-290 so far",
-      "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
-      "log_sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4"
-    },
-    {
       "change_id": "qvqpqxpnkypnomvonkstvrymxxnypluk",
       "commit_id": null,
       "immutable": false,
@@ -658,6 +657,22 @@
       "immutable": false,
       "summary": "watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once",
       "body": "The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).",
+      "log_sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4"
+    },
+    {
+      "change_id": "qqoppoklvroomtmulqpylmksxznkluyv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)",
+      "body": "Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.\n\nExample 288's proofs/prove.py runs each frozen claim, unchanged, through the adapter entry its first assumption names, beside the route (which has no adapter entry), with the simpleMatch lemma of example 286 and, for preservation, a lemma for each release's simpleMatch. Inline probes at smaller bounds gave every expected verdict: fixed-security established at 2 and 5 (47 s); vulnerable-security and mutant-security refuted at 3 in 8 s and 5 s, each witness decided under tr-TR with a capital I and run on a JVM; preservation established at 2, 3 and 4 (48 s), and refuted at 2 when given no allowed change. The frozen bound, 8, is queued: jobs 20261116-201436-example-288-fixed-security-through-the-a, 20261116-201436-example-288-vulnerable-security-through, 20261116-201436-example-288-mutant-security-through-the and 20261116-203637-example-288-preservation-through-the-ada; and, because the checker's array read changed under nearly every proof-tier test, 20261116-203933-the-proof-tier-after-example-288-s-engin. The example's target.json, example.json and README record the queued state and close the four predicted blockers outside the route; no verdict label changes until the jobs report.",
+      "log_sha256": "5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7"
+    },
+    {
+      "change_id": "krmvzrytnpwvqpsrlnwsnttrtwvprvtm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher's decisions on the run of 288-290 so far",
+      "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
       "log_sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4"
     },
     {
@@ -747,6 +762,14 @@
       "summary": "Record verification results: the default test run at qnmttuprxxym passed, closing VF-032",
       "body": "Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.",
       "log_sha256": "545993ea65f8ba76e194e9cd3f5a9b155ae0a223369b842555d42a0bdd9b3295"
+    },
+    {
+      "change_id": "kxkyqntwvlolrqrtkkkvmrtyuwqzlsvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the proof tier after example 290's engine changes passed",
+      "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
+      "log_sha256": "4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3"
     }
   ],
   "logs": {
@@ -797,6 +820,12 @@
       "lines": 3189,
       "gzip_bytes": 1373766,
       "url": "https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4adea8f9f6ca4d6a267f087d6cba9d30115b44f18669bdaf07dce773a9a50ff0.jsonl.gz"
+    },
+    "4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3": {
+      "bytes": 41749579,
+      "lines": 15686,
+      "gzip_bytes": 6332305,
+      "url": null
     },
     "545993ea65f8ba76e194e9cd3f5a9b155ae0a223369b842555d42a0bdd9b3295": {
       "bytes": 40330733,

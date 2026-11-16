@@ -392,6 +392,8 @@ pub struct GapSetting {
     /// The class initializers the engine takes the observed state of in place of running them
     /// ([`crate::observed`]), in any mode.
     pub observed: std::sync::Arc<crate::observed::Observations>,
+    /// The models on request the engine runs ([`crate::models::ON_REQUEST`]), by internal name, in any mode.
+    pub models: std::sync::Arc<BTreeSet<String>>,
 }
 
 impl From<GapMode> for GapSetting {
@@ -513,7 +515,7 @@ const MODEL_INTERFACES: &[&str] = &["java/util/List", "java/util/Collection", "j
 /// (`overrides`, the walk's), and every application class below `owner` has code for it too, its own or a model's.
 /// On a receiver a gap made, the engine meets the JDK call where it runs it, as before.
 fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &str, overrides: &[String], made: &BTreeSet<String>) -> bool {
-    if !(crate::models::CHECKER_RUNS.contains(&owner) || MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| crate::models::CHECKER_RUNS.contains(&o.as_str())) {
+    if !(cp.runs_model(owner) || MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| cp.runs_model(o)) {
         return false;
     }
     made.iter().filter(|n| cp.is_application(n) && cp.is_subtype(n, owner)).all(|n| cp.checker_method(n, name, descriptor).is_some_and(|(c, m)| cp.checker_runs(&c.name) && m.code.is_some()))

@@ -1,5 +1,6 @@
 package claims;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -142,6 +143,218 @@ public final class M {
             return false;
         }
         catch (ArrayIndexOutOfBoundsException e) {
+            return true;
+        }
+    }
+
+    /**
+     * An {@code ArrayList} of the elements added, in order: made empty with or without a capacity (a negative one
+     * is refused), of their number, each where it was added, by {@code get}, by the iterator and in both arrays.
+     */
+    public static boolean collected(int[] a, int capacity) {
+        List<At> list;
+        try {
+            list = capacity == 7 ? new ArrayList<>() : new ArrayList<>(capacity);
+        }
+        catch (IllegalArgumentException e) {
+            return capacity < 0;
+        }
+        if (capacity < 0 || !list.isEmpty() || list.size() != 0) {
+            return false;
+        }
+        int n = a.length;
+        At[] made = new At[n];
+        for (int i = 0; i < n; i++) {
+            made[i] = new At(a[i]);
+            if (!list.add(made[i]) || list.size() != i + 1 || list.isEmpty()) {
+                return false;
+            }
+        }
+        Object[] plain = list.toArray();
+        At[] typed = list.toArray(new At[0]);
+        if (plain.length != n || typed.length != n) {
+            return false;
+        }
+        int met = 0;
+        for (At at : list) {
+            if (met >= n || at != made[met++]) {
+                return false;
+            }
+        }
+        if (met != n) {
+            return false;
+        }
+        for (int i = 0; i < n; i++) {
+            if (list.get(i) != made[i] || plain[i] != made[i] || typed[i] != made[i]) {
+                return false;
+            }
+        }
+        try {
+            list.get(n);
+            return false;
+        }
+        catch (IndexOutOfBoundsException e) {
+        }
+        try {
+            list.get(-1);
+            return false;
+        }
+        catch (IndexOutOfBoundsException e) {
+            return true;
+        }
+    }
+
+    /**
+     * {@code toArray(T[])} of the first {@code k} elements: the given array where they fit, the elements first,
+     * a null after them where there is room and the rest as it was; a new array of their number where they don't.
+     */
+    public static boolean filled(int[] a, int k) {
+        int n = a.length;
+        if (k < 0 || k > n) {
+            return true;
+        }
+        ArrayList<At> list = new ArrayList<>();
+        At[] made = new At[n];
+        for (int i = 0; i < k; i++) {
+            made[i] = new At(a[i]);
+            list.add(made[i]);
+        }
+        At mark = new At(0);
+        At[] given = new At[n];
+        for (int i = 0; i < n; i++) {
+            given[i] = mark;
+        }
+        At[] got = list.toArray(given);
+        if (got != given) {
+            return false;
+        }
+        for (int i = 0; i < n; i++) {
+            if (got[i] != (i < k ? made[i] : i == k ? null : mark)) {
+                return false;
+            }
+        }
+        if (k == 0) {
+            return true;
+        }
+        At[] small = new At[k - 1];
+        At[] fresh = list.toArray(small);
+        if (fresh == small || fresh.length != k) {
+            return false;
+        }
+        for (int i = 0; i < k; i++) {
+            if (fresh[i] != made[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * {@code addAll}: the other collection's elements after the list's own, in its order, true when it had any;
+     * of another {@code ArrayList} and of the list {@code Arrays.asList} makes; a null collection is refused.
+     */
+    public static boolean appended(int[] a, int[] b, boolean view) {
+        if (a.length + b.length > 3) {
+            return true;
+        }
+        ArrayList<At> list = new ArrayList<>(a.length);
+        At[] all = new At[a.length + b.length];
+        for (int i = 0; i < a.length; i++) {
+            all[i] = new At(a[i]);
+            list.add(all[i]);
+        }
+        At[] more = new At[b.length];
+        List<At> other = view ? Arrays.asList(more) : new ArrayList<>();
+        for (int i = 0; i < b.length; i++) {
+            more[i] = new At(b[i]);
+            all[a.length + i] = more[i];
+            if (!view) {
+                other.add(more[i]);
+            }
+        }
+        if (list.addAll(other) != (b.length > 0) || list.size() != all.length) {
+            return false;
+        }
+        for (int i = 0; i < all.length; i++) {
+            if (list.get(i) != all[i]) {
+                return false;
+            }
+        }
+        try {
+            list.addAll(null);
+            return false;
+        }
+        catch (NullPointerException e) {
+            return list.size() == all.length;
+        }
+    }
+
+    /**
+     * An {@code ArrayList}'s iterator fails fast once an element is added after it was made, an empty
+     * {@code addAll} included, and is past the end after the last element.
+     */
+    public static boolean swept(int change) {
+        ArrayList<At> list = new ArrayList<>();
+        list.add(new At(0));
+        Iterator<At> it = list.iterator();
+        if (change == 1) {
+            list.add(new At(1));
+        }
+        if (change == 2) {
+            list.addAll(new ArrayList<>());
+        }
+        try {
+            if (!it.hasNext() || it.next().i != 0 || it.hasNext()) {
+                return false;
+            }
+        }
+        catch (ConcurrentModificationException e) {
+            return change == 1 || change == 2;
+        }
+        try {
+            it.next();
+            return false;
+        }
+        catch (NoSuchElementException e) {
+            return change != 1 && change != 2;
+        }
+    }
+
+    /** A method the {@code ArrayList} model does not keep: the JDK call it names. */
+    public static boolean contained() {
+        return !new ArrayList<At>().contains(null);
+    }
+
+    /** {@code Arrays.copyOf} of an array of references: a new array of the length asked for, the elements first. */
+    public static boolean recopied(int[] a, int length) {
+        int n = a.length;
+        if (length > n + 1) {
+            return true;
+        }
+        At[] made = new At[n];
+        for (int i = 0; i < n; i++) {
+            made[i] = new At(a[i]);
+        }
+        At[] copy;
+        try {
+            copy = Arrays.copyOf(made, length);
+        }
+        catch (NegativeArraySizeException e) {
+            return length < 0;
+        }
+        if (length < 0 || copy == made || copy.length != length) {
+            return false;
+        }
+        for (int i = 0; i < length; i++) {
+            if (copy[i] != (i < n ? made[i] : null)) {
+                return false;
+            }
+        }
+        try {
+            Arrays.copyOf((At[]) null, length);
+            return false;
+        }
+        catch (NullPointerException e) {
             return true;
         }
     }

@@ -125,6 +125,20 @@ model only the checker runs too ([`java/util/lists`](java/util/lists/)). It exte
 keeps `size`, `get` and `toArray()`, over the array it is a view of. Every other method is `AbstractList`'s, which
 the checker does not run: the JDK call it names. Its conformance is `claims.M#listed`.
 
+`java.util.ArrayList` (with its iterator `ArrayList$Itr`, in [`java/util/lists`](java/util/lists/) too) is a model
+the checker runs only for a check that asks for it (`prove --model java.util.ArrayList`, `models::ON_REQUEST`).
+Otherwise the class is the JDK's: `new ArrayList(int)` is the gap the contract library
+([`contracts`](contracts/)), the conformance corpus and the examples' recorded refusals are written about, and a
+model run unasked would change each of them. The model is a list as an array of its elements and their number. It
+keeps `ArrayList()`, `ArrayList(int)` with its `IllegalArgumentException`, `size`, `isEmpty`, `get` with its
+`IndexOutOfBoundsException`, `add`, `addAll`, `toArray()`, `toArray(T[])` and `iterator()`, whose iterator fails
+fast on `AbstractList`'s `modCount`. It keeps no capacity: the array is as long as the list (grown with
+`Arrays.copyOf`, which the checker models for arrays of references), so a capacity a JVM could not allocate is no
+`OutOfMemoryError` here. Every other method is `AbstractList`'s or `AbstractCollection`'s, the JDK call it names,
+and so is the iterator's `remove`. A `toArray(T[])` into an array that cannot hold an element is an
+`ArrayStoreException` on a JVM, which the checker's array stores do not model. Its conformance is
+`claims.M#collected`, `filled`, `appended` and `swept`.
+
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken
 yet.

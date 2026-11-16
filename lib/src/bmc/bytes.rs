@@ -19,11 +19,11 @@
 //! - `MessageDigest.isEqual(byte[], byte[])`: true for one array (two nulls included), false for one null, and
 //!   otherwise whether the lengths are the same and every byte is. The JDK reads every byte whatever it finds, to
 //!   take the same time; what it returns is this.
-//! - `Arrays.copyOf(T[], int)` for `T` one of `boolean`, `byte`, `char`, `short`, `int` and `long`:
-//!   `NullPointerException` for null, `NegativeArraySizeException` for a negative length, and a new array of that
-//!   length with the original's elements up to the shorter of the two, zero after them. The new array has a cell
-//!   for each of the original's and for each further one the new length may ask for, as `newarray` counts them
-//!   ([`Engine::new_array_cells`]).
+//! - `Arrays.copyOf(T[], int)` for `T` one of `boolean`, `byte`, `char`, `short`, `int` and `long`, and for an
+//!   array of references: `NullPointerException` for null, `NegativeArraySizeException` for a negative length, and
+//!   a new array of the original's class and of that length, with the original's elements up to the shorter of
+//!   the two, zero (null) after them. The new array has a cell for each of the original's and for each further
+//!   one the new length may ask for, as `newarray` counts them ([`Engine::new_array_cells`]).
 //! - `Integer.parseInt(String)`: an optional `+` or `-` and at least one digit, the value within an int, or
 //!   `NumberFormatException` (for null too). The JDK takes every Unicode decimal digit (`Character.digit`); the
 //!   model takes `0` to `9`, and a String with a unit outside ASCII is the JDK call it was (a gap).
@@ -43,7 +43,7 @@ pub const STANDARD_CHARSETS: &str = "java/nio/charset/StandardCharsets";
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J")
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
 }
 
@@ -206,18 +206,19 @@ impl Engine<'_> {
                 let negative = self.b.negative(length);
                 // A cell for every element the new length may ask for: the original's where the solver shows it no
                 // longer, else as many as a new array of that length has.
+                let held = from.cells.len().max(from.refs.len());
                 let longer = self.b.slt(&from.length, length);
                 let mut assumptions = path.cond.clone();
                 assumptions.push(longer);
                 let cells = match self.solve(&assumptions) {
-                    Ok(false) => from.cells.len(),
+                    Ok(false) => held,
                     Ok(true) => {
-                        let most = self.b.constant(from.cells.len() as i64 + 1, 32);
+                        let most = self.b.constant(held as i64 + 1, 32);
                         let beyond = self.b.slt(&most, length);
                         assumptions.pop();
                         assumptions.push(beyond);
                         match self.solve(&assumptions) {
-                            Ok(false) => from.cells.len() + 1,
+                            Ok(false) => held + 1,
                             Ok(true) => match self.new_array_cells(path, length) {
                                 Ok(cells) => cells,
                                 Err(stop) => return Some(Err(stop)),
@@ -227,21 +228,33 @@ impl Engine<'_> {
                     }
                     Err(stop) => return Some(Err(stop)),
                 };
-                let width = cell_width(&from.element);
-                let zero = self.b.constant(0, width);
-                let copied: Vec<Bits> = (0..cells)
-                    .map(|i| match from.cells.get(i) {
-                        Some(cell) => {
-                            let here = self.b.constant(i as i64, 32);
-                            let inside = self.b.slt(&here, &from.length);
-                            self.b.ite_bits(inside, cell, &zero)
-                        }
-                        None => zero.clone(),
+                // Each cell is the original's where the original has an element there, and zero or null past it.
+                let inside: Vec<Lit> = (0..cells)
+                    .map(|i| {
+                        let here = self.b.constant(i as i64, 32);
+                        self.b.slt(&here, &from.length)
                     })
                     .collect();
+                let (mut copied, mut references) = (Vec::new(), Vec::new());
+                if holds_references(&from.element) {
+                    for (i, inside) in inside.into_iter().enumerate() {
+                        references.push(match from.refs.get(i) {
+                            Some(cell) => choose(&mut self.b, inside, cell, &Val::R(None))?,
+                            None => Val::R(None),
+                        });
+                    }
+                } else {
+                    let zero = self.b.constant(0, cell_width(&from.element));
+                    for (i, inside) in inside.into_iter().enumerate() {
+                        copied.push(match from.cells.get(i) {
+                            Some(cell) => self.b.ite_bits(inside, cell, &zero),
+                            None => zero.clone(),
+                        });
+                    }
+                }
                 let length = length.clone();
                 Some(self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
-                    path.objects.push(Obj { array: Some(Array { element: from.element, length, cells: copied, refs: Vec::new() }), ..Obj::new(&class) });
+                    path.objects.push(Obj { array: Some(Array { element: from.element, length, cells: copied, refs: references }), ..Obj::new(&class) });
                     let o = path.objects.len() - 1;
                     engine.push(path, Val::R(Some(o)));
                     engine.advance(path);

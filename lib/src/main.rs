@@ -718,6 +718,12 @@ struct ProveArgs {
     /// to be what the initializer leaves in every run. Never for the class under proof. Not with --cache.
     #[arg(long = "observed-initializer")]
     observed_initializer: Vec<String>,
+    /// A JDK class the tool's own checker is to run its model of, `pkg.Class`; may be repeated. For the models it
+    /// runs only on request: java.util.ArrayList (ArrayList(), ArrayList(int), size, isEmpty, get, add, addAll,
+    /// toArray, iterator). Without it the class is the JDK's, and each of its calls is a gap. The result states
+    /// the model as what it rests on. Not with --cache.
+    #[arg(long = "model")]
+    model: Vec<String>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
     /// claim's key (the code closure of the target and of what its inputs are made by, a construction plan's makers
     /// and setup calls included, the assertion, the assumptions, the domain, the plan whole, the bounds, the models,
@@ -976,6 +982,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.decreases = declaration.decreases.clone();
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
+                options.requested_models = args.model.clone();
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

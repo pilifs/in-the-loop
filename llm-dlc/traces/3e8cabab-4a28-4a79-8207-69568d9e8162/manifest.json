@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-16T17:06:47.867Z",
-  "duration_seconds": 78166,
+  "ended": "2026-11-17T00:06:54.463Z",
+  "duration_seconds": 103373,
   "stats": {
-    "turns": 25,
-    "api_calls": 674,
-    "tool_calls": 708,
-    "tool_errors": 20,
+    "turns": 26,
+    "api_calls": 713,
+    "tool_calls": 751,
+    "tool_errors": 21,
     "compactions": 6,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 1378,
-      "output_tokens": 956081,
-      "cache_read_input_tokens": 170359910,
-      "cache_creation_input_tokens": 2132263
+      "input_tokens": 1456,
+      "output_tokens": 1024775,
+      "cache_read_input_tokens": 176683592,
+      "cache_creation_input_tokens": 2332352
     }
   },
   "tools": {
-    "Bash": 628,
-    "Write": 39,
-    "Read": 14,
+    "Bash": 666,
+    "Write": 42,
+    "Read": 16,
     "Edit": 8,
     "AskUserQuestion": 6,
     "SendMessage": 5,
@@ -69,7 +69,10 @@
     "~/code/in-the-loop-prove-java-change/llm-dlc/tools/test_watch.py",
     "~/code/in-the-loop-prove-java-change/llm-dlc/tools/watch.py",
     "~/code/in-the-loop-prove-java-change/llm-dlc/watch-summary-template.md",
-    "~/code/in-the-loop-prove-java-change/plugins/in-the-loop/skills/prove-java-change/SKILL.md"
+    "~/code/in-the-loop-prove-java-change/plugins/in-the-loop/skills/prove-java-change/SKILL.md",
+    "~/code/in-the-loop-run-brief/.claude/skills/run-brief/SKILL.md",
+    "~/code/in-the-loop-run-brief/llm-dlc/tools/brief_run.py",
+    "~/code/in-the-loop-run-brief/llm-dlc/tools/test_brief_run.py"
   ],
   "context_windows": [
     {
@@ -159,24 +162,24 @@
     {
       "index": 6,
       "started": "2026-11-16T17:06:47.678Z",
-      "ended": "2026-11-16T17:06:47.867Z",
-      "turns": 1,
-      "api_calls": 0,
+      "ended": "2026-11-17T00:06:54.463Z",
+      "turns": 2,
+      "api_calls": 39,
       "usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 0
+        "input_tokens": 78,
+        "output_tokens": 68694,
+        "cache_read_input_tokens": 6323682,
+        "cache_creation_input_tokens": 200089
       },
-      "peak_context_tokens": 0
+      "peak_context_tokens": 229614
     }
   ],
   "log": {
-    "sha256": "324460a5ab60e82b3c555bb2ed2d16f6846b70dfc4cc635b2b4bd5a7bcce4a12",
-    "bytes": 17578519,
-    "lines": 6250,
-    "gzip_bytes": 2961249,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/324460a5ab60e82b3c555bb2ed2d16f6846b70dfc4cc635b2b4bd5a7bcce4a12.jsonl.gz"
+    "sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98",
+    "bytes": 19081848,
+    "lines": 6636,
+    "gzip_bytes": 3257757,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98.jsonl.gz"
   },
   "subagents": [
     {
@@ -620,6 +623,182 @@
       "log_sha256": "641542547e13a66af6e338dd94824418f04823787ec3b86064c665195f8f50fd"
     },
     {
+      "change_id": "pruvstkqurrsrrqtvmrqsnupxnxrnlxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288 (CVE-2024-38820) set up from its catalog entry: locale-table decision claim and preservation frozen, replays pass",
+      "body": "Example 288 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, prepared as llm-dlc/runtime.md's catalog entry brief asks, with example 286 (CVE-2022-22968, the fix this one corrects) as the model. The release pair is Spring Framework 6.1.13 -> 6.1.14, from published JARs. Each release's DataBinder.java is the exact-fix pair's blob (c7af62b5, 98157756). Every other class the decision and the bind reach is byte-identical in the two closures. sources.lock.json records the tags, blobs, ancestry, JAR hashes against Maven Central, and a hand sweep of every JDK 21/25 locale: only tr and az lowercase an ASCII letter apart from the root locale, and only I.\n\nThere are two claims and six tasks. The decision claim is 286's assertion and ASCII domain, with the default locale as two int inputs indexing a table (root, en-US, tr-TR, az-AZ, lt-LT): one locale while the binder is configured, one while it decides. It says a field a disallowed pattern matches ignoring ASCII case is denied. It is expected refuted on 6.1.13, established on 6.1.14, and refuted on a mutant that lowercases the field in the default locale again. Preservation: outside the locale-dependent aliases (a capital I in the field decided under tr/az, or in a pattern configured under them), both releases decide alike. The controls are adapters, a driver, 36 probes and an independent oracle with a self-test.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "rronuyxosqyznqwktzpsuznymslyyktl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass",
+      "body": "Example 289 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, set up as llm-dlc/runtime.md's catalog entry brief asks, with 288 (the packet's shape) and 285 (its HttpServletRequest carrier) as models. The release pair is Spring Security 5.6.3 -> 5.6.4, from published JARs. Each release's RegexRequestMatcher.java is the exact-fix pair's blob (9264b56f, a334afc7). Every other class the matcher reaches is byte-identical in the two closures (Spring Framework 5.3.19 and 5.3.20). The release pair also hardens StrictHttpFirewall, in a commit before the fix; that is outside the matcher and the claims. sources.lock.json records the tags, blobs, ancestry and JAR hashes against Maven Central.\n\nThere are two claims and six tasks. The security claim covers a matcher built as RegexRequestMatcher(P + \".*\", null, caseInsensitive), where P is a literal ASCII prefix. It must match every request whose documented URL (servletPath + pathInfo, then ? and the query) begins with P, line terminators included, exactly or ignoring US-ASCII case. It is expected refuted on 5.6.3, established on 5.6.4, and refuted on a mutant that leaves DOTALL out of the case-insensitive flags. Preservation: outside a URL in the namespace that holds a line terminator, both releases decide alike. The controls are an adapter, a request carrier, a driver, 36 probes and an independent oracle with a self-test.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "lxvynzvoqslluqrtmlymuxnlnkynoqxz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A /prove-java-change run checks what a commit changed, not the default test run, and a prepared example needs no edit to the packet tests",
+      "body": "The setup sessions of 288 and 289 each spent about 16 minutes on the default test run before committing, and each added its example by hand to test_packets.py's list. Following a review of the live run, CLAUDE.md (Tests), lib/README.md and runtime.md's briefs now say that a session of a /prove-java-change run checks a commit by what it changed: examples/tools/validate_example.py NNN for an example's own files (the router regenerated first, since the tests read examples/index.json and a stale one failed two checks of the live run; then the form, each task's plan, the oracle's self-test, with --replay the replays on a JVM, and the four test files that read every example), and the tests of any shared code it touched. The default run comes once an example is done and before anything is published. test_packets.py now discovers each packet from its sidecar's mutant revision instead of a hand-kept list; the expected outcomes of each replay stay written by hand. Verified: validate_example.py 288 289 passes in 40 s; the discovered packets equal the old list exactly; test_packets.py 22 tests pass; test_costs.py estimate changed only the new test's row and the lint agrees.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "lrkmlooyrrxkpzxwytrqsptmykomrmwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change: stage 2 runs on every run and designs or reviews the claims, hands off plan.json, and the setup writes them with scaffold_example.py and records how each proof is invoked",
+      "body": "Following a review of the live run of 288-290: examples named by number skipped stage 2, so a catalog entry's setup session interpreted the advisory, chose the domain and froze the claims itself. Now stage 2 runs on every run, in the fixed session at high effort (was medium), on changes and on examples by number alike. It designs the claims of catalog entries (property, preservation boundary, meaningful bounds, positive, negative and mutation controls, entry point, environment assumptions), reviews the claims of prepared examples with remarks (misstates, which the setup corrects; suggestion, which is the user's), and reuses an accepted review while the claim files are unchanged: watch.py claims --accept now keeps the files' hashes beside the decision record (llm-dlc/decisions/prove-change-claims.json), and preflight lists toReview and reviewed. Stage 2 writes plan.json beside plan.md (llm-dlc/prove-plan.schema.json; watch.py plan --check), and examples/tools/scaffold_example.py NNN writes a designed example's claim files and tasks from it, checks them against their schemas, refuses to change a frozen claim, and lists what is left for the setup. How each proof task is invoked is now a setup deliverable, recorded on the task as invocation (route, adapter or gap with an observed blocker; target.schema.json), and preflight lists tasks without it as toClassify without stopping a run. SKILL.md, runtime.md (stage 2, stage 3, examples by number, the catalog entry's and the repair's briefs), the plan template and the READMEs describe the new order: preflight, stage 2, the claims once, setup, repair, the loop in the plan's order. Verified: test_watch.py (36, 3 new), test_scaffold_example.py (4, new), test_changes, test_sidecar, test_workflow, test_build, test_conductor, test_decisions pass; validate_example.py 288 289 passes; test_costs lint agrees.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "ypqrkrolzkklmwopyppmywtktlzyzvww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change: setup overlaps proving in a workspace of its own, the loop takes examples added while it runs, and the watcher sees each setup and measures the run",
+      "body": "Following a review of the live run of 288-290, where the proof loop waited for all three setups and the watcher saw a setup only start and end. watch.py stage setup now takes --example NNN, which records each attempt (example, attempt number, session, cost, commit, the example's state and the proof tasks whose invocation it left unrecorded, its report), and --workspace NAME, which runs it in a jj workspace beside the checkout, made from the loop's line, so that one setup worker and one proof worker never share a working copy. watch.py add NNN leaves the running loop a conductor command, and feature-loop.sh's new add command takes the items after the ones it has (only from the conductor, where the item list lives; the run record notes each). watch.py wait now tells the watcher when a setup ends and when one goes quiet (one command running past ten minutes, or nothing written for twenty), and the summary has a Setup line (each under way: its tool calls, the command running, the last validate_example.py result) and a Measures line: the time to the first proof cycle, the setups redone, the examples whose first setup recorded every invocation, and the claims answered per dollar (from the stages' results and each cycle's turn). SKILL.md and runtime.md describe the overlap: claims accepted once for the batch, the loop started as soon as one example is ready, each later setup in the workspace prove-setup, merged between two examples (checked with validate_example.py, not the default run, unless shared code came in) and then added. Verified: test_watch.py (39, 3 new), test_prove_loop.py (30, 1 new: an example added while the loop runs is taken after the ones it has, and one it has already is not taken twice), test_conductor, test_loop_stats and test_inbox pass; watch.py status renders on the live run directory; test_costs lint agrees.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "pvnkwqntllpqkqnooxpqrmvqtsxqvrml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's",
+      "body": "The repair's brief (llm-dlc/runtime.md) for example 288 (CVE-2024-38820), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 288 in toClassify, since none of its four proof tasks recorded how it is invoked. Each now records it as adapter (target.json, invocation). The route plans every task, but it enters DataBinder#isAllowed(String), and the claims' expressions name the adapter's parameters, so they can't compile there. LocaleDecisionAdapter#allowed was compiled against each revision's pinned closure and ran on the 31 decide probes on 6.1.13, 6.1.14 and the mutant, on JDK 21 and 25. There is no proof script of the example's own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/permitted-fields-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement is replaced word for word by the remark's, which states agreement between the releases only, and the remark's note on the expected answers is added to the claim's notes. Nothing else in the claim changed.\n\ncontrols/oracle.py's canonical() was a regular expression needing two quote characters. Where Spring's PropertyAccessorUtils.canonicalPropertyName turns ['] and [\"] into ], it left them unchanged. It is now a transcription of Spring's loop. It agrees with the method on a JVM (6.1.13 and 6.1.14, JDK 21 and 25) for 3928 Strings: null, every String of at most 5 characters over [ ] ' \" a, and every String of the probes. The regex disagreed on 146 of them. The self-test now checks 13 of those shapes and the new probes. Two guarded probes were added (patterns ['] and [\"], field ], root locale), and both replays ran again over the 38 probes. As the plan expected, both releases and the mutant deny ], the 14 triggers and the mutant's 8 are unchanged, and the comparison is preserved. The setup's receipts, whose controls changed, are replaced by the new ones. The page's probe counts follow.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "lwvsvznoxkrykovywzxokxynssprzsml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "validate_example.py regenerates the router after the replays, not before",
+      "body": "The repair of example 288 found that validate_example.py --replay regenerated examples/index.json first and then ran the replays, whose new receipts left the index stale for the tests that read it. The router step now comes after every step that can write receipts and before the tests. Verified: validate_example.py 288 passes.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "qvqpqxpnkypnomvonkstvrymxxnypluk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging",
+      "body": "The repair's brief (llm-dlc/runtime.md) for example 289 (CVE-2022-22978, RegexRequestMatcher and line terminators), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 289 in toClassify because none of its four proof tasks recorded how it is invoked. Each one now records it as adapter (target.json, invocation). The route plans every task, but it enters RegexRequestMatcher#matches(HttpServletRequest), and the claims' expressions name the adapter's parameters (pattern, caseInsensitive, servletPath, pathInfo, query), so they can't compile there. RegexMatchAdapter#matches was compiled against each revision's pinned closure and run on the 44 probes on 5.6.3, 5.6.4 and the mutant, on JDK 21 and 25. The example has no proof script of its own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/prefix-classification-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement was replaced word for word by the remark's text, which states only that the releases agree, and the remark's note on the expected answers was added to the claim's notes. Nothing else in the claim changed. The README's preservation sentence was reworded the same way.\n\nFollowing the plan's revised controls: eight probes were added for unpaired surrogates, which the claims' domain includes. Six are guarded: a lone U+D800, a lone U+DC00, and a pair split between the servlet path and the path info, each in both case modes. Two are triggers: U+D800 then a line feed, in both case modes. That makes 44 probes: 18 triggers, 16 guarded, 7 legitimate, 3 outside. The driver now prints each input string as its UTF-16 code units, the form argv passes, and every other string as ASCII with escapes kept as text, so the route's controls record (written as UTF-8) can hold a lone surrogate. Its first line also reports LogFactory.getLog(RegexRequestMatcher.class).isDebugEnabled() and whether java.util.logging.config.file or .class is set. The oracle decodes the code units, and it refuses a run where debug is on or not reported. Its self-test covers the surrogate probes, a path that isn't in code-unit form, debug enabled, and a missing report. Both replays ran again, as the plan expected. 5.6.3 fails at exactly the 18 triggers, and 5.6.4 holds. Every surrogate probe that is guarded matches on both releases and on the mutant. The mutant fails at exactly the 5 case-insensitive triggers. Debug was off and no JUL property was set on every run, and JDK 21 and 25 gave identical results. The setup's receipts, whose controls changed, were replaced by the new ones, and the page's and example.json's probe counts and 'Not probed' paragraph now match.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "mlmnzmwkxwvokkwvxpnwyyxuxqplkoos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290 set up from its catalog entry: claims and tasks from the plan, release pair and mutant prepared, carriers, driver and oracle, both replays as expected",
+      "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 -> 5.8.5, requestMatchers(String...) in a multi-servlet application) was a catalog entry. The setup stage of /prove-java-change wrote the plan's two claims and six tasks with scaffold_example.py (unchanged from plan.json), and the rest from the entry: the release pair on the published-artifact route (spring-security-config/web/core, Spring Framework 5.3.28 and 5.3.29 with spring-webmvc, jakarta.servlet-api 4.0.4, pinned by sha256), sources.lock.json (each release's AbstractRequestMatcherRegistry.java is the exact-fix pair's blob; the other classes the replays load are byte-identical or differ outside the code reached; javap shows no subclass in either config JAR overriding the implicit overloads), and the mutant controls/first-registration-only.patch (hasDispatcherServlet looks at the first registration only).\n\nThe entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), with SelectionRegistry (the three abstract methods only), PlainServlet, ExtendedDispatcherServlet and carriers for the WebApplicationContext, servlet context and registrations whose other methods throw. controls/probes.json has 29 probes, each with the outcome expected of 5.8.4, 5.8.5 and the mutant written before the run; controls/oracle.py holds each run to its revision's expectations (told by the registry class's sha256) and its self-test tells the fix from six constructed registries. Two null-pattern probes beyond the plan show the mutant throwing IllegalArgumentException from AntPathRequestMatcher rather than a rejection.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "zppsuptrnwkzmxsusztpolrotxpyzmls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: the page and notes count three null-pattern probes beyond the plan, not two",
+      "body": "The setup commit's README and example.json notes said two probes with a null pattern element were added beyond the plan's list; there are three (ambiguous-plain-dispatcher-null-pattern, lone-dispatcher-null-pattern, no-dispatcher-plain-null-pattern). Corrected the count and stated the lone probe's outcome. Verified with validate_example.py 290.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "rlosmoxonwxyyssnwqoukroqoqkrxkqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once",
+      "body": "The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "qqoppoklvroomtmulqpylmksxznkluyv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)",
+      "body": "Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.\n\nExample 288's proofs/prove.py runs each frozen claim, unchanged, through the adapter entry its first assumption names, beside the route (which has no adapter entry), with the simpleMatch lemma of example 286 and, for preservation, a lemma for each release's simpleMatch. Inline probes at smaller bounds gave every expected verdict: fixed-security established at 2 and 5 (47 s); vulnerable-security and mutant-security refuted at 3 in 8 s and 5 s, each witness decided under tr-TR with a capital I and run on a JVM; preservation established at 2, 3 and 4 (48 s), and refuted at 2 when given no allowed change. The frozen bound, 8, is queued: jobs 20261116-201436-example-288-fixed-security-through-the-a, 20261116-201436-example-288-vulnerable-security-through, 20261116-201436-example-288-mutant-security-through-the and 20261116-203637-example-288-preservation-through-the-ada; and, because the checker's array read changed under nearly every proof-tier test, 20261116-203933-the-proof-tier-after-example-288-s-engin. The example's target.json, example.json and README record the queued state and close the four predicted blockers outside the route; no verdict label changes until the jobs report.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "krmvzrytnpwvqpsrlnwsnttrtwvprvtm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher's decisions on the run of 288-290 so far",
+      "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "urqorxxswwuuwtxmnmnqrwsuoytlqklo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result: example 288 fixed-security through the adapter entry passed",
+      "body": "Job 20261116-201436-example-288-fixed-security-through-the-a passed in 19m42s (peak 1.4 GiB, estimated 25m, 6 GiB) on vm-1, jvmcontract holds as expected; 3 outputs applied.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "nvlyyytuquxxknltyzqksxsvozslpmwx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup",
+      "body": "The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "olnsqxznyoyrvvkwpoxqrznprytsmpyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)",
+      "body": "Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.\n\nThe verifier's own checker (lib/src/bmc) gained one guarded rule and what the path needs beside it. regex.rs: Pattern.compile(String, int) of a String that is no constant is modelled only where the solver shows that on the path the String can only be characters that stand for themselves followed by .*; the Pattern is then those characters as a quoted text and . any number of times, and any other pattern stays the JDK's call, a gap refused by name. The flags CASE_INSENSITIVE and DOTALL are formulas (a constructor chooses them by an input, and paths that chose differently may have merged before the call); that no other flag is set is the solver's to show. One .* that ends an expression takes surrogates: what comes before it matched none, so it never begins inside a pair, and neither a pair nor a surrogate alone is a line terminator, so matching by unit is the JDK's matching by code point there; a dot anywhere else still makes an input with a surrogate the JDK's call. strings.rs: Character.isLetter of an ASCII char, the JDK's call of any other. runtime.rs: the java.util.logging levels below INFO as constants and Logger.isLoggable of one as false, under an assumption each outcome states (the matcher's debug line through spring-jcl is not written). models: IntStream.range(int, int) enters a model the checker runs (RangeStream), as String.chars() does.\n\nEvidence for the rules: lib/tests/claims.rs has a new tool-tier test over a new fixture, claims.P. It proves the rule is its definition written out in Java (begins with the literal, ASCII case folded under CASE_INSENSITIVE, no line terminator after it without DOTALL) under each flag combination and with the flags chosen by an input, on every pattern and String of the bound; refutes a wrong claim on a witness run on a JVM; shows the refusals by name (any pattern, any text before the dot, another flag, a dot inside with a surrogate in the input, isLetter outside ASCII, isLoggable at INFO); and samples the definitions against the JDK on a JVM, with the five line terminators, surrogates alone and in pairs, the letters that fold outside ASCII, and isLetter on every char. lib/README.md and lib/models/README.md describe the rules.\n\nThe example: proofs/prove.py passes each frozen claim to jvmcontract through the adapter entry on the release's own bytecode, with no lemma and nothing put in a method's place, and builds the mutant by the replay route's recipe (the JAR it gives has the SHA-256 the mutant replay's receipt records). It follows loops for 26 turns where the default is 16: the allowed change reads a URL of up to 25 units, and at 16 the preservation check ended with no verdict, saying a loop was covered by an invariant. proofs/predicates.py compiles the claims' assumption, assertion and allowed change with javac and evaluates them on the 44 probes: they read each as controls/oracle.py does. target.json, example.json and the README record the queue, the probes and what became of the four predicted blockers.\n\nVerified: inline probes at the frozen bound, each one capped run, gave every expected verdict (fixed-security established in 28 s, vulnerable-security and mutant-security refuted in 3 s each on witnesses run on a JVM, the mutant's with caseInsensitive true; preservation established in 47 s, and refuted at bound 3 with no allowed change). The unit tests (285) and the claims, values, pairing, conformance, loops, object_strings, string_literals, tiers and value_parameters tests pass; test_costs.py lint agrees; validate_example.py 289 passes. The default test run was not run: it is owed when the example is decided.\n\nJobs queued, the results of record: 20261116-214343-example-289-fixed-security-through-the-a, 20261116-214344-example-289-vulnerable-security-through, 20261116-214344-example-289-mutant-security-through-the, 20261116-214344-example-289-preservation-through-the-ada, and the proof tier after the engine changes, 20261116-214344-the-proof-tier-after-example-289-s-engin.\n\nAlso in this commit, collected by the pipeline's runner and found uncommitted in the working copy: the results of three of example 288's jobs. The proof tier after 288's engine changes passed (35m47s). 288's vulnerable-security and mutant-security ended on the checker's own 30-minute limit with no verdict, not with a wrong one; they are to be resubmitted larger in 288's next cycle, as its handoff says. The watcher's decision log is committed with it.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "ukstuotlookomtusowprsmysvnrxxkpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 is decided beside the route: the security claim refuted on 5.6.3 and on the mutant, established on 5.6.4, and preservation established, each at the frozen bound",
+      "body": "The four proof jobs queued in the commit before this one passed, each with its expected verdict on the unchanged claim files, through the adapter entry on the releases' own bytecode (examples/289-.../proofs/prove.py), at the frozen bound of 8 code units for each String, strict gaps, loops followed for 26 turns. fixed-security (job 20261116-214343-example-289-fixed-security-through-the-a): established on Spring Security 5.6.4 in 36 s, 1,003 paths, 265 MiB, not vacuous. vulnerable-security (20261116-214344-example-289-vulnerable-security-through): refuted on 5.6.3 in 2 s at matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null), which returns false. mutant-security (20261116-214344-example-289-mutant-security-through-the): refuted on the mutant in 2 s at a witness with caseInsensitive true and U+2029 in the path info; the mutant the job built has the SHA-256 the mutant replay's receipt records. Each witness was run on a JVM. preservation (20261116-214344-example-289-preservation-through-the-ada): established on the release pair in 61 s, 1,373 paths, 551 MiB.\n\nRecorded: each task's besideRoute in target.json (answer, job, by, recorded), the handoff and the blockers' notes; example.json's verdict label, summary and a note with the figures, what the verdicts rest on and what they do not say; the README's verdict row and results table. changes.py 289 now says decided: 2 refuted and 2 established beside the route. The jobs' results, logs and outputs (verification/results, verification/.work-289) are committed with it. The route itself still has no adapter entry, so these are not route receipts.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "wwqnoqtlkttyyvoqwsllspoktlrnvrun",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for examples 288 and 289 and the two proof-tier jobs; VF-031 for example 288's timeouts",
+      "body": "Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-security and preservation ran out of the engine's own --timeout with no verdict (VF-031, not resubmitted since the fix is a step change); 289 vulnerable/mutant/fixed/preservation passed; the proof-tier jobs after 288's and 289's engine changes passed (33 cargo tests each).",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "optkyymtxunxqzprsmwpmvvpxorxpkvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: a library initializer the checker does not run is observed on a JVM, registrations are a LinkedHashMap in order and classes are found by name, and fixed-security is queued through the adapter entry (verification pending)",
+      "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5: requestMatchers(String...) chooses a matcher type by the servlet context's registrations) gets its proof script, proofs/prove.py, which passes the frozen claims to jvmcontract through the adapter entry on the releases' own bytecode, beside the route, and proofs/predicates.py, which shows that the claims' expressions as javac compiles them agree with the oracle on the 27 select probes. An inline probe established fixed-security at the frozen bound of 8 in 6.9 s (659 paths). It is queued as job 20261116-225709-example-290-fixed-security-through-the-a. The two refutations and preservation are not decided: target.json's handoff says where each stops (Collections.emptyMap, Arrays.asList, ArrayList's addAll and toArray; then the matchers' constructors).\n\nWhat the verifier gained for it (lib/). The new kind: prove --observed-initializer CLASS (src/observed.rs, src/bmc/observed.rs). Spring's ClassUtils builds its tables through an IdentityHashMap, a HashSet and a map of soft references, which the checker does not run (identity hash order, a float load factor, reference queues), and the servlet API's GenericServlet and HttpServlet each load a resource bundle. Such an initializer has no input, so the tool runs it on a JVM instead: the class is initialized in a JVM of its own, first thing, on the check's class path, its static fields are read by reflection, and the checker takes that state where a use initializes the class. Held: null, integral and boolean primitives, Strings (and whether each is the pooled one), Classes, a java.util.HashMap of String keys (as the HashMap model's entries) and arrays of those; any other value is not held, and a read of such a field is refused by name. A result that used one states it among what it rests on: one observation on the check's JDK, taken to be what the initializer leaves in every run. It is asked for class by class, is refused with --cache and for an initializer that throws, and is never used for the class under proof: the registry's own initializer runs as written. A class of a JDK package that the class path holds (javax.servlet's) is the JDK's to the checker, initialized already; naming it as observed is how its initializer is now accounted for.\n\nBeside it: a model of java.util.LinkedHashMap for the checker alone (models/java/util/LinkedHashMap.java: the HashMap model's chain, which is in insertion order, with values(), its size and a fail-fast iterator); Arrays.stream(int[]) as a stream model; an int, short or byte in the compiler's concatenation as its decimal digits (String model 6; such a String had no content before); Class.forName(String) of a constant name with its initialization, and both forms of forName left to the JDK where a supertype is missing from the class path; Class.isAssignableFrom of two class literals; Thread.currentThread() and its context class loader as the class path's, under a stated assumption.\n\nVerified by: lib/tests/claims.rs, two new tests over the new fixtures claims.M, claims.Tables, claims.Fails and javax.claims.Library (each model against its definition written out on every input of a bound; the observed state read as the JVM has it, an unheld field refused by name, the gap without the option, a throwing initializer and --cache refused), with claims.Samples running the same methods on a JVM; the unit tests (288 pass, three new in observed.rs); and the test files of the changed code (claims 14, values 18, conformance 10, loops, object_strings, pairing, string_literals, tiers, value_parameters). Two values tests that pinned the old behaviour were updated: a concatenated int now has content (a boolean is the gap that remains), and LinkedHashMap() is modelled (LinkedHashMap(Map) is the gap that remains). test_costs.py lint agrees; validate_example.py 290 passes. The default test run and the proof tier job follow once the example's remaining engine work is in.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "pptopklkymsmqkkxwsluxvrmoxvuyznq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290 fixed-security passed; the default test run failed one test (VF-032)",
+      "body": "Job 20261116-225709 (example 290 fixed-security through the adapter entry) passed in 9.8s, jvmcontract holds; its 3 outputs applied. Job 20261116-224337 (default test run at 76862913606e) failed 1 of 49 files: test_runtime.py sees JVMCONTRACT_JBMC_MEMORY_MB passed through to the verifier; recorded as VF-032 for the targets owner. No result edited.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "mqoqmvttwklvknxxktpwvtktyvzpnvmu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: fixed-security is established beside the route at the frozen bound, mutant-security is queued after its probe refuted it, and the page says where the other two stand (verification pending)",
+      "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5). Job 20261116-225709-example-290-fixed-security-through-the-a passed: the frozen security claim is established on 5.8.5 at the bound of 8, through the adapter entry, in 6.9 s (659 paths, 8,509 variables, 131 MiB). target.json records it as the task's besideRoute answer; changes.py still lists the example as to prove, since three tasks are open. The verdict rests on three library initializers observed on a JVM in place of run by the checker (Spring's ClassUtils, the servlet API's GenericServlet and HttpServlet), which the outcome states and the page explains: weaker evidence than an initializer the checker ran, and said so.\n\nmutant-security: an inline probe at the frozen bound refuted the claim on the mutant in 6.1 s, on select(servlets=[1, 0], method=0, patterns={}) returning 0, run on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. Queued as 20261116-231724-example-290-mutant-security-through-the, and not recorded as decided until that job is in. What it needed since the last commit: Arrays.asList(T...) as a model for the checker alone (lib/models/java/util/lists/ArrayAsList.java: a view of its array with size, get and toArray(), compiled against the JDK's List in a run of its own) and Collections.emptyMap() as the JDK's one empty map, with their evidence in lib/tests/claims.rs (claims.M#listed and #emptied, in the checker on every input of a bound and on a JVM). Those files of lib/ are in the commit before this one, pptopklk: the pipeline's commit of collected results took a snapshot of the shared working copy while they were being written.\n\nvulnerable-security has no verdict: the checker stops, by name, at new ArrayList(int) in createMvcMatchers, and 5.8.4 collects its matchers in ArrayLists on every path. A model of ArrayList written in this session gave the expected witness on 5.8.4 (select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM) and was taken out again before any commit: lib/tests/conformance.rs and lib/tests/values.rs record ArrayList as a class with no model and the contract library holds a contract for ArrayList(int), so making it a model changes recorded verdicts, which is a step to make and review on its own. preservation is not attempted; it needs that model, the matchers' constructors, and --observed-initializer for equivalence. The page (README.md), target.json's handoff and the blockers' notes say all of this.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "zklwynpumvlnvpwowokkqlmmpukxtpxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290 mutant-security passed",
+      "body": "Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
       "change_id": "snpkzvoozwwvwoyouxlpsxvmqmxxwwkn",
       "commit_id": null,
       "immutable": false,
@@ -634,6 +813,14 @@
       "summary": "Record verification results: the default test run at qnmttuprxxym passed, closing VF-032",
       "body": "Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.",
       "log_sha256": "324460a5ab60e82b3c555bb2ed2d16f6846b70dfc4cc635b2b4bd5a7bcce4a12"
+    },
+    {
+      "change_id": "kxkyqntwvlolrqrtkkkvmrtyuwqzlsvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the proof tier after example 290's engine changes passed",
+      "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
+      "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
     }
   ],
   "logs": {
@@ -690,6 +877,12 @@
       "lines": 2308,
       "gzip_bytes": 1371139,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/7ec3c13b23bcc6acf8de525755c3db63847c6ea48cc58275a054f8048b958db9.jsonl.gz"
+    },
+    "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98": {
+      "bytes": 19081848,
+      "lines": 6636,
+      "gzip_bytes": 3257757,
+      "url": null
     },
     "986ad63f61154b7ab86b683fd98ffa05530771e10c5aceed1687e68174c485ea": {
       "bytes": 1378728,

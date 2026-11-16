@@ -308,6 +308,47 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     assert!(property::run(&cached).unwrap_err().to_string().contains("--observed-initializer with --cache"));
 }
 
+/// The lists a registry collects its matchers in (`claims.M`, example 290). `java.util.ArrayList` is the JDK's,
+/// each of its calls a gap, until a check asks for the model (`--model java.util.ArrayList`): then the model is
+/// its definition written out on every input of the bound, the result says what it rests on, and a method the
+/// model does not keep is still the JDK call it names. `Arrays.copyOf` of an array of references, which the model
+/// grows by, is modelled for every check.
+#[test]
+fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let unasked = run(&options(classes, "claims.M#collected", 3, "collected-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("jdk-constructor:java.util.ArrayList.<init>(I)V"), "{}", unasked.output);
+
+    let asking = |target: &str, work: &str, model: &str| {
+        let mut o = options(classes, target, 3, work);
+        o.requested_models = vec![model.to_string()];
+        o
+    };
+    for method in ["collected", "filled", "appended", "swept"] {
+        let o = run(&asking(&format!("claims.M#{method}"), &format!("M-{method}"), "java.util.ArrayList"));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code")), "{method}: {:?}", stated.assumptions);
+    }
+    proved(classes, "claims.M#recopied", 3);
+    // A check that asks for the model and runs none of it does not rest on it.
+    let unused = run(&asking("claims.M#recopied", "M-recopied-asking", "java.util.ArrayList"));
+    assert_eq!(unused.verdict, Verdict::Verified, "{}", unused.output);
+    assert!(!unused.stated.as_ref().expect("a statement").assumptions.iter().any(|a| a.text.contains("the tool's model of the class")), "{}", unused.output);
+
+    let left_out = run(&asking("claims.M#contained", "M-contained", "java.util.ArrayList"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.util.ArrayList.contains(Ljava/lang/Object;)Z"), "{}", left_out.output);
+
+    let none = property::run(&asking("claims.M#swept", "M-none", "java.util.Vector")).unwrap_err().to_string();
+    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList"), "{none}");
+    let mut cached = asking("claims.M#swept", "M-cached", "java.util.ArrayList");
+    cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
+    assert!(property::run(&cached).unwrap_err().to_string().contains("--model with --cache"));
+}
+
 /// `toString()`, the class of an object the run made, and an initializer that keeps a method reference for the
 /// logging library the class path has (the reference it does not keep is never called, and is not walked).
 #[test]
