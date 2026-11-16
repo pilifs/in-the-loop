@@ -36,6 +36,12 @@ The three security jobs passed. fixed-security (20261116-053832-example-287-fixe
 
 The example's README has a section on these proofs (what they are, what they rest on, how to run them, what is open), its entry a verdict label and a note, and target.json dated notes on the four predicted blockers, which were reached and closed, and on the observed ones. These are proofs beside the route, not route receipts: the route has no adapter entry. The two guard tasks, which do run through the route, reached verdicts and are queued again for their receipts (20261116-060128-example-287-fixed-guard-again-for-its-re, 20261116-060128-example-287-vulnerable-guard-again-for-i); their refusal packets stay as recorded until those are collected. Not attempted: preservation, and the guard claim on the mutant. Verified by the Python half of the default run (33 of 33).
 
+### Example 287: where the preservation claim stops beside the route
+
+change `uwvylonzknlv` · [log `0efb6ae3b58f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz)
+
+Tried once through the adapter entry with each release's own class path (jvmcontract equivalence --before-classpath, which gets past the route's recorded gap of two dependency closures): a regression check refuses a nullable String parameter, and without the nullable parameters it refuses the allowed change as written, because a regression's scope is in the tool's own expression language, which has no getBytes. Recorded in the example's README and notes with the two refusals' words, and with what is predicted behind them and was not reached (pairing bcrypt's unchanged callees, since invariants that forget the S-boxes on each side cannot show two results equal). No code changed; the example's tests (test_packets, test_acceptance, test_gap_inventory, test_workflow_refusal, test_targets_contract, test_build, test_alignment) pass.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz) has every step in between: reasoning, tool calls and their results.
