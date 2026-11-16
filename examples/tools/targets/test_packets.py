@@ -25,17 +25,32 @@ from cost_tier import cost  # noqa: E402
 
 # Each packet: the mutant's base, its patch, the task whose claim the mutant is meant to fail, and the mutant's own
 # claim task. A CVE packet's mutant fails the fixed release's security property; a positive's fails its preservation
-# (gate A4: "its nearby constructed mutation fails the same claim and control").
-PACKETS = {
-    "285": ("fixed-release", "controls/raw-method-fallback.patch", "fixed-security", "mutant-security"),
-    "286": ("fixed-release", "controls/pattern-side-unnormalized.patch", "fixed-security", "mutant-security"),
-    "287": ("fixed-release", "controls/char-count-guard.patch", "fixed-security", "mutant-security"),
-    "288": ("fixed-release", "controls/field-side-default-locale.patch", "fixed-security", "mutant-security"),
-    "289": ("fixed-release", "controls/case-insensitive-without-dotall.patch", "fixed-security", "mutant-security"),
-    "305": ("after", "controls/status-200.patch", "preservation", "mutant-preservation"),
-    "306": ("release-after", "controls/drop-prefix.patch", "preservation", "mutant-preservation"),
-    "307": ("after", "controls/us-ascii.patch", "preservation", "mutant-preservation"),
-}
+# (gate A4: "its nearby constructed mutation fails the same claim and control"). They are read from each sidecar that
+# declares a mutant revision, so an example a setup session prepares is checked here without editing this file; what
+# a packet is expected to show stays written out by hand below (RouterTest), apart from what the sidecar says.
+ON_MUTANT = lambda t: t.get("revision") == "mutant" or t.get("pair") == "mutation"  # noqa: E731
+# The packets these checks were written for: discovery that finds fewer is a fault of discovery, not a pass.
+KNOWN = {"285", "286", "287", "305", "306", "307"}
+
+
+def discover():
+    found = {}
+    for path in sorted(EXAMPLES.glob("[0-9][0-9][0-9]-*/target.json")):
+        folder = path.parent
+        target = sidecar.load(folder, json.loads((folder / "example.json").read_text()))
+        mutant = target.get("history", {}).get("revisions", {}).get("mutant", {}).get("mutant")
+        claims = [t for t in target.get("tasks", []) if t["kind"] != "replay" and ON_MUTANT(t)]
+        if not mutant or not claims:
+            continue
+        task = claims[0]
+        same = [t for t in target["tasks"] if t.get("claim") == task.get("claim") and t["kind"] == task["kind"]
+                and not ON_MUTANT(t)]
+        reference = next((t for t in same if t.get("revision") == mutant["base"]), same[0] if len(same) == 1 else None)
+        found[folder.name[:3]] = (mutant["base"], mutant["patch"], reference and reference["id"], task["id"])
+    return found
+
+
+PACKETS = discover()
 
 
 def packet(number):
@@ -45,6 +60,12 @@ def packet(number):
 
 
 class PacketMutantTest(unittest.TestCase):
+    def test_discovery_finds_every_packet_with_a_mutant_and_its_reference_task(self):
+        self.assertLessEqual(KNOWN, set(PACKETS))
+        for number, (_, _, reference, _) in PACKETS.items():
+            with self.subTest(number):
+                self.assertTrue(reference, "no task states the mutant's claim on its base")
+
     def test_each_packet_declares_its_mutant_as_a_revision_in_a_mutation_pair(self):
         for number, (base, patch, _, _) in PACKETS.items():
             with self.subTest(number):

@@ -336,7 +336,8 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    change sits where it does in the order.
 2. The revisions prepared: their JARs fetched or built, pinned and locked (`build.py --plan NNN`).
 3. The change run once on a JVM (the replay task), with the plan's inputs.
-4. Each example committed by itself, and `build.py --index-only` run.
+4. Each example checked with `python3 examples/tools/validate_example.py --replay NNN`, not the default run
+   ([tests in a run](#the-proof-loop)), and committed by itself.
 
 It is done when `changes.py` calls each example `prepared`. You decide nothing the plan left open and change no
 claim: what does not work as the plan says (a revision that won't build, a replay that shows something else) goes
@@ -406,7 +407,10 @@ entries like it and are the model.
    bounds and assumptions, then freeze it. Where the summary leaves open what is claimed, take the narrowest
    reading and say so in the claim's notes: the user reads every claim before a proof starts.
 3. Prove nothing. A probe that shows where the verifier stops belongs to the proof loop.
-4. Done when `changes.py NNN` calls the example `prepared`. Commit it by itself, run `build.py --index-only`, and
+4. Done when `changes.py NNN` calls the example `prepared`. Check it with
+   `python3 examples/tools/validate_example.py --replay NNN` (it regenerates the router first, then checks the
+   form, the plans, the oracle and the replays, and runs the tests that read every example; they find a prepared
+   example by themselves, so add it to no test's list), not the default run, commit it by itself, and
    reply with each claim in a sentence and anything that did not work as the entry predicted. An entry that can't
    be set up (a revision that does not build, a change no replay shows) is left as it was, with the reason in its
    notes and in your reply.
@@ -531,6 +535,10 @@ there leaves the run unmeasured). It works the same in both modes, and the watch
   A cycle that makes no commit ends the run, as in every loop.
 - **The order** is the order of its arguments, with a waiting example taken up again as its proof comes in. Every
   example it is given is worked on, decided or not: `changes.py --pending` gives the ones still to prove.
+- **Tests.** No session of a run runs the default test run before each commit: it takes about 16 minutes, and a
+  cycle commits often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN` for an
+  example's own files, and the tests of any shared code it touched. The default run comes once an example is done
+  and before anything is published, and what it finds is fixed then ([`CLAUDE.md`](../CLAUDE.md#tests)).
 - **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
   does. The watcher's verification loop runs them; started by hand, `prove-loop.sh` starts one itself unless one
   already runs for this repository.

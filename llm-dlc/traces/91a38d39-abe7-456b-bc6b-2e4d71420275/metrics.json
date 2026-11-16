@@ -1,20 +1,20 @@
 {
   "schema": "llm-trace-metrics/v1",
   "session_id": "91a38d39-abe7-456b-bc6b-2e4d71420275",
-  "source": {"log_sha256":"84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d","log_lines":619,"redaction_policy":4},
+  "source": {"log_sha256":"ed83e0c2f2ffea60a98c3f5ed75e7dc0227a442b4fa7b69c7ee57871edbd766b","log_lines":631,"redaction_policy":4},
   "pricing_as_of": "2026-11-15",
-  "totals": {"prompts":1,"commands":0,"commits":1,"compactions":0,"subagents":0,"tool_errors":1,"peak_context_tokens":225287,"api_calls":79,"tool_calls":80,"input_tokens":162,"output_tokens":76227,"thinking_tokens":24734,"cache_read_tokens":11072660,"cache_write_tokens":214031,"cache_write_5m_tokens":0,"cache_write_1h_tokens":214031,"usd":5.45197,"uncached_usd":46.671952,"unpriced_calls":0},
+  "totals": {"prompts":1,"commands":0,"commits":2,"compactions":0,"subagents":0,"tool_errors":1,"peak_context_tokens":226627,"api_calls":80,"tool_calls":80,"input_tokens":164,"output_tokens":77332,"thinking_tokens":24763,"cache_read_tokens":11297945,"cache_write_tokens":215371,"cache_write_5m_tokens":0,"cache_write_1h_tokens":215371,"usd":5.529855,"uncached_usd":47.60056,"unpriced_calls":0},
   "after_last_commit": {"api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0},
-  "time": {"elapsed_ms":2502873,"agent_ms":1386551,"model_ms":681558,"tool_ms":681669,"busy_ms":1360260,"compaction_ms":0,"paused_ms":0},
-  "reported": null,
+  "time": {"elapsed_ms":2520084,"agent_ms":1403613,"model_ms":692062,"tool_ms":688160,"busy_ms":1377255,"compaction_ms":0,"paused_ms":0},
+  "reported": {"line":631,"usd":5.529853,"api_ms":744683,"tool_ms":644124,"lines_added":619,"lines_removed":32,"calls_usd":5.529855,"unattributed_usd":-2e-06,"models":{"claude-opus-5-5":{"usd":5.529853,"input_tokens":164,"output_tokens":77332,"cache_read_tokens":11297945,"cache_write_tokens":215371}}},
   "by_model": [
-    {"model":"claude-opus-5-5","api_calls":79,"tool_calls":80,"input_tokens":162,"output_tokens":76227,"thinking_tokens":24734,"cache_read_tokens":11072660,"cache_write_tokens":214031,"cache_write_5m_tokens":0,"cache_write_1h_tokens":214031,"usd":5.45197,"uncached_usd":46.671952,"unpriced_calls":0}
+    {"model":"claude-opus-5-5","api_calls":80,"tool_calls":80,"input_tokens":164,"output_tokens":77332,"thinking_tokens":24763,"cache_read_tokens":11297945,"cache_write_tokens":215371,"cache_write_5m_tokens":0,"cache_write_1h_tokens":215371,"usd":5.529855,"uncached_usd":47.60056,"unpriced_calls":0}
   ],
   "by_effort": [
-    {"effort":"high","api_calls":79,"tool_calls":80,"input_tokens":162,"output_tokens":76227,"thinking_tokens":24734,"cache_read_tokens":11072660,"cache_write_tokens":214031,"cache_write_5m_tokens":0,"cache_write_1h_tokens":214031,"usd":5.45197,"uncached_usd":46.671952,"unpriced_calls":0}
+    {"effort":"high","api_calls":80,"tool_calls":80,"input_tokens":164,"output_tokens":77332,"thinking_tokens":24763,"cache_read_tokens":11297945,"cache_write_tokens":215371,"cache_write_5m_tokens":0,"cache_write_1h_tokens":215371,"usd":5.529855,"uncached_usd":47.60056,"unpriced_calls":0}
   ],
   "by_tool": [
-    {"name":"Bash","calls":76,"errors":1,"no_result":1,"total_ms":680018,"median_ms":574,"max_ms":590046,"result_chars":291089},
+    {"name":"Bash","calls":76,"errors":1,"no_result":0,"total_ms":686509,"median_ms":583,"max_ms":590046,"result_chars":291639},
     {"name":"Write","calls":3,"errors":0,"no_result":0,"total_ms":2935,"median_ms":1179,"max_ms":1729,"result_chars":694},
     {"name":"ToolSearch","calls":1,"errors":0,"no_result":0,"total_ms":10,"median_ms":10,"max_ms":10,"result_chars":0}
   ],
@@ -30,7 +30,7 @@
     {"family":"mkdir","calls":3,"errors":0,"no_result":0,"total_ms":2135,"median_ms":883,"max_ms":962,"result_chars":3111},
     {"family":"rm","calls":3,"errors":0,"no_result":0,"total_ms":1582,"median_ms":545,"max_ms":748,"result_chars":3342},
     {"family":"curl","calls":2,"errors":0,"no_result":0,"total_ms":1072,"median_ms":713,"max_ms":713,"result_chars":2865},
-    {"family":"find","calls":2,"errors":0,"no_result":1,"total_ms":2892,"median_ms":2892,"max_ms":2892,"result_chars":5009},
+    {"family":"find","calls":2,"errors":0,"no_result":0,"total_ms":9383,"median_ms":6491,"max_ms":6491,"result_chars":5559},
     {"family":"timeout","calls":2,"errors":1,"no_result":0,"total_ms":591146,"median_ms":590046,"max_ms":590046,"result_chars":187},
     {"family":"cp","calls":1,"errors":0,"no_result":0,"total_ms":1287,"median_ms":1287,"max_ms":1287,"result_chars":280},
     {"family":"diff","calls":1,"errors":0,"no_result":0,"total_ms":1264,"median_ms":1264,"max_ms":1264,"result_chars":1027},
@@ -41,16 +41,17 @@
     {"cause":"session_start","events":1,"tokens":14797,"write_usd":0.118376,"excess_usd":0.115417,"reread_usd":0}
   ],
   "windows": [
-    {"index":0,"started":"2026-11-16T17:51:00.622Z","ended":"2026-11-16T18:32:43.061Z","prompts":1,"peak_context_tokens":225287,"api_calls":79,"tool_calls":80,"input_tokens":162,"output_tokens":76227,"thinking_tokens":24734,"cache_read_tokens":11072660,"cache_write_tokens":214031,"cache_write_5m_tokens":0,"cache_write_1h_tokens":214031,"usd":5.45197,"uncached_usd":46.671952,"unpriced_calls":0}
+    {"index":0,"started":"2026-11-16T17:51:00.622Z","ended":"2026-11-16T18:33:00.123Z","prompts":1,"peak_context_tokens":226627,"api_calls":80,"tool_calls":80,"input_tokens":164,"output_tokens":77332,"thinking_tokens":24763,"cache_read_tokens":11297945,"cache_write_tokens":215371,"cache_write_5m_tokens":0,"cache_write_1h_tokens":215371,"usd":5.529855,"uncached_usd":47.60056,"unpriced_calls":0}
   ],
   "compactions": [],
   "pauses": [],
   "commits": [
-    {"index":0,"change_id":"rronuyxosqyznqwktzpsuznymslyyktl","summary":"Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass","log_sha256":"84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d","log_lines":629,"log_bytes":2063492,"log_gzip_bytes":320316,"ts":"2026-11-16T18:32:43.061Z","api_calls":79,"tool_calls":80,"input_tokens":162,"output_tokens":76227,"thinking_tokens":24734,"cache_read_tokens":11072660,"cache_write_tokens":214031,"cache_write_5m_tokens":0,"cache_write_1h_tokens":214031,"usd":5.45197,"uncached_usd":46.671952,"unpriced_calls":0,"prompts":1,"agent_ms":1386551,"tool_errors":1}
+    {"index":0,"change_id":"rronuyxosqyznqwktzpsuznymslyyktl","summary":"Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass","log_sha256":"84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d","log_lines":629,"log_bytes":2063492,"log_gzip_bytes":320316,"ts":"2026-11-16T18:33:00.272Z","api_calls":80,"tool_calls":80,"input_tokens":164,"output_tokens":77332,"thinking_tokens":24763,"cache_read_tokens":11297945,"cache_write_tokens":215371,"cache_write_5m_tokens":0,"cache_write_1h_tokens":215371,"usd":5.529855,"uncached_usd":47.60056,"unpriced_calls":0,"prompts":1,"agent_ms":1403613,"tool_errors":1},
+    {"index":1,"change_id":"lxvynzvoqslluqrtmlymuxnlnkynoqxz","summary":"A /prove-java-change run checks what a commit changed, not the default test run, and a prepared example needs no edit to the packet tests","log_sha256":"ed83e0c2f2ffea60a98c3f5ed75e7dc0227a442b4fa7b69c7ee57871edbd766b","log_lines":641,"log_bytes":2127037,"log_gzip_bytes":334579,"ts":"2026-11-16T18:33:00.272Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0}
   ],
   "prompts": [
     {"index":0,"kind":"human","ts":"2026-11-16T17:51:00.232Z","end":"2026-11-16T18:13:54.826Z","line":4,"window":0,"commit":0,"chars":165,"text":"Example 289 (examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass) is a catalog entry. Do \"A catalog entry's brief\" of llm-dlc/runtime.md for it.","api_calls":77,"tool_calls":78,"input_tokens":156,"output_tokens":75090,"thinking_tokens":24734,"cache_read_tokens":10623828,"cache_write_tokens":212914,"cache_write_5m_tokens":0,"cache_write_1h_tokens":212914,"usd":5.330503,"uncached_usd":44.849392,"unpriced_calls":0,"tool_errors":1,"models":["claude-opus-5-5"],"agent_ms":1374594,"model_ms":671217,"tool_ms":680236,"busy_ms":1348486},
-    {"index":1,"kind":"task_notification","ts":"2026-11-16T18:32:31.104Z","end":"2026-11-16T18:32:43.061Z","line":613,"window":0,"commit":0,"chars":0,"text":"","api_calls":2,"tool_calls":2,"input_tokens":6,"output_tokens":1137,"thinking_tokens":0,"cache_read_tokens":448832,"cache_write_tokens":1117,"cache_write_5m_tokens":0,"cache_write_1h_tokens":1117,"usd":0.121467,"uncached_usd":1.82256,"unpriced_calls":0,"tool_errors":0,"models":["claude-opus-5-5"],"agent_ms":11957,"model_ms":10341,"tool_ms":1433,"busy_ms":11774}
+    {"index":1,"kind":"task_notification","ts":"2026-11-16T18:32:31.104Z","end":"2026-11-16T18:33:00.123Z","line":613,"window":0,"commit":0,"chars":0,"text":"","api_calls":3,"tool_calls":2,"input_tokens":8,"output_tokens":2242,"thinking_tokens":29,"cache_read_tokens":674117,"cache_write_tokens":2457,"cache_write_5m_tokens":0,"cache_write_1h_tokens":2457,"usd":0.199352,"uncached_usd":2.751168,"unpriced_calls":0,"tool_errors":0,"models":["claude-opus-5-5"],"agent_ms":29019,"model_ms":20845,"tool_ms":7924,"busy_ms":28769}
   ],
   "calls": [
     {"seq":0,"agent":null,"line":29,"start":"2026-11-16T17:51:00.622Z","end":"2026-11-16T17:51:02.312Z","window":0,"prompt":0,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"tool_use","context_tokens":26053,"input_tokens":2,"output_tokens":169,"thinking_tokens":33,"cache_read_tokens":11254,"cache_write_tokens":14797,"cache_write_5m_tokens":0,"cache_write_1h_tokens":14797,"thinking_ms":598,"tool_calls":1,"tools":["Bash"],"usd":0.124015,"uncached_usd":0.107592},
@@ -131,7 +132,8 @@
     {"seq":75,"agent":null,"line":597,"start":"2026-11-16T18:13:49.047Z","end":"2026-11-16T18:13:51.776Z","window":0,"prompt":0,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"tool_use","context_tokens":221040,"input_tokens":2,"output_tokens":188,"thinking_tokens":83,"cache_read_tokens":216424,"cache_write_tokens":4614,"cache_write_5m_tokens":0,"cache_write_1h_tokens":4614,"thinking_ms":1360,"tool_calls":1,"tools":["ToolSearch"],"usd":0.083965,"uncached_usd":0.88792},
     {"seq":76,"agent":null,"line":608,"start":"2026-11-16T18:13:51.871Z","end":"2026-11-16T18:13:54.826Z","window":0,"prompt":0,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"end_turn","context_tokens":224172,"input_tokens":4,"output_tokens":128,"thinking_tokens":66,"cache_read_tokens":221038,"cache_write_tokens":3130,"cache_write_5m_tokens":0,"cache_write_1h_tokens":3130,"thinking_ms":1207,"tool_calls":0,"tools":[],"usd":0.071824,"uncached_usd":0.899248},
     {"seq":77,"agent":null,"line":616,"start":"2026-11-16T18:32:31.206Z","end":"2026-11-16T18:32:32.968Z","window":0,"prompt":1,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"tool_use","context_tokens":224668,"input_tokens":4,"output_tokens":92,"thinking_tokens":0,"cache_read_tokens":224168,"cache_write_tokens":496,"cache_write_5m_tokens":0,"cache_write_1h_tokens":496,"thinking_ms":0,"tool_calls":1,"tools":["Bash"],"usd":0.050658,"uncached_usd":0.900512},
-    {"seq":78,"agent":null,"line":619,"start":"2026-11-16T18:32:34.482Z","end":"2026-11-16T18:32:43.061Z","window":0,"prompt":1,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"tool_use","context_tokens":225287,"input_tokens":2,"output_tokens":1045,"thinking_tokens":0,"cache_read_tokens":224664,"cache_write_tokens":621,"cache_write_5m_tokens":0,"cache_write_1h_tokens":621,"thinking_ms":0,"tool_calls":1,"tools":["Bash"],"usd":0.070809,"uncached_usd":0.922048}
+    {"seq":78,"agent":null,"line":619,"start":"2026-11-16T18:32:34.482Z","end":"2026-11-16T18:32:43.061Z","window":0,"prompt":1,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"tool_use","context_tokens":225287,"input_tokens":2,"output_tokens":1045,"thinking_tokens":0,"cache_read_tokens":224664,"cache_write_tokens":621,"cache_write_5m_tokens":0,"cache_write_1h_tokens":621,"thinking_ms":0,"tool_calls":1,"tools":["Bash"],"usd":0.070809,"uncached_usd":0.922048},
+    {"seq":79,"agent":null,"line":627,"start":"2026-11-16T18:32:49.619Z","end":"2026-11-16T18:33:00.123Z","window":0,"prompt":1,"commit":0,"model":"claude-opus-5-5","effort":"high","stop_reason":"end_turn","context_tokens":226627,"input_tokens":2,"output_tokens":1105,"thinking_tokens":29,"cache_read_tokens":225285,"cache_write_tokens":1340,"cache_write_5m_tokens":0,"cache_write_1h_tokens":1340,"thinking_ms":6278,"tool_calls":0,"tools":[],"usd":0.077885,"uncached_usd":0.928608}
   ],
   "tools": [
     {"seq":0,"agent":null,"line":30,"name":"Bash","call":0,"prompt":0,"start":"2026-11-16T17:51:02.312Z","end":"2026-11-16T17:51:03.013Z","ms":701,"status":"ok","error_kind":null,"result_chars":595,"family":"python3","label":"Print repo mode and runtime.md headings","error":null,"commit":0},
@@ -213,7 +215,7 @@
     {"seq":76,"agent":null,"line":589,"name":"Bash","call":74,"prompt":0,"start":"2026-11-16T18:13:48.507Z","end":"2026-11-16T18:13:48.958Z","ms":451,"status":"ok","error_kind":null,"result_chars":10366,"family":"jj","label":"Show router and gap-inventory diffs","error":null,"commit":0},
     {"seq":77,"agent":null,"line":599,"name":"ToolSearch","call":75,"prompt":0,"start":"2026-11-16T18:13:51.776Z","end":"2026-11-16T18:13:51.786Z","ms":10,"status":"ok","error_kind":null,"result_chars":0,"family":null,"label":"select:Monitor","error":null,"commit":0},
     {"seq":78,"agent":null,"line":616,"name":"Bash","call":77,"prompt":1,"start":"2026-11-16T18:32:32.968Z","end":"2026-11-16T18:32:34.401Z","ms":1433,"status":"ok","error_kind":null,"result_chars":887,"family":"tail","label":"Show the default test run result","error":null,"commit":0},
-    {"seq":79,"agent":null,"line":619,"name":"Bash","call":78,"prompt":1,"start":"2026-11-16T18:32:43.061Z","end":null,"ms":null,"status":"no_result","error_kind":null,"result_chars":0,"family":"find","label":"Commit example 289 setup with sync.py","error":null,"commit":0}
+    {"seq":79,"agent":null,"line":619,"name":"Bash","call":78,"prompt":1,"start":"2026-11-16T18:32:43.061Z","end":"2026-11-16T18:32:49.552Z","ms":6491,"status":"ok","error_kind":null,"result_chars":550,"family":"find","label":"Commit example 289 setup with sync.py","error":null,"commit":0}
   ],
   "cache_events": [
     {"seq":0,"agent":null,"start":"2026-11-16T17:51:00.622Z","window":0,"prompt":0,"cause":"session_start","also":[],"tokens":14797,"cache_read_tokens":11254,"previous_context_tokens":null,"gap_ms":null,"after_tools":[],"later_calls":0,"write_usd":0.118376,"excess_usd":0.115417,"reread_usd":0}

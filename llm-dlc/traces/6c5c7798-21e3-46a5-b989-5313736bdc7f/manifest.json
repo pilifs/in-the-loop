@@ -12,32 +12,37 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T18:25:36.589Z",
-  "duration_seconds": 89890,
+  "ended": "2026-11-16T18:37:15.843Z",
+  "duration_seconds": 90589,
   "stats": {
-    "turns": 47,
-    "api_calls": 309,
-    "tool_calls": 274,
+    "turns": 48,
+    "api_calls": 333,
+    "tool_calls": 300,
     "tool_errors": 5,
     "compactions": 2,
     "peak_context_tokens": 237996,
     "usage": {
-      "input_tokens": 722,
-      "output_tokens": 222516,
-      "cache_read_input_tokens": 42360313,
-      "cache_creation_input_tokens": 588331
+      "input_tokens": 774,
+      "output_tokens": 241503,
+      "cache_read_input_tokens": 46633816,
+      "cache_creation_input_tokens": 621229
     }
   },
   "tools": {
-    "Bash": 256,
+    "Bash": 280,
     "SendMessage": 5,
     "ToolSearch": 5,
     "ListAgents": 3,
     "Monitor": 2,
     "TaskStop": 2,
-    "AskUserQuestion": 1
+    "AskUserQuestion": 1,
+    "Edit": 1,
+    "Write": 1
   },
-  "files_touched": [],
+  "files_touched": [
+    "CLAUDE.md",
+    "examples/tools/validate_example.py"
+  ],
   "context_windows": [
     {
       "index": 0,
@@ -70,24 +75,24 @@
     {
       "index": 2,
       "started": "2026-11-16T09:49:36.548Z",
-      "ended": "2026-11-16T18:25:36.589Z",
-      "turns": 9,
-      "api_calls": 57,
+      "ended": "2026-11-16T18:37:15.843Z",
+      "turns": 10,
+      "api_calls": 81,
       "usage": {
-        "input_tokens": 126,
-        "output_tokens": 37273,
-        "cache_read_input_tokens": 5685397,
-        "cache_creation_input_tokens": 175142
+        "input_tokens": 178,
+        "output_tokens": 56260,
+        "cache_read_input_tokens": 9958900,
+        "cache_creation_input_tokens": 208040
       },
-      "peak_context_tokens": 161267
+      "peak_context_tokens": 195407
     }
   ],
   "log": {
-    "sha256": "1b7058dba62a0a622a10cbdd8b32e2ad6a92840537b01e99a8e76879ade8f49a",
-    "bytes": 5769084,
-    "lines": 2334,
-    "gzip_bytes": 1085775,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/1b7058dba62a0a622a10cbdd8b32e2ad6a92840537b01e99a8e76879ade8f49a.jsonl.gz"
+    "sha256": "3f9b53fde4f762a0e26a15d0969c230c5648eb8a1722c912c0717f83a38a8134",
+    "bytes": 6155837,
+    "lines": 2562,
+    "gzip_bytes": 1133668,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/3f9b53fde4f762a0e26a15d0969c230c5648eb8a1722c912c0717f83a38a8134.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -546,6 +551,14 @@
       "summary": "Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass",
       "body": "Example 289 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, set up as llm-dlc/runtime.md's catalog entry brief asks, with 288 (the packet's shape) and 285 (its HttpServletRequest carrier) as models. The release pair is Spring Security 5.6.3 -> 5.6.4, from published JARs. Each release's RegexRequestMatcher.java is the exact-fix pair's blob (9264b56f, a334afc7). Every other class the matcher reaches is byte-identical in the two closures (Spring Framework 5.3.19 and 5.3.20). The release pair also hardens StrictHttpFirewall, in a commit before the fix; that is outside the matcher and the claims. sources.lock.json records the tags, blobs, ancestry and JAR hashes against Maven Central.\n\nThere are two claims and six tasks. The security claim covers a matcher built as RegexRequestMatcher(P + \".*\", null, caseInsensitive), where P is a literal ASCII prefix. It must match every request whose documented URL (servletPath + pathInfo, then ? and the query) begins with P, line terminators included, exactly or ignoring US-ASCII case. It is expected refuted on 5.6.3, established on 5.6.4, and refuted on a mutant that leaves DOTALL out of the case-insensitive flags. Preservation: outside a URL in the namespace that holds a line terminator, both releases decide alike. The controls are an adapter, a request carrier, a driver, 36 probes and an independent oracle with a self-test.",
       "log_sha256": "1b7058dba62a0a622a10cbdd8b32e2ad6a92840537b01e99a8e76879ade8f49a"
+    },
+    {
+      "change_id": "lxvynzvoqslluqrtmlymuxnlnkynoqxz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A /prove-java-change run checks what a commit changed, not the default test run, and a prepared example needs no edit to the packet tests",
+      "body": "The setup sessions of 288 and 289 each spent about 16 minutes on the default test run before committing, and each added its example by hand to test_packets.py's list. Following a review of the live run, CLAUDE.md (Tests), lib/README.md and runtime.md's briefs now say that a session of a /prove-java-change run checks a commit by what it changed: examples/tools/validate_example.py NNN for an example's own files (the router regenerated first, since the tests read examples/index.json and a stale one failed two checks of the live run; then the form, each task's plan, the oracle's self-test, with --replay the replays on a JVM, and the four test files that read every example), and the tests of any shared code it touched. The default run comes once an example is done and before anything is published. test_packets.py now discovers each packet from its sidecar's mutant revision instead of a hand-kept list; the expected outcomes of each replay stay written by hand. Verified: validate_example.py 288 289 passes in 40 s; the discovered packets equal the old list exactly; test_packets.py 22 tests pass; test_costs.py estimate changed only the new test's row and the lint agrees.",
+      "log_sha256": "3f9b53fde4f762a0e26a15d0969c230c5648eb8a1722c912c0717f83a38a8134"
     }
   ],
   "logs": {
@@ -566,6 +579,12 @@
       "lines": 997,
       "gzip_bytes": 569797,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/39ef98b0ab6cf2bd4520f682e03e1fc7f9bbc012501a544221126c1aa5a365f3.jsonl.gz"
+    },
+    "3f9b53fde4f762a0e26a15d0969c230c5648eb8a1722c912c0717f83a38a8134": {
+      "bytes": 6155837,
+      "lines": 2562,
+      "gzip_bytes": 1133668,
+      "url": null
     },
     "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6": {
       "bytes": 5021100,
