@@ -72,7 +72,7 @@ pages instead of remembered paths.
 | [`llm-dlc/runtime.md`](llm-dlc/runtime.md) | How the skill runs: what each step stands on, the released copy on your machine, the proof loop and its conductor, contributing back, and releases | [Where things are](llm-dlc/runtime.md#where-things-are) |
 | [`examples/`](examples/README.md) | 183 changes run through a formal verifier, each with its verdict and the input or trace behind it: 159 written for small systems built to be provable, 24 from published libraries. They are also what the skill sizes your change against | [Find an example](examples/README.md#find-an-example), [Layout](examples/README.md#layout) |
 | [`lib/`](lib/README.md) | `jvmcontract`, the verifier, in Rust: a class-file reader, a bytecode interpreter and its own bounded model checker, with JBMC as a second engine. It derives contracts without a JVM and proves without `javac` | [Layout](lib/README.md#layout) |
-| [`verification/`](verification/README.md) | The pipeline: proofs never run inside a session. They are queued as jobs and run under memory and CPU caps, each with a recorded result | [Layout](verification/README.md#layout) |
+| [`verification/`](verification/README.md) | The pipeline: proofs are queued as jobs, not run inside a session, and run under memory and CPU caps, each with a recorded result | [Layout](verification/README.md#layout) |
 | [`llm-dlc/`](llm-dlc/README.md) | How the repository is built: the unattended loops, and every commit published with the redacted session that made it | [Layout](llm-dlc/README.md#layout) |
 
 ## For agents
@@ -83,8 +83,9 @@ pages instead of remembered paths.
   runtime side.
 - To find examples close to a task: `python3 examples/tools/find.py`
   ([`examples/README.md`](examples/README.md#find-an-example)).
-- Proofs and model checks are queued, never run inline
-  ([`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)).
+- Proofs and model checks are queued as jobs
+  ([`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)). `CLAUDE.md` says
+  the little that may run inline.
 - In this repository the skill runs as `/prove-java-change NNN` on an existing example, without the setup steps.
 
 ## Background
