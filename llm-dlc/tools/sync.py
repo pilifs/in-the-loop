@@ -43,7 +43,11 @@ Commands:
   sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json,
                                 traces/loops.json, traces/loops.md, README.md's index table and the decision
                                 views from the session files and decision records, which settles their
-                                conflicts; lists any other conflict and exits 1 if one is left
+                                conflicts; lists any other conflict and exits 1 if one is left. It also
+                                takes from the repository's other workspaces the logs of the merged sessions
+                                that are stored only there (adopt-logs)
+  sync.py adopt-logs            take each log a manifest names and this workspace lacks from the workspace that
+                                stores it, checked against its sha256 before it is kept
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
@@ -2105,7 +2109,7 @@ HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook
 # only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
 LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "commit": "exclusive", "push": "exclusive",
            "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
-           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive"}
+           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
 
 
 def _terminated(signum, frame) -> None:
@@ -3614,6 +3618,54 @@ def conflicted_paths() -> list[str]:
     return [m[1] for line in r.stdout.splitlines() if (m := RESOLVE_LIST_RE.match(line))] if r.returncode == 0 else []
 
 
+def workspace_roots() -> list[Path]:
+    """The folders of this repository's other jj workspaces."""
+    listed = jj("workspace", "list", "-T", 'name ++ "\\n"')
+    out = []
+    for name in (listed.stdout.split() if listed.returncode == 0 else []):
+        r = jj("workspace", "root", "--name", name)
+        if r.returncode == 0 and r.stdout.strip() and Path(r.stdout.strip()).resolve() != REPO.resolve():
+            out.append(Path(r.stdout.strip()))
+    return out
+
+
+def adopt_logs() -> list[str]:
+    """After a merge of another workspace's line: the logs its sessions' manifests name that are neither stored here
+    nor uploaded, copied from the workspace that stores them. A snapshot is named by the sha256 of its uncompressed
+    content, so each copy is checked against its name before it is kept, and one that doesn't match is left out:
+    nothing is taken on trust, and nothing already here is touched."""
+    roots, adopted = workspace_roots(), []
+    for sid, m in all_manifests().items():
+        for sha, info in (m.get("logs") or {}).items():
+            dest = log_path(sid, sha)
+            if dest.exists() or info.get("url") or info.get("withdrawn"):
+                continue
+            for root in roots:
+                src = root / dest.relative_to(REPO)
+                try:
+                    data = src.read_bytes()
+                    if hashlib.sha256(gzip.decompress(data)).hexdigest() != sha:
+                        continue
+                except (OSError, EOFError, gzip.BadGzipFile):
+                    continue
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                tmp = dest.with_name(dest.name + ".tmp")
+                tmp.write_bytes(data)
+                os.replace(tmp, dest)
+                adopted.append(f"{sid}: log {sha[:12]}, from {root}")
+                break
+    return adopted
+
+
+def cmd_adopt_logs(args: list[str]) -> int:
+    if args:
+        print("usage: sync.py adopt-logs", file=sys.stderr)
+        return 2
+    for line in adopt_logs() or ["no log to take from another workspace"]:
+        print(line)
+    return 0
+
+
 def cmd_regenerate(args: list[str]) -> int:
     """After a merge: rewrite the files generated from the per-session files (index.json,
     traces/README.md, traces/metrics.json, traces/loops.json, traces/loops.md, and README.md's
@@ -3645,6 +3697,8 @@ def cmd_regenerate(args: list[str]) -> int:
         if 0 <= start < end and all(start < at < end for at in hunks):
             atomic_write(CHANGES_README, text[:start + len(INDEX_BEGIN)] + "\n" + text[end:])  # write_index fills it
     write_index()
+    for line in adopt_logs():  # the merged sessions' logs, stored only in the workspace they ran in
+        print(f"took {line}")
     left = conflicted_paths()
     resolved = [p for p in conflicted if p not in left]
     for p in resolved:
@@ -3899,6 +3953,8 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_stamp(args)
     elif cmd == "regenerate":
         return cmd_regenerate(args)
+    elif cmd == "adopt-logs":
+        return cmd_adopt_logs(args)
     elif cmd == "langfuse":
         return cmd_langfuse(args)
     elif cmd == "perf":

@@ -67,7 +67,7 @@ def cmd_queue(rev: str, why: str | None) -> int:
     argv = [sys.executable, str(ROOT / "verification/pipeline.py"), "submit", "--title", f"{TITLE}{change}",
             "--description", description, "--kind", "other", "--capability", CAPABILITY, "--revision", commit,
             "--link", f"commit:{change}", "--expected", "exits 0: every test of the default run passes",
-            "--cpus", "6", "--memory", "6G", "--duration", "25m", "--timeout", "1h", "--requires", "cargo",
+            "--cpus", "6", "--memory", "4G", "--duration", "25m", "--timeout", "1h", "--requires", "cargo",
             "--estimate-notes", "the default run took about 16 minutes inline in 2026-11 (11 Rust, 5 Python), longer "
                                 "beside proof jobs; its cargo target directory is kept warm between runs",
             "--step", "default tests", "nice -n 10 python3 verification/default_tests.py step"]

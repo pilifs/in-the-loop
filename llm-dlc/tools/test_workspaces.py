@@ -125,6 +125,33 @@ class Workspaces(unittest.TestCase):
             errors, _ = sync.check_trailers(sync.all_manifests())
         self.assertEqual(errors, [f"change {change[:12]}: session no-such-session has no manifest"])
 
+    def test_regenerating_after_a_merge_takes_the_merged_sessions_logs_from_their_workspace_checked(self):
+        import gzip
+        import hashlib
+        good, bad = b'{"made": "up"}\n', b'{"made": "up, but other"}\n'
+        sha_good, sha_bad = hashlib.sha256(good).hexdigest(), hashlib.sha256(bad).hexdigest()
+        with self.at(self.a):
+            self.add_session("session-a", "a" * 64, "Made-up A")
+            self.line_a = self.traced("A's change", "session-a", "a" * 64)
+        b = self.base_dir / "b"
+        with self.at(self.a):
+            self.run_jj("workspace", "add", "--name", "b", "-r", self.base, str(b))
+        with self.at(b):
+            (b / ".gitignore").write_text("llm-dlc/traces/*/logs/\n")  # as the repository's: a log is stored, not committed
+            self.add_session("session-b", sha_good, "Made-up B")
+            self.add_session("session-c", sha_bad, "Made-up C")
+            for sid, sha, data in (("session-b", sha_good, good), ("session-c", sha_bad, good)):  # c's copy is not its log
+                sync.log_path(sid, sha).parent.mkdir(parents=True, exist_ok=True)
+                sync.log_path(sid, sha).write_bytes(gzip.compress(data))
+            self.line_b = self.traced("B's change", "session-b", sha_good)
+        with self.at(self.a):
+            self.run_jj("new", self.line_a, self.line_b)
+            code, out, _ = self.regenerate()
+            self.assertEqual(code, 0)
+            self.assertIn(f"took session-b: log {sha_good[:12]}", out)
+            self.assertEqual(gzip.decompress(sync.log_path("session-b", sha_good).read_bytes()), good)
+            self.assertFalse(sync.log_path("session-c", sha_bad).exists(), "a copy that isn't the log its name says is left")
+
     def test_after_the_merge_both_lines_are_checked(self):
         self.two_lines()
         with self.at(self.a):

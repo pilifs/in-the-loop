@@ -525,7 +525,7 @@ runs from a private copy of its scripts, so a merge can't pull them from under i
 - The user asks for a merge at any time, and the watcher queues it: `watch.py merge add NAME`. At this question the
   watcher merges each queued workspace into the loop's line, in the loop's checkout: a merge commit of the line's
   tip and the workspace's (`jj new @- NAME@-`), its conflicts resolved, `python3 llm-dlc/tools/sync.py regenerate`
-  in a development checkout, what came in checked (`examples/tools/validate_example.py NNN` for the examples it
+  in a development checkout (which also takes the merged sessions' logs from the workspace that stores them), what came in checked (`examples/tools/validate_example.py NNN` for the examples it
   brings, the tests of the shared code it brings), the merge committed, the default run queued at it as a job
   (`verification/default_tests.py queue --rev @- --why "the merge of NAME"`, committed in the side workspace, so
   nothing waits on it), then `watch.py merge done NAME`. Leave nothing of a merge uncommitted while the
