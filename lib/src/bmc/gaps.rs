@@ -36,7 +36,8 @@
 //! runs them on a String whatever class the call names (`Object.equals`, `CharSequence.length`), as the JVM
 //! dispatches them; the scan, which sees the class named and not the receiver, reports such a call as the gap it
 //! may be. Nor are `Objects.requireNonNull` and `Pattern.compile` of a constant regular expression of the plain
-//! form ([`super::models_jdk_reference_static`], [`crate::jdk_facts::plain_regex`]), nor the calls of the
+//! form or of the checker's own syntax ([`super::models_jdk_reference_static`], [`crate::jdk_facts::plain_regex`],
+//! [`super::regex::compiles_constant`]), nor the calls of the
 //! `HashMap` model (`lib/models/java/util/HashMap.java`: its two constructors, `put`, `get`, `containsKey`,
 //! `size`, `isEmpty`), each with an evidence record of `values::OPERATIONS`. Nor are the
 //! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples (`List.of`'s fixed forms,
@@ -572,6 +573,10 @@ pub fn unmodelled_instance_call(cp: &ClassPath, owner: &str, name: &str, descrip
 pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
     let Ok(d) = MethodDescriptor::parse(descriptor) else { return JdkCall::Refused };
     let floating = |t: &Type| matches!(t, Type::Float | Type::Double);
+    // A model that makes an array (`Arrays.copyOf`) is one before an array result is refused.
+    if super::bytes::models_static(owner, name, descriptor) {
+        return JdkCall::Exact;
+    }
     if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {
         return JdkCall::Refused;
     }
@@ -1098,10 +1103,24 @@ impl<'a> Walker<'a> {
                     self.make(&class);
                 }
                 Insn::InvokeDynamic(index) => {
-                    let (_, _, text) = cf.pool.invoke_dynamic(index).map_err(|e| Error::new(e.to_string()))?;
+                    let (bootstrap, _, text) = cf.pool.invoke_dynamic(index).map_err(|e| Error::new(e.to_string()))?;
                     let d = MethodDescriptor::parse(text).map_err(|e| Error::new(e.to_string()))?;
+                    // A lambda or a method reference makes an object, as the engine makes it; its method runs
+                    // where the interface's is called on the object. The walk that lists what a method reaches
+                    // follows an application's there. The one that decides an initializer does not: making the
+                    // object runs nothing, and a method it names for a class path that has another library (a
+                    // logging adapter's, one for each library it looks for) is never called on this one.
+                    let lambda = cf.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap))).filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory" && b.method.member.name == "metafactory");
+                    if let Some(lambda) = lambda {
+                        if let (false, Some(crate::classfile::BootstrapArg::MethodHandle(handle))) = (self.deciding, lambda.args.get(1)) {
+                            if self.cp.is_application(&handle.member.owner) {
+                                self.enqueue(&handle.member.owner, &handle.member.name, &handle.member.descriptor);
+                            }
+                        }
+                        continue;
+                    }
                     if d.ret != Type::Object("java/lang/String".into()) {
-                        self.refuse("invokedynamic other than string concatenation", format!("invokedynamic {text}"), &site);
+                        self.refuse("invokedynamic other than a lambda and string concatenation", format!("invokedynamic {text}"), &site);
                         continue;
                     }
                     for class in converted_arguments(&d) {
@@ -1120,8 +1139,9 @@ impl<'a> Walker<'a> {
                         // A model the engine runs although it is only for JBMC's class path (`List.of`), as it does.
                         self.initialise(&c.name, &site);
                         self.enqueue(&c.name, &member.name, &member.descriptor);
-                    } else if (member.owner.as_str(), member.name.as_str()) == ("java/util/regex/Pattern", "compile") && super::models_jdk_reference_static(&member.owner, &member.name, &member.descriptor) && !loaded.is_some_and(|units| crate::jdk_facts::plain_regex(&units)) {
-                        // The engine compiles a constant regex of the plain form alone ([`crate::jdk_facts::plain_regex`]):
+                    } else if (member.owner.as_str(), member.name.as_str()) == ("java/util/regex/Pattern", "compile") && super::models_jdk_reference_static(&member.owner, &member.name, &member.descriptor) && !loaded.is_some_and(|units| crate::jdk_facts::plain_regex(&units) || super::regex::compiles_constant(&units)) {
+                        // The engine compiles a constant regex of the plain form ([`crate::jdk_facts::plain_regex`]) or of
+                        // its own syntax with a class, a group or a count ([`super::regex::compiles_constant`]) alone:
                         // any other, or one this walk doesn't see loaded just before the call, may be the gap it meets.
                         self.gap(GapKind::JdkStaticMethod, &member.owner, &member.name, &member.descriptor, site);
                     } else {
@@ -1200,7 +1220,8 @@ mod tests {
         assert_eq!(jdk_static_call("java/util/Arrays", "fill", "([II)V"), JdkCall::Gap(GapKind::JdkStaticMethod));
         assert_eq!(jdk_static_call("java/lang/Math", "addExact", "(II)I"), JdkCall::Exact);
         assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Refused);
-        assert_eq!(jdk_static_call("java/util/Arrays", "copyOf", "([II)[I"), JdkCall::Refused);
+        assert_eq!(jdk_static_call("java/util/Arrays", "copyOfRange", "([III)[I"), JdkCall::Refused);
+        assert_eq!(jdk_static_call("java/util/Arrays", "copyOf", "([II)[I"), JdkCall::Exact);
         let cp = ClassPath::new().with_default_jdk();
         assert_eq!(jdk_instance_call(&cp, "java/util/Random", "nextInt", "(I)I"), JdkCall::Gap(GapKind::JdkPrimitiveMethod));
         assert_eq!(jdk_instance_call(&cp, "java/util/BitSet", "get", "(I)Z"), JdkCall::Gap(GapKind::JdkPrimitiveMethod));

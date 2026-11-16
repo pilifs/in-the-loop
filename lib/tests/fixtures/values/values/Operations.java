@@ -1,5 +1,7 @@
 package values;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -138,6 +140,38 @@ public final class Operations {
     /** Whether every code unit, as the int the stream gives, is below the limit. */
     static boolean chars(int n, int a, int b, int c, int limit) {
         return of(n, a, b, c).chars().allMatch(u -> u >= 0 && u < limit);
+    }
+
+    /** The UTF-8 encoding: how many bytes for a negative i, else the ith. */
+    static int getBytes(int n, int a, int b, int c, int i) {
+        byte[] bytes = of(n, a, b, c).getBytes(StandardCharsets.UTF_8);
+        return i < 0 ? bytes.length : bytes[i];
+    }
+
+    static int getBytesByNull(int n, int a, int b, int c) {
+        return of(n, a, b, c).getBytes((Charset) null).length;
+    }
+
+    /** A constant regular expression of classes, a group of alternatives and counts, against the whole String. */
+    static boolean matches(int n, int a, int b, int c) {
+        return of(n, a, b, c).matches("[a-c]x{1,2}|(\\d|\\$)[^0-9]?");
+    }
+
+    static boolean matchesByNull(int n, int a, int b, int c) {
+        return of(n, a, b, c).matches(null);
+    }
+
+    /** A String's toString is the String itself: 2. */
+    static int toString(int n, int a, int b, int c) {
+        String s = of(n, a, b, c);
+        return made(s, s.toString(), s);
+    }
+
+    /** toString called through Object runs the String's, as the JVM dispatches it. */
+    static int toStringAsObject(int n, int a, int b, int c) {
+        String s = of(n, a, b, c);
+        Object o = s;
+        return made(s, o.toString(), s);
     }
 
     /** The compiler's concatenation of two Strings and a constant, null as "null". */
@@ -482,5 +516,10 @@ public final class Operations {
 
     static boolean patternsAreFresh() {
         return Pattern.compile("/$") != Pattern.compile("/$");
+    }
+
+    /** A constant with a class and a count compiles to a Pattern that says whether it matches all of a String. */
+    static boolean patternMatches(int n, int a, int b, int c) {
+        return Pattern.compile("\\A[./A-Za-z0-9]{2,3}").matcher(of(n, a, b, c)).matches();
     }
 }

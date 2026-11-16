@@ -49,7 +49,7 @@
 //! |---|---|
 //! | `nop`, `aconst_null`, `iconst`, `lconst`, `bipush`/`sipush`, `ldc` of an int or a long, `iload`/`lload`/`aload`, `istore`/`lstore`/`astore`, `pop`, `pop2`, `dup`, `dup_x1`, `dup_x2`, `dup2`, `dup2_x1`, `dup2_x2`, `swap`, `iinc` | implemented |
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
-//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
+//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again), and a path that needs another iteration goes on from an invariant of the loop where the engine finds one ([`loops`], [`Options::invariants`]); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
 //! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
@@ -70,10 +70,10 @@
 //! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
-//! | `invokevirtual` of the String methods of [`strings`] and of `split(String, int)` ([`regex`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` of a String with a unit outside ASCII, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
+//! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` of a String with a unit outside ASCII, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
 //! | `invokestatic` of `Arrays.stream(Object[])` and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -93,7 +93,9 @@
 pub mod bitwuzla;
 pub mod bits;
 pub mod gaps;
-pub mod regex;
+pub mod bytes;
+mod loops;
+mod regex;
 pub mod runtime;
 pub mod sat;
 pub mod strings;
@@ -135,6 +137,9 @@ pub struct Options {
     /// and 6 lines take over a minute, and with 512 here 10 lines do. Example 286's decision, whose paths multiply
     /// by the Strings it makes, takes 1.7 times as long at 5 code units as with 512 (51 s for 30 s, unoptimized).
     pub merge_heaps_after: u64,
+    /// Whether a loop that goes round more often than `unwind` is covered by an invariant the engine looks for
+    /// ([`loops`]). Off, a path that needs another iteration ends the run with no verdict, whatever the loop.
+    pub invariants: bool,
     /// What a gap does to the path that reaches it ([`gaps::GapMode`]): ends it (strict) or is assumed.
     pub gaps: GapMode,
     /// Under advised, the contracts that close gaps (`--contracts`, [`crate::gap_contracts`]): the engine applies
@@ -170,7 +175,7 @@ pub struct Summary {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None }
     }
 }
 
@@ -205,6 +210,9 @@ impl Parameters {
 /// explores every path once; on a path that violates the property it asks the solver for an input in the first
 /// stage that has one, and goes on to the next path only while no path has given one in the first stage.
 pub const STAGES: &[(i64, i64)] = &[(0, 20), (-100_000, 100_000)];
+
+/// The most questions to the solver in making a witness the least input ([`Engine::least`]).
+const LEAST_QUESTIONS: usize = 2048;
 
 /// The engine's answer about one harness.
 #[derive(Debug, Clone)]
@@ -258,6 +266,9 @@ pub struct Outcome {
     /// What the models the run used take for granted about the JVM it stands for ([`strings::LOCALE_ASSUMPTION`],
     /// [`runtime::CLASS_PATH_ASSUMPTION`]): a verdict holds under them, and a statement lists them.
     pub assumed: Vec<String>,
+    /// The loops that go round more often than the bound and that an invariant covers ([`loops`]), each as
+    /// `p.C.m at pc N`: a proof holds of all their iterations, and a witness past one is run before it is believed.
+    pub loops: Vec<String>,
     /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
     pub transcript: Option<std::path::PathBuf>,
 }
@@ -317,6 +328,7 @@ impl Outcome {
             encoding_seconds: self.encoding,
             witness_seconds: self.witness,
             assumed: self.assumed.clone(),
+            loops: self.loops.clone(),
         }
     }
 
@@ -373,6 +385,21 @@ pub struct Stats {
     /// What the models the run used take for granted ([`Outcome::assumed`]); absent when they take nothing.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub assumed: Vec<String>,
+    /// The loops beyond the bound that an invariant covers ([`Outcome::loops`]); absent when there is none.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub loops: Vec<String>,
+}
+
+impl Stats {
+    /// The words of a verdict for the loops an invariant covers: `; 2 loops beyond the bound covered by invariants
+    /// the checker found and proved (p.C.m at pc 4, p.C.n at pc 9)`, or nothing.
+    pub fn covered_loops(&self) -> String {
+        match self.loops.len() {
+            0 => String::new(),
+            1 => format!("; 1 loop beyond the bound covered by an invariant the checker found and proved ({})", self.loops[0]),
+            n => format!("; {n} loops beyond the bound covered by invariants the checker found and proved ({})", self.loops.join(", ")),
+        }
+    }
 }
 
 /// Why a parameter type is outside the fragment, if it is. A `String` is in it under a bound
@@ -531,6 +558,11 @@ struct Obj {
     made: u64,
     /// Whether the object was there when the method a summary is proved of was entered ([`Engine::in_summary`]).
     given: bool,
+    /// Of an array of numbers past a summarized loop ([`loops`]): its cells hold any values, and `array.cells` is
+    /// what they were once, which nothing reads. A read of a cell is then any value, a write changes nothing, and
+    /// what would read the cells in bulk does not take it for an array ([`Obj::as_array`]) and is refused. A table
+    /// of a thousand words a loop writes at an index it computes is this and no fresh word for each cell.
+    unknown: bool,
 }
 
 /// An object `invokedynamic` made through `LambdaMetafactory.metafactory`: the interface it implements, the name
@@ -556,12 +588,17 @@ static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0)
 
 impl Obj {
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, unknown: false }
     }
 
-    /// The array the object is: not a String's content.
+    /// The array the object is, where its cells are known: not a String's content.
     fn as_array(&self) -> Option<&Array> {
-        self.array.as_ref().filter(|_| self.class.starts_with('['))
+        self.array.as_ref().filter(|_| self.class.starts_with('[') && !self.unknown)
+    }
+
+    /// Whether the object is an array, its cells known or not ([`Obj::unknown`]).
+    fn is_array(&self) -> bool {
+        self.array.is_some() && self.class.starts_with('[')
     }
 
     /// A String's content: its length and code units.
@@ -650,11 +687,14 @@ struct Frame {
     /// a new frame enters every loop afresh, and a back edge enters afresh each loop whose head is in its body
     /// (see [`Engine::jump`]).
     back_edges: BTreeMap<u32, u32>,
+    /// The loops, by head, that the frame is in past the bound, in the state an invariant gives ([`loops`]): a
+    /// back edge to one ends the path, and they are forgotten as the counts are.
+    summarized: std::collections::BTreeSet<u32>,
 }
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new(), back_edges: BTreeMap::new() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
     }
 
     fn pc(&self) -> u32 {
@@ -707,6 +747,11 @@ struct Path {
     /// The static fields of application classes the path has written, by declaring class and name; one it has not
     /// is its `ConstantValue`, or zero or null.
     statics: BTreeMap<(String, String), Val>,
+    /// The loop an iteration of which the path runs to find the loop's invariant ([`loops`]).
+    probing: Option<loops::Probe>,
+    /// Whether the path is past a loop an invariant covers: its state then stands for more than the states a run
+    /// reaches, and a computed index into a large array is not followed ([`loops`]).
+    loose: bool,
 }
 
 /// Where a class is in its initialization (JVMS §5.5).
@@ -733,6 +778,8 @@ enum Literal {
     Loader,
     /// The `java.util.logging.Logger` of a name ([`runtime`]).
     Logger(Vec<u16>),
+    /// A charset of `java.nio.charset.StandardCharsets`, by its field's name ([`bytes`]).
+    Charset(&'static str),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -823,7 +870,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
-        && a.frames.iter().zip(&b.frames).all(|(f, g)| f.initializes == g.initializes && f.entered == g.entered)
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
         && a.statics.len() == b.statics.len()
         && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
@@ -1029,6 +1076,11 @@ enum End {
     Gap,
     /// The path reached a join point and waits there for the paths that arrive after it.
     Parked,
+    /// The path is back at the head (a pc) of a loop an invariant covers ([`loops`]), in a state the head's state
+    /// stands for: with the path, where it is that loop's invariant that is still being found.
+    Back(u32, Option<Box<Path>>),
+    /// The path left the loop an iteration of which is run to find its invariant ([`loops::Probe`]).
+    Left,
 }
 
 /// Why the engine stops without a verdict.
@@ -1089,6 +1141,8 @@ struct Engine<'a> {
     merges: u64,
     merge_after: u64,
     merge_heaps_after: u64,
+    /// Whether a loop beyond the bound is given an invariant ([`Options::invariants`]).
+    invariants: bool,
     unwind: u32,
     deadline: Instant,
     /// Set at the first violation: the paths and the solver's work (conflicts, [`Blaster::work`]) at which the search
@@ -1105,7 +1159,14 @@ struct Engine<'a> {
     arrays: Vec<(u32, Type, Bits, Vec<Bits>)>,
     /// What the models the run used take for granted beyond the bytecode (the default locale, under
     /// [`strings::LOCALE_ASSUMPTION`]), for the statement.
-    assumed: std::collections::BTreeSet<&'static str>,
+    assumed: std::collections::BTreeSet<String>,
+    /// The loops an invariant covered past the bound ([`loops`]), for the outcome.
+    loops: std::collections::BTreeSet<String>,
+    /// While an iteration is run to find a loop's invariant: the arrays read or written at an index that is no
+    /// constant, by allocation, each with the index ([`loops`]).
+    indexed: Option<Vec<(u64, Bits)>>,
+    /// The same loops by class, method and head, for [`Engine::summarize_at_entry`].
+    known_loops: HashMap<(String, String, u32), loops::Known>,
     /// Each `String[]` parameter's own array, by slot: its length, and for each cell whether it is null, and the
     /// length and code units of the String it holds otherwise.
     string_arrays: Vec<(u32, Bits, Vec<(Lit, Bits, Vec<Bits>)>)>,
@@ -1192,6 +1253,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         merges: 0,
         merge_after: options.merge_after,
         merge_heaps_after: options.merge_heaps_after,
+        invariants: options.invariants,
         unwind: options.unwind,
         deadline: started + options.timeout,
         witness_budget: None,
@@ -1201,6 +1263,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         arrays: Vec::new(),
         string_arrays: Vec::new(),
         assumed: Default::default(),
+        loops: Default::default(),
+        known_loops: Default::default(),
+        indexed: None,
         choices: Vec::new(),
         max_array_length: options.max_array_length,
         stage_lits: vec![None; STAGES.len()],
@@ -1248,6 +1313,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })).into_iter().chain(gaps::contract_records(&engine.applied, &engine.contracts, jdk.as_deref())).collect(),
         gap_mode: engine.gap_mode,
         assumed: engine.assumed.iter().map(|a| a.to_string()).collect(),
+        loops: engine.loops.iter().cloned().collect(),
         transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
@@ -1371,7 +1437,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -1399,7 +1465,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
                 break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
             }
             match engine.run(path) {
-                Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) => {}
+                Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) | Ok(End::Back(..)) | Ok(End::Left) => {}
                 Ok(End::Violation(cond)) => {
                     let (stage, input) = match engine.staged_input(&cond) {
                         Ok(found) => found,
@@ -1662,6 +1728,9 @@ impl<'a> Engine<'a> {
     fn run(&mut self, mut path: Path) -> Result<End, Stop> {
         let mut steps: u64 = 0;
         loop {
+            if path.probing.as_ref().is_some_and(|probe| probe.left(&path)) {
+                return Ok(End::Left);
+            }
             if !path.resumed && self.paths > self.merge_after {
                 let frame = path.frames.last().expect("a frame");
                 let eager = self.eager();
@@ -1674,13 +1743,17 @@ impl<'a> Engine<'a> {
                 }
             }
             path.resumed = false;
+            if self.summarize_at_entry(&mut path)? {
+                continue;
+            }
             steps += 1;
             if steps % 256 == 0 && Instant::now() > self.deadline {
                 return Err(Stop::Budget("the engine did not finish within the time limit".into()));
             }
-            let stepped = self.step(&mut path);
-            if let Some(end) = stepped? {
-                return Ok(end);
+            match self.step(&mut path)? {
+                Some(End::Back(head, _)) if path.probing.as_ref().is_some_and(|probe| probe.is(path.frames.len(), head)) => return Ok(End::Back(head, Some(Box::new(path)))),
+                Some(end) => return Ok(end),
+                None => {}
             }
         }
     }
@@ -1815,6 +1888,7 @@ impl<'a> Engine<'a> {
             let l = self.stage_literal(i);
             assumptions.push(l);
             if self.solve(&assumptions)? {
+                self.least(&mut assumptions)?;
                 return Ok((i, self.input()));
             }
             assumptions.pop();
@@ -1822,7 +1896,83 @@ impl<'a> Engine<'a> {
         if !self.solve(cond)? {
             return Err(Stop::Budget("the solver changed its mind about a violating path".into()));
         }
+        let mut assumptions = cond.to_vec();
+        self.least(&mut assumptions)?;
         Ok((STAGES.len(), self.input()))
+    }
+
+    /// In a run that covered a loop by an invariant ([`loops`]), makes the solver's model of `assumptions` the
+    /// least violating input there is under them: the scalar parameters, then each array's length and, of a
+    /// String, its code units, each in turn the least it can be with the ones before it as they are (a number not
+    /// negative where it can be, a String the first in dictionary order). A witness of such a run is run on the
+    /// method before it is believed, every iteration of the loop with it, and what a program takes its counts
+    /// from (a cost, a length, the digits of one) is fewest where its input is least. One question to the solver
+    /// for each bit that is set, up to [`LEAST_QUESTIONS`] and for at most half the time the run has left when the
+    /// violation is found: a descent that runs out of either leaves the bits it has not asked about as the model
+    /// has them, and the violation stands (before, the time limit passing in the descent lost it: example 287's
+    /// byte guard on 6.3.7, whose violating path is found after four minutes and asks some 300 questions of a
+    /// formula of millions of variables, 0.2 s each). The model the solver is left with is the input.
+    fn least(&mut self, assumptions: &mut Vec<Lit>) -> Result<(), Stop> {
+        if self.loops.is_empty() {
+            return Ok(());
+        }
+        let mut numbers: Vec<Bits> = self.params.iter().map(|(_, _, bits)| bits.clone()).collect();
+        let arrays: Vec<(Type, Bits, Vec<Bits>)> = self.arrays.iter().map(|(_, element, length, cells)| (element.clone(), length.clone(), cells.clone())).collect();
+        let (mut asked, mut holds) = (0, true);
+        let mut next = arrays.into_iter();
+        // Half the time the run has left is the descent's: the violation is found already, and stands without it.
+        let until = {
+            let now = Instant::now();
+            now + self.deadline.saturating_duration_since(now) / 2
+        };
+        loop {
+            for bits in std::mem::take(&mut numbers) {
+                // From the sign or the highest bit down; a bit the model has clear stays clear.
+                let mut model: Vec<bool> = bits.iter().map(|&bit| self.b.value(bit)).collect();
+                for k in (0..bits.len()).rev() {
+                    let bit = bits[k];
+                    if bit == TRUE || bit == FALSE {
+                        continue;
+                    }
+                    if !model[k] {
+                        assumptions.push(-bit);
+                        continue;
+                    }
+                    if asked == LEAST_QUESTIONS {
+                        assumptions.push(bit);
+                        continue;
+                    }
+                    asked += 1;
+                    assumptions.push(-bit);
+                    let answer = if self.witness_budget.is_some() { Some(self.solve(assumptions)?) } else { self.solve_until(assumptions, until, None)? };
+                    holds = answer == Some(true);
+                    if holds {
+                        model = bits.iter().map(|&bit| self.b.value(bit)).collect();
+                    } else {
+                        assumptions.pop();
+                        assumptions.push(bit);
+                    }
+                    if answer.is_none() {
+                        // Out of its time: every bit left stays as the last model has it.
+                        asked = LEAST_QUESTIONS;
+                    }
+                }
+                if !holds {
+                    // The model the bits before were read from is the solver's again.
+                    holds = self.solve(assumptions)?;
+                    if !holds {
+                        return Err(Stop::Budget("the solver changed its mind about a violating path".into()));
+                    }
+                }
+            }
+            let Some((element, length, cells)) = next.next() else { return Ok(()) };
+            numbers.push(length.clone());
+            if element == Type::Char {
+                // Its units up to the length the model gives it, which is the least by now.
+                let n = usize::try_from(self.b.eval(&length)).unwrap_or(0).min(cells.len());
+                numbers.extend(cells[..n].iter().cloned());
+            }
+        }
     }
 
     /// The parameters' values in the solver's last model: an array's elements are its cells up to its length.
@@ -1939,16 +2089,21 @@ impl<'a> Engine<'a> {
                 self.b.set_work_limit(Some(conflicts - spent));
             }
             self.b.set_timeout((until - now).as_secs_f32());
-            match self.b.solve_with(assumptions) {
+            let answered = self.b.solve_with(assumptions);
+            match answered {
                 None => return Ok(None),
                 Some(false) => return Ok(false).map(Some),
                 // A model that gives one function of equal operands two values is ruled out by a lemma first, so a
                 // proof that two versions compute one remainder differently builds no divider.
-                Some(true) => match (self.b.inconsistent_pair(), self.b.wrong_operation()) {
-                    (Some((i, j, swapped)), _) => self.b.add_congruence(i, j, swapped),
-                    (None, None) => return Ok(Some(true)),
-                    (None, Some(i)) => self.b.refine_operation(i),
-                },
+                // Only of the operations the assumptions depend on: any other decides nothing of them.
+                Some(true) => {
+                    let among = self.b.operations_under(assumptions);
+                    match (self.b.inconsistent_pair(&among), self.b.wrong_operation(&among)) {
+                        (Some((i, j, swapped)), _) => self.b.add_congruence(i, j, swapped),
+                        (None, None) => return Ok(Some(true)),
+                        (None, Some(i)) => self.b.refine_operation(i),
+                    }
+                }
             }
         }
     }
@@ -2009,6 +2164,7 @@ impl<'a> Engine<'a> {
                         Literal::Class(_) => "java/lang/Class",
                         Literal::Loader => "java/lang/ClassLoader",
                         Literal::Logger(_) => "java/util/logging/Logger",
+                        Literal::Charset(_) => bytes::CHARSET,
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -2087,6 +2243,7 @@ impl<'a> Engine<'a> {
     }
 
     fn absorb(&mut self, into: &mut Path, other: &Path) {
+        into.loose |= other.loose;
         let prefix = into.cond.iter().zip(&other.cond).take_while(|(x, y)| x == y).count();
         let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
         let rest_into: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
@@ -2137,9 +2294,15 @@ impl<'a> Engine<'a> {
                 }
                 o.same = same;
             }
+            o.unknown |= q.unknown;
+            let unknown = o.unknown;
             if let (Some(x), Some(y)) = (&mut o.array, &q.array) {
                 if x.length != y.length {
                     x.length = self.b.ite_bits(takes_into, &x.length, &y.length);
+                }
+                // Cells that hold any values on either path hold any on both.
+                if unknown {
+                    continue;
                 }
                 // A text's cells past the other's are its own where it is taken, and nothing's elsewhere.
                 let blank = self.b.constant(0, 16);
@@ -2400,8 +2563,14 @@ impl<'a> Engine<'a> {
                 let array = path.objects[o].array.clone().expect("an array");
                 check_kind(*kind, &array.element)?;
                 let width = cell_width(&array.element);
-                let mut value = array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width));
+                self.index_used(path, o, &index);
+                // Past a summarized loop a computed index into a large array is not followed ([`loops`]).
+                let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && self.b.constant_value(&index).is_none());
+                let mut value = if loose { self.b.fresh(width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
                 for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
+                    if loose {
+                        break;
+                    }
                     let here = self.b.constant(i as i64, 32);
                     let is = self.b.eq(&index, &here);
                     value = self.b.ite_bits(is, cell, &value);
@@ -2435,8 +2604,19 @@ impl<'a> Engine<'a> {
                 }
                 let stored = self.b.trunc(&value, width);
                 let length = array.length.clone();
+                self.index_used(path, o, &index);
                 let in_bounds = self.b.ult(&index, &length);
                 self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
+                    // Past a summarized loop a write at a computed index into a large array may be any cell's:
+                    // the cells hold any values from here on ([`loops`]).
+                    let cells = path.objects[o].array.as_ref().expect("an array").cells.len();
+                    if path.loose && cells > loops::LOOSE_CELLS && engine.b.constant_value(&index).is_none() {
+                        path.objects[o].unknown = true;
+                    }
+                    if path.objects[o].unknown {
+                        engine.advance(path);
+                        return;
+                    }
                     let cells = &mut path.objects[o].array.as_mut().expect("an array").cells;
                     for (i, cell) in cells.iter_mut().enumerate() {
                         let here = engine.b.constant(i as i64, 32);
@@ -2791,10 +2971,16 @@ impl<'a> Engine<'a> {
         if to <= frame.at {
             let from = frame.pc();
             frame.back_edges.retain(|&head, _| head <= target || head > from);
+            frame.summarized.retain(|&head| head <= target || head > from);
+            // Back at the head of a loop an invariant covers: the head's state stands for this one.
+            if frame.summarized.contains(&target) {
+                return Ok(Some(End::Back(target, None)));
+            }
             let count = frame.back_edges.entry(target).or_insert(0);
             *count += 1;
             if *count > self.unwind {
-                return Ok(Some(End::Unwound(format!("{}.{} at pc {target}", frame.class.name.replace('/', "."), frame.method))));
+                // Past the bound: an invariant of the further iterations, or the loop is left unwound ([`loops`]).
+                return self.summarize(path, target, from);
             }
         }
         path.frames.last_mut().expect("a frame").at = to;
@@ -2843,7 +3029,7 @@ impl<'a> Engine<'a> {
     fn pop_array(&mut self, path: &mut Path) -> Result<usize, Step> {
         let r = self.pop_ref(path).map_err(Err)?;
         let o = self.null_check(path, r)?.expect("checked");
-        if path.objects[o].as_array().is_none() {
+        if !path.objects[o].is_array() {
             return Err(unsupported("an array operation on an object that is not an array"));
         }
         Ok(o)
@@ -3179,6 +3365,13 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                // The JDK's UTF-8 charset is one object ([`bytes`]).
+                if (declaring.as_str(), member.name.as_str()) == (bytes::STANDARD_CHARSETS, "UTF_8") {
+                    let charset = self.literal(path, Literal::Charset("UTF_8"), bytes::CHARSET);
+                    self.push(path, Val::R(Some(charset)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if let Some(step) = self.initialise(path, &declaring) {
                     return step;
                 }
@@ -3358,10 +3551,22 @@ impl<'a> Engine<'a> {
         if let Some((class, method, entry)) = crate::models::entry(STRING, name, descriptor) {
             return Some(self.call(path, class, method, entry, vec![Val::R(Some(o))]));
         }
+        // `toString()` of a String is the String itself (its Javadoc), whatever the engine holds of its content.
+        if name == "toString" {
+            self.push(path, Val::R(Some(o)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         let limited = |obj: &Obj| obj.limit.clone().map(|why| unsupported(why));
         let Some(s) = path.objects[o].content().cloned() else { return limited(&path.objects[o]) };
         if strings::models(name, descriptor) {
             return Some(self.string_method_on_content(path, o, &s, name, descriptor, args));
+        }
+        if name == "matches" && regex::models_string(name, descriptor) {
+            return self.string_matches(path, &s, args);
+        }
+        if bytes::models_string(name, descriptor) {
+            return self.string_bytes(path, &s, args);
         }
         if regex::models_string(name, descriptor) {
             return Some(self.string_split(path, o, &s, args));
@@ -3766,7 +3971,7 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) => self.alloc(path, class),
         };
         path.literals.insert(literal, o);
         o
@@ -4022,8 +4227,8 @@ impl<'a> Engine<'a> {
         };
         let special = special;
         // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
-        if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].as_array().is_some() {
-            let copy = Obj { array: path.objects[o].array.clone(), ..Obj::new(&path.objects[o].class) };
+        if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].is_array() {
+            let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, ..Obj::new(&path.objects[o].class) };
             path.objects.push(copy);
             let r = path.objects.len() - 1;
             self.push(path, Val::R(Some(r)));
@@ -4082,7 +4287,9 @@ impl<'a> Engine<'a> {
         // a floating-point or array result, refused. Under assume, a constructor does nothing, a void method
         // nothing, and a method that returns an object returns a new one; one that returns a primitive has
         // no approximation, and is refused there too.
-        match if contracted { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
+        // A builder's call that its model did not take (the builder's content is not the engine's) is the call
+        // it is to a checker with no such model.
+        match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
             JdkCall::Exact => {}
             JdkCall::Gap(kind) => {
                 // What the call does to a builder is the contract's or the assumption's to say: the engine holds
@@ -4333,8 +4540,14 @@ impl<'a> Engine<'a> {
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         // The JVM's own objects ([`runtime`]): a class by name, a logger. Where the arguments are not ones it
         // answers for, the call is the gap it was.
-        if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) {
-            let modelled = if runtime::models_static(owner, name, descriptor) { self.runtime_static(path, owner, name, &args) } else { self.regex_static(path, owner, name, &args) };
+        if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) || bytes::models_static(owner, name, descriptor) {
+            let modelled = if runtime::models_static(owner, name, descriptor) {
+                self.runtime_static(path, owner, name, &args)
+            } else if bytes::models_static(owner, name, descriptor) {
+                self.bytes_static(path, owner, name, descriptor, &args)
+            } else {
+                self.regex_static(path, owner, name, &args)
+            };
             return match modelled {
                 Some(step) => step,
                 None => {
@@ -4530,7 +4743,7 @@ impl<'a> Engine<'a> {
 /// Whether the engine models the String method `owner.name(descriptor)` on a String whose content it holds
 /// ([`Engine::string_method`]); the engine and the gap scan share it.
 pub fn models_string_method(owner: &str, name: &str, descriptor: &str) -> bool {
-    owner == STRING && (matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("hashCode", "()I") | ("startsWith", "(Ljava/lang/String;)Z")) || strings::models(name, descriptor) || regex::models_string(name, descriptor) || crate::models::entry(STRING, name, descriptor).is_some())
+    owner == STRING && (matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("hashCode", "()I") | ("startsWith", "(Ljava/lang/String;)Z") | ("toString", "()Ljava/lang/String;")) || strings::models(name, descriptor) || regex::models_string(name, descriptor) || bytes::models_string(name, descriptor) || crate::models::entry(STRING, name, descriptor).is_some())
 }
 
 /// Whether [`Engine::call_jdk_static`] models `owner.name`: the arms of its match, for [`gaps::scan`], which counts
@@ -4556,6 +4769,7 @@ pub fn models_jdk_reference_static(owner: &str, name: &str, descriptor: &str) ->
         ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;" | "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;") | ("java/util/regex/Pattern", "compile", "(Ljava/lang/String;)Ljava/util/regex/Pattern;")
     ) || runtime::models_static(owner, name, descriptor)
         || regex::models_static(owner, name, descriptor)
+        || bytes::models_static(owner, name, descriptor)
         || crate::models::entry(owner, name, descriptor).is_some()
 }
 
@@ -5112,9 +5326,16 @@ mod tests {
             code.load(Kind::Int, 0);
             code.if_icmp(Cond::Lt, fail);
         });
-        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, invariants: false, ..Options::default() }).unwrap();
         assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
         assert!(out.problem.unwrap().contains("not fully unwound"));
+
+        // With an invariant looked for, the loop's further iterations are covered: `i` is at least 4 from then
+        // on, and where the loop is left it is not below `n`.
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!(out.loops, ["Check.check at pc 3"]);
+        assert!(out.assumed.is_empty(), "i grows: the loop ends: {:?}", out.assumed);
     }
 
     /// `for (i = 0; i < outer; i++) for (j = 0; j < inner(i); j++) s++;`, with `i` in slot 1, `j` in slot 2 and `s`
@@ -5183,7 +5404,7 @@ mod tests {
 
         // The count still bounds each entry: an inner loop of 5 iterations is beyond --unwind 4.
         let cp = harness("()V", |code, _, _| nested_loops(code, |code| code.iconst(2), |code| code.iconst(5)));
-        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, invariants: false, ..Options::default() }).unwrap();
         assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
         assert!(out.problem.unwrap().contains("not fully unwound"));
     }
@@ -5193,7 +5414,7 @@ mod tests {
         // The inner loop starts afresh on each of the outer loop's iterations, but the outer loop's 5 are beyond
         // --unwind 4, so the path still ends with no verdict.
         let cp = harness("()V", |code, _, _| nested_loops(code, |code| code.iconst(5), |code| code.iconst(1)));
-        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, invariants: false, ..Options::default() }).unwrap();
         assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
         assert!(out.problem.unwrap().contains("not fully unwound"));
 
@@ -5217,7 +5438,7 @@ mod tests {
             code.goto(b); // back to b, after a's head
             code.bind(out);
         });
-        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, invariants: false, ..Options::default() }).unwrap();
         assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
         assert!(out.problem.unwrap().contains("not fully unwound"));
     }

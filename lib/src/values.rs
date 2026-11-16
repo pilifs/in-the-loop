@@ -162,8 +162,9 @@ const LIST: &str = "java/util/List";
 /// runs a modelled method on a String whatever class the call names (`Object.equals`, `CharSequence.length`), as
 /// the JVM dispatches it: a map's keys are compared so. Model 3 added `endsWith`, `indexOf`, `substring`,
 /// `toLowerCase` on ASCII, `split` at one character and `chars` (for example 286's claims, which state a wildcard
-/// match with them), each with its record.
-pub const STRING_MODEL: &str = "jvmcontract String model 3: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; regex's split), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+/// match with them), each with its record. Model 4 added `getBytes(UTF_8)`, `matches` of a constant regular
+/// expression and `toString` (for example 287's claims, over a password's bytes and a stored hash's shape).
+pub const STRING_MODEL: &str = "jvmcontract String model 4: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -185,7 +186,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII, split at one character and chars), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap".into(),
             "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -378,7 +379,7 @@ pub fn map_model() -> ModelEvidence {
 
 /// The JDK static calls over references that the own checker and the interpreter reproduce
 /// (`bmc::models_jdk_reference_static`): their identity, to be bumped whenever either changes.
-pub const CALLS_MODEL: &str = "jvmcontract reference calls 1: lib/src/bmc (Engine::call_jdk_static: Objects.requireNonNull, Pattern.compile), lib/src/jdk_facts.rs (plain_regex), lib/src/interp (natives)";
+pub const CALLS_MODEL: &str = "jvmcontract reference calls 2: lib/src/bmc (Engine::call_jdk_static: Objects.requireNonNull, Pattern.compile; regex.rs: a constant with a class, a group or a count), lib/src/jdk_facts.rs (plain_regex), lib/src/interp (natives)";
 
 /// The JDK those calls were sampled on (`lib/tests/values.rs`).
 pub const CALLS_MODEL_JDK: &str = "25.0.5";
@@ -391,8 +392,8 @@ pub fn calls_model() -> ModelEvidence {
         level: EvidenceLevel::Tested,
         leaves_out: vec![
             "Objects.requireNonNull's forms with a message supplier, and every other method of java.util.Objects: each is a named gap".into(),
-            "what a Pattern does: the one compile returns is an object with no content, and each of its methods (matcher, split, pattern) is the JDK call it names, a gap".into(),
-            "Pattern.compile of a regular expression that is not a constant of the plain form (jdk_facts::plain_regex), and Pattern.compile(String, int): named gaps".into(),
+            "what a Pattern of the plain form does: the one compile returns is an object with no content, and each of its methods (matcher, split, pattern) is the JDK call it names, a gap. The own checker alone compiles a constant with a class, a group, alternatives or a counted quantifier (bmc/regex.rs) to a Pattern whose matcher(..).matches() it decides; the interpreter has none of it, and a witness past one is replayed on a JVM".into(),
+            "Pattern.compile of a regular expression that is not a constant of the plain form (jdk_facts::plain_regex) or of the own checker's syntax (bmc/regex.rs), and Pattern.compile(String, int): named gaps".into(),
         ],
     }
 }
@@ -781,7 +782,8 @@ impl OperationEvidence {
 const NPE: &str = "java.lang.NullPointerException";
 const SIOOBE: &str = "java.lang.StringIndexOutOfBoundsException";
 const STRINGS_SOURCE: &str = "the own checker: bmc::strings, formulas over the String's content; the interpreter: interp::natives (string_method); JBMC: its own String model, not this one";
-const REGEX_SOURCE: &str = "the own checker: bmc::regex (Engine::string_split); the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
+const REGEX_SOURCE: &str = "the own checker: bmc::regex (Engine::string_split, Engine::string_matches); the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
+const BYTES_SOURCE: &str = "the own checker: bmc::bytes (Engine::string_bytes), a formula over the String's content; the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
 const STREAM_SOURCE: &str = "the stream models' bytecode (lib/models/java/util/stream/CharsStream.java, IntStream.java), run by the own checker alone; the interpreter: none, a witness is run on a JVM; JBMC: not given the models";
 const STRING_SOURCE: &str = "the own checker: bmc::Engine::string_method on the String's content; the interpreter: interp::JStr; JBMC: its own String model, not this one";
 const MAP_SOURCE: &str = "the HashMap model's bytecode (lib/models/java/util/HashMap.java), run by the own checker and JBMC; the interpreter: its HashMap natives";
@@ -983,6 +985,39 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["chars()Ljava/util/stream/IntStream;"],
     },
     OperationEvidence {
+        operation: "java.lang.String.getBytes(Ljava/nio/charset/Charset;)[B",
+        family: Family::String,
+        source: BYTES_SOURCE,
+        admits: "a String with content and StandardCharsets.UTF_8: a new byte array of the String's UTF-8 encoding, one byte for a unit below 0x80, two below 0x800, four for a high surrogate followed by a low one, the one byte '?' for a surrogate in no such pair, three for any other unit",
+        throws: &[NPE],
+        leaves_out: &["any other charset: the JDK call it names, a gap", "getBytes(), getBytes(String), and a String with no content"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["getBytes", "getBytesByNull"],
+        calls: &["getBytes(Ljava/nio/charset/Charset;)[B"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.matches(Ljava/lang/String;)Z",
+        family: Family::String,
+        source: REGEX_SOURCE,
+        admits: "a String with content and a constant regular expression of the checker's syntax (bmc/regex.rs: characters, escapes, classes and their negations and ranges, the shorthands of ASCII, groups, alternatives, the quantifiers ? * + and {n}, {n,}, {n,m}, the anchors \\A, ^ and \\z): whether it matches the whole String",
+        throws: &[NPE],
+        leaves_out: &["any other regex (a reluctant or possessive quantifier, a back reference, look-around, $, a flag, a Unicode class) and one that is not a constant: refused or the JDK call it names, never matched", "an input with a surrogate unit where the expression has something a surrogate could match (a dot, a negated class, a class with one in a range): the JDK call it names, a gap, since the JDK matches by code point", "what a group captured"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["matches", "matchesByNull"],
+        calls: &["matches(Ljava/lang/String;)Z"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.toString()Ljava/lang/String;",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "any String, by whatever class the call names (Object, CharSequence): the String itself",
+        throws: &[NPE],
+        leaves_out: &["toString of any other object: the JDK call it names, a gap"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["toString", "toStringAsObject"],
+        calls: &["toString()Ljava/lang/String;"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.hashCode()I",
         family: Family::String,
         source: STRING_SOURCE,
@@ -1172,11 +1207,11 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         operation: "java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;",
         family: Family::Call,
         source: CALLS_SOURCE,
-        admits: "null, or a constant regular expression of the plain form (jdk_facts::plain_regex: characters that stand for themselves, each followed by at most one of + * ?, ^ first and $ last), which the JDK compiles whatever it is: a new Pattern each time",
+        admits: "null, or a constant regular expression of the plain form (jdk_facts::plain_regex: characters that stand for themselves, each followed by at most one of + * ?, ^ first and $ last), which the JDK compiles whatever it is: a new Pattern each time; in the own checker also a constant of its regex syntax with a class, a group, alternatives or a counted quantifier (bmc/regex.rs)",
         throws: &[NPE],
-        leaves_out: &["every other regular expression, and one that is not a constant: a named gap, since whether it compiles is the JDK's parser's to say", "the Pattern's content: its methods are the JDK calls they name, each a gap"],
+        leaves_out: &["every other regular expression, and one that is not a constant: a named gap, since whether it compiles is the JDK's parser's to say", "the Pattern's content, but for matcher(..).matches() on one the own checker compiled from its regex syntax: its methods are the JDK calls they name, each a gap"],
         level: EvidenceLevel::Tested,
-        sampled_by: &["patternCompile", "patternsAreFresh"],
+        sampled_by: &["patternCompile", "patternsAreFresh", "patternMatches"],
         calls: &["compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"],
     },
 ];
@@ -1208,7 +1243,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 18);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 21);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

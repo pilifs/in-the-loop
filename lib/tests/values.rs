@@ -884,6 +884,46 @@ const OPERATION_CASES: &[Case] = &[
     refusable(OPS, "chars", &[2, C, 0x7F, 0, 0x80]),
     refusable(OPS, "chars", &[0, 0, 0, 0, 0]),
     refusable(OPS, "chars", &[-1, 0, 0, 0, 0]),
+    refusable(OPS, "getBytes", &[3, C, 0x7F, 0, -1]),
+    refusable(OPS, "getBytes", &[3, C, 0x7F, 0, 2]),
+    refusable(OPS, "getBytes", &[3, 0x80, 0x7FF, 0x800, -1]),
+    refusable(OPS, "getBytes", &[3, 0x80, 0x7FF, 0x800, 0]),
+    refusable(OPS, "getBytes", &[3, 0x80, 0x7FF, 0x800, 3]),
+    refusable(OPS, "getBytes", &[3, 0x80, 0x7FF, 0x800, 4]),
+    refusable(OPS, "getBytes", &[3, 0x80, 0x7FF, 0x800, 6]),
+    refusable(OPS, "getBytes", &[3, 0xFFFF, 0xD7FF, 0xE000, -1]),
+    refusable(OPS, "getBytes", &[3, 0xFFFF, 0xD7FF, 0xE000, 8]),
+    refusable(OPS, "getBytes", &[2, SMILE.0, SMILE.1, 0, -1]),
+    refusable(OPS, "getBytes", &[2, SMILE.0, SMILE.1, 0, 0]),
+    refusable(OPS, "getBytes", &[2, SMILE.0, SMILE.1, 0, 3]),
+    refusable(OPS, "getBytes", &[3, SMILE.0, SMILE.1, SMILE.0, -1]),
+    refusable(OPS, "getBytes", &[3, SMILE.0, SMILE.1, SMILE.0, 4]),
+    refusable(OPS, "getBytes", &[3, HIGH, C, LOW, -1]),
+    refusable(OPS, "getBytes", &[3, HIGH, C, LOW, 0]),
+    refusable(OPS, "getBytes", &[3, HIGH, C, LOW, 2]),
+    refusable(OPS, "getBytes", &[2, LOW, HIGH, 0, -1]),
+    refusable(OPS, "getBytes", &[2, HIGH, HIGH, 0, 1]),
+    refusable(OPS, "getBytes", &[0, 0, 0, 0, -1]),
+    refusable(OPS, "getBytes", &[-1, 0, 0, 0, -1]),
+    refusable(OPS, "getBytesByNull", &[1, C, 0, 0]),
+    refusable(OPS, "matches", &[2, 0x61, 0x78, 0]),
+    refusable(OPS, "matches", &[3, 0x63, 0x78, 0x78]),
+    refusable(OPS, "matches", &[1, 0x61, 0, 0]),
+    refusable(OPS, "matches", &[3, 0x61, 0x78, 0x79]),
+    refusable(OPS, "matches", &[2, 0x64, 0x78, 0]),
+    refusable(OPS, "matches", &[1, 0x37, 0, 0]),
+    refusable(OPS, "matches", &[2, 0x37, 0x7A, 0]),
+    refusable(OPS, "matches", &[2, 0x37, 0x38, 0]),
+    refusable(OPS, "matches", &[1, 0x24, 0, 0]),
+    refusable(OPS, "matches", &[1, 0x663, 0, 0]),
+    refusable(OPS, "matches", &[0, 0, 0, 0]),
+    refusable(OPS, "matches", &[-1, 0, 0, 0]),
+    refusable(OPS, "matchesByNull", &[1, C, 0, 0]),
+    case(OPS, "toString", &[2, C, C, 0]),
+    case(OPS, "toString", &[0, 0, 0, 0]),
+    case(OPS, "toString", &[-1, 0, 0, 0]),
+    case(OPS, "toStringAsObject", &[3, C, HIGH, 0]),
+    case(OPS, "toStringAsObject", &[-1, 0, 0, 0]),
     case(OPS, "hashCode", &[0, 0, 0, 0]),
     case(OPS, "hashCode", &[1, C, 0, 0]),
     case(OPS, "hashCode", &[2, C, 0x61, 0]),
@@ -995,6 +1035,14 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "patternCompile", &[2]),
     case(OPS, "patternCompile", &[-1]),
     case(OPS, "patternsAreFresh", &[]),
+    refusable(OPS, "patternMatches", &[2, 0x2E, 0x2F, 0]),
+    refusable(OPS, "patternMatches", &[3, 0x61, 0x5A, 0x39]),
+    refusable(OPS, "patternMatches", &[1, 0x61, 0, 0]),
+    refusable(OPS, "patternMatches", &[3, 0x61, 0x2D, 0x62]),
+    refusable(OPS, "patternMatches", &[2, 0x61, HIGH, 0]),
+    refusable(OPS, "patternMatches", &[3, SMILE.0, SMILE.1, 0x61]),
+    refusable(OPS, "patternMatches", &[0, 0, 0, 0]),
+    refusable(OPS, "patternMatches", &[-1, 0, 0, 0]),
 ];
 
 /// Exceptions a case may throw, each after the ones of them that are its subclasses, so that a generated check
@@ -1128,7 +1176,6 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("replace", "jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String;"),
     ("trim", "jdk-reference-method:java.lang.String.trim()Ljava/lang/String;"),
     ("compareTo", "jdk-primitive-method:java.lang.String.compareTo(Ljava/lang/String;)I"),
-    ("toStringAsObject", "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;"),
     ("subSequence", "jdk-reference-method:java.lang.CharSequence.subSequence(II)Ljava/lang/CharSequence;"),
     ("valueOf", "jdk-static-method:java.lang.String.valueOf(I)Ljava/lang/String;"),
     ("contains", "jdk-primitive-method:java.util.List.contains(Ljava/lang/Object;)Z"),
@@ -1148,9 +1195,9 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("mapKeyOfIdentity", "jdk-primitive-method:java.lang.Object.hashCode()I"),
     ("linkedMap", "jdk-constructor:java.util.LinkedHashMap.<init>()V"),
     ("mapOfAMap", "jdk-constructor:java.util.HashMap.<init>(Ljava/util/Map;)V"),
-    ("patternWithAClass", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
+    ("patternOutsideTheSyntax", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
     ("patternOfAnInput", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
-    ("patternMatcher", "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;"),
+    ("patternsPattern", "jdk-reference-method:java.util.regex.Pattern.pattern()Ljava/lang/String;"),
     ("requireNonNullElse", "jdk-static-method:java.util.Objects.requireNonNullElse(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
 ];
 
@@ -1158,8 +1205,8 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
 /// a verdict. Every claim of [`OUTSIDE`] holds on the JVM, so a verdict could only rest on semantics no record
 /// vouches for: a String method other than the ones modelled on content (`values::OPERATIONS`), a list method or form the list models
 /// implement (`contains`, `equals`, `hashCode`, `addAll`, `List.of(E...)` …) that no record samples, a map the
-/// `HashMap` model is not or a method it has not, a key hashed by its identity, a regular expression that is not a
-/// plain constant, a `Pattern`'s own methods. Each run, merging
+/// `HashMap` model is not or a method it has not, a key hashed by its identity, a regular expression that is neither a
+/// plain constant nor one of the checker's syntax, a `Pattern`'s methods but `matcher`. Each run, merging
 /// from the start and never, has no verdict and names the operation's gap (or its refusal), and the gap scan reports
 /// the same gap and walks none of the models' unsampled methods. Before, the own checker ran every method the list
 /// models implement, so `contains`, `indexOf`, `equals`, `hashCode`, `addAll`, `sort` and the array form were proved.
@@ -1245,10 +1292,11 @@ fn swept_lists() -> Option<&'static Path> {
     .as_deref()
 }
 
-/// One check of the sweep, timed, with a time limit of its own.
+/// One check of the sweep, timed, with a time limit of its own. Its loops are unwound, never covered by an invariant
+/// (`tests/loops.rs` has those): the sweep is of the encodings' cost at a bound, and of the named unwinding limit.
 fn swept(cp: &ClassPath, class: &str, method: &str, parameters: Parameters, merge_after: u64, unwind: u32) -> (Outcome, f64) {
     let start = std::time::Instant::now();
-    let out = bmc::check(cp, class, method, &Options { parameters, merge_after, unwind, timeout: std::time::Duration::from_secs(60), ..Options::default() }).unwrap();
+    let out = bmc::check(cp, class, method, &Options { parameters, merge_after, unwind, invariants: false, timeout: std::time::Duration::from_secs(60), ..Options::default() }).unwrap();
     (out, start.elapsed().as_secs_f64())
 }
 

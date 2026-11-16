@@ -23,18 +23,25 @@
 //!   (a final sigma), which the engine has not: there the call is the gap it was.
 //!
 //! A `StringBuilder` is an object with a content of its own, which its methods change: `StringBuilder()`,
-//! `StringBuilder(String)` (`NullPointerException` for null), `length()`, `indexOf(String)`, `indexOf(String,
-//! int)`, `substring(int, int)` (the literal `""` for an empty range, else a new String), `delete(int, int)` (the
+//! `StringBuilder(String)` (`NullPointerException` for null), `length()`, `charAt(int)`
+//! (`StringIndexOutOfBoundsException` outside the length), `append(String)` (the four units `null` for null),
+//! `append(char)`, `append(int)` (the int's decimal digits, [`super::bytes`]; each the builder itself returned, its
+//! content at most [`MOST_BUILDER_CONTENT`] units, past which the run ends with no verdict), `indexOf(String)`,
+//! `indexOf(String, int)`, `substring(int, int)` (the literal `""` for an empty range, else a new String), `delete(int, int)` (the
 //! end held to the length; `StringIndexOutOfBoundsException` for a start below zero or beyond the end; the builder
 //! itself returned) and `toString()` (the literal `""` when empty, else a new String). Any other method of a
 //! builder is the JDK call it was, a gap: after it the engine holds the builder's content no longer, whatever the
-//! gap's assumption or contract says the call did, and a later modelled call on that builder is refused by name.
-//! A contract given for a modelled call stands in place of the model ([`gaps::modelled_jdk_call`]).
+//! gap's assumption or contract says the call did, and a later modelled call on that builder that reads its content
+//! out is refused by name; an `append` or a `charAt` on it is the JDK call again, a gap as it was before the engine
+//! modelled it. A contract given for a modelled call stands in place of the model ([`gaps::modelled_jdk_call`]).
 
 use super::*;
 
 /// The builder's class.
 pub const BUILDER: &str = "java/lang/StringBuilder";
+
+/// The most code units a builder the engine holds the content of has a cell for.
+pub const MOST_BUILDER_CONTENT: usize = 1024;
 
 /// What a run that lowered a String's case took for granted about the JVM's default locale.
 pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered";
@@ -52,7 +59,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
     owner == BUILDER
         && matches!(
             (name, descriptor),
-            ("<init>", "()V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
+            ("<init>", "()V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
 
@@ -315,7 +322,7 @@ impl Engine<'_> {
                 }
                 let beyond_ascii = self.any(&outside);
                 let changed = self.any(&changes);
-                self.assumed.insert(LOCALE_ASSUMPTION);
+                self.assumed.insert(LOCALE_ASSUMPTION.to_string());
                 let (owner, name, descriptor) = (STRING, name.to_string(), descriptor.to_string());
                 let length = s.length.clone();
                 let original = s.clone();
@@ -342,7 +349,7 @@ impl Engine<'_> {
         if path.objects[o].class != BUILDER || !models_builder(BUILDER, name, descriptor) {
             return None;
         }
-        if !matches!(name, "length" | "indexOf" | "substring" | "toString") {
+        if !matches!(name, "length" | "charAt" | "indexOf" | "substring" | "toString") {
             if let Err(stop) = self.keeps(path, Some(o), "changes a StringBuilder made before it was called") {
                 return Some(Err(stop));
             }
@@ -362,10 +369,62 @@ impl Engine<'_> {
             return Some(Ok(None));
         }
         // A builder made or changed by a call the module doesn't model (a gap, or a contract's call) has no content.
-        let Some(s) = path.objects[o].array.clone() else { return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model"))) };
+        // An `append` or a `charAt` there is the JDK call it is, a gap as any call of a builder with no model; a
+        // method that reads the content out (`toString`, `length`, …) is refused by name, as it would give the
+        // content the engine no longer holds.
+        let Some(s) = path.objects[o].array.clone() else {
+            if matches!(name, "append" | "charAt") {
+                return None;
+            }
+            return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model")));
+        };
         Some(match (name, args) {
             ("length", []) => {
                 self.push(path, Val::I(s.length));
+                self.advance(path);
+                Ok(None)
+            }
+            ("charAt", [Val::I(index)]) => {
+                // An int compared unsigned: a negative index is out of bounds too (`Preconditions.checkIndex`).
+                let inside = self.b.ult(index, &s.length);
+                let unit = self.unit_at(&s, index);
+                let value = self.b.zext(&unit, 32);
+                self.branch_throw(path, -inside, "java/lang/StringIndexOutOfBoundsException", Val::I(value))
+            }
+            ("append", [appended]) => {
+                // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.
+                let t = match appended {
+                    Val::R(None) => Array { element: Type::Char, length: self.b.constant(4, 32), cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() },
+                    Val::R(other) => match self.string_argument(path, *other, (BUILDER, name, descriptor)) {
+                        Ok(t) => t,
+                        Err(step) => return Some(step),
+                    },
+                    Val::I(value) if descriptor.starts_with("(C)") => Array { element: Type::Char, length: self.b.constant(1, 32), cells: vec![self.b.trunc(value, 16)], refs: Vec::new() },
+                    Val::I(value) => {
+                        let (length, cells) = self.decimal(value);
+                        Array { element: Type::Char, length, cells, refs: Vec::new() }
+                    }
+                    _ => return Some(unsupported(format!("StringBuilder.{name}{descriptor} with arguments {args:?}"))),
+                };
+                if s.cells.len() + t.cells.len() > MOST_BUILDER_CONTENT {
+                    return Some(unsupported(format!("a StringBuilder of more than {MOST_BUILDER_CONTENT} code units")));
+                }
+                // The unit at `i`: the builder's own below its length, the appended one at `i - length` from there.
+                let length = self.b.add(&s.length, &t.length);
+                let cells = (0..s.cells.len() + t.cells.len())
+                    .map(|i| {
+                        let here = self.b.constant(i as i64, 32);
+                        let own = self.b.slt(&here, &s.length);
+                        let at = self.b.sub(&here, &s.length);
+                        let other = self.unit_at(&t, &at);
+                        match s.cells.get(i) {
+                            Some(cell) => self.b.ite_bits(own, cell, &other),
+                            None => other,
+                        }
+                    })
+                    .collect();
+                path.objects[o].array = Some(Array { element: Type::Char, length, cells, refs: Vec::new() });
+                self.push(path, Val::R(Some(o)));
                 self.advance(path);
                 Ok(None)
             }

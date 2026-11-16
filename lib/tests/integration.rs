@@ -2687,7 +2687,7 @@ fn jbmc_applies_the_contracts_for_its_gaps() {
 
     // A reference result is the object the contract names: the receiver, passed through the contract's method.
     let builder = block("jdk-constructor:java.lang.StringBuilder.<init>()V", "  call: java.lang.StringBuilder.<init>()\n  modifies: nothing\n");
-    let append = block("jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(int i) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
+    let append = block("jdk-reference-method:java.lang.StringBuilder.append(J)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(long i) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
     let o = prove("chained", "chained", "result", &[], &[&builder, &append]);
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     assert_eq!(contracts(&o).len(), 2, "{}", o.output);
@@ -2869,8 +2869,9 @@ public class Contracted {
     public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; }
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
     public static int filled(byte[] out) { new java.util.Random(1).nextBytes(out); return out.length; }
-    public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append(n) == b; }
-    public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
+    public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append((long) n) == b; }
+    public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append((CharSequence) "n") == b && n == n; }
+    public static boolean spelled(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
     public static int initialised(int n) { return Table.first() + n; }
     public static int bits(int n) { return 32 - Integer.numberOfTrailingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
@@ -2966,15 +2967,23 @@ fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted
         // --max-trust: a contract the JVM cannot test is trusted. With none allowed it is refused, and its gap goes
         // back to the agent; with one allowed the verdict rests on it.
         let builder = block("jdk-constructor:java.lang.StringBuilder.<init>()V", "  call: java.lang.StringBuilder.<init>()\n  modifies: nothing\n");
-        let named = block("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(java.lang.String s) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
+        let named = block("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(java.lang.CharSequence s) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
         let o = prove("named-no-trust", "named", "result", &[], &[&builder, &named], Some(0), engine);
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
         let a = o.advice.as_ref().expect("advice");
         assert_eq!(a.gaps.len(), 1, "{}", o.output);
-        assert!(a.gaps[0].id.starts_with("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)"), "{}", o.output);
+        assert!(a.gaps[0].id.starts_with("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/CharSequence;)"), "{}", o.output);
         let why = a.gaps[0].refused_contract.as_deref().unwrap();
-        assert!(why.starts_with("it is trusted: nothing has checked it, since parameter s is a java.lang.String, which the test makes no values of; the proof would rest on 1 trusted contract, and --max-trust 0 allows none"), "{why}");
+        assert!(why.starts_with("it is trusted: nothing has checked it, since parameter s is a java.lang.CharSequence, which the test makes no values of; the proof would rest on 1 trusted contract, and --max-trust 0 allows none"), "{why}");
         assert!(o.search.is_none(), "nothing is solved: {}", o.output);
+        // A trusted contract for a call the own checker models (`append(String)`) is counted the same, though no
+        // scan lists the call as a gap: refused, the call on a builder a contract made is the gap it was.
+        let spelled = block("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(java.lang.String s) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
+        let o = prove("spelled-no-trust", "spelled", "result", &[], &[&builder, &spelled], Some(0), engine);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains("java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;") && o.output.contains("it is trusted: nothing has checked it"), "{}", o.output);
+        let o = prove("spelled-one-trusted", "spelled", "result", &[], &[&builder, &spelled], Some(1), engine);
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         let o = prove("named-one-trusted", "named", "result", &[], &[&builder, &named], Some(1), engine);
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(o.output.contains("1 tested, 1 trusted (--gaps advised)"), "{}", o.output);
@@ -3044,7 +3053,7 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
     let random = block("jdk-constructor:java.util.Random.<init>(J)V", "  call: java.util.Random.<init>(long seed)\n  modifies: nothing\n");
     let fill = block("jdk-void-method:java.util.Random.nextBytes([B)V", "  call: java.util.Random.nextBytes(byte[] bytes)\n  modifies: this, bytes\n");
     let builder = block("jdk-constructor:java.lang.StringBuilder.<init>()V", "  call: java.lang.StringBuilder.<init>()\n  modifies: nothing\n");
-    let append = |result: &str| block("jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;", &format!("  call: java.lang.StringBuilder.append(int i) -> java.lang.StringBuilder\n  assert: {result}\n  modifies: this\n"));
+    let append = |result: &str| block("jdk-reference-method:java.lang.StringBuilder.append(J)Ljava/lang/StringBuilder;", &format!("  call: java.lang.StringBuilder.append(long i) -> java.lang.StringBuilder\n  assert: {result}\n  modifies: this\n"));
     let table = block("class-initializer:fixtures.Contracted$Table.<clinit>()V", "  call: fixtures.Contracted$Table.<clinit>()\n  modifies: nothing\n");
     let prove = |name: &str, method: &str, assert: &str, throws: &[&str], blocks: &[&str], engine: Engine| {
         let file = dir.join(format!("{name}.contracts"));
@@ -3113,11 +3122,11 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
 
         // A contract the JVM cannot test, a parameter being a String it makes no values of, is trusted, and says
         // why; the verdict counts both levels.
-        let named = block("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(java.lang.String s) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
+        let named = block("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(java.lang.CharSequence s) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
         let o = prove("named", "named", "result", &[], &[&builder, &named], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(o.output.contains(", relying on 2 contracts for gaps of the tool's own checker, 1 tested, 1 trusted (--gaps advised) ("), "{}", o.output);
-        assert!(o.output.contains("(written by the test; trusted: no JVM test, since parameter s is a java.lang.String, which the test makes no values of)"), "{}", o.output);
+        assert!(o.output.contains("(written by the test; trusted: no JVM test, since parameter s is a java.lang.CharSequence, which the test makes no values of)"), "{}", o.output);
         assert!(o.output.contains("(written by the test; tested on 1 input on JDK "), "a constructor of no arguments has one input: {}", o.output);
 
         // Outside a contract's `assume:` the gap is open, and refused.
@@ -3163,7 +3172,7 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         let o = prove("chained-fresh", "chained", "result", &[], &[&builder, &append("\\fresh(result)")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
         let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
-        assert!(refused.starts_with("a JVM refutes it: on i=0 the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
+        assert!(refused.starts_with("a JVM refutes it: on i=0L the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
 
         // An initializer that throws nothing has run.
         let o = prove("table", "initialised", "result == n + 7", &[], &[&table], engine).unwrap();

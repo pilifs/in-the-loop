@@ -99,6 +99,9 @@ struct Lazy {
     /// The remainder; empty for a product.
     r: Bits,
     refined: bool,
+    /// Whether the facts were given to the solver: at once, or, once clauses are deferred ([`Blaster::defer`]),
+    /// when a call first depends on the operation.
+    facts: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -154,17 +157,48 @@ fn value_in(model: &Model, bits: &Bits) -> Option<i64> {
 /// A model of the circuits, kept by the path it satisfies: the inputs' values as the solver chose them, and the
 /// values of the gates evaluated so far. A gate made after the model was taken is evaluated from its inputs when
 /// it is asked for, and an input made after it is free, so the model stays a model of every clause.
+///
+/// The values are kept in pages of [`PAGE_WORDS`] words that a copy shares until one of the two writes there: the
+/// models of the paths that split off one path are the same but for what each evaluated since, and a run of some
+/// million gates keeps some hundred models.
 #[derive(Clone, Default)]
 pub struct Model {
-    known: Vec<u64>,
-    value: Vec<u64>,
+    /// For each page, which of its variables have a value (the first [`PAGE_WORDS`] words) and the values.
+    pages: Vec<Option<std::rc::Rc<[u64; 2 * PAGE_WORDS]>>>,
+    /// What an input the model does not fix is when it is first asked for: false, or, where this is not zero, a
+    /// bit drawn from it and the input's number ([`Model::salted`]).
+    salt: u64,
 }
 
+/// The words of a [`Model`]'s page: 4096 variables.
+const PAGE_WORDS: usize = 64;
+
 impl Model {
+    /// The model with the inputs it does not fix yet drawn by `salt`, not false: as much a model, since an input
+    /// it does not fix is one nothing it was asked about depends on, and one of other values of what a loop reads
+    /// from tables and computes, where every such input false is one state among many ([`super::loops`]).
+    pub fn salted(&self, salt: u64) -> Model {
+        Model { salt: salt | 1, ..self.clone() }
+    }
+
+    /// The value of an input the model does not fix.
+    fn free(&self, v: usize) -> bool {
+        if self.salt == 0 {
+            return false;
+        }
+        // splitmix64 of the input's number and the salt.
+        let mut z = (v as u64).wrapping_add(self.salt).wrapping_add(0x9E37_79B9_7F4A_7C15);
+        z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+        z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+        (z ^ (z >> 31)) & 1 == 1
+    }
+
     fn get(&self, v: usize) -> Option<bool> {
         let (word, bit) = (v / 64, v % 64);
-        if self.known.get(word).is_some_and(|w| w >> bit & 1 == 1) {
-            Some(self.value[word] >> bit & 1 == 1)
+        let page = self.pages.get(word / PAGE_WORDS)?.as_ref()?;
+        let word = word % PAGE_WORDS;
+        if page[word] >> bit & 1 == 1 {
+            Some(page[PAGE_WORDS + word] >> bit & 1 == 1)
         } else {
             None
         }
@@ -172,15 +206,16 @@ impl Model {
 
     fn set(&mut self, v: usize, b: bool) {
         let (word, bit) = (v / 64, v % 64);
-        if word >= self.known.len() {
-            self.known.resize(word + 1, 0);
-            self.value.resize(word + 1, 0);
+        let (page, word) = (word / PAGE_WORDS, word % PAGE_WORDS);
+        if page >= self.pages.len() {
+            self.pages.resize(page + 1, None);
         }
-        self.known[word] |= 1 << bit;
+        let page = std::rc::Rc::make_mut(self.pages[page].get_or_insert_with(|| std::rc::Rc::new([0; 2 * PAGE_WORDS])));
+        page[word] |= 1 << bit;
         if b {
-            self.value[word] |= 1 << bit;
+            page[PAGE_WORDS + word] |= 1 << bit;
         } else {
-            self.value[word] &= !(1 << bit);
+            page[PAGE_WORDS + word] &= !(1 << bit);
         }
     }
 
@@ -239,6 +274,18 @@ pub struct Blaster {
     work_limit: Option<u64>,
     /// What reading the clock around nothing takes, which each timed operation's time includes once.
     clock: std::time::Duration,
+    /// Once clauses are deferred ([`Blaster::defer`]): the first variable whose gate was not given to the solver
+    /// as it was made, for each variable from there whether its gate has been given since, and the variables
+    /// whose gates a clause or a call has come to depend on and that are still to be given.
+    deferred: Option<usize>,
+    given: Vec<bool>,
+    needed: Vec<usize>,
+    /// The solver's variable for each variable from the first deferred one (0: none yet), numbered in the order
+    /// the solver comes to hold them, so that what it holds is as dense as what it is asked; and the inputs among
+    /// them, which a model is read off.
+    numbered: Vec<Lit>,
+    numbers: Lit,
+    numbered_inputs: Vec<usize>,
 }
 
 /// What timing nothing takes: the median of a few empty timed regions.
@@ -298,7 +345,7 @@ impl Blaster {
     pub fn over(mut solver: Box<dyn super::sat::Sat>, transcript: Option<super::transcript::Transcript>) -> Blaster {
         let words = solver.terms().is_some();
         assert!(!(words && transcript.is_some()), "a transcript records clauses, and this solver is given terms");
-        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None, work_limit: None };
+        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None, work_limit: None, deferred: None, given: Vec::new(), needed: Vec::new(), numbered: Vec::new(), numbers: 0, numbered_inputs: Vec::new() };
         b.clause(&[TRUE]);
         b
     }
@@ -423,11 +470,119 @@ impl Blaster {
     }
 
     fn clause(&mut self, lits: &[Lit]) {
+        if self.deferred.is_some() {
+            self.needed.extend(lits.iter().map(|l| l.unsigned_abs() as usize));
+            let numbered: Vec<Lit> = lits.iter().map(|&l| self.number(l)).collect();
+            return self.clause_given(&numbered);
+        }
+        self.clause_given(lits)
+    }
+
+    fn clause_given(&mut self, lits: &[Lit]) {
         self.solver.add_clause(lits);
         self.clauses += 1;
         if let Some(t) = &mut self.transcript {
             t.clause(lits);
         }
+    }
+
+    /// The solver's literal for `l`: itself until clauses are deferred and for a variable made before, and the
+    /// next number the solver has not seen for a later one, the first time it is given.
+    fn number(&mut self, l: Lit) -> Lit {
+        let Some(first) = self.deferred else { return l };
+        let v = l.unsigned_abs() as usize;
+        if v < first {
+            return l;
+        }
+        if self.numbered.len() <= v - first {
+            self.numbered.resize(self.next as usize - first, 0);
+        }
+        if self.numbered[v - first] == 0 {
+            self.numbers += 1;
+            self.numbered[v - first] = self.numbers;
+            if matches!(self.defs[v], Def::Input) {
+                self.numbered_inputs.push(v);
+            }
+        }
+        let n = self.numbered[v - first];
+        if l < 0 { -n } else { n }
+    }
+
+    /// The solver's literal for `l`, if the solver holds its variable.
+    fn numbered(&self, l: Lit) -> Option<Lit> {
+        let Some(first) = self.deferred else { return Some(l) };
+        let v = l.unsigned_abs() as usize;
+        if v < first {
+            return Some(l);
+        }
+        let n = self.numbered.get(v - first).copied().filter(|&n| n != 0)?;
+        Some(if l < 0 { -n } else { n })
+    }
+
+    /// From here on a gate's clauses are given to the solver only when a clause or a call comes to depend on the
+    /// gate, and an operation's facts ([`Lazy`]) when one comes to depend on the operation. What the solver is
+    /// asked is the same, since a gate nothing asked depends on constrains nothing asked; what it holds is less,
+    /// where much of what is built is never asked about (the values a loop computes, when only its bounds are:
+    /// [`super::loops`]). Everything built before stays as it was given. A solver that takes terms is given
+    /// every definition as before.
+    pub fn defer(&mut self) {
+        if self.deferred.is_none() && !self.words {
+            self.deferred = Some(self.next as usize);
+            self.numbers = self.next - 1;
+        }
+    }
+
+    /// Gives the solver the gates the variables in `needed` depend on that it does not hold yet.
+    fn give_needed(&mut self) {
+        let Some(first) = self.deferred else { return };
+        while let Some(v) = self.needed.pop() {
+            if v < first {
+                continue;
+            }
+            if self.given.len() <= v - first {
+                self.given.resize(self.next as usize - first, false);
+            }
+            if std::mem::replace(&mut self.given[v - first], true) {
+                continue;
+            }
+            let o = v as Lit;
+            match self.defs[v] {
+                Def::Input | Def::Word(_) => {}
+                Def::And(a, b) => self.and_clauses(o, a, b),
+                Def::Xor(x, y) => self.xor_clauses(o, x, y),
+                Def::Ite(c, a, b) => self.ite_clauses(o, c, a, b),
+                Def::Lazy(i) => {
+                    let l = &mut self.lazy[i as usize];
+                    if !std::mem::replace(&mut l.facts, true) {
+                        let (op, a, b, q, r) = (l.op, l.a.clone(), l.b.clone(), l.q.clone(), l.r.clone());
+                        match op {
+                            Op::DivRem => self.remainder_facts(&a, &b, &q, &r),
+                            Op::Mul => self.multiplication_facts(&a, &b, &q),
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fn and_clauses(&mut self, o: Lit, a: Lit, b: Lit) {
+        self.clause(&[-o, a]);
+        self.clause(&[-o, b]);
+        self.clause(&[o, -a, -b]);
+    }
+
+    fn xor_clauses(&mut self, o: Lit, x: Lit, y: Lit) {
+        self.clause(&[-o, x, y]);
+        self.clause(&[-o, -x, -y]);
+        self.clause(&[o, -x, y]);
+        self.clause(&[o, x, -y]);
+    }
+
+    fn ite_clauses(&mut self, o: Lit, c: Lit, a: Lit, b: Lit) {
+        self.clause(&[-c, -a, o]);
+        self.clause(&[-c, a, -o]);
+        self.clause(&[c, -b, o]);
+        self.clause(&[c, b, -o]);
     }
 
     /// A fresh variable: an input.
@@ -504,10 +659,8 @@ impl Blaster {
         let o = self.gate(Def::And(a, b));
         if self.words {
             self.define(o, Gate::And(a, b));
-        } else {
-            self.clause(&[-o, a]);
-            self.clause(&[-o, b]);
-            self.clause(&[o, -a, -b]);
+        } else if self.deferred.is_none() {
+            self.and_clauses(o, a, b);
         }
         self.gates.insert(key, o);
         o
@@ -551,11 +704,8 @@ impl Blaster {
                 let o = self.gate(Def::Xor(x, y));
                 if self.words {
                     self.define(o, Gate::Xor(x, y));
-                } else {
-                    self.clause(&[-o, x, y]);
-                    self.clause(&[-o, -x, -y]);
-                    self.clause(&[o, -x, y]);
-                    self.clause(&[o, x, -y]);
+                } else if self.deferred.is_none() {
+                    self.xor_clauses(o, x, y);
                 }
                 self.gates.insert(key, o);
                 o
@@ -589,11 +739,8 @@ impl Blaster {
         let o = self.gate(Def::Ite(c, a, b));
         if self.words {
             self.define(o, Gate::Ite(c, a, b));
-        } else {
-            self.clause(&[-c, -a, o]);
-            self.clause(&[-c, a, -o]);
-            self.clause(&[c, -b, o]);
-            self.clause(&[c, b, -o]);
+        } else if self.deferred.is_none() {
+            self.ite_clauses(o, c, a, b);
         }
         self.gates.insert(key, o);
         o
@@ -794,6 +941,21 @@ impl Blaster {
         if a.iter().chain(b).all(|&l| is_const(l)) || self.words {
             return self.sdivrem(a, b);
         }
+        // By a constant power of two, once clauses are deferred: shifts, as a compiler divides by one. The
+        // quotient is `(a + bias) >> k`, the bias `2^k - 1` for a negative `a` (the JVM rounds toward zero), and the
+        // remainder `a` less the quotient shifted back.
+        if self.deferred.is_some() {
+            if let Some(k) = self.constant_value(b).filter(|&v| v > 0 && v & (v - 1) == 0).map(|v| v.trailing_zeros() as usize) {
+                let width = a.len();
+                let sa = self.negative(a);
+                let bias: Bits = (0..width).map(|i| if i < k { sa } else { FALSE }).collect();
+                let sum = self.add(a, &bias);
+                let q: Bits = (0..width).map(|i| sum[(i + k).min(width - 1)]).collect();
+                let back: Bits = (0..width).map(|i| if i < k { FALSE } else { q[i - k] }).collect();
+                let r = self.sub(a, &back);
+                return (q, r);
+            }
+        }
         if let Some(&i) = self.divisions.get(&(a.clone(), b.clone())) {
             return (self.lazy[i].q.clone(), self.lazy[i].r.clone());
         }
@@ -801,9 +963,12 @@ impl Blaster {
         let width = a.len();
         let q: Bits = (0..width).map(|_| self.gate(Def::Lazy(i as u32))).collect();
         let r: Bits = (0..width).map(|_| self.gate(Def::Lazy(i as u32))).collect();
-        self.lazy.push(Lazy { op: Op::DivRem, a: a.clone(), b: b.clone(), q: q.clone(), r: r.clone(), refined: false });
+        let facts = self.deferred.is_none();
+        self.lazy.push(Lazy { op: Op::DivRem, a: a.clone(), b: b.clone(), q: q.clone(), r: r.clone(), refined: false, facts });
         self.divisions.insert((a.clone(), b.clone()), i);
-        self.division_facts(a, b, &q, &r);
+        if facts {
+            self.division_facts(a, b, &q, &r);
+        }
         (q, r)
     }
 
@@ -836,9 +1001,12 @@ impl Blaster {
         let i = self.lazy.len();
         let width = a.len();
         let p: Bits = (0..width).map(|_| self.gate(Def::Lazy(i as u32))).collect();
-        self.lazy.push(Lazy { op: Op::Mul, a: a.clone(), b: b.clone(), q: p.clone(), r: Vec::new(), refined: false });
+        let facts = self.deferred.is_none();
+        self.lazy.push(Lazy { op: Op::Mul, a: a.clone(), b: b.clone(), q: p.clone(), r: Vec::new(), refined: false, facts });
         self.products.insert(key, i);
-        self.multiplication_facts(a, b, &p);
+        if facts {
+            self.multiplication_facts(a, b, &p);
+        }
         p
     }
 
@@ -899,6 +1067,38 @@ impl Blaster {
     /// is `a` with no remainder, by minus one its negation, of `a` by itself one; and a power of two divides a
     /// non-negative `a` with the remainder `a & (b - 1)`. All of them hold for `MIN_VALUE` too, which the
     /// magnitudes being unsigned makes so.
+    /// The facts of a division an index computed with `%` is in bounds by, and an index that goes round an array
+    /// (`(i + 1) % length`) is exact by, given once clauses are deferred ([`Blaster::defer`]) in place of all of
+    /// [`Blaster::division_facts`], which are some thousand gates a division: when `b` is not zero, `|r| < |b|`,
+    /// `r` is zero or of `a`'s sign, a dividend smaller than the divisor is the remainder with the quotient zero,
+    /// and `a` by itself is one with no remainder. Anything else the solver gets wrong of the division builds its
+    /// circuit, as ever ([`Blaster::refine_operation`]).
+    fn remainder_facts(&mut self, a: &Bits, b: &Bits, q: &Bits, r: &Bits) {
+        let nz = -self.is_zero(b);
+        let (sa, sr) = (self.negative(a), self.negative(r));
+        let abs_a = self.magnitude(a);
+        let abs_b = self.magnitude(b);
+        let abs_r = self.magnitude(r);
+        let within = self.ult(&abs_r, &abs_b);
+        let r_zero = self.is_zero(r);
+        let r_sign = -self.xor(sr, sa);
+        let signed = self.or(r_zero, r_sign);
+        let small = self.ult(&abs_a, &abs_b);
+        let q_zero = self.is_zero(q);
+        let r_is_a = self.eq(r, a);
+        let itself = self.and(q_zero, r_is_a);
+        let smaller = self.or(-small, itself);
+        let same = self.eq(a, b);
+        let one = self.constant(1, a.len());
+        let q_one = self.eq(q, &one);
+        let once = self.and(q_one, r_zero);
+        let by_itself = self.or(-same, once);
+        for f in [within, signed, smaller, by_itself] {
+            let guarded = self.or(-nz, f);
+            self.clause(&[guarded]);
+        }
+    }
+
     fn division_facts(&mut self, a: &Bits, b: &Bits, q: &Bits, r: &Bits) {
         let width = a.len();
         let nz = -self.is_zero(b);
@@ -948,12 +1148,46 @@ impl Blaster {
         }
     }
 
-    /// The first operation left to the solver whose result in the solver's last model is not the real operation
-    /// on the operands' values there (a division by zero is never wrong: the JVM throws before the values
-    /// matter). `None` when the model is a real one, as a model of the circuits alone always is: the first wrong
-    /// operation decides, since the operands of a later one may come from it.
-    pub fn wrong_operation(&self) -> Option<usize> {
-        self.lazy.iter().enumerate().find(|(_, l)| {
+    /// The operations left to the solver that the literals depend on, in the order they were made: an operation
+    /// none of them depends on decides nothing of them, whatever the solver chose for it, and a model kept for
+    /// later is the inputs' values alone ([`Blaster::snapshot`]), from which every operation is computed anew.
+    pub fn operations_under(&self, lits: &[Lit]) -> Vec<usize> {
+        let mut seen = vec![false; self.defs.len()];
+        let mut found = vec![false; self.lazy.len()];
+        let mut stack: Vec<usize> = lits.iter().map(|l| l.unsigned_abs() as usize).collect();
+        while let Some(v) = stack.pop() {
+            if std::mem::replace(&mut seen[v], true) {
+                continue;
+            }
+            match self.defs[v] {
+                Def::Input => {}
+                Def::And(a, b) | Def::Xor(a, b) => stack.extend([a.unsigned_abs() as usize, b.unsigned_abs() as usize]),
+                Def::Ite(c, a, b) => stack.extend([c.unsigned_abs() as usize, a.unsigned_abs() as usize, b.unsigned_abs() as usize]),
+                Def::Lazy(i) => {
+                    let l = &self.lazy[i as usize];
+                    if !std::mem::replace(&mut found[i as usize], true) {
+                        stack.extend(l.a.iter().chain(&l.b).map(|x| x.unsigned_abs() as usize));
+                    }
+                }
+                Def::Word(i) => stack.extend(self.word_ops[i as usize].operands.iter().flatten().map(|x| x.unsigned_abs() as usize)),
+            }
+        }
+        found.iter().enumerate().filter(|(_, &f)| f).map(|(i, _)| i).collect()
+    }
+
+    /// Every operation left to the solver.
+    pub fn every_operation(&self) -> Vec<usize> {
+        (0..self.lazy.len()).collect()
+    }
+
+    /// The first operation left to the solver, among `among`, whose result in the solver's last model is not the
+    /// real operation on the operands' values there (a division by zero is never wrong: the JVM throws before
+    /// the values matter). `None` when the model is a real one of what depends on those operations alone, as a
+    /// model of the circuits alone always is: the first wrong operation decides, since the operands of a later
+    /// one may come from it.
+    pub fn wrong_operation(&self, among: &[usize]) -> Option<usize> {
+        among.iter().copied().find(|&i| {
+            let l = &self.lazy[i];
             if l.refined {
                 return false;
             }
@@ -963,27 +1197,29 @@ impl Blaster {
             }
             let r = if l.r.is_empty() { 0 } else { self.eval(&l.r) };
             real_operation(l.op, l.a.len(), a, b) != (self.eval(&l.q), r)
-        }).map(|(i, _)| i)
+        })
     }
 
-    /// Two operations left to the solver that the last model gives the same operands but different results: a
-    /// division and a division, or a product and a product (its operands in either order), of one width. Each is a
-    /// function of its operands, but they are separate bits unless their operand *terms* are the same, so the
-    /// solver may answer `hash % b` and `(hash & 0x7fffffff) % b` differently where `hash` is not negative. Such a
-    /// model is not real whichever of the two is right; [`Blaster::add_congruence`] rules it out with a clause,
-    /// which is cheaper than building both circuits and having the solver prove two dividers equivalent.
-    pub fn inconsistent_pair(&self) -> Option<(usize, usize, bool)> {
-        let values: Vec<(i64, i64, i64, i64)> = self.lazy.iter().map(|l| {
+    /// Two operations left to the solver, among `among`, that the last model gives the same operands but
+    /// different results: a division and a division, or a product and a product (its operands in either order),
+    /// of one width. Each is a function of its operands, but they are separate bits unless their operand *terms*
+    /// are the same, so the solver may answer `hash % b` and `(hash & 0x7fffffff) % b` differently where `hash`
+    /// is not negative. Such a model is not real whichever of the two is right; [`Blaster::add_congruence`] rules
+    /// it out with a clause, which is cheaper than building both circuits and having the solver prove two
+    /// dividers equivalent.
+    pub fn inconsistent_pair(&self, among: &[usize]) -> Option<(usize, usize, bool)> {
+        let values: Vec<(i64, i64, i64, i64)> = among.iter().map(|&i| {
+            let l = &self.lazy[i];
             let r = if l.r.is_empty() { 0 } else { self.eval(&l.r) };
             (self.eval(&l.a), self.eval(&l.b), self.eval(&l.q), r)
         }).collect();
-        for j in 0..self.lazy.len() {
-            for i in 0..j {
+        for (jj, &j) in among.iter().enumerate() {
+            for (ii, &i) in among[..jj].iter().enumerate() {
                 let (x, y) = (&self.lazy[i], &self.lazy[j]);
                 if x.op != y.op || x.a.len() != y.a.len() || (x.refined && y.refined) {
                     continue;
                 }
-                let (vx, vy) = (values[i], values[j]);
+                let (vx, vy) = (values[ii], values[jj]);
                 if (vx.2, vx.3) == (vy.2, vy.3) {
                     continue;
                 }
@@ -1167,6 +1403,13 @@ impl Blaster {
         if assumptions.contains(&FALSE) {
             return Some(false);
         }
+        let assumptions: Vec<Lit> = if self.deferred.is_some() {
+            self.needed.extend(assumptions.iter().map(|l| l.unsigned_abs() as usize));
+            self.encoding(|s| s.give_needed());
+            assumptions.iter().map(|&l| self.number(l)).collect()
+        } else {
+            assumptions
+        };
         let started = std::time::Instant::now();
         let answer = self.solver.solve(&assumptions);
         let took = started.elapsed();
@@ -1180,12 +1423,47 @@ impl Blaster {
     /// The solver's last model, as the inputs' values.
     pub fn snapshot(&self) -> Model {
         let mut model = Model::default();
-        for (v, def) in self.defs.iter().enumerate().skip(2) {
+        // An input the solver does not hold is free, and false when it is asked for ([`Blaster::holds`]).
+        let before = self.deferred.unwrap_or(self.defs.len());
+        for (v, def) in self.defs.iter().enumerate().take(before).skip(2) {
             if matches!(def, Def::Input) {
                 model.set(v, self.solver.value(v as Lit).unwrap_or(false));
             }
         }
+        for &v in &self.numbered_inputs {
+            model.set(v, self.value(v as Lit));
+        }
         model
+    }
+
+    /// The solver's last model with the inputs among `free` given other values, by `seed`, and the inputs it does
+    /// not fix drawn by it too ([`Model::salted`]): a model of everything that does not depend on those inputs.
+    pub fn snapshot_with(&self, free: &[Bits], seed: u64) -> Model {
+        let mut model = self.snapshot().salted(seed);
+        let mut state = seed | 1;
+        for &l in free.iter().flatten() {
+            let v = l.unsigned_abs() as usize;
+            if v < 2 || !matches!(self.defs[v], Def::Input) {
+                continue;
+            }
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            model.set(v, state & 1 == 1);
+        }
+        model
+    }
+
+    /// Gives the inputs among `to`, in `model`, the values `from` has there, bit by bit: a state's new, free
+    /// values set to the ones they replace.
+    pub fn carry(&mut self, model: &mut Model, from: &Bits, to: &Bits) {
+        for (&old, &new) in from.iter().zip(to) {
+            let v = new.unsigned_abs() as usize;
+            if v >= 2 && matches!(self.defs[v], Def::Input) {
+                let value = self.holds(model, old);
+                model.set(v, value == (new > 0));
+            }
+        }
     }
 
     /// Whether the literal holds in the model, evaluating the gates it depends on that the model has not been
@@ -1211,7 +1489,7 @@ impl Blaster {
             };
             match self.defs[v] {
                 Def::Input => {
-                    model.set(v, false);
+                    model.set(v, model.free(v));
                     stack.pop();
                     done += 1;
                 }
@@ -1292,7 +1570,7 @@ impl Blaster {
         if is_const(lit) {
             return lit == TRUE;
         }
-        self.solver.value(lit).unwrap_or(false)
+        self.numbered(lit).and_then(|l| self.solver.value(l)).unwrap_or(false)
     }
 
     /// A value's bits in the last model, sign-extended.
@@ -1400,7 +1678,7 @@ mod tests {
         assert_eq!(b.solve_with(&[x7, y6, -p42]), Some(false));
         assert_eq!(b.solve_with(&[x7, y6]), Some(true));
         assert_eq!((b.eval(&p), b.eval(&d), b.eval(&r)), (42, 1, 1));
-        assert_eq!(b.wrong_operation(), None);
+        assert_eq!(b.wrong_operation(&b.every_operation()), None);
         assert_eq!(b.clauses, 1, "the constant's unit clause, and nothing else");
     }
 
@@ -1480,7 +1758,7 @@ mod tests {
     fn solve_refined(b: &mut Blaster, assumptions: &[Lit]) -> Option<bool> {
         loop {
             match b.solve_with(assumptions) {
-                Some(true) => match (b.inconsistent_pair(), b.wrong_operation()) {
+                Some(true) => match (b.inconsistent_pair(&b.every_operation()), b.wrong_operation(&b.every_operation())) {
                     (Some((i, j, swapped)), _) => b.add_congruence(i, j, swapped),
                     (None, None) => return Some(true),
                     (None, Some(i)) => b.refine_operation(i),
@@ -1549,7 +1827,7 @@ mod tests {
         let r_2 = b.eq(&r, &b.constant(2, 32).clone());
         assert_eq!(b.solve_with(&[x_23, y_7, -r_2]), Some(true), "the facts allow a wrong remainder");
         let mut rounds = 0;
-        while let Some(i) = b.wrong_operation() {
+        while let Some(i) = b.wrong_operation(&b.every_operation()) {
             b.refine_operation(i);
             rounds += 1;
             assert_eq!(b.solve_with(&[x_23, y_7]), Some(true));
@@ -1561,7 +1839,7 @@ mod tests {
         // A division by zero is never wrong: the JVM throws before its value matters.
         let y_zero = b.is_zero(&y);
         assert_eq!(b.solve_with(&[y_zero]), Some(true));
-        assert_eq!(b.wrong_operation(), None);
+        assert_eq!(b.wrong_operation(&b.every_operation()), None);
     }
 
     #[test]
@@ -1600,12 +1878,12 @@ mod tests {
         let p_right = b.eq(&p, &b.constant(150_000, 32).clone());
         let p_wrong = b.eq(&p, &b.constant(150_000 + 256, 32).clone());
         assert_eq!(b.solve_with(&[x_300, y_500, p_wrong]), Some(true), "the facts allow a wrong product of the same low bits");
-        assert_eq!(b.wrong_operation(), Some(0));
+        assert_eq!(b.wrong_operation(&b.every_operation()), Some(0));
         b.refine_operation(0);
         assert_eq!(b.solve_with(&[x_300, y_500, p_wrong]), Some(false), "300 * 500 is 150000 once the circuit is there");
         assert_eq!(b.solve_with(&[x_300, y_500]), Some(true));
         assert!(b.value(p_right));
-        assert_eq!(b.wrong_operation(), None);
+        assert_eq!(b.wrong_operation(&b.every_operation()), None);
         assert_eq!(b.multiplications(), (1, 1));
         // A product with a constant factor is built as it is, small.
         let p3 = b.mul_lazy(&x, &three);
@@ -1632,7 +1910,7 @@ mod tests {
         let x_min = b.eq(&x, &min);
         let y_minus_one = b.eq(&y, &minus_one);
         assert_eq!(b.solve_with(&[x_min, y_minus_one]), Some(true));
-        while let Some(i) = b.wrong_operation() {
+        while let Some(i) = b.wrong_operation(&b.every_operation()) {
             b.refine_operation(i);
             assert_eq!(b.solve_with(&[x_min, y_minus_one]), Some(true));
         }
@@ -1667,6 +1945,75 @@ mod tests {
         assert_eq!(real_division(32, i64::from(i32::MIN), -1), (i64::from(i32::MIN), 0));
         assert_eq!(real_division(64, i64::MIN, -1), (i64::MIN, 0));
         assert_eq!(real_division(64, 5, 0), (-1, 5));
+    }
+
+    #[test]
+    fn deferred_gates_reach_the_solver_when_a_call_depends_on_them_and_answer_the_same() {
+        let mut b = Blaster::new();
+        let (x, y) = (b.fresh(32), b.fresh(32));
+        let early = b.add(&x, &y);
+        b.defer();
+        let given = b.clauses;
+        // Built and never asked about: the solver is given nothing.
+        let unused = b.mul(&early, &x);
+        let late = b.sub(&early, &y);
+        assert_eq!(b.clauses, given, "{unused:?}");
+        // Asked about: x + y - y == x, whatever the values, and a value the solver chooses is read back.
+        let same = b.eq(&late, &x);
+        assert_eq!(b.solve_with(&[-same]), Some(false));
+        assert!(b.clauses > given);
+        let x_is = b.eq(&x, &b.constant(40, 32).clone());
+        let sum_is = b.eq(&early, &b.constant(42, 32).clone());
+        assert_eq!(b.solve_with(&[x_is, sum_is]), Some(true));
+        assert_eq!((b.eval(&x), b.eval(&y), b.eval(&late)), (40, 2, 40));
+        let mut model = b.snapshot();
+        assert!(b.holds(&mut model, same));
+    }
+
+    #[test]
+    fn an_index_that_goes_round_an_array_is_exact_without_its_division() {
+        // (i + 1) % n for 0 <= i < n is i + 1, or zero at the end: the facts given once clauses are deferred say
+        // so, and no divider is built.
+        let mut b = Blaster::new();
+        b.defer();
+        let (i, n) = (b.fresh(32), b.fresh(32));
+        let (zero, one) = (b.constant(0, 32), b.constant(1, 32));
+        let next = b.add(&i, &one);
+        let (_, r) = b.sdivrem_lazy(&next, &n);
+        let inside = [b.sle(&zero, &i), b.slt(&i, &n)];
+        let last = b.eq(&next, &n);
+        let wraps = b.is_zero(&r);
+        let steps = b.eq(&r, &next);
+        let exact = b.ite(last, wraps, steps);
+        assert_eq!(b.solve_with(&[inside[0], inside[1], -exact]), Some(false));
+        let in_bounds = b.ult(&r, &n);
+        assert_eq!(b.solve_with(&[inside[0], inside[1], -in_bounds]), Some(false));
+        assert_eq!(b.divisions(), (1, 0), "no circuit was built");
+        // A division by a constant power of two is shifts from the start.
+        let eight = b.constant(8, 32);
+        let (q, _) = b.sdivrem_lazy(&i, &eight);
+        let minus_nine = b.eq(&i, &b.constant(-9, 32).clone());
+        let minus_one = b.eq(&q, &b.constant(-1, 32).clone());
+        assert_eq!(b.solve_with(&[minus_nine, -minus_one]), Some(false), "-9 / 8 == -1");
+        assert_eq!(b.divisions(), (1, 0));
+    }
+
+    #[test]
+    fn a_models_copy_shares_its_pages_until_one_of_the_two_writes() {
+        let mut model = Model::default();
+        model.set(5, true);
+        model.set(100_000, false);
+        let mut copy = model.clone();
+        assert!(std::rc::Rc::ptr_eq(model.pages[0].as_ref().unwrap(), copy.pages[0].as_ref().unwrap()));
+        copy.set(6, true);
+        assert!(!std::rc::Rc::ptr_eq(model.pages[0].as_ref().unwrap(), copy.pages[0].as_ref().unwrap()));
+        assert_eq!((model.get(5), model.get(6), model.get(100_000), model.get(100_001)), (Some(true), None, Some(false), None));
+        assert_eq!((copy.get(5), copy.get(6), copy.get(100_000)), (Some(true), Some(true), Some(false)));
+        // A variable the model does not fix is false, or drawn by the salt, the same each time it is asked.
+        let salted = model.salted(7);
+        assert!(!model.free(9));
+        assert_eq!(salted.free(9), salted.free(9));
+        assert!((0..64).any(|v| salted.free(v)) && (0..64).any(|v| !salted.free(v)));
     }
 
     #[test]

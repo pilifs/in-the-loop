@@ -27,6 +27,10 @@ before application-core's last `lib/src` change (`yrlkzqvw`, 19:53); its sha256 
 JDK calls the checker has always refused, and a rerun of `make_records.py` with a current build records it again.
 The records were remade on 2026-11-14, in Phase 5, when the recipe gained `-parameters` (VF-024): every JAR's sha256
 changed, the controls' outputs didn't, and the gap scan used the same binary.
+They were remade again on 2026-11-16, when `RegexGate`'s pattern became `[a-z]++` (it was `[a-z]+`): the checker
+matches a class with a greedy quantifier since example 287, so the deliberate refusal needed a form it still does
+not implement, a possessive quantifier, which allows the same Strings. Every JAR's sha256 changed again, the
+controls' outputs didn't, and the gap scan was recorded with that day's build.
 
 The tasks in `target.json` are the fixture's: `vulnerable-security` (expected refuted), `fixed-security` (expected
 established), `preservation` outside `code == 97` (expected established), `mutant-security` (expected refuted),

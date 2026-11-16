@@ -970,14 +970,14 @@ public class Digits {
 "#;
 
 /// `Digits` with `edit` before its return: `formats` throws, with a message `String.format` makes, where it was a
-/// value; `same` reads the identity of a formatted string's `toString`, which the checker approximates under
+/// value; `same` reads the identity of a formatted string's `trim`, which the checker approximates under
 /// `--gaps assume` as a new object, and which the JVM gives as the string itself, so that it changes nothing.
 fn digits(name: &str, edit: &str) -> PathBuf {
     compile(name, &[("digits/Digits.java", &DIGITS.replace("        return ch - 48;", &format!("        {edit}\n        return ch - 48;")))])
 }
 
 const FORMATS: &str = "if (ch == 1655) { throw new IllegalArgumentException(\"not a digit\".formatted()); }";
-const SAME: &str = "String a = \"x\".formatted(); if (ch == 1655 && a.toString() != a) { return -1; }";
+const SAME: &str = "String a = \"x\".formatted(); if (ch == 1655 && a.trim() != a) { return -1; }";
 
 /// A replay that cannot run one version is no reproduction (the main brief's Phase 0 finding on VF-015's step 4,
 /// where an outcome the interpreter could not produce counted as a difference). The counterexample is run on a JVM,
@@ -1006,8 +1006,9 @@ fn o2_a_replay_that_cannot_run_one_version_is_no_reproduction() {
     assert!(!c.after.contains("could not replay") && c.after.contains("IllegalArgumentException"), "the new version's outcome is the JVM's: {}", c.after);
     assert_eq!(c.differs, vec!["exception".to_string()], "{}", o.output);
 
-    // No difference on a JVM: the checker's approximation of `toString` took the method down a path the JVM never
-    // does. That was a refutation, `reproduced`, with the new version's outcome unknown.
+    // No difference on a JVM: the checker's approximation of `trim`, which gives back the String itself where there
+    // is nothing to trim, took the method down a path the JVM never does (`toString` was the call until the checker
+    // modelled it). That was a refutation, `reproduced`, with the new version's outcome unknown.
     let o = run("unreplayed-same", &digits("unreplayed-same", SAME));
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.replay.as_ref().is_some_and(|r| !r.reproduced), "{:?}", o.replay);

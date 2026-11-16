@@ -777,6 +777,8 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         }
         ("equals", "(Ljava/lang/Object;)Z") => return Ok(Some(Value::bool(native_equals(m, r, args[0])?))),
         ("hashCode", "()I") => return Ok(Some(Value::Int(native_hash(m, r)?))),
+        // A String's toString is the String itself, which `==` sees.
+        ("toString", "()Ljava/lang/String;") if matches!(native, Native::String(_)) => return Ok(Some(Value::Ref(r))),
         ("toString", "()Ljava/lang/String;") => {
             let s = native_to_string(m, r)?;
             return Ok(Some(m.new_string(s)));

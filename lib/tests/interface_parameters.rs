@@ -50,7 +50,7 @@ const SOURCES: &[(&str, &str)] = &[
     ),
     (
         "Routes",
-        "import java.util.regex.Pattern;\npublic final class Routes {\n    private static final Pattern VARIABLE = Pattern.compile(\"\\\\{[^/]+\\\\}\");\n    public static int port(Request request) {\n        return request.getPort();\n    }\n}\n",
+        "import java.util.regex.Pattern;\npublic final class Routes {\n    private static final Pattern VARIABLE = Pattern.compile(\"\\\\{[^/]+?\\\\}\");\n    public static int port(Request request) {\n        return request.getPort();\n    }\n}\n",
     ),
 ];
 
@@ -167,8 +167,8 @@ fn the_given_implementation_answers_the_accessors_the_target_may_call() {
 /// What the implementation doesn't answer is named, never passed over. A call of an abstract method that takes an
 /// argument is a gap the strict checker refuses by name; an expression reads the accessors the implementation
 /// answers, and is told which when it asks for a default method, an accessor the target doesn't call or a field;
-/// and a class initializer that compiles a regular expression with a character class is the JDK call it is, a named
-/// gap, where the plain `//+` of the other class is none. That the other checker is not given an implementation is
+/// and a class initializer that compiles a regular expression with a reluctant quantifier is the JDK call it is, a
+/// named gap, where the plain `//+` of the other class is none. That the other checker is not given an implementation is
 /// `a_domain_jbmc_is_not_given_is_refused_by_name`'s, in `tests/conformance.rs`.
 #[test]
 fn what_a_given_implementation_does_not_answer_is_refused_by_name() {
@@ -191,7 +191,7 @@ fn what_a_given_implementation_does_not_answer_is_refused_by_name() {
 /// floating-point arithmetic the checker has none of: the claim over it is proved under strict gaps. The scan walks
 /// the enum's map through the `HashMap` model, counts the map's calls as the model's, and reports as gaps only what
 /// the model's key comparison may reach on a key that is no String; the plain regular expression is no gap, the one
-/// with a character class is. Before, a call was followed into every class below its owner: the fixed release of
+/// with a reluctant quantifier is. Before, a call was followed into every class below its owner: the fixed release of
 /// example 285 reached every `Map` of its libraries from `HttpMethod`'s initializer, which was judged outside the
 /// fragment for what one of them does, and the scan took over two minutes.
 #[test]
@@ -218,6 +218,7 @@ fn the_scan_follows_a_call_into_the_classes_of_the_objects_made() {
     assert_eq!(calls("Tags#port"), ["getMethod()Ljava/lang/String;", "getPort()I", "isGet()Z"]);
     assert_eq!(calls("Tags#header"), ["getHeader(Ljava/lang/String;)Ljava/lang/String;"]);
     assert!(calls("Tags#none").is_empty());
-    // A regular expression with a character class is the JDK call it names.
+    // A regular expression with a reluctant quantifier is the JDK call it names: one with a class alone is none since
+    // example 287 (`bmc::regex::compiles_constant`, shown in `tests/claims.rs`).
     assert!(ids(&scan("Routes#port")).contains(&"jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;".to_string()));
 }

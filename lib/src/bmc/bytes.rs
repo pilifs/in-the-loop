@@ -1,0 +1,364 @@
+//! Text as bytes and digits: `String.getBytes(UTF_8)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of
+//! primitives, `Integer.parseInt(String)` and the decimal digits a `StringBuilder` appends for an int.
+//!
+//! A password check turns a String into its bytes, a hash's text into numbers and bytes, and back, and compares
+//! two encodings byte by byte (Spring Security's `BCrypt.checkpw`). Each of these is a formula over the cells the
+//! engine holds, as the String methods are ([`super::strings`]): no path is split for what a call computes, only
+//! for what it throws. Each is the JDK's method by its Javadoc and its source (JDK 25), and each is proved to be a
+//! definition written out in Java, on every input of a bound, which is itself sampled against the JDK's method on
+//! a JVM (`tests/fixtures/claims/claims/B.java` and `Samples.java`, run by `tests/claims.rs`).
+//!
+//! - `StandardCharsets.UTF_8` (a static field of the JDK): one object for the run, as it is one on a JVM. The
+//!   other five are not read here.
+//! - `String.getBytes(Charset)` with that object, on a String whose content the engine holds: the String's UTF-8
+//!   encoding, as `String.encodeUTF8` writes it. A unit below `0x80` is one byte, one below `0x800` two, a high
+//!   surrogate followed by a low one four for the pair, a surrogate that is in no such pair the one byte `?`
+//!   (the encoder replaces, it does not throw), and any other unit three. The array is new, as long as the
+//!   encoding, and has a cell for three times the String's cells. `NullPointerException` for a null charset; any
+//!   other charset is the JDK call it was.
+//! - `MessageDigest.isEqual(byte[], byte[])`: true for one array (two nulls included), false for one null, and
+//!   otherwise whether the lengths are the same and every byte is. The JDK reads every byte whatever it finds, to
+//!   take the same time; what it returns is this.
+//! - `Arrays.copyOf(T[], int)` for `T` one of `boolean`, `byte`, `char`, `short`, `int` and `long`:
+//!   `NullPointerException` for null, `NegativeArraySizeException` for a negative length, and a new array of that
+//!   length with the original's elements up to the shorter of the two, zero after them. The new array has a cell
+//!   for each of the original's and for each further one the new length may ask for, as `newarray` counts them
+//!   ([`Engine::new_array_cells`]).
+//! - `Integer.parseInt(String)`: an optional `+` or `-` and at least one digit, the value within an int, or
+//!   `NumberFormatException` (for null too). The JDK takes every Unicode decimal digit (`Character.digit`); the
+//!   model takes `0` to `9`, and a String with a unit outside ASCII is the JDK call it was (a gap).
+//! - the digits of an int, for `StringBuilder.append(int)` ([`Engine::decimal`]): `Integer.toString`'s, a `-` and
+//!   the magnitude's decimal digits with no leading zero, `-2147483648` for the least.
+
+use super::*;
+
+const INTEGER: &str = "java/lang/Integer";
+const DIGEST: &str = "java/security/MessageDigest";
+const ARRAYS: &str = "java/util/Arrays";
+/// The class of `StandardCharsets.UTF_8`'s object.
+pub const CHARSET: &str = "java/nio/charset/Charset";
+pub const STANDARD_CHARSETS: &str = "java/nio/charset/StandardCharsets";
+
+/// Whether the engine models the static call here.
+pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    matches!(
+        (owner, name, descriptor),
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J")
+    )
+}
+
+/// Whether the engine models `String.name(descriptor)` here.
+pub fn models_string(name: &str, descriptor: &str) -> bool {
+    (name, descriptor) == ("getBytes", "(Ljava/nio/charset/Charset;)[B")
+}
+
+impl Engine<'_> {
+    /// `String.getBytes(Charset)` on a String of content `s`: see the module's notes. `None` where the call
+    /// stays the JDK's.
+    pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, args: &[Val]) -> Option<Step> {
+        let [Val::R(charset)] = args else { return None };
+        let Some(charset) = *charset else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+        if path.literals.get(&Literal::Charset("UTF_8")) != Some(&charset) {
+            return None;
+        }
+        let (length, cells) = self.utf8(s);
+        path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
+        let o = path.objects.len() - 1;
+        self.push(path, Val::R(Some(o)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// The UTF-8 encoding of the String content `s`, as the JDK writes it: its length and its bytes, a cell for
+    /// every byte it may have.
+    fn utf8(&mut self, s: &Array) -> (Bits, Vec<Bits>) {
+        let n = s.cells.len();
+        let constant16 = |engine: &mut Self, v: i64| engine.b.constant(v, 16);
+        let (x80, x800) = (constant16(self, 0x80), constant16(self, 0x800));
+        let (mask, high, low) = (constant16(self, 0xFC00), constant16(self, 0xD800), constant16(self, 0xDC00));
+        let inside: Vec<Lit> = (0..n)
+            .map(|i| {
+                let here = self.b.constant(i as i64, 32);
+                self.b.slt(&here, &s.length)
+            })
+            .collect();
+        let kind = |engine: &mut Self, cell: &Bits, of: &Bits| {
+            let top = engine.b.and_bits(cell, &mask);
+            engine.b.eq(&top, of)
+        };
+        let highs: Vec<Lit> = s.cells.iter().map(|c| kind(self, c, &high)).collect();
+        let lows: Vec<Lit> = s.cells.iter().map(|c| kind(self, c, &low)).collect();
+        // `second[i]`: the unit is the low surrogate of a pair, written with the unit before it. A high surrogate
+        // before it is the first of the pair whatever is before that one, since a high surrogate is no low one.
+        let second: Vec<Lit> = (0..n).map(|i| if i == 0 { FALSE } else { self.b.all(&[lows[i], highs[i - 1], inside[i]]) }).collect();
+        let mut position = self.b.constant(0, 32);
+        // For each byte the encoding may have, the units that may write it: where each starts and what it writes.
+        let mut written: Vec<Vec<(Lit, Bits)>> = vec![Vec::new(); 3 * n];
+        for i in 0..n {
+            let cell = &s.cells[i];
+            let one = self.b.ult(cell, &x80);
+            let below_800 = self.b.ult(cell, &x800);
+            let two = self.b.and(-one, below_800);
+            let first = if i + 1 < n { self.b.and(highs[i], second[i + 1]) } else { FALSE };
+            let surrogate = self.b.or(highs[i], lows[i]);
+            let alone = self.b.all(&[surrogate, -first, -second[i]]);
+            let three = self.b.all(&[-below_800, -surrogate]);
+            // The code point of a pair: 0x10000 + ((high - 0xD800) << 10) + (low - 0xDC00), 21 bits.
+            let point: Bits = if i + 1 < n {
+                let low_bits = &s.cells[i + 1][..10];
+                let high_bits = &cell[..10];
+                let joined: Bits = low_bits.iter().chain(high_bits.iter()).copied().chain(std::iter::once(FALSE)).collect();
+                let base = self.b.constant(0x10000, 21);
+                self.b.add(&joined, &base)
+            } else {
+                self.b.constant(0, 21)
+            };
+            let byte = |bits: &[Lit], lead: &[bool]| -> Bits { bits.iter().copied().chain(lead.iter().map(|&b| if b { TRUE } else { FALSE })).collect() };
+            // The bytes of each form, most significant first; a continuation byte is 10 and six bits.
+            let cont = |bits: &[Lit]| byte(bits, &[false, true]);
+            let forms: [(Lit, Vec<Bits>); 5] = [
+                (one, vec![cell[..8].to_vec()]),
+                (two, vec![byte(&cell[6..11], &[false, true, true]), cont(&cell[..6])]),
+                (three, vec![byte(&cell[12..16], &[false, true, true, true]), cont(&cell[6..12]), cont(&cell[..6])]),
+                (first, vec![byte(&point[18..21], &[false, true, true, true, true]), cont(&point[12..18]), cont(&point[6..12]), cont(&point[..6])]),
+                (alone, vec![self.b.constant(i64::from(b'?'), 8)]),
+            ];
+            let mut count = self.b.constant(0, 32);
+            // The bytes before this unit are at least as many as the units (a pair's two units are four bytes) less
+            // one, and at most three for each.
+            let (least, most) = (i.saturating_sub(1), 3 * i);
+            for (is, bytes) in &forms {
+                let writes = self.b.and(inside[i], *is);
+                if writes == FALSE {
+                    continue;
+                }
+                let size = self.b.constant(bytes.len() as i64, 32);
+                count = self.b.ite_bits(writes, &size, &count);
+                for start in least..=most.min(3 * n - 1) {
+                    let here = self.b.constant(start as i64, 32);
+                    let starts = self.b.eq(&position, &here);
+                    let at = self.b.and(writes, starts);
+                    if at == FALSE {
+                        continue;
+                    }
+                    for (k, value) in bytes.iter().enumerate() {
+                        if start + k < 3 * n {
+                            written[start + k].push((at, value.clone()));
+                        }
+                    }
+                }
+            }
+            position = self.b.add(&position, &count);
+        }
+        let cells = written
+            .into_iter()
+            .map(|writers| {
+                let mut value = self.b.constant(0, 8);
+                for (at, byte) in writers {
+                    value = self.b.ite_bits(at, &byte, &value);
+                }
+                value
+            })
+            .collect();
+        (position, cells)
+    }
+
+    /// `Integer.parseInt`, `MessageDigest.isEqual` and `Arrays.copyOf`: see the module's notes. `None` where the
+    /// call stays the JDK's.
+    pub(super) fn bytes_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        match (owner, name, args) {
+            (INTEGER, "parseInt", [Val::R(text)]) => {
+                let Some(text) = *text else { return Some(self.raise(path, "java/lang/NumberFormatException")) };
+                let s = path.objects[text].content().cloned()?;
+                let (value, bad, beyond_ascii) = self.parsed_int(&s);
+                // On the side that is ASCII the call throws or returns; neither ends a path here.
+                let mut inner: Step = Ok(None);
+                let outer = self.branch_gap_or(path, beyond_ascii, (GapKind::JdkStaticMethod, owner, name, descriptor), |engine, side| {
+                    inner = engine.branch_throw(side, bad, "java/lang/NumberFormatException", Val::I(value));
+                });
+                Some(inner.and(outer))
+            }
+            (DIGEST, "isEqual", [Val::R(a), Val::R(b)]) => {
+                let truth = match (*a, *b) {
+                    (None, None) => TRUE,
+                    (None, _) | (_, None) => FALSE,
+                    (Some(a), Some(b)) if a == b => TRUE,
+                    (Some(a), Some(b)) => {
+                        let (x, y) = (path.objects[a].as_array()?.clone(), path.objects[b].as_array()?.clone());
+                        let mut same = vec![self.b.eq(&x.length, &y.length)];
+                        let zero = self.b.constant(0, 8);
+                        for i in 0..x.cells.len().max(y.cells.len()) {
+                            let here = self.b.constant(i as i64, 32);
+                            let inside = self.b.slt(&here, &x.length);
+                            let equal = self.b.eq(x.cells.get(i).unwrap_or(&zero), y.cells.get(i).unwrap_or(&zero));
+                            same.push(self.b.or(-inside, equal));
+                        }
+                        self.b.all(&same)
+                    }
+                };
+                self.push_truth(path, truth);
+                Some(Ok(None))
+            }
+            (ARRAYS, "copyOf", [Val::R(original), Val::I(length)]) => {
+                let Some(original) = *original else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+                let from = path.objects[original].as_array()?.clone();
+                let class = path.objects[original].class.clone();
+                let negative = self.b.negative(length);
+                // A cell for every element the new length may ask for: the original's where the solver shows it no
+                // longer, else as many as a new array of that length has.
+                let longer = self.b.slt(&from.length, length);
+                let mut assumptions = path.cond.clone();
+                assumptions.push(longer);
+                let cells = match self.solve(&assumptions) {
+                    Ok(false) => from.cells.len(),
+                    Ok(true) => {
+                        let most = self.b.constant(from.cells.len() as i64 + 1, 32);
+                        let beyond = self.b.slt(&most, length);
+                        assumptions.pop();
+                        assumptions.push(beyond);
+                        match self.solve(&assumptions) {
+                            Ok(false) => from.cells.len() + 1,
+                            Ok(true) => match self.new_array_cells(path, length) {
+                                Ok(cells) => cells,
+                                Err(stop) => return Some(Err(stop)),
+                            },
+                            Err(stop) => return Some(Err(stop)),
+                        }
+                    }
+                    Err(stop) => return Some(Err(stop)),
+                };
+                let width = cell_width(&from.element);
+                let zero = self.b.constant(0, width);
+                let copied: Vec<Bits> = (0..cells)
+                    .map(|i| match from.cells.get(i) {
+                        Some(cell) => {
+                            let here = self.b.constant(i as i64, 32);
+                            let inside = self.b.slt(&here, &from.length);
+                            self.b.ite_bits(inside, cell, &zero)
+                        }
+                        None => zero.clone(),
+                    })
+                    .collect();
+                let length = length.clone();
+                Some(self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
+                    path.objects.push(Obj { array: Some(Array { element: from.element, length, cells: copied, refs: Vec::new() }), ..Obj::new(&class) });
+                    let o = path.objects.len() - 1;
+                    engine.push(path, Val::R(Some(o)));
+                    engine.advance(path);
+                }))
+            }
+            _ => None,
+        }
+    }
+
+    /// What `Integer.parseInt` makes of the content `s`: the value, whether it throws instead, and whether a unit
+    /// of `s` is outside ASCII, where the model does not say.
+    fn parsed_int(&mut self, s: &Array) -> (Bits, Lit, Lit) {
+        const WIDTH: usize = 40;
+        let unit = |engine: &mut Self, c: u8| engine.b.constant(i64::from(c), 16);
+        let (minus, plus, zero_digit, nine, ascii) = (unit(self, b'-'), unit(self, b'+'), unit(self, b'0'), unit(self, b'9'), self.b.constant(0x80, 16));
+        let zero = self.b.constant(0, 32);
+        let empty = self.b.eq(&s.length, &zero);
+        let (negative, signed) = match s.cells.first() {
+            Some(first) => {
+                let negative = self.b.eq(first, &minus);
+                let positive = self.b.eq(first, &plus);
+                (negative, self.b.or(negative, positive))
+            }
+            None => (FALSE, FALSE),
+        };
+        let one = self.b.constant(1, 32);
+        let only_sign = {
+            let is_one = self.b.eq(&s.length, &one);
+            self.b.and(signed, is_one)
+        };
+        let mut bad = vec![empty, only_sign];
+        let mut outside = Vec::new();
+        let ten = self.b.constant(10, WIDTH);
+        let limit = self.b.constant(1 << 32, WIDTH);
+        let mut value = self.b.constant(0, WIDTH);
+        let mut large = FALSE;
+        for (i, cell) in s.cells.iter().enumerate() {
+            let here = self.b.constant(i as i64, 32);
+            let inside = self.b.slt(&here, &s.length);
+            let beyond = self.b.ult(cell, &ascii);
+            outside.push(self.b.and(inside, -beyond));
+            let read = if i == 0 { self.b.and(inside, -signed) } else { inside };
+            let below = self.b.ult(cell, &zero_digit);
+            let above = self.b.ult(&nine, cell);
+            let digit = self.b.and(-below, -above);
+            bad.push(self.b.and(read, -digit));
+            // The value so far is below 2^32, so ten times it and a digit more is below 2^36.
+            let times = self.b.mul(&value, &ten);
+            let digit_value: Bits = cell[..4].iter().copied().chain(std::iter::repeat(FALSE)).take(WIDTH).collect();
+            let next = self.b.add(&times, &digit_value);
+            let fits = self.b.ult(&next, &limit);
+            let takes = self.b.all(&[read, digit, -large]);
+            let grows = self.b.and(takes, fits);
+            let overflows = self.b.and(takes, -fits);
+            value = self.b.ite_bits(grows, &next, &value);
+            large = self.b.or(large, overflows);
+        }
+        // The magnitude is at most 2^31 for a negative number and one less for any other.
+        let most_negative = self.b.constant(1 << 31, WIDTH);
+        let over = self.b.ult(&most_negative, &value);
+        let at_limit = self.b.eq(&value, &most_negative);
+        let positive_over = self.b.and(-negative, at_limit);
+        bad.extend([large, over, positive_over]);
+        let magnitude = self.b.trunc(&value, 32);
+        let negated = self.b.neg(&magnitude);
+        let result = self.b.ite_bits(negative, &negated, &magnitude);
+        (result, self.any(&bad), self.any(&outside))
+    }
+
+    /// The decimal digits of the int `value`, as `Integer.toString` writes them: how many units, and the units (a
+    /// cell for each of the eleven the least int has).
+    pub(super) fn decimal(&mut self, value: &Bits) -> (Bits, Vec<Bits>) {
+        const WIDTH: usize = 34;
+        let negative = self.b.negative(value);
+        let wide = self.b.sext(value, WIDTH);
+        let negated = self.b.neg(&wide);
+        let magnitude = self.b.ite_bits(negative, &negated, &wide);
+        // The digits from the least: the magnitude's remainders by ten, and how many it has.
+        let ten = self.b.constant(10, WIDTH);
+        let mut rest = magnitude;
+        let mut digits: Vec<Bits> = Vec::with_capacity(10);
+        let mut more: Vec<Lit> = Vec::with_capacity(10);
+        for _ in 0..10 {
+            let (quotient, remainder) = self.b.udivrem(&rest, &ten);
+            let digit: Bits = remainder[..4].iter().copied().chain(std::iter::repeat(FALSE)).take(16).collect();
+            let character = self.b.constant(i64::from(b'0'), 16);
+            digits.push(self.b.add(&digit, &character));
+            let none = self.b.is_zero(&quotient);
+            more.push(-none);
+            rest = quotient;
+        }
+        // `count`: the digits, at least one.
+        let mut count = self.b.constant(1, 32);
+        for (k, &has) in more.iter().enumerate().take(9) {
+            let this = self.b.constant(k as i64 + 2, 32);
+            count = self.b.ite_bits(has, &this, &count);
+        }
+        let one = self.b.constant(1, 32);
+        let with_sign = self.b.add(&count, &one);
+        let length = self.b.ite_bits(negative, &with_sign, &count);
+        // The unit at `i`: the sign first, then the digits from the most significant.
+        let minus = self.b.constant(i64::from(b'-'), 16);
+        let cells = (0..11)
+            .map(|i| {
+                let mut unit = self.b.constant(0, 16);
+                for (k, digit) in digits.iter().enumerate() {
+                    // Digit `k` (from the least) is at `length - 1 - k`.
+                    let offset = self.b.constant(i as i64 + 1 + k as i64, 32);
+                    let here = self.b.eq(&length, &offset);
+                    unit = self.b.ite_bits(here, digit, &unit);
+                }
+                if i == 0 {
+                    unit = self.b.ite_bits(negative, &minus, &unit);
+                }
+                unit
+            })
+            .collect();
+        (length, cells)
+    }
+}

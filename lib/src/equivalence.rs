@@ -574,6 +574,9 @@ pub(crate) fn unreproduced_cause(result: &JbmcResult) -> String {
     if !assumed.is_empty() {
         return format!("The path to it goes through what the tool's own checker approximates under --gaps assume ({}): an approximation says less of the call than the JDK's code does", assumed.join(", "));
     }
+    if let Some(loops) = result.native.as_ref().map(|n| &n.loops).filter(|l| !l.is_empty()) {
+        return format!("The path to it goes past a loop the tool's own checker covers by an invariant ({}): the invariant says less of the loop than its iterations do, so a state past it may be one no run reaches, and nothing is proved or refuted. A larger --unwind follows more iterations exactly", loops.join(", "));
+    }
     "A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value".into()
 }
 
@@ -2306,7 +2309,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     match last.verdict {
         Verdict::Verified => {
-            let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
+            let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{}{sharing}", last.version, last.properties, options.unwind, last.native.as_ref().map(crate::bmc::Stats::covered_loops).unwrap_or_default());
             let (assuming, assumed) = assumed_gaps(&last);
             let (relying, relied) = relied_contracts(&last);
             let _ = writeln!(out, "✓ {} {relation}{restriction}{assuming}{relying} ({how})", options.target);

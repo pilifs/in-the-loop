@@ -6,6 +6,9 @@
 //! class path and the JDK, which the engine has: each is modelled where the answer is one, under an assumption the
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
+//! - `Object.getClass()` of an object of an application class that the run made with `new`: that class's literal,
+//!   the one object a class literal of it is (JLS §15.8.2). Of any other object (an array, a lambda's, a JDK
+//!   class's) it is the JDK call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //! - `Class.getClassLoader()` of the literal of a class of the check's class path: the one loader object of the
 //!   run; of a JDK class, the JDK call it was.
@@ -34,9 +37,9 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!((owner, name, descriptor), (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;") | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;"))
 }
 
-/// Whether the engine models the instance call here, on a class literal.
+/// Whether the engine models the instance call here, on a class literal, or `getClass()` on an object it made.
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
-    matches!((owner, name, descriptor), (CLASS, "getName", "()Ljava/lang/String;") | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;"))
+    matches!((owner, name, descriptor), (CLASS, "getName", "()Ljava/lang/String;") | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;") | ("java/lang/Object", "getClass", "()Ljava/lang/Class;"))
 }
 
 /// The JDK constructors that only set their object's own fields, throw nothing and take nothing: the object is
@@ -61,9 +64,19 @@ impl Engine<'_> {
         s.cells.get(..length)?.iter().map(|c| self.b.constant_value(c).map(|u| u as u16)).collect()
     }
 
-    /// `Class.getName()` and `Class.getClassLoader()` on the object `o`: see the module's notes. `None` where the
-    /// call stays the JDK's.
+    /// `Class.getName()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
+    /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
+        if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
+            let class = path.objects[o].class.clone();
+            if class.starts_with('[') || path.objects[o].lambda.is_some() || !self.cp.is_application(&class) {
+                return None;
+            }
+            let literal = self.literal(path, Literal::Class(class), CLASS);
+            self.push(path, Val::R(Some(literal)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) {
             return None;
         }
@@ -77,7 +90,7 @@ impl Engine<'_> {
                 if !self.cp.is_application(&class) {
                     return None;
                 }
-                self.assumed.insert(CLASS_PATH_ASSUMPTION);
+                self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 self.literal(path, Literal::Loader, LOADER)
             }
         };
@@ -102,7 +115,7 @@ impl Engine<'_> {
                 // A binary name has no `/`: one that does names no class.
                 let internal = text.replace('.', "/");
                 let found = !text.contains('/') && self.cp.exists(&internal);
-                self.assumed.insert(CLASS_PATH_ASSUMPTION);
+                self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 if !found {
                     return Some(self.raise(path, "java/lang/ClassNotFoundException"));
                 }

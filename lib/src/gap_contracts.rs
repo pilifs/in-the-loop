@@ -643,11 +643,14 @@ fn setting_untimed(mode: gaps::GapMode, options: &ContractOptions, scan: Option<
     Ok((setting, Some(loaded), notes))
 }
 
-/// Refuses every trusted contract for a gap `scan` reached (every gap, without one) when there are more than `n`:
+/// Refuses every trusted contract for a gap `scan` reached (every gap, without one) or for a call the own checker
+/// models (which the scan does not list, and the contract replaces the model of) when there are more than `n`:
 /// a run under `--max-trust n` rests on at most `n` contracts nothing has checked, and their gaps go back to the
 /// agent, who can give a contract the JVM can test.
 fn limit_trust(loaded: &mut Loaded, n: usize, scan: Option<&gaps::Scan>) {
-    let reached = |id: &str| gap_of(id).is_some_and(|(g, _)| scan.is_none_or(|s| s.gaps.contains_key(&g)));
+    // A call the own checker models is no gap to the scan, yet a contract given for it stands in place of the
+    // model wherever the call is made: it counts as reached.
+    let reached = |id: &str| gap_of(id).is_some_and(|(g, _)| gaps::modelled_jdk_call(&g.owner, &g.name, &g.descriptor) || scan.is_none_or(|s| s.gaps.contains_key(&g)));
     let trusted: Vec<usize> = loaded.accepted.iter().enumerate().filter(|(_, a)| a.evidence == Evidence::Trusted && reached(&a.id)).map(|(i, _)| i).collect();
     if trusted.len() <= n {
         return;

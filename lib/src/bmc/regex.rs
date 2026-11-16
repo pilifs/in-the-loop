@@ -1,4 +1,4 @@
-//! `java.util.regex` as far as a claim states a glob with it, and `String.split` at one character.
+//! `java.util.regex` as far as a claim states a glob or a text's shape with it, and `String.split` at one character.
 //!
 //! A property that says what a wildcard pattern means, independently of the code that matches it, writes the
 //! pattern as a regular expression: each part between two `*` quoted, the parts joined by `.*`, the whole compiled
@@ -25,17 +25,31 @@
 //!   `NullPointerException` for null.
 //! - `Matcher.matches()` of such a Matcher: whether the pieces match the whole input.
 //!
-//! The syntax of a constant: a character that stands for itself (an ASCII letter or digit, the space and
-//! `! " # % & ' , - / : ; < = > @ _ ` ~`), `\` before an ASCII punctuation character, and `.`, each followed by at
-//! most one `*`. Nothing else: no class, group, alternative, anchor or other quantifier.
+//! The syntax of a constant, in ASCII: a character that stands for itself (a letter or digit, the space and
+//! `! " # % & ' , - / : ; < = > @ _ ` ~`), `\` before a punctuation character, `\t \n \r \f \e \a`, `.`, the
+//! classes `\d \w \s` and their complements `\D \W \S` (ASCII's, as without `UNICODE_CHARACTER_CLASS`), a class in
+//! brackets (characters, ranges, `\d \w \s` and escaped punctuation, negated by a leading `^`; no nested class and
+//! no intersection), a group (`(` or `(?:`, which differ only in what a match records, not in what matches),
+//! alternatives (`|`), the quantifiers `*`, `+`, `?`, `{n}`, `{n,}` and `{n,m}` (greedy: a reluctant one is the same
+//! language and is refused all the same, a possessive one is not), and the anchors `\A`, `^` (the input's
+//! beginning, without `MULTILINE`) and `\z`. Nothing else: no `$` (which also matches before a last line
+//! terminator), back reference, look-around, flag or Unicode class. A class or an alternative under
+//! `CASE_INSENSITIVE` is refused too.
+//!
+//! - `String.matches(String)` of a String whose content the engine holds and a regex that is such a constant:
+//!   whether the regex matches the whole String. `NullPointerException` for a null regex.
 //!
 //! What `matches()` says is membership in a regular language, so the order in which the JDK's matcher tries the
 //! alternatives does not matter. A literal unit matches itself; under `CASE_INSENSITIVE` (without
 //! `UNICODE_CASE`, which is refused) two units also match when both are ASCII letters that differ in case, as the
 //! JDK's `ASCII.toLower` comparison does; `.` matches any unit under `DOTALL`, and any but the line terminators
 //! `\n`, `\r`, `\u0085`, ` ` and ` ` without it. The JDK matches by code point, which differs from
-//! matching by unit only where a surrogate is: an input or a quoted part with a surrogate unit is the JDK call it
-//! was (a gap). Any other method of such a Matcher makes it an object the engine knows nothing of again.
+//! matching by unit only where a surrogate is matched: a quoted part with a surrogate unit is the JDK call it was
+//! (a gap), and so is an input with one where the regular expression has something a surrogate could match (`.`, a
+//! negated class, a class with one in a range). Where every atom is a set of units that has no surrogate, a
+//! surrogate in the input matches nothing by unit and nothing by code point (alone it is its own code point, in a
+//! pair it is part of a supplementary one, and neither is in the set), so matching by unit is the JDK's matching.
+//! Any other method of such a Matcher makes it an object the engine knows nothing of again.
 
 use super::*;
 
@@ -66,11 +80,281 @@ pub(super) struct Split {
     parts: Bits,
 }
 
-/// What matches one unit: any, or one constant.
+/// What matches one unit: any, one constant, or a class (the units of its ranges, or every other unit when it
+/// is negated).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Atom {
     Any,
     Unit(u16),
+    Class(Vec<(u16, u16)>, bool),
+}
+
+impl Atom {
+    /// Whether the atom may match a surrogate unit, where matching by unit is not the JDK's matching.
+    fn wide(&self) -> bool {
+        let surrogates = (0xD800u16, 0xDFFFu16);
+        match self {
+            Atom::Any => true,
+            Atom::Unit(u) => (surrogates.0..=surrogates.1).contains(u),
+            Atom::Class(_, true) => true,
+            Atom::Class(ranges, false) => ranges.iter().any(|(lo, hi)| *lo <= surrogates.1 && *hi >= surrogates.0),
+        }
+    }
+}
+
+/// A constant regular expression in the module's syntax.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Node {
+    One(Atom),
+    Seq(Vec<Node>),
+    Alt(Vec<Node>),
+    /// At least the first number of times, and at most the second, or any number where there is none.
+    Repeat(Box<Node>, u32, Option<u32>),
+    /// The input's beginning (`\A`, `^`) and its end (`\z`).
+    Begin,
+    End,
+}
+
+impl Node {
+    fn wide(&self) -> bool {
+        match self {
+            Node::One(atom) => atom.wide(),
+            Node::Seq(nodes) | Node::Alt(nodes) => nodes.iter().any(Node::wide),
+            Node::Repeat(node, _, _) => node.wide(),
+            Node::Begin | Node::End => false,
+        }
+    }
+
+    /// Whether the expression is letters only as [`Engine::atom_matches`] folds them: no class and no alternative.
+    fn folds(&self) -> bool {
+        match self {
+            Node::One(Atom::Class(..)) | Node::Alt(_) => false,
+            Node::One(_) | Node::Begin | Node::End => true,
+            Node::Seq(nodes) => nodes.iter().all(Node::folds),
+            Node::Repeat(node, _, _) => node.folds(),
+        }
+    }
+
+    /// The expression as atoms in sequence, each once or any number of times, where it is that.
+    fn flat(&self) -> Option<Vec<(Atom, bool)>> {
+        let Node::Seq(nodes) = self else { return None };
+        nodes
+            .iter()
+            .map(|node| match node {
+                Node::One(atom @ (Atom::Any | Atom::Unit(_))) => Some((atom.clone(), false)),
+                Node::Repeat(inner, 0, None) => match &**inner {
+                    Node::One(atom @ (Atom::Any | Atom::Unit(_))) => Some((atom.clone(), true)),
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect()
+    }
+}
+
+/// The most a counted quantifier may count to here.
+const MOST_REPEATS: u32 = 1024;
+
+/// A reader of a constant regular expression's units.
+struct Reader<'a> {
+    units: &'a [u16],
+    at: usize,
+}
+
+impl Reader<'_> {
+    /// The next unit as an ASCII character, if there is one and it is one.
+    fn peek(&self) -> Option<char> {
+        self.units.get(self.at).and_then(|u| char::from_u32(u32::from(*u))).filter(char::is_ascii)
+    }
+
+    fn done(&self) -> bool {
+        self.at >= self.units.len()
+    }
+
+    fn eat(&mut self, c: char) -> bool {
+        let is = self.peek() == Some(c);
+        self.at += usize::from(is);
+        is
+    }
+
+    fn alternatives(&mut self) -> Option<Node> {
+        let mut branches = vec![self.sequence()?];
+        while self.eat('|') {
+            branches.push(self.sequence()?);
+        }
+        Some(if branches.len() == 1 { branches.pop().expect("a branch") } else { Node::Alt(branches) })
+    }
+
+    fn sequence(&mut self) -> Option<Node> {
+        let mut nodes = Vec::new();
+        while !self.done() && !matches!(self.peek()?, '|' | ')') {
+            let atom = self.atom()?;
+            nodes.push(self.quantified(atom)?);
+        }
+        Some(Node::Seq(nodes))
+    }
+
+    fn atom(&mut self) -> Option<Node> {
+        let c = self.peek()?;
+        self.at += 1;
+        Some(match c {
+            '.' => Node::One(Atom::Any),
+            '^' => Node::Begin,
+            '\\' => {
+                let e = self.peek()?;
+                self.at += 1;
+                match e {
+                    'A' => Node::Begin,
+                    'z' => Node::End,
+                    'D' | 'W' | 'S' => Node::One(Atom::Class(shorthand(e.to_ascii_lowercase())?, true)),
+                    'd' | 'w' | 's' => Node::One(Atom::Class(shorthand(e)?, false)),
+                    _ => Node::One(Atom::Unit(escaped(e)?)),
+                }
+            }
+            '[' => {
+                let negated = self.eat('^');
+                let mut ranges = Vec::new();
+                loop {
+                    let c = self.peek()?;
+                    self.at += 1;
+                    let low = match c {
+                        ']' if !ranges.is_empty() => break,
+                        ']' | '[' => return None,
+                        '&' if self.peek() == Some('&') => return None,
+                        '\\' => {
+                            let e = self.peek()?;
+                            self.at += 1;
+                            if let Some(class) = shorthand(e) {
+                                ranges.extend(class);
+                                continue;
+                            }
+                            escaped(e)?
+                        }
+                        c if (' '..='~').contains(&c) => c as u16,
+                        _ => return None,
+                    };
+                    // A range, unless the `-` is the class's last character.
+                    if self.peek() == Some('-') && self.units.get(self.at + 1) != Some(&u16::from(b']')) {
+                        self.at += 1;
+                        let c = self.peek()?;
+                        self.at += 1;
+                        let high = match c {
+                            '[' | ']' => return None,
+                            '\\' => {
+                                let e = self.peek()?;
+                                self.at += 1;
+                                escaped(e)?
+                            }
+                            c if (' '..='~').contains(&c) => c as u16,
+                            _ => return None,
+                        };
+                        if high < low {
+                            return None;
+                        }
+                        ranges.push((low, high));
+                    } else {
+                        ranges.push((low, low));
+                    }
+                }
+                Node::One(Atom::Class(ranges, negated))
+            }
+            '(' => {
+                if self.eat('?') && !self.eat(':') {
+                    return None;
+                }
+                let inner = self.alternatives()?;
+                if !self.eat(')') {
+                    return None;
+                }
+                inner
+            }
+            c if c.is_ascii_alphanumeric() || " !\"#%&',-/:;<=>@_`~".contains(c) => Node::One(Atom::Unit(c as u16)),
+            _ => return None,
+        })
+    }
+
+    fn number(&mut self) -> Option<u32> {
+        let start = self.at;
+        let mut n: u32 = 0;
+        while let Some(d) = self.peek().and_then(|c| c.to_digit(10)) {
+            n = n.checked_mul(10)?.checked_add(d)?;
+            self.at += 1;
+        }
+        (self.at > start && n <= MOST_REPEATS).then_some(n)
+    }
+
+    fn quantified(&mut self, node: Node) -> Option<Node> {
+        let (least, most) = match self.peek() {
+            Some('*') => (0, None),
+            Some('+') => (1, None),
+            Some('?') => (0, Some(1)),
+            Some('{') => (0, None),
+            _ => return Some(node),
+        };
+        let (least, most) = if self.eat('{') {
+            let least = self.number()?;
+            let most = if self.eat(',') {
+                if self.peek() == Some('}') {
+                    None
+                } else {
+                    Some(self.number()?)
+                }
+            } else {
+                Some(least)
+            };
+            if !self.eat('}') || most.is_some_and(|m| m < least) {
+                return None;
+            }
+            (least, most)
+        } else {
+            self.at += 1;
+            (least, most)
+        };
+        // An anchor is not repeated here, nor a quantifier quantified: reluctant, possessive, or stacked.
+        if matches!(node, Node::Begin | Node::End) || matches!(self.peek(), Some('*' | '+' | '?' | '{')) {
+            return None;
+        }
+        Some(Node::Repeat(Box::new(node), least, most))
+    }
+}
+
+/// The units of `\d`, `\w` and `\s` without `UNICODE_CHARACTER_CLASS`.
+fn shorthand(e: char) -> Option<Vec<(u16, u16)>> {
+    let range = |lo: char, hi: char| (lo as u16, hi as u16);
+    match e {
+        'd' => Some(vec![range('0', '9')]),
+        'w' => Some(vec![range('a', 'z'), range('A', 'Z'), range('_', '_'), range('0', '9')]),
+        's' => Some(vec![range(' ', ' '), (0x09, 0x0D)]),
+        _ => None,
+    }
+}
+
+/// The unit `\` and `e` stand for: a punctuation character itself, or a control character by its letter.
+fn escaped(e: char) -> Option<u16> {
+    Some(match e {
+        't' => 0x09,
+        'n' => 0x0A,
+        'r' => 0x0D,
+        'f' => 0x0C,
+        'a' => 0x07,
+        'e' => 0x1B,
+        e if e.is_ascii_punctuation() => e as u16,
+        _ => return None,
+    })
+}
+
+/// The constant regular expression of these units, in the module's syntax; `None` for any other.
+pub fn parse_constant(units: &[u16]) -> Option<Node> {
+    let mut reader = Reader { units, at: 0 };
+    let node = reader.alternatives()?;
+    reader.done().then_some(node)
+}
+
+/// Whether `Pattern.compile` of this constant gives a Pattern of pieces ([`Engine::compile_source`]): one in the
+/// module's syntax that is more than atoms in sequence. For [`super::gaps::scan`], which counts the call as
+/// reproduced where the engine does not meet it as a gap.
+pub fn compiles_constant(units: &[u16]) -> bool {
+    parse_constant(units).is_some_and(|node| node.flat().is_none())
 }
 
 /// A piece of a regular expression: an atom once, an atom any number of times, a quoted text (and the part of a
@@ -82,6 +366,21 @@ pub(super) enum Kind {
     Star(Atom),
     Text(Text, Option<(Rc<Split>, usize)>),
     Parts(Rc<Split>, Vec<(Atom, bool)>),
+    /// A constant regular expression that is more than atoms in sequence.
+    Node(Rc<Node>),
+}
+
+impl Kind {
+    /// Whether the piece may match a surrogate unit of the input ([`Atom::wide`]). A quoted text matches its own
+    /// units, which are looked at where it is matched.
+    fn wide(&self) -> bool {
+        match self {
+            Kind::One(atom) | Kind::Star(atom) => atom.wide(),
+            Kind::Text(..) => false,
+            Kind::Parts(_, between) => between.iter().any(|(atom, _)| atom.wide()),
+            Kind::Node(node) => node.wide(),
+        }
+    }
 }
 
 /// A piece that is there when `when` holds, and matches the empty sequence otherwise (an element of a joined
@@ -113,7 +412,7 @@ impl Regex {
 
 /// Whether the engine models `String.name(descriptor)` here.
 pub fn models_string(name: &str, descriptor: &str) -> bool {
-    (name, descriptor) == ("split", "(Ljava/lang/String;I)[Ljava/lang/String;")
+    matches!((name, descriptor), ("split", "(Ljava/lang/String;I)[Ljava/lang/String;") | ("matches", "(Ljava/lang/String;)Z"))
 }
 
 /// Whether the engine models the static call here, where its arguments let it.
@@ -122,30 +421,6 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
         (owner, name, descriptor),
         (PATTERN, "quote", "(Ljava/lang/String;)Ljava/lang/String;") | (PATTERN, "compile", "(Ljava/lang/String;I)Ljava/util/regex/Pattern;") | (STRING, "join", "(Ljava/lang/CharSequence;[Ljava/lang/CharSequence;)Ljava/lang/String;")
     )
-}
-
-/// The pieces of a constant regular expression in the module's syntax, each an atom with or without a star as
-/// `(atom, starred)`; `None` for any other.
-pub fn parse(units: &[u16]) -> Option<Vec<(Atom, bool)>> {
-    let ascii = |u: u16| char::from_u32(u32::from(u)).filter(char::is_ascii);
-    let mut pieces = Vec::new();
-    let mut i = 0;
-    while i < units.len() {
-        let atom = match ascii(units[i])? {
-            '.' => Atom::Any,
-            '\\' => {
-                i += 1;
-                Atom::Unit(ascii(*units.get(i)?).filter(char::is_ascii_punctuation)? as u16)
-            }
-            c if c.is_ascii_alphanumeric() || " !\"#%&',-/:;<=>@_`~".contains(c) => Atom::Unit(c as u16),
-            _ => return None,
-        };
-        i += 1;
-        let starred = units.get(i) == Some(&u16::from(b'*'));
-        i += usize::from(starred);
-        pieces.push((atom, starred));
-    }
-    Some(pieces)
 }
 
 /// The character `String.split` splits at without a Pattern, for a regex of these units: the JDK's fast path.
@@ -174,7 +449,21 @@ impl Engine<'_> {
             return Some(pieces.clone());
         }
         let units = self.constant_units(path, o)?;
-        Some(parse(&units)?.into_iter().map(|(atom, starred)| Piece { when: TRUE, kind: if starred { Kind::Star(atom) } else { Kind::One(atom) } }).collect())
+        let node = parse_constant(&units)?;
+        Some(match node.flat() {
+            Some(atoms) => atoms.into_iter().map(|(atom, starred)| Piece { when: TRUE, kind: if starred { Kind::Star(atom) } else { Kind::One(atom) } }).collect(),
+            None => vec![Piece { when: TRUE, kind: Kind::Node(Rc::new(node)) }],
+        })
+    }
+
+    /// `String.matches(regex)` on a String of content `s`: see the module's notes. `None` where the call stays
+    /// the JDK's.
+    pub(super) fn string_matches(&mut self, path: &mut Path, s: &Array, args: &[Val]) -> Option<Step> {
+        let [Val::R(regex)] = args else { return None };
+        let Some(regex) = *regex else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+        let pieces = self.regex_source(path, regex).filter(|_| path.objects[regex].regex.is_none())?;
+        let (truth, surrogate) = self.matches(&pieces, 0, &Text::of(s));
+        Some(self.branch_gap_or(path, surrogate, (GapKind::JdkPrimitiveMethod, STRING, "matches", "(Ljava/lang/String;)Z"), move |engine, path| engine.push_truth(path, truth)))
     }
 
     /// `String.split(regex, limit)` on the String `o` of content `s`: see the module's notes.
@@ -317,6 +606,9 @@ impl Engine<'_> {
                 let Some(regex) = *regex else { return null(self, path) };
                 let flags = self.b.constant_value(flags).filter(|f| f & !(CASE_INSENSITIVE | DOTALL) == 0)?;
                 let pieces = self.regex_source(path, regex)?;
+                if flags & CASE_INSENSITIVE != 0 && pieces.iter().any(|piece| matches!(&piece.kind, Kind::Node(node) if !node.folds())) {
+                    return None;
+                }
                 self.regex_object(path, PATTERN, Regex::Pattern(pieces, flags))
             }
             _ => return None,
@@ -384,11 +676,16 @@ impl Engine<'_> {
         Ok(Some(Piece { when: TRUE, kind: Kind::Parts(split, atoms) }))
     }
 
-    /// `Pattern.compile(String)` of the String `o` that is a regular expression by its tag: a Pattern of its
-    /// pieces. `None` for any other String.
+    /// `Pattern.compile(String)` of the String `o` that is a regular expression by its tag, or a constant in the
+    /// module's syntax that is more than atoms in sequence: a Pattern of its pieces. `None` for any other String.
     pub(super) fn compile_source(&mut self, path: &mut Path, o: usize) -> Option<Step> {
-        let Some(Regex::Source(pieces)) = path.objects[o].regex.as_deref() else { return None };
-        let pieces = pieces.clone();
+        let pieces = match path.objects[o].regex.as_deref() {
+            Some(Regex::Source(pieces)) => pieces.clone(),
+            Some(_) => return None,
+            // A constant with a class, a group, an alternative or a counted quantifier: one the plain form
+            // ([`crate::jdk_facts::plain_regex`]) leaves out, or says nothing of the matching of.
+            None => self.regex_source(path, o).filter(|pieces| pieces.iter().any(|piece| matches!(piece.kind, Kind::Node(_))))?,
+        };
         let pattern = self.regex_object(path, PATTERN, Regex::Pattern(pieces, 0));
         self.push(path, Val::R(Some(pattern)));
         self.advance(path);
@@ -436,7 +733,9 @@ impl Engine<'_> {
                 surrogates.push(engine.b.all(&[when, inside, is]));
             }
         };
-        inside_surrogates(self, input, TRUE, &mut surrogates);
+        if pieces.iter().any(|piece| piece.when != FALSE && piece.kind.wide()) {
+            inside_surrogates(self, input, TRUE, &mut surrogates);
+        }
         let units: Vec<Bits> = input.cells.iter().map(|c| self.folded(c, insensitive)).collect();
         // `reach[j]`: the pieces so far match the first `j` units of the input. A unit at or past the input's
         // length may be reached too, and never counts: positions only grow, and the end asks for the length.
@@ -501,6 +800,7 @@ impl Engine<'_> {
                     }
                     reached
                 }
+                Kind::Node(node) => self.node_step(&reach, node, flags, input, &units),
             };
             reach = match piece.when {
                 TRUE => next,
@@ -530,6 +830,62 @@ impl Engine<'_> {
         }
     }
 
+    /// The positions the pieces so far and then `node` reach, from those `reach`ed.
+    fn node_step(&mut self, reach: &[Lit], node: &Node, flags: i64, input: &Text, units: &[Bits]) -> Vec<Lit> {
+        let either = |engine: &mut Self, a: &[Lit], b: &[Lit]| -> Vec<Lit> { a.iter().zip(b).map(|(x, y)| engine.b.or(*x, *y)).collect() };
+        match node {
+            Node::One(atom) => self.atom_step(reach, atom, false, flags, input, units),
+            Node::Seq(nodes) => nodes.iter().fold(reach.to_vec(), |reach, node| self.node_step(&reach, node, flags, input, units)),
+            Node::Alt(nodes) => {
+                let mut any = vec![FALSE; reach.len()];
+                for node in nodes {
+                    let one = self.node_step(reach, node, flags, input, units);
+                    any = either(self, &any, &one);
+                }
+                any
+            }
+            Node::Repeat(inner, least, most) => {
+                let mut reached = reach.to_vec();
+                for _ in 0..*least {
+                    reached = self.node_step(&reached, inner, flags, input, units);
+                }
+                match (most, &**inner) {
+                    (Some(most), _) => {
+                        let mut any = reached.clone();
+                        for _ in *least..*most {
+                            reached = self.node_step(&reached, inner, flags, input, units);
+                            any = either(self, &any, &reached);
+                        }
+                        any
+                    }
+                    (None, Node::One(atom)) => self.atom_step(&reached, atom, true, flags, input, units),
+                    // Each further time either adds nothing or takes a unit more: as many times as there are units.
+                    (None, _) => {
+                        let mut any = reached.clone();
+                        for _ in 0..units.len() {
+                            reached = self.node_step(&reached, inner, flags, input, units);
+                            if reached.iter().all(|&l| l == FALSE) {
+                                break;
+                            }
+                            any = either(self, &any, &reached);
+                        }
+                        any
+                    }
+                }
+            }
+            Node::Begin => reach.iter().enumerate().map(|(j, &l)| if j == 0 { l } else { FALSE }).collect(),
+            Node::End => reach
+                .iter()
+                .enumerate()
+                .map(|(j, &l)| {
+                    let here = self.b.constant(j as i64, 32);
+                    let is_end = self.b.eq(&input.length, &here);
+                    self.b.and(l, is_end)
+                })
+                .collect(),
+        }
+    }
+
     /// The positions the pieces so far and then `atom` reach, from those `reach`ed: once, or any number of times.
     fn atom_step(&mut self, reach: &[Lit], atom: &Atom, starred: bool, flags: i64, input: &Text, units: &[Bits]) -> Vec<Lit> {
         let n = units.len();
@@ -556,6 +912,27 @@ impl Engine<'_> {
                 let lowered = if flags & CASE_INSENSITIVE != 0 && (u16::from(b'A')..=u16::from(b'Z')).contains(u) { u | 0x20 } else { *u };
                 let constant = self.b.constant(i64::from(lowered), 16);
                 self.b.eq(unit, &constant)
+            }
+            Atom::Class(ranges, negated) => {
+                let within: Vec<Lit> = ranges
+                    .iter()
+                    .map(|&(lo, hi)| {
+                        if lo == hi {
+                            let constant = self.b.constant(i64::from(lo), 16);
+                            return self.b.eq(raw, &constant);
+                        }
+                        let (low, high) = (self.b.constant(i64::from(lo), 16), self.b.constant(i64::from(hi), 16));
+                        let below = self.b.ult(raw, &low);
+                        let above = self.b.ult(&high, raw);
+                        self.b.and(-below, -above)
+                    })
+                    .collect();
+                let is = self.any(&within);
+                if *negated {
+                    -is
+                } else {
+                    is
+                }
             }
             Atom::Any if flags & DOTALL != 0 => TRUE,
             Atom::Any => {

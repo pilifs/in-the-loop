@@ -622,9 +622,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         summaries.push(crate::bmc::Summary { owner: signature.class.clone(), name: signature.name.clone(), descriptor: signature.descriptor.clone(), stub: crate::summary::stub(i) });
     }
     let pure = options.summary.then(|| (class_internal.clone(), method_name.clone(), method.descriptor.clone()));
-    let generate = |assume: Option<&str>, assertion: Option<&str>| harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, &signals, options.max_array_length);
+    let generate = |assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]| harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, signals, options.max_array_length);
     // With such members the claim's class is needed whatever the expressions are.
-    let own = if members.is_empty() { generate(options.assume.as_deref(), options.assert.as_deref()) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
+    let own = if members.is_empty() { generate(options.assume.as_deref(), options.assert.as_deref(), &signals) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
     let harness = match own {
         Ok(h) => h,
         // Java the tool's own compiler doesn't take (a lambda, a stream, a library call) is javac's ([`crate::claim`]):
@@ -644,6 +644,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             };
             let mut methods: Vec<(&str, &[harness::Param], &str)> = options.assume.iter().map(|a| ("assume", params.as_slice(), a.as_str())).collect();
             methods.extend(assertion.iter().map(|a| ("holds", names.as_slice(), a.as_str())));
+            // A throws clause's condition is Java over the parameters too: each is a method of its own.
+            let thrown_names: Vec<String> = (0..signals.len()).map(|i| format!("thrown{i}")).collect();
+            methods.extend(signals.iter().zip(&thrown_names).map(|(signal, name)| (name.as_str(), params.as_slice(), signal.when.as_str())));
+            let thrown_calls: Vec<Signal> = signals.iter().zip(&thrown_names).map(|(signal, name)| Signal { class: signal.class.clone(), when: harness::expr::claim_call(name, &params) }).collect();
             let mut entries: Vec<PathBuf> = options.classes.clone();
             entries.extend(options.classpath.iter().cloned());
             let javac = match crate::claim::compile(&harness_dir, &entries, &methods, &members, options.java_home.as_deref()) {
@@ -652,10 +656,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 Err(problem) => return refuse(&mut out, line, format!("the property is not well-formed: javac does not take its expressions, its measure or its lemmas' as Java: {problem}")),
             };
             let holds_call = assertion.as_ref().map(|_| harness::expr::claim_call("holds", &names));
-            let mut h = match generate(assume_call.as_deref(), holds_call.as_deref()) {
+            let mut h = match generate(assume_call.as_deref(), holds_call.as_deref(), &thrown_calls) {
                 Ok(h) => h,
                 Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
             };
+            for ((kept, _), (signal, call)) in h.signals.iter_mut().zip(signals.iter().zip(&thrown_calls)) {
+                h.source = h.source.replace(call.when.as_str(), &signal.when);
+                *kept = signal.clone();
+            }
             // The statement and the readers' source keep the expressions as given.
             if let Some(enter) = &enter_call {
                 h.source = h.source.replace(&format!(" && {enter}"), "").replace(enter.as_str(), "true");
@@ -965,7 +973,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     match last.verdict {
         Verdict::Verified => {
-            let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
+            let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{}", last.version, last.properties, options.unwind, last.native.as_ref().map(crate::bmc::Stats::covered_loops).unwrap_or_default());
             let (assuming, assumed) = crate::equivalence::assumed_gaps(&last);
             let (relying, relied) = crate::equivalence::relied_contracts(&last);
             let _ = writeln!(out, "✓ {} {claim} on {every}{where_}{and_throws}{assuming}{relying} ({how})", options.target);
@@ -1170,7 +1178,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // What a throws clause required of this input, when that is what failed.
             let expected = match (applying(&arguments), thrown) {
                 (Some(i), _) => Some(format!("throws {}, since {}", harness.signals[i].0.java_name(), harness.signals[i].0.when)),
-                (None, Some(_)) if !harness.signals.is_empty() => Some("a normal return: no throws clause applies to this input".to_string()),
+                // Where each condition can be evaluated here: one javac compiled is the harness's to evaluate.
+                (None, Some(_)) if !harness.signals.is_empty() && harness.signals.iter().all(|(_, when)| !when.has_call()) => Some("a normal return: no throws clause applies to this input".to_string()),
                 _ => None,
             };
             // An assertion that cannot be evaluated on the outcome (an index out of bounds) is what failed.

@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-053833-the-proof-tier-after-example-287-s-engin",
+  "title": "The proof tier after example 287's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+  "description": "Runs the proof tier's command (lib/tools/test_costs.py run --tier proof prints it) with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as VF-030 asks: the job after example 286's changes stopped at heap.rs, so the binaries after it never ran. There are no Python proof tests. The change behind it touches what nearly every proof-tier test runs, the own checker (lib/src/bmc): a loop beyond the bound is now covered by an invariant where one is found and no longer ends the check, clauses reach the solver only when a call depends on them once a loop is summarized, the operations checked after an answer are the ones the call depends on, a path's models share their pages, and constant regexes, text as bytes and digits, StringBuilder appends, Object.getClass and String.toString are modelled. The default run passes inline.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/bmc/loops.rs",
+      "lib/src/bmc/bits.rs",
+      "lib/src/bmc/regex.rs",
+      "lib/src/bmc/strings.rs"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test but VF-018's three passes",
+  "submitted": {
+    "at": "2026-11-16T05:38:33+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "2h",
+    "timeout": "4h",
+    "notes": "the job after example 286 ran conformance and heap in 1h34m at 3.3 GiB peak before stopping; the three skipped tests were about an hour each of that, and the binaries after heap have not been timed together"
+  },
+  "steps": [
+    {
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

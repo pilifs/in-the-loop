@@ -56,14 +56,6 @@ public final class Outside {
         }
     }
 
-    /** toString called through Object: a String's is itself, and the call is the JDK's Object.toString. */
-    public static void toStringAsObject(String s) {
-        Object o = s;
-        if (s != null && o.toString() != s) {
-            throw new AssertionError();
-        }
-    }
-
     /** subSequence called through CharSequence. */
     public static void subSequence(String s) {
         CharSequence c = s;
@@ -216,10 +208,12 @@ public final class Outside {
         }
     }
 
-    // java.util.regex.Pattern and java.util.Objects: all but compile of a plain constant and requireNonNull.
+    // java.util.regex.Pattern and java.util.Objects: all but compile of a constant of the plain form or the checker's
+    // syntax, matcher(..).matches() on one of the latter, and requireNonNull.
 
-    public static void patternWithAClass(String s) {
-        if (Pattern.compile("[a-z]+") == null) {
+    /** A reluctant quantifier: outside the plain form and the checker's own syntax (bmc/regex.rs). */
+    public static void patternOutsideTheSyntax(String s) {
+        if (Pattern.compile("[a-z]+?") == null) {
             throw new AssertionError();
         }
     }
@@ -230,8 +224,9 @@ public final class Outside {
         }
     }
 
-    public static void patternMatcher(String s) {
-        if (s != null && Pattern.compile("a+").matcher(s) == null) {
+    /** A Pattern's methods but matcher: its matcher(..).matches() is the checker's (values.Operations.patternMatches). */
+    public static void patternsPattern(String s) {
+        if (s != null && Pattern.compile("a+").pattern() == null) {
             throw new AssertionError();
         }
     }

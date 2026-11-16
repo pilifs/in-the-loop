@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-053832-example-287-vulnerable-security-through",
+  "title": "Example 287 vulnerable-security through the adapter entry: the frozen public claim on 6.3.7, expected refuted",
+  "description": "The frozen claim claims/overlong-candidate-rejected.json, unchanged, run by examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example287.adapter.PasswordMatchAdapter#matches(String candidate, String storedHash), the entry the claim's first assumption names (one call of new BCryptPasswordEncoder().matches), with the claim's assumption, assertion and throws clause as they are written, compiled by javac and run as bytecode (a throws clause's condition is now compiled as the other two are), at the claim's bound of 80 code units. The class path is the revision's pinned JARs, each checked against its SHA-256, and the adapter compiled against them. This is a proof beside the example route, whose own attempt of the task stops at BCryptPasswordEncoder's receiver (seven constructors, no construction plan, VF-027). Until this change the checker refused the encoder's constructor (Object.getClass, spring-jcl 6's LogAdapter initializer, which keeps a method reference per logging library), CharSequence.toString, the encoder's pattern, String.getBytes(UTF_8) and every loop of bcrypt beyond the bound; the loops are now covered by invariants it finds and proves (lib/src/bmc/loops.rs). 6.3.7 returns for a candidate of more than 72 UTF-8 bytes; expected refuted on the least such input.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "287"
+    ],
+    "paths": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+      "lib/src/bmc/loops.rs",
+      "lib/src/bmc/bytes.rs",
+      "lib/src/bmc/runtime.rs",
+      "lib/src/property.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM'",
+  "submitted": {
+    "at": "2026-11-16T05:38:32+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "12G",
+    "duration": "30m",
+    "timeout": "1h30m",
+    "notes": "as the guard jobs, with the candidate's UTF-8 encoding (80 code units, 240 byte cells) and the encoder's constructor before it. One capped probe of fixed-security (280 s, 4 GiB, beside a test run) did not finish: 345 paths, 9.4 million variables and five loops covered by then, so the time and memory here are a guess from the guard's 250 s"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 80",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-287",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-287/vulnerable-security/outcome.json",
+    "verification/.work-287/vulnerable-security/work/harness/PropertyHarness.java",
+    "verification/.work-287/vulnerable-security/work/harness/PropertyClaim.java"
+  ]
+}

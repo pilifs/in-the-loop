@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-053832-example-287-fixed-guard-the-byte-array-g",
+  "title": "Example 287 fixed-guard: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected established",
+  "description": "The frozen claim claims/overlong-bytes-rejected.json on the task's pinned release, by jvmcontract's own checker under strict gaps, through the example route with no adapter: BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes and never returns true for such an array, for every valid stored hash (minor a, b or y, cost 04 to 30). The task's recorded refusal was at checkpw's String parameter in a property check (VF-027), which example 286's change lifted; the check then stopped at String.matches in the claim's assumption, at Integer.parseInt, and at the key schedule's first loop beyond the bound. jvmcontract's own checker now runs the claim as it is written: the assumption's regular expression (classes, a group of alternatives, a count of 53) is a formula over the hash's 60 code units, Integer.parseInt, Arrays.copyOf, the StringBuilder appends, String.getBytes(UTF_8) and MessageDigest.isEqual are modelled, and the loops that go round more often than --unwind 16 (the key schedule's 18 and 512 iterations, the 2^cost rounds, the 64 encryptions) are covered by invariants the checker finds and proves by induction (lib/src/bmc/loops.rs), with the S-boxes any values past them. Nothing in the claim, its bound (arrays and Strings of up to 80) or the route's command changed. 6.3.8's hashpw(byte[], String, boolean) refuses more than 72 bytes before the salt is read; expected established for every array of up to 80 bytes, with the loops named in the verdict.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/loops.rs",
+      "lib/src/bmc/bytes.rs",
+      "lib/src/bmc/regex.rs"
+    ],
+    "examples": [
+      "287"
+    ]
+  },
+  "expected": "example 287 task fixed-guard gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-16T05:38:32+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "15m",
+    "timeout": "1h",
+    "notes": "one capped probe each (5 minutes, 4 GiB, the verifier alone on the pinned JARs, beside a test run): on 6.3.8 the claim was proved in 250 s with six loops covered by invariants; on 6.3.7 the violating path was found after about 237 s and the search for the least witness, some 300 solver questions at 0.2 s each, was cut by the probe's limit, so the route's 600 s should hold both. The time besides is the acquisition, the gap scan, the JVM runs and the release build of lib/ if its tree isn't cached"
+  },
+  "steps": [
+    {
+      "name": "example 287 task fixed-guard (prove)",
+      "run": "python3 examples/tools/build.py 287 --task fixed-guard",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard"
+  ]
+}

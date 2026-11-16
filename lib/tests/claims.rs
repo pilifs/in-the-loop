@@ -1,12 +1,13 @@
 //! Claims written in Java beyond the tool's own expression compiler, and what the own checker needs to run them:
 //! String and `String[]` parameters, the String and StringBuilder methods a library's string code calls, lambdas
-//! and the stream models, `java.util.regex` as far as a claim states a glob with it, proofs by induction and
-//! checked summaries (`lib/src/claim.rs`, `lib/src/summary.rs`, `lib/src/bmc/strings.rs`, `lib/src/bmc/regex.rs`).
+//! and the stream models, `java.util.regex` as far as a claim states a glob or a hash's shape with it, text as
+//! bytes and digits, proofs by induction and checked summaries (`lib/src/claim.rs`, `lib/src/summary.rs`,
+//! `lib/src/bmc/strings.rs`, `lib/src/bmc/regex.rs`, `lib/src/bmc/bytes.rs`).
 //!
 //! Each fixture method under `tests/fixtures/claims` returns whether the JDK's answer is the one a definition
 //! written out over `charAt` gives, so a proof of `result` is a proof that the model and the definition agree on
-//! every input of the bound; the same methods hold on a JVM by `R.main`-style sampling when the models are written
-//! (`lib/README.md`).
+//! every input of the bound; the same methods hold on a JVM by sampling, which `claims.Samples` does for the
+//! methods of `B` (`lib/README.md`).
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -116,6 +117,65 @@ fn a_glob_stated_with_the_regex_library_matches_as_the_matcher_written_out() {
     for method in ["parts", "constant", "exact", "ignoringCase"] {
         proved(classes, &format!("claims.R#{method}"), 3);
     }
+}
+
+/// What a password check does with a hash's text (`lib/src/bmc/bytes.rs`, the constant regexes of
+/// `lib/src/bmc/regex.rs`, a builder's appends): each model is its definition written out, on every input of the
+/// bound, and each definition is the JDK's method on a JVM, on samples.
+#[test]
+fn text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for method in ["utf8", "equal", "copied", "parsed", "appended", "digits", "excluded"] {
+        proved(classes, &format!("claims.B#{method}"), 3);
+    }
+    for method in ["shaped", "anchored"] {
+        proved(classes, &format!("claims.B#{method}"), 9);
+    }
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Samples", "20000"]).output().expect("java runs");
+    assert!(sampled.status.success(), "{}", String::from_utf8_lossy(&sampled.stderr));
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "all hold on 20000 samples");
+    // What the models do not say stays the JDK's call: another charset's object, a digit outside ASCII.
+    for (method, why) in [("latin", "reads static field java.nio.charset.StandardCharsets.ISO_8859_1"), ("unicodeDigits", "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I")] {
+        let o = run(&options(classes, &format!("claims.B#{method}"), 3, method));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains(why), "{}", o.output);
+    }
+}
+
+/// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is
+/// compiled by javac, proved, and a wrong one refuted on a witness the harness fails on a JVM.
+#[test]
+fn a_throws_clause_over_a_strings_bytes_is_compiled_by_javac_and_checked() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let bytes = "s.getBytes(java.nio.charset.StandardCharsets.UTF_8).length";
+    let mut o = options(classes, "claims.B#guarded", 3, "guarded");
+    o.assert = Some("result <= 2".into());
+    o.throws = vec![format!("java.lang.IllegalArgumentException when {bytes} > 2")];
+    let o = run(&o);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains(&format!("throws java.lang.IllegalArgumentException when {bytes} > 2")), "{}", o.output);
+    let mut wrong = options(classes, "claims.B#guarded", 3, "guarded-wrong");
+    wrong.assert = Some("true".into());
+    wrong.throws = vec![format!("java.lang.IllegalArgumentException when {bytes} > 3")];
+    let o = run(&wrong);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.output.contains("run on a JVM"), "{}", o.output);
+}
+
+/// What a library asks of the JVM before anything else, as far as Spring Security's encoder does: a String's own
+/// `toString()`, the class of an object the run made, and an initializer that keeps a method reference for the
+/// logging library the class path has (the reference it does not keep is never called, and is not walked).
+#[test]
+fn an_objects_class_a_strings_to_string_and_an_initializer_that_keeps_a_method_reference_run() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    proved(classes, "claims.B#itself", 3);
+    let o = run(&options(classes, "claims.B#adapted", 3, "adapted"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.contains("the classes of the check's class path are loaded by one class loader")), "{:?}", stated.assumptions);
 }
 
 #[test]
