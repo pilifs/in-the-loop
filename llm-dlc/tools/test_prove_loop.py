@@ -15,12 +15,14 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.append(str(REPO / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
 import conductor  # noqa: E402
+import watch  # noqa: E402
 sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
@@ -407,6 +409,14 @@ class ProveLoopTest(unittest.TestCase):
             self.assertIn(line, record)
         self.assertEqual([(e["item"], e["state"]) for e in self.events("item")],
                          [("901", "waiting"), ("902", "finished"), ("901", "resumed"), ("901", "finished"), ("903", "finished")])
+        # The watcher's tool reads the same run: what the loop wrote is what its summary is made from.
+        with mock.patch.dict(os.environ, {"STANDIN_JOBS": str(self.jobs), "JJ_CONFIG": os.devnull}):
+            state = watch.state(watch.Run(self.root))
+        self.assertEqual((state["examples"], state["items"], state["item"], state["cycle"], state["ended"]["status"]),
+                         (["901", "902", "903"], {"901": "finished", "902": "finished", "903": "finished"}, None, 4, 0))
+        summary = watch.render(state, None, self.root)
+        self.assertIn("**Examples:** 3 of 3 done (901 902 903)", summary)
+        self.assertIn("the loop has ended (status 0)", summary)
 
     @cost("tool")
     def test_when_only_waiting_examples_are_left_the_loop_waits_for_the_first_proof(self):

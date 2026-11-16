@@ -266,7 +266,7 @@ class CommandTest(unittest.TestCase):
             call = json.loads(log.read_text().splitlines()[0])
         self.assertEqual((call["cwd"], call["connectors"]), (str(REPO), "false"))
         self.assertEqual(call["args"][:3], ["--setting-sources", "project,local", "--strict-mcp-config"])
-        self.assertEqual(call["args"][-5:], ["--model", "claude-fable-5-2", "--effort", "max", "hello"])
+        self.assertEqual(call["args"][-5:], ["--model", "claude-opus-5-5", "--effort", "max", "hello"])
 
 
 if __name__ == "__main__":

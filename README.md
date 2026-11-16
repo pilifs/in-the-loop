@@ -10,9 +10,9 @@ hands you the input where it breaks. Nobody writes a specification.
 /in-the-loop:prove-java-change <a pull request, a commit or a range on GitHub, and what to prove about it>
 ```
 
-It also takes a list of changes: it prepares them all, orders them so that the most accessible is proved first, and
-proves them one after another. With `--scaffold-only` it prepares them and stops; the same request without the flag
-proves what was prepared.
+It also takes a list of changes: it evaluates them all, orders them so that the most accessible is proved first,
+and proves them one after another. With `--scaffold-only` it prepares them and stops; the same request without the
+flag proves what was prepared.
 
 It runs on your machine, on a released copy of this repository that the skill installs and checks against a hash it
 carries. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you agree to it.
@@ -24,18 +24,25 @@ claude plugin marketplace add pilifs/in-the-loop
 claude plugin install in-the-loop@in-the-loop
 ```
 
-Then, in Claude Code on Fable 5.2 at high effort, run the command above. You confirm twice, and the rest is
-unattended:
+Then, in Claude Code, run the command above. The session you run it in becomes the run's watcher, on Opus 5.5: it
+starts each stage in a session of its own, keeps a verification loop (Sonnet 5.5) running for the proofs they queue,
+and reports. You confirm the plan once, and the rest is unattended:
 
-| Step | What happens | You |
-|---|---|---|
-| 1. Set up and measure | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools. It also checks what else Claude Code has loaded (other plugins, MCP servers, memory files), warns that this may lead to unexpected results, and offers a clean session without it | confirm |
-| 2. State the claims | It pins each change to two exact commits, sizes it against the closest past examples, compiles it, runs it once on a JVM, and writes each claim in full | confirm the claims and the estimate, in hours and tokens |
-| 3. Prove it | A fork of the session runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result | |
-| 4. Report | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
+| Stage | Session | What happens | You |
+|---|---|---|---|
+| 1. Set up and measure | Opus 5.5, high effort | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools. The watcher also checks what else Claude Code has loaded (other plugins, MCP servers, memory files), warns that this may lead to unexpected results, and offers a clean session without it | choose, if anything is loaded |
+| 2. Evaluate and order | Fable 5.2, medium effort | It judges whether the machine is enough, pins each change to two exact commits, sizes it against the closest past examples, writes each claim in full, and orders the changes | confirm the claims, the order and the estimate, in hours and tokens |
+| 3. Set the examples up | Opus 5.5, high effort | It builds each revision, loads its JARs, fills in the example and its claims from the plan, and runs the change once on a JVM | |
+| 4. Prove them | Fable 5.2, high effort: the session of stage 2, continued | It runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result. While an example's last proof runs, the loop starts the next one and comes back when the proof is in | ask the watcher anything, any time |
+| Report | the watcher | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
 
-**It needs** Linux, at least 8 GB of memory, 2 CPUs and 10 GB of free disk, and Claude Code with Fable 5.2. Step 1
-installs what it can of the rest (jj, a Java 25 JDK, Rust) and says what is missing and what limits the machine.
+While stage 4 runs, the watcher prints a summary every 10 minutes (ask it for another interval), with what changed
+since the last one first: the loop, the example under way and the verification jobs. Between two examples it merges
+whatever workspace you asked it to, and stops if you asked it to. It can also look into any part of the run for
+you, and fix what is small: a job that hangs, a loop that died.
+
+**It needs** Linux, at least 8 GB of memory, 2 CPUs and 10 GB of free disk, and Claude Code with Opus 5.5,
+Fable 5.2 and Sonnet 5.5. Stage 1 installs what it can of the rest (jj, a Java 25 JDK, Rust) and says what is missing and what limits the machine.
 
 **It takes** changes on GitHub only, with their dependencies from Maven Central and the other allowed hosts.
 
@@ -73,7 +80,7 @@ pages instead of remembered paths.
 | Where | What it is | Its layout |
 |---|---|---|
 | [`plugins/in-the-loop/`](plugins/in-the-loop/skills/prove-java-change/SKILL.md) | The plugin: the skill, the bootstrap that installs and checks a release, and the pin of the release it runs on | [`runtime.md`](llm-dlc/runtime.md#where-things-are) |
-| [`llm-dlc/runtime.md`](llm-dlc/runtime.md) | How the skill runs: what each step stands on, the released copy on your machine, the proof loop and its conductor, contributing back, and releases | [Where things are](llm-dlc/runtime.md#where-things-are) |
+| [`llm-dlc/runtime.md`](llm-dlc/runtime.md) | How the skill runs: the watcher and what each stage stands on, the released copy on your machine, the proof loop and how the watcher judges it, contributing back, and releases | [Where things are](llm-dlc/runtime.md#where-things-are) |
 | [`examples/`](examples/README.md) | 183 changes run through a formal verifier, each with its verdict and the input or trace behind it: 159 written for small systems built to be provable, 24 from published libraries. They are also what the skill sizes your change against | [Find an example](examples/README.md#find-an-example), [Layout](examples/README.md#layout) |
 | [`lib/`](lib/README.md) | `jvmcontract`, the verifier, in Rust: a class-file reader, a bytecode interpreter and its own bounded model checker, with JBMC as a second engine. It derives contracts without a JVM and proves without `javac` | [Layout](lib/README.md#layout) |
 | [`verification/`](verification/README.md) | The pipeline: proofs are queued as jobs, not run inside a session, and run under memory and CPU caps, each with a recorded result | [Layout](verification/README.md#layout) |
@@ -90,7 +97,9 @@ pages instead of remembered paths.
 - Proofs and model checks are queued as jobs
   ([`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)). `CLAUDE.md` says
   the little that may run inline.
-- In this repository the skill runs as `/prove-java-change NNN` on an existing example, without the setup steps.
+- In this repository the skill runs as `/prove-java-change NNN [NNN ...]` on existing examples, without the setup
+  stages. Every moonshot over examples is run this way: the watcher starts the loop, judges its cycles and reports
+  ([`llm-dlc/runtime.md`](llm-dlc/runtime.md#the-watcher)).
 
 ## Background
 

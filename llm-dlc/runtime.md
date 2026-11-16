@@ -19,32 +19,35 @@ skill that sets it up, the proof loop, contributions and releases.
 ## `/prove-java-change`
 
 The skill ([`SKILL.md`](../plugins/in-the-loop/skills/prove-java-change/SKILL.md)) proves a change to Java code, or
-[a list of changes](#many-changes-and-preparing-without-proving), on a user's machine, in four steps, orchestrated
-by Fable 5.2 at high effort. It is short on purpose: it says what each step is for and when to stop, and this
-repository holds what the steps stand on.
+[a list of changes](#many-changes-and-preparing-without-proving), on a user's machine. The session it is started in
+is [the watcher](#the-watcher), on Opus 5.5: it runs four stages in order, each in a session of its own model and
+effort, and reports. The skill is short on purpose: it says what each stage is for and when to stop, and this
+repository holds what the stages stand on.
 
-| Step | Runs in | Stands on |
-|---|---|---|
-| 1. Set up, verify and measure the machine | a subagent on Opus, only when something needs setting up; the check of Claude Code in the orchestrating session, every run | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough), [what Claude Code has loaded](#what-claude-code-has-loaded) |
-| 2. Assess the changes and set the examples up | the orchestrating session | what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for each change. [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task. [`changes.py`](#many-changes-and-preparing-without-proving) says what is already prepared |
-| 3. Prove it | a fork of that session, in a moonshot loop it conducts | [the proof loop](#the-proof-loop) |
-| 4. Report, and offer to contribute | the orchestrating session | [contributing back](#contributing-back) |
+| Stage | Session | Model, effort | Stands on |
+|---|---|---|---|
+| 1. Set up and measure the machine | a new one, only when something needs setting up; the check of Claude Code is the watcher's, every run | Opus 5.5, high | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough), [what Claude Code has loaded](#what-claude-code-has-loaded) |
+| 2. Evaluate the changes and order them | the fixed session | Fable 5.2, medium | [its brief](#stage-2-evaluate-the-changes-and-order-them): past examples as the measure, the claims in full, a plan from [`prove-plan-template.md`](prove-plan-template.md). [`changes.py`](#many-changes-and-preparing-without-proving) says what is already prepared |
+| 3. Set the examples up | a new one | Opus 5.5, high | [its brief](#stage-3-set-the-examples-up): what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for each change of the plan |
+| 4. Prove them | the fixed session, continued, in a moonshot loop the watcher watches | Fable 5.2, high | [the proof loop](#the-proof-loop), [watching it](#watching-the-loop) |
+| Report, and offer to contribute | the watcher | Opus 5.5 | [contributing back](#contributing-back) |
 
-The user confirms after steps 1 and 2, and a blocker is settled before the next step starts. With `--scaffold-only`
-the skill stops after step 2.
+Beside the stages, the watcher keeps a verification loop running on Sonnet 5.5 for the jobs the sessions queue. The
+user confirms once, after stage 2, with the machine's assessment and the plan in front of them; a hardware limit
+that blocks ends the run after stage 1. With `--scaffold-only` the skill stops after stage 3.
 
 **GitHub only.** The official plugin proves changes whose revisions are commits on github.com, with dependencies
 from the allowed hosts (Maven Central, repo.spring.io, the Gradle hosts), and nothing else: the routes that prepare a
 revision refuse any other source ([`examples/README.md`](../examples/README.md#add-an-example)), and the skill does
-not work around them. A change in a repository elsewhere, or one not pushed yet, is a blocker at step 2 until it is
+not work around them. A change in a repository elsewhere, or one not pushed yet, is set aside at stage 2 until it is
 on GitHub. The user decided this on 2026-11-15; a local or private source could be added here later, or by a fork of
 this repository with its own release.
 
 **In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
 plugin, so `/prove-java-change NNN [NNN ...]` runs the copy being worked on. The bootstrap answers `development`,
-steps 1 and 2 don't apply (the checkout is the home, its machine is known and the examples exist), and the skill goes
-straight to step 3 on the examples named, in the order given, with traces as for any loop here, and reports as in
-step 4.
+stages 1 to 3 don't apply (the checkout is the home, its machine is known and the examples exist), and the watcher
+starts the verification loop and goes straight to stage 4 on the examples named, in the order given, in a new fixed
+session, with traces as for any loop here. Every moonshot over examples is run this way from now on.
 
 **Installed.** A user adds this repository as a plugin marketplace and installs the plugin `in-the-loop`; the skill
 is then `/in-the-loop:prove-java-change`. The plugin carries only the skill's folder: the skill, its bootstrap and
@@ -53,27 +56,27 @@ its pin.
 ### Many changes, and preparing without proving
 
 ```
-/in-the-loop:prove-java-change [--scaffold-only] <one change, or a list of them, each with what to prove about it>
+/in-the-loop:prove-java-change [--scaffold-only] [--wait-for-proofs] <one change, or a list of them, each with what to prove about it>
 ```
 
-- **A list.** Step 2 understands and sizes every change before it adds an example for any. Then it orders them, the
+- **A list.** Stage 2 understands and sizes every change before an example is added for any. Then it orders them, the
   most accessible first: a proof that lands early can extend the verifier under the later ones, and a hard one first
-  can use up the run. The order is the skill's judgement, from the same reading that sizes each change, and it says
+  can use up the run. The order is the evaluating session's judgement, from the same reading that sizes each change, and it says
   why. A change that can't be prepared is set aside with its reason, and the others go on.
 - **The numbers carry the order.** The examples are added in that order on the next free numbers from 900, so the
   order needs no record of its own. Each example's `provenance` is the request it was prepared from, and its notes
   hold what the preparation learned and why it sits where it does, since its proof may start in a session that never
   saw the preparation.
-- **`--scaffold-only`** ends the skill after step 2: every example is a reproducible scaffold (its revisions
+- **`--scaffold-only`** ends the skill after stage 3: every example is a reproducible scaffold (its revisions
   materialize, the change has run once on a JVM, its claims are frozen), committed, and no proof has started. It is
   the readiness the examples' index calls `scaffolded`
   ([`examples/README.md`](../examples/README.md#run-an-example)).
-- **The same request again, without the flag,** proves what was prepared. Nothing remembers a request: step 2 finds
+- **The same request again, without the flag,** proves what was prepared. Nothing remembers a request: stage 2 finds
   each change's example by its source and revisions, keeps it, and prepares only what has none. So a list can also
   grow between runs, and a run that was interrupted is picked up the same way.
-- **One run or one at a time.** One run of the [proof loop](#the-proof-loop) takes the examples one after another,
-  one per cycle, in one session. One at a time is one example per run, with its report and the user's word before
-  the next.
+- **One after another, or stopping in between.** One run of the [proof loop](#the-proof-loop) takes the examples
+  one after another in one session, each for as many cycles as it takes. The user can ask the watcher at any time to
+  stop after the example under way (`watch.py stop-after example`), look at its report, and go on with another run.
 
 [`changes.py`](tools/changes.py) is what the skill reads for all of this. It derives each example's state from its
 folder alone (its sidecar, its claims and its receipts), so nothing is kept in step by hand:
@@ -101,16 +104,17 @@ Without numbers it lists the checkout's own examples, 900 to 999, by number; wit
 | `.claude/skills/prove-java-change` | A link to the skill's folder, which makes it a project skill in this repository |
 | [`tools/mode.py`](tools/mode.py) | Which [mode](#runtime-mode-and-prove-java-change) a checkout is in; `sync.py` asks it |
 | [`tools/doctor.py`](tools/doctor.py) | [Whether the machine is enough](#is-the-machine-enough), and a budget for it |
+| [`tools/watch.py`](tools/watch.py), [`watch-summary-template.md`](watch-summary-template.md), [`prove-plan-template.md`](prove-plan-template.md) | [The watcher's](#the-watcher) tool, the summary it prints at intervals, and the plan stage 2 fills in |
 | [`tools/claude_setup.py`](tools/claude_setup.py) | [What Claude Code has loaded](#what-claude-code-has-loaded) besides the plugin, and the clean launch |
 | [`tools/changes.py`](tools/changes.py) | [Which examples are prepared, decided or still to prove](#many-changes-and-preparing-without-proving) |
 | [`tools/prove-loop.sh`](tools/prove-loop.sh), [`tools/feature-loop.sh`](tools/feature-loop.sh) | [The proof loop](#the-proof-loop), and the loop under it |
-| [`tools/conductor.py`](tools/conductor.py) | [The conductor's](#the-conductor) side of that loop |
+| [`tools/conductor.py`](tools/conductor.py) | [How the loop and the watcher talk](#the-conductor): the loop's questions, the watcher's verdicts |
 | [`tools/contribute.py`](tools/contribute.py) | [What can go upstream](#contributing-back), and a check of a prepared pull request |
 | [`tools/release.py`](tools/release.py) | [Cutting a release](#releases) |
 | `.in-the-loop-runtime.json` (not committed) | The marker of a runtime checkout, written by the bootstrap |
 | `llm-dlc/loop-summaries/prove-change/` (not committed) | The state of a proof loop's run, beside the run's record |
 
-Step 2 of the skill stands on the [examples](../examples/README.md#add-an-example), the proofs run through the
+Stages 2 and 3 of the skill stand on the [examples](../examples/README.md#add-an-example), the proofs run through the
 [verification pipeline](../verification/README.md), and the verifier is [`lib/`](../lib/README.md).
 
 ## Procedure for agents in a runtime checkout
@@ -180,8 +184,8 @@ loop's is its memory cap (`FEATURE_LOOP_MEMORY_MAX`).
 
 Anything a session holds besides the plugin and the checkout is context from somewhere else: another plugin's
 skills, an MCP server's or a claude.ai connector's tools and instructions, the user's memory files, their own
-skills, agents and hooks. Step 2 writes the claims in the session the user started, and the proof loop is a fork of
-it, so that context reaches both, and it may lead to unexpected results. Step 1 checks for it on every run:
+skills, agents and hooks. Reaching the session that writes the claims or the one that proves them, it may lead to
+unexpected results. Stage 1 checks for it on every run:
 
 ```bash
 python3 llm-dlc/tools/claude_setup.py check [--json]   # the warning, what is loaded, whether a clean launch works here
@@ -195,18 +199,20 @@ python3 llm-dlc/tools/claude_setup.py flags            # the clean launch's flag
   out every MCP server and connector; and the memory files of the user and of the directories above the checkout
   are excluded by path (`claudeMdExcludes`). Nothing in the user's configuration is edited, so nothing has to be put
   back afterwards. Logging in, the model and permissions work as usual.
-- **The sessions the skill starts are clean by themselves** in a runtime checkout: the proof loop's fork, its
-  compactions and its cycles, and the verification loop's runs ([`loop-common.sh`](tools/loop-common.sh)'s
-  `isolation`). This is the part the skill can turn off without asking, and `check` proves it on the machine by
-  starting one. `prove-loop.sh --no-isolation` starts them as a plain `claude`, for a machine where a clean launch
+- **The sessions the watcher starts are clean by themselves** in a runtime checkout: the evaluation and the setup
+  of the examples ([`watch.py`](tools/watch.py)'s stages), the proof loop's cycles, compactions and judge, and the
+  verification loop's runs ([`loop-common.sh`](tools/loop-common.sh)'s `isolation`). So everything that states a
+  claim or proves one is clean whatever the user's session holds, and `check` proves it on the machine by starting
+  one. `prove-loop.sh --no-isolation` starts them as a plain `claude`, for a machine where a clean launch
   does not answer (a login kept in the user's settings, for one). A development checkout's loops are not isolated:
   its authors' setup is theirs.
-- **The session the user is in can't unload what it holds.** `check` starts two one-word sessions on the smallest
+- **The session the user is in, the watcher, can't unload what it holds.** It does none of the work, but it
+  relays the request, judges the cycles and reports, so what it holds can still colour the run. `check` starts two one-word sessions on the smallest
   model, without tools or a transcript, and compares what each reports at start-up: one started as the user's
   session was (its directory and launch flags, from the process `CLAUDE_PID` names), one clean. What only the first
   has is what the session has loaded, with the memory files and hooks it reads and the plugins Claude Code's own
   listing calls enabled. When that is not empty, `check` prints the command of a clean session (`launch`, on
-  Fable 5.2 at high effort), where the skill is run again as `/prove-java-change`: the checkout carries the skill
+  Opus 5.5 at high effort), where the skill is run again as `/prove-java-change`: the checkout carries the skill
   as a project skill. The user may continue in the session they have instead, which is not recommended.
 - **What it can't do.** Settings an administrator manages (`/etc/claude-code/`) apply to every session, and `check`
   lists them. A non-interactive probe can report less than an interactive session holds (it has been seen to
@@ -215,63 +221,197 @@ python3 llm-dlc/tools/claude_setup.py flags            # the clean launch's flag
   servers and runs their session hooks once, as starting Claude Code there does. In a development checkout `check`
   refuses: its hooks would trace the probes.
 
+## The watcher
+
+The session the user starts the skill in is the run's watcher: one session, on Opus 5.5 at high effort, that does
+none of the work. It starts the sessions that do, in order, each on the model and effort the user set on 2026-11-16,
+keeps the user informed, and judges what a script can't. [`watch.py`](tools/watch.py) is its tool.
+
+```bash
+python3 llm-dlc/tools/watch.py stage evaluate "PROMPT"        # stage 2, in the fixed session
+python3 llm-dlc/tools/watch.py stage setup "PROMPT"           # stage 3, in a new session
+python3 llm-dlc/tools/watch.py verification start|stop|status # the verification loop, on Sonnet 5.5
+python3 llm-dlc/tools/watch.py loop --memory SIZE NNN ...     # stage 4: the proof loop, detached, in the fixed session
+python3 llm-dlc/tools/watch.py wait                           # block until there is something for the watcher
+python3 llm-dlc/tools/watch.py status                         # where everything stands, for a question about the run
+```
+
+- **The fixed session** is the one that evaluates the changes (stage 2, at medium effort) and then proves them
+  (stage 4, at high effort): the loop continues it, so the session that proves is the one that planned. Its id is in
+  the run's state (`watch.py session`), and a run that proves what an earlier `--scaffold-only` run prepared
+  continues the same one. The sessions of stages 1 and 3 are new each time.
+- **A stage** is a `claude -p` of its own, started in the checkout, clean in a runtime checkout
+  ([what Claude Code has loaded](#what-claude-code-has-loaded)) and traced like any session in a development one. It
+  can't ask the user anything: what it can't settle it reports, the watcher asks, and the answer goes back with
+  another call of the same stage. Its stream is kept in the run's state (`stage-NAME.jsonl`).
+- **The verification loop** runs the [jobs](../verification/README.md) the sessions queue, on Sonnet 5.5. The
+  watcher starts it before stage 2, since setting an example up already queues work, and stops it once the run has
+  ended and the queue is clear. One per repository is enough: `start` leaves a running one alone.
+- **The run's state** is in `llm-dlc/loop-summaries/prove-change/` (gitignored): `watch.json` (the fixed session,
+  the stages, the last summary), `plan.md`, the stages' streams, and [the loop's own files](#the-proof-loop).
+
+### Stage 2: evaluate the changes and order them
+
+For the session `watch.py stage evaluate` starts. You are given the user's request (one change or several, each with
+what to prove about it) and the machine's assessment (`doctor.py`'s output). You evaluate and plan; you set nothing
+up, and you don't start proving. You are also the session that will prove these changes, in stage 4.
+
+1. **The machine.** Say whether it is enough for these changes, what limits it, and what budget follows.
+2. **What is already there.** `python3 llm-dlc/tools/changes.py` lists the examples the checkout holds, with the
+   change each came from. A change of the request that has one, `prepared` or `decided`, keeps it: read its page,
+   claims and notes, and leave it out of the plan's new work.
+3. **Each change.** Its two revisions as exact commits on github.com, what it is meant to change and what it must
+   keep. Read the code. A change that is not on GitHub is set aside, not worked around
+   ([GitHub only](#prove-java-change)).
+4. **Its size.** The closest past examples and what they cost (`examples/tools/find.py`, their notes and receipts,
+   `pipeline.py report`), set against the budget: whether a proof is plausible here and what will be hard.
+5. **Its claims,** each in full: the property, the revision, the domain, the assumptions, the bounds and the answer
+   expected. Stage 4 may not change a claim to fit a result, so a claim you are not sure of is an open question for
+   the user, not a guess.
+6. **The order,** the most accessible first: a proof that lands early can extend the verifier under the later ones,
+   and a hard one first can use up the run.
+7. **The plan.** Fill in [`prove-plan-template.md`](prove-plan-template.md) as
+   `llm-dlc/loop-summaries/prove-change/plan.md`, with the next free numbers from 900 in that order, and reply with
+   it. Commit nothing.
+
+### Stage 3: set the examples up
+
+For the session `watch.py stage setup` starts. You are given the plan. You turn each of its changes into an example,
+in the plan's order and under the plan's numbers, as [`examples/README.md`](../examples/README.md#add-an-example)
+describes for a real-world example ([285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md)
+is a worked one, and what the [example-targets loop](loops/example-targets.md) did for 285 to 300 is the model):
+
+1. `example.json` and its target sidecar, filled in from the plan: the source, each revision by its full commit and
+   how it is prepared, the tasks, and one claim file per claim, stating the claim as the plan does. Its `provenance`
+   is the change's part of the request as the user gave it, and its notes hold what the plan learned and why the
+   change sits where it does in the order.
+2. The revisions prepared: their JARs fetched or built, pinned and locked (`build.py --plan NNN`).
+3. The change run once on a JVM (the replay task), with the plan's inputs.
+4. Each example committed by itself, and `build.py --index-only` run.
+
+It is done when `changes.py` calls each example `prepared`. You decide nothing the plan left open and change no
+claim: what does not work as the plan says (a revision that won't build, a replay that shows something else) goes
+into your report as a question, with what you found.
+
+### Watching the loop
+
+`watch.py wait` blocks until one of four things, prints it, and is run again:
+
+| It prints | What the watcher does |
+|---|---|
+| A summary | Prints it as it is. One comes every 10 minutes (`watch.py interval SECONDS` changes that), from [`watch-summary-template.md`](watch-summary-template.md): what changed since the last one first, then the loop (the cycle, how long it has run, the session's tool calls and its last output), the examples (done, waiting on a proof, not started), the example under way (its claims by answer), the verification jobs, and what needs attention |
+| A question of the loop's | Judges it and answers with the `conductor.py decide` line printed beside it. The three questions are below |
+| A proof that has come in | Tells the user. The loop takes the example up again by itself when it next changes example |
+| The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
+
+**After each cycle** the loop asks whether the example is done (`cycle`, five minutes to answer). `wait` prints the
+example's state beside the question: its claims by answer and its jobs not in yet.
+
+- `finished`: every claim has its answer, or what is left needs a person.
+- `continue`: the session can still make real progress on it. It gets another cycle, with the same instruction.
+- `waiting`: all that is left is to act on the results of verification jobs that are still out, typically the final
+  proof. See below.
+
+**Between two examples** the loop asks whether to go on (`example`, two minutes, or two hours while a workspace is
+queued to merge). This is the one point where the checkout is still: the session is idle and compacted, and the loop
+runs from a private copy of its scripts, so a merge can't pull them from under it.
+
+- The user asks for a merge at any time, and the watcher queues it: `watch.py merge add NAME`. At this question the
+  watcher merges each queued workspace into the loop's line, in the loop's checkout: a merge commit of the line's
+  tip and the workspace's (`jj new @- NAME@-`), its conflicts resolved, `python3 llm-dlc/tools/sync.py regenerate`
+  in a development checkout, the default tests run, the merge committed, then `watch.py merge done NAME`. A merge
+  that does not come out clean is undone (`jj abandon`), left queued, and reported to the user.
+- The user asks to stop after the example under way at any time: `watch.py stop-after example` (`cycle` ends it
+  sooner, `never` takes it back). The loop then ends by itself at this point. The watcher answers `stop` here only
+  for what the user asked since, and otherwise `continue`.
+
+**An example that waits on its proof.** By default the loop does not sit idle while an example's last proof runs:
+on `waiting` it leaves the example and takes the next one. The watcher starts `watch.py proof NNN` as a background
+task of its own, a shell that does nothing but wait for that example's jobs, so it and the user hear when the proof
+is in. Whenever the loop leaves an example, it first goes back to the earliest waiting one whose jobs are in, for a
+cycle that acts on the result, and only then starts a new one; when only waiting examples are left it waits for the
+first to come in. `--wait-for-proofs` in the request turns this off: the example keeps the loop while its jobs run.
+
+**A compaction with no commit** is [the conductor's](#the-conductor) first question, unchanged.
+
+**No answer** never stops the work: a judge of the loop's own answers the cycle question, and the other two default
+to going on. So a watcher that is busy, or gone, costs minutes, not the run.
+
+### What the watcher may fix
+
+The user can ask the watcher about any part of the run: `watch.py status` has the loop, the examples and the queue
+in one place, the stages' and the loop's streams are in the run's state, and `pipeline.py status` and `report` have
+the jobs. The watcher fixes what is small and says what it did:
+
+- a verification job that runs away. The runner stops a step that has stalled by itself; one that is still busy
+  far past its estimate runs in a scope of its own (`systemctl --user list-units 'vjob-*'`), which
+  `systemctl --user stop` ends, and the runner records the step as failed. `pipeline.py resubmit` queues it again
+  with other resources, if that is what it needs ([`verification/README.md`](../verification/README.md));
+- a verification loop that died: `watch.py verification start`;
+- a loop that ended on a cycle with no commit: read why in its record, and start it again on what is left
+  (`changes.py --pending`), the example it stopped on last, unless what stopped it would stop the others too;
+- a lock or a scope a killed run left behind.
+
+It does not write into the loop's session, change a claim, or decide what is the user's. A session that has written
+nothing for twenty minutes is flagged in the summary; it is usually a long command, so the watcher looks before it
+acts.
+
 ## The proof loop
 
 ```bash
-llm-dlc/tools/prove-loop.sh --fork SESSION --memory SIZE [--no-isolation] NNN [NNN ...]
+llm-dlc/tools/prove-loop.sh --session SESSION --memory SIZE [--wait-for-proofs] [--no-isolation] NNN [NNN ...]
 ```
 
 [`prove-loop.sh`](tools/prove-loop.sh) runs [`feature-loop.sh`](tools/feature-loop.sh)'s `prove-change` moonshot over
-the examples it is given, one per cycle: "Formally prove example NNN as elegantly and efficiently as possible", on
-Fable 5.2 at high effort, the instruction and nothing else. It works the same in both modes.
+the examples it is given: "Formally prove example NNN as elegantly and efficiently as possible", on Fable 5.2 at high
+effort, the instruction and nothing else. It works the same in both modes, and the watcher starts it
+(`watch.py loop`). Every moonshot over examples is run this way: `prove-examples`, the list 285 to 300 that
+`feature-loop.sh` still names, is this loop given those numbers.
 
-- **The order** is the order of its arguments, and every example it is given gets a cycle, decided or not:
-  `changes.py --pending` gives the ones still to prove. A cycle that makes no commit ends the run, as in every loop,
-  and leaves the examples after it untouched. The conductor then reads why in the run's record and starts a run on
-  what is left, with the example it stopped on last, unless what stopped it would stop the others too.
-- **The fork.** With `--fork`, the loop's session starts as a fork of the session that prepared the example, made in
-  one turn without tools and then compacted, so the loop begins knowing what the preparation learned and needs no
-  brief. The parent goes on untouched and may be mid-turn. Without `--fork` the loop starts a fresh session.
+- **The session.** With `--session` the loop continues a session that exists: the fixed one, which evaluated the
+  changes. With `--fork` it starts as a fork of a session, made in one turn without tools and then compacted, and
+  with neither it starts a fresh one.
+- **An example keeps the loop** for as many cycles as it takes. After each commit the watcher says whether it is
+  finished, goes on, or waits on its proof ([watching the loop](#watching-the-loop)); `--cycles N` caps the run.
+  A cycle that makes no commit ends the run, as in every loop.
+- **The order** is the order of its arguments, with a waiting example taken up again as its proof comes in. Every
+  example it is given is worked on, decided or not: `changes.py --pending` gives the ones still to prove.
 - **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
-  does. `prove-loop.sh` starts the [verification loop](README.md#unattended-loops) for them unless one already runs
-  for this repository, and stops it when the loop has ended and the queue is clear.
+  does. The watcher's verification loop runs them; started by hand, `prove-loop.sh` starts one itself unless one
+  already runs for this repository.
 - **Clean sessions.** In a runtime checkout every session of the loop starts with this checkout only, and none of
   the user's own Claude Code setup ([what Claude Code has loaded](#what-claude-code-has-loaded)); `--no-isolation`
   starts them as a plain `claude`.
 - **The cap.** The loop runs in a systemd scope with a memory cap (`--memory`; `doctor.py`'s budget proposes one). On
   a machine without systemd user scopes it refuses to start unless `FEATURE_LOOP_UNCAPPED=1` says to run with none.
 - **The run's state** is in `llm-dlc/loop-summaries/prove-change/` (gitignored): `run.json` (the session, the
-  examples, how it ended), `events.jsonl`, and the verification loop's log. The run's record is beside it, as for
+  examples, the process, how it ended), `events.jsonl` (where the loop is and what it asks), `commands` and
+  `merge-queue` (what the watcher leaves for it), and its output (`loop.log`). The run's record is beside it, as for
   every loop. One run at a time in a checkout.
 
 ### The conductor
 
-A moonshot has no acceptance criteria, so its context window is its measure: the session compacts itself at 600k
-tokens, and a compaction with no commit since the cycle began, or since the last compaction, is where the work is
-either hard and going well or stuck. A rule can't tell which: a loop by itself only logs the compaction, since a rule
-that stopped there stopped good work (`FEATURE_LOOP_STOP_ON_COMPACT=1` still turns it on). This loop asks. It appends
-the event to `events.jsonl`, lets the turn go on, and waits fifteen minutes (`FEATURE_LOOP_CONDUCTOR_WAIT`, in
-seconds) for a verdict:
+[`conductor.py`](tools/conductor.py) is how the loop and the session outside it talk: the loop appends an event to
+`events.jsonl` and waits for a verdict file, and the watcher answers with `decide`. The watcher never writes to the
+loop's session, whose instruction stays the one line. Any moonshot run with `LOOP_CONDUCTOR` set has one; the proof
+loop's is the watcher.
 
-```bash
-python3 llm-dlc/tools/conductor.py wait llm-dlc/loop-summaries/prove-change      # blocks until there is something to judge
-python3 llm-dlc/tools/conductor.py decide llm-dlc/loop-summaries/prove-change N continue --reason "..."
-```
+| Question | When | Answers | With no answer in time |
+|---|---|---|---|
+| `compaction` | The session compacted itself (at 600k tokens) with no commit since the cycle began, or since the last compaction | `continue`, `stop` | The turn goes on (15 minutes, `FEATURE_LOOP_CONDUCTOR_WAIT`); with `FEATURE_LOOP_STOP_ON_COMPACT=1` it stops |
+| `cycle` | A cycle has committed | `finished`, `continue`, `waiting` | A judge of the loop's own answers, on Sonnet 5.5, from the cycle's report and commits (5 minutes, `FEATURE_LOOP_JUDGE_WAIT`) |
+| `example` | The loop is leaving an example and another is left | `continue`, `stop` | It goes on (2 minutes, `FEATURE_LOOP_EXAMPLE_WAIT`; 2 hours while a merge is queued, `FEATURE_LOOP_MERGE_WAIT`) |
 
-The session that started the loop is its conductor. It runs `wait` as a background task, so it is called back when
-there is something to judge or the loop has ended (exit 3 means neither yet: wait again). It judges from outside: the
-loop's transcript, which the event names, the commits and the working copy's diff, the jobs, and whether the same
-failure or file keeps coming back. Then it answers and waits again.
+A moonshot has no acceptance criteria, so its context window is its measure, and a compaction with no commit is
+where the work is either hard and going well or stuck. A rule can't tell which, and a rule that stopped there
+stopped good work, so the loop asks. The conductor judges from outside: the loop's transcript, which the event
+names, the commits and the working copy's diff, the jobs, and whether the same failure or file keeps coming back.
+`continue` lets the turn run to its next compaction, where the question is asked again if there is still no commit;
+`stop` ends the turn and the loop. Lean towards `continue` while the work is moving: an example left unfinished is
+fine, since a later run can return to it, and a stop costs a person's attention.
 
-- `continue` lets the turn run to its next compaction, where the question is asked again if there is still no commit.
-- `stop` ends the turn and the loop.
-- No answer in time leaves the turn running, as in a loop without a conductor, and the record says so. A conductor
-  that has gone away must not stop good work. With `FEATURE_LOOP_STOP_ON_COMPACT=1`, silence stops the loop too.
-- Lean towards `continue` while the work is moving. An example left unfinished is fine, since a later run can return
-  to it, and a stop costs a person's attention.
-
-The verdict and its reason go into the run's record under the cycle's line. The conductor never writes to the loop's
-session, whose instruction stays the one line.
+The verdicts and their reasons go into the run's record under the cycle's line. `conductor.py command` leaves the
+loop a line as if it were typed in its terminal (`stop`, `item`, a count), which is how `watch.py stop-after` works.
 
 ## Contributing back
 

@@ -1,32 +1,43 @@
 ---
 name: prove-java-change
-description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. Sets up and checks the machine, prepares each change as an example with its claims, runs an unattended proof loop over them, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof.
-argument-hint: "[--scaffold-only] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it>"
+description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof.
+argument-hint: "[--scaffold-only] [--wait-for-proofs] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it>"
 disable-model-invocation: true
-model: claude-fable-5-2
+model: claude-opus-5-5
 effort: high
 ---
 
 # Prove a Java change
 
-You orchestrate four steps, in order, with [in-the-loop](https://github.com/pilifs/in-the-loop): a repository that
-verifies compiled Java, and that this skill installs a released copy of. The repository holds what each step stands
-on. This page says what each step is for and when to stop.
+You are the watcher of a run of [in-the-loop](https://github.com/pilifs/in-the-loop), a repository that verifies
+compiled Java and that this skill installs a released copy of. You are one session, on Opus 5.5, and you do none of
+the work yourself: you start the sessions that do, in this order, each on its own model and effort, you keep the
+user informed while they run, and you judge what a script can't.
 
-- **This runs on Fable 5.2 at high effort**, and so does the proof loop. The effort now is `${CLAUDE_EFFORT}`. If
-  you are another model, or the effort is lower, say so and stop: the user switches with `/model` and `/effort` and
-  runs the skill again.
-- **Decide what you can.** You probably know better than the user how to do each step: decide, say what you decided
-  and why in a line, and go on. Ask only for what is theirs: what the change is meant to do, their machine's hours
-  and their money, and anything that leaves their machine.
-- **The repository's pages outrank your memory of them.** Once there is a checkout, read `llm-dlc/runtime.md` in it,
-  and follow it and the checkout's `CLAUDE.md`.
+| Stage | Session | Model and effort |
+|---|---|---|
+| 1. Set up and measure the machine | a new one | Opus 5.5, high |
+| 2. Evaluate the changes and order them | the fixed session | Fable 5.2, medium |
+| 3. Set the examples up | a new one | Opus 5.5, high |
+| 4. Prove them, in a moonshot loop | the fixed session, continued | Fable 5.2, high |
+
+Beside them runs the verification loop, on Sonnet 5.5, which executes the jobs the sessions queue.
+
+- **You run on Opus 5.5.** If you are another model, say so and stop: the user switches with `/model` and runs the
+  skill again.
+- **Decide what you can.** Say what you decided and why in a line, and go on. Ask only for what is the user's: what
+  a change is meant to do, their machine's hours and their money, and anything that leaves their machine.
+- **The repository's pages outrank your memory of them.** Once there is a checkout, read "The watcher" in
+  `llm-dlc/runtime.md` in it, and follow it and the checkout's `CLAUDE.md`.
+- **Leave the work to its session.** If a stage falls short, run it again and say what was missing. Never write into
+  the proof loop's session: its instruction is one line and stays one line.
 
 The request: $ARGUMENTS
 
-It names one change or a list of them, each with what to prove about it. `--scaffold-only` in it means: prepare
-(steps 1 and 2) and stop before the proof. A change that already has its example is not prepared again, so the same
-request without the flag proves what an earlier run prepared.
+It names one change or a list of them, each with what to prove about it. `--scaffold-only` in it means: stop after
+stage 3, with the examples prepared and no proof started. A change that already has its example is not prepared
+again, so the same request without the flag proves what an earlier run prepared. `--wait-for-proofs` keeps the loop
+on an example while its last proof runs; without it the loop takes the next example meanwhile.
 
 ## 0. Where you are
 
@@ -34,96 +45,99 @@ request without the flag proves what an earlier run prepared.
 python3 ${CLAUDE_SKILL_DIR}/bootstrap.py status
 ```
 
-`state: development` means the skill is running inside a development checkout of the repository itself. Steps 1 and
-2 don't apply there: take the examples the request names, in this checkout and in the order given, straight to step 3
-(with `--scaffold-only` there is nothing to do: say so). Any other state is a user's machine: start at step 1. `home`
-is the checkout every later step works in; when it is outside this session's working directories, have the user add
-it once (`/add-dir`).
+`state: development` means the skill is running inside a development checkout of the repository itself. Stages 1 to
+3 don't apply there: start the verification loop and take the examples the request names, in the order given, to
+stage 4 in a new fixed session (`watch.py session --new`). Any other state is a user's machine: start at stage 1.
+`home` is the checkout every later command runs in; when it is outside this session's working directories, have the
+user add it once (`/add-dir`).
 
-## 1. Set up, verify and measure the machine
+## 1. Set up and measure the machine
 
-Done when the bootstrap answers `state: current` with no blockers and `python3 llm-dlc/tools/doctor.py --json`, in the
-home, lists nothing `blocking`.
+Done when the bootstrap answers `state: current` with no blockers and `python3 llm-dlc/tools/doctor.py --json`, in
+the home, lists nothing `blocking`. If both already hold, there is nothing to set up. Otherwise hand the setup to one
+subagent on Opus at high effort, in a session of its own (the Agent tool, `model: opus`), with the two outputs and
+where to read (`llm-dlc/runtime.md`, the checkout and the machine): it installs or updates the checkout, resolves
+what an update left in conflict, installs the missing tools it can without sudo, writes the runner's budget, and
+returns the two outputs as they are afterwards. A hardware limit that blocks is final: say which, and stop.
 
-If both already hold, there is nothing to set up. Otherwise hand the setup to one subagent on Opus, in a session of
-its own (the Agent tool, `model: opus`), with the two outputs and where to read (`llm-dlc/runtime.md`, the checkout
-and the machine): it installs or updates the checkout (`bootstrap.py install`, `update`), resolves what an update
-left in conflict, installs the missing tools it can without sudo, writes the runner's budget to
-`verification/pipeline.local.toml`, and returns the two outputs as they are afterwards. Nothing here is traced or
-uploaded: a runtime checkout has no Langfuse and no Cloudflare, and setup adds neither.
-
-A hardware limit that blocks is final: no setup removes it. Say which, and stop.
-
-Then check Claude Code itself, in this session, on every run: `python3 llm-dlc/tools/claude_setup.py check`, in the
-home. Show the user its warning as printed. It lists what this session has loaded besides this plugin and the
-checkout (other plugins, MCP servers and connectors, memory files, skills, agents, hooks); add what you can see in
-your own context that it missed. The proof loop's sessions are started without any of it, and the check says whether
-that works on this machine. This session can't unload what it already holds, and you don't edit the user's Claude
-Code configuration to try: the way to be rid of it is the one command the check prints, which starts a clean session
-in the home, where the user runs the skill again.
-
-Then tell the user where things stand (the release and its digest, the machine, what limits it, the budget, what was
-installed or still needs them, such as a tool that needs sudo, and what the check found) and ask them to confirm
-before step 2. A blocker is fixed first: by another setup session, or by the user, who then runs the skill again.
-When the check listed anything, the choice is theirs: start the clean session, which you recommend, or continue in
-this one, which you don't. If the loop's sessions can't start clean either and they continue, step 3 adds
+Then check Claude Code itself, on every run: `python3 llm-dlc/tools/claude_setup.py check`, in the home. Show the
+user its warning as printed. The sessions of stages 2 to 4 start without any of what it lists, and the check says
+whether that works on this machine; you are the one session that holds it. When it lists anything, the choice is
+the user's: start the clean session the check prints and run the skill there, which you recommend, or continue in
+this one, which you don't. If the loop's sessions can't start clean either and they continue, stage 4 adds
 `--no-isolation`.
 
-## 2. Assess the changes and set the examples up
-
-In this session, not a subagent: the proof loop starts as a fork of it and inherits what you learn here.
-
-`python3 llm-dlc/tools/changes.py`, in the home, lists the examples it already holds, with the change each came from
-and where it stands. A change of the request that has one, `prepared` or `decided`, keeps it: read its page, claims
-and notes, and don't prepare it again. For the others:
-
-- **Understand each change.** Its two revisions as exact commits on github.com, what it is meant to change, and what
-  it must keep. Read the code; ask the user only for intent the code and its history don't give.
-- **Size each roughly.** Find the closest past examples and what they cost, and set that against this machine's
-  budget. Enough to say whether a proof is plausible here and what will be hard. Don't start solving it.
-- **Order them**, the most accessible first. A proof that lands early can extend the verifier under the later ones,
-  and a hard one first can use up the run. Say the order, and why, in a line each.
-- **Add the examples** to the home in that order, on the next free numbers from 900 to 999, so the numbers carry the
-  order. Each has its sidecar, its claims, its revisions prepared and compiled, and the change run once on a JVM (the
-  replay task). Its `provenance` is the request as the user gave it, and its notes hold what you learned and why it
-  sits where it does in the order: the proof may start in a session that never saw this one. Write each claim now,
-  in full. The proof step may not change a claim to fit a result, so a claim you aren't sure of is a question for
-  the user. Commit each example; it is done when `changes.py` calls it `prepared`.
-
-A change that can't be prepared (it is not on GitHub, a revision won't build, a claim can't be stated yet) is set
-aside with its reason, not worked around, and the others go on.
-
-Then tell the user, for each change in order: what will be proved, claim by claim in plain words, what you expect to
-be hard, and roughly what it costs in hours and tokens. With `--scaffold-only` the skill ends here: say that the same
-request without the flag proves them. Otherwise ask them to confirm before step 3 and, when there are several,
-whether to prove them in one run or one at a time.
-
-## 3. Prove it
-
-From the home, in a tmux window when there is tmux (it outlives this session), else as a background task, with the
-examples still to prove, in order (`changes.py --pending NNN ...` leaves out what is already decided):
+Then start the verification loop, which stays up until the run has ended:
 
 ```bash
-llm-dlc/tools/prove-loop.sh --fork ${CLAUDE_SESSION_ID} --memory SIZE NNN [NNN ...]
+python3 llm-dlc/tools/watch.py verification start
 ```
 
-It forks this session, compacts the fork, and proves the examples one after another in a moonshot loop on Fable 5.2
-at high effort. Its instruction is one line and stays one line: add nothing to it, and never write to its session.
+## 2. Evaluate the changes and order them
 
-You are its conductor, from outside. Run `python3 llm-dlc/tools/conductor.py wait llm-dlc/loop-summaries/prove-change`
-as a background task; when it returns an event, judge it as "The conductor" in `llm-dlc/runtime.md` describes, answer
-with `conductor.py decide`, and wait again, until the loop has ended. Lean towards letting it work.
+As a background task, in the home:
 
-One at a time means one example per run: report on it as in step 4, and ask before the next. A run that ends before
-its list does has stopped on one example: read why in its record, and start it again on what is left, that example
-last, unless what stopped it would stop the others too.
+```bash
+python3 llm-dlc/tools/watch.py stage evaluate "PROMPT"
+```
 
-## 4. Report, and offer to contribute
+The prompt is the request as the user gave it, the doctor's output, and one instruction: do "Stage 2" of
+`llm-dlc/runtime.md`. The session is the fixed one: it judges whether this machine is enough for these changes,
+understands and sizes each change, orders them with the most accessible first, and writes its plan, with every claim
+stated in full. It is the session that will prove them. A change that already has its example keeps it.
 
-The results are in each example's folder in the home, with the run's record and the verification results. Tell the
+Its report is the plan. Tell the user, for each change in order: what will be proved, claim by claim in plain words,
+what is expected to be hard, roughly what it costs in hours and tokens, and what was set aside and why. Ask them to
+confirm. What they answer or correct goes back to the same session with another `stage evaluate`, until the plan
+stands.
+
+## 3. Set the examples up
+
+```bash
+python3 llm-dlc/tools/watch.py stage setup "PROMPT"
+```
+
+The prompt names the plan and gives one instruction: do "Stage 3" of `llm-dlc/runtime.md`. The session turns each
+entry of the plan into its example: the revisions pinned and built, their JARs loaded, the sidecar and the claims
+filled in as the plan states them, the change run once on a JVM, each example committed. It decides nothing the plan
+left open: that comes back to you as a question. Done when `python3 llm-dlc/tools/changes.py` calls each example
+`prepared`; if one is not, run the stage again with what is missing.
+
+With `--scaffold-only` the skill ends here: say what was prepared, and that the same request without the flag
+proves it.
+
+## 4. Prove them
+
+```bash
+python3 llm-dlc/tools/watch.py loop --memory SIZE NNN [NNN ...]
+```
+
+with the examples still to prove, in order (`changes.py --pending NNN ...` leaves out what is decided), the memory
+cap the doctor's budget proposes, and `--wait-for-proofs` before the numbers if the request has it. It starts the
+proof loop detached, continuing the fixed session at high effort, and returns at once. Then watch it: run
+`python3 llm-dlc/tools/watch.py wait` as a background task, act on what it returns as "Watching the loop" in
+`llm-dlc/runtime.md` says, and run it again, until the loop has ended.
+
+- **A summary** (every 10 minutes, or as the user asks with `watch.py interval`): print it as it is.
+- **After a cycle**, the loop asks whether the example is done. Judge it from the example's own state, the cycle's
+  report and the queue, and answer `finished`, `continue`, or `waiting` when all that is left is a proof still
+  running. For `waiting`, start `watch.py proof NNN` as a background task of its own: the loop takes the next example
+  meanwhile and comes back to this one when its proof is in.
+- **Between two examples**, merge whatever workspace the user has queued, then answer `stop` if they asked the loop
+  to end there, else `continue`.
+- **A compaction with no commit**: `continue` while the work is moving, `stop` when it is stuck.
+
+The user may ask about any part of the run at any time: answer from `watch.py status`, the sessions' logs and the
+queue. Fix what is small yourself (a job that hangs or runs away, a verification loop that died, a stale lock), say
+what you did, and leave the rest to the user.
+
+## 5. Report, and offer to contribute
+
+When the loop has ended, stop the verification loop once the queue is clear (`watch.py verification stop`). The
+results are in each example's folder in the home, with the run's record and the verification results. Tell the
 user, for each change and each claim of it: established, refuted (with the witness, replayed on a JVM) or left open
-(with why), under which bounds and assumptions, and what none of it covers. A refuted claim is a finding about their
-change: say so plainly.
+(with why), under which bounds and assumptions, and what none of it covers. A refuted claim is a finding about
+their change: say so plainly.
 
 If the proof needed something new of the verifier, that part helps the next user more than this one. Say what it is
 and offer to send it upstream as a pull request against `pilifs/in-the-loop`; if they agree, follow "Contributing

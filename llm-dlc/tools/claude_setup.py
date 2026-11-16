@@ -5,7 +5,7 @@ Claude Code setup in step 1 of the skill (llm-dlc/runtime.md#what-claude-code-ha
     claude_setup.py check [--json]    the warning, what the session running this has loaded, whether the proof
                                       loop's own sessions start without it, and the command that starts a clean one
     claude_setup.py flags             the launch flags of a clean session, one per line (prove-loop.sh reads them)
-    claude_setup.py launch [ARG ...]  start Claude Code in this checkout with those flags, on Fable 5.2 at high effort
+    claude_setup.py launch [ARG ...]  start Claude Code in this checkout with those flags, on Opus 5.5 at high effort
 
 A clean session loads this checkout (its CLAUDE.md, its settings and its skills) and nothing of the user's own
 setup: no other plugin, no MCP server or claude.ai connector, no memory file of the user's or of a directory above,
@@ -46,7 +46,7 @@ import mode  # llm-dlc/tools/mode.py
 
 REPO = Path(__file__).resolve().parents[2]
 PLUGIN = "in-the-loop"
-MODEL, EFFORT = "claude-fable-5-2", "high"
+MODEL, EFFORT = "claude-opus-5-5", "high"  # the watcher's (runtime.md#the-watcher)
 WARNING = ("Warning: any extraneous context from external sources may lead to unexpected results. That is anything "
            "Claude Code has loaded besides this plugin: other plugins, MCP servers and connectors, memory files, "
            "skills, agents and hooks.")
