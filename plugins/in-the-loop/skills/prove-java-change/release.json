@@ -1,8 +1,8 @@
 {
   "schema": "in-the-loop-release/v1",
-  "version": "0.6.0",
-  "digest": "6058a0d22f1cdbbf9a82ca9405ffa01953f6f74b52b423de8ac281a5decdba56",
-  "files": 5396,
+  "version": "0.7.0",
+  "digest": "71e4a9d91d4c631621bf5819a5239f5eafe6277afd0d406051f329ceb3b6b2e8",
+  "files": 5400,
   "excluded": [
     "plugins/in-the-loop/skills/prove-java-change/release.json",
     "llm-dlc/traces/",
@@ -12,5 +12,5 @@
   "repository": "https://github.com/pilifs/in-the-loop",
   "ref": "main",
   "cut": "2026-11-16",
-  "note": "Step 1 checks what else Claude Code has loaded, warns, and offers a clean session; the sessions the skill starts load only the checkout."
+  "note": "The skill's session is a watcher on Opus 5.5: it starts each stage in a session of its own (setup: Opus 5.5 high; evaluation and ordering: Fable 5.2 medium; examples: Opus 5.5 high; the proof loop: the evaluating session continued, Fable 5.2 high), keeps a verification loop on Sonnet 5.5, prints a summary every 10 minutes, judges each cycle, merges queued workspaces between examples, and lets the loop start the next example while a final proof runs (--wait-for-proofs turns that off)."
 }
