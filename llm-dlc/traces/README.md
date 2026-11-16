@@ -10,17 +10,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 121, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-16 19:41 UTC |
-| Prompts | 2,666 |
-| Model calls | 26,796 |
-| Tool calls | 27,816 (484 failed) |
+| Sessions | 122, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-16 19:49 UTC |
+| Prompts | 2,667 |
+| Model calls | 26,836 |
+| Tool calls | 27,857 (485 failed) |
 | Compactions | 410 |
 | Subagents | 19 |
-| Tokens written | 27,253,403 |
-| Tokens read | 4,309,951,797 (98.0% from cache) |
-| Commits with a trace | 804 |
-| Log snapshots | 1,028 (2315.2 MB gzipped, 1,014 uploaded) |
+| Tokens written | 27,285,192 |
+| Tokens read | 4,313,740,518 (98.0% from cache) |
+| Commits with a trace | 805 |
+| Log snapshots | 1,029 (2315.4 MB gzipped, 1,014 uploaded) |
 
 ## Sessions
 
@@ -149,6 +149,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-16 17:16 UTC | [77332e8d-0d4e-458f-ab21-4b5ba627dfb0](77332e8d-0d4e-458f-ab21-4b5ba627dfb0/summary.md) | ended | 34 min | `claude-opus-5-5` | 2 | 85 | 84 | 0 | 0 | 246,996 | 1 |
 | 2026-11-16 17:51 UTC | [91a38d39-abe7-456b-bc6b-2e4d71420275](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | ended | 42 min | `claude-opus-5-5` | 2 | 80 | 80 | 1 | 0 | 226,627 | 2 |
 | 2026-11-16 19:29 UTC | [722674dd-f1af-42c9-a55d-4febdb90b0f1](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | open | 10 min | `claude-opus-5-5` | 1 | 56 | 57 | 1 | 0 | 134,314 | 2 |
+| 2026-11-16 19:42 UTC | [515f8415-55b4-4a47-8fbe-978fc5054ac2](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | open | 7 min | `claude-opus-5-5` | 1 | 40 | 41 | 1 | 0 | 135,833 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -279,12 +280,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`77332e8d`](77332e8d-0d4e-458f-ab21-4b5ba627dfb0/summary.md) | 88,837 | 172 | 235,740 | 13,233,540 | 98.2% | 152 |
 | [`91a38d39`](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | 77,332 | 164 | 215,371 | 11,297,945 | 98.1% | 149 |
 | [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | 35,444 | 112 | 123,058 | 5,166,629 | 97.7% | 149 |
+| [`515f8415`](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | 31,789 | 80 | 122,647 | 3,665,994 | 96.8% | 119 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 24,562 | 88.3% | 121 |
+| `Bash` | 24,603 | 88.3% | 122 |
 | `Read` | 1,240 | 4.5% | 51 |
 | `Edit` | 938 | 3.4% | 51 |
 | `Write` | 610 | 2.2% | 50 |
@@ -1111,6 +1113,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 802 | [`03f74bfb`](https://github.com/pilifs/in-the-loop/commit/03f74bfb1070f92bface9f0a22f10fd9e3101486) | Record session traces | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/641542547e13a66af6e338dd94824418f04823787ec3b86064c665195f8f50fd.jsonl.gz)), [`919d1317`](919d1317-7c09-476f-aee3-b72638b3aff0/summary.md) ([log](https://terminalvalue.net/raw-traces/919d1317-7c09-476f-aee3-b72638b3aff0/4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7.jsonl.gz)) |
 | 803 | change `pvnkwqnt` | Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/8c39af16d6ff66f32d956e36d581ce3ab707698067c9a4fb0b9ac4cedff9beb3.jsonl.gz)), [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) ([log](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0.jsonl.gz)) |
 | 804 | change `lwvsvzno` | validate_example.py regenerates the router after the replays, not before | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/b72acd2a9fb9768900e0639e3c4d0302eec6133dc09ace70c524bc56ee17eafa.jsonl.gz)), [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) ([log](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/503c8de630511427d19ba1f744bc7fb7a6b6b6fc2b53a2917d96ae583f352b00.jsonl.gz)) |
+| 805 | change `qvqpqxpn` | Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging | [`515f8415`](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) ([log](https://terminalvalue.net/raw-traces/515f8415-55b4-4a47-8fbe-978fc5054ac2/266cec597a5b8e1f0fbbf2e0fd84c318bc16efd22948e9a2f4b2d469d3d8d683.jsonl.gz)) |
 
 ## Logs
 
@@ -1239,6 +1242,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`77332e8d`](77332e8d-0d4e-458f-ab21-4b5ba627dfb0/summary.md) | 2 | 0 | 0.7 MB | `777e10cc789d`, not uploaded |
 | [`91a38d39`](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | 2 | 0 | 0.7 MB | `ed83e0c2f2ff`, not uploaded |
 | [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | 2 | 0 | 0.4 MB | `503c8de63051`, not uploaded |
+| [`515f8415`](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | 1 | 0 | 0.2 MB | `266cec597a5b`, not uploaded |
 
 ## Session notes
 

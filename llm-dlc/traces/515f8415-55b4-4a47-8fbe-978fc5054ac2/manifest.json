@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "515f8415-55b4-4a47-8fbe-978fc5054ac2",
+  "status": "open",
+  "title": null,
+  "first_prompt": "You are working in the jj workspace prove-setup, beside a proof loop that runs in the default workspace (~/code/in-the-loop); commit only here, with sync.py commit as CLAUDE.md says. Example 289 (exam",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-16T19:42:03.595Z",
+  "ended": "2026-11-16T19:49:47.328Z",
+  "duration_seconds": 464,
+  "stats": {
+    "turns": 1,
+    "api_calls": 40,
+    "tool_calls": 41,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 135833,
+    "usage": {
+      "input_tokens": 80,
+      "output_tokens": 31789,
+      "cache_read_input_tokens": 3665994,
+      "cache_creation_input_tokens": 122647
+    }
+  },
+  "tools": {
+    "Bash": 41
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-16T19:42:03.595Z",
+      "ended": "2026-11-16T19:49:47.328Z",
+      "turns": 1,
+      "api_calls": 40,
+      "usage": {
+        "input_tokens": 80,
+        "output_tokens": 31789,
+        "cache_read_input_tokens": 3665994,
+        "cache_creation_input_tokens": 122647
+      },
+      "peak_context_tokens": 135833
+    }
+  ],
+  "log": {
+    "sha256": "266cec597a5b8e1f0fbbf2e0fd84c318bc16efd22948e9a2f4b2d469d3d8d683",
+    "bytes": 1365663,
+    "lines": 368,
+    "gzip_bytes": 218871,
+    "path": "llm-dlc/traces/515f8415-55b4-4a47-8fbe-978fc5054ac2/logs/266cec597a5b8e1f0fbbf2e0fd84c318bc16efd22948e9a2f4b2d469d3d8d683.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "qvqpqxpnkypnomvonkstvrymxxnypluk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging",
+      "body": "The repair's brief (llm-dlc/runtime.md) for example 289 (CVE-2022-22978, RegexRequestMatcher and line terminators), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 289 in toClassify because none of its four proof tasks recorded how it is invoked. Each one now records it as adapter (target.json, invocation). The route plans every task, but it enters RegexRequestMatcher#matches(HttpServletRequest), and the claims' expressions name the adapter's parameters (pattern, caseInsensitive, servletPath, pathInfo, query), so they can't compile there. RegexMatchAdapter#matches was compiled against each revision's pinned closure and run on the 44 probes on 5.6.3, 5.6.4 and the mutant, on JDK 21 and 25. The example has no proof script of its own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/prefix-classification-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement was replaced word for word by the remark's text, which states only that the releases agree, and the remark's note on the expected answers was added to the claim's notes. Nothing else in the claim changed. The README's preservation sentence was reworded the same way.\n\nFollowing the plan's revised controls: eight probes were added for unpaired surrogates, which the claims' domain includes. Six are guarded: a lone U+D800, a lone U+DC00, and a pair split between the servlet path and the path info, each in both case modes. Two are triggers: U+D800 then a line feed, in both case modes. That makes 44 probes: 18 triggers, 16 guarded, 7 legitimate, 3 outside. The driver now prints each input string as its UTF-16 code units, the form argv passes, and every other string as ASCII with escapes kept as text, so the route's controls record (written as UTF-8) can hold a lone surrogate. Its first line also reports LogFactory.getLog(RegexRequestMatcher.class).isDebugEnabled() and whether java.util.logging.config.file or .class is set. The oracle decodes the code units, and it refuses a run where debug is on or not reported. Its self-test covers the surrogate probes, a path that isn't in code-unit form, debug enabled, and a missing report. Both replays ran again, as the plan expected. 5.6.3 fails at exactly the 18 triggers, and 5.6.4 holds. Every surrogate probe that is guarded matches on both releases and on the mutant. The mutant fails at exactly the 5 case-insensitive triggers. Debug was off and no JUL property was set on every run, and JDK 21 and 25 gave identical results. The setup's receipts, whose controls changed, were replaced by the new ones, and the page's and example.json's probe counts and 'Not probed' paragraph now match.",
+      "log_sha256": "266cec597a5b8e1f0fbbf2e0fd84c318bc16efd22948e9a2f4b2d469d3d8d683"
+    }
+  ],
+  "logs": {
+    "266cec597a5b8e1f0fbbf2e0fd84c318bc16efd22948e9a2f4b2d469d3d8d683": {
+      "bytes": 1365663,
+      "lines": 368,
+      "gzip_bytes": 218871,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

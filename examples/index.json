@@ -7790,7 +7790,7 @@
       "id": "289",
       "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass",
       "title": "CVE-2022-22978: Authorization bypass in RegexRequestMatcher",
-      "summary": "Spring Security 5.6.3 → 5.6.4, fixed by 70863952: RegexRequestMatcher compiled its pattern without Pattern.DOTALL, so the '.' of a protective rule such as /admin/.* didn't match a line terminator, and a request whose servlet path a container had decoded to /admin/ followed by a line feed escaped the rule. A deep negative packet, set up from its catalog entry: the release pair source-locked, the security claim (a literal prefix and '.*' matches every URL that begins with the prefix, line terminators included, in either case mode) and preservation frozen as four proof tasks, with an oracle, 36 probes, a request carrier, a driver and a mutant; both replays pass as expected; no proof task has run.",
+      "summary": "Spring Security 5.6.3 → 5.6.4, fixed by 70863952: RegexRequestMatcher compiled its pattern without Pattern.DOTALL, so the '.' of a protective rule such as /admin/.* didn't match a line terminator, and a request whose servlet path a container had decoded to /admin/ followed by a line feed escaped the rule. A deep negative packet, set up from its catalog entry: the release pair source-locked, the security claim (a literal prefix and '.*' matches every URL that begins with the prefix, line terminators included, in either case mode) and preservation frozen as four proof tasks, with an oracle, 44 probes, a request carrier, a driver and a mutant; both replays pass as expected; no proof task has run.",
       "origin": "real-world",
       "system": "Spring Security",
       "symbol": "org.springframework.security.web.util.matcher.RegexRequestMatcher#matches",
@@ -7817,7 +7817,7 @@
       "severity": "high",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "not run: replay ✗ on 5.6.3 at the 16 line-terminator triggers, ✓ on 5.6.4, ✗ on the mutant at the 4 case-insensitive ones; no proof verdict yet",
+      "verdictLabel": "not run: replay ✗ on 5.6.3 at the 18 line-terminator triggers, ✓ on 5.6.4, ✗ on the mutant at the 5 case-insensitive ones; no proof verdict yet",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
@@ -7827,9 +7827,9 @@
         "The release pair holds one more change: StrictHttpFirewall rejects non-printable characters in the servlet path and path info, where 5.6.3 checks the request URI alone (whose %0a is printable). It came in a commit before the fix (the fix's parent already has 5.6.4's StrictHttpFirewall.java, blob cb24811f), and it is outside the matcher: behind the strict firewall a 5.6.4 filter chain rejects these requests before any matcher, which is not part of a claim.",
         "Two claims: the security claim (claims/protected-prefix-matched-across-line-terminators.json: vulnerable-security, fixed-security, mutant-security) and preservation outside a URL in the protected namespace holding a line terminator (claims/prefix-classification-preserved.json). Narrowest reading of the entry: the matcher's classification for a literal prefix and '.*', with no HTTP method (as regexMatchers(String...) builds a rule), in either case mode; the chain's fallback rule, the firewall and other patterns are outside, named in the claims' notes.",
         "Entry: example289.adapter.RegexMatchAdapter#matches(String pattern, boolean caseInsensitive, String servletPath, String pathInfo, String query), which builds the original matcher and asks it of example289.carrier.PathOnlyRequest, an HttpServletRequest supplying those three getters as given and throwing on every other servlet method (example 285's carrier, its overrides reused). Neither release reads anything else of the request.",
-        "Replay (receipts/replay, 2026-11-16, JDK 21 and 25, identical): 5.6.3 fails the property at exactly the 16 triggers (\\n, \\r, CR LF, U+0085, U+2028 and U+2029 after the prefix, in the servlet path, the path info or the query, for both constructors, the upstream tests' two among them) and passes every guarded and legitimate probe; 5.6.4 holds and passes; the comparison is preserved, every change inside the allowed region. The mutant replay (receipts/mutant-replay): the mutant fails at exactly the 4 case-insensitive triggers and holds elsewhere.",
+        "Replay (receipts/replay, 2026-11-16, JDK 21 and 25, identical, rerun with the surrogate probes, the matcher's logger reporting debug off): 5.6.3 fails the property at exactly the 18 triggers (\\n, \\r, CR LF, U+0085, U+2028 and U+2029 after the prefix, in the servlet path, the path info or the query, and a line feed after an unpaired high surrogate, for both constructors, the upstream tests' two among them) and passes every guarded and legitimate probe; 5.6.4 holds and passes; the comparison is preserved, every change inside the allowed region. The mutant replay (receipts/mutant-replay): the mutant fails at exactly the 5 case-insensitive triggers and holds elsewhere.",
         "For review, outside the claims' domain: on 5.6.4 a pattern with an inline (?-s) still misses /admin/ followed by a line feed (probe inline-flag-turns-dotall-off): the fix sets DOTALL as a default the pattern can turn off. A '.' with more pattern after it (/files/.*\\.txt, probe dot-inside-pattern) changes from unmatched to matched as the claims' family does. A null servlet path throws NullPointerException on both.",
-        "Not probed: an unpaired surrogate in the URL. The claims' domain includes it, but the route's controls record (runtime.run_controls) writes the parsed observations as UTF-8 and can't hold one, so the guarded probe for it was dropped before the replay.",
+        "Unpaired surrogates, which the claims' domain includes (probes added on 2026-11-16, as the /prove-java-change plan's review asked): a lone high surrogate (U+D800) after /admin/, a lone low one (U+DC00), and a pair split between the servlet path (U+D83D) and the path info (U+DE00), each in both case modes, are matched by both releases and the mutant; /admin/ then U+D800 then a line feed is a trigger like the others, unmatched on 5.6.3, matched on 5.6.4, and missed by the mutant in the case-insensitive mode. The driver prints each probe's strings as their UTF-16 code units, so the route's controls record (runtime.run_controls, which writes the parsed observations as UTF-8 and couldn't hold a lone surrogate) holds them as ASCII. Its first line also reports whether the matcher's logger has debug enabled and whether a java.util.logging configuration property is set, and the oracle refuses a run with debug on or unreported: the claims assume the debug line is not logged.",
         "Imported on 2026-11-14 from the archived registry (llm-dlc/loops/example-targets-inputs/spring-cve-targets.research-2026-11-04.json, as of 2026-11-04, rank 5, priority P1). Its capability notes are from verifier 4c279ba6 and stale; the blockers in target.json are predictions, with one more predicted from example 286's observed refusals (preservation's two closures, and the route's missing adapter entry).",
         "Revisions checked against upstream on 2026-11-14, and again on 2026-11-16 for the setup: the release tags resolved to commits, each fix commit and its parent read from github.com, and the fix an ancestor of the fixed release and not of the vulnerable one.",
         "Proof boundary (research): matcher classification depends on JDK regex behaviour and the servlet path's representation; proving that the flag equals Pattern.DOTALL is not an authorization theorem. The claims quantify over the pattern's prefix, the case mode and every request string, so java.util.regex is on the proof's path, not a constant.",
@@ -7873,16 +7873,16 @@
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261116T180022Z-d2a34b19/result.json",
-            "attempt": "20261116T180022Z-d2a34b19",
+            "path": "receipts/replay/20261116T194739Z-8b8a26ed/result.json",
+            "attempt": "20261116T194739Z-8b8a26ed",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
             "attempts": 1
           },
           "mutant-replay": {
-            "path": "receipts/mutant-replay/20261116T180041Z-214c77a6/result.json",
-            "attempt": "20261116T180041Z-214c77a6",
+            "path": "receipts/mutant-replay/20261116T194802Z-000affab/result.json",
+            "attempt": "20261116T194802Z-000affab",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
@@ -7901,7 +7901,7 @@
           "verifier-interface"
         ],
         "historical": {
-          "verdictLabel": "not run: replay ✗ on 5.6.3 at the 16 line-terminator triggers, ✓ on 5.6.4, ✗ on the mutant at the 4 case-insensitive ones; no proof verdict yet",
+          "verdictLabel": "not run: replay ✗ on 5.6.3 at the 18 line-terminator triggers, ✓ on 5.6.4, ✗ on the mutant at the 5 case-insensitive ones; no proof verdict yet",
           "source": "https://github.com/spring-projects/spring-security/commit/70863952aeb9733499027714d38821db05654856",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
