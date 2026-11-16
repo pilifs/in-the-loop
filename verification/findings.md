@@ -20,7 +20,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-032: the default test run at `76862913606e` failed one test, `test_runtime.py` (the environment of a verifier run), because `JVMCONTRACT_JBMC_MEMORY_MB` is passed through
 
-- **Status**: open
+- **Status**: closed by job `20261116-232054-default-test-run-at-qnmttuprxxym` (at `73542e073f35`, 2026-11-16, `vm-1`): the default run passed under the runner, 49 of 49 files, 14m32s
 - **Raised**: 2026-11-16 on `vm-1`, job `20261116-224337-default-test-run-at-yooukqwllnmu` at `76862913606e`. A first
   attempt of the same job was cancelled at 10 min when my own background command hit its time limit; the rerun is the
   one recorded.
