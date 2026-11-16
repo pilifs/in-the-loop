@@ -9,14 +9,14 @@ and comes once an example is done and before anything is published.
 
 In this order, so that nothing reads a file an earlier step rewrites:
 
-1. the router (`build.py --index-only`), first: the tests below read examples/index.json, and a stale one fails
-   them for no fault of the example;
-2. each example's form and artifacts, as `watch.py preflight` checks them: example.json against its schema, the
+1. each example's form and artifacts, as `watch.py preflight` checks them: example.json against its schema, the
    sidecar, each revision's lock, each claim frozen, a proof task among the tasks;
-3. each task's plan (`build.py --plan NNN`): every task plans offline, with its claim file loaded, of its kind and
+2. each task's plan (`build.py --plan NNN`): every task plans offline, with its claim file loaded, of its kind and
    in step with the task's bounds;
-4. the oracle's own test, `controls/oracle.py self-test`, where the oracle has one;
-5. with --replay, the replay and mutant-replay tasks on a JVM (`build.py NNN --task T`), inline as the briefs allow;
+3. the oracle's own test, `controls/oracle.py self-test`, where the oracle has one;
+4. with --replay, the replay and mutant-replay tasks on a JVM (`build.py NNN --task T`), inline as the briefs allow;
+5. the router (`build.py --index-only`), after anything that writes receipts and before the tests: they read
+   examples/index.json, and a stale one fails them for no fault of the example;
 6. the tests that read every example's files: the packets, the acceptance gates, the targets' contract and the gap
    inventory. They take seconds, and they discover a prepared example by itself: adding one edits none of them.
 
@@ -93,8 +93,6 @@ def validate(numbers: list[str], replay: bool) -> dict:
     def step(name, ok, detail, example=None):
         steps.append({"example": example, "step": name, "ok": ok, "detail": detail})
 
-    ok, out, _ = run([sys.executable, "examples/tools/build.py", "--index-only"])
-    step("router", ok, "examples/index.json and examples/README.md regenerated" if ok else tail(out))
     for number in numbers:
         folder = next(iter(sorted((REPO / "examples").glob(f"{number}-*"))), None)
         if folder is None:
@@ -111,6 +109,8 @@ def validate(numbers: list[str], replay: bool) -> dict:
             for task in (t for t in REPLAYS if t in tasks):
                 ok, out, took = run([sys.executable, "examples/tools/build.py", number, "--task", task], timeout=1800)
                 step(f"{task} on a JVM", ok, f"{took:.0f} s; " + tail(out, 3), number)
+    ok, out, _ = run([sys.executable, "examples/tools/build.py", "--index-only"])
+    step("router", ok, "examples/index.json and examples/README.md regenerated" if ok else tail(out))
     for test in TESTS:
         ok, out, took = run([sys.executable, test])
         step(Path(test).name, ok, f"{took:.0f} s" if ok else tail(out, 20))
