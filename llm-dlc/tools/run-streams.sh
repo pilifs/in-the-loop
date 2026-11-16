@@ -60,23 +60,33 @@
 # to working to run it), and each loop finishes what an interrupted cycle left.
 #
 # The integration check, for a brief that names one, shows while the streams
-# run whether their work fits together, rather than only at the merge. It keeps
-# a workspace of its own, NAME-integration (../REPO-NAME-integration), used for nothing
-# else: never committed from or pushed. Whenever a stream's @- has moved since the
-# last check, at most once every RUN_STREAMS_INTEGRATION_EVERY seconds, it makes
-# there a merge of every stream's @- and runs SCRIPT (a path in the repo, run
-# from that workspace's root) in the systemd scope
-# feature-loop-NAME-integration.scope with a 6 GB cap and a loop's CPU weight, so the
-# verification runner leaves it room as it does a loop. What it found, with the
-# commits it merged, goes to llm-dlc/loop-summaries/NAME-integration.md here
-# (NAME being the brief's), which each stream reads every cycle. The generated
-# trace files (llm-dlc/index.json, traces/README.md, traces/metrics.json and
-# README.md's index table) conflict whenever two streams have committed: the
-# merged tree's `sync.py regenerate` rewrites them from the session files, which
-# merge cleanly, and the report names them. A merge with any other conflict is
-# reported, not resolved, and SCRIPT isn't run on it. The previous
-# check's merge is abandoned at the next; the reconcile loop forgets the
-# workspace. (Before 2026-11-07 it was named integration, for every brief.) Neither the streams' branches nor the default workspace change.
+# run whether their work fits together, rather than only at the merge: it keeps
+# a rolling integration line (llm-dlc/tools/integration.py, and
+# llm-dlc/loops/stream-conductor.md, Design 1), in a workspace of its own,
+# NAME-integration (../REPO-NAME-integration), used for nothing else and never
+# pushed. Whenever a stream's @- has moved since the last check, at most once
+# every RUN_STREAMS_INTEGRATION_EVERY seconds, it makes there a merge of every
+# stream's @- and of the line's newest passing merge. The generated trace files
+# (llm-dlc/index.json, traces/README.md, traces/metrics.json, README.md's index
+# table and the decision views) conflict whenever two streams have committed:
+# the merged tree's `sync.py regenerate` rewrites them from the session files,
+# which merge cleanly. With no other conflict it runs SCRIPT (a path in the
+# repo, run from that workspace's root) in the systemd scope
+# feature-loop-NAME-integration.scope with a 6 GB cap and a loop's CPU weight,
+# so the verification runner leaves it room as it does a loop. A merge that
+# passes is committed on the line, so the line always holds the newest merge
+# known to work; `integration.py line BRIEF` names it. A merge with a conflict
+# in real work, or one the script fails, is left uncommitted and triaged into
+# the decision record and the streams' inboxes in the default workspace: a
+# `failure` item for a stream whose changes alone are named, or an open
+# question on how two or more streams' changes meet, with a `queued` item for
+# each, closed as settled (and each side told it may go on) once a merge passes.
+# What it found, with the commits it merged, goes to
+# llm-dlc/loop-summaries/NAME-integration.md here (NAME being the brief's),
+# which each stream reads every cycle. Neither the streams' branches nor the
+# default workspace's line change; the reconcile loop forgets the workspace.
+# (Before 2026-11-07 it was named integration, for every brief; before
+# stream-conductor step 3 it committed nothing and triaged nothing.)
 #
 # A brief whose Loop settings say "- verification: separate" runs without the
 # pipeline: step 3 is skipped, and this script waits for no job. Its loops submit
@@ -393,51 +403,19 @@ stream_heads() {
   done
 }
 
-# One check of the streams' current commits: merge, run the script, report.
+# One run of the rolling integration line (see the header): llm-dlc/tools/integration.py merges, settles the
+# generated files, runs the script in its scope, commits a passing merge on the line, triages a failing one
+# into the decision record and the streams' inboxes, and writes the report.
 integrate_once() {
-  local heads=$1 s revs=() previous conflicted regenerated code tmp
-  for s in "${STREAMS[@]}"; do revs+=("${WS[$s]}@-"); done
-  tmp=$(mktemp) || return 1
-  {
-    printf '# Integration check of %s\n\n' "$BRIEF"
-    printf -- '- When: %s\n' "$(date '+%F %T')"
-    printf -- '- Merged: '
-    for s in "${!STREAMS[@]}"; do printf '%s@- %s; ' "${WS[${STREAMS[$s]}]}" "$(cut -d' ' -f$(( s + 1 )) <<<"$heads")"; done
-    printf '\n- Where: the workspace %s, %s\n' "$INTEGRATION_WS" "$INTEGRATION_DIR"
-  } >"$tmp"
-  previous=$(cd "$INTEGRATION_DIR" && jj log --no-graph -r @ -T 'if(description, "", change_id)' 2>/dev/null)
-  if ! (cd "$INTEGRATION_DIR" && jj new --quiet "${revs[@]}" >/dev/null 2>&1); then
-    printf -- '- Result: the merge could not be made (jj new failed)\n' >>"$tmp"
-    mv "$tmp" "$INTEGRATION_REPORT"
-    return 1
-  fi
-  [[ -n "$previous" ]] && (cd "$INTEGRATION_DIR" && jj abandon --quiet "$previous" >/dev/null 2>&1)
-  conflicted=$(cd "$INTEGRATION_DIR" && jj resolve --list 2>/dev/null)
-  if [[ -n "$conflicted" ]]; then
-    # Settle the generated trace files' conflicts; a sync.py without the command settles none.
-    regenerated=$(cd "$INTEGRATION_DIR" && python3 llm-dlc/tools/sync.py regenerate </dev/null 2>/dev/null |
-                  sed -n 's/^regenerated: //p' | paste -sd' ')
-    [[ -n "$regenerated" ]] && printf -- '- Regenerated, as generated trace files in conflict: %s\n' "$regenerated" >>"$tmp"
-    conflicted=$(cd "$INTEGRATION_DIR" && jj resolve --list 2>/dev/null)
-  fi
-  if [[ -n "$conflicted" ]]; then
-    printf -- '- Result: the streams conflict; the script was not run. Files in conflict:\n\n```\n%s\n```\n' "$conflicted" >>"$tmp"
-    mv "$tmp" "$INTEGRATION_REPORT"
-    log "[integration] the streams conflict: see $INTEGRATION_REPORT"
-    return 0
-  fi
-  log "[integration] running $INTEGRATION on $heads"
-  (cd "$INTEGRATION_DIR" && systemd-run --user --scope --quiet --collect --unit="$INTEGRATION_SCOPE" \
-    -p MemoryMax=6G -p MemorySwapMax=0 -p OOMPolicy=continue -p CPUWeight=50 \
-    timeout 3600 "$INTEGRATION_DIR/$INTEGRATION" </dev/null) >"$tmp.out" 2>&1
-  code=$?
-  printf -- '- Result: %s (exit %s)\n\n## Output, last 200 lines\n\n```\n' \
-    "$( (( code == 0 )) && echo passed || echo failed )" "$code" >>"$tmp"
-  tail -n 200 "$tmp.out" >>"$tmp"
-  printf '```\n' >>"$tmp"
-  rm -f "$tmp.out"
-  mv "$tmp" "$INTEGRATION_REPORT"
-  log "[integration] $( (( code == 0 )) && echo passed || echo "failed (exit $code)" ): see $INTEGRATION_REPORT"
+  local s args=()
+  for s in "${STREAMS[@]}"; do args+=(--stream "$s=${WS[$s]}"); done
+  log "[integration] merging $1"
+  python3 "$ROOT/llm-dlc/tools/integration.py" run --name "$(basename "$BRIEF" .md)" --workspace "$INTEGRATION_DIR" \
+    --report "$INTEGRATION_REPORT" "${args[@]}" \
+    -- systemd-run --user --scope --quiet --collect --unit="$INTEGRATION_SCOPE" \
+      -p MemoryMax=6G -p MemorySwapMax=0 -p OOMPolicy=continue -p CPUWeight=50 \
+      timeout 3600 "$INTEGRATION_DIR/$INTEGRATION" </dev/null 2>&1 |
+    while IFS= read -r line; do log "[integration] $line"; done
 }
 
 # Runs until killed: a check whenever a stream's @- has moved, at most every INTEGRATION_EVERY seconds.

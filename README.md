@@ -1,84 +1,116 @@
-# Java formal verification demos
+# in-the-loop: `/prove-java-change`
 
-Proofs of concept for formally verifying Java, from source code down to **JVM bytecode** and **native machine code**,
-plus distributed-systems protocols running on Kubernetes.
+**Formally prove a change to Java code, in one command.**
 
-These demos are inspired by [LLM-assisted formal verification at scale](https://www.anthropic.com/research/formal-verification),
-which proved properties of compiled RISC-V binaries, not source code.
-The demos ask what the equivalent pipelines look like for the JVM.
+Point Claude Code at a pull request or a commit on GitHub. The skill works out what the change must keep and what it
+is meant to do, and states that as claims. A model checker then proves each claim from the compiled bytecode, or
+hands you the input where it breaks. Nobody writes a specification.
 
-The repo has two parts:
+```
+/in-the-loop:prove-java-change <a pull request, a commit or a range on GitHub, and what to prove about it>
+```
 
-## [`examples/`](examples/README.md): formal verification
+It also takes a list of changes: it evaluates them all, orders them so that the most accessible is proved first,
+and proves them one after another. With `--scaffold-only` it prepares them and stops; the same request without the
+flag proves what was prepared.
 
-**Start here.** 109 examples in one folder, each a code change run through a formal verifier, with the verdict, the witness and why it matters: 104 constructed over four subject systems written for this repository, with the code before and after, the counterexamples and a comparison with the existing tests, and 5 pull requests and commits to published libraries verified from their bytecode with `/verify-bytecode`. The examples are a router: each is tagged by domain, defect and technique, and `examples/tools/find.py` finds the ones closest to a task.
+It runs on your machine, on a released copy of this repository that the skill installs and checks against a hash it
+carries. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you agree to it.
 
-| Path | Content |
+## Try it
+
+```bash
+claude plugin marketplace add pilifs/in-the-loop
+claude plugin install in-the-loop@in-the-loop
+```
+
+Then, in Claude Code, run the command above. The session you run it in becomes the run's watcher, on Opus 5.5: it
+starts each stage in a session of its own, keeps a verification loop (Sonnet 5.5) running for the proofs they queue,
+and reports. You confirm the plan once, and the rest is unattended:
+
+| Stage | Session | What happens | You |
+|---|---|---|---|
+| 1. Set up and measure | Opus 5.5, high effort | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools. The watcher also checks what else Claude Code has loaded (other plugins, MCP servers, memory files), warns that this may lead to unexpected results, and offers a clean session without it | choose, if anything is loaded |
+| 2. Evaluate and order | Fable 5.2, medium effort | It judges whether the machine is enough, pins each change to two exact commits, sizes it against the closest past examples, writes each claim in full, and orders the changes | confirm the claims, the order and the estimate, in hours and tokens |
+| 3. Set the examples up | Opus 5.5, high effort | It builds each revision, loads its JARs, fills in the example and its claims from the plan, and runs the change once on a JVM | |
+| 4. Prove them | Fable 5.2, high effort: the session of stage 2, continued | It runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result. While an example's last proof runs, the loop starts the next one and comes back when the proof is in | ask the watcher anything, any time |
+| Report | the watcher | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
+
+While stage 4 runs, the watcher prints a summary every 10 minutes (ask it for another interval), with what changed
+since the last one first: the loop, the example under way and the verification jobs. Between two examples it merges
+whatever workspace you asked it to, and stops if you asked it to. It can also look into any part of the run for
+you, and fix what is small: a job that hangs, a loop that died.
+
+**It needs** Linux, at least 8 GB of memory, 2 CPUs and 10 GB of free disk, and Claude Code with Opus 5.5,
+Fable 5.2 and Sonnet 5.5. Stage 1 installs what it can of the rest (jj, a Java 25 JDK, Rust) and says what is missing and what limits the machine.
+
+**It takes** changes on GitHub only, with their dependencies from Maven Central and the other allowed hosts.
+
+## Three answers, and none is the model's opinion
+
+The model writes the claims and drives the tools. The answer to each claim comes from a model checker.
+
+| Answer | What it means |
 |---|---|
-| [`examples/README.md`](examples/README.md) | The router: how to find an example, the subject systems and approaches, every example in a table and by tag, how to run or add one, and where notes go |
-| [`examples/index.json`](examples/index.json), [`examples/tags.json`](examples/tags.json), [`examples/tools/find.py`](examples/tools/find.py) | Every example with its tags and notes, the tag vocabulary, and the search over them |
-| [`examples/apps/boxoffice/`](examples/apps/boxoffice/README.md) | The first subject system: concert ticketing as two Spring Boot services with Kafka and MongoDB, and the invariants they must keep, with its [TLA+ model](examples/apps/boxoffice/spec/README.md) |
-| [`examples/apps/quorum/`](examples/apps/quorum/README.md) | The second: the pure kernels of a replicated system, Raft's election and replication rules, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins and two-phase commit, with [TLA+ models](examples/apps/quorum/spec/README.md) of two-phase commit, Raft election and Raft replication |
-| [`examples/apps/crosscut/`](examples/apps/crosscut/README.md) | The third: the kernels behind a Spring Boot service's cross-cutting concerns, transaction rollback, a circuit breaker, a retry policy, a token bucket, an `Idempotency-Key` receiver, Kafka, JWT and cache expiry, with [TLA+ models](examples/apps/crosscut/spec/README.md) |
-| [`examples/apps/mica/`](examples/apps/mica/README.md) | The fourth: the decision kernels of a small JVM written in Java, class initialization with its [TLA+ model](examples/apps/mica/spec/README.md), the type checker, access control, the interpreter's arithmetic, class-file structures and modified UTF-8 |
-| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The Java verifiers of the Box Office examples: behavioural, regression and capability contracts, a CI gate that proves what changed and what did not |
-| [`examples/tools/build.py`](examples/tools/build.py) | Runs the constructed examples, generates their pages, and generates the router |
-| [`examples/approaches.md`](examples/approaches.md) | The approaches by level (source, bytecode, native, distributed), and the research plan |
-| [`examples/setup/`](examples/setup/README.md) | The toolchain installer for Ubuntu and WSL2 |
+| **Established** | The claim holds for every input within the bounds the report states, not for a sample of them |
+| **Refuted** | A concrete input, shrunk to a small one and run on a real JVM. It is a finding about your change |
+| **Left open** | The tools could not decide, and the report says why. It never counts as a pass |
 
-## [`lib/`](lib/README.md): the verifiers as a Rust library
+[Example 285](examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) is the proof loop's
+first real target, a Spring Boot security fix (CVE-2023-34055, 2.7.17 → 2.7.18) proved on the released JARs:
 
-`jvmcontract`, a Rust crate and command line that ports the verifiers of the examples (behavioural, regression and capability contracts, and the TLA+ generator) and goes further: it derives contracts without a JVM, by interpreting the bytecode under an effect monitor that makes the purity proof complete over the domain; it generates its JBMC harnesses as bytecode, so no Java compiler is in the proof pipeline; and it adds property proofs (a postcondition or a law, stated next to the code and proved over every input), API contracts, per-dependency capability contracts, a TLC runner and a state-machine view of a contract.
-It reproduces the contracts the Java tool committed for Box Office, which its tests check, and it is the verifier behind examples 013 to 054.
+```
+Does the fix bound the "method" metric label?
 
-| Path | Content |
-|---|---|
-| [`lib/README.md`](lib/README.md) | What it verifies, how each verdict is proved, the commands, and the library API |
-| [`lib/src/`](lib/src) | The crate: a class-file reader, the JDK image reader, the interpreter, and one module per contract kind |
-| [`lib/tests/`](lib/tests) | Integration tests over Java fixtures compiled at test time, and against the committed Box Office contracts |
+✗ 2.7.17: refuted      method(request{getMethod()=""}) returns ImmutableTag{key="method", value=""}
+                       the same input, run on a JVM, fails too
+✓ 2.7.18: established  the label is one of eight names or UNKNOWN, for every request of the domain
+✓ preserved            outside the fix, both releases give the same tag
+```
 
-## [`plugins/`](plugins/jvmcontract/README.md): the verifier as Claude Code skills
+Its proof tasks first stopped at things the verifier could not model. The loop extended the verifier, reran the
+unchanged claims on the same JARs, and each came out as expected.
 
-`/verify-bytecode <pull request>`, a Claude Code skill that compiles a Java pull request before and after, runs `jvmcontract` over the bytecode, and reports what was proved, what was refuted (with the input) and what it could not check; and `/add-tla-model`, which adds a TLA+ model to a Java project around its decision kernel, derived from the bytecode, and checks the user's invariants with TLC. One-command install, as personal skills or as a plugin from this repository's marketplace.
+## What is in the repository
 
-| Path | Content |
-|---|---|
-| [`plugins/jvmcontract/README.md`](plugins/jvmcontract/README.md) | Install, what each skill proves, and libraries to try them on |
-| [`plugins/jvmcontract/skills/verify-bytecode/`](plugins/jvmcontract/skills/verify-bytecode/SKILL.md) | `/verify-bytecode`: verify a pull request. The procedure, the tool reference for the agent, the report template, and the fetch and build scripts |
-| [`plugins/jvmcontract/skills/add-tla-model/`](plugins/jvmcontract/skills/add-tla-model/SKILL.md) | `/add-tla-model`: add a TLA+ model to a Java project and check custom invariants with TLC. The procedure, the TLA+ reference for the agent, the `check.sh` and README templates, and the scripts that find classes and install TLC |
-| [`plugins/jvmcontract/install.sh`](plugins/jvmcontract/install.sh) | The installer behind `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh \| bash` |
-| [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | The marketplace, for `claude plugin install jvmcontract --marketplace pilifs/in-the-loop` |
+The skill is a page of about 130 lines. What it stands on is the rest of the repository, and each part's page has its own
+layout that says where things are. The folders will be reorganized at some point, so follow the links from these
+pages instead of remembered paths.
 
-## [`verification/`](verification/README.md): the verification pipeline
+| Where | What it is | Its layout |
+|---|---|---|
+| [`plugins/in-the-loop/`](plugins/in-the-loop/skills/prove-java-change/SKILL.md) | The plugin: the skill, the bootstrap that installs and checks a release, and the pin of the release it runs on | [`runtime.md`](llm-dlc/runtime.md#where-things-are) |
+| [`llm-dlc/runtime.md`](llm-dlc/runtime.md) | How the skill runs: the watcher and what each stage stands on, the released copy on your machine, the proof loop and how the watcher judges it, contributing back, and releases | [Where things are](llm-dlc/runtime.md#where-things-are) |
+| [`examples/`](examples/README.md) | 183 changes run through a formal verifier, each with its verdict and the input or trace behind it: 159 written for small systems built to be provable, 24 from published libraries. They are also what the skill sizes your change against | [Find an example](examples/README.md#find-an-example), [Layout](examples/README.md#layout) |
+| [`lib/`](lib/README.md) | `jvmcontract`, the verifier, in Rust: a class-file reader, a bytecode interpreter and its own bounded model checker, with JBMC as a second engine. It derives contracts without a JVM and proves without `javac` | [Layout](lib/README.md#layout) |
+| [`verification/`](verification/README.md) | The pipeline: proofs are queued as jobs, not run inside a session, and run under memory and CPU caps, each with a recorded result | [Layout](verification/README.md#layout) |
+| [`llm-dlc/`](llm-dlc/README.md) | How the repository is built: the unattended loops, and every commit published with the redacted session that made it | [Layout](llm-dlc/README.md#layout) |
 
-Proofs and model checks don't run inside development sessions: a session queues them as jobs, committed with the change and marked verification pending, and a runner executes them under memory and CPU limits, several at a time, and brings the results back for a batch read.
+## For agents
 
-| Path | What it is |
-|---|---|
-| [`verification/README.md`](verification/README.md) | The lifecycle, how to submit a job, how to read a result, the runner's resources, and how a cloud backend would fit |
-| [`verification/pipeline.py`](verification/pipeline.py) | `submit`, `status`, `run`, `collect`, `report`, `resubmit`, `validate` |
-| [`verification/schema/`](verification/schema) | The job and result formats |
-| [`verification/jobs/`](verification/jobs), [`verification/results/`](verification/results) | Jobs as submitted, and what happened when each ran |
-| [`.claude/skills/run-verification/`](.claude/skills/run-verification/SKILL.md) | `/run-verification`: the procedure for the agent that manages the pipeline |
+- [`CLAUDE.md`](CLAUDE.md) is the procedure. `python3 llm-dlc/tools/mode.py` says which of two modes a checkout is in:
+  *development*, this repository as its authors work in it, with every session traced and published, or *runtime*,
+  the released copy the skill installs, where nothing is traced. [`llm-dlc/runtime.md`](llm-dlc/runtime.md) is the
+  runtime side.
+- To find examples close to a task: `python3 examples/tools/find.py`
+  ([`examples/README.md`](examples/README.md#find-an-example)).
+- Proofs and model checks are queued as jobs
+  ([`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)). `CLAUDE.md` says
+  the little that may run inline.
+- In this repository the skill runs as `/prove-java-change NNN [NNN ...]` on existing examples, without the setup
+  stages. Every moonshot over examples is run this way: the watcher starts the loop, judges its cycles and reports
+  ([`llm-dlc/runtime.md`](llm-dlc/runtime.md#the-watcher)).
 
-## [`llm-dlc/`](llm-dlc/README.md): the LLM development lifecycle
+## Background
 
-A meta example. This repo is written with an LLM, and every commit is published with the session that made it: what was asked, what the agent did, what it cost, and the full redacted transcript.
-Each commit message links to its session and carries the SHA-256 of the log as it stood at that commit, so anyone can download the log and verify it.
-The folder also holds everything that makes this work:
+The work is inspired by [LLM-assisted formal verification at scale](https://www.anthropic.com/research/formal-verification),
+which proved properties of compiled RISC-V binaries, not source code. This repository asks what the equivalent looks
+like for the JVM. It started as a set of demos, from source code down to bytecode and native code, with distributed
+protocols model-checked in TLA+; [`examples/approaches.md`](examples/approaches.md) has the approaches by level.
 
-| Path | Content |
-|---|---|
-| [`llm-dlc/README.md`](llm-dlc/README.md) | The procedure agents follow, and the index of sessions |
-| [`llm-dlc/specification.md`](llm-dlc/specification.md) | The specification: identifiers, invariants, metrics, storage and redaction |
-| [`llm-dlc/traces/README.md`](llm-dlc/traces/README.md) | Every session added up: prompts, tokens, tools, commits and logs |
-| [`llm-dlc/traces/`](llm-dlc/traces) | One folder per session: a readable `summary.md`, the `manifest.json` metadata, and `metrics.json`, with every prompt, model call and tool call as data |
-| [`llm-dlc/traces/metrics.json`](llm-dlc/traces/metrics.json) | Cost, time and cache behaviour over all sessions, by model, tool, day, session and commit |
-| [`llm-dlc/tools/sync.py`](llm-dlc/tools/sync.py) | The hooks and commands that capture, redact, publish and check the traces |
-| [`llm-dlc/tools/metrics.py`](llm-dlc/tools/metrics.py) | Turns each log into the metrics tables, priced from [`llm-dlc/pricing.json`](llm-dlc/pricing.json) |
-| [`llm-dlc/session-notes/`](llm-dlc/session-notes) | Hand-written notes on sessions, for what a log and its commits cannot say |
-| [`llm-dlc/infra/cdn/`](llm-dlc/infra/cdn) | The Cloudflare Worker that serves the published logs |
-| [`llm-dlc/infra/langfuse/`](llm-dlc/infra/langfuse) | An optional local Langfuse for browsing traces |
+It is written almost entirely by models working in unattended loops, and every session is public: each commit
+message links the session that made it and carries the SHA-256 of its log
+([`llm-dlc/README.md`](llm-dlc/README.md)).
 
 ## License
 

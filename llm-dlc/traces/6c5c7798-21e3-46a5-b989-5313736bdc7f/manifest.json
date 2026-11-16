@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "open",
+  "status": "ended",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T07:30:34.349Z",
-  "duration_seconds": 50588,
+  "ended": "2026-11-16T08:23:30.625Z",
+  "duration_seconds": 53764,
   "stats": {
     "turns": 38,
-    "api_calls": 240,
-    "tool_calls": 210,
+    "api_calls": 249,
+    "tool_calls": 217,
     "tool_errors": 4,
     "compactions": 1,
-    "peak_context_tokens": 226937,
+    "peak_context_tokens": 236387,
     "usage": {
-      "input_tokens": 566,
-      "output_tokens": 179791,
-      "cache_read_input_tokens": 33879612,
-      "cache_creation_input_tokens": 403807
+      "input_tokens": 588,
+      "output_tokens": 184214,
+      "cache_read_input_tokens": 35963804,
+      "cache_creation_input_tokens": 411795
     }
   },
   "tools": {
-    "Bash": 193,
+    "Bash": 199,
+    "SendMessage": 5,
     "ToolSearch": 5,
-    "SendMessage": 4,
     "ListAgents": 3,
     "Monitor": 2,
     "TaskStop": 2,
@@ -56,24 +56,24 @@
     {
       "index": 1,
       "started": "2026-11-15T23:09:43.277Z",
-      "ended": "2026-11-16T07:30:34.349Z",
+      "ended": "2026-11-16T08:23:30.625Z",
       "turns": 17,
-      "api_calls": 125,
+      "api_calls": 134,
       "usage": {
-        "input_tokens": 286,
-        "output_tokens": 91594,
-        "cache_read_input_tokens": 17062128,
-        "cache_creation_input_tokens": 230577
+        "input_tokens": 308,
+        "output_tokens": 96017,
+        "cache_read_input_tokens": 19146320,
+        "cache_creation_input_tokens": 238565
       },
-      "peak_context_tokens": 226937
+      "peak_context_tokens": 236387
     }
   ],
   "log": {
-    "sha256": "aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7",
-    "bytes": 4148165,
-    "lines": 1699,
-    "gzip_bytes": 778409,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7.jsonl.gz"
+    "sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330",
+    "bytes": 4300225,
+    "lines": 1762,
+    "gzip_bytes": 807177,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -212,6 +212,198 @@
       "summary": "feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and \"item\" stops the loop once the item under way is",
       "body": "At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and \"stop\" could only end the loop after a cycle, not after an example.\n\nNow, after each commit of a templated moonshot, a judge outside the session decides whether the item is finished: a separate claude -p call (FEATURE_LOOP_JUDGE_MODEL, claude-sonnet-5-5 by default) with no tools, only the user's settings and no transcript reads the cycle's final report and commit messages and answers ITEM: finished (the goal is met, or what is left needs a person or only waits on jobs) or ITEM: continue (the session itself can still make real progress). Nothing is added to the moonshot's own session, so its instruction stays the only thing it is given. An unfinished item gets the next cycle with the same instruction; an unclear answer moves on, as before. The record keeps the verdict and its reason under each commit line, and a later run resumes at the first item that has no commit or whose last verdict was continues. FEATURE_LOOP_ITEM_CYCLES caps an item's cycles in a run (no cap by default, the user's choice), and FEATURE_LOOP_ITEM_JUDGE=0 restores one cycle per item. Typing \"item\" in the loop's terminal ends the run once the item under way is finished, however many cycles that takes; a count typed after it replaces it. loop_stats.py reads the new record header and verdicts, so an item the judge left open counts as attempted, not done, and the verdict is not published as a column.\n\nVerified: test_loop_stats (22, two new) and test_runs pass, and the cost lint agrees. End to end, in a scratch jj repo with a stand-in claude that commits and answers as the judge from a script, the patched script (its own three-item list, no systemd scope): the judge kept item 1 for two cycles and the run went on to 2 and 3 and ended with no items left; a record whose last verdict was continues resumed at that item; an unclear answer moved on; a cap of 2 moved on after two continues; FEATURE_LOOP_ITEM_JUDGE=0 kept the old header and one cycle per item; a bad cap exits 2; and \"item\" typed during cycle 1, on a private tmux server, ended the run after cycle 2, once the judge found item 1 finished. Three real judge calls on made-up reports answered finished for a decided example, continue for one with work the session could do, and finished for one blocked on a person's decision.",
       "log_sha256": "aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7"
+    },
+    {
+      "change_id": "ulzlppqmvsltzrrknxznwxrpszquwoyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop",
+      "body": "At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "zxukowpmwzlrqunumokvpxplrwlwkklk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Remove the jvmcontract plugin and its two skills",
+      "body": "/verify-bytecode and /add-tla-model are removed, with everything that existed only for them: plugins/jvmcontract (both skills, their references, templates and scripts, the installer and the plugin's README), the marketplace file that listed the plugin, and lib/tests/skill.rs, the test that held the skill's commands to the CLI. They were written for the tool as it was on 2026-11-01 and no longer describe how a change is verified here; /prove-java-change replaces them in the commits that follow, and the history keeps the old files.\n\nEvery page that pointed at them is reworded so that nothing links to a removed file: the top README (its plugins section is gone until the new skill's is written), lib/README.md (the agent's side of the gap protocol is described without the skill), examples/README.md (a real-world example is now added through its target sidecar, the way examples 285 and later were, instead of by running the skill), the example schema's description and the pull-request-review tag. The 21 real-world examples named the skill's folder as approach.tool, which their pages link as a README: it is lib now, the verifier that ran. Examples 105 to 109 were recorded from the skill's runs and their provenance says so, with the date it was removed; 105's report no longer links the two removed pages. llm-dlc/loops/sound-verdicts.md keeps its record of step 3e with a note and no dead links.\n\nOne sentence is left: examples/apps/crosscut/spec/README.md still says its breaker model was written with /add-tla-model, with a link that is now dead. That file is an input of 18 Crosscut examples' claims, so changing a byte of it marks all 18 stale until they are run again. It should go with their next run, not hold this change behind 18 jobs while the prove-examples loop has the runner.\n\nVerified: examples/tools/build.py --index-only leaves no example stale; lib/tools/test_costs.py estimate rewrote the inventory without skill.rs (655 Rust tests); the default run, python3 lib/tools/test_costs.py run, passed 34 of 34 (cargo test and every Python suite). Made in the jj workspace prove-java-change, beside the running loop.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "ymlptsqyklmxtnxkqyxnztvlkzprxqyp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Two modes of a checkout: development, and runtime on a user's machine",
+      "body": "/prove-java-change will install a released copy of this repository on a user's machine. That copy must not trace, redact or publish anything, yet the agents working in it follow this repository's procedure, which says to commit with sync.py commit. So the procedure stays one and the checkout decides: llm-dlc/tools/mode.py tells a runtime checkout by a marker file at its root, .in-the-loop-runtime.json (written by the skill's bootstrap, gitignored, a fact about one copy), and anything else is a development checkout that behaves as it always has. IN_THE_LOOP_MODE overrides the marker for tests. A marker that can't be read is an error, never a development checkout, since tracing a user's sessions by mistake would publish them.\n\nIn a runtime checkout sync.py does this, decided before it takes its lock or writes anything under its state folder: commit writes the message with an In-The-Loop-Runtime: VERSION sha256:DIGEST trailer naming the release and starts a new change, reading no session; check passes with nothing to check; the hooks that run after every tool call and turn return at once; and every other command (push, upload, scan, sync, review, allow, stamp, langfuse, unpublish, regenerate) refuses and points at llm-dlc/runtime.md. In a development checkout one thing changes: link_commits never stamps a session's trace on a commit that carries the runtime trailer, so a contribution merged from a user's checkout is not credited to whichever session happened to be running when it was authored.\n\nllm-dlc/runtime.md is the new page for the runtime side, starting with the two modes and the procedure for agents in a runtime checkout; CLAUDE.md and llm-dlc/README.md point at it. Examples added in a runtime checkout take numbers 900 to 999, which examples/README.md now reserves, so an update never brings an example with the same number.\n\nVerified: test_mode.py (13 tests, in the cost inventory as unit tier) covers the marker, the override, each runtime command, main's dispatch without the lock, and the unstamped contributed commit. Run for real with IN_THE_LOOP_MODE=runtime: check exits 0, push exits 2 with the reason, hook exits 0 silently. Every Python suite passes (lib/tools/test_costs.py run --only python, 34 of 34 after test_performance.py's copied tool sources gained mode.py), and cargo test --test tiers, the Rust half of the tier lint. The rest of cargo test was not run again: no Rust file changed since the previous commit's full default run.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "pvokroqypwtlovwpnonytxpvwsuysrnk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A release process with a hash, and the bootstrap that installs a release",
+      "body": "/prove-java-change runs on a released copy of this repository, and the copy has to be the one the running skill was released with. A release is therefore one commit, the skill at a version and the repository beside it, pinned to each other by the sha256 digest of the commit's tree, which the skill carries in release.json beside its bootstrap. The pin can't name the commit's id, because it is in that commit, so it names the content: the digest is over one line per file (mode, sha256 of its bytes, path) and leaves out the pin itself and the files sync.py regenerates on every commit (llm-dlc/traces/, llm-dlc/index.json, llm-dlc/README.md), which the pin lists. It is of content only, so the trace lines sync.py adds to a commit's message later leave it as it was.\n\nllm-dlc/tools/release.py cut [VERSION] is the one command a release takes, at any commit and as often as wanted: it writes the version into the plugin and the marketplace, the pin from @'s tree, commits with sync.py commit, and verifies the commit; it refuses while @ holds other uncommitted work. status and verify read the last release back. A release reaches users only when main is pushed with it.\n\nplugins/in-the-loop/skills/prove-java-change/bootstrap.py is the user's side and the one implementation of the digest (release.py loads it). status says where things stand as JSON, install clones the repository with jj into IN_THE_LOOP_HOME (by default ~/.local/share/in-the-loop) and stands on the release, update fetches and rebases the user's commits onto the next release, listing conflicts. A release is found without a tag: through the history of the pin, for the commit that carries this version and digest, accepted only when its tree hashes to the digest again. A checkout is current only when that holds, the working copy descends from the release, and the skill's files in the release are the bytes of the skill that is running. Inside a development checkout the bootstrap answers development and installs nothing. The plugin's manifest and the marketplace entry come back with it, as plugin in-the-loop at 0.4.0; the skill's own page follows in a later commit, and no release is cut yet.\n\nVerified: test_release.py, 11 tests (8 at the tool tier, with git and jj on a made-up repository in a temporary directory): the digest ignores messages and the files left out and sees a changed byte or mode; a commit changed after its digest was taken is no release; install stands on the release rather than the branch's tip, writes the marker and leaves git clean; a skill edited after it was installed blocks; a pin whose release is not in the repository installs nothing and leaves no directory; update moves a local commit onto the next release. On this repository the digest of 5,380 files takes 0.4 s. Every Python suite passes (35 of 35) and cargo test --test tiers; the rest of cargo test was not rerun, no Rust file having changed.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "xrvmqunvtvlqnyyzszprytytooznptyo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "doctor.py: whether a machine can prove a change, and what blocks it",
+      "body": "Step 1 of /prove-java-change has to say, in numbers, whether the user's machine is enough, and to tell what no setup can fix from what a setup fixes. llm-dlc/tools/doctor.py measures the machine and looks for the tools, installs and changes nothing, and gives each check one of three levels. Blocking: a proof can't run here; a hardware limit (under 8 GiB of memory, 2 CPUs or 10 GiB of free disk, a margin below the 8-core, 9 GB laptop that is the smallest machine this repository has run on) or an operating system other than Linux is blocking by itself, and so is a missing tool every proof needs (Python 3.11 with jsonschema, git, jj, a Java 25 JDK, cargo, and a Claude Code with the flags the loop uses). Limits: the machine works with less, and the check says what is lost (no JBMC, no systemd user scopes for memory caps, no JDK 21 and 25 under sdkman for replays, no Maven, gh or tmux). Ok otherwise. It exits 1 when something blocks, and --json gives the same as data.\n\nIt also proposes a budget, shared out as verification/README.md describes: a reserve for the person and the operating system, one loop's memory cap, and the rest to the verification runner, for whoever sets the machine up to adjust. For this VM (30 vCPUs, 105 GiB) the arithmetic gives the budget that was set here by hand on 2026-11-14: a 13G reserve, 12G for a loop, 80G and 26 CPUs for the runner.\n\nVerified: test_doctor.py, 11 unit tests over made-up machines (which sizes block and which limit, that a limit says what is lost, that the three shares fit in machines from 8 to 512 GiB, the VM's budget, the exit status). Run on this machine: nothing blocking, nothing limiting. Every Python suite passes (36 of 36) and cargo test --test tiers; no Rust file changed, so the rest of cargo test was not rerun.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "srxmyvovzxtsusrtvlspzoslotokklxp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "feature-loop.sh: a moonshot compacts at 600k tokens, and a compaction with no commit stops the loop",
+      "body": "A moonshot has no acceptance criteria, so one context window is its measure. Each moonshot turn (named or templated, not a brief) now passes --autocompact 600k (FEATURE_LOOP_AUTOCOMPACT overrides it, 100k to 1M or auto). During the cycle's instruction, show_progress in loop-common.sh watches the stream for an automatic compact_boundary: if no commit has landed at @- since the cycle began, or since the previous such compaction, it ends the turn (SIGTERM to claude and its descendants), and the loop records 'Stopped ...: cycle N (item X) compacted with no commit at T tokens; session ... needs attention' and exits 1 for a person to look at. The session stays chained across cycles; manual /compact turns and the decide, status and summary turns are not watched. loop_stats.py counts the new ending as 'compacted, no commit'.\n\nVerified with a stand-in claude on PATH that emits a compact_boundary event: an auto compaction with @- unchanged ends the turn at once, leaves no child behind and writes the reason; with a commit since, or a manual compaction, the turn runs to its end. claude accepts --autocompact 600k (checked against its argument validation). bash -n on both scripts; test_loop_stats passes. Written in workspace moonshot so the running prove-examples loop, whose bash has already parsed its loop body, is untouched; it takes effect from the next start of the loop.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "tprnppkuzltoxlnqumonqslqlurvrzyw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "prove-loop.sh: a proof loop forked from the session that prepared the example, with that session as its conductor",
+      "body": "Step 3 of /prove-java-change. llm-dlc/tools/prove-loop.sh [--fork SESSION] [--memory SIZE] NNN... runs a new templated moonshot of feature-loop.sh, prove-change, over the examples it is given: the instruction of prove-examples, one example per cycle, on Fable 5.2 at high effort, every example given whether an earlier run committed for it or not. With --fork the loop's session starts as a fork of the session that prepared the example: the parent's transcript is found wherever that session ran, copied beside this checkout's sessions for one turn that runs without tools or the repository's hooks, and removed; the fork is then compacted and the cycles follow in it, so the loop needs no brief. The script starts the verification loop for the jobs the proof queues unless one already runs for the same jj repository, gives the queue an hour to clear after the loop ends, and keeps the run's state in llm-dlc/loop-summaries/prove-change/. It works the same in a development and a runtime checkout.\n\nThe conductor. The commit below this one (brought into this line from the moonshot workspace, where it was waiting) makes a moonshot's session compact itself at 600k tokens and stops the loop at a compaction with no commit. That rule can't tell hard work going well from a stuck session, and the conductor loop planned for it is superseded: the session that starts a proof loop conducts it. With LOOP_CONDUCTOR set, which prove-loop.sh does, the loop's reader appends the compaction to events.jsonl, lets the turn go on, and waits FEATURE_LOOP_CONDUCTOR_WAIT seconds (900) for a verdict. llm-dlc/tools/conductor.py wait blocks until there is such an event or the loop has ended, and decide N continue|stop --reason answers it. continue lets the turn run to its next compaction and is noted under the cycle's line in the run's record; stop, or silence, ends the turn and the loop as the rule alone does. A turn that ends by itself first takes its question back. Every other loop is unchanged: without LOOP_CONDUCTOR the rule stands as it was.\n\nfeature-loop.sh also gains FEATURE_LOOP_UNCAPPED=1, to run with no memory cap on a machine without systemd user scopes, where it otherwise refuses to start; it says so loudly. llm-dlc/runtime.md describes the loop and the conductor, and llm-dlc/README.md lists the loop with the others.\n\nVerified with a stand-in claude, no model called: test_prove_loop.py (8 tool-tier tests, about 6 s) runs prove-loop.sh, feature-loop.sh and the reader for real in a made-up jj repository under a temporary CLAUDE_CONFIG_DIR, and checks the fork's arguments and that the parent's copy is removed, the compact, the one-line instruction on claude-fable-5-2 at high effort with --autocompact 600k, a fresh session without --fork, a compaction that goes on at the conductor's word with its note in the record, one that stops at its word, one that stops for want of a verdict, a question taken back, a cycle with no commit, and an example that isn't there. test_conductor.py (10 unit tests) covers the event file and the verdicts. Forking a session that is mid-turn was tried by hand earlier with a real claude on a scratch folder; no real proof loop has been run through this yet. Every Python suite passes (38 of 38) and cargo test --test tiers; no Rust file changed.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "rlrxnosywkvspypzxvmlnwrlxnumurnw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "contribute.py: what of a runtime checkout's work can go upstream, and a check of a prepared pull request",
+      "body": "Step 4 of /prove-java-change ends by offering to send upstream what a proof added to the tool. A runtime checkout's commits have no traces, so they can't follow this repository's own commit procedure; llm-dlc/runtime.md now has the process that is theirs, and llm-dlc/tools/contribute.py is the part of it that can be checked by a program. It only reads: preparing the branch and opening the pull request stay with the agent, and only after the user agrees.\n\ncontribute.py status lists the commits made since the installed release and says of each changed path whether it travels (the library, the tools, the schemas, their tests and documentation), stays (verification/jobs, verification/results, the findings register and the priorities, traces, loop records and session notes: the machine's own record, which upstream runs again), or is an example, with its number. contribute.py check REV takes a prepared contribution, the commits from the upstream main to REV, and names each thing that stops it: a conflict, a commit without the In-The-Loop-Runtime trailer or with a session's trace trailer, a path that stays, an example still numbered 900 to 999, an example that names a file:// URL or an absolute local path as a source, and any added line that names the user's home directory, user name or host name. It says where such a line is and never prints it. With no problem it prints a pull request body: the release the work was built on, the commits, and what was not run.\n\nVerified: test_contribute.py, 10 unit tests over made-up commits and diffs (the classification, added lines and their place, a naming line found and not quoted, a short or generic user name not searched for, a local source, a clean contribution, each stopping problem named). status run here answers that this is a development checkout. No pull request has been prepared with it yet. Every Python suite passes (39 of 39) and cargo test --test tiers; no Rust file changed.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "otlruumyoomszzkntuuuuqxmqqyzxpuo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change: the skill",
+      "body": "The skill that replaces /verify-bytecode and /add-tla-model, and supersedes the planned conductor loop: plugins/in-the-loop/skills/prove-java-change/SKILL.md, in the plugin in-the-loop beside its bootstrap. It proves a change to Java code on a user's machine in four steps and is kept short on purpose, since it is locked to Fable 5.2 at high effort and runs inside this repository: it says what each step is for and when to stop, and the repository holds the rest. Step 0 asks the bootstrap where it is. Step 1 (set up, verify and measure the machine) is skipped when the checkout is current and doctor.py finds nothing blocking, and otherwise goes to one subagent on Opus; a hardware limit ends the run; the user confirms. Step 2 (assess the change, add the example with its claims, run it once on a JVM) stays in the orchestrating session, because the proof loop is forked from it; the user confirms. Step 3 starts prove-loop.sh --fork with the session's own id and conducts the loop from outside. Step 4 reports each claim as established, refuted or left open and offers to send what the proof added to the tool upstream. The orchestrator decides what it can and asks only for what is the user's.\n\nIn this repository the skill is also a project skill: .claude/skills/prove-java-change is a link to its folder in the plugin, so /prove-java-change NNN runs the copy being worked on, the bootstrap answers development, steps 1 and 2 are skipped and the skill goes straight to the loop on an existing example. Installed as a plugin it is /in-the-loop:prove-java-change. llm-dlc/runtime.md opens with a table of the four steps and what each stands on, and the top README has a section for the skill with how to install it.\n\nTwo things the page is honest about. release.py status now exits 1 while the skill's folder differs from the last release, because the plugin is installed from the tip of main and a copy of the skill that is not its release's bytes refuses to run: a change to the skill is followed by a cut before main is pushed. And a change that is not public has no route yet: a revision is prepared from a commit on github.com or a published JAR, so a private or uncommitted change is a blocker at step 2, or a fixture when it is small enough to copy; a local repository as a revision's source is the next piece of work, left out here because it changes the downloads policy and the files the running prove-examples loop works in.\n\nVerified: claude plugin validate passes for the marketplace and the plugin; the bootstrap run through the project skill's link answers development with this checkout as home; every Python suite passes (39 of 39) and cargo test --test tiers. Not verified: the skill has not been run, in development mode or installed. That waits for the prove-examples loop to finish, as agreed, since a run starts a second proof loop on this machine.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "zpmywssrlsmxknnspqouyokoqxnrxxsn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.4.0 of /prove-java-change",
+      "body": "The skill at 0.4.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (e071b6300d027cee230697780b57337a9b6a961a911e1e08935dae68472e8ae0, 5392 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. The first release: for trying the install and the skill before it is merged, not yet pushed.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "yrprrlwmvnttzoqvxynmmoxsyxkurpvw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change takes changes on GitHub only, and step 2 is what the example-targets loop did",
+      "body": "Two answers from the user on 2026-11-15, written into the skill and its pages. First, the official plugin proves changes whose revisions are commits on github.com and nothing else: a local or private repository as a revision's source is not a gap to close now but a decision, and private runs are for a fork of this repository with its own release, or for later. The routes that prepare a revision already refuse any other source; the skill now says so up front (its description and argument hint name GitHub, and step 2 treats a change that is not there as a blocker the user settles by pushing it, not something to work around), and llm-dlc/runtime.md states the policy where it had listed a missing route and suggested a fixture as a way round. Second, step 2 of the skill is what the example-targets loop did for examples 285 to 300, for one change; runtime.md's table of steps now points at that brief.\n\nVerified: every Python suite passes (39 of 39) and cargo test --test tiers; only pages and the skill's text changed. release.py status exits 1 on this commit, as it should, because the skill differs from release 0.4.0; the release that follows settles it.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "ukykwuxlxuolwmplvwnzxptqkmlyqrps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.4.1 of /prove-java-change",
+      "body": "The skill at 0.4.1 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (45bb92eafb34fa73ebeba54cd2d7c0e432afdcb5a8c8160d4b22ab84cc5dd786, 5392 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. GitHub is the only source of a change, by the user's decision of 2026-11-15. Not yet pushed.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "lmmrntlskxvpymsrslulkkztnyvwktol",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "feature-loop.sh: a compaction with no commit stops a moonshot only on a conductor's word, or with FEATURE_LOOP_STOP_ON_COMPACT=1",
+      "body": "This line carries a copy (srxmyvov) of the change that made a moonshot compact at 600k tokens and stop at a compaction with no commit. The original, uzporttn in the moonshot workspace, was amended on 2026-11-15 at the user's request: the stop became opt-in, because cycle 2 of the prove-examples run compacted with no commit while making good progress, so the rule would have stopped good work. This commit brings this line to the same behaviour and fits the conductor to it, so that uzporttn can be abandoned at the merge instead of merged.\n\nA moonshot's compaction with no commit since the cycle began, or since the last one, now has three outcomes. With neither setting, it is logged and nothing else happens, as in the amended uzporttn. With FEATURE_LOOP_STOP_ON_COMPACT=1 and no conductor, the turn ends and the loop stops, the old rule. With LOOP_CONDUCTOR, which prove-loop.sh sets, the conductor is asked: its stop ends the turn and the loop, and its continue lets the turn run to the next compaction. What changes for the conductor is its silence: no verdict by the deadline used to stop the loop and now leaves the turn running, with a line in the run's record, unless FEATURE_LOOP_STOP_ON_COMPACT=1 is also set. A conductor that has gone away, such as an orchestrating session the user closed, is then no worse than no conductor, and can't cause the false stop the amendment removed. The question is asked again at the next compaction with no commit. The header of feature-loop.sh, conductor.py's description, llm-dlc/runtime.md and llm-dlc/README.md say the same.\n\nVerified with the stand-in claude: test_prove_loop.py has 11 tool-tier tests (8.5 s), four of them new or changed: silence from the conductor lets the turn go on and is noted under the cycle's line; silence with the rule on stops the loop; feature-loop.sh run by itself, with no conductor, only logs the compaction and the turn runs to its own end; and with the rule on it stops at the compaction. The conductor's continue and stop are tested as before. Every Python suite passes (39 of 39) and cargo test --test tiers. The skill's folder is unchanged, so release 0.4.1 stands; this commit is in no release yet.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "tzousuxuwotlqkxmuuvkvqozmqsqpvnu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "README: the repository's page is about /prove-java-change, and each part's page carries its own layout",
+      "body": "The repository's primary purpose is now the plugin, and the top README still introduced a set of demos with the skill as its last section. It is rewritten around the skill, at the user's request and with the work-in-progress landing page for the skill in the website's repository as a model for the order (that page was only read): what the skill does in three sentences and the command; how to install it and the four steps, with the two confirmations; what it needs (Linux, 8 GB, 2 CPUs, 10 GB of disk, Claude Code with Fable 5.2) and that it takes changes on GitHub only; the three answers a claim can get and that a model checker gives them, not the model; example 285 as the proof loop's first real target, with its three verdicts and its witness as the example's page records them; then a short table of what is in the repository, a few lines for agents (CLAUDE.md, the two modes, find.py, the job queue, the skill in this repository), the background and the licence.\n\nThe README no longer lists paths inside the folders: the four tables of files it had are gone, and each row of its one table links the part's page and that page's own layout. That keeps the top page short, and it means a reorganization of the folders, which is planned for after the running loop and the queued features, changes one page per folder. So each page it routes to has a layout: lib/README.md gains one (the crate, the folders under src, the models, the tests and their cost tiers, the benchmark and the solver comparison); llm-dlc/README.md's tree gets a Layout heading and a sentence on what of the skill lives there; llm-dlc/runtime.md gains Where things are (the plugin's files, the project skill's link, each tool with the section that describes it, the marker and the loop's state); verification/README.md's layout gains the page itself, pipeline.py and /run-verification; examples/README.md's gains the Shop and Deliveries systems and tools/targets. The pages of the subject systems and of the tools under examples are left as they are: some are inputs of the examples' claims, and editing one marks its examples stale.\n\nNumbers on the page are the index's (183 examples, 159 constructed and 24 real-world) and doctor.py's minimums. Verified: every relative link and heading anchor on the six pages resolves (the tag anchors lib/README.md already linked are not headings and were not checked); build.py --index-only leaves no example stale; every Python suite passes (39 of 39) and cargo test --test tiers; claude plugin validate passes. The skill's folder is unchanged, so release.py status still reports nothing owed; this commit and the one before it are in no release yet.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "vrqwrmlruywqkkouwsyxmvrnouossrvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "README: proofs are queued as jobs, and CLAUDE.md says what may run inline",
+      "body": "The top README said proofs and model checks are never run inline, in its table and in its list for agents. The default line now has a rule (change upkxonlz) that lets one capped probe of a prover or model checker run inline for up to 5 minutes and 4 GB, so the absolute wording would contradict CLAUDE.md once this branch is merged. Both sentences now say that proofs are queued as jobs, and the agents' line points at CLAUDE.md for the exceptions instead of restating them. The skill's own pages (SKILL.md, llm-dlc/runtime.md) name no inline limit and did not change, so no release is owed. Verified with the Python half of the default test run: 39 of 39 suites pass.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "yvvkzplruqllpkqmoozqnkpsrnkyloxt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change takes a list of changes, orders them by how accessible they are, and prepares without proving with --scaffold-only",
+      "body": "The skill's request is now one change or a list of them. Step 2 understands and sizes every change, orders them with the most accessible first (a proof that lands early can extend the verifier under the later ones), and adds the examples in that order on the next free numbers from 900, so the numbers carry the order and no separate record of it exists. Each example's provenance is the request it came from and its notes hold what the preparation learned, because its proof may start in a session that never saw the preparation. A change that can't be prepared is set aside with its reason and the others go on.\n\n--scaffold-only ends the skill after step 2, with every example a committed, reproducible scaffold (the readiness the examples' index already calls scaffolded) and no proof started. The same request without the flag proves what was prepared: nothing remembers a request, step 2 finds each change's example by its source and revisions and prepares only what has none. Step 3 then gives prove-loop.sh the examples still to prove, in order, in one run (one per cycle, in one session, as before) or, if the user prefers, one example per run with a report between. In a development checkout the examples named are taken in the order given.\n\nNew tool llm-dlc/tools/changes.py, read-only: it derives each example's state from its folder alone through examples/tools/targets/workflow.py (unprepared with the reason, prepared, decided, or unknown for an example with no target sidecar), lists a runtime checkout's examples 900 to 999 by number or the named ones in the order given, and with --pending prints the numbers still to prove as prove-loop.sh's arguments. A claim left open keeps its example to prove; a refuted claim decides it. llm-dlc/runtime.md has a new section, Many changes and preparing without proving, and the top README and llm-dlc/README.md's layout mention the list, the flag and the tool.\n\nVerified: test_changes.py (15 unit tests on copies of the made-up target fixture with hand-written receipts) covers each state, the order, --pending and that nothing is written; two new tests in test_prove_loop.py run prove-loop.sh on three examples against the stand-in claude and check one cycle each, in the order given, in one session, and that a cycle with no commit leaves the examples after it untouched. The Python half of the default run passes (40 of 40 suites), cargo test --test tiers passes, claude plugin validate passes for the plugin and the marketplace, and every relative link and anchor on the edited pages resolves. Not verified: the skill itself has not been run by a model on a real list; only the tools under it are tested. The skill's folder changed, so a release is owed and follows in the next commit.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "vuxlvnqzulzsmoruwqynxpuzpkzmovmu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.5.0 of /prove-java-change",
+      "body": "The skill at 0.5.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (d6a0d457f1c8c93bc47e013b73355768be91626e75987ca16b53ae2408199bf4, 5394 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. The skill takes a list of changes, orders them by how accessible they are, and with --scaffold-only prepares the examples and stops before the proof; changes.py says which examples are prepared, decided or still to prove.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "xrsnmkwttrqpxrttmvspyusknvxlmlpp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change checks what else Claude Code has loaded, and the sessions it starts load only the checkout",
+      "body": "Step 1 of the skill now checks the user's Claude Code setup on every run. New tool llm-dlc/tools/claude_setup.py: check prints a warning that any extraneous context from external sources may lead to unexpected results, then lists what the session running it has loaded besides the plugin and the checkout (other plugins, MCP servers and claude.ai connectors, memory files, skills, agents, commands, hooks, managed settings). It asks Claude Code itself: two one-word sessions on the smallest model, without tools or a transcript, one started as the user's session was (its directory and launch flags, read from the process CLAUDE_PID names) and one clean in the checkout, compared by what each reports at start-up; memory files, hooks and the plugins Claude Code's own listing calls enabled are added from disk. It prints names and paths only, never a setting's value.\n\nDisabling is done by launch flags, not by editing the user's configuration, so nothing has to be put back: --setting-sources project,local, --strict-mcp-config, ENABLE_CLAUDEAI_MCP_SERVERS=false, and claudeMdExcludes for the memory files of the user and of the directories above the checkout. In a runtime checkout every session the skill starts now uses them (loop-common.sh's isolation: the proof loop's fork, compactions and cycles, and the verification loop's runs), and check proves on the machine that such a launch answers. The session the user is already in can't unload what it holds, so when anything is listed the skill offers the one command check prints (claude_setup.py launch: a clean session in the checkout, on Fable 5.2 at high effort, where the skill runs as the checkout's project skill) or, not recommended, to continue as it is. prove-loop.sh --no-isolation starts the loop's sessions as a plain claude for a machine where a clean launch does not work. A development checkout's loops are unchanged, and check refuses there because its hooks would trace the probes.\n\nVerified: test_claude_setup.py (21 tests, the check itself against a stand-in claude and made-up directories) and two new tests in test_prove_loop.py (in a runtime checkout all five sessions of a run carry the clean flags; with --no-isolation or in a development checkout none does). With the real Claude Code 2.1.325, from scratch directories: the flags leave no MCP server, connector, user skill or plugin in the start-up report, a memory file excluded by path is not read while the checkout's own is, the checkout's project skills still load, the login still works, and launch started from another project answers with the checkout's memory and not that project's. The Python half of the default run passes (41 of 41 suites), cargo test --test tiers passes, claude plugin validate passes, and the edited pages' links resolve. Not verified: whether --setting-sources alone drops the user's own memory file (Claude Code's documentation does not say, and this machine has none, hence the exclusion by path); a real proof loop under the clean flags; and the skill's new step run by a model. A known limit, documented: a non-interactive probe was seen to report no connectors in a directory that has a memory file, where an interactive session has them, so the skill also adds what the session sees in its own context. The skill's folder changed, so a release follows.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "rvpsvkwmznurmkyyytpwxssmzrzouowx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.6.0 of /prove-java-change",
+      "body": "The skill at 0.6.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (6058a0d22f1cdbbf9a82ca9405ffa01953f6f74b52b423de8ac281a5decdba56, 5396 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Step 1 checks what else Claude Code has loaded, warns, and offers a clean session; the sessions the skill starts load only the checkout.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "vurtkmrvlosvpxpumxlyylwuvkkzowps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and \"item\" stops the loop once the item under way is",
+      "body": "At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and \"stop\" could only end the loop after a cycle, not after an example.\n\nNow, after each commit of a templated moonshot, a judge outside the session decides whether the item is finished: a separate claude -p call (FEATURE_LOOP_JUDGE_MODEL, claude-sonnet-5-5 by default) with no tools, only the user's settings and no transcript reads the cycle's final report and commit messages and answers ITEM: finished (the goal is met, or what is left needs a person or only waits on jobs) or ITEM: continue (the session itself can still make real progress). Nothing is added to the moonshot's own session, so its instruction stays the only thing it is given. An unfinished item gets the next cycle with the same instruction; an unclear answer moves on, as before. The record keeps the verdict and its reason under each commit line, and a later run resumes at the first item that has no commit or whose last verdict was continues. FEATURE_LOOP_ITEM_CYCLES caps an item's cycles in a run (no cap by default, the user's choice), and FEATURE_LOOP_ITEM_JUDGE=0 restores one cycle per item. Typing \"item\" in the loop's terminal ends the run once the item under way is finished, however many cycles that takes; a count typed after it replaces it. loop_stats.py reads the new record header and verdicts, so an item the judge left open counts as attempted, not done, and the verdict is not published as a column.\n\nVerified: test_loop_stats (22, two new) and test_runs pass, and the cost lint agrees. End to end, in a scratch jj repo with a stand-in claude that commits and answers as the judge from a script, the patched script (its own three-item list, no systemd scope): the judge kept item 1 for two cycles and the run went on to 2 and 3 and ended with no items left; a record whose last verdict was continues resumed at that item; an unclear answer moved on; a cap of 2 moved on after two continues; FEATURE_LOOP_ITEM_JUDGE=0 kept the old header and one cycle per item; a bad cap exits 2; and \"item\" typed during cycle 1, on a private tmux server, ended the run after cycle 2, once the judge found item 1 finished. Three real judge calls on made-up reports answered finished for a decided example, continue for one with work the session could do, and finished for one blocked on a person's decision.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "xzwozoqztxtowxywyrokrupnpxmzqnpw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "feature-loop.sh: a conductor judges each cycle, an item that waits on its proof lets the next one start, and the loop asks before it changes items",
+      "body": "This folds the moonshot branch into the /prove-java-change line. The commit below this one is a duplicate of tlzowkqv (workspace moonshot: an item keeps a templated moonshot until a judge outside the session finds it finished), with its six conflicts against this line resolved; this commit reconciles and extends it. The user asked on 2026-11-16 for everything about moonshot loops from the moonshot and conductor branches to be folded in here, for the loop to be run by a watcher session, and for a loop that goes on while an example waits on its final proof.\n\nWith a conductor directory (LOOP_CONDUCTOR, which prove-loop.sh sets) the conductor is the judge: after each commit the loop asks it whether the item is finished, takes another cycle, or only waits on the verification jobs it queued, and falls back on tlzowkqv's own judge (Sonnet, now with the third answer) when no verdict comes in FEATURE_LOOP_JUDGE_WAIT seconds. An item that waits is left: the loop takes the next one meanwhile, and whenever it leaves an item it first returns to the earliest waiting one whose jobs are in (conductor.py unfinished reads the queue and matches jobs to examples by their outputs or title). When only waiting items are left it waits for the first to come in. FEATURE_LOOP_CONTINUE_WHILE_PROVING=0, or prove-loop.sh --wait-for-proofs, keeps the loop on the item instead; the default is on. Between two items the loop asks the conductor whether to stop there, and waits longer while the run's merge-queue names a workspace the conductor is to merge first. The conductor can leave command lines (stop, item, counts) that the loop applies as if typed in its terminal, and the loop notes where it is as events (cycle-start, item, proofs).\n\nSo that a merge between two examples can't rewrite the script under the loop, feature-loop.sh and prove-loop.sh now run from a private copy of themselves. prove-loop.sh gains --session SESSION, which continues an existing session instead of forking one, and records its pid in run.json. In a runtime checkout the judge takes the clean launch flags instead of --setting-sources user. loop_stats.py reads the waiting verdict as an item left open, and knows the new endings.\n\nVerified: test_prove_loop.py runs the loop against a stand-in claude, now also a stand-in judge and a made-up job queue (26 tests): the watcher's verdict keeps or ends an example, silence falls back on the judge, an example that waits lets the next start and is taken up again when its jobs are in (order 901, 902, 901, 903), the loop waits when only waiting examples are left, waiting with nothing outstanding is another cycle, --wait-for-proofs removes the third answer, a stop between examples and a queued merge's longer wait, a command line, --session, and a script rewritten mid-run that does not affect the loop. test_conductor.py has five new tests (15). The Python half of the default run passes, 41 of 41 suites. Not verified: any of this with a real model in the loop; the Rust tests were not run (nothing in lib/ changed). The pages (runtime.md, the skill) still describe the previous design and are rewritten with the watcher in the next commit, which also cuts the release.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "notyxmukpumumlqukwvrmqnprzvpulpw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/prove-java-change is started by a watcher on Opus 5.5, which starts each stage in a session of its own and watches the proof loop",
+      "body": "The skill's session no longer does the work. It is the run's watcher (Opus 5.5, high effort; the user set the models on 2026-11-16) and starts, in order: the setup of the machine (a new session, Opus 5.5 high), the evaluation and ordering of the changes (the fixed session, Fable 5.2 medium), the setup of the examples from the evaluation's plan (a new session, Opus 5.5 high), and the moonshot loop over them, which continues the fixed session at high effort. Beside them it keeps a verification loop (Sonnet 5.5) running for the jobs the sessions queue. In a development checkout the watcher goes straight to the loop on the examples named, which is how every moonshot over examples is run from now on.\n\nllm-dlc/tools/watch.py is the watcher's tool: stage evaluate|setup (a headless session on its model and effort, clean in a runtime checkout), verification start|stop|status, loop (prove-loop.sh detached, with --session), wait (blocks until a question of the loop's, a proof that came in, the loop's end, or a summary when the interval has passed: 600 s by default, set with interval), summary and status (from llm-dlc/watch-summary-template.md, with what changed since the last summary first: examples that changed state, claims answered, commits, jobs queued or in; then the loop, the example under way, the verification jobs and what needs attention, such as a session silent for 20 minutes), merge add|done|list (workspaces the user asked to have merged between two examples), stop-after example|cycle|never, and proof NNN (the shell that waits on one example's proof while the loop works on the next). llm-dlc/prove-plan-template.md is the plan the evaluation fills in and the setup turns into examples.\n\nSKILL.md is rewritten for the watcher, and llm-dlc/runtime.md has its section (the stages' briefs, watching the loop, the three questions and their defaults, merging between examples, what the watcher may fix); README.md and llm-dlc/README.md follow. claude_setup.py's clean launch now defaults to Opus 5.5, the watcher's model.\n\nVerified against stand-ins only: test_watch.py (20 tests: a made-up checkout, a stand-in claude, a queue that is a file), one test in test_prove_loop.py in which watch.py reads the run a real prove-loop.sh wrote, the Python default run (42 of 42 suites), the Rust tier test, claude plugin validate, and every link and anchor of the pages touched. No real model has run the skill, a stage or the loop under this design. The release that carries this is cut in the next commit.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "zzttlsknkztmpyyqxqspsymxmzswyqws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.7.0 of /prove-java-change",
+      "body": "The skill at 0.7.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (71e4a9d91d4c631621bf5819a5239f5eafe6277afd0d406051f329ceb3b6b2e8, 5400 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. The skill's session is a watcher on Opus 5.5: it starts each stage in a session of its own (setup: Opus 5.5 high; evaluation and ordering: Fable 5.2 medium; examples: Opus 5.5 high; the proof loop: the evaluating session continued, Fable 5.2 high), keeps a verification loop on Sonnet 5.5, prints a summary every 10 minutes, judges each cycle, merges queued workspaces between examples, and lets the loop start the next example while a final proof runs (--wait-for-proofs turns that off).",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
+    },
+    {
+      "change_id": "qpyvxyuxqkmyyzusnwrpstpwkzzuutqm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "watch.py: a test of starting and stopping the verification loop, and a note on headless sessions in a checkout not yet trusted",
+      "body": "test_watch.py now covers watch.py verification start, status and stop against a stand-in verification-loop.sh in a made-up jj repository: one start, a second start that leaves the first alone, and a stop that asks it to end (SIGUSR1) rather than killing it. The suite has 21 tests and passes.\n\nllm-dlc/runtime.md records what a trial of release 0.7.0 showed: installed from this clone into a scratch home, watch.py stage evaluate ran twice there with one-word prompts on the smallest model. Claude Code 2.1.325 accepted the stage's flags, the second call resumed the fixed session the first made (it recalled the first reply), and both sessions started with no MCP server, only Claude Code's built-in plugins, and the skill. Each printed that the checkout's allow list was ignored because the directory had never been opened interactively; the sessions run in auto mode regardless. The skill's folder is unchanged, so release 0.7.0 stands.",
+      "log_sha256": "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330"
     }
   ],
   "logs": {
@@ -267,6 +459,12 @@
       "bytes": 3161025,
       "lines": 1260,
       "gzip_bytes": 627833,
+      "url": null
+    },
+    "d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330": {
+      "bytes": 4300225,
+      "lines": 1762,
+      "gzip_bytes": 807177,
       "url": null
     },
     "f720acba22b42aec0b3ce3431e36902d54676d6e2ea5e53f49b4e5bebed98440": {

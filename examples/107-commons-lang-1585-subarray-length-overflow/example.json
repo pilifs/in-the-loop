@@ -26,7 +26,7 @@
   "approach": {
     "id": "B9",
     "name": "Regression verification",
-    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "tool": "lib",
     "also": [
       "B11",
       "B10"
@@ -45,5 +45,5 @@
     "The first attempt crashed the tool: the interpreter replaying JBMC's witness tried to allocate the two-billion-element array literally. It now raises `OutOfMemoryError` for absurd arrays, fixed in the same commit as the record.",
     "The confined change is stated as \"`end - start` overflows\" written without the overflow: `startIndexInclusive > 0 && endIndexExclusive < startIndexInclusive - 2147483647 - 1`."
   ],
-  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+  "provenance": "A real change to a published library, verified from its compiled bytecode with jvmcontract, through the /verify-bytecode skill of the time (removed 2026-11-15); the report is this folder's README.md."
 }

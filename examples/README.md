@@ -9,8 +9,9 @@ sequence, and told apart by their fields and tags:
   [`tools/build.py`](tools/build.py) applies each one's patch, runs the verifier, and generates its page, so no
   page claims a result the tool did not produce.
 - **Real-world** examples (`origin: real-world`) are pull requests and commits to published Java libraries, verified
-  from their bytecode with the [`/verify-bytecode`](../plugins/jvmcontract/README.md) skill, as they came. Each
-  folder's README is the report.
+  from their bytecode with `jvmcontract`, as they came. Each folder's README is the report. One with a target
+  sidecar (`target.json`) is run one task at a time and keeps a receipt for each attempt
+  ([Run an example](#run-an-example)).
 
 ## Find an example
 
@@ -48,8 +49,8 @@ A few starting points:
 | A pull request to a library | 105 to 109 ([open-source-libraries](#tag-open-source-libraries)) |
 | A verdict that seems wrong, or no verdict | [solver-limits](#tag-solver-limits), [jdk-models](#tag-jdk-models), [tla-coverage](#tag-tla-coverage) |
 
-Examples 001 to 005 were written by Opus 5.5, 006 to 104 by Fable 5.1, and 105 to 109 recorded from `/verify-bytecode`
-runs.
+Examples 001 to 005 were written by Opus 5.5, 006 to 104 by Fable 5.1, and 105 to 109 recorded from runs of
+`/verify-bytecode`, a skill removed on 2026-11-15: their reports still name its steps.
 
 ## Subject systems
 
@@ -61,7 +62,7 @@ runs.
 | [Mica](apps/mica/README.md) | The decision kernels of a small JVM written in Java: class initialization (JVMS 5.5) with a [TLA+ model](apps/mica/spec/README.md), assignability, access control, `idiv` and `fcmp`, `lookupswitch`, exception tables, stack map frames, `Code` attribute lengths, constant pool numbering, `max_stack`, modified UTF-8 | `jvmcontract` |
 | [Deliveries](apps/deliveries/README.md) | A thin Spring route in front of a Crosscut kernel: a webhook dispatcher's failure report, answered by the retry policy and performed as a Kafka send, the subject of entry-point checks (tag `effect-trace`) | `jvmcontract effects` |
 | [Shop](apps/shop/README.md) | A pricing kernel behind one thin Spring route, a quote's total and a Kafka event: the foundations loop's joint example as an app, the subject of whole-build comparisons (tag `joint-run`) | `jvmcontract compare` |
-| Published libraries | Apache Commons Numbers, Lang and Codec, and jackson-core | `jvmcontract`, through `/verify-bytecode` |
+| Published libraries | Apache Commons Numbers, Lang and Codec, and jackson-core | `jvmcontract` |
 
 `jvmcontract` is the Rust tool in [`lib/`](../lib/README.md), with no JVM in the loop: a bytecode interpreter
 checking, among others, the kernels of a bytecode interpreter, and since examples 142 and 143 the proof JBMC could
@@ -120,7 +121,7 @@ A constructed example's page has the same sections every time:
 | Notes | What belongs to this example alone: the configuration it needs, the examples it pairs with, what to try next |
 | Evidence | The verifier's console output and SARIF report, unedited; the JDK APIs a proof trusted; the generated statement a symbolic proof checked |
 
-A real-world example's page is the `/verify-bytecode` report ([template](../plugins/jvmcontract/skills/verify-bytecode/report-template.md)):
+A real-world example's page is a report written by hand:
 the verdict per changed method, each finding with its witness and command, what no proof reached and why, and how
 it was produced. Its `example.json` holds what the router needs, with its notes.
 
@@ -420,7 +421,7 @@ it was produced. Its `example.json` holds what the router needs, with its notes.
 - <a id="tag-tla-unreachable-exception"></a>**tla-unreachable-exception** (2): An exception the kernel reserves for an impossible input, proved unreachable in every run. [066](066-leader-that-treats-a-vote-request-of-its-term-as-impossible-crashes/README.md), [073](073-vote-rule-that-throws-on-a-term-not-adopted-and-the-model-shows-the-term-always-is/README.md)
 - <a id="tag-generated-operator"></a>**generated-operator** (56): A TLA+ operator generated from a Java method's contract, so the model runs the proven bytecode. [011](011-skipped-seat-check-strands-the-money/README.md), [012](012-deleting-the-sweeper-is-safe/README.md), [020](020-coordinator-that-presumes-commit-on-timeout/README.md), [021](021-aborting-on-the-first-no-proved-safe/README.md), [029](029-retry-in-progress-executes-twice/README.md), [030](030-stored-failures-proved-at-most-once/README.md), [042](042-class-init-that-proceeds-while-another-thread-initializes/README.md), [043](043-class-init-that-waits-on-its-own-thread-deadlocks/README.md), [057](057-coordinator-that-waits-for-the-last-yes-vote-blocks-forever/README.md), [058](058-grace-period-for-the-last-vote-proved-live-and-a-refinement/README.md), [059](059-vote-granted-without-adopting-the-term-elects-two-leaders/README.md), [060](060-one-timeout-rule-makes-a-leader-campaign-against-itself/README.md), [061](061-leader-that-steps-down-on-its-own-timeout-proved-safe/README.md), [062](062-candidate-that-retries-without-voting-again-elects-two-leaders/README.md), [063](063-candidate-that-retries-in-the-same-term-proved-safe-but-not-live/README.md), [064](064-candidate-that-stands-down-on-a-timeout-proved-safe-and-live/README.md), [065](065-leader-that-ignores-vote-requests-from-newer-terms-votes-twice/README.md), [066](066-leader-that-treats-a-vote-request-of-its-term-as-impossible-crashes/README.md), [067](067-coordinator-that-commits-after-aborting-when-late-votes-are-all-yes/README.md), [068](068-coordinator-that-answers-a-late-vote-with-its-decision-proved-safe/README.md), [069](069-vote-rule-that-lets-a-voter-switch-candidates-elects-two-leaders/README.md), [070](070-vote-rule-without-the-election-restriction-elects-a-leader-missing-a-committed-entry/README.md), [072](072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md), [073](073-vote-rule-that-throws-on-a-term-not-adopted-and-the-model-shows-the-term-always-is/README.md), [074](074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/README.md), [075](075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/README.md), [076](076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md), [077](077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/README.md), [078](078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md), [079](079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md), [080](080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md), [081](081-role-machine-that-adopts-the-term-of-a-stale-reply-sends-a-term-backwards/README.md), [082](082-role-machine-that-treats-a-stale-reply-as-impossible-crashes-on-a-late-reply/README.md), [083](083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/README.md), [084](084-candidate-that-stands-down-for-a-rival-of-its-term-votes-twice-in-it/README.md), [085](085-leader-that-yields-to-a-candidate-of-its-own-term-lets-the-term-elect-twice/README.md), [086](086-leader-that-answers-a-candidate-of-its-term-with-heartbeats-proved-its-only-leader/README.md), [087](087-coordinator-that-aborts-on-restart-reverses-a-commit-it-had-sent/README.md), [088](088-coordinator-with-nothing-to-redo-on-restart-leaves-a-logged-decision-unsent/README.md), [089](089-coordinator-that-resumes-collecting-on-restart-proved-safe-and-live/README.md), [090](090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/README.md), [091](091-coordinator-node-that-logs-the-tally-only-with-a-decision-forgets-the-votes-in-a-crash/README.md), [092](092-participant-that-votes-no-when-it-gives-up-its-recorded-runs-all-steps-of-the-model/README.md), [093](093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/README.md), [094](094-participant-node-that-sends-its-vote-before-logging-it-restarts-as-if-it-had-not-voted/README.md), [095](095-restarted-participant-that-votes-no-rather-than-wait-for-the-timer-proved-safe-and-live/README.md), [096](096-follower-that-takes-entries-after-a-conflicting-previous-entry-breaks-log-matching/README.md), [097](097-leader-that-commits-an-earlier-terms-entry-by-counting-replicas-loses-it-to-a-rival/README.md), [098](098-follower-that-drops-a-conflicting-previous-entry-at-once-proved-safe/README.md), [099](099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/README.md), [100](100-follower-that-refuses-to-overwrite-a-conflicting-entry-never-catches-up/README.md), [101](101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/README.md), [102](102-leader-that-moves-a-follower-up-on-a-refusal-records-entries-the-follower-lacks/README.md), [103](103-leader-that-backs-up-on-a-refusal-it-has-moved-on-from-sends-the-follower-what-it-holds/README.md), [104](104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/README.md), [146](146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/README.md)
 - <a id="tag-multiple-configurations"></a>**multiple-configurations** (50): One model checked under several configurations, the verdict being the first that fails. [029](029-retry-in-progress-executes-twice/README.md), [030](030-stored-failures-proved-at-most-once/README.md), [057](057-coordinator-that-waits-for-the-last-yes-vote-blocks-forever/README.md), [058](058-grace-period-for-the-last-vote-proved-live-and-a-refinement/README.md), [059](059-vote-granted-without-adopting-the-term-elects-two-leaders/README.md), [060](060-one-timeout-rule-makes-a-leader-campaign-against-itself/README.md), [061](061-leader-that-steps-down-on-its-own-timeout-proved-safe/README.md), [062](062-candidate-that-retries-without-voting-again-elects-two-leaders/README.md), [063](063-candidate-that-retries-in-the-same-term-proved-safe-but-not-live/README.md), [064](064-candidate-that-stands-down-on-a-timeout-proved-safe-and-live/README.md), [065](065-leader-that-ignores-vote-requests-from-newer-terms-votes-twice/README.md), [066](066-leader-that-treats-a-vote-request-of-its-term-as-impossible-crashes/README.md), [067](067-coordinator-that-commits-after-aborting-when-late-votes-are-all-yes/README.md), [068](068-coordinator-that-answers-a-late-vote-with-its-decision-proved-safe/README.md), [069](069-vote-rule-that-lets-a-voter-switch-candidates-elects-two-leaders/README.md), [070](070-vote-rule-without-the-election-restriction-elects-a-leader-missing-a-committed-entry/README.md), [072](072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md), [073](073-vote-rule-that-throws-on-a-term-not-adopted-and-the-model-shows-the-term-always-is/README.md), [074](074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/README.md), [075](075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/README.md), [076](076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md), [077](077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/README.md), [078](078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md), [079](079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md), [080](080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md), [081](081-role-machine-that-adopts-the-term-of-a-stale-reply-sends-a-term-backwards/README.md), [082](082-role-machine-that-treats-a-stale-reply-as-impossible-crashes-on-a-late-reply/README.md), [083](083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/README.md), [084](084-candidate-that-stands-down-for-a-rival-of-its-term-votes-twice-in-it/README.md), [085](085-leader-that-yields-to-a-candidate-of-its-own-term-lets-the-term-elect-twice/README.md), [086](086-leader-that-answers-a-candidate-of-its-term-with-heartbeats-proved-its-only-leader/README.md), [087](087-coordinator-that-aborts-on-restart-reverses-a-commit-it-had-sent/README.md), [088](088-coordinator-with-nothing-to-redo-on-restart-leaves-a-logged-decision-unsent/README.md), [089](089-coordinator-that-resumes-collecting-on-restart-proved-safe-and-live/README.md), [090](090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/README.md), [091](091-coordinator-node-that-logs-the-tally-only-with-a-decision-forgets-the-votes-in-a-crash/README.md), [092](092-participant-that-votes-no-when-it-gives-up-its-recorded-runs-all-steps-of-the-model/README.md), [093](093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/README.md), [094](094-participant-node-that-sends-its-vote-before-logging-it-restarts-as-if-it-had-not-voted/README.md), [095](095-restarted-participant-that-votes-no-rather-than-wait-for-the-timer-proved-safe-and-live/README.md), [096](096-follower-that-takes-entries-after-a-conflicting-previous-entry-breaks-log-matching/README.md), [097](097-leader-that-commits-an-earlier-terms-entry-by-counting-replicas-loses-it-to-a-rival/README.md), [098](098-follower-that-drops-a-conflicting-previous-entry-at-once-proved-safe/README.md), [099](099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/README.md), [100](100-follower-that-refuses-to-overwrite-a-conflicting-entry-never-catches-up/README.md), [101](101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/README.md), [102](102-leader-that-moves-a-follower-up-on-a-refusal-records-entries-the-follower-lacks/README.md), [103](103-leader-that-backs-up-on-a-refusal-it-has-moved-on-from-sends-the-follower-what-it-holds/README.md), [104](104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/README.md), [146](146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/README.md)
-- <a id="tag-pull-request-review"></a>**pull-request-review** (5): A pull request or commit to a library verified from its compiled bytecode with /verify-bytecode. [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/README.md), [106](106-commons-lang-1750-reverse-with-min-value-end-index/README.md), [107](107-commons-lang-1585-subarray-length-overflow/README.md), [108](108-jackson-core-1203-division-by-1000-as-multiply-and-shift/README.md), [109](109-commons-codec-43a9aa66-hex-decoding-restricted-to-ascii/README.md)
+- <a id="tag-pull-request-review"></a>**pull-request-review** (5): A pull request or commit to a library verified from its compiled bytecode. [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/README.md), [106](106-commons-lang-1750-reverse-with-min-value-end-index/README.md), [107](107-commons-lang-1585-subarray-length-overflow/README.md), [108](108-jackson-core-1203-division-by-1000-as-multiply-and-shift/README.md), [109](109-commons-codec-43a9aa66-hex-decoding-restricted-to-ascii/README.md)
 - <a id="tag-jdk-models"></a>**jdk-models** (1): JDK classes JBMC has no model of, and the models that fix the false violations they cause. [109](109-commons-codec-43a9aa66-hex-decoding-restricted-to-ascii/README.md)
 - <a id="tag-joint-run"></a>**joint-run** (7): Two builds of an application compared whole, with nothing written by hand (jvmcontract compare): each entry point under its own observation spec, effects included, each changed kernel method under the correspondence alignment proposes from how the constructors route their parameters, every proof under the proof cache and rerun to show the exact hits, and every decision a person made or is asked for counted by category. Reach for it when a change reshapes the objects behind a route and the question is what the route's consumers can still rely on.. [190](190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md), [191](191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md), [192](192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md), [193](193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md), [194](194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md), [195](195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md), [196](196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md)
 - <a id="tag-solver-limits"></a>**solver-limits** (3): Where the prover gives no verdict or a wrong one: timeouts, memory, division, arrays of computed size. [107](107-commons-lang-1585-subarray-length-overflow/README.md), [108](108-jackson-core-1203-division-by-1000-as-multiply-and-shift/README.md), [109](109-commons-codec-43a9aa66-hex-decoding-restricted-to-ascii/README.md)
@@ -458,10 +459,13 @@ examples/
   apps/quorum/             Quorum, with its TLA+ models in spec/
   apps/crosscut/           Crosscut, with its TLA+ models in spec/
   apps/mica/               Mica, with its TLA+ model in spec/
+  apps/shop/               Shop: a pricing kernel behind one Spring route, for whole-build comparisons
+  apps/deliveries/         Deliveries: a Spring route in front of a Crosscut kernel, for checks at an entry point
   tools/build.py           the generator: runs the constructed examples, writes their pages and the router
   tools/find.py            the search over index.json
   tools/alignment.py       the ground truth alignment inference is scored against (alignment/), checked against the examples
   tools/contracts/         the Java verifier for B8, B9 and B10, used by Box Office
+  tools/targets/           real-world examples with a target.json sidecar: pinned sources, preparation, tasks, receipts
   tools/tla/               the generator of a model's state machine from a B8 contract, and the TLA+ standard modules
   setup/                   the toolchain installer for Ubuntu and WSL2
 ```
@@ -685,7 +689,9 @@ inputs before shrinking. Counterexamples recorded before 2026-11-05 have no `wit
 
 Take the next free number; constructed and real-world examples share the sequence. Numbers 280–329 are reserved for
 [`example-targets.md`](../llm-dlc/loops/example-targets.md)'s streams (its [Streams](../llm-dlc/loops/example-targets.md#streams)
-section allocates them): skip them when you take the next free number.
+section allocates them): skip them when you take the next free number. Numbers 900–999 are never used here: they are
+for the examples a user adds in a runtime checkout ([`llm-dlc/runtime.md`](../llm-dlc/runtime.md)), so that an update
+never brings one with the same number.
 
 **A constructed example:**
 
@@ -722,17 +728,24 @@ section allocates them): skip them when you take the next free number.
 
 **A real-world example:**
 
-1. Run `/verify-bytecode <pull request>`. It leaves `report.md` and every harness, statement and JBMC log in its
-   working directory. For a commit rather than a pull request, check out the commit and its parent into two worktrees
-   and run the same proofs by hand, as 109 did. When a library's class reads a JDK class JBMC has no model of, a
-   violation is an artifact until there is one: the tool's [models](../lib/models/README.md) are on the class path by
-   themselves (`jvmcontract models` lists them), and a class beyond them needs a model added there.
-2. Copy the report to `examples/NNN-<library>-<number>-short-name/README.md`. Keep every number tied to the run: the
-   witness, the verdict lines and the times as the tool printed them, and the exact commands. Say what the run did not
-   reach and why, and say so where a proof was made on a file compiled alone rather than by the library's build. Link
-   the library's source rather than copying it.
-3. Write its `example.json` with `origin: real-world`, `source`, `verdictLabel` (the verdicts in one line), tags and
-   notes, and run `python3 examples/tools/build.py --index-only`.
+1. Write `examples/NNN-<project>-<change>-short-name/example.json` with `origin: real-world`, `source`, tags and
+   notes, and beside it the target sidecar, `target.json` ([`schema/target.schema.json`](schema/target.schema.json)):
+   each revision by its full commit, the pair compared, how each revision's artifacts are prepared (published JARs,
+   the commit's own build, or a source slice compiled against pinned JARs), the controls, and one task for each
+   obligation. A proof task names a claim file under `claims/`
+   ([`schema/target-claim.schema.json`](schema/target-claim.schema.json)) that states the property, its domain, its
+   assumptions and its bounds before anything is run; the claim is never changed to fit a result.
+   [285](285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) is a worked one, and
+   `python3 examples/tools/find.py --readiness executable` lists the others.
+2. `python3 examples/tools/build.py --plan NNN` prints each task's plan, offline. Run a replay task inline with
+   `build.py NNN --task T`, and queue a proof task (`pipeline.py submit --example NNN --task T`). Each attempt
+   leaves a receipt under `receipts/T/`, and `python3 examples/tools/targets/workflow_handoff.py NNN T` prints
+   what the next attempt needs. When a class reads a JDK class the tool has no model of, a violation is an artifact
+   until there is one: the tool's [models](../lib/models/README.md) are on the class path by themselves
+   (`jvmcontract models` lists them), and a class beyond them needs a model added there.
+3. Write the folder's `README.md` as the report, from the receipts: keep every number tied to one (the witness, the
+   verdict lines and the times as the tool printed them), say what no attempt reached and why, and link the
+   project's source rather than copying it. Then run `python3 examples/tools/build.py --index-only`.
 
 Good subjects for real-world examples have small Maven or Gradle builds, an active pull request flow, and static
 utility methods over primitives and primitive arrays, where the regression and property proofs land:
@@ -747,8 +760,7 @@ utility methods over primitives and primitive arrays, where the regression and p
 
 What does not work well: `String`-heavy libraries (jsoup, Commons Text), anything whose build takes longer than the
 proofs (Guava, Netty), and methods whose only parameters are objects. The limits are the tool's, in the
-[library README](../lib/README.md#limits); the skill's [reference](../plugins/jvmcontract/skills/verify-bytecode/reference.md#costs-so-you-can-budget)
-has the measured costs to budget by.
+[library README](../lib/README.md#limits).
 
 ## Where notes go
 

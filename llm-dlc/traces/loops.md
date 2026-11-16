@@ -16,10 +16,10 @@ loop or not.
 
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| moonshot | 6 | 6 | 52 | 49 | 67 | 48 (44 passed, 4 failed) | 2.1 d | 6,668,644 | $773.98 | $15.80 |
-| brief | 27 | 53 | 300 | 297 | 368 | 205 (160 passed, 45 failed) | 3.3 d | 13,072,341 | $1,104.01 | $3.72 |
-| verification | 1 | 52 | 0 | 0 | 172 | 0 | 13 h 33 min | 225,023 | $13.75 | n/a |
-| **all** | 34 | 111 | 352 | 346 | 607 | 253 (204 passed, 49 failed) | 6.0 d | 19,966,008 | $1,891.74 | $5.47 |
+| moonshot | 6 | 6 | 52 | 49 | 67 | 48 (44 passed, 4 failed) | 2.1 d | 6,677,650 | $775.36 | $15.82 |
+| brief | 28 | 54 | 303 | 300 | 372 | 205 (160 passed, 45 failed) | 3.3 d | 13,237,569 | $1,113.01 | $3.71 |
+| verification | 1 | 52 | 0 | 0 | 179 | 0 | 13 h 33 min | 225,023 | $13.75 | n/a |
+| **all** | 35 | 112 | 355 | 349 | 618 | 253 (204 passed, 49 failed) | 6.0 d | 20,140,242 | $1,902.12 | $5.45 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -32,7 +32,7 @@ The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person 
 | `tla` | 1 | 17 | 16 | 16 | 0 | `claude-fable-5-1` | 2026-11-02 | 18 h 24 min | 8 h 52 min | 28 min | 1,874,477 | $217.38 | $12.53 | $13.59 |
 | `spring` | 1 | 10 | 10 | 14 | 10 (10 passed) | `claude-fable-5-1` | 2026-11-03 | 5 h 29 min | 4 h 35 min | 29 min | 928,810 | $102.28 | $10.59 | $7.31 |
 | `relational` | 1 | 14 | 13 | 15 | 20 (20 passed) | `claude-fable-5-1` | 2026-11-04 | 5 h 50 min | 5 h 28 min | 23 min | 1,175,603 | $137.35 | $10.61 | $9.16 |
-| `prove-examples` | 1 | 3 | 3 | 15 | 18 (14 passed, 4 failed) | `claude-fable-5-2` | 2026-11-15 to 11-16 | 15 h 13 min | 14 h 56 min | 4 h 53 min | 1,632,033 | $196.50 | $66.12 | $13.10 |
+| `prove-examples` | 1 | 3 | 3 | 15 | 18 (14 passed, 4 failed) | `claude-fable-5-2` | 2026-11-15 to 11-16 | 15 h 16 min | 14 h 58 min | 4 h 53 min | 1,641,039 | $197.88 | $66.12 | $13.19 |
 
 - `examples-by-hand`, typed by hand, a different wording each cycle:
   - "Create more novel examples of formal verification against Java bytecode using the jvmcontract library that feel exciting to expert Java distributed systems principals."
@@ -54,7 +54,7 @@ One row per item of the list. *Attempts* are the cycles that took the item, and 
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: | --- |
 | 285 | done | 1 | 3 h 01 min | 2 h 56 min | 484 | 494 | 2 | 471,337 | 466,839 | $66.12 | 6 (5 passed, 1 failed) | failed | 7,956 CPU s | `ywytmluumutt` Example 285 is decided: its four proof tasks have their receipts, eac… |
 | 286 | done | 1 | 5 h 00 min | 4 h 53 min | 482 | 489 | 0 | 626,867 | 465,997 | $70.45 | 4 (3 passed, 1 failed) | failed | 20,383 CPU s | `vurkswvtpmyq` Example 286's decision claim is decided beside the route: established… |
-| 287 | done | 1 | 7 h 11 min | 7 h 07 min | 421 | 429 | 7 | 533,829 | 466,279 | $59.94 | 8 (6 passed, 2 failed) | failed | 10,034 CPU s | `rzyzyqxwmwmm` Example 287's guard lemma is decided by the route: established on 6.3… |
+| 287 | done | 1 | 7 h 13 min | 7 h 08 min | 424 | 431 | 7 | 536,774 | 466,279 | $60.29 | 8 (6 passed, 2 failed) | failed | 10,034 CPU s | `rzyzyqxwmwmm` Example 287's guard lemma is decided by the route: established on 6.3… |
 | 288 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
 | 289 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
 | 290 | pending | 0 |  |  | 0 | 0 | 0 | 0 | 0 |  | 0 |  |  |  |
@@ -126,7 +126,7 @@ Oldest first. A cycle is one turn of the instruction, then the commit, then the 
 | `2026-11-04-052019-relational` | 14 |  | 2026-11-04 11:06 | 3.9 min | 3.9 min | 13 | 13 | 1 | 15,946 | 84,788 | $2.39 | 0 | 0 | *no commit* |
 | `2026-11-15-161311-prove-examples` | 1 | 285 | 2026-11-15 16:13 | 3 h 01 min | 2 h 56 min | 484 | 494 | 2 | 471,337 | 466,839 | $66.12 | 5 | 6 (5 passed, 1 failed) | Example 285 is decided: its four proof tasks have their receipts, eac… |
 | `2026-11-15-161311-prove-examples` | 2 | 286 | 2026-11-15 19:14 | 5 h 00 min | 4 h 53 min | 482 | 489 | 0 | 626,867 | 465,997 | $70.45 | 2 | 4 (3 passed, 1 failed) | Example 286's decision claim is decided beside the route: established… |
-| `2026-11-15-161311-prove-examples` | 3 | 287 | 2026-11-16 00:14 | 7 h 11 min | 7 h 07 min | 421 | 429 | 7 | 533,829 | 466,279 | $59.94 | 8 | 8 (6 passed, 2 failed) | Example 287's guard lemma is decided by the route: established on 6.3… |
+| `2026-11-15-161311-prove-examples` | 3 | 287 | 2026-11-16 00:14 | 7 h 13 min | 7 h 08 min | 424 | 431 | 7 | 536,774 | 466,279 | $60.29 | 8 | 8 (6 passed, 2 failed) | Example 287's guard lemma is decided by the route: established on 6.3… |
 
 ## Briefs
 
@@ -166,11 +166,12 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | &nbsp;&nbsp;stream `example-targets-runtime` | 2 | 10 | 10 | 12 | 5 (4 passed, 1 failed) | `claude-opus-5-5` | 2026-11-14 | 2 h 49 min | 2 h 16 min | 13 min | 494,397 | $34.99 | $2.75 | $2.92 |
 | &nbsp;&nbsp;stream `example-targets-workflow` | 1 | 6 | 6 | 7 | 0 | `claude-opus-5-5` | 2026-11-14 | 70 min | 63 min | 10 min | 266,029 | $18.48 | $2.78 | $2.64 |
 | &nbsp;&nbsp;*with its streams* | 10 | 66 | 66 | 88 | 78 (52 passed, 26 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 14 h 25 min | 12 h 53 min | 11 min | 2,462,854 | $210.14 | $2.75 | $2.39 |
+| **`stream-conductor`** | 1 | 3 | 3 | 4 | 0 | `claude-opus-5-5` | 2026-11-14 | 35 min | 32 min | 12 min | 165,228 | $9.00 | $3.30 | $2.25 |
 | **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 
 ## Verification loop
 
-52 runs from 2026-11-03 to 11-16, on `claude-sonnet-5-5`: 13 h 33 min active, 172 commits, 225,023 tokens written, $13.75 ($0.26 a run). Of the 298 verification jobs on record, 253 are tied to the loop cycle that submitted them.
+52 runs from 2026-11-03 to 11-16, on `claude-sonnet-5-5`: 13 h 33 min active, 179 commits, 225,023 tokens written, $13.75 ($0.26 a run). Of the 298 verification jobs on record, 253 are tied to the loop cycle that submitted them.
 
 ## Runs
 
@@ -232,12 +233,13 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-14 18:19 | [`2026-11-14-181912-example-targets-runtime`](3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/runs/2026-11-14-181912-example-targets-runtime.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 6.1 min | 5.4 min | $0.94 | work done | record |
 | 2026-11-14 18:25 | [`2026-11-14-182520-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-182520-example-targets.md) | brief | `claude-opus-5-5` | 1 | 2 | 13 min | 13 min | $2.33 | blocked | record |
 | 2026-11-14 19:43 | [`2026-11-14-194319-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-194319-example-targets.md) | brief | `claude-opus-5-5` | 14 | 14 | 2 h 17 min | 2 h 06 min | $29.00 | waiting on jobs | record |
+| 2026-11-14 21:13 | `2026-11-14-211345-stream-conductor` | brief | `claude-opus-5-5` | 3 | 4 | 35 min | 32 min | $9.00 | no end recorded | transcript |
 | 2026-11-14 22:29 | [`2026-11-14-222909-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-222909-example-targets.md) | brief | `claude-opus-5-5` | 7 | 13 | 1 h 45 min | 98 min | $26.20 | brief changed (stopped) | record |
 | 2026-11-15 00:18 | [`2026-11-15-001859-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-001859-example-targets.md) | brief | `claude-opus-5-5` | 8 | 15 | 1 h 57 min | 1 h 49 min | $28.53 | waiting on jobs | record |
 | 2026-11-15 04:13 | [`2026-11-15-041307-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-041307-example-targets.md) | brief | `claude-opus-5-5` | 10 | 13 | 1 h 50 min | 98 min | $27.82 | work done | record |
 | 2026-11-15 12:23 | [`2026-11-15-122338-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-122338-test-cost.md) | brief | `claude-opus-5-5` | 2 | 2 | 17 min | 16 min | $4.46 | interrupted | record |
 | 2026-11-15 13:01 | [`2026-11-15-130104-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-130104-test-cost.md) | brief | `claude-opus-5-5` | 9 | 10 | 2 h 12 min | 99 min | $21.23 | work done | record |
-| 2026-11-15 16:13 | [`2026-11-15-161311-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-15-161311-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 3 | 15 | 15 h 13 min | 14 h 56 min | $196.50 | no end recorded | record |
+| 2026-11-15 16:13 | [`2026-11-15-161311-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-15-161311-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 3 | 15 | 15 h 16 min | 14 h 58 min | $197.88 | cycle count reached | record |
 
 ## Reading these numbers
 

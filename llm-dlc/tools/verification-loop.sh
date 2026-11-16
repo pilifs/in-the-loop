@@ -42,6 +42,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 1
 
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
+isolation || exit 1
 
 HELP='while it runs, type a command and Enter:
   stop   end after the run under way, or at once while waiting
@@ -109,7 +110,7 @@ if s["running"]:
 }
 
 run_claude() {
-  claude -p "$1" --model "$MODEL" --effort "$EFFORT" \
+  claude -p "$1" --model "$MODEL" --effort "$EFFORT" "${ISOLATION[@]}" \
     --permission-mode auto --output-format stream-json --verbose </dev/null | show_progress
 }
 

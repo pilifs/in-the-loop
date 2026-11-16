@@ -59,7 +59,8 @@ RECORD_ITEMS = re.compile(r"^Each cycle puts the next item in place of \{\}: (?P
 # the judge's verdict on its item.
 RECORD_ITEMS_JUDGED = re.compile(
     r"^Each item stays in place of \{\} until a judge outside the session finds it finished: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
-RECORD_VERDICT = re.compile(r"^  - item (?P<item>\S+) (?P<verdict>continues|finished|left after)\b")
+# "waiting" leaves an item open as "continues" does: the loop comes back to it when its verification jobs are in.
+RECORD_VERDICT = re.compile(r"^  - item (?P<item>\S+) (?P<verdict>continues|waiting|finished|left after)\b")
 RECORD_BRIEF = re.compile(r"^Brief `(?P<brief>[^`]+)` at sha256 ", re.M)
 RECORD_FORK = re.compile(rf"^Session {UUID} was forked from session (?P<parent>{UUID})\.", re.M)
 REASONS = (  # how feature-loop.sh words each ending, first match wins
@@ -68,7 +69,8 @@ REASONS = (  # how feature-loop.sh words each ending, first match wins
     ("the brief says blocked", "blocked"), ("the session decided to stop", "decided to stop"),
     ("no items left", "no items left"), ("compacted with no commit", "compacted, no commit"), ("made no commit", "no commit"), ("the brief changed", "brief changed"),
     ("gave no clear", "unclear decision"), ("the fork of session", "fork failed"),
-    ("was finished, as asked", "stopped after its item"))
+    ("while waiting on the verification jobs", "stopped waiting on jobs"), ("did not come in within", "jobs not in"),
+    ("was finished, as asked", "stopped after its item"), (", as asked", "stopped after its item"))
 
 # What the script sends besides the instruction, as the transcripts hold it (metrics.py keeps the
 # first 200 characters of a prompt, whitespace collapsed).
@@ -175,7 +177,7 @@ def parse_record(name: str, text: str) -> dict | None:
         elif last is not None and (m := RECORD_DECIDED.match(line)):
             last["decision"] = m["decision"]
         elif last is not None and (m := RECORD_VERDICT.match(line)):
-            last["verdict"] = "continue" if m["verdict"] == "continues" else "finished"
+            last["verdict"] = "continue" if m["verdict"] in ("continues", "waiting") else "finished"
     ends = list(RECORD_END.finditer(text))
     end = None
     if ends:

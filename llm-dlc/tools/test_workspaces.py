@@ -15,6 +15,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import decisions
 import metrics
 import sync
 
@@ -52,7 +53,7 @@ class Workspaces(unittest.TestCase):
         values = {"REPO": root, "CHANGES": llm, "TRACES": llm / "traces", "INDEX": llm / "index.json",
                   "CHANGES_README": llm / "README.md", "TRACES_README": llm / "traces" / "README.md",
                   "METRICS_ROLLUP": llm / "traces" / "metrics.json", "SESSION_NOTES": llm / "session-notes",
-                  "PRICING": PRICING}
+                  "DECISIONS": llm / "decisions", "PRICING": PRICING}
         with contextlib.ExitStack() as stack:
             for name, value in values.items():
                 stack.enter_context(mock.patch.object(sync, name, value))
@@ -136,6 +137,34 @@ class Workspaces(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("session session-b has no manifest", errors[0])
 
+    def restamped_under_b(self, listed_in_a: bool) -> tuple[list, list]:
+        """A's change, shared by b's line, stamped again in a with a newer log of session-a (as a session
+        still at work there does), with a's manifest listing that log or not: what b's check makes of it."""
+        with self.at(self.a):
+            self.add_session("session-a", "a" * 64, "Made-up A")
+            self.line_a = self.traced("A's change", "session-a", "a" * 64)
+        b = self.base_dir / "b"
+        with self.at(self.a):
+            self.run_jj("workspace", "add", "--name", "b", "-r", self.line_a, str(b))
+            if listed_in_a:
+                m = sync.load_manifest("session-a")
+                m["logs"]["e" * 64] = {"bytes": 1, "lines": 1, "gzip_bytes": 1, "url": None}
+                sync.manifest_path("session-a").write_text(json.dumps(m, indent=2) + "\n")
+            self.run_jj("describe", "-r", self.line_a, "-m", f"A's change\n\n{sync.TRAILER}: session-a sha256:{'e' * 64}\n")
+        with self.at(b):
+            self.run_jj("workspace", "update-stale")
+            return sync.check_trailers(sync.all_manifests())
+
+    def test_a_shared_change_stamped_in_another_workspace_is_a_note_while_its_manifest_there_lists_the_log(self):
+        errors, notes = self.restamped_under_b(listed_in_a=True)
+        self.assertEqual(errors, [])
+        self.assertEqual(len([n for n in notes if "workspace default's copy of it lists the log" in n]), 1, notes)
+
+    def test_a_shared_change_stamped_with_a_log_no_manifest_lists_is_still_an_error(self):
+        errors, _ = self.restamped_under_b(listed_in_a=False)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("points at log eeeeeeeeeeee that the manifest does not list", errors[0])
+
     # regenerate: the generated files after a merge
 
     def test_the_four_generated_files_conflict_and_regenerating_settles_them(self):
@@ -188,6 +217,41 @@ class Workspaces(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("llm-dlc/traces/session-shared/manifest.json", err)
             self.assertEqual(sync.INDEX.read_text(), before)
+
+    def record_decision(self, question: str):
+        """A made-up decision in the record made-up, written as the conductor writes it."""
+        data = {"asked": {"by": "runtime", "question": question}, "state": "decided",
+                "options": [{"id": "a", "summary": "This way", "consequences": "None."}],
+                "decision": {"option": "a", "by": "conductor", "rationale": "The only option.",
+                             "confidence": {"level": "high", "basis": "the brief"},
+                             "recovery": {"class": "cheap", "undo": "Revert it."}}}
+        with mock.patch("sys.stdout", io.StringIO()):
+            self.assertEqual(decisions.main(["record", "made-up"], root=sync.DECISIONS,
+                                            stdin=io.StringIO(json.dumps(data))), 0)
+
+    def test_a_decision_record_in_conflict_is_listed_and_the_trace_files_still_settled(self):
+        b = self.two_lines()
+        for root, question in ((self.a, "A's question?"), (b, "B's question?")):
+            with self.at(root):
+                self.record_decision(question)
+                setattr(self, "line_a" if root == self.a else "line_b", self.commit("decision"))
+        with self.at(self.a):
+            self.run_jj("new", self.line_a, self.line_b)
+            code, out, err = self.regenerate()
+            self.assertEqual(code, 1)
+            self.assertIn("regenerated: llm-dlc/index.json", out)
+            self.assertEqual(sorted(sync.conflicted_paths()),
+                             ["llm-dlc/decisions/made-up.jsonl", "llm-dlc/decisions/made-up.md"])
+            self.assertIn("llm-dlc/decisions/made-up.jsonl", err)
+
+    def test_the_decision_views_are_written_with_the_other_generated_files(self):
+        with self.at(self.a):
+            self.record_decision("A question?")
+            view = sync.DECISIONS / "made-up.md"
+            view.unlink()
+            sync.write_index()
+            self.assertIn("### made-up-D001: A question?", view.read_text())
+            self.assertEqual(decisions.problems(sync.DECISIONS), [])
 
     def test_without_a_conflict_it_rewrites_stale_files(self):
         with self.at(self.a):

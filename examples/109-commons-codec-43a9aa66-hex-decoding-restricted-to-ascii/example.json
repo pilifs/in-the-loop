@@ -25,7 +25,7 @@
   "approach": {
     "id": "B11",
     "name": "Property proofs",
-    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "tool": "lib",
     "also": [
       "B9"
     ]
@@ -45,5 +45,5 @@
     "Next in Commons Codec: `MurmurHash3` and `PureJavaCrc32`, whose classes read no charsets.",
     "`toDigit` throws `DecoderException`, a checked exception, on a char that is no hex digit, and the equivalence harness catches only unchecked exceptions and `Error` (`harness::EXCEPTIONS`). So `equivalence` on `Hex#toDigit` ends in \"an unexpected property failed: `EquivalenceHarness.check:(CI)V.1`\" (JBMC's \"no uncaught exception\") until the harness tells declared exceptions apart, and a step that expects exit 1 for \"the change, found\" passes on that too: check for the found change instead. The old version's regression proof under `--assume 'ch == 1632'` holds under `--gaps strict` since the gap preflight asks JBMC's solver whether `String.format`'s stub is reached (VF-015, job `20261108-011411-vf-015-example-109-revisited-hex-todigit`)."
   ],
-  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+  "provenance": "A real change to a published library, verified from its compiled bytecode with jvmcontract, through the /verify-bytecode skill of the time (removed 2026-11-15); the report is this folder's README.md."
 }

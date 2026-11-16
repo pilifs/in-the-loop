@@ -1,7 +1,26 @@
 # Brief: a conductor for parallel streams
 
-**Drafted 2026-11-14; its [decisions](#decisions) settled by the user the same day. Not to start until example-targets
-is merged and done**: it changes `run-streams.sh`, `feature-loop.sh` and how streams talk, which the running loop uses.
+**Drafted 2026-11-14; its [decisions](#decisions) settled by the user the same day. Steps 1–3 of [the plan](#the-plan)
+run now, beside example-targets' Phase 5, in the jj workspace `stream-conductor`; this branch is merged, and steps 4–6
+start, only after example-targets is done**: it changes `run-streams.sh`, `feature-loop.sh` and `sync.py`, which the
+running loop uses. See [This run](#this-run-steps-13-beside-example-targets).
+
+## This run: steps 1–3 beside example-targets
+
+The user started this loop on 2026-11-14 while example-targets' own loop runs Phase 5 in the default workspace
+(`../in-the-loop`), from that loop's commit `krnmkrsm`. Keep out of its way:
+- Work only in this workspace (`../in-the-loop-stream-conductor`). Never edit, snapshot or run jj commands against the
+  default workspace's files, never merge this branch into its line or rebase onto it, and never push. The merge is the
+  user's to start once example-targets is `done`, with `sync.py regenerate` after `jj new`.
+- Test on made-up data in temporary repositories, as `llm-dlc/tools/test_workspaces.py` does. Don't start Claude
+  sessions, `feature-loop.sh`, `run-streams.sh` or systemd scopes: a scope named `feature-loop-*` counts as a loop in the
+  verification runner's budget, and a real two-stream trial belongs to step 6.
+- No verification jobs are expected. The runner reads the default workspace's queue, so a job submitted here would not
+  run until the merge; if one is needed, record it in Progress instead.
+- Gitignored local files (`verification/pipeline.local.toml`, uploaded logs) are not in this workspace; nothing in steps
+  1–3 needs them.
+- Example-targets is the source of the [table above](#where-it-starts-from), and its data may change while you work;
+  read it, don't edit its brief or files.
 
 ## Direction
 
@@ -201,6 +220,49 @@ merge is itself a logged decision (cheap or costly by the test above).
 - Tell the verification runner when the number of running loops changes, so it can move to a larger budget row in
   `pipeline.local.toml`.
 
+### 7. A moonshot conductor: judging a compaction from outside the loop
+
+Added 2026-11-15 at the user's request, for later, after the streams' steps. Built elsewhere since: the user said on
+2026-11-15 that `/prove-java-change` supersedes it, and its session, the watcher, is the moonshot conductor
+([`runtime.md`](../runtime.md#the-conductor), `tools/conductor.py`, `tools/watch.py`). This design stays as the
+record of what was asked; what it does not have yet is listed under step 7.
+
+A moonshot (a one-line instruction, or one item of a list, repeated by `feature-loop.sh`) has no acceptance criteria, so
+nothing says when an item should stop. The user wants its session chained across cycles, so later cycles build on what
+earlier ones learned, and the moonshot's input kept to the one line: no added rules, since that would spoil the experiment.
+Not finishing an item is fine as long as the work is productive: another pass can come back to it.
+
+The mechanical rule comes first, `uzporttn` (workspace `moonshot`, not yet on the default line on 2026-11-15):
+- every moonshot turn passes `--autocompact 600k`;
+- an automatic compaction with no commit since the cycle began, or since the last compaction, ends the turn and stops the
+  loop for the user.
+
+A compaction is the natural point to judge, but a rule can't tell the two cases apart:
+- the work is hard and still going well;
+- the session is stuck and needs a person.
+
+The moonshot conductor makes that judgment and acts on it:
+- **From outside the loop.** It is a separate session, so the moonshot is not distracted and its input stays the one line.
+  That is the conductor's job for streams too.
+- **On the compaction event.** It reads what the session did since the cycle began or the last compaction:
+  - the transcript;
+  - the commits and the working copy's diff;
+  - test runs, and jobs submitted or failed;
+  - whether the same failure or file keeps coming back.
+- **It acts, by Design 3** (act where recovery is cheap, the user reviews afterwards):
+  - **let the turn go on**, the default when the work is moving;
+  - **stop the loop**, with a decision queued for the user saying why, when the session is stuck;
+  - possibly other actions for the implementer to propose, such as ending the item at its last good commit so the loop
+    moves to the next item.
+  Each judgment goes into the decision record with its basis, as every other decision does.
+- **The mechanical rule stays** as the fallback when the conductor isn't running or can't decide. The conductor's
+  verdict replaces the rule's stop, not the event that triggers it. `show_progress` in `loop-common.sh` already sees the
+  `compact_boundary` event and holds claude's pid, so it is where the hand-off goes.
+
+The run that prompted this: `prove-examples` (examples 285–300), started 2026-11-15 16:13 UTC. Cycle 1 compacted at
+477k tokens, committed `lvvpsuxl` 80 minutes in, and went on in the same turn to the next part of the item. The user let
+it run because its progress was good. That is the judgment this conductor should be able to make on its own.
+
 ### How it runs
 
 The conductor is a `feature-loop.sh` loop in the default workspace (`NAME-conductor`), started by `run-streams.sh` in
@@ -233,6 +295,13 @@ place of today's `integrate()` bash loop.
    - integration checks that ran versus stopped;
    - decisions made during the run versus queued;
    - decisions the user overturned, with the rework each cost.
+
+7. **The moonshot conductor** ([Design 7](#7-a-moonshot-conductor-judging-a-compaction-from-outside-the-loop)), after
+   step 6, when these streams are picked up again: the compaction hand-off from `show_progress`, the judgment session,
+   its actions, and its decision records. Measured on the next moonshot run: the stops it avoided, and the stops it made
+   that the user agreed with. Done outside this brief, in `/prove-java-change` (merged here on 2026-11-16), except for
+   two things that are open: the watcher's verdicts go to the run's record, not to a decision record
+   (`llm-dlc/decisions/`), and nothing has measured them on a real run yet.
 
 Each step is one commit with its tests. Steps 1–3 are useful before the conductor session exists: a session can write
 decisions and inbox items by hand, as was done on 2026-11-14.
@@ -283,4 +352,136 @@ The next parallel run uses the conductor:
 - 2026-11-14, the user's directional answers to the five decisions folded in. Design 3 is now act-first with a recovery
   test and review afterwards, and Design 4 is the decision record and its projections. Early merge is contextual, and
   there is no rebase.
-- Status: draft: implement after example-targets is done, starting with step 1
+- 2026-11-14, the user chose to run steps 1–3 now in the workspace `stream-conductor`, beside example-targets' Phase 5
+  (see [This run](#this-run-steps-13-beside-example-targets)); steps 4–6 wait for its merge. Next: step 1, the decision
+  record.
+- 2026-11-14, step 1 done: the decision record.
+  - `llm-dlc/decisions/schema.json` and `llm-dlc/tools/decisions.py`, a tool of its own as proposed (`list`, `show`,
+    `counts`, `review`, `answer`, `render`, `check`, and the conductor's `record` and `depend`).
+  - The views are rendered by `sync.py` with its other generated files and by `regenerate`. `check` validates the
+    records against the schema, plus the rules it can't state, Design 3's action table among them. Leak scanning
+    covers the records too.
+  - Tests: `test_decisions.py` (15, including an overturn after dependents grew, and agreement with `jsonschema`) and
+    two more in `test_workspaces.py`. All 210 tool tests pass.
+  - The two open items, taken as proposed:
+    - the re-flag threshold is three commits or any job (`DEPENDENTS_THRESHOLD`);
+    - `decisions.py` is its own tool.
+  - Beyond Design 4's field table:
+    - every line has a `kind` (`decision`, or the user's `review` and `answer` lines) and an `at`, so a review never
+      rewrites the conductor's snapshot;
+    - the views add an "overturned, waiting for the conductor" group between unreviewed and the rest.
+  - Next: step 2, inboxes.
+- 2026-11-14, a fix found by step 1's own commit: `check` reported 8 false errors on example-targets commits under
+  this branch.
+  - Cause: session `d34058d5`, still at work in the default workspace, had stamped them, and only that line's copy of
+    its manifest lists the log.
+  - Fix: such a trailer is now a note when another workspace's working copy holds a manifest that lists the log.
+  - Two tests in `test_workspaces.py`; 212 tool tests pass.
+- 2026-11-14, step 2 done: inboxes, `llm-dlc/tools/inbox.py`.
+  - The convention: `llm-dlc/loop-summaries/NAME-STREAM-inbox.md` in the default workspace, rendered from
+    `NAME-STREAM-inbox.jsonl` beside it. Both are gitignored, and `send` and `collect` find the default workspace from
+    any workspace.
+  - Item ids are `NAME-STREAM-I001`. Open items are shown in full; acknowledged ones get a line each.
+  - The sentence: `feature-loop.sh` adds `inbox.py instruction NAME` to every brief's cycle instruction. It names the
+    inbox path, says to acknowledge each item by its id in the Progress update, and states the precedence (brief,
+    then the user's decisions, then the conductor; a contradiction is reported, not obeyed). The inbox's own header
+    repeats it.
+  - The only-what-to-act-on rule as `send` enforces it:
+    - an item is one of six kinds, each from Design 2's list: `failure`, `interface`, `answer`, `unblocked`,
+      `overturned`, and `queued`;
+    - `queued` is my addition, from Design 3's "queued at once and the stream goes on";
+    - every item says what to `do` and names a decision or commit as its source;
+    - a decision it names must be in the state the kind needs;
+    - anything else is refused and nothing is written.
+  - An item sent for a decision is added to that decision's `applied.inbox`.
+  - `collect` takes acknowledgements from each stream's committed Progress (`WORKSPACE@-`), keeping the commit and the
+    Progress line, so a reported contradiction shows.
+  - Tests: `test_inbox.py` (8), including the two-stream fixture run. That run is a real jj repo with a default
+    workspace and two stream workspaces:
+    - the conductor sends an interface rule to both streams, and the upkeep item is refused;
+    - each stream finds its inbox through the sentence's path from its own workspace;
+    - one stream acknowledges in a commit, while an uncommitted edit doesn't count;
+    - after the user overturns the decision, both streams get the undo;
+    - one stream reports the stale item as contradicting its brief.
+
+    All 220 tool tests pass.
+  - Next: step 3, the rolling integration line.
+- 2026-11-14, step 3 done: the rolling integration line, `llm-dlc/tools/integration.py`. `run-streams.sh`'s
+  `integrate_once` now calls it, with the systemd scope around the script only. `integrate()` still decides when.
+  - Each run merges every stream's `@-` in `NAME-integration`, with the line's newest passing merge as a parent too, so
+    the line is one chain. It settles the generated files with that tree's `sync.py regenerate`. With no other conflict
+    it runs the script, then drops whatever the script wrote into the tree.
+  - A passing merge is committed there with `Integration-Line: NAME` and an `Integration-Head: STREAM COMMIT` per stream.
+    `integration.py line NAME` names the newest. Nothing is pushed or committed in the default workspace.
+  - A failing merge, a real conflict or a failing script, is left uncommitted and triaged. It is attributed to the
+    streams whose changes since they branched touch the files in conflict, or the files the output names (Python
+    tracebacks, `path:line`, a Java frame's `File.java`).
+    - One stream: a `failure` item, with no decision.
+    - Two or more: an open decision asked by `integration`, with options for each side standing, a rule both adapt to,
+      and `settled`. Each side gets a `queued` item: hold back on those files, go on with the rest.
+    - None named: one stream that changed anything since the last pass, by elimination. Otherwise an open decision,
+      with nothing sent.
+  - A merge that passes closes each open, unanswered question the line asked as `settled`: by the conductor, high
+    confidence and cheap, so unreviewed. Each side it held back gets an `unblocked` item.
+  - The same failure again (result, files, streams) sends nothing new. The last triage is kept in
+    `NAME-integration.json` beside the report.
+  - The report keeps its path and its `- Result:` line for the status bar. Its first word is `passed`, `failed`,
+    `conflict`, `error` or `unchanged`.
+  - Decisions the brief left open, taken here:
+    - the line chains its merges;
+    - the script's output is kept out of the line;
+    - the line never decides how two sides meet, since it can't name a basis (Design 3), so it queues the question
+      and decides only `settled`;
+    - attribution goes by files, with elimination as the fallback;
+    - one stream's failure is an item, not a decision.
+
+    The `queued` kind's heading now reads "a question about your work is queued for the user".
+  - Tests: `test_integration.py` (5). The fixture run is a real jj repo with two streams and a stand-in `regenerate`.
+    It covers, in order: a pass after a generated-file conflict, committed without the script's output; a two-sided
+    failure; the same failure again; a pass that settles it; a textual conflict; and a one-stream failure. The other
+    tests cover attribution and the `run-streams.sh` wiring. All 225 tool tests pass. No verification job is needed.
+  - **What step 4 needs from the merge** (after example-targets is `done`, by the user, with `sync.py regenerate`
+    after `jj new`):
+    - This branch's changes to `run-streams.sh`, `feature-loop.sh`, `sync.py`, the README and the brief template,
+      merged with whatever example-targets changed in them. Steps 1–3's tests must pass on the merged tree.
+    - Someone must commit the decision record. `integration.py` and `inbox.py` write
+      `llm-dlc/decisions/NAME.jsonl` and its view in the default workspace, uncommitted. Step 4's conductor commits
+      them with its Progress (Design 4). Until then, a run's merge loop must commit them.
+    - The conductor's cycle has three duties that nothing runs today:
+      - `inbox.py collect`;
+      - taking the line's open `integration` questions, deciding or leaving them for the user by Design 3;
+      - running `inbox.py send` for interface requests in Progress.
+    - Wake-ups: a change in `NAME-integration.md` is one of the events `run-streams.sh` watches.
+    - The line's commits stay visible as heads after the run. The final merge should start from `integration.py line
+      BRIEF`, or abandon them. Otherwise `prune_workspaces.py` (rule 2) won't delete `NAME-integration`. This is for
+      step 4 or 5 to settle.
+    - The first real run of the line, the conductor and the inboxes is step 6's.
+- 2026-11-15: Design 7 and plan step 7 added at the user's request: a moonshot conductor that judges a compaction from
+  outside the moonshot loop. It is for later and doesn't change steps 4–6.
+- 2026-11-16: merged into the default line with `/prove-java-change`, at the user's request, by the session that
+  built that skill.
+  - Steps 1–3 are on the default line with their tests in the default run (`test_decisions.py`, `test_inbox.py`,
+    `test_integration.py`, tagged with their cost tiers).
+  - One thing met the default line's later work: `sync.py`'s check of the decision records broke two tests of
+    `test_loop_stats.py`, which redirect `sync.py`'s paths to a made-up repository and now redirect `DECISIONS` too.
+  - Design 7 and step 7 are built in `/prove-java-change`; see the notes there.
+  - Before steps 4–6 are started: Loop settings still name the workspace `stream-conductor` and the fork of
+    `d34058d5`, and the Loop until below ends at step 3. Both are the user's to change.
+- Status: blocked: steps 1–3 merged; steps 4–6 wait for the user to start them, with new Loop settings and Loop until
+
+## Loop settings
+
+- session: 4a47a539-a6f1-4f2d-b4c9-828596296714
+- model: claude-opus-5-5
+- effort: high
+- memory: 12G
+- workspace: stream-conductor
+- fork: d34058d5-39ed-426b-a9ff-d538463f39cc
+
+## Loop until
+
+Steps 1–3 of the plan, one commit each with its tests, in order. Keep the last line of Progress a status: `working`, or
+`blocked: ...` with what needs the user. Once step 3 is committed, record in Progress what step 4 needs from the merge
+and stop with `blocked: steps 1–3 done; step 4 waits for example-targets to be done and this branch merged`. Never start
+step 4 in this run. A decision the brief leaves open is yours to propose and take, recorded in Progress; stop `blocked:`
+only for one the brief says belongs to the user.

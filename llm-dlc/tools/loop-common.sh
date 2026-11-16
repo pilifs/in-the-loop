@@ -3,20 +3,48 @@
 
 log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*"; }
 
+# ISOLATION: the launch flags of a session that loads this checkout and nothing of
+# the user's own Claude Code setup (claude_setup.py; llm-dlc/runtime.md, "What Claude
+# Code has loaded"). Set in a runtime checkout, where the session works for a user
+# whose plugins, MCP servers and memory files are no part of the task, and empty in
+# a development one, where the authors' setup is theirs. LOOP_ISOLATION=1 or 0 says
+# otherwise. Call it from the root of the repo, before the first claude.
+isolation() {
+  ISOLATION=()
+  local on=${LOOP_ISOLATION:-}
+  [[ -z "$on" && "$(python3 llm-dlc/tools/mode.py 2>/dev/null)" == runtime ]] && on=1
+  [[ "$on" == 1 ]] || return 0
+  mapfile -t ISOLATION < <(python3 llm-dlc/tools/claude_setup.py flags)
+  if (( ${#ISOLATION[@]} == 0 )); then
+    log "claude_setup.py gave no flags: the sessions can't be started clean (LOOP_ISOLATION=0 starts them as a plain claude)"
+    return 1
+  fi
+  export ENABLE_CLAUDEAI_MCP_SERVERS=false
+  log "sessions start clean: this checkout only, none of the user's own Claude Code setup"
+}
+
 # Print each stream-json event as it arrives: a turn in text mode stays silent
 # until it ends, which can be hours. This only displays, so it must outlive any
 # line it cannot read, or a closed pipe would kill claude.
 show_progress() {
   python3 -u -c '
-import json, os, signal, subprocess, sys, time
+import json, os, signal, subprocess, sys, threading, time
 
 def say(text):
     print(time.strftime("[%F %T]"), text, flush=True)
 
-# feature-loop.sh sets these during a moonshot instruction: a compaction with no
-# commit since LOOP_WATCH_BASE (the change at @- when the cycle began, then at the
-# last compaction) ends the turn, and LOOP_WATCH_MARK says why.
+# feature-loop.sh sets these during a moonshot instruction it watches: a compaction
+# with no commit since LOOP_WATCH_BASE (the change at @- when the cycle began, then
+# at the last compaction) is put to the conductor when there is one (LOOP_CONDUCTOR,
+# a directory, see llm-dlc/tools/conductor.py). The turn ends, with LOOP_WATCH_MARK
+# saying why, on a stop from the conductor, or by rule where LOOP_WATCH_STOP is set and
+# no conductor answers. Otherwise the compaction is only logged.
 base = os.environ.get("LOOP_WATCH_BASE")
+stop_rule = bool(os.environ.get("LOOP_WATCH_STOP"))
+conductor_dir = os.environ.get("LOOP_CONDUCTOR")
+conductor_wait = int(os.environ.get("FEATURE_LOOP_CONDUCTOR_WAIT") or 900)
+over = threading.Event()  # the turn has ended by itself
+waiter = None
 
 def last_change():
     # Without a snapshot: the working copy is the session at work.
@@ -36,6 +64,81 @@ def tree(pid):
         pass
     return found
 
+def end_turn(why):
+    # The reason first: the loop reads the mark once the turn is over.
+    with open(os.environ["LOOP_WATCH_MARK"], "w") as f:
+        f.write(why + "\n")
+    try:
+        with open(os.environ["LOOP_WATCH_PID"]) as f:
+            pids = tree(int(f.read().strip()))
+        os.kill(pids[0], signal.SIGTERM)
+        for pid in pids[1:]:
+            try:
+                os.kill(pid, signal.SIGTERM)
+            except OSError:
+                pass
+        say("ending the turn: %s" % why)
+    except (OSError, ValueError) as err:
+        say("%s, but the turn could not be ended: %s" % (why, err))
+
+def keep(text):
+    # For the run record, under the line of the cycle once it has one.
+    if os.environ.get("LOOP_WATCH_NOTES"):
+        with open(os.environ["LOOP_WATCH_NOTES"], "a") as f:
+            f.write(text + "\n")
+
+def ask_conductor(at, tokens, since):
+    # A session outside the loop judges; the turn goes on while it does. Its stop ends the
+    # turn. Its silence until the deadline leaves the turn running, as in a loop with no
+    # conductor, unless the rule is on.
+    sys.path.insert(0, "llm-dlc/tools")
+    import conductor
+    from pathlib import Path
+    directory = Path(conductor_dir)
+    asked = conductor.append_event(
+        directory, type="compaction", needsVerdict=True, commitSince=False, tokens=tokens, since=since,
+        cycle=os.environ.get("LOOP_WATCH_CYCLE"), item=os.environ.get("LOOP_WATCH_ITEM") or None,
+        session=os.environ.get("LOOP_WATCH_SESSION"), transcript=os.environ.get("LOOP_WATCH_TRANSCRIPT"),
+        deadline=time.time() + conductor_wait,
+        question="The session compacted itself with no commit since change %s (where the cycle began, or the last "
+                 "compaction was). Is the work moving, or is the session stuck?" % since[:12])
+    say("compacted with no commit%s: asking the conductor (event %s), for up to %s s" % (at, asked["n"], conductor_wait))
+
+    def wait():
+        global base
+        verdict = None
+        while verdict is None and time.time() < asked["deadline"] and not over.is_set():
+            verdict = conductor.read_verdict(directory, asked["n"])
+            if verdict is None:
+                over.wait(1)
+        if verdict is None:  # once more: the answer and the end of the turn can come together
+            verdict = conductor.read_verdict(directory, asked["n"])
+        if verdict and verdict["verdict"] == "continue":
+            say("the conductor says continue: %s" % verdict["reason"])
+            keep("compacted with no commit%s; the conductor let the turn go on: %s" % (at, verdict["reason"]))
+            base = since  # the next compaction with no commit asks again
+        elif verdict and over.is_set():
+            # Nothing left to end, but the loop stops: the mark is what it reads.
+            with open(os.environ["LOOP_WATCH_MARK"], "w") as f:
+                f.write("compacted with no commit%s, and the conductor said stop: %s\n" % (at, verdict["reason"]))
+            say("the conductor says stop, after the turn had ended: %s" % verdict["reason"])
+        elif verdict:
+            end_turn("compacted with no commit%s, and the conductor said stop: %s" % (at, verdict["reason"]))
+        elif over.is_set():
+            conductor.append_event(directory, type="withdrawn", event=asked["n"],
+                                   note="the turn ended by itself before a verdict came: nothing to judge")
+            say("the turn ended before the conductor answered event %s" % asked["n"])
+        elif stop_rule:
+            end_turn("compacted with no commit%s, and no verdict came from the conductor in %s s" % (at, conductor_wait))
+        else:
+            say("no verdict from the conductor in %s s: the turn goes on, as in a loop without one" % conductor_wait)
+            keep("compacted with no commit%s; no verdict came from the conductor in %s s, and the turn went on" % (at, conductor_wait))
+            base = since
+
+    global waiter
+    waiter = threading.Thread(target=wait, daemon=True)
+    waiter.start()
+
 def compacted(e):
     global base
     meta = e.get("compact_metadata") or e.get("compactMetadata") or {}
@@ -51,21 +154,17 @@ def compacted(e):
     elif now != base:
         base = now
     else:
-        with open(os.environ["LOOP_WATCH_MARK"], "w") as f:
-            f.write("compacted with no commit%s\n" % at)
-        try:
-            with open(os.environ["LOOP_WATCH_PID"]) as f:
-                pids = tree(int(f.read().strip()))
-            os.kill(pids[0], signal.SIGTERM)
-            for pid in pids[1:]:
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                except OSError:
-                    pass
-            say("no commit since the cycle began or the last compaction: ending the turn")
-        except (OSError, ValueError) as err:
-            say("no commit since the last compaction, but the turn could not be ended: %s" % err)
-        base = None
+        base = None  # one question at a time: a compaction while it is open asks nothing
+        if conductor_dir:
+            try:
+                ask_conductor(at, tokens, now)
+                return
+            except Exception as err:
+                say("the conductor could not be asked (%s)" % err)
+        if stop_rule:
+            end_turn("compacted with no commit%s" % at)
+        else:
+            base = now
 
 def event(e):
     if e.get("type") == "assistant":
@@ -95,5 +194,9 @@ try:
             pass
 except KeyboardInterrupt:
     pass
+# A question still open when the turn ends is settled before the loop reads what came of it.
+over.set()
+if waiter is not None:
+    waiter.join(10)
 '
 }

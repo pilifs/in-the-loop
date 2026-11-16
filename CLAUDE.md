@@ -1,6 +1,8 @@
 # Instructions for Claude Code
 
-This repo publishes every LLM session alongside the code it produced. Follow the procedure in [`llm-dlc/README.md`](llm-dlc/README.md#procedure-for-agents). In short:
+This repo runs in one of two modes, and `python3 llm-dlc/tools/mode.py` prints which. This file describes **development**, the repository as its authors work in it. In a **runtime** checkout, a released copy on a user's machine set up by `/prove-java-change`, [`llm-dlc/runtime.md`](llm-dlc/runtime.md#procedure-for-agents-in-a-runtime-checkout) replaces the first list below: the same `sync.py commit` makes a plain commit, and nothing is traced, redacted or pushed. The sections on verification jobs, tests and examples hold in both.
+
+In development, this repo publishes every LLM session alongside the code it produced. Follow the procedure in [`llm-dlc/README.md`](llm-dlc/README.md#procedure-for-agents). In short:
 
 - The version control system is jj, colocated with git. Never run `git commit`.
 - Commit each feature as soon as it is finished and verified, without asking:

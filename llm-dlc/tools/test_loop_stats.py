@@ -449,7 +449,8 @@ class InSync(unittest.TestCase):
         self.patches = [mock.patch.object(sync, name, value) for name, value in (
             ("REPO", repo), ("TRACES", llm / "traces"), ("INDEX", llm / "index.json"), ("PRICING", pricing),
             ("TRACES_README", llm / "traces" / "README.md"), ("METRICS_ROLLUP", llm / "traces" / "metrics.json"),
-            ("REVIEWED", llm / "reviewed.json"), ("ALLOWLIST", llm / "allowlist.json"))]
+            ("REVIEWED", llm / "reviewed.json"), ("ALLOWLIST", llm / "allowlist.json"),
+            ("DECISIONS", llm / "decisions"))]
         self.patches.append(mock.patch.object(sync, "render_traces_readme", return_value="made-up overview\n"))
         for p in self.patches:
             p.start()

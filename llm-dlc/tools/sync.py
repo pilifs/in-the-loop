@@ -13,6 +13,8 @@ Layout (llm-dlc/specification.md has the full spec, llm-dlc/README.md the proced
   llm-dlc/traces/loops.json, loops.md                checked in: the loops added up by category, loop, run, cycle
                                                      and item, as data and as a page (loop_stats.py)
   llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
+  llm-dlc/decisions/<name>.md                        checked in: a parallel run's decisions, rendered from its
+                                                     record <name>.jsonl (decisions.py, which writes the record)
 
 Public URL of a log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
 
@@ -39,9 +41,9 @@ Commands:
                                 each -m is one paragraph, as in git; then runs `check` on the result,
                                 counting its notes, and fails if it finds an error
   sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json,
-                                traces/loops.json, traces/loops.md and
-                                README.md's index table from the session files, which settles their conflicts;
-                                lists any other conflict and exits 1 if one is left
+                                traces/loops.json, traces/loops.md, README.md's index table and the decision
+                                views from the session files and decision records, which settles their
+                                conflicts; lists any other conflict and exits 1 if one is left
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
@@ -83,6 +85,11 @@ Commands:
                                 the Stop hook does at the end of each turn); --pending lists the sessions
                                 with turns to send, --all sends them (tools/langfuse-loop.sh waits for more)
 
+In a runtime checkout (llm-dlc/tools/mode.py, llm-dlc/runtime.md), a released copy on a user's machine,
+none of this applies: `commit` writes a plain message with the release's In-The-Loop-Runtime trailer and
+starts a new change, `check` passes with nothing to check, the hooks do nothing, and every other command
+refuses. Nothing is read from ~/.claude and nothing is written outside the checkout.
+
 Standard library only. The hook never fails a session; errors go to
 ~/.local/state/llm-traces/hook.log.
 """
@@ -113,8 +120,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
+import decisions  # llm-dlc/tools/decisions.py
 import loop_stats  # llm-dlc/tools/loop_stats.py
 import metrics  # llm-dlc/tools/metrics.py
+import mode  # llm-dlc/tools/mode.py: development or runtime
 import redaction_rules  # llm-dlc/tools/redaction_rules.py
 import redactor  # llm-dlc/tools/redactor.py: what decides a cached result
 from measure import perf  # llm-dlc/tools/measure.py
@@ -135,6 +144,7 @@ TRACES_README = TRACES / "README.md"
 TRACES_README_TEMPLATE = CHANGES / "traces-readme-template.md"
 METRICS_ROLLUP = TRACES / "metrics.json"
 PRICING = CHANGES / "pricing.json"
+DECISIONS = CHANGES / "decisions"  # parallel runs' decision records and their views (decisions.py)
 INDEX_SCHEMA = "llm-trace-index/v1"
 LANGFUSE_ENV = CHANGES / "infra" / "langfuse" / ".env"
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
@@ -790,7 +800,8 @@ def link_commits(sid: str, m: dict, current: bool, publishing: bool = False) -> 
     change that carries its trailer (mutable or not) in the manifest.
 
     A session "made" the mutable ancestors of @ created while it ran, plus @ itself if the
-    session is the one running now (`current`). @ is re-stamped with the latest log on every
+    session is the one running now (`current`), except a change that carries the runtime trailer,
+    which came from a runtime checkout (llm-dlc/runtime.md) and is never stamped. @ is re-stamped with the latest log on every
     sync, together with the manifest in its tree, so the two always agree. Other changes are
     stamped once, if they have no trailer for this session yet, and then left alone;
     immutable ones are never touched. When publishing, every change below @ is about to be
@@ -802,6 +813,8 @@ def link_commits(sid: str, m: dict, current: bool, publishing: bool = False) -> 
         if current:
             made = f"({made}) | @"
         for c in jj_commits(made):
+            if runtime_made(c["description"]):
+                continue  # contributed from a runtime checkout: no session here made it, whenever it is dated
             stamped = any(s_id == sid and sha for s_id, sha in session_trailers(c["description"]))
             if c["change_id"] != at and stamped:
                 continue
@@ -1265,6 +1278,7 @@ def write_index() -> None:
     data, page = render_loops(found=found)
     write_if_changed(loops_data_path(), data)
     write_if_changed(loops_page_path(), page)
+    decisions.render_all(DECISIONS)
 
 
 def _table(header: list[str], rows: list[list]) -> str:
@@ -3175,12 +3189,19 @@ def allowlist_problems(redact: Redactor) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def commit_message(args: list[str]) -> str | None:
+    """The message `commit -m SUMMARY [-m PARAGRAPH ...]` gives, or None when the arguments are anything else."""
+    if not args or len(args) % 2 or any(a != "-m" for a in args[::2]) or not args[1].strip():
+        return None
+    return "\n\n".join(a.strip() for a in args[1::2] if a.strip())
+
+
 def cmd_commit(args: list[str]) -> int:
     """Finish @ with a message whose trailers match the manifest in its tree, then start a new change."""
-    if not args or len(args) % 2 or any(a != "-m" for a in args[::2]) or not args[1].strip():
+    message = commit_message(args)
+    if message is None:
         print("usage: sync.py commit -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
         return 2
-    message = "\n\n".join(a.strip() for a in args[1::2] if a.strip())
     # Describe first: the sync then stamps the trailer onto this message and writes a manifest
     # that lists @ under its real summary, before `jj new` freezes both into the commit.
     with journaled("describe", summary=message.split("\n", 1)[0]):
@@ -3457,7 +3478,11 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     are known, and the manifest committed with it names the same log. Commits only another workspace's
     line holds are left to that workspace's own check (each `commit` runs one), and to this one once
     they are merged: until then their manifests are not in this tree, so every one would be reported
-    missing (a feature loop's streams, each in its own workspace, made 26 such false errors at once)."""
+    missing (a feature loop's streams, each in its own workspace, made 26 such false errors at once).
+    A commit both lines hold can still be stamped by the other: a session at work there stamps the
+    changes made while it ran, rewriting them under this line, and only that line's copy of its
+    manifest lists the new log. Such a trailer is a note when another workspace's working copy holds
+    a manifest that lists the log, since the merge brings it here; otherwise it is an error."""
     errors, notes = [], []
     if not has_jj():
         return errors, notes
@@ -3466,6 +3491,9 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     with perf.phase("read trees"):
         files = tree_files([(c["commit_id"], path) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
                             if sha and sid in manifests and sha in manifests[sid].get("logs", {}) for path in paths(sid)])
+    unlisted = {(sid, sha) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
+                if sha and sid in manifests and sha not in manifests[sid].get("logs", {})}
+    elsewhere = listed_elsewhere(unlisted, paths) if unlisted else {}
     for c in traced:
         for sid, sha in TRAILER_RE.findall(c["description"]):
             where = f"change {c['change_id'][:12]}"
@@ -3473,6 +3501,10 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                 notes.append(f"{where}: legacy trailer without sha256 for {sid}")
             elif sid not in manifests:
                 errors.append(f"{where}: session {sid} has no manifest")
+            elif (sid, sha) in elsewhere:
+                notes.append(f"{where}: points at log {sha[:12]} of {sid}, which this tree's manifest predates: "
+                             f"workspace {elsewhere[sid, sha]}'s copy of it lists the log, and a merge brings that "
+                             "here")
             elif sha not in manifests[sid].get("logs", {}):
                 errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
             else:
@@ -3483,6 +3515,31 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                     notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
                                  f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
     return errors, notes
+
+
+def listed_elsewhere(wanted: set[tuple[str, str]], paths) -> dict[tuple[str, str], str]:
+    """Of the (session, log) pairs in `wanted`, those whose session's manifest in another workspace's
+    working-copy commit lists the log, with that workspace's name. Read from the commits jj recorded,
+    without snapshotting any working copy."""
+    r = jj("log", "--ignore-working-copy", "--no-graph", "-r", "working_copies() ~ @",
+           "-T", 'commit_id ++ "\t" ++ working_copies ++ "\n"')
+    if r.returncode:
+        return {}
+    others = [(commit, names.split()[0].removesuffix("@")) for line in r.stdout.splitlines()
+              if len((parts := line.split("\t"))) == 2 and (commit := parts[0]) and (names := parts[1]).strip()]
+    sessions = {sid for sid, _ in wanted}
+    files = tree_files([(commit, path) for commit, _ in others for sid in sessions for path in paths(sid)])
+    found = {}
+    for commit, name in others:
+        for sid, sha in wanted:
+            for path in paths(sid):
+                data = files.get((commit, path))
+                try:
+                    if data is not None and sha in json.loads(data).get("logs", {}):
+                        found.setdefault((sid, sha), name)
+                except ValueError:
+                    pass
+    return found
 
 
 CONFLICT_MARKER_RE = re.compile(r"^(?:<{7,}|>{7,})", re.M)  # a hunk's first and last line, in every marker style
@@ -3505,9 +3562,11 @@ def cmd_regenerate(args: list[str]) -> int:
     the first four, and in the loops' two when either ran a loop, and a clean textual
     merge of them can still be wrong; every input (a session's manifest and metrics.json) is in a
     directory of its own, so it merges cleanly and regenerating is always the right resolution.
+    The decision views (llm-dlc/decisions/*.md) are rewritten from their records the same way.
     A conflict anywhere else is left for a person or an agent and listed, and so is one in
     README.md outside its index table: nothing is regenerated then if a session file conflicts,
-    since its outputs would be read from conflict markers. Exits 0 when no conflict is left."""
+    since its outputs would be read from conflict markers. A decision record in conflict keeps its
+    view as it is, and both are listed. Exits 0 when no conflict is left."""
     if args:
         print("usage: sync.py regenerate", file=sys.stderr)
         return 2
@@ -3581,7 +3640,7 @@ def tree_files(wanted: list[tuple[str, str]]) -> dict[tuple[str, str], bytes | N
 
 
 def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str]:
-    """Errors in the files generated over all sessions, and in the review lists."""
+    """Errors in the files generated over all sessions, in the review lists, and in the decision records."""
     errors = []
     if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
         errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
@@ -3594,9 +3653,10 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
         if not path.exists() or path.read_text() != text:
             errors.append(f"{path.relative_to(REPO)} does not match the session metrics, the run records and "
                           "the verification jobs (run sync)")
-    for listed in (REVIEWED, ALLOWLIST):
+    for listed in (REVIEWED, ALLOWLIST, *sorted(DECISIONS.glob("*.jsonl"))):
         if listed.exists() and (leaks := redact.leaks(listed.read_text())):
             errors.append(f"unredacted {leaks} in {listed.relative_to(REPO)}")
+    errors += decisions.problems(DECISIONS, str(DECISIONS.relative_to(REPO)))
     return errors
 
 
@@ -3674,8 +3734,67 @@ def log(msg: str) -> None:
         f.write(f"{datetime.now().isoformat(timespec='seconds')} {msg}\n")
 
 
+# --------------------------------------------------------------------------- runtime mode
+
+RUNTIME_TRAILER_RE = re.compile(rf"^{mode.RUNTIME_TRAILER}: ", re.M)
+RUNTIME_REFUSAL = ("this is a runtime checkout (llm-dlc/runtime.md): nothing here is traced, redacted, uploaded or "
+                   "pushed, so `sync.py {cmd}` has nothing to do")
+
+
+def runtime_made(desc: str) -> bool:
+    """Whether a change was made in a runtime checkout, by its trailer."""
+    return bool(RUNTIME_TRAILER_RE.search(desc))
+
+
+def set_runtime_trailer(desc: str) -> str:
+    """The message with this checkout's release as its In-The-Loop-Runtime trailer, in place of any it has: at
+    the end of its trailer block, or as one."""
+    lines = [ln for ln in desc.rstrip("\n").split("\n") if not RUNTIME_TRAILER_RE.match(ln)]
+    body = "\n".join(lines).rstrip("\n")
+    paras = body.split("\n\n")
+    block = len(paras) > 1 and all(re.match(r"^[A-Za-z][A-Za-z-]*: ", ln) for ln in paras[-1].split("\n"))
+    return f"{body}{chr(10) if block else chr(10) * 2}{mode.RUNTIME_TRAILER}: {mode.release(REPO)}"
+
+
+def runtime_check() -> int:
+    print(f"runtime checkout of release {mode.release(REPO).split()[0]}: no traces to check, 0 error(s)")
+    return 0
+
+
+def runtime_commit(args: list[str]) -> int:
+    """`commit` in a runtime checkout: the message with the release's trailer, and a new change. No session is
+    read, nothing is redacted or recorded, and nothing leaves the checkout."""
+    message = commit_message(args)
+    if message is None:
+        print("usage: sync.py commit -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
+        return 2
+    if jj("describe", "-r", "@", "-m", set_runtime_trailer(message)).returncode:
+        print("jj describe failed", file=sys.stderr)
+        return 1
+    at = jj_commits("@")[0]
+    if jj("new").returncode:
+        print("jj new failed", file=sys.stderr)
+        return 1
+    print(f"committed {at['change_id'][:12]}")
+    return runtime_check()
+
+
+def runtime_run(cmd: str, args: list[str]) -> int:
+    """Every command in a runtime checkout. The hooks stay silent: they run after every tool call and turn."""
+    if cmd in ("hook", "hook-commit"):
+        return 0
+    if cmd == "commit":
+        return runtime_commit(args)
+    if cmd == "check":
+        return runtime_check()
+    print(RUNTIME_REFUSAL.format(cmd=cmd or "COMMAND"), file=sys.stderr)
+    return 2
+
+
 def main(argv: list[str]) -> int:
     cmd = argv[0] if argv else ""
+    if mode.mode(REPO) == "runtime":  # before the lock, the timings and anything else kept under STATE
+        return runtime_run(cmd, argv[1:])
     for sig in (signal.SIGTERM, signal.SIGHUP):
         signal.signal(sig, _terminated)
     try:

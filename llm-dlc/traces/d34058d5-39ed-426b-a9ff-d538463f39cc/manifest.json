@@ -994,6 +994,46 @@
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
+    },
+    {
+      "change_id": "rrmtvtxmkrkxwnwtoktmnmqnmvnusnlp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor: run steps 1-3 now, in the workspace stream-conductor, beside example-targets' Phase 5",
+      "body": "The user chose to start the conductor's first three steps (decision record, inboxes, rolling integration line) while\nexample-targets' loop finishes Phase 5 in the default workspace, instead of waiting for it. The brief now says how to keep\nout of that loop's way: work only in this workspace, test on made-up repositories, start no sessions or scopes, never\nmerge or push; the merge waits until example-targets is done. It gains Loop settings (12G, workspace stream-conductor,\nforked from the design session d34058d5) and a Loop until that stops blocked after step 3.\n\nBased on krnmkrsm, which already carries its trace line, so example-targets' later sync.py commits leave it alone.",
+      "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
+    },
+    {
+      "change_id": "ltmykkvxtywqmuyrlstvwzukpkolxwyl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor step 1: the decision record, llm-dlc/decisions/NAME.jsonl, with decisions.py and its view",
+      "body": "A parallel run's conductor will decide what it safely can and queue the rest for the user, who reviews afterwards rather than approving first (stream-conductor.md, Design 3 and 4). This adds the data that rests on: llm-dlc/decisions/schema.json, one JSON line per change of state, and llm-dlc/tools/decisions.py (standard library only, as sync.py) to write and read it. The conductor writes with record (a new decision, or a patch over one's current state; a decision taken without a review gets the one Design 3's table gives, flagged when costly or of medium confidence) and depend (adds what was built on a decision; at three commits or any job one still unreviewed is flagged again). The user writes review accept/overturn and answer lines, by id or range (D003-D007). list, show and counts give the projections the merge loop and a status bar will read. Every write is checked against the whole record first and refused, with nothing written, if it would leave a problem.\n\nsync.py renders the view (llm-dlc/decisions/NAME.md: flagged first, then open questions, then unreviewed, then overturned, then settled) with its other generated files and in regenerate; a record left in conflict by a merge keeps its view and both are listed. check validates each record: the schema (by a small validator, so check still needs nothing beyond the standard library), seq order, ids that exist, a decision the conductor may not take alone, a flag it left off, a review it wrote for the user, a decision changed instead of superseded, a view out of date, and anything the redactor would still change.",
+      "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
+    },
+    {
+      "change_id": "rsmpqlswuvvnttswkuoossumlvxxkkkv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "sync.py check: a shared change stamped in another workspace is a note while that workspace's manifest lists its log",
+      "body": "Step 1's commit in the stream-conductor workspace reported 8 errors on example-targets commits this branch shares with the default line: they point at a log of session d34058d5 that the manifest here does not list. That session is still at work in the default workspace, and its syncs stamp the changes made while it ran, which rewrote those shared commits under this branch (jj rebased it); only the default line's copy of the manifest lists the new log, and a merge brings it here. check_trailers already left commits only another line holds to that line; this closes the remaining case. A trailer whose log the local manifest does not list is now a note when some other workspace's working-copy commit holds a manifest of that session listing the log (read with git cat-file from the commits jj recorded, snapshotting nothing), and an error otherwise, as before.",
+      "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
+    },
+    {
+      "change_id": "zkyqxvtxvrmvsmmllwmrowrloyurmnnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor step 2: inboxes, llm-dlc/tools/inbox.py, and the sentence feature-loop.sh adds to every brief's instruction",
+      "body": "Each stream of a parallel run gets an inbox from the conductor, llm-dlc/loop-summaries/NAME-STREAM-inbox.md in the default workspace (gitignored), rendered from a JSONL of the items sent and the acknowledgements found. feature-loop.sh adds one sentence to every brief's cycle instruction (inbox.py instruction): read the inbox, acknowledge each item by its id in the Progress update, and the precedence: the brief, then the user's decisions, then the conductor's messages, so a contradiction is reported, not obeyed.\n\ninbox.py send holds the conductor to Design 2's only-what-to-act-on rule. An item is one of six kinds (failure, interface, answer, queued, unblocked, overturned), says what the stream is to do, and names a decision or commit it comes from. A named decision must be in the state its kind needs, and is given the item in its applied.inbox through decisions.py. Upkeep and anything else is refused with nothing written. inbox.py collect reads each stream's committed Progress (WORKSPACE@-) for the ids and records the commit and the line, so a reported contradiction shows.\n\nVerified with test_inbox.py (8 tests), including a two-stream fixture run in a temporary jj repo with a default workspace and two stream workspaces: sends from either workspace land in the default one, each stream finds its inbox through the sentence's path, only a committed acknowledgement counts, and an overturn reaches both streams with the undo. All 220 tool tests pass. The brief's queued kind is an addition from Design 3 (a stream told its question is queued goes on with other items), recorded in Progress.",
+      "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
+    },
+    {
+      "change_id": "znxmmrnvzonqnkxwruuyoulysnzrpqsl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "stream-conductor step 3: the rolling integration line, llm-dlc/tools/integration.py, in place of run-streams.sh's integrate_once",
+      "body": "run-streams.sh's integration check now keeps a rolling integration line (stream-conductor.md, Design 1). In the run's NAME-integration workspace, integration.py merges every stream's @- with the line's newest passing merge as a parent, settles generated files with that tree's sync.py regenerate, and runs the brief's script, still inside the 6 GB systemd scope. A merge that passes is committed on the line, with Integration-Line and Integration-Head trailers, without whatever the script wrote, and never pushed or committed in the default workspace. integration.py line NAME names the newest.\n\nA merge that fails, with a real conflict or a failing script, stays uncommitted and is triaged. The streams are found from the files in conflict, or named in the script's output, that each changed since they branched. One stream gets a failure item in its inbox. Two or more get an open decision in the decision record on how their changes meet, and a queued item each. The line never decides how sides meet itself: it can't name a basis, so by Design 3 it queues the question. When a later merge passes, each such question no one has answered is closed as settled (high confidence, cheap, unreviewed), and each side is sent an unblocked item. The same failure seen twice sends nothing new. The report keeps its path and its '- Result:' line for the status bar. The queued kind's heading in inbox.py now reads 'a question about your work is queued for the user'.\n\nVerified with test_integration.py (5 tests), on a real jj repo made up in a temporary directory, with two stream workspaces and a stand-in regenerate. It covers a pass after a generated-file conflict, a two-sided failure, the same failure again, a pass that settles it, a textual conflict and a one-stream failure, plus attribution and the run-streams.sh wiring. All 225 tool tests pass. Progress records what step 4 needs from the merge, and the loop stops blocked, as its Loop until says, until example-targets is done and this branch merged.",
+      "log_sha256": "32d82ea6ab1c77d7c6de751b7f5830270b9371a917caa17a347ce78f053f149b"
     }
   ],
   "logs": {
