@@ -14,7 +14,9 @@ It also takes a list of changes: it evaluates them all, orders them so that the 
 and proves them one after another. With `--scaffold-only` it prepares them and stops; the same request without the
 flag proves what was prepared. It takes examples by number too. One that is already prepared is
 checked: that it has what a proof needs and is formed correctly, with one try at putting right what is not, or
-nothing starts. A catalog entry is set up first, and you confirm every claim that was written before a proof starts. `--instruction "TEXT"` gives the proof loop your own line in place of the one in the table below.
+nothing starts. Every run goes through stage 2, examples by number included: it orders them, designs the claims of a catalog entry
+and reviews those of a prepared example (keeping an earlier review while its claims are unchanged), and you confirm
+every claim it designed or remarked on before a proof starts. `--instruction "TEXT"` gives the proof loop your own line in place of the one in the table below.
 
 It runs on your machine, on a released copy of this repository that the skill installs and checks against a hash it
 carries. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you agree to it.
@@ -33,8 +35,8 @@ and reports. You confirm the plan once, and the rest is unattended:
 | Stage | Session | What happens | You |
 |---|---|---|---|
 | 1. Set up and measure | Opus 5.5, high effort | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools. The watcher also checks what else Claude Code has loaded (other plugins, MCP servers, memory files), warns that this may lead to unexpected results, and offers a clean session without it | choose, if anything is loaded |
-| 2. Evaluate and order | Fable 5.2, medium effort | It judges whether the machine is enough, pins each change to two exact commits, sizes it against the closest past examples, writes each claim in full, and orders the changes | confirm the claims, the order and the estimate, in hours and tokens |
-| 3. Set the examples up | Opus 5.5, high effort | It builds each revision, loads its JARs, fills in the example and its claims from the plan, and runs the change once on a JVM | |
+| 2. Evaluate and order, and design the claims | Fable 5.2, high effort | It judges whether the machine is enough, pins each change to two exact commits, sizes it against the closest past examples, designs each claim in full (the property, the preservation boundary, the bounds, the controls, the entry point and the environment) or reviews the claims an example already has, and orders them | confirm the claims, the order and the estimate, in hours and tokens |
+| 3. Set the examples up | Opus 5.5, high effort | It writes the plan's claims into the example, builds each revision, loads its JARs, runs the change once on a JVM, and confirms how each proof will be invoked | |
 | 4. Prove them | Fable 5.2, high effort: the session of stage 2, continued | It runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result. While an example's last proof runs, the loop starts the next one and comes back when the proof is in | ask the watcher anything, any time |
 | Report | the watcher | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
 

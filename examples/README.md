@@ -746,6 +746,11 @@ never brings one with the same number.
 3. Write the folder's `README.md` as the report, from the receipts: keep every number tied to one (the witness, the
    verdict lines and the times as the tool printed them), say what no attempt reached and why, and link the
    project's source rather than copying it. Then run `python3 examples/tools/build.py --index-only`.
+4. Check it with `python3 examples/tools/validate_example.py NNN` (`--replay` to run the replays again): the
+   router regenerated, the form, each task's plan, the oracle's self-test, and the tests that read every example,
+   which find a new one by themselves. A `/prove-java-change` run writes a designed example's claims and tasks
+   from its plan first, with `examples/tools/scaffold_example.py NNN`, and records how each proof task is invoked
+   (`invocation` on the task: route, adapter or gap).
 
 Good subjects for real-world examples have small Maven or Gradle builds, an active pull request flow, and static
 utility methods over primitives and primitive arrays, where the regression and property proofs land:

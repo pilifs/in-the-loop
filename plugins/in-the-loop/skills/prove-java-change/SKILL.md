@@ -16,7 +16,7 @@ user informed while they run, and you judge what a script can't.
 | Stage | Session | Model and effort |
 |---|---|---|
 | 1. Set up and measure the machine | a new one | Opus 5.5, high |
-| 2. Evaluate the changes and order them | the fixed session | Fable 5.2, medium |
+| 2. Evaluate and order them, and design or review their claims | the fixed session | Fable 5.2, high |
 | 3. Set the examples up | a new one | Opus 5.5, high |
 | 4. Prove them, in a moonshot loop | the fixed session, continued | Fable 5.2, high |
 
@@ -92,18 +92,24 @@ Then start the verification loop, which stays up until the run has ended:
 python3 llm-dlc/tools/watch.py verification start
 ```
 
-## 2. Evaluate the changes and order them
+## 2. Evaluate and order them, and design or review their claims
 
-As a background task, in the home:
+Stage 2 runs on every run, whether the request names changes or examples by number: it sets the order, catches what
+an example's preparation missed, gives the session that will prove them its bearings, and designs the claims, the
+hardest judgment of a run. As a background task, in the home:
 
 ```bash
 python3 llm-dlc/tools/watch.py stage evaluate "PROMPT"
 ```
 
-The prompt is the request as the user gave it, the doctor's output, and one instruction: do "Stage 2" of
-`llm-dlc/runtime.md`. The session is the fixed one: it judges whether this machine is enough for these changes,
-understands and sizes each change, orders them with the most accessible first, and writes its plan, with every claim
-stated in full. It is the session that will prove them. A change that already has its example keeps it.
+The prompt is the request as the user gave it, the doctor's output, for examples named by number the preflight's
+output (below), and one instruction: do "Stage 2" of `llm-dlc/runtime.md`. The session is the fixed one: it judges
+whether this machine is enough, understands and sizes each change, designs the claims of what has none and reviews
+those of what has, orders them with the most accessible first, and writes its plan twice: `plan.md` for the user,
+and `plan.json`, the handoff the setup and the proof loop read. It is the session that will prove them. A change
+that already has its example keeps it, and its claims are reviewed like any other's; an example whose claims are
+unchanged since an accepted review (preflight's `reviewed`) keeps that review. When it is done, run
+`watch.py plan --check`, and send what it finds back to the same session once.
 
 Its report is the plan. Tell the user, for each change in order: what will be proved, claim by claim in plain words,
 what is expected to be hard, roughly what it costs in hours and tokens, and what was set aside and why. Ask them to
@@ -117,18 +123,19 @@ python3 llm-dlc/tools/watch.py stage setup "PROMPT"
 ```
 
 The prompt names the plan and gives one instruction: do "Stage 3" of `llm-dlc/runtime.md`. The session turns each
-entry of the plan into its example: the revisions pinned and built, their JARs loaded, the sidecar and the claims
-filled in as the plan states them, the change run once on a JVM, each example committed. It decides nothing the plan
-left open: that comes back to you as a question. Done when `python3 llm-dlc/tools/changes.py` calls each example
-`prepared`; if one is not, run the stage again with what is missing.
+entry of the plan into its example: the claims and tasks written from `plan.json` first
+(`examples/tools/scaffold_example.py`), the revisions pinned and built, their JARs loaded, the oracle and the
+drivers, the change run once on a JVM, how each proof task is invoked confirmed and recorded, each example checked
+with `validate_example.py` and committed. It decides nothing the plan left open: that comes back to you as a
+question. Done when `python3 llm-dlc/tools/changes.py` calls each example `prepared` and preflight's `toClassify`
+doesn't name it; if one is not, run the stage again with what is missing.
 
 With `--scaffold-only` the skill ends here: say what was prepared, and that the same request without the flag
 proves it.
 
 ## Examples named by number
 
-When the request names examples by number, stage 2 doesn't run. After stage 1, check them, all before any is
-started:
+When the request names examples by number, check them after stage 1, all before any is started:
 
 ```bash
 python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
@@ -137,25 +144,33 @@ python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
 It prints what each lacks, and the lists to act on. Go through them in this order:
 
 1. **`absent`** (exit 2), an example that is not there: abort at once, naming it.
-2. **`toRepair`**, prepared examples that lack `artifacts` or have a fault in their `form`: make one attempt to put
-   them right. Run `watch.py stage setup "PROMPT"`, where the prompt is the check's output and one instruction: do
-   "The repair's brief" of `llm-dlc/runtime.md`. Check again. If `toRepair` still names anything, abort: tell the
-   user which example lacks what and what the repair tried, and start nothing.
-3. **`toSetUp`**, catalog entries, which have revisions and nothing else: have every one set up before the loop
-   starts. For each, in the order given and one after another, run `watch.py stage setup "PROMPT"` as a background
-   task, where the prompt names the entry and gives one instruction: do "A catalog entry's brief" of
+2. **Stage 2,** as above, for every example named: the prompt carries the check's output. Catalog entries
+   (`toSetUp`) and examples whose claims are new or changed since an accepted review (`toReview`) get their claims
+   designed or reviewed; the rest (`reviewed`) keep their review and are only ordered. Its plan's order is the order
+   from here on.
+3. **The claims.** Run `watch.py claims NNN ...` for every example whose claims stage 2 designed or remarked on, show
+   the user every claim as printed (a designed one as the plan states it), with stage 2's remarks, in one list, and
+   get their word once; once the claims are in the example, record it with `watch.py claims NNN --accept "REASON"`,
+   quoting what they said. A correction goes back to stage 2 for that example, and an example they turn down is left out.
+   With `--unattended`, print the list all the same and read it in their place, each example's claims against its
+   `example.json` summary and its advisory. Where they say what the entry says and no more, accept them (after the
+   setup, `watch.py claims NNN --accept "REASON"`, which records your word as a decision flagged for their review).
+   A remark that a claim misstates the example's own pages goes to the setup with the plan, to be corrected; a
+   suggestion to claim more is the user's, so name it in the report and go on with the claims as they stand. Where
+   you are not sure, leave that example out and name it, with its claims, in the report: it waits for them.
+4. **`toSetUp`** and the corrections, catalog entries first: have every one set up before its proof starts. For
+   each, in the plan's order and one after another, run `watch.py stage setup "PROMPT"` as a background task, where
+   the prompt names the entry and the plan and gives one instruction: do "A catalog entry's brief" of
    `llm-dlc/runtime.md` for it. Then check again with `--after-setup NNN,NNN` naming them. An entry that is still
    not prepared is in `leftOut`: say which and why, and go on without it.
-4. **The claims.** If anything was set up, or the repair wrote a claim, run `watch.py claims NNN ...` for those
-   examples, show the user every claim as printed, in one list, and get their word once. A correction goes to
-   another setup session for that example, and an example they turn down is left out.
-   With `--unattended`, print the list all the same and read it in their place, each example's claims against its
-   `example.json` summary and its advisory. Where they say what the entry says and no more, run
-   `watch.py claims NNN --accept "REASON"`, which records your word as a decision flagged for their review. Where
-   you are not sure, leave that example out and name it, with its claims, in the report: it waits for them.
+5. **`toRepair`** and **`toClassify`**, prepared examples that lack `artifacts`, have a fault in their `form`, or
+   don't record how a proof task is invoked: make one attempt to put them right. Run `watch.py stage setup "PROMPT"`,
+   where the prompt is the check's output and the plan, and one instruction: do "The repair's brief" of
+   `llm-dlc/runtime.md`. Check again. If `toRepair` still names anything, abort: tell the user which example lacks
+   what and what the repair tried, and start nothing. One still in `toClassify` goes on, and the report names it.
 
-Then go to stage 4 with `toProve`, in the order given, starting with the first. Say which examples were left out as
-already decided. With `--scaffold-only` the skill ends after step 4.
+Then go to stage 4 with `toProve`, in the plan's order, starting with the first. Say which examples were left out as
+already decided. With `--scaffold-only` the skill ends after step 5.
 
 ## 4. Prove them
 

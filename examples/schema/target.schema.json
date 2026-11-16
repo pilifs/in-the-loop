@@ -220,6 +220,19 @@
               "recorded": { "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
             }
           },
+          "invocation": {
+            "description": "How this task's proof is invoked, which the setup confirms without attempting the proof (llm-dlc/runtime.md, stage 3). route: the standard route (build.py) takes the task as it stands. adapter: a driver or adapter of the example's own enters the claim, compiled and run once on the prepared revisions, beside the route as example 286's proofs/prove.py does. gap: the verifier can't be given the task until a named capability is added, which an observed blocker of this task in the handoff records, with the claim kept as it is.",
+            "type": "object",
+            "required": ["how", "checked", "evidence"],
+            "additionalProperties": false,
+            "properties": {
+              "how": { "enum": ["route", "adapter", "gap"] },
+              "checked": { "description": "The date the setup confirmed it.", "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+              "evidence": { "description": "What showed it: the task's plan and the entry resolved, the adapter compiled and run, or the blocker's probe.", "type": "string" },
+              "entry": { "description": "For adapter: the adapter's class and method, and the script that runs it.", "type": "string" },
+              "blocker": { "description": "For gap: the blocker's kind, as handoff.blockers names it.", "type": "string" }
+            }
+          },
           "notes": { "type": "array", "items": { "type": "string" } }
         },
         "allOf": [

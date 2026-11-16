@@ -27,8 +27,8 @@ repository holds what the stages stand on.
 | Stage | Session | Model, effort | Stands on |
 |---|---|---|---|
 | 1. Set up and measure the machine | a new one, only when something needs setting up; the check of Claude Code is the watcher's, every run | Opus 5.5, high | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough), [what Claude Code has loaded](#what-claude-code-has-loaded) |
-| 2. Evaluate the changes and order them | the fixed session | Fable 5.2, medium | [its brief](#stage-2-evaluate-the-changes-and-order-them): past examples as the measure, the claims in full, a plan from [`prove-plan-template.md`](prove-plan-template.md). [`changes.py`](#many-changes-and-preparing-without-proving) says what is already prepared |
-| 3. Set the examples up | a new one | Opus 5.5, high | [its brief](#stage-3-set-the-examples-up): what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for each change of the plan |
+| 2. Evaluate and order them, and design or review their claims | the fixed session, on every run | Fable 5.2, high | [its brief](#stage-2-evaluate-and-order-them-and-design-or-review-their-claims): past examples as the measure, the claims designed or reviewed in full, a plan from [`prove-plan-template.md`](prove-plan-template.md) with its data as [`prove-plan.schema.json`](prove-plan.schema.json). [`changes.py`](#many-changes-and-preparing-without-proving) says what is already prepared |
+| 3. Set the examples up | a new one | Opus 5.5, high | [its brief](#stage-3-set-the-examples-up): the plan's claims written by [`scaffold_example.py`](../examples/tools/scaffold_example.py), then what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for each change of the plan |
 | 4. Prove them | the fixed session, continued, in a moonshot loop the watcher watches | Fable 5.2, high | [the proof loop](#the-proof-loop), [watching it](#watching-the-loop) |
 | Report, and offer to contribute | the watcher | Opus 5.5 | [contributing back](#contributing-back) |
 
@@ -47,7 +47,8 @@ this repository with its own release.
 plugin, so `/prove-java-change NNN [NNN ...]` runs the copy being worked on. The bootstrap answers `development`,
 stage 1 doesn't apply (the checkout is the home and its machine is known), and the request names
 [examples by number](#examples-named-by-number): the watcher starts the verification
-loop, checks them, and takes them to stage 4 in the order given, with traces as for any loop here. The fixed session is a new one (`watch.py session --new`) unless the request names a session to
+loop, checks them, has stage 2 order them and design or review their claims, has what needs it set up, and takes
+them to stage 4 in the plan's order, with traces as for any loop here. The fixed session is a new one (`watch.py session --new`) unless the request names a session to
 continue (`watch.py session --use ID`), such as the one an earlier moonshot ran in, which then keeps what it learned.
 Every moonshot over examples is run this way from now on.
 
@@ -299,56 +300,92 @@ python3 llm-dlc/tools/watch.py status                         # where everything
 - **The run's state** is in `llm-dlc/loop-summaries/prove-change/` (gitignored): `watch.json` (the fixed session,
   the stages, the last summary), `plan.md`, the stages' streams, and [the loop's own files](#the-proof-loop).
 
-### Stage 2: evaluate the changes and order them
+### Stage 2: evaluate and order them, and design or review their claims
 
-For the session `watch.py stage evaluate` starts. You are given the user's request (one change or several, each with
-what to prove about it) and the machine's assessment (`doctor.py`'s output). You evaluate and plan; you set nothing
-up, and you don't start proving. You are also the session that will prove these changes, in stage 4.
+For the session `watch.py stage evaluate` starts, on every run. You are given the user's request (changes, each with
+what to prove about it, or examples by number with `watch.py preflight`'s output) and the machine's assessment
+(`doctor.py`'s output). You evaluate, design and plan; you set nothing up, and you don't start proving. You are also
+the session that will prove these examples, in stage 4: what you learn here is where that proof starts from.
 
-1. **The machine.** Say whether it is enough for these changes, what limits it, and what budget follows.
+Deciding what must be proved is the hardest part of a run and the one that costs most when it is wrong, so it is
+done here, by the session that proves, and not left to the setup: the setup produces the artifacts and the evidence
+your plan asks for.
+
+1. **The machine.** Say whether it is enough for these examples, what limits it, and what budget follows.
 2. **What is already there.** `python3 llm-dlc/tools/changes.py` lists the examples the checkout holds, with the
-   change each came from. A change of the request that has one, `prepared` or `decided`, keeps it: read its page,
-   claims and notes, and leave it out of the plan's new work.
+   change each came from. A change of the request that has one, `prepared` or `decided`, keeps it. Each example
+   is one of three to you:
+   - **reused** (preflight's `reviewed`): its claims are the ones an accepted review covered, unchanged since. Read
+     its page and notes for the order and your own bearings, and don't review its claims again;
+   - **reviewed** (`toReview`, prepared): its claims exist and are new or changed since a review. Read them against
+     the example's own pages, its advisory and its code, and remark where one misstates what the pages say
+     (`misstates`, which the setup corrects as you state it) or where something is missing or too narrow
+     (`suggestion`, which is the user's);
+   - **designed** (a catalog entry, or a change with no example): nothing states its claims yet. Design them.
 3. **Each change.** Its two revisions as exact commits on github.com, what it is meant to change and what it must
    keep. Read the code. A change that is not on GitHub is set aside, not worked around
    ([GitHub only](#prove-java-change)).
 4. **Its size.** The closest past examples and what they cost (`examples/tools/find.py`, their notes and receipts,
    `pipeline.py report`), set against the budget: whether a proof is plausible here and what will be hard.
-5. **Its claims,** each in full: the property, the revision, the domain, the assumptions, the bounds and the answer
-   expected. Stage 4 may not change a claim to fit a result, so a claim you are not sure of is an open question for
-   the user, not a guess.
+5. **Its claims,** for each example you design, settled in full: the property; the preservation boundary (what the
+   change may alter and what it must keep); the bounds that make the claims meaningful, with why each is enough; the
+   controls the claims need (inputs that must hold, inputs that must fail, and the constructed mutant that must fail
+   the claim); the entry point (the method, an adapter if the route can't enter it, and how inputs are built), with
+   which of route, adapter or gap you expect ([how a proof is invoked](#stage-3-set-the-examples-up)); and every
+   assumption about the environment (locale, JDK, configuration, the code around the entry). Where the entry's
+   summary or advisory leaves the claim open, take the narrowest reading and say so. Write each claim file as
+   [`target-claim.schema.json`](../examples/schema/target-claim.schema.json) says, and each task as the sidecar's
+   tasks: the setup writes them as they are. Stage 4 may not change a claim to fit a result, so a claim you are not
+   sure of is an open question for the user, not a guess.
 6. **The order,** the most accessible first: a proof that lands early can extend the verifier under the later ones,
    and a hard one first can use up the run.
 7. **The plan.** Fill in [`prove-plan-template.md`](prove-plan-template.md) as
-   `llm-dlc/loop-summaries/prove-change/plan.md`, with the next free numbers from 900 in that order, and reply with
-   it. Commit nothing.
+   `llm-dlc/loop-summaries/prove-change/plan.md`, with the next free numbers from 900 for new changes, in that order,
+   and write its data as `plan.json` beside it ([`prove-plan.schema.json`](prove-plan.schema.json)): for each example
+   whether its claims were designed, reviewed or reused, the designed claims and tasks, your remarks, the controls,
+   the entry, the preparation recipe, the validation commands and when the setup is done. Check it with
+   `python3 llm-dlc/tools/watch.py plan --check`, and reply with the plan. Commit nothing.
 
 ### Stage 3: set the examples up
 
-For the session `watch.py stage setup` starts. You are given the plan. You turn each of its changes into an example,
-in the plan's order and under the plan's numbers, as [`examples/README.md`](../examples/README.md#add-an-example)
+For the session `watch.py stage setup` starts. You are given the plan. You turn each of its examples into a prepared
+one, in the plan's order and under the plan's numbers, as [`examples/README.md`](../examples/README.md#add-an-example)
 describes for a real-world example ([285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md)
 is a worked one, and what the [example-targets loop](loops/example-targets.md) did for 285 to 300 is the model):
 
-1. `example.json` and its target sidecar, filled in from the plan: the source, each revision by its full commit and
-   how it is prepared, the tasks, and one claim file per claim, stating the claim as the plan does. Its `provenance`
-   is the change's part of the request as the user gave it, and its notes hold what the plan learned and why the
-   change sits where it does in the order.
-2. The revisions prepared: their JARs fetched or built, pinned and locked (`build.py --plan NNN`).
-3. The change run once on a JVM (the replay task), with the plan's inputs.
-4. Each example checked with `python3 examples/tools/validate_example.py --replay NNN`, not the default run
+1. **The claims, from the plan.** `python3 examples/tools/scaffold_example.py NNN` writes the claim files and the
+   tasks `plan.json` designed for the example, checks them against their schemas, and says what is left for you.
+   Write no claim of your own, and change none: one that doesn't work as the plan says goes into your report.
+2. `example.json` and its target sidecar, filled in from the plan: the source, each revision by its full commit and
+   how it is prepared, the controls. Its `provenance` is the change's part of the request as the user gave it, and
+   its notes hold what the plan learned and why the change sits where it does in the order.
+3. The revisions prepared: their JARs fetched or built, pinned and locked (`build.py --plan NNN`), as the plan's
+   preparation recipe says.
+4. The change run once on a JVM (the replay task), with the plan's controls, and the mutant's replay.
+5. **How each proof task is invoked,** confirmed without attempting the proof and recorded on the task as
+   `invocation` ([`target.schema.json`](../examples/schema/target.schema.json)), with the date and what showed it:
+   - `route`: the task plans (`build.py --plan NNN --task T`), its target method resolves in the prepared JARs,
+     and the claim's expressions compile;
+   - `adapter`: the route can't enter the claim (an adapter entry, two dependency closures), and an adapter or
+     driver of the example's own compiles against each revision and has run once through the claim's entry;
+   - `gap`: neither can be given the task yet. Record the missing capability as an observed blocker of the task
+     in the handoff, with the probe that showed it, and as an engineering task in `handoff.next`; the claim stays
+     as it is.
+6. Each example checked with `python3 examples/tools/validate_example.py --replay NNN`, not the default run
    ([tests in a run](#the-proof-loop)), and committed by itself.
 
-It is done when `changes.py` calls each example `prepared`. You decide nothing the plan left open and change no
-claim: what does not work as the plan says (a revision that won't build, a replay that shows something else) goes
-into your report as a question, with what you found.
+It is done when `changes.py` calls each example `prepared` and `watch.py preflight` doesn't name it in
+`toClassify`. You decide nothing the plan left open and change no claim: what does not work as the plan says (a
+revision that won't build, a replay that shows something else, an entry that can't be invoked as planned) goes into
+your report as a question, with what you found.
 
 ### Examples named by number
 
 A request may name examples by number in place of changes: ones an earlier `--scaffold-only` run, another agent or a
 person prepared, and catalog entries, which have their revisions pinned and nothing else (examples 288 to 300 are
-such). Stage 2 doesn't run for them. The watcher checks them first, and the loop starts on none until the check
-passes:
+such). They go through [stage 2](#stage-2-evaluate-and-order-them-and-design-or-review-their-claims) like changes
+do: what tells the review apart is whether an example's claims were reviewed, not how the request named it. The
+watcher checks them first, and the loop starts on none until the check passes:
 
 ```bash
 python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
@@ -363,70 +400,82 @@ It is a cursory check, from the files alone, and prints for each example what it
 | `form` | The example is formed correctly: `example.json` validates against its schema, the target sidecar loads, every proof task has its claim frozen, and its tasks include a proof task | a sidecar that is not JSON; a claim not frozen | one repair, else aborts |
 | `catalogue` | The example is more than a catalog entry: its sidecar has tasks | `"tasks": []` | has it set up; one that fails is left out |
 
-The watcher acts in this order, and its output's lists say which examples each step is for:
+Beside the kinds it says, for each example, whether its claims were reviewed (`review`: `reviewed` when they are the
+ones an accepted review covered, by their files' hashes kept beside the decision record; `changed`, `new` or
+`catalogued` otherwise) and which proof tasks don't record how they are invoked (`invocation`). Its lists are
+`toSetUp`, `toRepair`, `toReview`, `reviewed`, `toClassify`, `leftOut`, `toProve` and `decided`.
+
+The watcher acts in this order:
 
 1. **`absent` (exit 2):** it aborts, naming the example.
-2. **`toRepair`:** a prepared example that lacks something is a fault. The watcher makes one attempt to put it
-   right: a setup session (`watch.py stage setup`, Opus 5.5 at high effort) given the check's output and the
-   repair's brief below. Then it checks again, and if `toRepair` still names anything it aborts: it says which
-   example lacks what, and starts nothing.
-3. **`toSetUp`:** a catalog entry is not a fault. The watcher has every one set up before the loop starts, one
-   setup session for each, one after another in the order given, each with the catalog entry's brief below. Then it
+2. **Stage 2** for every example named, with the check's output: it designs the claims of the catalog entries,
+   reviews those of `toReview`, keeps the review of `reviewed`, and orders them all. Its plan's order is the order
+   from here on.
+3. **The claims, once.** The watcher shows the user what stage 2 designed or remarked on before anything is set up,
+   all in one list (`watch.py claims NNN ...` for claims already in an example: each claim in its file's own words,
+   its bounds and assumptions, and the answer expected on each revision; the plan's own words for designed ones),
+   and asks for their word once. A correction goes back to stage 2, and an example the user turns down is left out.
+   With `--unattended` the watcher reads the claims in the user's place. It still prints the list. For an example
+   whose claims say what its entry's summary and advisory say, and no more, it accepts them once they are in the
+   example (`watch.py claims NNN --accept "REASON"`): a decision in the run's record, flagged because proving the
+   wrong claim costs the loop's hours, which the user reviews afterwards (`decisions.py review`). A `misstates`
+   remark goes to the setup with the plan; a `suggestion` is named in the report, and the example goes on as it
+   stands. An example whose claims it is not sure of is left out of the loop and named in the report, with its
+   claims: that one waits for the user. Either way the acceptance keeps the claim files' hashes, so a later run
+   reuses the review while they are unchanged.
+4. **`toSetUp`:** a catalog entry is not a fault. The watcher has every one set up before its proof starts, one
+   setup session for each, one after another in the plan's order, each with the catalog entry's brief below. Then it
    checks again with `--after-setup NNN,NNN`, naming them: an entry that is still not prepared is in `leftOut` and
    no longer counts against the others. The watcher says which was left out and why, and goes on without it.
-4. **The claims, once.** When anything was set up, or a repair wrote a claim, the watcher shows the user what those
-   examples claim before the loop starts, all in one list (`watch.py claims NNN ...`: each claim in its file's own
-   words, its bounds and assumptions, and the answer expected on each revision), and asks for their word once. A
-   correction goes back to a setup session for that example, and an example the user turns down is left out.
-   With `--unattended` the watcher reads the claims in the user's place. It still prints the list. For an example
-   whose claims say what its entry's summary and advisory say, and no more, it runs
-   `watch.py claims NNN --accept "REASON"`: a decision in the run's record, flagged because proving the wrong claim
-   costs the loop's hours, which the user reviews afterwards (`decisions.py review`). An example whose claims it is
-   not sure of is left out of the loop and named in the report, with its claims: that one waits for the user.
-5. **Exit 0:** nothing is lacking. The loop takes `toProve`, in the order given; an example already `decided` is
+5. **`toRepair` and `toClassify`:** a prepared example that lacks something is a fault, and one that doesn't record
+   how a proof task is invoked lacks the setup's last deliverable. The watcher makes one attempt to put them right:
+   a setup session (`watch.py stage setup`, Opus 5.5 at high effort) given the check's output, the plan and the
+   repair's brief below. Then it checks again, and if `toRepair` still names anything it aborts: it says which
+   example lacks what, and starts nothing. One still in `toClassify` goes on, and the report names it.
+6. **Exit 0:** nothing is lacking. The loop takes `toProve`, in the plan's order; an example already `decided` is
    left out, and the watcher says so. An example without a target sidecar (a constructed one) passes with a note:
    only its `example.json` was checked.
 
-With `--scaffold-only` the skill ends after step 4.
+With `--scaffold-only` the skill ends after step 5.
 
-**A catalog entry's brief,** for the session `watch.py stage setup` starts with one entry's number. You set that
-one example up, as [stage 3](#stage-3-set-the-examples-up) does for a change, and what stands in for the plan is
-the entry itself: its `example.json` (the summary says what the fix is meant to guarantee), its sidecar (the
-revisions, already pinned, and the hand-off's blockers, which are predictions, not findings) and its README.
-Examples [285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) to 287 were
+**A catalog entry's brief,** for the session `watch.py stage setup` starts with one entry's number and the plan. You
+set that one example up as [stage 3](#stage-3-set-the-examples-up) does, from the plan's entry for it: stage 2 has
+designed its claims, its controls and its entry, and you write them with `scaffold_example.py`, then make the
+artifacts and the evidence they need. The entry itself (its `example.json`, its sidecar with the revisions already
+pinned and the hand-off's blockers, which are predictions, not findings, and its README) is your source for the
+rest. Examples [285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) to 289 were
 entries like it and are the model.
 
-1. Prepare the revisions (`build.py --plan NNN`), write the driver and the oracle, and run the change once on a
-   JVM: the replay task on the release pair, and a mutant of the fix with its own replay. A replay task runs
-   inline; a preparation that takes more than a minute or 1 GB (a revision's own build, for one) is queued as a
-   job (`pipeline.py submit --example NNN --task T`), and you wait for its result before going on, since the
-   verification loop is running.
-2. State the claims the entry's summary and its upstream advisory state, and no others: the property on the
-   vulnerable revision (expected refuted), the same property on the fix (expected established) and on the mutant
-   (expected refuted), and preservation outside the allowed change. Say each in words in its claim file, with its
-   bounds and assumptions, then freeze it. Where the summary leaves open what is claimed, take the narrowest
-   reading and say so in the claim's notes: the user reads every claim before a proof starts.
-3. Prove nothing. A probe that shows where the verifier stops belongs to the proof loop.
-4. Done when `changes.py NNN` calls the example `prepared`. Check it with
-   `python3 examples/tools/validate_example.py --replay NNN` (it regenerates the router first, then checks the
+1. Write the claims and tasks (`scaffold_example.py NNN`). Prepare the revisions (`build.py --plan NNN`), write the
+   driver and the oracle, and run the change once on a JVM: the replay task on the release pair, and the plan's
+   mutant with its own replay. A replay task runs inline; a preparation that takes more than a minute or 1 GB (a
+   revision's own build, for one) is queued as a job (`pipeline.py submit --example NNN --task T`), and you wait for
+   its result before going on, since the verification loop is running.
+2. Confirm and record how each proof task is invoked (stage 3, step 5).
+3. Prove nothing. A probe that shows where the verifier stops belongs to the proof loop; the one that confirms an
+   entry can be invoked is yours.
+4. Done when `changes.py NNN` calls the example `prepared` and preflight's `toClassify` doesn't name it. Check it
+   with `python3 examples/tools/validate_example.py --replay NNN` (it regenerates the router first, then checks the
    form, the plans, the oracle and the replays, and runs the tests that read every example; they find a prepared
-   example by themselves, so add it to no test's list), not the default run, commit it by itself, and
-   reply with each claim in a sentence and anything that did not work as the entry predicted. An entry that can't
-   be set up (a revision that does not build, a change no replay shows) is left as it was, with the reason in its
-   notes and in your reply.
+   example by themselves, so add it to no test's list), not the default run, commit it by itself, and reply with
+   each claim in a sentence, how each proof task is invoked, and anything that did not work as the plan or the entry
+   predicted. An entry that can't be set up (a revision that does not build, a change no replay shows) is left as it
+   was, with the reason in its notes and in your reply.
 
-**The repair's brief,** for the session `watch.py stage setup` starts with a check's output. You put right what the
-check names, in the examples it names, and nothing else:
+**The repair's brief,** for the session `watch.py stage setup` starts with a check's output and the plan. You put
+right what the check names, in the examples it names, and nothing else:
 
 1. A missing artifact is made from the example's own files: its revisions prepared again from their lock
    (`build.py --plan NNN`), its replay run again. A revision that no longer builds or a replay that now shows
    something else is not repaired by changing the example: report it.
 2. A fault in the form is corrected where the example's own files say what is meant: a field renamed to what the
    schema asks, a path that moved, a claim file a task names and the folder holds under another name.
-3. A claim is the user's. Where a proof task or its claim is missing, write it only if the example's own pages state
-   in words what is to be proved, as they state it, and list every claim you wrote in your report: the watcher shows
-   them to the user before the loop starts. Where nothing states it, write none and report that.
-4. Commit each example you changed by itself, and reply with what you did, what you could not, and why.
+3. A claim is the user's. Correct one only where the plan's remark says it misstates the example's own pages, as
+   the remark states it, and list every claim you changed in your report. Where a proof task or its claim is
+   missing and the plan doesn't design it, write none and report that.
+4. A proof task with no `invocation`: confirm and record it, as stage 3's step 5 says.
+5. Check each example you changed with `validate_example.py --replay NNN`, commit it by itself, and reply with what
+   you did, what you could not, and why.
 
 ### Watching the loop
 

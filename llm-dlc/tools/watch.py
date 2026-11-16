@@ -8,7 +8,7 @@ keeps the user informed, and judges what a script can't:
     watch.py session [--new | --use ID]    the id of the fixed session: the one that evaluates the changes and then
                                            proves them (made on first use, kept in the run's state); --use
                                            takes an existing session instead, such as an earlier moonshot's
-    watch.py stage evaluate PROMPT         run the evaluation in the fixed session, on Fable 5.2 at medium effort
+    watch.py stage evaluate PROMPT         run the evaluation in the fixed session, on Fable 5.2 at high effort
     watch.py stage setup PROMPT            run the examples' setup in a new session, on Opus 5.5 at high effort
                                            (both print the session's report; --model, --effort and --memory override)
     watch.py preflight [--after-setup NNN,...] NNN ...
@@ -22,9 +22,14 @@ keeps the user informed, and judges what a script can't:
     watch.py claims NNN ...                what each example claims, in its own words, for the user to confirm
                                            before the loop: every claim's statement, bounds, and the answer expected
                                            on each revision
-    watch.py claims NNN ... --accept "REASON"   the watcher's own word for them, in a run the user is away from: a
-                                           decision for each example in the run's decision record, flagged for
-                                           the user to review afterwards
+    watch.py claims NNN ... --accept "REASON"   the watcher's word for them: a decision for each example in the
+                                           run's decision record, flagged for the user to review afterwards (in a
+                                           run they are away from, or quoting what they said when they confirmed
+                                           them in the session). The claim files' hashes are kept beside the
+                                           record, so a later run reuses the review while they are unchanged
+                                           (preflight's `reviewed`)
+    watch.py plan [--check]                where stage 2's plan is, and with --check whether plan.json is formed
+                                           as llm-dlc/prove-plan.schema.json says
     watch.py verification start|stop|status   the verification loop, on Sonnet 5.5, which runs the jobs the
                                            sessions queue; started once, before the examples are set up
     watch.py verification nudge            say that the queue changed, so the runner or the waiting loop looks at
@@ -76,7 +81,9 @@ REPO = Path(__file__).resolve().parents[2]
 RUN = "llm-dlc/loop-summaries/prove-change"
 TEMPLATE = "llm-dlc/watch-summary-template.md"
 INTERVAL = 1800  # a run of days is watched by a session whose context every summary adds to
-STAGES = {"evaluate": {"model": "claude-fable-5-2", "effort": "medium", "fixed": True},
+# Stage 2 reviews and designs the claims on every run (examples named by number included): the hardest judgment of
+# a run, so it runs at high effort, in the session that will prove them.
+STAGES = {"evaluate": {"model": "claude-fable-5-2", "effort": "high", "fixed": True},
           "setup": {"model": "claude-opus-5-5", "effort": "high", "fixed": False}}
 SILENT = 20 * 60  # a session that has written nothing for this long may be stuck: the summary says so
 LEFT = ("finished", "capped")  # item states that end an example in this run
@@ -219,6 +226,73 @@ def schema_gaps(root: Path, row: dict) -> list[dict]:
             for e in errors[:5]]
 
 
+INVOKED = ("route", "adapter", "gap")
+
+
+def uninvoked(root: Path, row: dict) -> list[dict]:
+    """The proof tasks of a set-up example whose sidecar doesn't say how the proof is invoked (`invocation`): through
+    the route, through a validated adapter, or not until a named gap of the verifier is closed, which an observed
+    blocker of the task records. It is the setup's deliverable (llm-dlc/runtime.md); one missing doesn't stop a run."""
+    try:
+        target = json.loads((root / row["path"] / "target.json").read_text())
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+    observed = {b.get("task") for b in (target.get("handoff") or {}).get("blockers") or [] if b.get("observed")}
+    out = []
+    for t in target.get("tasks") or []:
+        if t.get("kind") == "replay":
+            continue
+        how = (t.get("invocation") or {}).get("how")
+        if how not in INVOKED:
+            out.append({"task": t["id"], "what": "how its proof is invoked is not recorded (route, adapter or gap)"})
+        elif how == "gap" and t["id"] not in observed and None not in observed:
+            out.append({"task": t["id"], "what": "invoked only once a gap is closed, and no observed blocker names it"})
+    return out
+
+
+def claim_hashes(root: Path, row: dict) -> dict[str, str]:
+    """The sha256 of each claim file the example's tasks name, by its path in the checkout."""
+    import hashlib
+    try:
+        folder = root / row["path"]
+        target = json.loads((folder / "target.json").read_text())
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+    out = {}
+    for name in sorted({t["claim"] for t in target.get("tasks") or [] if t.get("claim")}):
+        try:
+            out[f"{row['path']}/{name}"] = hashlib.sha256((folder / name).read_bytes()).hexdigest()
+        except OSError:
+            out[f"{row['path']}/{name}"] = "missing"
+    return out
+
+
+def ledger_path(run: Run) -> Path | None:
+    """Beside the run's decision record: the claims each accepted review covered, by their files' hashes."""
+    where = conductor.decision_record(run.dir)
+    return None if where is None else where[1] / f"{where[0]}-claims.json"
+
+
+def ledger(run: Run) -> dict:
+    path = ledger_path(run)
+    try:
+        data = json.loads(path.read_text()) if path else {}
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def review_state(run: Run, row: dict) -> str:
+    """`reviewed`: its claims are the ones an accepted review covered; `changed`: one was accepted, and a claim file
+    has changed since; `new`: none was; `catalogued`: nothing states a claim yet."""
+    if row["state"] == "catalogued":
+        return "catalogued"
+    entry = ledger(run).get(row["id"])
+    if not entry:
+        return "new"
+    return "reviewed" if entry.get("files") == claim_hashes(run.root, row) else "changed"
+
+
 def preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> dict:
     """What each example named lacks. `set_up` names the catalog entries a setup session has been run for: one that
     still lacks something is left out of the run, and the others go on without it."""
@@ -230,6 +304,10 @@ def preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> d
             gaps += schema_gaps(run.root, row)
         entry = {"id": row["id"], "path": row.get("path"), "state": row["state"], "ok": not gaps,
                  **{kind: [g for g in gaps if g["kind"] == kind] for kind in changes.KINDS}}
+        if row.get("path") and row["state"] not in ("catalogued", "unknown"):
+            entry["invocation"] = uninvoked(run.root, row)
+        if row.get("path"):
+            entry["review"] = review_state(run, row)
         if row["state"] == "unknown":
             entry["note"] = "no target sidecar: only its example.json was checked, and its claims are whatever its page states"
         out.append(entry)
@@ -241,7 +319,11 @@ def preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> d
             "toRepair": [e["id"] for e in counted if e[changes.ARTIFACTS] or e[changes.FORM]],
             "leftOut": left_out,
             "toProve": [e["id"] for e in out if e["ok"] and e["state"] != "decided"],
-            "decided": [e["id"] for e in out if e["ok"] and e["state"] == "decided"]}
+            "decided": [e["id"] for e in out if e["ok"] and e["state"] == "decided"],
+            # Stage 2 runs on every run: it designs the claims of what is not reviewed and reuses the rest's review
+            "toReview": [e["id"] for e in counted if e.get("review") in ("new", "changed", "catalogued")],
+            "reviewed": [e["id"] for e in counted if e.get("review") == "reviewed"],
+            "toClassify": [e["id"] for e in counted if e.get("invocation")]}
 
 
 def cmd_preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> int:
@@ -356,6 +438,13 @@ def accept_claims(run: Run, numbers: list[str], reason: str) -> tuple[list[str],
         }
         lines.append(decisions.conductor_line(name, patch, current, events[0]["time"] if events else None, stamp, taken))
     decisions.write(name, root, lines)
+    rows = {r["id"]: r for r in changes.listing(run.root, [e["id"] for e in found])["examples"]}
+    kept = ledger(run)
+    for e, line in zip(found, lines):
+        kept[e["id"]] = {"files": claim_hashes(run.root, rows[e["id"]]), "decision": line["id"], "at": stamp}
+    path = ledger_path(run)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(kept, indent=1, sort_keys=True) + "\n")
     return [line["id"] for line in lines], []
 
 
@@ -372,6 +461,51 @@ def cmd_accept_claims(run: Run, numbers: list[str], reason: str) -> int:
     print(f"accepted the claims of {' '.join(numbers)} for the user to review afterwards: {' '.join(ids)} "
           "(python3 llm-dlc/tools/decisions.py list --group flagged)")
     return 0
+
+
+# -- stage 2's plan
+
+PLAN_SCHEMA = "llm-dlc/prove-plan.schema.json"
+
+
+def plan_problems(run: Run) -> list[str]:
+    """What is wrong with stage 2's plan.json: its form (PLAN_SCHEMA, where jsonschema is installed) and what the
+    schema can't say: the order names each example once, and an example whose claims stage 2 designed carries them."""
+    path = run.dir / "plan.json"
+    try:
+        plan = json.loads(path.read_text())
+    except OSError:
+        return [f"no plan: stage 2 writes {path}"]
+    except ValueError as e:
+        return [f"{path} is not JSON: {e}"]
+    out = []
+    try:
+        import jsonschema
+        schema = json.loads((run.root / PLAN_SCHEMA).read_text())
+        out += [f"{'/'.join(map(str, e.absolute_path)) or 'the plan'}: {e.message}"[:300]
+                for e in sorted(jsonschema.Draft202012Validator(schema).iter_errors(plan), key=lambda e: list(e.absolute_path))[:10]]
+    except (ImportError, OSError, ValueError):
+        pass
+    if out or not isinstance(plan, dict):
+        return out or ["the plan is not an object"]
+    ids = [e.get("id") for e in plan.get("examples") or []]
+    if sorted(plan.get("order") or []) != sorted(ids) or len(set(ids)) != len(ids):
+        out.append(f"the order ({' '.join(plan.get('order') or [])}) must name each example of the plan once ({' '.join(map(str, ids))})")
+    for e in plan.get("examples") or []:
+        if e.get("review") == "designed" and not (e.get("claimFiles") and e.get("tasks")):
+            out.append(f"{e.get('id')}: its claims were designed here, and the plan carries no claimFiles or tasks for them")
+    return out
+
+
+def cmd_plan(run: Run, check: bool) -> int:
+    print(run.dir / "plan.json")
+    if not check:
+        return 0
+    problems = plan_problems(run)
+    for line in problems:
+        print(f"  {line}")
+    print("the plan is formed as the schema says" if not problems else f"{len(problems)} problem(s)")
+    return 1 if problems else 0
 
 
 # -- the verification loop and the proof loop
@@ -842,6 +976,7 @@ def main(argv: list[str] | None = None) -> int:
     cl.add_argument("examples", nargs="+", metavar="NNN")
     cl.add_argument("--json", action="store_true")
     cl.add_argument("--accept", metavar="REASON")
+    sub.add_parser("plan").add_argument("--check", action="store_true")
     sub.add_parser("verification").add_argument("action", choices=("start", "stop", "status", "nudge"))
     sub.add_parser("loop").add_argument("arguments", nargs="*")
     w = sub.add_parser("wait")
@@ -888,6 +1023,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_wait(run, args.interval, args.timeout)
     elif args.command == "summary":
         return cmd_summary(run)
+    elif args.command == "plan":
+        return cmd_plan(run, args.check)
     elif args.command == "status":
         s = state(run)
         print(json.dumps(s, indent=1) if args.json else render(s, run.read().get("lastSummary"), run.root))

@@ -1,0 +1,49 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "The plan of a /prove-java-change run, as data",
+ "description": "What stage 2 writes beside plan.md (llm-dlc/loop-summaries/prove-change/plan.json), and the setup and the proof loop read: the handoff from the review of the claims to the sessions that set them up and prove them (llm-dlc/runtime.md, stage 2). `watch.py plan --check` checks it; examples/tools/scaffold_example.py writes an example's designed claims and tasks from it.",
+ "type": "object",
+ "required": ["schema", "request", "order", "examples"],
+ "additionalProperties": false,
+ "properties": {
+  "schema": {"const": "prove-plan/v1"},
+  "request": {"description": "The request, as the user gave it.", "type": "string"},
+  "machine": {"description": "Whether the machine is enough, what limits it, and the budget (doctor.py).", "type": "string"},
+  "order": {"description": "The examples' numbers, the most accessible first: the loop takes them in this order.", "type": "array", "items": {"$ref": "#/$defs/number"}},
+  "examples": {"type": "array", "items": {"$ref": "#/$defs/example"}},
+  "setAside": {"type": "array", "items": {"type": "object", "required": ["what", "why"], "additionalProperties": false, "properties": {"what": {"type": "string"}, "why": {"type": "string"}}}},
+  "questions": {"description": "What only the user can answer, each with the example it holds up.", "type": "array", "items": {"type": "object", "required": ["example", "question"], "additionalProperties": false, "properties": {"example": {"$ref": "#/$defs/number"}, "question": {"type": "string"}}}}
+ },
+ "$defs": {
+  "number": {"type": "string", "pattern": "^[0-9]{3}$"},
+  "text": {"type": "array", "items": {"type": "string"}},
+  "example": {
+   "type": "object",
+   "required": ["id", "review", "entry", "controls", "validation", "done"],
+   "additionalProperties": false,
+   "properties": {
+    "id": {"$ref": "#/$defs/number"},
+    "title": {"type": "string"},
+    "source": {"description": "The change on github.com.", "type": "string"},
+    "review": {"description": "designed: stage 2 wrote the claims here (a catalog entry, a new change, or a correction); reviewed: claims already in the example, read again here; reused: claims unchanged since an accepted review (watch.py preflight's `reviewed`), not read again.", "enum": ["designed", "reviewed", "reused"]},
+    "property": {"description": "What the fix is meant to guarantee, in words: the property the claims state.", "type": "string"},
+    "boundary": {"description": "The preservation boundary: what the change may alter, and what it must leave as it was.", "type": "string"},
+    "bounds": {"description": "The bounds that make the claims meaningful, and why each is enough.", "type": "string"},
+    "environment": {"description": "Each assumption about the environment (locale, JDK, configuration, the code around the entry) the claims make.", "$ref": "#/$defs/text"},
+    "claimFiles": {"description": "Designed claims: each claim file's path in the example (claims/NAME.json) and its content, as examples/schema/target-claim.schema.json says.", "type": "object", "additionalProperties": {"type": "object"}},
+    "tasks": {"description": "Designed tasks, as the sidecar's tasks (examples/schema/target.schema.json): the proof tasks over the claims, and the replays.", "type": "array", "items": {"type": "object", "required": ["id", "kind", "relation", "target"]}},
+    "remarks": {"description": "On claims that exist: misstates (the claim says other than the example's own pages; setup corrects it, as the plan says) or suggestion (a claim to add or widen; the user's, and the example goes ahead as it stands).", "type": "array", "items": {"type": "object", "required": ["kind", "text"], "additionalProperties": false, "properties": {"claim": {"type": "string"}, "kind": {"enum": ["misstates", "suggestion"]}, "text": {"type": "string"}}}},
+    "controls": {"description": "The controls the claims need: concrete inputs that must hold (positive), must fail (negative), and the constructed mutants that must fail the claim (mutation).", "type": "object", "required": ["positive", "negative", "mutation"], "additionalProperties": false, "properties": {"positive": {"$ref": "#/$defs/text"}, "negative": {"$ref": "#/$defs/text"}, "mutation": {"$ref": "#/$defs/text"}}},
+    "entry": {"description": "How the proof is invoked: the method, the adapter if any, how inputs are built, and which of the three ways the setup expects to confirm.", "type": "object", "required": ["target", "invocation"], "additionalProperties": false, "properties": {"target": {"type": "string"}, "adapter": {"type": ["string", "null"]}, "inputs": {"type": "string"}, "invocation": {"enum": ["route", "adapter", "gap"]}, "gap": {"description": "For a gap: the verifier's missing capability, as an engineering task.", "type": ["string", "null"]}}},
+    "preparation": {"description": "The artifacts: how each revision is prepared and its dependency closure.", "type": "object", "additionalProperties": false, "properties": {"recipe": {"type": "string"}, "closures": {"type": "string"}}},
+    "validation": {"description": "The commands that check the setup, in order (validate_example.py --replay NNN at least).", "$ref": "#/$defs/text"},
+    "done": {"description": "When the setup is complete.", "$ref": "#/$defs/text"},
+    "approval": {"description": "Whose word the claims were proved on: the decision `watch.py claims --accept` recorded.", "type": ["object", "null"], "required": ["by", "decision"], "additionalProperties": false, "properties": {"by": {"enum": ["user", "conductor"]}, "decision": {"type": "string"}}},
+    "closest": {"description": "The closest past examples and what they cost.", "type": "string"},
+    "hard": {"description": "What the verifier may not model yet.", "type": "string"},
+    "estimate": {"description": "Hours and tokens, roughly.", "type": "string"},
+    "accessibility": {"description": "Why it sits where it does in the order.", "type": "string"}
+   }
+  }
+ }
+}

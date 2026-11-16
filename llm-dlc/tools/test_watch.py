@@ -99,14 +99,14 @@ class StageTest(Made):
     def flag(self, call, name):
         return call["args"][call["args"].index(name) + 1]
 
-    def test_the_evaluation_runs_in_the_fixed_session_on_fable_at_medium_effort(self):
+    def test_the_evaluation_runs_in_the_fixed_session_on_fable_at_high_effort(self):
         status, out = self.call("stage", "evaluate", "Evaluate these changes")
         self.assertEqual(status, 0)
         self.assertIn("three changes, ordered 902 900 901", out)
         first = self.calls()[0]
         session = self.call("session")[1].strip()
         self.assertEqual((self.flag(first, "--model"), self.flag(first, "--effort"), self.flag(first, "--session-id")),
-                         ("claude-fable-5-2", "medium", session))
+                         ("claude-fable-5-2", "high", session))
         self.assertEqual((self.flag(first, "-p"), first["cwd"]), ("Evaluate these changes", str(self.root)))
         watch.transcript(self.root, session).parent.mkdir(parents=True)
         watch.transcript(self.root, session).write_text("{}\n")
@@ -218,6 +218,39 @@ class SummaryTest(Made):
         self.assertEqual(shipped, watch.DEFAULT_TEMPLATE.strip("\n"), "the page and the fallback say the same")
 
 
+class PlanTest(Made):
+    PLAN = {"schema": "prove-plan/v1", "request": "290", "order": ["290"], "examples": [
+        {"id": "290", "review": "designed", "entry": {"target": "a.B#c()Z", "invocation": "route"},
+         "controls": {"positive": ["p"], "negative": ["n"], "mutation": ["m"]},
+         "validation": ["python3 examples/tools/validate_example.py --replay 290"], "done": ["prepared"],
+         "claimFiles": {"claims/x.json": {}}, "tasks": [{"id": "fixed-security", "kind": "prove", "relation": "security", "target": "a.B#c()Z"}]}]}
+
+    def setUp(self):
+        super().setUp()
+        (self.root / "llm-dlc").mkdir()
+        (self.root / watch.PLAN_SCHEMA).write_text((REPO / watch.PLAN_SCHEMA).read_text())
+
+    def test_the_plan_is_checked_against_its_schema_and_its_order(self):
+        self.assertEqual(self.call("plan", "--check")[0], 1, "no plan yet")
+        self.run.dir.mkdir(parents=True)
+        (self.run.dir / "plan.json").write_text(json.dumps(self.PLAN))
+        status, out = self.call("plan", "--check")
+        self.assertEqual(status, 0, out)
+        bad = json.loads(json.dumps(self.PLAN))
+        bad["order"] = ["290", "291"]
+        del bad["examples"][0]["tasks"]
+        bad["examples"][0]["review"] = "made up"
+        (self.run.dir / "plan.json").write_text(json.dumps(bad))
+        status, out = self.call("plan", "--check")
+        self.assertEqual(status, 1)
+        self.assertIn("review", out)
+        bad["examples"][0]["review"] = "designed"
+        (self.run.dir / "plan.json").write_text(json.dumps(bad))
+        out = self.call("plan", "--check")[1]
+        self.assertIn("must name each example of the plan once", out)
+        self.assertIn("carries no claimFiles or tasks", out)
+
+
 class PreflightTest(Checkout):
     """Examples that are already prepared, checked before a loop takes them: copies of the made-up target fixture."""
 
@@ -299,6 +332,44 @@ class PreflightTest(Checkout):
         folder = next((run.root / "examples").glob("900-*")).relative_to(run.root)
         self.assertEqual(line["context"]["files"], [f"{folder}/claims/{c}.json" for c in ("gate-preservation", "gate-security", "regex-probe")])
         self.assertIn("example 900", line["asked"]["question"])
+
+    def test_an_accepted_review_is_reused_until_a_claim_file_changes(self):
+        folder = self.example("900")
+        self.example("901")
+        self.catalog_entry("902")
+        status, found, by = self.check("900", "901", "902")
+        self.assertEqual((found["toReview"], found["reviewed"]), (["900", "901", "902"], []))
+        self.assertEqual((by["900"]["review"], by["902"]["review"]), ("new", "catalogued"))
+        with mock.patch.dict(os.environ, {"IN_THE_LOOP_MODE": "development"}), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(watch.main(["--root", str(self.root), "claims", "900", "901", "--accept", "as the advisory says"]), 0)
+        status, found, by = self.check("900", "901", "902")
+        self.assertEqual((found["toReview"], found["reviewed"]), (["902"], ["900", "901"]))
+        claim = folder / "claims/gate-security.json"
+        claim.write_text(claim.read_text().replace('"statement": "', '"statement": "Changed: ', 1))
+        status, found, by = self.check("900", "901", "902")
+        self.assertEqual((by["900"]["review"], found["toReview"], found["reviewed"]), ("changed", ["900", "902"], ["901"]))
+
+    def test_a_proof_task_that_doesnt_record_how_it_is_invoked_is_to_classify_without_stopping_the_run(self):
+        folder = self.example("900")
+        self.example("901")
+        status, found, by = self.check("900", "901")
+        self.assertEqual((status, found["ok"], found["toClassify"]), (0, True, ["900", "901"]))
+        self.assertIn("fixed-security", [g["task"] for g in by["900"]["invocation"]])
+        target = json.loads((folder / "target.json").read_text())
+        for t in target["tasks"]:
+            if t["kind"] != "replay":
+                t["invocation"] = {"how": "route", "checked": "2026-11-16", "evidence": "build.py --plan: it plans"}
+        last = next(t for t in target["tasks"] if t["id"] == "fixed-security")
+        last["invocation"]["how"] = "gap"
+        (folder / "target.json").write_text(json.dumps(target))
+        status, found, by = self.check("900", "901")
+        self.assertEqual([g["task"] for g in by["900"]["invocation"]], [last["id"]],
+                         "a gap is recorded as an observed blocker of the task")
+        target["handoff"]["blockers"].append({"kind": "verifier-interface", "observed": True, "task": last["id"],
+                                              "summary": "made up: the verifier can't be given it"})
+        (folder / "target.json").write_text(json.dumps(target))
+        status, found, by = self.check("900", "901")
+        self.assertEqual((by["900"]["invocation"], found["toClassify"]), ([], ["901"]))
 
     def test_an_example_json_that_breaks_its_schema_is_a_fault_in_the_form(self):
         folder = self.example("900")
