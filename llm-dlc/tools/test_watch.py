@@ -16,8 +16,10 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import changes
 import conductor
 import watch
+from test_changes import PROOFS, Checkout
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.append(str(REPO / "lib/tools"))
@@ -212,6 +214,61 @@ class SummaryTest(Made):
                          "1 of its verification jobs not in yet")
         shipped = (REPO / watch.TEMPLATE).read_text().split("<!-- template -->")[1].strip("\n")
         self.assertEqual(shipped, watch.DEFAULT_TEMPLATE.strip("\n"), "the page and the fallback say the same")
+
+
+class PreflightTest(Checkout):
+    """Examples that are already prepared, checked before a loop takes them: copies of the made-up target fixture."""
+
+    def check(self, *numbers):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+            status = watch.main(["--root", str(self.root), "preflight", *numbers])
+        found = json.loads(out.getvalue())
+        return status, found, {e["id"]: e for e in found["examples"]}
+
+    def test_prepared_examples_pass_in_the_order_given_and_a_decided_one_is_left_out_of_the_loop(self):
+        self.example("901")
+        self.example("900", answers={**PROOFS, "regex-probe": "refuted"})
+        self.example("902", answers=PROOFS)
+        status, found, _ = self.check("902", "900", "901", "902")
+        self.assertEqual((status, found["ok"], found["toProve"], found["decided"]), (0, True, ["902", "901"], ["900"]))
+
+    def test_a_missing_artifact_and_a_fault_in_the_form_are_told_apart(self):
+        self.example("900", replays=False)
+        (self.example("901") / "target.json").write_text("{ not JSON")
+        self.example("902")
+        status, found, by = self.check("900", "901", "902")
+        self.assertEqual((status, found["ok"], found["toProve"]), (1, False, ["902"]))
+        self.assertTrue(by["900"]["artifacts"] and not by["900"]["form"], by["900"])
+        self.assertTrue(by["901"]["form"] and not by["901"]["artifacts"], by["901"])
+        self.assertTrue(by["902"]["ok"])
+
+    def test_an_example_that_is_not_there_is_said_apart_since_nothing_can_put_it_right(self):
+        self.example("900")
+        status, found, by = self.check("900", "950")
+        self.assertEqual((status, found["absent"], by["950"]["ok"]), (2, ["950"], False))
+
+    def test_an_example_json_that_breaks_its_schema_is_a_fault_in_the_form(self):
+        folder = self.example("900")
+        (self.root / "examples/schema").mkdir()
+        (self.root / "examples/schema/example.schema.json").write_text((REPO / "examples/schema/example.schema.json").read_text())
+        self.assertEqual(self.check("900")[0], 0, "the fixture's example.json is valid")
+        example = json.loads((folder / "example.json").read_text())
+        del example["title"]
+        (folder / "example.json").write_text(json.dumps(example))
+        status, _, by = self.check("900")
+        self.assertEqual(status, 1)
+        self.assertTrue(any("title" in g["what"] for g in by["900"]["form"]), by["900"])
+
+    def test_an_example_without_a_sidecar_passes_with_a_note(self):
+        folder = self.example("900")
+        (folder / "target.json").unlink()
+        example = json.loads((folder / "example.json").read_text())
+        example.pop("target", None)
+        (folder / "example.json").write_text(json.dumps(example))
+        status, found, by = self.check("900")
+        self.assertEqual((status, found["toProve"], by["900"]["state"]), (0, ["900"], "unknown"))
+        self.assertIn("no target sidecar", by["900"]["note"])
 
 
 @cost("tool")

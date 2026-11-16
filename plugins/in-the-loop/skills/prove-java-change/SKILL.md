@@ -1,7 +1,7 @@
 ---
 name: prove-java-change
-description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof.
-argument-hint: "[--scaffold-only] [--wait-for-proofs] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it>"
+description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof. It also takes examples that are already prepared, by number, which it checks before it starts.
+argument-hint: "[--scaffold-only] [--wait-for-proofs] [--instruction \"TEXT with {}\"] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it | examples already prepared, by number: NNN ...>"
 disable-model-invocation: true
 model: claude-opus-5-5
 effort: high
@@ -34,10 +34,16 @@ Beside them runs the verification loop, on Sonnet 5.5, which executes the jobs t
 
 The request: $ARGUMENTS
 
-It names one change or a list of them, each with what to prove about it. `--scaffold-only` in it means: stop after
-stage 3, with the examples prepared and no proof started. A change that already has its example is not prepared
-again, so the same request without the flag proves what an earlier run prepared. `--wait-for-proofs` keeps the loop
-on an example while its last proof runs; without it the loop takes the next example meanwhile.
+It names one change or a list of them, each with what to prove about it, or examples that are already prepared, by
+their numbers (see "Examples already prepared" below); not both: ask the user to split a request that mixes them.
+
+- `--scaffold-only` means: stop after stage 3, with the examples prepared and no proof started. A change that
+  already has its example is not prepared again, so the same request without the flag proves what an earlier run
+  prepared.
+- `--wait-for-proofs` keeps the loop on an example while its last proof runs; without it the loop takes the next
+  example meanwhile.
+- `--instruction "TEXT"` is the user's own text for the proof loop, in place of its one line. It must be one line
+  with `{}` where the example's number goes; if it is not, say so and stop before anything starts.
 
 ## 0. Where you are
 
@@ -45,10 +51,10 @@ on an example while its last proof runs; without it the loop takes the next exam
 python3 ${CLAUDE_SKILL_DIR}/bootstrap.py status
 ```
 
-`state: development` means the skill is running inside a development checkout of the repository itself. Stages 1 to
-3 don't apply there: start the verification loop and take the examples the request names, in the order given, to
-stage 4, in a new fixed session (`watch.py session --new`) or, when the request names a session to continue, in
-that one (`watch.py session --use ID`). Any other state is a user's machine: start at stage 1.
+`state: development` means the skill is running inside a development checkout of the repository itself. Stage 1
+doesn't apply there and the request names examples by number: start the verification loop and go to "Examples
+already prepared", with a new fixed session (`watch.py session --new`) or, when the request names a session to
+continue, that one (`watch.py session --use ID`). Any other state is a user's machine: start at stage 1.
 `home` is the checkout every later command runs in; when it is outside this session's working directories, have the
 user add it once (`/add-dir`).
 
@@ -107,6 +113,27 @@ left open: that comes back to you as a question. Done when `python3 llm-dlc/tool
 With `--scaffold-only` the skill ends here: say what was prepared, and that the same request without the flag
 proves it.
 
+## Examples already prepared
+
+When the request names examples by number, stages 2 and 3 don't run. After stage 1, check them, all before any is
+started:
+
+```bash
+python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
+```
+
+It prints, for each, what it lacks: `artifacts` a proof needs that are not there, or faults in its `form`.
+
+- **Nothing lacking** (exit 0): go to stage 4 with `toProve`, in the order given, starting with the first. Say
+  which examples were left out as already decided.
+- **Something lacking** (exit 1): make one attempt to put it right. Run `watch.py stage setup "PROMPT"`, where the
+  prompt is the check's output and one instruction: do "The repair's brief" of `llm-dlc/runtime.md`. Then run the
+  check again. If it still reports anything, abort: tell the user which example lacks what and what the repair
+  tried, and start nothing. If the repair wrote a claim, show the user each one and get their word before stage 4.
+- **An example that is not there** (exit 2): abort at once, naming it.
+
+With `--scaffold-only` the check and the one repair are all that is done.
+
 ## 4. Prove them
 
 ```bash
@@ -114,7 +141,8 @@ python3 llm-dlc/tools/watch.py loop --memory SIZE NNN [NNN ...]
 ```
 
 with the examples still to prove, in order (`changes.py --pending NNN ...` leaves out what is decided), the memory
-cap the doctor's budget proposes, and `--wait-for-proofs` before the numbers if the request has it. It starts the
+cap the doctor's budget proposes, and, before the numbers, `--wait-for-proofs` and `--instruction "TEXT"` if the
+request has them. It starts the
 proof loop detached, continuing the fixed session at high effort, and returns at once. Then watch it: run
 `python3 llm-dlc/tools/watch.py wait` as a background task, act on what it returns as "Watching the loop" in
 `llm-dlc/runtime.md` says, and run it again, until the loop has ended.

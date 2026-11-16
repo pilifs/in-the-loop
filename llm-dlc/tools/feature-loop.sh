@@ -35,8 +35,8 @@
 #   relational  make relational verification more efficient and accurate, with examples
 # Templated moonshots, one item of a list at a time:
 #   prove-examples  formally prove examples 285 to 300, each for as many cycles as it takes, as elegantly and efficiently as possible
-#   prove-change    the same instruction over the examples FEATURE_LOOP_ITEMS names: step 3 of
-#                   /prove-java-change, started by llm-dlc/tools/prove-loop.sh, which also forks its session
+#   prove-change    the same instruction, or FEATURE_LOOP_INSTRUCTION's, over the examples FEATURE_LOOP_ITEMS
+#                   names: the last stage of /prove-java-change, started by llm-dlc/tools/prove-loop.sh
 # Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
@@ -276,7 +276,12 @@ case "$PROMPT" in
     ;;
   prove-change)
     # The examples are the caller's: prove-loop.sh names them, and the session, a fork of the one that prepared them.
-    TEMPLATE="Formally prove example {} as elegantly and efficiently as possible"
+    # So is the instruction, when it gives one (FEATURE_LOOP_INSTRUCTION): one line, with {} for the example's number.
+    TEMPLATE=${FEATURE_LOOP_INSTRUCTION:-"Formally prove example {} as elegantly and efficiently as possible"}
+    if [[ "$TEMPLATE" != *"{}"* || "$TEMPLATE" == *$'\n'* ]]; then
+      echo "feature-loop.sh: FEATURE_LOOP_INSTRUCTION is one line with {} where the example's number goes" >&2
+      exit 2
+    fi
     read -r -a ITEMS <<<"${FEATURE_LOOP_ITEMS:-}"
     if (( ${#ITEMS[@]} == 0 )); then
       echo "feature-loop.sh: prove-change takes its examples from FEATURE_LOOP_ITEMS; start it with llm-dlc/tools/prove-loop.sh" >&2

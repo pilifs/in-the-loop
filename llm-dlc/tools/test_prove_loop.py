@@ -113,7 +113,7 @@ class ProveLoopTest(unittest.TestCase):
                      "FEATURE_LOOP_AUTOCOMPACT", "FEATURE_LOOP_MEMORY_MAX", "FEATURE_LOOP_STOP_ON_COMPACT",
                      "FEATURE_LOOP_CONDUCTOR_WAIT", "LOOP_CONDUCTOR", "IN_THE_LOOP_MODE", "FEATURE_LOOP_ITEM_JUDGE",
                      "FEATURE_LOOP_ITEM_CYCLES", "FEATURE_LOOP_CONTINUE_WHILE_PROVING", "FEATURE_LOOP_COPY",
-                     "PROVE_LOOP_COPY", "STANDIN_JUDGE"):
+                     "PROVE_LOOP_COPY", "STANDIN_JUDGE", "FEATURE_LOOP_INSTRUCTION"):
             self.env.pop(name, None)
         subprocess.run(["jj", "--quiet", "git", "init", str(self.root)], env=self.env, check=True, capture_output=True)
         subprocess.run(["jj", "--quiet", "describe", "-m", "The made-up checkout"], cwd=self.root, env=self.env, check=True)
@@ -517,6 +517,23 @@ class ProveLoopTest(unittest.TestCase):
         self.assertEqual((state["session"], state["forkedFrom"]), (fixed, None))
         both = self.loop("--session", fixed, "--fork", PARENT, "901")
         self.assertEqual(both.returncode, 2)
+
+    @cost("tool")
+    def test_the_loops_text_may_be_the_users_with_the_examples_number_in_it(self):
+        self.more_examples("902")
+        text = "Formally prove example {} and say which lemma carried the proof"
+        r = self.loop("--instruction", text, "901", "902")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [text.replace("{}", n) for n in ("901", "902")])
+        self.assertIn("> " + text, self.record(), "the record keeps the text, which the statistics read")
+        self.assertEqual(json.loads((self.run_dir / "run.json").read_text())["instruction"], text)
+
+    @cost("tool")
+    def test_a_text_that_does_not_name_the_example_starts_nothing(self):
+        r = self.loop("--instruction", "Prove the example as elegantly as possible", "901")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("{}", r.stderr)
+        self.assertEqual(self.calls(), [])
 
     @cost("tool")
     def test_the_loop_runs_from_a_copy_of_its_scripts(self):

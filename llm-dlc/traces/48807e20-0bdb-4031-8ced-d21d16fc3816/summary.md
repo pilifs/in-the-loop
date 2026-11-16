@@ -63,12 +63,6 @@ A moonshot has no acceptance criteria, so one context window is its measure. Eac
 
 Verified with a stand-in claude on PATH that emits a compact_boundary event: an auto compaction with @- unchanged ends the turn at once, leaves no child behind and writes the reason; with a commit since, or a manual compaction, the turn runs to its end. claude accepts --autocompact 600k (checked against its argument validation). bash -n on both scripts; test_loop_stats passes. Written in workspace moonshot so the running prove-examples loop, whose bash has already parsed its loop body, is untouched; it takes effect from the next start of the loop.
 
-### stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop
-
-change `ulzlppqmvslt` · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
-
-At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.
-
 ### feature-loop.sh: a moonshot compacts at 600k tokens, and every compaction is logged
 
 change `uzporttnlrtk` · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
@@ -78,6 +72,12 @@ Each moonshot turn (named or templated, not a brief) now passes --autocompact 60
 Opt-in, off by default: with FEATURE_LOOP_STOP_ON_COMPACT=1, an automatic compaction during the cycle's instruction with no commit since the cycle began, or since the previous such compaction, ends the turn (SIGTERM to claude and its descendants), and the loop records 'Stopped ...: cycle N (item X) compacted with no commit at T tokens; session ... needs attention' and exits 1. It is off because a compaction alone doesn't say whether the work is stuck: the prove-examples run's cycle 2 compacted with no commit while making good progress. Until a conductor judges this from outside the loop, a person watching does. loop_stats.py counts that ending as 'compacted, no commit'.
 
 Verified with a stand-in claude on PATH emitting a compact_boundary event: without the opt-in the compaction is only logged and the turn runs on; with it, the turn ends at once with no child left behind and the reason written; with a commit since, or a manual compaction, it runs to its end. claude accepts --autocompact 600k. bash -n on both scripts; test_loop_stats passes. Written in workspace moonshot, beside the running prove-examples loop, whose bash has already parsed its loop body.
+
+### stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop
+
+change `ulzlppqmvslt` · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
+
+At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.
 
 ## Conversation
 

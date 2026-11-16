@@ -78,6 +78,19 @@ class StateTest(Checkout):
         self.assertTrue(any("oracleValidated" in w for w in row["why"]), row["why"])
         self.assertEqual(changes.listing(self.root, [])["pending"], [])
 
+    def test_what_an_unprepared_example_lacks_is_told_by_kind(self):
+        self.example("900", replays=False)                      # no oracle run: an artifact
+        broken = self.example("901")
+        (broken / "target.json").write_text("{ not JSON")       # a sidecar that does not load: its form
+        rows = self.rows("900", "901", "902")
+        self.assertEqual({g["kind"] for g in rows["900"]["gaps"]}, {changes.ARTIFACTS})
+        self.assertTrue(all(g["task"] for g in rows["900"]["gaps"]), rows["900"]["gaps"])
+        self.assertTrue(any("oracleValidated" in g["what"] for g in rows["900"]["gaps"]), rows["900"]["gaps"])
+        self.assertEqual([g["kind"] for g in rows["901"]["gaps"]], [changes.FORM])
+        self.assertEqual([g["kind"] for g in rows["902"]["gaps"]], [changes.ABSENT])
+        self.example("903")
+        self.assertNotIn("gaps", self.rows("903")["903"], "a prepared example lacks nothing")
+
     def test_a_complete_scaffold_with_no_answer_is_prepared(self):
         self.example("900")
         row = self.rows()["900"]

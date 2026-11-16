@@ -11,6 +11,10 @@ keeps the user informed, and judges what a script can't:
     watch.py stage evaluate PROMPT         run the evaluation in the fixed session, on Fable 5.2 at medium effort
     watch.py stage setup PROMPT            run the examples' setup in a new session, on Opus 5.5 at high effort
                                            (both print the session's report; --model, --effort and --memory override)
+    watch.py preflight NNN ...             check examples that are already prepared before a loop takes them: what
+                                           each lacks, as missing artifacts or as a fault in its form (exit 0:
+                                           nothing; 1: something a setup session may put right; 2: an example
+                                           that is not there at all)
     watch.py verification start|stop|status   the verification loop, on Sonnet 5.5, which runs the jobs the
                                            sessions queue; started once, before the examples are set up
     watch.py loop [OPTION ...] NNN ...     start the proof loop on these examples, continuing the fixed session at
@@ -184,6 +188,45 @@ def cmd_stage(run: Run, name: str, prompt: str, model: str | None, effort: str |
     run.update(stages=stages)
     print((result or {}).get("result") or f"the {name} session ended with status {status} and no report: see {log}")
     return 0 if ok else 1
+
+
+# -- examples that are already prepared
+
+def schema_gaps(root: Path, row: dict) -> list[dict]:
+    """example.json against its schema, which build.py checks only when it builds the example's page."""
+    try:
+        import jsonschema
+        schema = json.loads((root / "examples/schema/example.schema.json").read_text())
+        example = json.loads((root / row["path"] / "example.json").read_text())
+    except (ImportError, OSError, ValueError, KeyError):
+        return []  # nothing to check with, or a file changes.py has reported already
+    errors = sorted(jsonschema.Draft202012Validator(schema).iter_errors(example), key=lambda e: list(e.absolute_path))
+    return [changes.gap(changes.FORM, f"example.json, {'/'.join(map(str, e.absolute_path)) or 'the document'}: {e.message}"[:300])
+            for e in errors[:5]]
+
+
+def preflight(run: Run, numbers: list[str]) -> dict:
+    numbers = list(dict.fromkeys(numbers))
+    out = []
+    for row in changes.listing(run.root, numbers)["examples"]:
+        gaps = list(row.get("gaps") or [])
+        if not any(g["kind"] == changes.ABSENT for g in gaps) and row.get("path"):
+            gaps += schema_gaps(run.root, row)
+        entry = {"id": row["id"], "path": row.get("path"), "state": row["state"], "ok": not gaps,
+                 **{kind: [g for g in gaps if g["kind"] == kind] for kind in (changes.ARTIFACTS, changes.FORM, changes.ABSENT)}}
+        if row["state"] == "unknown":
+            entry["note"] = "no target sidecar: only its example.json was checked, and its claims are whatever its page states"
+        out.append(entry)
+    return {"examples": out, "ok": all(e["ok"] for e in out),
+            "absent": [e["id"] for e in out if e[changes.ABSENT]],
+            "toProve": [e["id"] for e in out if e["ok"] and e["state"] != "decided"],
+            "decided": [e["id"] for e in out if e["ok"] and e["state"] == "decided"]}
+
+
+def cmd_preflight(run: Run, numbers: list[str]) -> int:
+    found = preflight(run, numbers)
+    print(json.dumps(found, indent=1))
+    return 0 if found["ok"] else 2 if found["absent"] else 1
 
 
 # -- the verification loop and the proof loop
@@ -566,6 +609,7 @@ def main(argv: list[str] | None = None) -> int:
     st.add_argument("--model")
     st.add_argument("--effort")
     st.add_argument("--memory")
+    sub.add_parser("preflight").add_argument("examples", nargs="+", metavar="NNN")
     sub.add_parser("verification").add_argument("action", choices=("start", "stop", "status"))
     sub.add_parser("loop").add_argument("arguments", nargs="*")
     w = sub.add_parser("wait")
@@ -589,6 +633,11 @@ def main(argv: list[str] | None = None) -> int:
         print(fixed_session(run, args.new, args.use))
     elif args.command == "stage":
         return cmd_stage(run, args.name, args.prompt, args.model, args.effort, args.memory)
+    elif args.command == "preflight":
+        bad = [n for n in args.examples if not (len(n) == 3 and n.isdigit())]
+        if bad:
+            ap.error(f"not an example's number: {' '.join(bad)}")
+        return cmd_preflight(run, args.examples)
     elif args.command == "verification":
         return cmd_verification(run, args.action)
     elif args.command == "loop":

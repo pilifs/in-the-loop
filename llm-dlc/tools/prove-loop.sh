@@ -3,8 +3,8 @@
 # (llm-dlc/runtime.md#the-proof-loop), in a development or a runtime checkout.
 #
 # Usage: llm-dlc/tools/prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE]
-#                                    [--wait-for-proofs] [--no-verification] [--no-isolation]
-#                                    EXAMPLE [EXAMPLE ...]
+#                                    [--instruction TEXT] [--wait-for-proofs] [--no-verification]
+#                                    [--no-isolation] EXAMPLE [EXAMPLE ...]
 #
 # It gives each example to feature-loop.sh's `prove-change` moonshot: "Formally
 # prove example {} as elegantly and efficiently as possible", on Fable 5.2 at high
@@ -18,6 +18,9 @@
 #                    changes (watch.py's fixed session), so it proves what it planned.
 #   --wait-for-proofs  stay on an example while its verification jobs run, instead
 #                    of taking the next one meanwhile
+#   --instruction TEXT  what each cycle tells the session, in place of the line
+#                    above: one line, with {} where the example's number goes. It is
+#                    still the only thing the session is given.
 #   --fork SESSION   the loop's session starts as a fork of that one: the session
 #                    that prepared the example hands on what it learned. The fork is
 #                    made in one turn without tools, then compacted, and the cycles
@@ -70,7 +73,7 @@ VERIFY=1
 EXAMPLES=()
 
 usage() {
-  echo "usage: prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE] [--wait-for-proofs] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
+  echo "usage: prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE] [--instruction TEXT] [--wait-for-proofs] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
   exit 2
 }
 
@@ -79,6 +82,7 @@ while (( $# )); do
     --fork) [[ $# -ge 2 ]] || usage; FORK=$2; shift 2 ;;
     --session) [[ $# -ge 2 ]] || usage; CONTINUE=$2; shift 2 ;;
     --wait-for-proofs) export FEATURE_LOOP_CONTINUE_WHILE_PROVING=0; shift ;;
+    --instruction) [[ $# -ge 2 ]] || usage; export FEATURE_LOOP_INSTRUCTION=$2; shift 2 ;;
     --cycles) [[ $# -ge 2 && "$2" =~ ^[1-9][0-9]*$ ]] || usage; CYCLES=$2; shift 2 ;;
     --memory) [[ $# -ge 2 ]] || usage; export FEATURE_LOOP_MEMORY_MAX=$2; shift 2 ;;
     --no-verification) VERIFY=; shift ;;
@@ -88,6 +92,10 @@ while (( $# )); do
   esac
 done
 (( ${#EXAMPLES[@]} )) || usage
+if [[ -n "${FEATURE_LOOP_INSTRUCTION+set}" ]] && [[ "$FEATURE_LOOP_INSTRUCTION" != *"{}"* || "$FEATURE_LOOP_INSTRUCTION" == *$'\n'* ]]; then
+  echo "prove-loop.sh: --instruction takes one line with {} where the example's number goes" >&2
+  exit 2
+fi
 UUID='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 [[ -z "$FORK" || "$FORK" =~ $UUID ]] || { echo "prove-loop.sh: not a session id: $FORK" >&2; exit 2; }
 [[ -z "$CONTINUE" || "$CONTINUE" =~ $UUID ]] || { echo "prove-loop.sh: not a session id: $CONTINUE" >&2; exit 2; }
@@ -161,9 +169,10 @@ if [[ -n "$FORK" ]]; then
 fi
 
 python3 - "$RUN/run.json" "$SESSION" "$FORK" "$$" "${EXAMPLES[@]}" <<'EOF' || exit 1
-import json, sys, time
+import json, os, sys, time
 path, session, fork, pid, *examples = sys.argv[1:]
 json.dump({"session": session, "forkedFrom": fork or None, "pid": int(pid), "examples": examples,
+           "instruction": os.environ.get("FEATURE_LOOP_INSTRUCTION"),
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "ended": None}, open(path, "w"), indent=1)
 EOF
 

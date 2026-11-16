@@ -45,9 +45,9 @@ this repository with its own release.
 
 **In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
 plugin, so `/prove-java-change NNN [NNN ...]` runs the copy being worked on. The bootstrap answers `development`,
-stages 1 to 3 don't apply (the checkout is the home, its machine is known and the examples exist), and the watcher
-starts the verification loop and goes straight to stage 4 on the examples named, in the order given, with traces as
-for any loop here. The fixed session is a new one (`watch.py session --new`) unless the request names a session to
+stage 1 doesn't apply (the checkout is the home and its machine is known), and the request names
+[examples that are already prepared](#examples-that-are-already-prepared): the watcher starts the verification
+loop, checks them, and takes them to stage 4 in the order given, with traces as for any loop here. The fixed session is a new one (`watch.py session --new`) unless the request names a session to
 continue (`watch.py session --use ID`), such as the one an earlier moonshot ran in, which then keeps what it learned.
 Every moonshot over examples is run this way from now on.
 
@@ -58,8 +58,12 @@ its pin.
 ### Many changes, and preparing without proving
 
 ```
-/in-the-loop:prove-java-change [--scaffold-only] [--wait-for-proofs] <one change, or a list of them, each with what to prove about it>
+/in-the-loop:prove-java-change [--scaffold-only] [--wait-for-proofs] [--instruction "TEXT"] <one change, or a list of them, each with what to prove about it>
+/in-the-loop:prove-java-change [--wait-for-proofs] [--instruction "TEXT"] NNN [NNN ...]
 ```
+
+The second form names [examples that are already prepared](#examples-that-are-already-prepared), by number.
+`--instruction` gives [the proof loop](#the-proof-loop) the user's own text in place of its one line.
 
 - **A list.** Stage 2 understands and sizes every change before an example is added for any. Then it orders them, the
   most accessible first: a proof that lands early can extend the verifier under the later ones, and a hard one first
@@ -232,6 +236,7 @@ keeps the user informed, and judges what a script can't. [`watch.py`](tools/watc
 ```bash
 python3 llm-dlc/tools/watch.py stage evaluate "PROMPT"        # stage 2, in the fixed session
 python3 llm-dlc/tools/watch.py stage setup "PROMPT"           # stage 3, in a new session
+python3 llm-dlc/tools/watch.py preflight NNN ...              # examples already prepared: what each lacks
 python3 llm-dlc/tools/watch.py verification start|stop|status # the verification loop, on Sonnet 5.5
 python3 llm-dlc/tools/watch.py loop --memory SIZE NNN ...     # stage 4: the proof loop, detached, in the fixed session
 python3 llm-dlc/tools/watch.py wait                           # block until there is something for the watcher
@@ -297,6 +302,44 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
 It is done when `changes.py` calls each example `prepared`. You decide nothing the plan left open and change no
 claim: what does not work as the plan says (a revision that won't build, a replay that shows something else) goes
 into your report as a question, with what you found.
+
+### Examples that are already prepared
+
+A request may name examples by number in place of changes: ones an earlier `--scaffold-only` run, another agent or a
+person prepared. Stages 2 and 3 don't run for them. The watcher checks them first, and nothing is started on any
+until all of them pass:
+
+```bash
+python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
+```
+
+It is a cursory check, from the files alone, and prints for each example what it lacks, of two kinds:
+
+| Kind | What is checked | For instance |
+|---|---|---|
+| `artifacts` | What a proof needs is there: each revision materializes from its lock, and the change has run once on a JVM | no receipt binds a revision to prepared artifacts; no validated replay |
+| `form` | The example is formed correctly: `example.json` validates against its schema, the target sidecar loads, every proof task has its claim frozen, and there is a proof task at all | a sidecar that is not JSON; a claim not frozen; no proof task |
+
+- **Exit 0:** nothing is lacking. The loop takes `toProve`, in the order given; an example already `decided` is left
+  out, and the watcher says so. An example without a target sidecar (a constructed one) passes with a note: only its
+  `example.json` was checked.
+- **Exit 1:** something is lacking. The watcher makes one attempt to put it right: a setup session
+  (`watch.py stage setup`, Opus 5.5 at high effort) given the check's output and the brief below. Then it checks
+  again, and if anything is still lacking it aborts: it says which example lacks what, and starts nothing.
+- **Exit 2:** an example named is not there at all. Nothing says what it would be, so the watcher aborts at once.
+
+**The repair's brief,** for the session `watch.py stage setup` starts with a check's output. You put right what the
+check names, in the examples it names, and nothing else:
+
+1. A missing artifact is made from the example's own files: its revisions prepared again from their lock
+   (`build.py --plan NNN`), its replay run again. A revision that no longer builds or a replay that now shows
+   something else is not repaired by changing the example: report it.
+2. A fault in the form is corrected where the example's own files say what is meant: a field renamed to what the
+   schema asks, a path that moved, a claim file a task names and the folder holds under another name.
+3. A claim is the user's. Where a proof task or its claim is missing, write it only if the example's own pages state
+   in words what is to be proved, as they state it, and list every claim you wrote in your report: the watcher shows
+   them to the user before the loop starts. Where nothing states it, write none and report that.
+4. Commit each example you changed by itself, and reply with what you did, what you could not, and why.
 
 ### Watching the loop
 
@@ -370,12 +413,15 @@ acts.
 ## The proof loop
 
 ```bash
-llm-dlc/tools/prove-loop.sh --session SESSION --memory SIZE [--wait-for-proofs] [--no-isolation] NNN [NNN ...]
+llm-dlc/tools/prove-loop.sh --session SESSION --memory SIZE [--instruction TEXT] [--wait-for-proofs] [--no-isolation] NNN [NNN ...]
 ```
 
 [`prove-loop.sh`](tools/prove-loop.sh) runs [`feature-loop.sh`](tools/feature-loop.sh)'s `prove-change` moonshot over
 the examples it is given: "Formally prove example NNN as elegantly and efficiently as possible", on Fable 5.2 at high
-effort, the instruction and nothing else. It works the same in both modes, and the watcher starts it
+effort, the instruction and nothing else. `--instruction TEXT` gives it the user's text in place of that line:
+one line, with `{}` where the example's number goes, and still the only thing the session is given (the run's
+record keeps it, and the loop statistics tell its cycles by the words before `{}`, so fewer than 16 characters
+there leaves the run unmeasured). It works the same in both modes, and the watcher starts it
 (`watch.py loop`). Every moonshot over examples is run this way: `prove-examples`, the list 285 to 300 that
 `feature-loop.sh` still names, is this loop given those numbers.
 

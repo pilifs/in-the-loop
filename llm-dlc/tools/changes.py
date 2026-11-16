@@ -41,6 +41,15 @@ REPO = Path(__file__).resolve().parents[2]
 TOOLS = str(REPO / "examples" / "tools")  # targets/sidecar.py and targets/workflow.py: the code, whatever the root
 LOCAL_NUMBERS = range(900, 1000)  # a runtime checkout's own examples (llm-dlc/runtime.md)
 ANSWERS = ("established", "refuted")
+# What an unprepared example lacks, by kind, for whoever checks one before a proof loop takes it (watch.py
+# preflight): an artifact that is not there (a revision that does not materialize, no oracle run, no lock), the
+# example's form (a file that does not load or validate, a claim not frozen, no proof task), or the example itself.
+ARTIFACTS, FORM, ABSENT = "artifacts", "form", "absent"
+FORM_MILESTONES = ("claimFrozen",)
+
+
+def gap(kind: str, what: str, task: str | None = None) -> dict:
+    return {"kind": kind, "task": task, "what": what}
 TO_PROVE = ("prepared", "unknown")
 
 
@@ -56,13 +65,15 @@ def folders(root: Path, numbers: list[str]) -> list[tuple[str, Path | None]]:
 def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
     """One example's row. A folder that can't be read is unprepared, with the reason: the list never fails on one."""
     if sidecar_file is None:
-        return {"id": number, "state": "unprepared", "why": [f"there is no example {number}"]}
+        return {"id": number, "state": "unprepared", "why": [f"there is no example {number}"],
+                "gaps": [gap(ABSENT, f"there is no example {number}")]}
     folder = sidecar_file.parent
     r: dict = {"id": number, "path": str(folder.relative_to(root))}
     try:
         example = json.loads(sidecar_file.read_text())
     except (OSError, json.JSONDecodeError) as e:
-        return {**r, "state": "unprepared", "why": [f"example.json can't be read: {e}"]}
+        return {**r, "state": "unprepared", "why": [f"example.json can't be read: {e}"],
+                "gaps": [gap(FORM, f"example.json can't be read: {e}")]}
     source = example.get("source") or {}
     r.update(title=example.get("title"), source=source.get("url"), repository=source.get("repository"),
              provenance=example.get("provenance"), verdict=example.get("verdictLabel"))
@@ -75,7 +86,8 @@ def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
         projected = workflow.project(folder, example, target)
         ready = workflow.readiness(folder, example, target)
     except Exception as e:  # a sidecar refused, a claim that does not load: the reason is the finding
-        return {**r, "state": "unprepared", "why": [f"{type(e).__name__}: {e}"]}
+        return {**r, "state": "unprepared", "why": [f"{type(e).__name__}: {e}"],
+                "gaps": [gap(FORM, f"{type(e).__name__}: {e}")]}
     finally:
         sys.path.remove(TOOLS)
     r["next"] = (target.get("handoff") or {}).get("next")
@@ -84,17 +96,24 @@ def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
     r["readiness"] = ready["summary"]
     r["claims"] = {task: {"status": status, "expected": projected["expected"].get(task)}
                    for task, status in projected["claims"].items()}
-    why = []
+    why, gaps = [], []
     for task, t in ready["tasks"].items():
         if t["summary"] in ("partial", "catalogued"):
-            missing = [f"{name}: {m['evidence']}" for name, m in t["milestones"].items()
-                       if name in workflow.SCAFFOLD and m["reached"] is False]
+            unreached = {name: m["evidence"] for name, m in t["milestones"].items()
+                         if name in workflow.SCAFFOLD and m["reached"] is False}
+            missing = [f"{name}: {evidence}" for name, evidence in unreached.items()]
             observed = [b["summary"] for b in t["blockers"] if b.get("observed") and b["kind"] not in workflow.CAPABILITY_KINDS]
             why += [f"task {task}: {x}" for x in missing + observed] or [f"task {task}: {t['summary']}"]
+            gaps += [gap(FORM if name in FORM_MILESTONES else ARTIFACTS, f"{name}: {evidence}", task)
+                     for name, evidence in unreached.items()]
+            gaps += [gap(ARTIFACTS, x, task) for x in observed]
+            if not unreached and not observed:
+                gaps.append(gap(ARTIFACTS, t["summary"], task))
     if not r["claims"]:
         why.append("no proof task: nothing here states a claim")
+        gaps.append(gap(FORM, "no proof task: nothing here states a claim"))
     if why:
-        return {**r, "state": "unprepared", "why": why}
+        return {**r, "state": "unprepared", "why": why, "gaps": gaps}
     decided = all(c["status"] in ANSWERS for c in r["claims"].values())
     return {**r, "state": "decided" if decided else "prepared"}
 
