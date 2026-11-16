@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Verification results: the heap proof tier passes under JBMC at 600 s, closing VF-018
 
-[`bbd0578e1ec3`](https://github.com/pilifs/in-the-loop/commit/bbd0578e1ec3f3d52346eb30e2255a7cfcb2697b) · [log `9680123920a2`](https://terminalvalue.net/raw-traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/9680123920a27070b8afef19101da1f02b388e50970e6db94f5bf920efcfaa77.jsonl.gz)
+[`59c9e9593dd5`](https://github.com/pilifs/in-the-loop/commit/59c9e9593dd50bca32622c9ea149c1f27a441d81) · [log `9680123920a2`](https://terminalvalue.net/raw-traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/9680123920a27070b8afef19101da1f02b388e50970e6db94f5bf920efcfaa77.jsonl.gz)
 
 Job 20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an ran the nine ignored heap.rs tests unchanged with the Z3 second attempt: 9 passed in 11m52s, peak 2.0 GiB (estimated 1h30m, 4 GiB). VF-018 is closed in verification/findings.md.
 
 ### /prove-java-change: summaries every 30 minutes, a run the user is away from, one loop name, and the model may start the skill
 
-[`bf8d2634df77`](https://github.com/pilifs/in-the-loop/commit/bf8d2634df7746d9eb7b0740c0520945310514a1) · [log `a3470a801ec8`](https://terminalvalue.net/raw-traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/a3470a801ec8774e8c5c1e90609e450c9fa4ff5e1bc193f443fb7d13810ca77f.jsonl.gz)
+[`9879cf1c17a2`](https://github.com/pilifs/in-the-loop/commit/9879cf1c17a2f9213e1911727089bddf6b43e289) · [log `a3470a801ec8`](https://terminalvalue.net/raw-traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/a3470a801ec8774e8c5c1e90609e450c9fa4ff5e1bc193f443fb7d13810ca77f.jsonl.gz)
 
 Before the first real run of the skill (examples 288 onwards, in this development checkout), the user asked for four things. The watcher's summaries come every 30 minutes by default instead of 10, since nobody reads them as they come and each adds to the watcher's context; --summary-interval SECONDS in the request, or watch.py interval, sets another. The skill no longer forbids the model to start it, so the user can ask an open session for a run in their own words; its description says to start it only when the user asks. The run is to be as autonomous as it can: --unattended has the watcher read the claims of the catalog entries it had set up in the user's place, and accept them with watch.py claims NNN --accept REASON, which writes a decision for each example into the run's decision record, flagged as costly so the user reviews it afterwards; an example whose claims the watcher is not sure of is left out and reported. That flag is my reading of 'autonomous as possible': without it the run still waits for the user's one confirmation of the claims. And --record-as NAME (prove-loop.sh, FEATURE_LOOP_RECORD_AS) files a run under another loop's name, so 288 onwards are counted with 285 to 287 as prove-examples.
 

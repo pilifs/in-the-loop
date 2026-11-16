@@ -46,6 +46,9 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
 # The deep packets and the calibration: the examples whose receipts this file reads.
 PACKETS = ("105", "285", "286", "287", "305", "306", "307")
+# The catalog entries (288-300) a setup session of /prove-java-change has since set up (llm-dlc/runtime.md, a catalog
+# entry's brief): each brings its replays' receipts, and its proof tasks are the proof loop's, not this loop's jobs.
+CATALOG = range(288, 301)
 
 
 def sidecar_examples():
@@ -173,8 +176,10 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
 
     def test_the_packets_have_receipts(self):
         self.assertGreaterEqual(len(self.receipts), 14)
-        # 307's replays came back on the source slice on 2026-11-15, so every packet has receipts now.
-        self.assertEqual({f.name[:3] for f, _, _, _ in self.receipts}, set(PACKETS))
+        # 307's replays came back on the source slice on 2026-11-15, so every packet has receipts now; a catalog entry
+        # has receipts only once it is set up, with tasks in its sidecar.
+        set_up = {n for n, (_, _, t) in self.targets.items() if int(n) in CATALOG and t["tasks"]}
+        self.assertEqual({f.name[:3] for f, _, _, _ in self.receipts}, set(PACKETS) | set_up)
 
     def test_each_receipt_names_its_commits_jdks_and_ordered_classpath(self):
         for folder, task, directory, doc in self.receipts:

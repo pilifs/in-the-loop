@@ -32,7 +32,7 @@ Job 20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe passed (1 step, 1m2
 
 ### Record session traces
 
-change `nvsxqxwkwltq` · [log `4e33a252274b`](https://terminalvalue.net/raw-traces/919d1317-7c09-476f-aee3-b72638b3aff0/4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7.jsonl.gz)
+[`03f74bfb1070`](https://github.com/pilifs/in-the-loop/commit/03f74bfb1070f92bface9f0a22f10fd9e3101486) · [log `4e33a252274b`](https://terminalvalue.net/raw-traces/919d1317-7c09-476f-aee3-b72638b3aff0/4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

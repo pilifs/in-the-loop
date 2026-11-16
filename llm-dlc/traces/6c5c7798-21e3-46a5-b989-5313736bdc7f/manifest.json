@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "open",
+  "status": "ended",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T17:08:32.434Z",
-  "duration_seconds": 85266,
+  "ended": "2026-11-16T17:18:21.212Z",
+  "duration_seconds": 85854,
   "stats": {
-    "turns": 42,
-    "api_calls": 270,
-    "tool_calls": 238,
+    "turns": 44,
+    "api_calls": 285,
+    "tool_calls": 250,
     "tool_errors": 5,
     "compactions": 2,
     "peak_context_tokens": 237996,
     "usage": {
-      "input_tokens": 634,
-      "output_tokens": 195891,
-      "cache_read_input_tokens": 37787316,
-      "cache_creation_input_tokens": 506374
+      "input_tokens": 668,
+      "output_tokens": 201442,
+      "cache_read_input_tokens": 39164356,
+      "cache_creation_input_tokens": 530641
     }
   },
   "tools": {
-    "Bash": 220,
+    "Bash": 232,
     "SendMessage": 5,
     "ToolSearch": 5,
     "ListAgents": 3,
@@ -70,24 +70,24 @@
     {
       "index": 2,
       "started": "2026-11-16T09:49:36.548Z",
-      "ended": "2026-11-16T17:08:32.434Z",
-      "turns": 4,
-      "api_calls": 18,
+      "ended": "2026-11-16T17:18:21.212Z",
+      "turns": 6,
+      "api_calls": 33,
       "usage": {
-        "input_tokens": 38,
-        "output_tokens": 10648,
-        "cache_read_input_tokens": 1112400,
-        "cache_creation_input_tokens": 93185
+        "input_tokens": 72,
+        "output_tokens": 16199,
+        "cache_read_input_tokens": 2489440,
+        "cache_creation_input_tokens": 117452
       },
-      "peak_context_tokens": 76789
+      "peak_context_tokens": 101774
     }
   ],
   "log": {
-    "sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6",
-    "bytes": 5021100,
-    "lines": 1975,
-    "gzip_bytes": 967713,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6.jsonl.gz"
+    "sha256": "64166f9c2019b6fa4f8be2b42e0fe3e72f015997d392b357be5553ae53783f51",
+    "bytes": 5328790,
+    "lines": 2101,
+    "gzip_bytes": 1019509,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/64166f9c2019b6fa4f8be2b42e0fe3e72f015997d392b357be5553ae53783f51.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -462,7 +462,7 @@
     {
       "change_id": "ovnvrounvynowvqksptpzlkqznolmwnp",
       "commit_id": "31b7bb6c59cb06360e2fd466625e09885cd35193",
-      "immutable": false,
+      "immutable": true,
       "summary": "/prove-java-change: catalog entries are set up first, answers given beside the route count, and the watcher's verdicts go to the decision record",
       "body": "Five decisions the user took on 2026-11-16, asked one at a time, and what each became.\n\n1. A claim decided beside the route. Examples 286 and 287 had claims decided by a script of their own (proofs/prove.py) run as verification jobs, which leaves no route receipt, so changes.py listed them as open. A task in target.json may now carry besideRoute (answer, job, by, recorded; examples/schema/target.schema.json). changes.py counts such an answer only while the job's result is in the checkout, passed, and the job names the example; a route receipt outranks it. 286 and 287 have their six records. Both still list as prepared: each has other claims open, and an open claim now carries 'blocked', the kinds of observed verifier gaps its task stops at. Whether such an example is done stays the watcher's judgement.\n\n2. Catalog entries. Examples 288 to 300 have pinned revisions and no task. changes.py gives them a state of their own, catalogued, and watch.py preflight lists them under toSetUp, apart from prepared examples that lack something (toRepair, one repair, else abort, as before). The watcher has each entry set up by a setup session before the loop starts (runtime.md, 'A catalog entry's brief'), checks again with --after-setup, which leaves out an entry that is still not prepared without stopping the others, and shows the user every claim once before a proof starts (new: watch.py claims).\n\n3. Continuing 288 onwards in the old prove-examples session needs no code: the request names the session and the watcher runs watch.py session --use.\n\n4. The watcher's verdicts are decisions. conductor.py decide also appends each verdict given in time to llm-dlc/decisions/NAME.jsonl (local-NAME in a runtime checkout), with the question, its answers, the reason and how it is taken back; --confidence medium flags it for review. The watcher's summary names decisions the user overturned. A record that can't be written never holds a verdict back. The stream conductor's brief gains Design 8, a proposal to make the watcher the conductor of parallel streams in place of plan step 4; it is for the user to read and nothing of it is built.\n\n5. Housekeeping: watch.py no longer takes a shell that only mentions verification-loop.sh (the window a loop ended in) for a running loop.\n\nVerified by the default test run (Rust, and 46 of 46 Python files), with new tests in test_changes.py, test_watch.py and test_conductor.py; changes.py and watch.py preflight and claims were also run on examples 285 to 288 of this checkout. No model has run any of it: the setup of a catalog entry, the claims confirmation and the recorded verdicts are tested against stand-ins and fixtures only.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -470,7 +470,7 @@
     {
       "change_id": "rnoqllmozsomlxnylmrzpqstykxpovkr",
       "commit_id": "93177d41381e9883f9b1e13e1e7f27ddd4c07d26",
-      "immutable": false,
+      "immutable": true,
       "summary": "Release 0.9.0 of /prove-java-change",
       "body": "The skill at 0.9.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (8e12835a4ed91d536d070210d0cadc92d24c8e8e2b6835c9288218a229825b9f, 5530 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Examples named by number may be catalog entries: each is set up by a setup session before the loop starts, and the user confirms every claim once. Answers given beside the route (a sidecar's besideRoute, confirmed by a passed verification job) count as decided. The watcher's answers to the loop are recorded as decisions the user can review (llm-dlc/decisions/).",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -478,7 +478,7 @@
     {
       "change_id": "qskkyvqtknulmtzkloxprnlvoruklypw",
       "commit_id": "3387c8d6f280cf3f9a412a037d62d999a48d48bd",
-      "immutable": false,
+      "immutable": true,
       "summary": "JBMC runs get a second attempt on Z3 with multiplication congruence lemmas, for VF-018 (verification pending)",
       "body": "Three regression proofs over objects (objects.Kernel#price, lines.Lines#reprice, orders.Orders#reprice) never finished under JBMC within 1800 s: finding VF-018, open since 2026-11-07. Each relates products whose operands are equal only under the correspondence or a branch, such as cents * quantity against quantity * cents. JBMC's SAT backend builds every multiplication as a circuit of its own, so its solver has to find each equality through two 64-bit multipliers. The diagnosis came from another agent's analysis the user passed on; it was reproduced here before anything was built on it: Z3 gives no answer in 60 s on JBMC's formula for the lines case and answers unsat at once with the lemmas, and with JBMC driving Z3 the three proofs take 0.11 to 0.14 s.\n\nThe change is in the tool, not in the tests or the harness. lib/src/congruence.rs reads a formula JBMC wrote as SMT-LIB and adds, for every two products of one width, the lemma that equal operands in either order give equal products, which holds of any fixed-width multiplication; nothing else in the formula changes. jbmc::run uses it as a second attempt: a run still without a verdict after a twentieth of its limit (5 s at least, 30 s at most) is held still with SIGSTOP (tla::run_with_interlude), JBMC writes its formula, and JBMC runs again with a solver script that answers that one formula, byte for byte, by giving Z3 the formula with the lemmas. Only a proof with every property holding is taken. Then the result names what decided it (its checker reads 'JBMC 6.11.0, its formula decided by Z3 5.3.3 with 6 multiplication congruence lemma(s)', its evidence names Z3, and it carries the counts). Anything else leaves the held run to go on with the time it had: JBMC can't write a trace as JSON from an SMT model, so a counterexample always comes from its own solver. Without a Z3, or with JVMCONTRACT_Z3=off, a run is as it was. doctor.py lists z3 as a tool whose absence limits what JBMC can prove.\n\nVerified by the default test run (Rust and Python; the first run showed the attempt firing 50 ms into the short staged runs of two conformance tests, which is why it now waits 5 s at least), with unit tests of the reader and the lemmas and stand-in tests of a proof taken, a counterexample not taken with the run resumed where it was, and runs that never meet the attempt. One probe through jbmc::run with the real JBMC and Z3: lines.Lines#reprice ended Verified in 30.2 s (6 lemmas over 4 products, the attempt itself 0.2 s), and its defect twin was refuted by JBMC's own solver in 0.1 s as before. Not yet shown: the nine proof-tier tests of lib/tests/heap.rs, unchanged. Job 20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an runs them at the 600 s limit and is the finding's closing condition; VF-018 stays open until it is in. The prices test has proofs that are hard for Z3 too and may still need the longer limit.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -486,7 +486,7 @@
     {
       "change_id": "kzqntlsowxyopsxulmnloxzrvqvzwmwp",
       "commit_id": "59c9e9593dd50bca32622c9ea149c1f27a441d81",
-      "immutable": false,
+      "immutable": true,
       "summary": "Verification results: the heap proof tier passes under JBMC at 600 s, closing VF-018",
       "body": "Job 20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an ran the nine ignored heap.rs tests unchanged with the Z3 second attempt: 9 passed in 11m52s, peak 2.0 GiB (estimated 1h30m, 4 GiB). VF-018 is closed in verification/findings.md.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -494,7 +494,7 @@
     {
       "change_id": "ootztwnnypkqqxkklplqvuswpprszumw",
       "commit_id": "9879cf1c17a2f9213e1911727089bddf6b43e289",
-      "immutable": false,
+      "immutable": true,
       "summary": "/prove-java-change: summaries every 30 minutes, a run the user is away from, one loop name, and the model may start the skill",
       "body": "Before the first real run of the skill (examples 288 onwards, in this development checkout), the user asked for four things. The watcher's summaries come every 30 minutes by default instead of 10, since nobody reads them as they come and each adds to the watcher's context; --summary-interval SECONDS in the request, or watch.py interval, sets another. The skill no longer forbids the model to start it, so the user can ask an open session for a run in their own words; its description says to start it only when the user asks. The run is to be as autonomous as it can: --unattended has the watcher read the claims of the catalog entries it had set up in the user's place, and accept them with watch.py claims NNN --accept REASON, which writes a decision for each example into the run's decision record, flagged as costly so the user reviews it afterwards; an example whose claims the watcher is not sure of is left out and reported. That flag is my reading of 'autonomous as possible': without it the run still waits for the user's one confirmation of the claims. And --record-as NAME (prove-loop.sh, FEATURE_LOOP_RECORD_AS) files a run under another loop's name, so 288 onwards are counted with 285 to 287 as prove-examples.\n\nFound on the way: watch.py loop handed its arguments to argparse, which took the options out from between their values, so --memory 12G --wait-for-proofs 288 reached prove-loop.sh as --memory --wait-for-proofs 12G 288. One option worked, which is all the tests had; two or more would have failed the first real run. The arguments now go through in the order given. prove-loop.sh also took the window an ended loop was started in for a running verification loop, as watch.py did before its fix. In a development checkout the skill now runs the doctor for the loop's memory cap, and the catalog entry's brief says that a preparation over the inline limits is queued and waited for.\n\nThe user also asked that a clean launch never drop the memory of the project's own folder. It does not: probed on Claude Code 2.1.325 in a scratch folder with made-up markers, a session started with the clean flags held the folder's CLAUDE.md and its auto memory and not the CLAUDE.md of the directory above. runtime.md and claude_setup.py now say that the checkout's own memory always stays, and a test holds the flags to it. The user's own memory file was not in the probe, as this machine has none.\n\nVerified by the default test run (46 of 46), with new tests of the accepted claims as flagged decisions, of a run filed under another loop's name, and of several options passed through in order. A new release is owed for the skill's folder and follows.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -502,7 +502,7 @@
     {
       "change_id": "tuqslzvwxtuxtwrktmqvxpryzrxqvuum",
       "commit_id": "9b8ee4bc4576998a6ac9439092bd912aa82d9ff9",
-      "immutable": false,
+      "immutable": true,
       "summary": "A queued verification job starts at once: the commit announces it, a runner at work takes it into its run, and results are collected as they come (verification pending)",
       "body": "Until now the verification loop looked at the queue every 60 seconds while it waited, and not at all while a run was under way: pipeline.py run read the queue once, at its start, so a job committed during a long proof waited for that proof to end, and every result of a run was collected only after its longest job. The user asked that the prover, the watcher and the verifier work the queue together, with the intervals kept as the backup. The parts: (1) pipeline.py run reads the queue again at once after a nudge and every poll_seconds (30) besides, starts each new job beside the ones running as the budget allows, and ends after one last look when nothing runs and nothing is queued. (2) pipeline.py nudge says that the queue changed, by touching a file in the state directory; sync.py commit runs it when its commit changed verification/jobs/ or priorities.json, in both modes, so whoever queues a job announces it without having to remember. (3) verification-loop.sh, waiting for work, looks at once after a nudge. (4) pipeline.py wait blocks until a job has finished and waits to be collected, or no runner is at work, and /run-verification now collects, triages and commits each result as it comes while the other jobs run. (5) watch.py wait, the watcher's loop, announces a job it sees queued that nobody announced (once), and starts a verification loop if none is running while jobs wait, unless the watcher stopped it; watch.py verification nudge does the first by hand.\n\nReading the queue had to become cheap for this: it took 6.4 s here, a git process or two for each of 407 job files, and now takes 0.3 s, with one git cat-file for all the files and a source commit looked up only for jobs still waiting. The runner writes its pid into its lock file, so that wait and nudge can tell a runner is at work without trying the lock, which would turn away a runner starting at that moment.\n\nVerified by the default test run (46 of 47 on the first run; the one failure was a test listing a commit's exact steps, updated and rerun with its neighbours), with new tests: a job committed during a run starts at a nudge and its result is collected before the run ends; without a nudge the interval finds it; the verification loop starts a run at a nudge long before its interval (stand-ins for the pipeline and for claude); a commit that queues a job tells the pipeline and one that does not stays quiet; the watcher announces once and restarts a loop that is gone. The verification loop was restarted on the new script before this commit. Job 20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe runs the pipeline's tests under the runner, and is also the first job announced by its own commit on the real queue.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -510,7 +510,7 @@
     {
       "change_id": "uosmqmoxlpwntkypypnqspnllmvnkpps",
       "commit_id": "4365ee9883c0910ba0c9ce2cfa208ce14700b270",
-      "immutable": false,
+      "immutable": true,
       "summary": "Release 0.10.0 of /prove-java-change",
       "body": "The skill at 0.10.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (edd95d299add28cb690fc8a22e116b3a30dc1c22232239623722d76a678b5674, 5536 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Summaries every 30 minutes (--summary-interval), --unattended, --record-as, the model may start the skill, watch.py loop passes its options in order, and the verification queue is worked together: a queued job is announced by its commit and starts beside the jobs running",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -518,15 +518,15 @@
     {
       "change_id": "ykqrsqwumpkknzqkzvxmnvuqrnlnqtml",
       "commit_id": "c82d4ae2613db0244e87f87ef6a42a4f5b8cb139",
-      "immutable": false,
+      "immutable": true,
       "summary": "Verification results: the pipeline's own tests pass with the queue read again during a run",
       "body": "Job 20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe passed (1 step, 1m24s, peak 120 MiB; estimated 3m00s, 1.0 GiB) on vm-1 at 4fc4824f. No outputs to apply. No new findings.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
     },
     {
       "change_id": "nvsxqxwkwltqunykroyyrlumkwpzypso",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "03f74bfb1070f92bface9f0a22f10fd9e3101486",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6"
@@ -556,6 +556,12 @@
       "lines": 1667,
       "gzip_bytes": 770429,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/5ba60ac0a27f107bab9a938f838cb76c9e7618d17d55a0f84d86a98b39b55f8b.jsonl.gz"
+    },
+    "64166f9c2019b6fa4f8be2b42e0fe3e72f015997d392b357be5553ae53783f51": {
+      "bytes": 5328790,
+      "lines": 2101,
+      "gzip_bytes": 1019509,
+      "url": null
     },
     "8741962a9d1b9f947fb0f636d5fccf312b2007d8f29d85c0de9b9c9d23b8490c": {
       "bytes": 4117081,
