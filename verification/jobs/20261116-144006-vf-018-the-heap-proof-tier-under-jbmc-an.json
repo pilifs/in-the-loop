@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an",
+  "title": "VF-018: the heap proof tier under JBMC and auto --confirm, with the second attempt on Z3 for products JBMC's SAT solver can't relate",
+  "description": "The nine ignored tests of lib/tests/heap.rs, unchanged, at JBMC's default limit of 600 s. Four of them have failed since 2026-11-07 because JBMC gave no verdict on a regression proof over objects (objects.Kernel#price, lines.Lines#reprice, orders.Orders#reprice within 1800 s, prices.Prices#total within 600 s): finding VF-018. The change under test (lib/src/congruence.rs, used by lib/src/jbmc.rs): a JBMC run without a verdict after 30 s is held still, JBMC writes its formula as SMT-LIB, jvmcontract adds a congruence lemma for every two multiplications of one width (equal operands, in either order, give equal products), and JBMC runs again with Z3 answering that formula; only a proof is taken, otherwise the held run goes on. A probe of lines.Lines#reprice through this path gave Verified in 30.2 s (6 lemmas, 0.2 s of it the attempt), and its defect twin still gave its counterexample from JBMC's own solver in 0.1 s. This job is the finding's closing condition: the tests pass unchanged, including every defect's JVM witness. Some proofs in the prices test are harder for Z3 as well (21 s to more than 30 s with the lemmas), so that test may still meet the 600 s limit on a case other than Prices#total; if it does, the log says which.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/heap.rs",
+      "lib/src/congruence.rs",
+      "lib/src/jbmc.rs"
+    ]
+  },
+  "expected": "cargo exits 0: 9 passed, 0 failed. The three proofs that timed out now end Verified with a checker that reads 'JBMC 6.11.0, its formula decided by Z3 ... multiplication congruence lemma(s)'",
+  "submitted": {
+    "at": "2026-11-16T14:40:06+00:00",
+    "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+  },
+  "requires": [
+    "jbmc",
+    "z3",
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "1h30m",
+    "timeout": "3h",
+    "notes": "the same job took 50m12s on 2026-11-15 with four tests failing at 600 s timeouts (20261115-173209); the three stubborn proofs now take about 30 s each, the prices test is the unknown"
+  },
+  "steps": [
+    {
+      "name": "heap proof tier",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test heap -- --ignored",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

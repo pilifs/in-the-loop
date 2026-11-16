@@ -295,6 +295,7 @@ impl Outcome {
             gap_mode: Some(self.gap_mode),
             ending,
             profile,
+            congruence: None,
         }
     }
 

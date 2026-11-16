@@ -130,6 +130,10 @@ pub struct JbmcResult {
     pub ending: Ending,
     /// Where the run's time went, phase by phase, and the size of its formula ([`crate::phases`]).
     pub profile: crate::phases::Profile,
+    /// Set when the proof is not JBMC's own solver's but Z3's, on JBMC's formula with multiplication congruence
+    /// lemmas ([`crate::congruence`]); `version` then names both.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub congruence: Option<crate::congruence::Record>,
 }
 
 /// An argument of a counterexample: a primitive, an array of primitives, a String's UTF-16 code units, `null`, or
@@ -381,6 +385,12 @@ fn abnormal_end(output: &str, memory_mb: Option<u64>) -> Option<(Ending, String)
 
 /// Runs JBMC and reads its output through `--json-ui`.
 pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
+    run_with(run, crate::congruence::solver().as_deref(), crate::congruence::patience(run.timeout))
+}
+
+/// [`run`], with the Z3 for the second attempt named, or none for a run without one, and how long the run goes
+/// before that attempt.
+pub(crate) fn run_with(run: &JbmcRun, z3: Option<&Path>, patience: Duration) -> Result<JbmcResult, Error> {
     let memory_mb = memory_limit_mb();
     let cmd = limited(command(run), memory_mb);
     if !available(&run.executable) {
@@ -400,11 +410,24 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
             gap_mode: None,
             ending: Ending::Unavailable,
             profile: Default::default(),
+            congruence: None,
         });
     }
     let started = std::time::Instant::now();
     let cwd = run.log.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
-    let mut output = crate::tla::run_with_timeout(&cmd, &cwd, run.timeout)?;
+    // A run still without a verdict after a while is held still, and its formula is tried once with multiplication
+    // congruence lemmas on Z3 (crate::congruence, VF-018). Only a proof is taken from that; otherwise the run goes on.
+    let (mut notes, mut proved) = (String::new(), None);
+    let mut attempt = |left: Duration| {
+        let (answer, note) = congruence_attempt(run, z3?, &cwd, started.elapsed(), left, memory_mb);
+        notes.push_str(&note);
+        let (output, record) = answer?;
+        proved = Some(record);
+        Some(output)
+    };
+    // JBMC's string solver refines within its SAT backend only, so a run with it on has no such second attempt.
+    let interlude = z3.filter(|_| !run.refine_strings).map(|_| crate::tla::Interlude { after: patience, attempt: &mut attempt });
+    let mut output = crate::tla::run_with_interlude(&cmd, &cwd, run.timeout, interlude)?;
     if run.sat_solver.is_some() && output.contains("unknown solver '") {
         // This JBMC was built without the solver asked for: its own default will do.
         let fallback = JbmcRun { sat_solver: None, ..run.clone() };
@@ -414,8 +437,13 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
         output = note + &crate::tla::run_with_timeout(&limited(command(&fallback), memory_mb), &cwd, left)?;
     }
     let seconds = started.elapsed().as_secs_f64();
+    let output = notes + &output;
     std::fs::write(&run.log, &output)?;
     let mut result = parse_json(&output, &run.class, &run.function, run.unwind, run.stage.clone());
+    if let Some(record) = proved.filter(|_| result.verdict == Verdict::Verified) {
+        result.version = record.checker(&result.version);
+        result.congruence = Some(record);
+    }
     result.log = run.log.clone();
     result.seconds = seconds;
     result.profile = crate::phases::of_jbmc(&json_items(&output), seconds);
@@ -449,7 +477,93 @@ fn blank(version: &str, stage: Option<String>, ending: Ending, verdict: Verdict,
         gap_mode: None,
         ending,
         profile: Default::default(),
+        congruence: None,
     }
+}
+
+/// The run's command for JBMC's SMT backend in Z3's dialect: the same program, bounds and checks, no SAT solver
+/// named, and no trace, which JBMC can't write as JSON from an SMT model (it stops on an invariant of its own).
+fn smt_command(run: &JbmcRun) -> Vec<String> {
+    let mut cmd = command(&JbmcRun { sat_solver: None, ..run.clone() });
+    cmd.retain(|a| a != "--trace");
+    cmd.push("--z3".into());
+    cmd
+}
+
+/// The options of [`smt_command`] that every such run passes, for a result's evidence.
+fn smt_standing_options(refine_strings: bool) -> Vec<String> {
+    let mut options: Vec<String> = standing_options(refine_strings, None).into_iter().filter(|o| o != "--trace").collect();
+    options.extend(["--z3".to_string(), "--external-smt2-solver".to_string()]);
+    options
+}
+
+/// The solver a JBMC result's evidence names: [`sat`], or Z3 with its lemmas when that gave the proof
+/// ([`crate::congruence`]).
+pub fn sat_of(last: Option<&JbmcResult>, executable: &str, sat_solver: Option<&str>, refine_strings: bool) -> crate::statement::Sat {
+    match last.and_then(|l| l.congruence.as_ref()) {
+        Some(record) => record.sat(&smt_standing_options(refine_strings)),
+        None => sat(executable, sat_solver, refine_strings),
+    }
+}
+
+/// The solver's name for a result's evidence: the one JBMC was asked for, or `z3` when that gave the proof.
+pub fn solver_of<'a>(last: Option<&JbmcResult>, sat_solver: Option<&'a str>) -> Option<&'a str> {
+    if last.is_some_and(|l| l.congruence.is_some()) { Some("z3") } else { sat_solver }
+}
+
+/// The second attempt at a run that has no verdict yet ([`crate::congruence`]): JBMC writes the run's formula as
+/// SMT-LIB, the lemmas are added, and JBMC is run again with a solver that answers that formula alone, with the
+/// lemmas, on Z3. JBMC stays the judge of what the answer means for each property. Returns the proving run's
+/// output with what the result records, or nothing; and a line for the log either way. It takes at most
+/// [`crate::congruence::cap`], out of what is `left` of the run's time; `waited` is how long the run had gone.
+fn congruence_attempt(run: &JbmcRun, z3: &Path, cwd: &Path, waited: Duration, left: Duration, memory_mb: Option<u64>) -> (Option<(String, crate::congruence::Record)>, String) {
+    let started = std::time::Instant::now();
+    let cap = crate::congruence::cap(run.timeout).min(left);
+    let note = |what: &str| format!("note: no verdict from JBMC's solver after {:.0} s; its formula with multiplication congruence lemmas on Z3 ({}): {what}\n", waited.as_secs_f64(), z3.display());
+    let dir = absolute(&run.log.with_extension("congruence"));
+    let (formula, with_lemmas, script) = (dir.join("formula.smt2"), dir.join("formula-with-lemmas.smt2"), dir.join("solver.sh"));
+    let prepare = || -> Result<Option<crate::congruence::Prepared>, Error> {
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir)?;
+        let mut write = smt_command(run);
+        write.extend(["--outfile".to_string(), formula.display().to_string()]);
+        crate::tla::run_with_timeout(&limited(write, memory_mb), cwd, cap)?;
+        let Some(prepared) = std::fs::read_to_string(&formula).ok().and_then(|text| crate::congruence::prepare(&text)) else { return Ok(None) };
+        std::fs::write(&with_lemmas, &prepared.text)?;
+        std::fs::write(&script, crate::congruence::solver_script(z3, &formula, &with_lemmas, cap.as_secs().max(1)))?;
+        #[cfg(unix)]
+        std::fs::set_permissions(&script, std::os::unix::fs::PermissionsExt::from_mode(0o755))?;
+        Ok(Some(prepared))
+    };
+    let prepared = match prepare() {
+        Ok(Some(prepared)) => prepared,
+        Ok(None) => return (None, note("nothing to add (fewer than two products of one width, or a formula it does not read)")),
+        Err(e) => return (None, note(&format!("not tried ({e})"))),
+    };
+    let mut solve = smt_command(run);
+    solve.extend(["--external-smt2-solver".to_string(), script.display().to_string()]);
+    let output = match crate::tla::run_with_timeout(&limited(solve, memory_mb), cwd, cap.saturating_sub(started.elapsed())) {
+        Ok(output) => output,
+        Err(e) => return (None, note(&format!("not tried ({e})"))),
+    };
+    let result = parse_json(&output, &run.class, &run.function, run.unwind, run.stage.clone());
+    if result.verdict != Verdict::Verified || output.contains("did not finish within") || abnormal_end(&output, memory_mb).is_some() {
+        // No proof is no verdict here, whatever it printed: a counterexample is for JBMC's own solver to give, with
+        // its trace.
+        let kept = dir.join("jbmc.log");
+        let _ = std::fs::write(&kept, &output);
+        return (None, note(&format!("no proof with {} lemma(s) in {:.1} s ({}); JBMC's solver goes on", prepared.lemmas, started.elapsed().as_secs_f64(), kept.display())));
+    }
+    let record = crate::congruence::Record {
+        solver: z3.display().to_string(),
+        version: crate::congruence::version(z3),
+        products: prepared.products,
+        lemmas: prepared.lemmas,
+        after_seconds: waited.as_secs_f64(),
+        seconds: started.elapsed().as_secs_f64(),
+    };
+    let proved = note(&format!("proved, with {} lemma(s) over {} product(s), in {:.1} s ({})", record.lemmas, record.products, record.seconds, dir.display()));
+    (Some((proved + &output, record)), String::new())
 }
 
 /// Reads what JBMC printed under `--json-ui`: a JSON array of objects, each a message (`messageType`,
@@ -1002,6 +1116,111 @@ mod tests {
             tells_exceptions: true,
         })
         .unwrap()
+    }
+
+    /// A run of a stand-in for JBMC that knows the three ways the second attempt calls it (crate::congruence): asked
+    /// for the formula (`--outfile`) it writes one with two products; given a solver (`--external-smt2-solver`) it
+    /// asks it and prints `$ON_UNSAT`'s output if the answer is `unsat`, `$OTHERWISE`'s if not; and as itself it
+    /// notes that it started and runs `sat_run`. The stand-in for Z3 answers `unsat` to a file with the lemmas.
+    #[cfg(unix)]
+    fn held(dir: &Path, sat_run: &str, z3_answer: Option<&str>, formula: &str) -> JbmcResult {
+        use std::os::unix::fs::PermissionsExt;
+        let ok = property("java::PropertyHarness.check:(I)V.assertion.1", "SUCCESS", None);
+        let failed = property("java::PropertyHarness.check:(I)V.assertion.1", "FAILURE", Some("[]"));
+        std::fs::write(dir.join("proved.json"), json_run(&ok, Some("success"))).unwrap();
+        std::fs::write(dir.join("refuted.json"), json_run(&failed, Some("failure"))).unwrap();
+        std::fs::write(dir.join("formula"), formula).unwrap();
+        let d = dir.display();
+        let jbmc = format!(
+            "#!/bin/sh\n[ \"$1\" = --version ] && exit 0\nout=; ext=\nwhile [ $# -gt 0 ]; do case \"$1\" in --outfile) out=$2; shift;; --external-smt2-solver) ext=$2; shift;; --trace) echo trace >> '{d}/traced';; esac; shift; done\n\
+             if [ -n \"$out\" ]; then cat '{d}/formula' > \"$out\"; exit 0; fi\n\
+             if [ -n \"$ext\" ]; then cp '{d}/formula' '{d}/problem'; if [ \"$(\"$ext\" -smt2 '{d}/problem')\" = unsat ]; then cat '{d}/proved.json'; else cat '{d}/refuted.json'; fi; exit 0; fi\n\
+             echo started >> '{d}/starts'\n{sat_run}\n"
+        );
+        let z3 = format!("#!/bin/sh\n[ \"$1\" = --version ] && {{ echo 'Z3 version 9.9.9 - 64 bit'; exit 0; }}\nfor f; do :; done\ngrep -q 'multiplication congruence lemma' \"$f\" && echo {} || echo unknown\n", z3_answer.unwrap_or("unknown"));
+        for (name, body) in [("jbmc", jbmc), ("z3", z3)] {
+            std::fs::write(dir.join(name), body).unwrap();
+            std::fs::set_permissions(dir.join(name), std::fs::Permissions::from_mode(0o755)).unwrap();
+        }
+        let run = JbmcRun {
+            executable: dir.join("jbmc").to_string_lossy().into_owned(),
+            class: "PropertyHarness".into(),
+            function: "check".into(),
+            classpath: Vec::new(),
+            unwind: 16,
+            timeout: Duration::from_secs(20), // so the attempt has 2 s
+            stage: None,
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
+            log: dir.join("run.log"),
+            extra_args: Vec::new(),
+            tells_exceptions: true,
+        };
+        run_with(&run, z3_answer.map(|_| dir.join("z3")).as_deref(), Duration::from_secs(1)).unwrap()
+    }
+
+    #[cfg(unix)]
+    const TWO_PRODUCTS: &str = "(declare-fun a () (_ BitVec 32))\n(declare-fun b () (_ BitVec 32))\n(assert (not (= (bvmul a b) (bvmul b a))))\n(check-sat)\n";
+
+    #[cfg(unix)]
+    #[test]
+    fn a_run_without_a_verdict_is_held_while_z3_proves_its_formula_with_the_lemmas() {
+        crate::tool_tier!();
+        let dir = tempfile::tempdir().unwrap();
+        let started = std::time::Instant::now();
+        let r = held(dir.path(), "exec sleep 60", Some("unsat"), TWO_PRODUCTS);
+        assert!(started.elapsed() < Duration::from_secs(15), "the run gave way to the proof: {:?}", started.elapsed());
+        assert_eq!((r.verdict, r.ending, r.properties), (Verdict::Verified, Ending::Verified, 1), "{r:?}");
+        let record = r.congruence.clone().expect("the proof is the second attempt's");
+        assert_eq!((record.products, record.lemmas, record.version.as_deref()), (2, 1, Some("9.9.9")));
+        assert!(record.after_seconds >= 1.0 && record.seconds < 10.0, "{record:?}");
+        assert_eq!(r.version, "JBMC 6.11.0, its formula decided by Z3 9.9.9 with 1 multiplication congruence lemma(s)");
+        // The evidence names Z3 and what it was given, not the SAT solver JBMC was asked for.
+        let sat = sat_of(Some(&r), "jbmc", Some("cadical"), false);
+        assert_eq!((sat.solver.as_str(), solver_of(Some(&r), Some("cadical"))), ("Z3", Some("z3")));
+        assert!(sat.configuration.contains(&"--z3".to_string()) && !sat.configuration.contains(&"--trace".to_string()) && !sat.configuration.contains(&"cadical".to_string()), "{sat:?}");
+        let log = std::fs::read_to_string(&r.log).unwrap();
+        assert!(log.starts_with("note: no verdict from JBMC's solver after 1 s; its formula with multiplication congruence lemmas on Z3 (") && log.contains("): proved, with 1 lemma(s) over 2 product(s)"), "{log}");
+        // What Z3 was given is the formula as JBMC wrote it and one lemma, kept beside the log; no trace was asked of an SMT run.
+        let kept = std::fs::read_to_string(dir.path().join("run.congruence/formula-with-lemmas.smt2")).unwrap();
+        assert_eq!(kept.lines().filter(|l| !l.contains("congruence lemma") && !l.starts_with("(assert (=> ")).map(|l| format!("{l}\n")).collect::<String>(), TWO_PRODUCTS);
+        assert_eq!(std::fs::read_to_string(dir.path().join("traced")).unwrap().lines().count(), 1, "only JBMC's own run asks for a trace");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn without_a_proof_from_the_lemmas_the_run_goes_on_from_where_it_was() {
+        crate::tool_tier!();
+        // Z3 finds the formula satisfiable, and the stand-in for JBMC then reports a failed property: a
+        // counterexample is never taken from the second attempt. JBMC's own run, held meanwhile, gives the verdict.
+        let dir = tempfile::tempdir().unwrap();
+        let r = held(dir.path(), &format!("sleep 3; cat '{}/proved.json'", dir.path().display()), Some("sat"), TWO_PRODUCTS);
+        assert_eq!((r.verdict, r.congruence.as_ref(), r.version.as_str()), (Verdict::Verified, None, "JBMC 6.11.0"), "{r:?}");
+        assert_eq!(std::fs::read_to_string(dir.path().join("starts")).unwrap(), "started\n", "it was not started again");
+        let log = std::fs::read_to_string(&r.log).unwrap();
+        assert!(log.starts_with("note: no verdict from JBMC's solver after 1 s") && log.contains("no proof with 1 lemma(s)") && log.contains("JBMC's solver goes on"), "{log}");
+        assert_eq!(sat_of(Some(&r), "jbmc", Some("cadical"), false).solver, "CaDiCaL");
+        // A formula with one product has nothing to add: the solver is not even asked.
+        let dir = tempfile::tempdir().unwrap();
+        let one = "(declare-fun a () (_ BitVec 32))\n(assert (= a (bvmul a a)))\n(check-sat)\n";
+        let r = held(dir.path(), &format!("sleep 3; cat '{}/proved.json'", dir.path().display()), Some("unsat"), one);
+        assert_eq!((r.verdict, r.congruence.as_ref()), (Verdict::Verified, None));
+        assert!(std::fs::read_to_string(&r.log).unwrap().contains("nothing to add") && !dir.path().join("problem").exists());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_run_that_finishes_soon_or_has_no_z3_never_meets_the_second_attempt() {
+        crate::tool_tier!();
+        let dir = tempfile::tempdir().unwrap();
+        let r = held(dir.path(), &format!("cat '{}/proved.json'", dir.path().display()), Some("unsat"), TWO_PRODUCTS);
+        assert_eq!((r.verdict, r.congruence.as_ref()), (Verdict::Verified, None));
+        assert!(!dir.path().join("run.congruence").exists() && !std::fs::read_to_string(&r.log).unwrap().contains("note:"));
+        // Without a Z3, a run that takes its time is as it always was.
+        let dir = tempfile::tempdir().unwrap();
+        let r = held(dir.path(), &format!("sleep 3; cat '{}/proved.json'", dir.path().display()), None, TWO_PRODUCTS);
+        assert_eq!((r.verdict, r.congruence.as_ref()), (Verdict::Verified, None));
+        assert!(!dir.path().join("run.congruence").exists() && !std::fs::read_to_string(&r.log).unwrap().contains("note:"));
     }
 
     #[cfg(unix)]

@@ -1857,6 +1857,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
             gap_mode: None,
             ending: crate::jbmc::Ending::Verified,
             profile: Default::default(),
+            congruence: None,
         };
         for mode in [GapMode::Strict, GapMode::Assume, GapMode::Advised] {
             let mut proved = result(Verdict::Verified);

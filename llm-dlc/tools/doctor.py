@@ -187,6 +187,11 @@ def tools() -> list[dict]:
          "the tool's own checker needs none, but a proof under the jbmc or auto engine does, and so does every "
          "obligation the own checker refuses", "the CBMC .deb from github.com/diffblue/cbmc (install.sh's system "
          "component; needs sudo)")
+    tool("z3", out("z3", "--version"), "any", "limits",
+         "a JBMC run that relates products its SAT solver can't (the same operands in another order, or under a "
+         "condition) is proved by Z3 on JBMC's formula with congruence lemmas; without it such a run ends without "
+         "a verdict at its time limit (lib/README.md, VF-018)",
+         "apt install z3 (install.sh's system component), or a release from github.com/Z3Prover/z3 into ~/.local/bin")
     helped = ""
     if shutil.which("claude"):
         try:

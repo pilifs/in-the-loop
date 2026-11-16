@@ -200,6 +200,30 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   (`orders.Orders#reprice`, `heap.rs:1871`), each "JBMC did not finish within 1800 s". The same three that failed at
   1800 s on 2026-11-07; `the_computed_equations_…` (`prices.Prices#total`) passed. Not caused by example 286's engine
   changes. Still open. See VF-030 for what this job did not run.
+- **Diagnosed and changed** 2026-11-16 on `vm-1`, with the user. What the 77k clauses are: multiplications. Each
+  of the three obligations relates products whose operands are equal only under the correspondence or a branch
+  (`cents * quantity` in the old `price` against `quantity * cents` in the new; in `reprice`, the product of a
+  conditional against the conditional of two products). JBMC's SAT backend builds every multiplication as a
+  circuit of its own, so CaDiCaL has to rediscover each equality through two 64-bit multipliers. Probes on the
+  retained harnesses (capped at 4 GiB and minutes, JBMC 6.11.0, Z3 5.3.3):
+  - JBMC's formula for `lines.Lines#reprice`, written as SMT-LIB, has 4 products. Z3 gives no answer on it in 60 s.
+    With a congruence lemma for every two of them (equal operands, in either order, give equal products: valid for
+    any fixed-width multiplication), Z3 answers `unsat` at once.
+  - With JBMC driving Z3 on that formula (`--external-smt2-solver`), JBMC reports every property of
+    `objects.Kernel#price`, `lines.Lines#reprice` and `orders.Orders#reprice` proved, in 0.11 to 0.14 s each.
+  - On their defect twins the same route makes JBMC stop on an invariant of its own
+    (`json_goto_trace.cpp:122`): it can't write a trace as JSON from an SMT model. So the route can give proofs
+    only, and a counterexample stays with JBMC's own solver, which finds these in 0.1 s.
+
+  The change, in the tool and not in the tests or the harness: `lib/src/congruence.rs` and `jbmc::run`
+  ([`lib/README.md`](../lib/README.md), "A second attempt for a JBMC run that has no verdict yet"). A run without
+  a verdict after 30 s is held still, its formula is given to Z3 with the lemmas, and only a proof is taken; else
+  the run goes on with the time it had. Through `jbmc::run`, `lines.Lines#reprice` was proved in 30.2 s (the
+  attempt itself 0.2 s, 6 lemmas over 4 products), and its defect twin was refuted as before. No claim, bound or
+  expectation changed. The prices test has proofs that are harder for Z3 too (`raise` 21 s with the lemmas,
+  `raised` and `raise-relation` more than 30 s), so it may still need the longer limit. Job
+  `20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an` runs the nine tests unchanged at the 600 s limit:
+  the closing condition. Still open until it is in.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 

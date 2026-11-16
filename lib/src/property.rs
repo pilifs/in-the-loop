@@ -736,7 +736,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         observations: observations.clone(),
         bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
         models: crate::statement::Models { values: strings.iter().map(|a| a.domain().model.clone()).collect(), ..crate::statement::models(options.models) },
-        checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
+        checker: crate::statement::checker(search, crate::jbmc::solver_of(last, options.sat_solver.as_deref()), || crate::jbmc::sat_of(last, &options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
         vacuity: None,

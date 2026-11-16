@@ -35,6 +35,7 @@ pub mod classpath;
 pub mod closure;
 pub mod compare;
 pub mod config;
+pub mod congruence;
 /// The objects stream's module of `llm-dlc/loops/application-core.md`.
 pub mod construction;
 pub mod failures;

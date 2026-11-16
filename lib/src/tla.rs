@@ -459,6 +459,24 @@ pub fn run_tlc(options: &TlcOptions) -> Result<TlcResult, Error> {
 /// Runs a command, capturing stdout and stderr together; on timeout, or if a signal kills it, the output so far is
 /// returned with a note.
 pub fn run_with_timeout(command: &[String], cwd: &Path, timeout: Duration) -> Result<String, Error> {
+    run_with_interlude(command, cwd, timeout, None)
+}
+
+/// A second attempt at what a command is computing, made while the command is held still.
+pub struct Interlude<'a> {
+    /// How long the command runs before the attempt is made.
+    pub after: Duration,
+    /// The attempt, given what is left of the command's time. Its answer replaces the command's output, and the
+    /// command is ended; without one the command goes on from where it was.
+    pub attempt: &'a mut dyn FnMut(Duration) -> Option<String>,
+}
+
+/// [`run_with_timeout`], with an interlude: a command still running after `interlude.after` is stopped
+/// (SIGSTOP, so it keeps what it has computed and uses no processor), the attempt is made, and the command either
+/// gives way to the attempt's answer or continues (SIGCONT). The timeout is the command's own: the time it was
+/// held for the attempt is not counted, so a command that would have finished in time still does. Where a process
+/// can't be stopped (not Unix, or `kill` fails), the attempt runs beside it.
+pub fn run_with_interlude(command: &[String], cwd: &Path, timeout: Duration, mut interlude: Option<Interlude>) -> Result<String, Error> {
     let log = tempfile_path("jvmcontract-tlc");
     let file = std::fs::File::create(&log)?;
     let err = file.try_clone()?;
@@ -470,14 +488,32 @@ pub fn run_with_timeout(command: &[String], cwd: &Path, timeout: Duration) -> Re
         .spawn()
         .map_err(|e| Error::new(format!("cannot run {}: {e}", command[0])))?;
     let started = Instant::now();
+    let mut held = Duration::ZERO;
     let status = loop {
         if let Some(status) = child.try_wait()? {
             break Some(status);
         }
-        if started.elapsed() > timeout {
+        if started.elapsed() > timeout + held {
             let _ = child.kill();
             let _ = child.wait();
             break None;
+        }
+        if interlude.as_ref().is_some_and(|i| started.elapsed() > i.after) {
+            let Some(Interlude { attempt, .. }) = interlude.take() else { continue };
+            let stopped = signal(child.id(), "STOP");
+            let from = Instant::now();
+            let answer = attempt(timeout.saturating_sub(started.elapsed()));
+            if let Some(answer) = answer {
+                let _ = child.kill();
+                let _ = child.wait();
+                let _ = std::fs::remove_file(&log);
+                return Ok(answer);
+            }
+            if stopped {
+                signal(child.id(), "CONT");
+                held = from.elapsed();
+            }
+            continue;
         }
         std::thread::sleep(Duration::from_millis(50));
     };
@@ -492,6 +528,11 @@ pub fn run_with_timeout(command: &[String], cwd: &Path, timeout: Duration) -> Re
         }
     }
     Ok(output)
+}
+
+/// Sends a process a signal by name (`STOP`, `CONT`), with `kill`; false where that is not possible.
+fn signal(pid: u32, name: &str) -> bool {
+    cfg!(unix) && Command::new("kill").arg(format!("-{name}")).arg(pid.to_string()).stdout(std::process::Stdio::null()).stderr(std::process::Stdio::null()).status().is_ok_and(|s| s.success())
 }
 
 /// How [`run_with_timeout`] says that a signal ended the command, the kernel's out-of-memory killer's SIGKILL above all.
