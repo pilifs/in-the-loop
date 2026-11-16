@@ -25,8 +25,9 @@ RANKED = [
     # (gap, distinct families, blocked obligations): observed first, then families, then obligations. Until
     # 2026-11-15 two-dependency-closures was first (3 families, 4 obligations) and interface-parameter blocked 7:
     # example 285's four tasks left both when their receipts decided the unchanged claims (its packets' `closed`).
+    # Until 2026-11-16 string-parameter blocked 5: example 287's two guard tasks left it the same way.
     ("input-construction:receiver-of-several-constructors", 2, 8),
-    ("input-construction:string-parameter", 2, 5),
+    ("input-construction:string-parameter", 2, 3),
     ("verifier-interface:two-dependency-closures", 2, 3),
     ("input-construction:interface-parameter", 1, 4),
     ("jdk-constructor:java.lang.StringBuilder.<init>()V", 1, 1),
@@ -75,7 +76,7 @@ class GapInventoryTest(unittest.TestCase):
         observed = [g for g in self.value["gaps"] if g["observed"]]
         self.assertEqual([(g["gap"], len(g["families"]), g["blockedObligations"]) for g in observed], RANKED)
         self.assertEqual([g["rank"] for g in observed], list(range(1, len(RANKED) + 1)))
-        self.assertEqual(sum(g["blockedObligations"] for g in observed), 21)
+        self.assertEqual(sum(g["blockedObligations"] for g in observed), 19)
         predicted = [g for g in self.value["gaps"] if not g["observed"]]
         self.assertTrue(predicted)
         self.assertTrue(all(g["rank"] > len(RANKED) and g["blockedObligations"] == 0 for g in predicted))

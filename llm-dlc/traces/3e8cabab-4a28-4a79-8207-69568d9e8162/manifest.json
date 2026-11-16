@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-16T07:08:26.786Z",
-  "duration_seconds": 42265,
+  "ended": "2026-11-16T07:23:13.114Z",
+  "duration_seconds": 43152,
   "stats": {
     "turns": 12,
-    "api_calls": 261,
-    "tool_calls": 285,
+    "api_calls": 288,
+    "tool_calls": 312,
     "tool_errors": 6,
     "compactions": 2,
     "peak_context_tokens": 461408,
     "usage": {
-      "input_tokens": 534,
-      "output_tokens": 395744,
-      "cache_read_input_tokens": 62558568,
-      "cache_creation_input_tokens": 934133
+      "input_tokens": 590,
+      "output_tokens": 464664,
+      "cache_read_input_tokens": 71703261,
+      "cache_creation_input_tokens": 1039230
     }
   },
   "tools": {
-    "Bash": 242,
+    "Bash": 269,
     "Write": 22,
     "Read": 8,
     "Edit": 5,
@@ -93,24 +93,24 @@
     {
       "index": 2,
       "started": "2026-11-15T22:49:16.849Z",
-      "ended": "2026-11-16T07:08:26.786Z",
+      "ended": "2026-11-16T07:23:13.114Z",
       "turns": 4,
-      "api_calls": 84,
+      "api_calls": 111,
       "usage": {
-        "input_tokens": 174,
-        "output_tokens": 128351,
-        "cache_read_input_tokens": 14411045,
-        "cache_creation_input_tokens": 251176
+        "input_tokens": 230,
+        "output_tokens": 197271,
+        "cache_read_input_tokens": 23555738,
+        "cache_creation_input_tokens": 356273
       },
-      "peak_context_tokens": 279882
+      "peak_context_tokens": 385583
     }
   ],
   "log": {
-    "sha256": "69122164fc60d1f4d14976b6e06c75b3d6bb8327001c8e86bc2b1255e7d0245d",
-    "bytes": 7689234,
-    "lines": 2384,
-    "gzip_bytes": 1391165,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/69122164fc60d1f4d14976b6e06c75b3d6bb8327001c8e86bc2b1255e7d0245d.jsonl.gz"
+    "sha256": "020433e64136b589de4ec8c00700c7e93d48ef2133e625820613754b52e6e726",
+    "bytes": 8205204,
+    "lines": 2584,
+    "gzip_bytes": 1459689,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/020433e64136b589de4ec8c00700c7e93d48ef2133e625820613754b52e6e726.jsonl.gz"
   },
   "subagents": [
     {
@@ -248,9 +248,23 @@
       "summary": "Record verification results for 8 jobs: example 287's three security claims as expected, the Rust proof tier passes with VF-018's three apart",
       "body": "Jobs at 26a42d401510: 287's frozen public claim is established on 6.3.8 and refuted on 6.3.7 and on the char-count-guard mutant (as expected, 3 outputs each applied). The first two guard-lemma jobs failed with 'not-executed' (the receipt did not pass check_result); the submitter's reruns at c63eabcbd18b, 'again, for its receipt', passed as expected and applied the receipts. The proof-tier job (cargo --no-fail-fast, VF-018's three skipped) passed in 1h07m: conformance, heap and preparation ignored tests all ok. VF-030 updated: Rust half closed, Python proof tests still unrun, so it stays open. Rest of the working copy is the collect output (verification/.work-287 outputs, 287 receipts, examples index).",
       "log_sha256": "69122164fc60d1f4d14976b6e06c75b3d6bb8327001c8e86bc2b1255e7d0245d"
+    },
+    {
+      "change_id": "rzyzyqxwmwmmmlzykqqpkrwnxytmrnyp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 287's guard lemma is decided by the route: established on 6.3.8, refuted on 6.3.7, and its two blockers are closed",
+      "body": "The two guard tasks ran through the example route on the claim as frozen (claims/overlong-bytes-rejected.json on BCrypt.checkpw(byte[], String), arrays and Strings of up to 80, --unwind 16, own checker, strict gaps) and the pipeline collected their receipts in nkzzotot. fixed-guard (job 20261116-060128-example-287-fixed-guard-again-for-its-re, receipts/fixed-guard/20261116T070714Z-80d2813b): established in 244 s, not vacuous, six of bcrypt's loops covered by invariants. vulnerable-guard (job 20261116-060128-example-287-vulnerable-guard-again-for-i, receipts/vulnerable-guard/20261116T070828Z-a709a564): refuted in 318 s on 73 bytes with a hash of cost 04, where checkpw returns false and throws nothing, run on a JVM. The proof tier of the Rust tests after the engine changes passed as well (job 20261116-053833-the-proof-tier-after-example-287-s-engin, 1h07m, with --no-fail-fast and VF-018's three heap tests skipped, which is what VF-030 asked for).\n\nThis commit brings the example's records in line with the receipts, as example 285's were: records/refusals/fixed-guard.json and vulnerable-guard.json keep the refusal as observed and gain closed, naming the job and the receipt; target.json no longer lists those two blockers and its handoff says what is decided and what is next; the README has a section on the guard lemma, and its blocker table is split into the four tasks still blocked on the route and the two closed; example.json's verdict label and notes follow. The tests that pinned the blocked state follow too: test_workflow_refusal.py (19 blocked tasks, example 287's guard tasks among the closed ones, and the closed-gap test now asks that the sidecar lists no blocker for the closed task rather than none at all) and test_gap_inventory.py (the string-parameter gap blocks 3 obligations, 19 in all); examples/gap-inventory.md and the router are regenerated. Verified by the Python half of the default run (33 of 33).\n\nStill open for example 287: the three security tasks have no route receipt (the route has no adapter entry; their claim is decided beside the route by proofs/prove.py), preservation, and the guard claim on the mutant.",
+      "log_sha256": "020433e64136b589de4ec8c00700c7e93d48ef2133e625820613754b52e6e726"
     }
   ],
   "logs": {
+    "020433e64136b589de4ec8c00700c7e93d48ef2133e625820613754b52e6e726": {
+      "bytes": 8205204,
+      "lines": 2584,
+      "gzip_bytes": 1459689,
+      "url": null
+    },
     "10ce8026cc87063be6985585b10dea1a3fd22fba8101bb609b7e5ebcffe798f2": {
       "bytes": 3077579,
       "lines": 847,

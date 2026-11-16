@@ -9,7 +9,7 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 | Rank | Gap | Kind | Families | Blocked obligations | CVE and positive | Owner modules | Findings |
 |---|---|---|---|---|---|---|---|
 | 1 | `input-construction:receiver-of-several-constructors` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 8 | no | examples/tools/targets/runtime.py (run_verifier passes no --plan) and the claim format; lib/src/construction.rs | VF-027 |
-| 2 | `input-construction:string-parameter` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 5 | yes | lib/src/values.rs | VF-027, VF-028 |
+| 2 | `input-construction:string-parameter` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 3 | no | lib/src/values.rs | VF-027, VF-028 |
 | 3 | `verifier-interface:two-dependency-closures` | verifier-interface | 2: bcrypt-input-limit, spring-data-binding | 3 | yes | examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs | VF-027 |
 | 4 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 4 | no | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
 | 5 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
@@ -24,11 +24,11 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 
 ### 2. `input-construction:string-parameter`
 
-- **Blocks**: [287](287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/README.md) `vulnerable-guard` (da7512fb3d0a6e45), `fixed-guard` (2fc462942f0992af); [306](306-spring-framework-db9a10bf-pattern-match-prefix-startswith/README.md) `mutant-preservation` (51d7f1127b4df870); [307](307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/README.md) `preservation` (7eb077dac7a25751), `mutant-preservation` (7eb077dac7a25751).
-- **Smallest reproducer**: [287](287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/records/refusals/fixed-guard.json) `fixed-guard`, observed by job `20261114-234213-example-287-fixed-guard-phase-5-step-1-b`, 0.0 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 287 fixed-guard`.
-- **Missing semantics** (from that packet): A String parameter outside what the checker takes (BCrypt#checkpw(byte[], String)'s hashed, in a property check): it takes a String only as a regression check's bounded UTF-16 parameter that is never null (lib/README.md), so a String parameter of a property check, and a nullable one in a regression check, are refused. Needed: the String value adapter (lib/src/values.rs) in property checks, and null as one more value of a String parameter, in the witness and its replay as well.
+- **Blocks**: [306](306-spring-framework-db9a10bf-pattern-match-prefix-startswith/README.md) `mutant-preservation` (51d7f1127b4df870); [307](307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/README.md) `preservation` (7eb077dac7a25751), `mutant-preservation` (7eb077dac7a25751).
+- **Smallest reproducer**: [306](306-spring-framework-db9a10bf-pattern-match-prefix-startswith/records/refusals/mutant-preservation.json) `mutant-preservation`, observed by job `20261114-234214-example-306-mutant-preservation-phase-5`, 0.3 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 306 mutant-preservation`.
+- **Missing semantics** (from that packet): A String parameter outside what the checker takes (PatternMatchUtils#simpleMatch(String, String)'s pattern, --nullable in a regression check): it takes a String only as a regression check's bounded UTF-16 parameter that is never null (lib/README.md), so a String parameter of a property check, and a nullable one in a regression check, are refused. Needed: the String value adapter (lib/src/values.rs) in property checks, and null as one more value of a String parameter, in the witness and its replay as well.
 - **Owner modules**: lib/src/values.rs.
-- **Closure test** (each obligation's, here the reproducer's): the unchanged claim 2fc462942f0992af rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
+- **Closure test** (each obligation's, here the reproducer's): the unchanged claim 51d7f1127b4df870 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
 ### 3. `verifier-interface:two-dependency-closures`
 

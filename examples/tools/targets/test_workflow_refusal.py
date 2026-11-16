@@ -126,12 +126,11 @@ class CheckTest(unittest.TestCase):
 
 
 # VF-027's tasks still blocked, each with the job that observed its refusal (the user's decision of 2026-11-15):
-# 19 of its 23, example 285's four being closed (CLOSED, below).
+# 17 of its 23, example 285's four and example 287's two guard tasks being closed (CLOSED, below).
 VF027 = {
     "286": ("vulnerable-security", "fixed-security", "mutant-security", "vulnerable-protected-state-mutation",
             "fixed-protected-state-mutation", "preservation"),
-    "287": ("vulnerable-security", "fixed-security", "mutant-security", "vulnerable-guard", "fixed-guard",
-            "preservation"),
+    "287": ("vulnerable-security", "fixed-security", "mutant-security", "preservation"),
     "305": ("finite-outcome-before", "finite-outcome-after", "preservation", "mutant-preservation"),
     "306": ("preservation", "mutant-preservation"),
     "105": ("confined-change",),
@@ -141,11 +140,12 @@ VF028 = {"307": ("preservation", "mutant-preservation")}
 OBSERVED = [("VF-027", VF027), ("VF-028", VF028)]
 # Closed gaps: each task's unchanged claim, rerun with the extended checker, decided by a receipt as expected.
 CLOSED = {"285": {"vulnerable-security": "refuted", "fixed-security": "established", "mutant-security": "refuted",
-                  "preservation": "established"}}
+                  "preservation": "established"},
+          "287": {"vulnerable-guard": "refuted", "fixed-guard": "established"}}
 
 
 class Vf027PacketsTest(unittest.TestCase):
-    def test_each_of_the_21_tasks_is_blocked_by_its_observed_refusal_as_its_job_recorded_it(self):
+    def test_each_of_the_19_tasks_is_blocked_by_its_observed_refusal_as_its_job_recorded_it(self):
         count = 0
         for finding, number, tasks in ((f, n, ts) for f, rows in OBSERVED for n, ts in rows.items()):
             folder, example, target = load(number)
@@ -178,7 +178,7 @@ class Vf027PacketsTest(unittest.TestCase):
                     self.assertEqual(readiness["summary"], "blocked")
                     t = next(x for x in target["tasks"] if x["id"] == task)
                     self.assertIn(t.get("expected"), ("established", "refuted"), "the expectation is unchanged")
-        self.assertEqual(count, 21)
+        self.assertEqual(count, 19)
 
     def test_each_blocked_tasks_handoff_next_is_its_refusal_check_with_its_gap_id_and_closure_test(self):
         """Item 1 of the user's review of 2026-11-15: an ordinary attempt (pipeline.py submit) at a task an observed
@@ -202,16 +202,16 @@ class Vf027PacketsTest(unittest.TestCase):
                     self.assertIn(gap["packet"]["closure"]["check"], reason)
                     self.assertIn(value["plan"]["claim"]["key"], reason)
                     self.assertNotIn("pipeline.py submit", value["next"])
-        self.assertEqual(count, 21)
+        self.assertEqual(count, 19)
 
     def test_a_closed_gap_blocks_nothing_and_its_packet_names_the_receipt_that_decided_the_claim(self):
         """A gap closes by its packet's own test (workflow_handoff.py): the unchanged claim rerun on the same
         artifacts with the extended checker, its receipt deciding it as expected, not vacuous. Then the sidecar lists
-        no blocker for the task, nothing predicts a refusal, the task is executable with that receipt current, and the
+        no blocker for the task (example 287's other tasks keep theirs), nothing predicts a refusal, the task is executable with that receipt current, and the
         packet keeps the refusal as observed, with `closed` naming the job and the receipt."""
         for number, tasks in CLOSED.items():
             folder, example, target = load(number)
-            self.assertEqual(target["handoff"]["blockers"], [])
+            self.assertEqual([b for b in target["handoff"]["blockers"] if b["task"] in tasks], [])
             for task, status in tasks.items():
                 with self.subTest(example=number, task=task):
                     self.assertEqual(workflow_refusal.predictions(folder, target, task), [])
@@ -242,8 +242,8 @@ class Vf027PacketsTest(unittest.TestCase):
             "input-construction:interface-parameter", "input-construction:receiver-of-several-constructors",
             "input-construction:string-parameter", "verifier-interface:two-dependency-closures",
             "jdk-constructor:java.lang.StringBuilder.<init>()V"})
-        self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 21)
-        self.assertEqual(observed["input-construction:string-parameter"]["blockedObligations"], 5)
+        self.assertEqual(sum(g["blockedObligations"] for g in observed.values()), 19)
+        self.assertEqual(observed["input-construction:string-parameter"]["blockedObligations"], 3)
 
 
 if __name__ == "__main__":

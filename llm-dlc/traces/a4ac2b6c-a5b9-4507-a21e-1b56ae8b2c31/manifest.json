@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T07:08:02.873Z",
-  "duration_seconds": 53691,
+  "ended": "2026-11-16T07:26:02.555Z",
+  "duration_seconds": 54770,
   "stats": {
     "turns": 17,
-    "api_calls": 1372,
-    "tool_calls": 1397,
-    "tool_errors": 9,
+    "api_calls": 1387,
+    "tool_calls": 1412,
+    "tool_errors": 10,
     "compactions": 8,
     "peak_context_tokens": 466839,
     "usage": {
-      "input_tokens": 2744,
-      "output_tokens": 1613785,
-      "cache_read_input_tokens": 348532814,
-      "cache_creation_input_tokens": 3762328
+      "input_tokens": 2774,
+      "output_tokens": 1632033,
+      "cache_read_input_tokens": 352711821,
+      "cache_creation_input_tokens": 3791056
     }
   },
   "tools": {
-    "Bash": 1345,
+    "Bash": 1360,
     "Read": 31,
     "Write": 14,
     "Monitor": 4,
@@ -167,24 +167,24 @@
     {
       "index": 8,
       "started": "2026-11-16T04:12:15.423Z",
-      "ended": "2026-11-16T07:08:02.873Z",
+      "ended": "2026-11-16T07:26:02.555Z",
       "turns": 1,
-      "api_calls": 146,
+      "api_calls": 161,
       "usage": {
-        "input_tokens": 292,
-        "output_tokens": 101665,
-        "cache_read_input_tokens": 23246137,
-        "cache_creation_input_tokens": 251168
+        "input_tokens": 322,
+        "output_tokens": 119913,
+        "cache_read_input_tokens": 27425144,
+        "cache_creation_input_tokens": 279896
       },
-      "peak_context_tokens": 265828
+      "peak_context_tokens": 294556
     }
   ],
   "log": {
-    "sha256": "db8eb973622779f72188fe7817e3f0b95ebe957326a6abc088c3ad5fe53c9aab",
-    "bytes": 28537494,
-    "lines": 11124,
-    "gzip_bytes": 4167880,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/db8eb973622779f72188fe7817e3f0b95ebe957326a6abc088c3ad5fe53c9aab.jsonl.gz"
+    "sha256": "8b05c8b8b5bae377c6605ff10fcfadff8641e53d157063ae5a13457f6f6b88ba",
+    "bytes": 28797266,
+    "lines": 11238,
+    "gzip_bytes": 4196185,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/8b05c8b8b5bae377c6605ff10fcfadff8641e53d157063ae5a13457f6f6b88ba.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -299,6 +299,14 @@
       "summary": "Record verification results for 8 jobs: example 287's three security claims as expected, the Rust proof tier passes with VF-018's three apart",
       "body": "Jobs at 26a42d401510: 287's frozen public claim is established on 6.3.8 and refuted on 6.3.7 and on the char-count-guard mutant (as expected, 3 outputs each applied). The first two guard-lemma jobs failed with 'not-executed' (the receipt did not pass check_result); the submitter's reruns at c63eabcbd18b, 'again, for its receipt', passed as expected and applied the receipts. The proof-tier job (cargo --no-fail-fast, VF-018's three skipped) passed in 1h07m: conformance, heap and preparation ignored tests all ok. VF-030 updated: Rust half closed, Python proof tests still unrun, so it stays open. Rest of the working copy is the collect output (verification/.work-287 outputs, 287 receipts, examples index).",
       "log_sha256": "db8eb973622779f72188fe7817e3f0b95ebe957326a6abc088c3ad5fe53c9aab"
+    },
+    {
+      "change_id": "rzyzyqxwmwmmmlzykqqpkrwnxytmrnyp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 287's guard lemma is decided by the route: established on 6.3.8, refuted on 6.3.7, and its two blockers are closed",
+      "body": "The two guard tasks ran through the example route on the claim as frozen (claims/overlong-bytes-rejected.json on BCrypt.checkpw(byte[], String), arrays and Strings of up to 80, --unwind 16, own checker, strict gaps) and the pipeline collected their receipts in nkzzotot. fixed-guard (job 20261116-060128-example-287-fixed-guard-again-for-its-re, receipts/fixed-guard/20261116T070714Z-80d2813b): established in 244 s, not vacuous, six of bcrypt's loops covered by invariants. vulnerable-guard (job 20261116-060128-example-287-vulnerable-guard-again-for-i, receipts/vulnerable-guard/20261116T070828Z-a709a564): refuted in 318 s on 73 bytes with a hash of cost 04, where checkpw returns false and throws nothing, run on a JVM. The proof tier of the Rust tests after the engine changes passed as well (job 20261116-053833-the-proof-tier-after-example-287-s-engin, 1h07m, with --no-fail-fast and VF-018's three heap tests skipped, which is what VF-030 asked for).\n\nThis commit brings the example's records in line with the receipts, as example 285's were: records/refusals/fixed-guard.json and vulnerable-guard.json keep the refusal as observed and gain closed, naming the job and the receipt; target.json no longer lists those two blockers and its handoff says what is decided and what is next; the README has a section on the guard lemma, and its blocker table is split into the four tasks still blocked on the route and the two closed; example.json's verdict label and notes follow. The tests that pinned the blocked state follow too: test_workflow_refusal.py (19 blocked tasks, example 287's guard tasks among the closed ones, and the closed-gap test now asks that the sidecar lists no blocker for the closed task rather than none at all) and test_gap_inventory.py (the string-parameter gap blocks 3 obligations, 19 in all); examples/gap-inventory.md and the router are regenerated. Verified by the Python half of the default run (33 of 33).\n\nStill open for example 287: the three security tasks have no route receipt (the route has no adapter entry; their claim is decided beside the route by proofs/prove.py), preservation, and the guard claim on the mutant.",
+      "log_sha256": "8b05c8b8b5bae377c6605ff10fcfadff8641e53d157063ae5a13457f6f6b88ba"
     }
   ],
   "logs": {
@@ -342,6 +350,12 @@
       "bytes": 6678859,
       "lines": 2254,
       "gzip_bytes": 1009042,
+      "url": null
+    },
+    "8b05c8b8b5bae377c6605ff10fcfadff8641e53d157063ae5a13457f6f6b88ba": {
+      "bytes": 28797266,
+      "lines": 11238,
+      "gzip_bytes": 4196185,
       "url": null
     },
     "9a8ca680cf51555032f999e644cae3dbbf75de4921c8ab3dcf4672468339ccc7": {
