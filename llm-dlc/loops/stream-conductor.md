@@ -278,6 +278,53 @@ place of today's `integrate()` bash loop.
 - **Its brief** is the main brief's `## Conductor` section, plus a standing section in `brief-template.md`. That section
   covers the test of 3, the never-delegated list, and the inbox rule.
 
+### 8. Proposed: the watcher as the one conductor, in place of step 4's loop
+
+Proposed 2026-11-16, after the user chose to fold step 4 into the watcher of `/prove-java-change`
+([`runtime.md`](../runtime.md#the-watcher)) instead of building a second conductor inside `run-streams.sh`. It is a
+proposal for the user to read. Nothing of it is built, and [How it runs](#how-it-runs) and plan step 4 stand as
+written until the user says which they want.
+
+**What the watcher already is.** One session on Opus 5.5 that does none of the work. It starts the sessions that
+do, blocks in `watch.py wait` until something needs a judgement, answers, and waits again. Since 2026-11-16 each of
+its answers is a decision in the record of Design 4 (`llm-dlc/decisions/prove-change.jsonl`), reviewed and
+overturned with `decisions.py` like any other. It also merges a queued workspace between two examples and prints a
+summary at intervals. That is the conductor of Design 7, and most of the conductor of this section's steps, for one
+loop.
+
+**What a parallel run needs beyond that.**
+
+| A parallel run needs | Step 4 as written | With the watcher |
+|---|---|---|
+| To be woken when something happens | `run-streams.sh` watches and starts one conductor cycle per event | `watch.py wait` reads several runs: each stream's status and `@-`, the integration line's report, new review and answer lines in the record. It returns only what needs a judgement; everything else is counted into the next summary |
+| Routing and upkeep (`inbox.py collect`, `send`) | A conductor cycle on Sonnet | A script, run by `wait` before it returns: routing needs no model |
+| A decision or a failure triage | A conductor cycle on Opus | The watcher, with `decisions.py record` and `inbox.py send`, under the test of Design 3 |
+| A question for the user | Queued in the record as `open` | Asked in the conversation when the user is there, and recorded with their answer; queued as `open` when they are not |
+| Starting and re-running streams | `run-streams.sh` | The same script, started detached by `watch.py streams start BRIEF`, as `watch.py loop` starts the proof loop. It keeps re-running a stream that a decision unblocks |
+| Early merge (step 5) | The conductor's cycle | The watcher's merge of a queued workspace, which it does today between examples |
+| The conductor's brief | `## Conductor` in the brief template | A skill of this repository for the watcher of a parallel run, with the test of Design 3, the never-delegated list and the inbox rule |
+
+**What changes in the plan.** Step 4 becomes: `watch.py wait` over several runs with the streams' events, upkeep
+as a script, `watch.py streams start|status`, and the skill. Steps 5 and 6 keep their content; step 6 also measures
+what the watcher itself costs per hour of a run. Step 7 is done except for its measurement.
+
+**What it costs, and what is the user's to decide.**
+
+1. **Attended, or not.** Step 4's conductor is started by `run-streams.sh` and outlives the user's terminal. The
+   watcher is the user's own Claude Code session. While it is closed the loops go on, since no answer never stops
+   one, but a stream that is `blocked:` on a decision stays blocked until a watcher is back. Its state is all in
+   files, so a new session takes over where the last one stopped. A parallel run that must decide while nobody is
+   there would need a headless watcher (`claude -p` on the same tools) as part of this step. I would build the
+   attended watcher first and add the headless one only if step 6 shows blocked hours.
+2. **One model.** Decision 1 of this brief splits Sonnet for routing and Opus for decisions. With routing done by a
+   script there is no Sonnet session, and every judgement is Opus 5.5 at high effort. That replaces decision 1.
+3. **Where it is started.** A skill of its own for a parallel run, sharing `watch.py`, or a mode of
+   `/prove-java-change`. I would keep them apart: the plugin's skill is released to users, and a parallel run of
+   briefs is how this repository is developed.
+4. **One context for several streams.** Four streams send more events than one loop. `wait` keeps what it prints
+   small and the state stays in files, but the watcher's own compactions on a long run are something step 6 has to
+   look at.
+
 ## The plan
 
 1. **The decision record:** `llm-dlc/decisions/schema.json`, `decisions.py` (list, show, review, answer, render), the
@@ -289,6 +336,8 @@ place of today's `integrate()` bash loop.
    decisions and inbox items. This keeps today's report file for the status bar.
 4. **The conductor loop:** event-driven wake-ups in `run-streams.sh`, the model split, a `NAME-conductor` scope with a
    small cap, re-running streams that a decision unblocks, and `## Conductor` in the brief template.
+   [Design 8](#8-proposed-the-watcher-as-the-one-conductor-in-place-of-step-4s-loop) proposes the watcher in its
+   place; the user has not yet said which.
 5. **Early merge, where it is worth it:** the criteria of 5, the per-stream reconcile, and starting follow-up work.
 6. **Measure it on the next parallel run**, against the table above:
    - the time from the last stream finishing to the brief being `done`;
@@ -299,9 +348,9 @@ place of today's `integrate()` bash loop.
 7. **The moonshot conductor** ([Design 7](#7-a-moonshot-conductor-judging-a-compaction-from-outside-the-loop)), after
    step 6, when these streams are picked up again: the compaction hand-off from `show_progress`, the judgment session,
    its actions, and its decision records. Measured on the next moonshot run: the stops it avoided, and the stops it made
-   that the user agreed with. Done outside this brief, in `/prove-java-change` (merged here on 2026-11-16), except for
-   two things that are open: the watcher's verdicts go to the run's record, not to a decision record
-   (`llm-dlc/decisions/`), and nothing has measured them on a real run yet.
+   that the user agreed with. Done outside this brief, in `/prove-java-change` (merged here on 2026-11-16). Its
+   verdicts go to a decision record since 2026-11-16 (`llm-dlc/decisions/prove-change.jsonl`, written by
+   `conductor.py decide`). One thing is open: nothing has measured them on a real run yet.
 
 Each step is one commit with its tests. Steps 1–3 are useful before the conductor session exists: a session can write
 decisions and inbox items by hand, as was done on 2026-11-14.
@@ -467,7 +516,12 @@ The next parallel run uses the conductor:
   - Design 7 and step 7 are built in `/prove-java-change`; see the notes there.
   - Before steps 4–6 are started: Loop settings still name the workspace `stream-conductor` and the fork of
     `d34058d5`, and the Loop until below ends at step 3. Both are the user's to change.
-- Status: blocked: steps 1–3 merged; steps 4–6 wait for the user to start them, with new Loop settings and Loop until
+- 2026-11-16, later the same day, with the user: the watcher's verdicts now go to the decision record (step 7's
+  first open point), and the user chose to fold step 4 into the watcher. Design 8 is that proposal, written for
+  them to read; nothing of it is built. The workspace `stream-conductor` was forgotten and its folder removed, its
+  commits being on the default line, so the Loop settings below name a workspace that no longer exists: a restart
+  runs in the default workspace, with new Loop settings and a new Loop until.
+- Status: blocked: steps 1–3 merged; Design 8 (the watcher in place of step 4's loop) waits for the user's reading; nothing of steps 4–6 is started
 
 ## Loop settings
 

@@ -12,9 +12,9 @@ hands you the input where it breaks. Nobody writes a specification.
 
 It also takes a list of changes: it evaluates them all, orders them so that the most accessible is proved first,
 and proves them one after another. With `--scaffold-only` it prepares them and stops; the same request without the
-flag proves what was prepared. It takes examples that are already prepared too, by number: it checks that each has
-what a proof needs and is formed correctly, tries once to put right what is not, and starts with the first, or
-starts nothing. `--instruction "TEXT"` gives the proof loop your own line in place of the one in the table below.
+flag proves what was prepared. It takes examples by number too. One that is already prepared is
+checked: that it has what a proof needs and is formed correctly, with one try at putting right what is not, or
+nothing starts. A catalog entry is set up first, and you confirm every claim that was written before a proof starts. `--instruction "TEXT"` gives the proof loop your own line in place of the one in the table below.
 
 It runs on your machine, on a released copy of this repository that the skill installs and checks against a hash it
 carries. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you agree to it.

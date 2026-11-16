@@ -208,6 +208,18 @@
           "engine": { "description": "Named explicitly: native strict is the default this wave asks for, and the CLI's default engine is JBMC.", "enum": ["native", "jbmc", "auto"] },
           "gaps": { "enum": ["strict", "assume", "advised"] },
           "bounds": { "description": "Explicit bounds, by the tool's option names (maxArrayLength, unwind, maxStringLength ...).", "type": "object", "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" }, "additionalProperties": { "type": "integer", "minimum": 0 } },
+          "besideRoute": {
+            "description": "An answer to this task's claim given beside the route: by a script of the example's own, on the claim file as frozen, run as a verification job, which leaves no receipt. llm-dlc/tools/changes.py counts the claim as decided only while that job's result is in the checkout, passed, and the job names the example (links.examples); a route receipt, once there is one, outranks it. Written once the job is in; the task's `expected` and its claim stay as they were.",
+            "type": "object",
+            "required": ["answer", "job", "by", "recorded"],
+            "additionalProperties": false,
+            "properties": {
+              "answer": { "enum": ["established", "refuted"] },
+              "job": { "description": "The verification job that gave it, by id (verification/jobs, verification/results).", "type": "string", "pattern": "^[0-9]{8}-[0-9]{6}-[a-z0-9-]+$" },
+              "by": { "description": "How it was run and why not by the route, in a line: the script and what it adds (an adapter entry, a lemma).", "type": "string", "minLength": 1 },
+              "recorded": { "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+            }
+          },
           "notes": { "type": "array", "items": { "type": "string" } }
         },
         "allOf": [

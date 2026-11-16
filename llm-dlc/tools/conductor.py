@@ -36,6 +36,13 @@ comes before its deadline, so a conductor that has gone away never stops the wor
     example     the loop is between two items: `continue` (the default), or `stop` here. It waits longer while
                 DIR/merge-queue names a workspace the conductor is to merge first.
 
+A verdict given in time is also a decision, and goes into the decision record beside the verdict's own file:
+llm-dlc/decisions/NAME.jsonl (decisions.py), NAME the run directory's name (in a runtime checkout `local-NAME`, so a
+user's record never meets the one a release carries). There the user reviews it afterwards with the rest
+(`decisions.py list`, `review accept`, `review overturn --note`). The verdict's file stays what the loop reads, and
+a record that can't be written never holds a verdict back. `decide --confidence medium` flags the decision for the
+user's review; a verdict the conductor is not at least that sure of is not one to give: ask the user.
+
 The loop's side, for feature-loop.sh:
 
     conductor.py ask DIR TYPE --answers A,B --wait SECONDS [KEY=VALUE ...]
@@ -155,7 +162,75 @@ def answers(event: dict) -> tuple[str, ...]:
     return tuple(event.get("answers") or DEFAULT_ANSWERS)
 
 
-def cmd_decide(directory: Path, n: int, verdict: str, reason: str) -> int:
+# What each question's answers mean and how one is taken back, for the decision record (decisions.py). All of
+# them are cheap to take back: a loop's verdict costs a cycle or a restart, never work that is committed.
+QUESTIONS = {
+    "compaction": ("The session compacted with no commit{of}: does the turn go on?", {
+        "continue": ("let the turn run to the next compaction", "the session keeps working without a commit, and spends tokens if it is stuck",
+                     "answer stop at the next compaction"),
+        "stop": ("end the turn and the loop", "what the turn has not committed stays in the working copy, and the loop has to be started again",
+                 "start the loop again on the same examples: the session continues where it was")}),
+    "cycle": ("A cycle{of} has committed: is the example finished?", {
+        "finished": ("the example is done", "the loop takes the next example and does not return to this one in this run",
+                     "name the example in a later run of the loop"),
+        "continue": ("another cycle on the example", "a further cycle's time and tokens",
+                     "answer finished after the next cycle, or stop the loop after it"),
+        "waiting": ("leave it until its verification jobs are in", "the loop takes another example meanwhile and returns when the jobs are in",
+                    "nothing to undo: the loop returns to the example by itself")}),
+    "example": ("The loop is between two examples{after}: does it take the next one?", {
+        "continue": ("take the next example", "the run goes on", "stop the loop after the example under way"),
+        "stop": ("end the loop here", "the examples left are not started", "start the loop again on the examples left")}),
+}
+
+
+def decision_record(directory: Path) -> tuple[str, Path] | None:
+    """The decision record a run directory's verdicts go to, and where it is kept: for DIR =
+    CHECKOUT/llm-dlc/loop-summaries/NAME, the record NAME under CHECKOUT/llm-dlc/decisions. None for a directory
+    anywhere else, which has no checkout to keep a record in."""
+    d = directory.resolve()
+    if d.parent.name != "loop-summaries" or d.parent.parent.name != "llm-dlc" or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", d.name):
+        return None
+    checkout = d.parents[2]
+    try:
+        import mode
+        local = mode.mode(checkout) == "runtime"
+    except (Exception, SystemExit):  # a marker that can't be read: mode.py's own callers say so
+        local = False
+    return (f"local-{d.name}" if local else d.name), checkout / "llm-dlc" / "decisions"
+
+
+def record_decision(directory: Path, event: dict, verdict: str, reason: str, confidence: str) -> str | None:
+    """Add a verdict to the run's decision record. Returns the decision's id, or None when there is no record to add
+    it to; raises what decisions.py raises when it refuses the line."""
+    where = decision_record(directory)
+    if where is None:
+        return None
+    import decisions
+    name, root = where
+    item = event.get("item")
+    question, options = QUESTIONS.get(event.get("type"), ("The loop asks: {type}{of}", {}))
+    known = {a: options.get(a, (a, "as the loop's question defines it", "ask the loop again")) for a in answers(event)}
+    events = read_events(directory)
+    patch = {
+        "state": "decided",
+        "asked": {"by": directory.resolve().name, "at": event["time"],
+                  "question": question.format(of=f" on example {item}" if item else "", after=f", after {item}" if item else "",
+                                              type=event.get("type"))},
+        "context": {"files": sorted(str(p.relative_to(root.parents[1]))
+                                    for p in (root.parents[1] / "examples").glob(f"{item}-*") if p.is_dir())} if item else {},
+        "options": [{"id": a, "summary": text[0], "consequences": text[1]} for a, text in known.items()],
+        "decision": {"option": verdict, "by": "conductor", "rationale": reason,
+                     "confidence": {"level": confidence,
+                                    "basis": f"the loop's event {event['n']} ({directory.name}/{EVENTS}), the example's state and the verification queue"},
+                     "recovery": {"class": "cheap", "undo": known[verdict][2]}},
+    }
+    current, stamp = decisions.fold(decisions.read(name, root)), decisions.now()
+    line = decisions.conductor_line(name, patch, current, events[0]["time"] if events else None, stamp, [])
+    decisions.write(name, root, [line])
+    return line["id"]
+
+
+def cmd_decide(directory: Path, n: int, verdict: str, reason: str, confidence: str = "high") -> int:
     event = next((e for e in read_events(directory) if e.get("n") == n), None)
     if event is None or not event.get("needsVerdict"):
         print(f"event {n} asks for no verdict", file=sys.stderr)
@@ -171,6 +246,13 @@ def cmd_decide(directory: Path, n: int, verdict: str, reason: str) -> int:
     tmp.write_text(json.dumps({"verdict": verdict, "reason": " ".join(reason.split()), "time": now()}) + "\n")
     os.replace(tmp, verdict_path(directory, n))
     print(f"event {n}: {verdict}" + (" (after its deadline: the loop was no longer waiting for it)" if late else ""))
+    if not late:  # a verdict the loop no longer waited for decided nothing
+        try:
+            recorded = record_decision(directory, event, verdict, " ".join(reason.split()) or "no reason given", confidence)
+            if recorded:
+                print(f"recorded as {recorded}")
+        except (Exception, SystemExit) as e:  # the verdict stands whatever the record says
+            print(f"the verdict stands, but it is not in the decision record: {type(e).__name__}: {e}", file=sys.stderr)
     return 0
 
 
@@ -274,6 +356,8 @@ def main(argv: list[str]) -> int:
     d.add_argument("n", type=int)
     d.add_argument("verdict", choices=VERDICTS)
     d.add_argument("--reason", required=True)
+    d.add_argument("--confidence", choices=("high", "medium"), default="high",
+                   help="medium flags the decision for the user's review")
     e = sub.add_parser("events", help="every event so far")
     e.add_argument("directory", type=Path)
     c = sub.add_parser("command", help="a line for the loop, as if typed in its terminal")
@@ -297,7 +381,7 @@ def main(argv: list[str]) -> int:
     if args.command == "wait":
         return cmd_wait(args.directory, args.timeout)
     if args.command == "decide":
-        return cmd_decide(args.directory, args.n, args.verdict, args.reason)
+        return cmd_decide(args.directory, args.n, args.verdict, args.reason, args.confidence)
     if args.command == "command":
         return cmd_command(args.directory, " ".join(args.line))
     if args.command == "ask":

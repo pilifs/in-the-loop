@@ -4,12 +4,15 @@ Run: python3 llm-dlc/tools/test_conductor.py"""
 import contextlib
 import io
 import json
+import os
 import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import conductor
+import decisions
 
 
 def call(*argv):
@@ -136,6 +139,71 @@ class ConductorTest(unittest.TestCase):
                 "collected": ["20260101-000004-example-905-in  Example 905  [passed]"]}
         (root / "verification/pipeline.py").write_text(f"print({json.dumps(json.dumps(rows))})\n")
         self.assertEqual({k: len(v) for k, v in conductor.unfinished_jobs(root).items()}, {"901": 1, "902": 1, "904": 1})
+
+
+class DecisionRecordTest(unittest.TestCase):
+    """A verdict is also a decision: in a checkout, it goes into the run's decision record (decisions.py)."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.checkout = Path(tmp.name).resolve() / "checkout"
+        self.dir = self.checkout / "llm-dlc/loop-summaries/prove-change"
+        self.records = self.checkout / "llm-dlc/decisions"
+        (self.checkout / "examples/901-made-up").mkdir(parents=True)
+        patch = mock.patch.dict(os.environ, {"IN_THE_LOOP_MODE": "development"})
+        patch.start()
+        self.addCleanup(patch.stop)
+        self.start = conductor.append_event(self.dir, type="cycle-start", cycle=1, item="901")
+
+    def ask(self, seconds=600):
+        return conductor.append_event(self.dir, type="cycle", cycle=1, item="901", needsVerdict=True,
+                                      answers=["finished", "continue", "waiting"], deadline=time.time() + seconds)["n"]
+
+    def test_a_verdict_in_time_is_a_decision_the_user_can_review_afterwards(self):
+        status, out, err = call("decide", self.dir, self.ask(), "finished", "--reason", "every claim has its answer")
+        self.assertEqual((status, err), (0, ""))
+        self.assertIn("recorded as prove-change-D001", out)
+        d = decisions.fold(decisions.read("prove-change", self.records))["prove-change-D001"]
+        self.assertEqual((d["state"], d["decision"]["option"], d["decision"]["by"], d["review"]["state"]),
+                         ("decided", "finished", "conductor", "unreviewed"))
+        self.assertEqual((d["run"], d["context"]["files"], [o["id"] for o in d["options"]]),
+                         (self.start["time"], ["examples/901-made-up"], ["finished", "continue", "waiting"]))
+        self.assertIn("example 901", d["asked"]["question"])
+        self.assertEqual(decisions.problems(self.records), [])
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(decisions.main(["review", "overturn", "prove-change-D001", "--note", "one claim is still open"],
+                                            root=self.records), 0)
+        self.assertEqual(decisions.problems(self.records), [])
+        self.assertEqual(conductor.read_verdict(self.dir, 2)["verdict"], "finished", "the verdict's file is as it was")
+
+    def test_a_verdict_of_medium_confidence_is_flagged_and_each_verdict_gets_its_own_number(self):
+        call("decide", self.dir, self.ask(), "continue", "--reason", "a claim is open")
+        self.assertIn("recorded as prove-change-D002",
+                      call("decide", self.dir, self.ask(), "waiting", "--reason", "its proof is queued", "--confidence", "medium")[1])
+        d = decisions.fold(decisions.read("prove-change", self.records))["prove-change-D002"]
+        self.assertEqual(d["review"], {"state": "flagged", "why": "medium-confidence"})
+
+    def test_a_late_verdict_decided_nothing_and_is_not_recorded(self):
+        self.assertEqual(call("decide", self.dir, self.ask(seconds=-1), "finished", "--reason", "too late")[0], 0)
+        self.assertEqual(decisions.record_names(self.records), [])
+
+    def test_a_runtime_checkout_keeps_a_record_of_its_own(self):
+        with mock.patch.dict(os.environ, {"IN_THE_LOOP_MODE": "runtime"}):
+            self.assertIn("recorded as local-prove-change-D001",
+                          call("decide", self.dir, self.ask(), "finished", "--reason", "done")[1])
+        self.assertEqual(decisions.record_names(self.records), ["local-prove-change"])
+
+    def test_a_record_that_cant_be_written_does_not_hold_the_verdict_back(self):
+        self.records.parent.mkdir(parents=True, exist_ok=True)
+        self.records.write_text("a file where the records' folder would be")
+        status, _, err = call("decide", self.dir, self.ask(), "finished", "--reason", "done")
+        self.assertEqual(status, 0)
+        self.assertIn("the verdict stands", err)
+        self.assertEqual(conductor.read_verdict(self.dir, 2)["verdict"], "finished")
+
+    def test_a_run_directory_outside_a_checkout_has_no_record(self):
+        self.assertIsNone(conductor.decision_record(self.checkout / "run"))
 
 
 if __name__ == "__main__":

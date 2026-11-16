@@ -1,7 +1,7 @@
 ---
 name: prove-java-change
-description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof. It also takes examples that are already prepared, by number, which it checks before it starts.
-argument-hint: "[--scaffold-only] [--wait-for-proofs] [--instruction \"TEXT with {}\"] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it | examples already prepared, by number: NNN ...>"
+description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof. It also takes examples by number: ones already prepared, which it checks before it starts, and catalog entries, which it has set up first.
+argument-hint: "[--scaffold-only] [--wait-for-proofs] [--instruction \"TEXT with {}\"] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it | examples by number, prepared or catalogued: NNN ...>"
 disable-model-invocation: true
 model: claude-opus-5-5
 effort: high
@@ -34,8 +34,8 @@ Beside them runs the verification loop, on Sonnet 5.5, which executes the jobs t
 
 The request: $ARGUMENTS
 
-It names one change or a list of them, each with what to prove about it, or examples that are already prepared, by
-their numbers (see "Examples already prepared" below); not both: ask the user to split a request that mixes them.
+It names one change or a list of them, each with what to prove about it, or examples by their numbers (see
+"Examples named by number" below); not both: ask the user to split a request that mixes them.
 
 - `--scaffold-only` means: stop after stage 3, with the examples prepared and no proof started. A change that
   already has its example is not prepared again, so the same request without the flag proves what an earlier run
@@ -53,7 +53,7 @@ python3 ${CLAUDE_SKILL_DIR}/bootstrap.py status
 
 `state: development` means the skill is running inside a development checkout of the repository itself. Stage 1
 doesn't apply there and the request names examples by number: start the verification loop and go to "Examples
-already prepared", with a new fixed session (`watch.py session --new`) or, when the request names a session to
+named by number", with a new fixed session (`watch.py session --new`) or, when the request names a session to
 continue, that one (`watch.py session --use ID`). Any other state is a user's machine: start at stage 1.
 `home` is the checkout every later command runs in; when it is outside this session's working directories, have the
 user add it once (`/add-dir`).
@@ -113,26 +113,33 @@ left open: that comes back to you as a question. Done when `python3 llm-dlc/tool
 With `--scaffold-only` the skill ends here: say what was prepared, and that the same request without the flag
 proves it.
 
-## Examples already prepared
+## Examples named by number
 
-When the request names examples by number, stages 2 and 3 don't run. After stage 1, check them, all before any is
+When the request names examples by number, stage 2 doesn't run. After stage 1, check them, all before any is
 started:
 
 ```bash
 python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
 ```
 
-It prints, for each, what it lacks: `artifacts` a proof needs that are not there, or faults in its `form`.
+It prints what each lacks, and the lists to act on. Go through them in this order:
 
-- **Nothing lacking** (exit 0): go to stage 4 with `toProve`, in the order given, starting with the first. Say
-  which examples were left out as already decided.
-- **Something lacking** (exit 1): make one attempt to put it right. Run `watch.py stage setup "PROMPT"`, where the
-  prompt is the check's output and one instruction: do "The repair's brief" of `llm-dlc/runtime.md`. Then run the
-  check again. If it still reports anything, abort: tell the user which example lacks what and what the repair
-  tried, and start nothing. If the repair wrote a claim, show the user each one and get their word before stage 4.
-- **An example that is not there** (exit 2): abort at once, naming it.
+1. **`absent`** (exit 2), an example that is not there: abort at once, naming it.
+2. **`toRepair`**, prepared examples that lack `artifacts` or have a fault in their `form`: make one attempt to put
+   them right. Run `watch.py stage setup "PROMPT"`, where the prompt is the check's output and one instruction: do
+   "The repair's brief" of `llm-dlc/runtime.md`. Check again. If `toRepair` still names anything, abort: tell the
+   user which example lacks what and what the repair tried, and start nothing.
+3. **`toSetUp`**, catalog entries, which have revisions and nothing else: have every one set up before the loop
+   starts. For each, in the order given and one after another, run `watch.py stage setup "PROMPT"` as a background
+   task, where the prompt names the entry and gives one instruction: do "A catalog entry's brief" of
+   `llm-dlc/runtime.md` for it. Then check again with `--after-setup NNN,NNN` naming them. An entry that is still
+   not prepared is in `leftOut`: say which and why, and go on without it.
+4. **The claims.** If anything was set up, or the repair wrote a claim, run `watch.py claims NNN ...` for those
+   examples, show the user every claim as printed, in one list, and get their word once. A correction goes to
+   another setup session for that example, and an example they turn down is left out.
 
-With `--scaffold-only` the check and the one repair are all that is done.
+Then go to stage 4 with `toProve`, in the order given, starting with the first. Say which examples were left out as
+already decided. With `--scaffold-only` the skill ends after step 4.
 
 ## 4. Prove them
 
@@ -156,6 +163,11 @@ proof loop detached, continuing the fixed session at high effort, and returns at
   to end there, else `continue`.
 - **A compaction with no commit**: `continue` while the work is moving, `stop` when it is stuck.
 
+Each answer you give is also recorded as a decision the user can review afterwards (`llm-dlc/decisions/`). Add
+`--confidence medium` to an answer you are not sure of, which flags it for them; put a question you are less sure
+of than that to the user. A summary that names a decision the user overturned is theirs to you: act on it as
+"Watching the loop" says.
+
 The user may ask about any part of the run at any time: answer from `watch.py status`, the sessions' logs and the
 queue. Fix what is small yourself (a job that hangs or runs away, a verification loop that died, a stale lock), say
 what you did, and leave the rest to the user.
@@ -166,7 +178,9 @@ When the loop has ended, stop the verification loop once the queue is clear (`wa
 results are in each example's folder in the home, with the run's record and the verification results. Tell the
 user, for each change and each claim of it: established, refuted (with the witness, replayed on a JVM) or left open
 (with why), under which bounds and assumptions, and what none of it covers. A refuted claim is a finding about
-their change: say so plainly.
+their change: say so plainly. List the answers you gave the loop that they have not reviewed
+(`python3 llm-dlc/tools/decisions.py list --group flagged,unreviewed`), and say that `decisions.py review` accepts
+or overturns them.
 
 If the proof needed something new of the verifier, that part helps the next user more than this one. Say what it is
 and offer to send it upstream as a pull request against `pilifs/in-the-loop`; if they agree, follow "Contributing

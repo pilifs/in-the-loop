@@ -3,7 +3,9 @@
 
 The conductor of a parallel run (llm-dlc/loops/stream-conductor.md) decides what it safely can and
 records each decision, so the user reviews afterwards instead of approving first; what it can't
-decide it queues for the user as an open question. The record is the one place both are kept:
+decide it queues for the user as an open question. The watcher of a proof loop is a conductor too, and
+its answers to the loop's questions are decisions here (conductor.py writes them, to the record named
+after the run: prove-change). The record is the one place both are kept:
 
   llm-dlc/decisions/NAME.jsonl   one JSON object per line, appended, never edited (schema.json)
   llm-dlc/decisions/NAME.md      the review view, generated: flagged first, then open questions, then

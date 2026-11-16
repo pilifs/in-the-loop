@@ -74,7 +74,8 @@ llm-dlc/
   tools/loop_stats.py               adds up the loops from the metrics tables, the run records and the verification jobs;
                                     test_loop_stats.py tests it
   tools/streams_status.py           the state and status bar of run-streams.sh; test_streams_status.py tests it
-  decisions/<name>.jsonl            a parallel run's decision record: what its conductor decided, with the confidence, how hard it
+  decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
+                                    watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
   decisions/<name>.md               the review view of that record: flagged first, then open, then unreviewed (generated)
   tools/decisions.py                writes and reads the records: the conductor's `record` and `depend`, the user's `review` and
@@ -221,9 +222,9 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-11-16 05:44 UTC | [55c8cba6-01ea-400f-bee3-52e9db3aaba0](traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | 1 | 8 | ended |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | ended |
-| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 17 | 39 | open |
+| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 18 | 40 | open |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](traces/48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 1 | 6 | ended |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 40 | 46 | open |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 40 | 46 | ended |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 21 | 38 | ended |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 11 | 12 | ended |
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](traces/72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 61 | 21 | ended |

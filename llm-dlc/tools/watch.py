@@ -11,10 +11,17 @@ keeps the user informed, and judges what a script can't:
     watch.py stage evaluate PROMPT         run the evaluation in the fixed session, on Fable 5.2 at medium effort
     watch.py stage setup PROMPT            run the examples' setup in a new session, on Opus 5.5 at high effort
                                            (both print the session's report; --model, --effort and --memory override)
-    watch.py preflight NNN ...             check examples that are already prepared before a loop takes them: what
-                                           each lacks, as missing artifacts or as a fault in its form (exit 0:
-                                           nothing; 1: something a setup session may put right; 2: an example
-                                           that is not there at all)
+    watch.py preflight [--after-setup NNN,...] NNN ...
+                                           check examples named by number before a loop takes them: which are
+                                           catalog entries still to set up (toSetUp), and what a prepared one lacks,
+                                           as missing artifacts or as a fault in its form (toRepair). Exit 0:
+                                           nothing; 1: something a setup session may put right; 2: an example that
+                                           is not there at all. --after-setup names the catalog entries a setup
+                                           session was run for: one of them still lacking is left out (leftOut)
+                                           and no longer counts against the rest
+    watch.py claims NNN ...                what each example claims, in its own words, for the user to confirm
+                                           before the loop: every claim's statement, bounds, and the answer expected
+                                           on each revision
     watch.py verification start|stop|status   the verification loop, on Sonnet 5.5, which runs the jobs the
                                            sessions queue; started once, before the examples are set up
     watch.py loop [OPTION ...] NNN ...     start the proof loop on these examples, continuing the fixed session at
@@ -56,6 +63,7 @@ from pathlib import Path
 import changes        # llm-dlc/tools/changes.py
 import claude_setup   # llm-dlc/tools/claude_setup.py
 import conductor      # llm-dlc/tools/conductor.py
+import decisions      # llm-dlc/tools/decisions.py
 import mode           # llm-dlc/tools/mode.py
 
 REPO = Path(__file__).resolve().parents[2]
@@ -205,7 +213,9 @@ def schema_gaps(root: Path, row: dict) -> list[dict]:
             for e in errors[:5]]
 
 
-def preflight(run: Run, numbers: list[str]) -> dict:
+def preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> dict:
+    """What each example named lacks. `set_up` names the catalog entries a setup session has been run for: one that
+    still lacks something is left out of the run, and the others go on without it."""
     numbers = list(dict.fromkeys(numbers))
     out = []
     for row in changes.listing(run.root, numbers)["examples"]:
@@ -213,20 +223,91 @@ def preflight(run: Run, numbers: list[str]) -> dict:
         if not any(g["kind"] == changes.ABSENT for g in gaps) and row.get("path"):
             gaps += schema_gaps(run.root, row)
         entry = {"id": row["id"], "path": row.get("path"), "state": row["state"], "ok": not gaps,
-                 **{kind: [g for g in gaps if g["kind"] == kind] for kind in (changes.ARTIFACTS, changes.FORM, changes.ABSENT)}}
+                 **{kind: [g for g in gaps if g["kind"] == kind] for kind in changes.KINDS}}
         if row["state"] == "unknown":
             entry["note"] = "no target sidecar: only its example.json was checked, and its claims are whatever its page states"
         out.append(entry)
-    return {"examples": out, "ok": all(e["ok"] for e in out),
+    left_out = [e["id"] for e in out if not e["ok"] and e["id"] in set_up and not e[changes.ABSENT]]
+    counted = [e for e in out if e["id"] not in left_out]
+    return {"examples": out, "ok": all(e["ok"] for e in counted),
             "absent": [e["id"] for e in out if e[changes.ABSENT]],
+            "toSetUp": [e["id"] for e in counted if e[changes.CATALOGUE]],
+            "toRepair": [e["id"] for e in counted if e[changes.ARTIFACTS] or e[changes.FORM]],
+            "leftOut": left_out,
             "toProve": [e["id"] for e in out if e["ok"] and e["state"] != "decided"],
             "decided": [e["id"] for e in out if e["ok"] and e["state"] == "decided"]}
 
 
-def cmd_preflight(run: Run, numbers: list[str]) -> int:
-    found = preflight(run, numbers)
+def cmd_preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> int:
+    found = preflight(run, numbers, set_up)
     print(json.dumps(found, indent=1))
     return 0 if found["ok"] else 2 if found["absent"] else 1
+
+
+def claims(run: Run, numbers: list[str]) -> list[dict]:
+    """Each example's claims as its own files state them: one entry per claim file, with the tasks that put it to a
+    revision and the answer each expects. A task with no claim file yet is listed with its statement missing."""
+    out = []
+    for row in changes.listing(run.root, list(dict.fromkeys(numbers)))["examples"]:
+        entry = {"id": row["id"], "title": row.get("title"), "source": row.get("source"), "state": row["state"],
+                 "claims": []}
+        out.append(entry)
+        if not row.get("path"):
+            continue
+        folder = run.root / row["path"]
+        try:
+            target = json.loads((folder / "target.json").read_text())
+        except (OSError, ValueError):
+            continue  # no sidecar, or one changes.py has reported: nothing states a claim in a form to list
+        by_file: dict[str | None, dict] = {}
+        for task in target.get("tasks") or []:
+            if task.get("kind") == "replay":
+                continue
+            name = task.get("claim")
+            if name not in by_file or name is None:
+                claim = {}
+                try:
+                    claim = json.loads((folder / name).read_text()) if name else {}
+                except (OSError, ValueError):
+                    pass
+                c = {"file": name, "statement": claim.get("statement"), "bounds": claim.get("bounds") or {},
+                     "assumptions": [a.get("text") for a in claim.get("assumptions") or [] if isinstance(a, dict)],
+                     "tasks": []}
+                entry["claims"].append(c)
+                if name is not None:
+                    by_file[name] = c
+            else:
+                c = by_file[name]
+            c["tasks"].append({"task": task["id"], "on": task.get("revision") or task.get("pair"),
+                               "expected": task.get("expected"),
+                               **({"allowedChange": task["allowedChange"]} if task.get("allowedChange") else {})})
+    return out
+
+
+def cmd_claims(run: Run, numbers: list[str], as_json: bool) -> int:
+    found = claims(run, numbers)
+    if as_json:
+        print(json.dumps(found, indent=1))
+        return 0
+    for e in found:
+        print(f"## {e['id']}: {e['title'] or '(no title)'}")
+        if e.get("source"):
+            print(e["source"])
+        if not e["claims"]:
+            print(f"\nNo claim: the example is {e['state']}.")
+        for i, c in enumerate(e["claims"], 1):
+            print(f"\n{i}. {c['statement'] or '(no claim file yet: nothing states this claim)'}")
+            for t in c["tasks"]:
+                change = f"; the change may affect only: {t['allowedChange']}" if t.get("allowedChange") else ""
+                print(f"   - expected {t['expected'] or 'not said'} on {t['on']} (task {t['task']}){change}")
+            if c["bounds"]:
+                print("   - bounds: " + ", ".join(f"{k} {v}" for k, v in c["bounds"].items()))
+            for a in c["assumptions"]:
+                print(f"   - assuming: {a}")
+            if c["file"]:
+                print(f"   - {c['file']}")
+        print()
+    return 0
 
 
 # -- the verification loop and the proof loop
@@ -248,10 +329,13 @@ def verification_running(root: Path) -> int | None:
                        capture_output=True, text=True)
     for pid in r.stdout.split():
         try:
+            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
             theirs = store(os.readlink(f"/proc/{pid}/cwd"))
         except OSError:
             continue
-        if mine and theirs == mine:
+        # the script as a word of its own: a shell that only mentions it (`bash -lc "…loop.sh; read"`, the window a
+        # loop was started in, still open after the loop ended) is not the loop
+        if mine and theirs == mine and any(w.endswith(b"verification-loop.sh") for w in words):
             return int(pid)
     return None
 
@@ -338,6 +422,20 @@ def turn(path: str | None) -> dict:
         return {"toolCalls": None, "lastOutput": None}
 
 
+def decisions_state(run: Run) -> dict:
+    """Where the run's decision record stands: the watcher's answers the user has not reviewed, the ones flagged for
+    them, and the ones they overturned, which wait for the watcher."""
+    where = conductor.decision_record(run.dir)
+    if where is None:
+        return {}
+    try:
+        current = decisions.fold(decisions.read(*where))
+    except (decisions.RecordError, OSError):
+        return {}
+    by = {g: [d["id"] for d in current.values() if decisions.group(d) == g] for g in ("flagged", "unreviewed", "overturned")}
+    return {"record": where[0], "flagged": len(by["flagged"]), "unreviewed": len(by["unreviewed"]), "overturned": by["overturned"]}
+
+
 def state(run: Run) -> dict:
     events = conductor.read_events(run.dir)
     loop = run.run_json()
@@ -353,7 +451,7 @@ def state(run: Run) -> dict:
     ended = next((e for e in events if e.get("type") == "ended"), None)
     under_way = None if ended else current.get("item")
     rows = {r["id"]: r for r in changes.listing(run.root, examples)["examples"]} if examples else {}
-    claims = {i: {t: c["status"] for t, c in (rows[i].get("claims") or {}).items()} for i in rows}
+    claims = {i: {t: changes.answer(c) or c["status"] for t, c in (rows[i].get("claims") or {}).items()} for i in rows}
     head = commits(run.root, None)
     return {"time": now(), "started": stamp(loop.get("started")), "session": loop.get("session"),
             "examples": examples, "items": items, "item": under_way,
@@ -364,7 +462,7 @@ def state(run: Run) -> dict:
             "unfinished": conductor.unfinished_jobs(run.root),
             "loopAlive": alive(loop.get("pid")) if loop else False, "ended": ended,
             "verification": verification_running(run.root),
-            "mergeQueue": merge_queue(run), "asked": conductor.pending(run.dir)}
+            "mergeQueue": merge_queue(run), "asked": conductor.pending(run.dir), "decisions": decisions_state(run)}
 
 
 # -- the summary
@@ -423,6 +521,12 @@ def attention(s: dict) -> list[str]:
             if result not in ("passed", "?") and job in s.get("newlyCollected", ())]
     if s["mergeQueue"]:
         out.append(f"queued to merge at the next change of example: {', '.join(s['mergeQueue'])}")
+    recorded = s.get("decisions") or {}
+    out += [f"the user overturned {i}: act on its undo line (`decisions.py show {i}`), then record what was done as "
+            f"the decision that supersedes it" for i in recorded.get("overturned", [])]
+    if recorded.get("flagged"):
+        out.append(f"{recorded['flagged']} of the watcher's answers are flagged for the user's review: "
+                   f"`python3 llm-dlc/tools/decisions.py list {recorded['record']} --group flagged`")
     return out
 
 
@@ -496,10 +600,14 @@ def assessment(run: Run, event: dict) -> dict:
     out = len(conductor.unfinished_jobs(run.root).get(item, []))
     hint = ("every claim has its answer: finished, unless the report says work is left" if row.get("state") == "decided"
             else "its claims are not all answered, and jobs of it are queued: waiting if the session has nothing else to do, else continue" if out
-            else "its claims are not all answered by the route's receipts and nothing of it is queued: continue, unless what "
-                 "is left needs a person, or the example's own verdict and hand-off below say the open claims were "
-                 "decided beside the route or can't be decided here")
-    return {"example": row.get("state"), "claims": {t: c["status"] for t, c in (row.get("claims") or {}).items()},
+            else "its claims are not all answered and nothing of it is queued: continue, unless what is left needs a "
+                 "person or can't be decided here. `blocked` names the open claims that stop at an observed gap of "
+                 "the verifier, and the example's own verdict and hand-off below say what was tried")
+    found = row.get("claims") or {}
+    return {"example": row.get("state"),
+            "claims": {t: changes.answer(c) or c["status"] for t, c in found.items()},
+            "besideRoute": sorted(t for t, c in found.items() if c["status"] not in changes.ANSWERS and changes.answer(c)),
+            "blocked": {t: c["blocked"] for t, c in found.items() if c.get("blocked")},
             "jobsNotIn": out, "verdict": row.get("verdict"), "next": row.get("next"), "hint": hint}
 
 
@@ -510,7 +618,7 @@ def next_thing(run: Run, interval: float) -> dict | None:
             (run.dir / "ended.seen").write_text(conductor.now() + "\n")
             return {"kind": "ended", "event": event}
         out = {"kind": "question", "event": {**event, "secondsLeft": int(event["deadline"] - time.time())},
-               "answer": f"python3 llm-dlc/tools/conductor.py decide {RUN} {event['n']} {'|'.join(conductor.answers(event))} --reason TEXT"}
+               "answer": f"python3 llm-dlc/tools/conductor.py decide {RUN} {event['n']} {'|'.join(conductor.answers(event))} --reason TEXT [--confidence medium]"}
         if event.get("type") == "cycle":
             out["assessment"] = assessment(run, event)
         if event.get("type") == "example":
@@ -609,7 +717,12 @@ def main(argv: list[str] | None = None) -> int:
     st.add_argument("--model")
     st.add_argument("--effort")
     st.add_argument("--memory")
-    sub.add_parser("preflight").add_argument("examples", nargs="+", metavar="NNN")
+    pf = sub.add_parser("preflight")
+    pf.add_argument("examples", nargs="+", metavar="NNN")
+    pf.add_argument("--after-setup", default="", metavar="NNN,...")
+    cl = sub.add_parser("claims")
+    cl.add_argument("examples", nargs="+", metavar="NNN")
+    cl.add_argument("--json", action="store_true")
     sub.add_parser("verification").add_argument("action", choices=("start", "stop", "status"))
     sub.add_parser("loop").add_argument("arguments", nargs="*")
     w = sub.add_parser("wait")
@@ -633,11 +746,14 @@ def main(argv: list[str] | None = None) -> int:
         print(fixed_session(run, args.new, args.use))
     elif args.command == "stage":
         return cmd_stage(run, args.name, args.prompt, args.model, args.effort, args.memory)
-    elif args.command == "preflight":
-        bad = [n for n in args.examples if not (len(n) == 3 and n.isdigit())]
+    elif args.command in ("preflight", "claims"):
+        set_up = [n for n in getattr(args, "after_setup", "").split(",") if n]
+        bad = [n for n in args.examples + set_up if not (len(n) == 3 and n.isdigit())]
         if bad:
             ap.error(f"not an example's number: {' '.join(bad)}")
-        return cmd_preflight(run, args.examples)
+        if args.command == "claims":
+            return cmd_claims(run, args.examples, args.json)
+        return cmd_preflight(run, args.examples, set_up)
     elif args.command == "verification":
         return cmd_verification(run, args.action)
     elif args.command == "loop":

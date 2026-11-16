@@ -60,6 +60,30 @@ class Checkout(unittest.TestCase):
             "conclusion": {"status": status, "expectation": "yes"}}))
         (where / "plan.json").write_text(json.dumps(workflow.plan_record(plan)))
 
+    def catalog_entry(self, number):
+        """The fixture as a catalog entry: its sidecar with no task, and nothing that names one."""
+        folder = self.example(number, replays=False)
+        target = json.loads((folder / "target.json").read_text())
+        target["tasks"] = []
+        target["handoff"]["blockers"] = [b for b in target["handoff"]["blockers"] if "task" not in b]
+        (folder / "target.json").write_text(json.dumps(target))
+        return folder
+
+    def beside(self, folder, task, answer, job, status="passed", names=None):
+        """An answer given beside the route, as a sidecar records it, with the job's files as the pipeline leaves
+        them: its result (none when `status` is None) and the job itself, naming the examples it is about."""
+        target = json.loads((folder / "target.json").read_text())
+        next(t for t in target["tasks"] if t["id"] == task)["besideRoute"] = {
+            "answer": answer, "job": job, "by": "proofs/prove.py: made up", "recorded": "2026-01-02"}
+        (folder / "target.json").write_text(json.dumps(target))
+        verification = self.root / "verification"
+        if status:
+            (verification / "results" / job).mkdir(parents=True)
+            (verification / "results" / job / "result.json").write_text(json.dumps({"id": job, "status": status}))
+        (verification / "jobs").mkdir(parents=True, exist_ok=True)
+        (verification / "jobs" / f"{job}.json").write_text(json.dumps(
+            {"id": job, "links": {"examples": [folder.name[:3]] if names is None else names}}))
+
     def rows(self, *numbers):
         return {r["id"]: r for r in changes.listing(self.root, list(numbers))["examples"]}
 
@@ -144,6 +168,46 @@ class StateTest(Checkout):
         self.assertIn("next", row, "the hand-off's next step, when the sidecar has one")
         self.assertIn("verdict: made-up: the probe claim decided", self.run_main()[1])
 
+    def test_an_answer_given_beside_the_route_counts_while_its_job_passed_and_names_the_example(self):
+        folder = self.example("900", answers=PROOFS)  # regex-probe: unresolved by the route
+        self.assertEqual(self.rows()["900"]["claims"]["regex-probe"]["blocked"], ["java-semantics"],
+                         "an open claim says which observed gaps of the verifier its task stops at")
+        self.beside(folder, "regex-probe", "refuted", "20260102-000001-example-900-the-probe-beside")
+        row = self.rows()["900"]
+        claim = row["claims"]["regex-probe"]
+        self.assertEqual((row["state"], claim["status"], claim["beside"]["confirmed"]), ("decided", "unresolved", True))
+        self.assertNotIn("blocked", claim, "a claim with its answer stops nowhere")
+        self.assertEqual(changes.listing(self.root, [])["pending"], [])
+        self.assertIn("1 refuted beside the route", self.run_main()[1])
+
+    def test_an_answer_beside_the_route_does_not_count_without_a_passed_job_of_this_example(self):
+        cases = {"900": ({"status": "failed"}, "ended failed"), "901": ({"status": None}, "no result of job"),
+                 "902": ({"names": ["950"]}, "does not name example 902")}
+        for number, (how, why) in cases.items():
+            self.beside(self.example(number, answers=PROOFS), "regex-probe", "refuted",
+                        f"20260102-00000{number[2]}-example-{number}-the-probe", **how)
+        rows = self.rows()
+        for number, (_, why) in cases.items():
+            claim = rows[number]["claims"]["regex-probe"]
+            self.assertEqual((rows[number]["state"], claim["beside"]["confirmed"]), ("prepared", False), number)
+            self.assertIn(why, claim["beside"]["why"])
+            self.assertEqual(claim["blocked"], ["java-semantics"])
+        self.assertEqual(changes.listing(self.root, [])["pending"], ["900", "901", "902"])
+
+    def test_the_routes_answer_outranks_one_given_beside_it(self):
+        folder = self.example("900", answers={**PROOFS, "regex-probe": "established"})
+        self.beside(folder, "regex-probe", "refuted", "20260102-000001-example-900-the-probe-beside")
+        self.assertEqual(changes.answer(self.rows()["900"]["claims"]["regex-probe"]), "established")
+
+    def test_a_catalog_entry_is_told_apart_from_an_example_that_lacks_something(self):
+        self.catalog_entry("900")
+        self.example("901", replays=False)
+        found = changes.listing(self.root, [])
+        row = found["examples"][0]
+        self.assertEqual((row["state"], [g["kind"] for g in row["gaps"]]), ("catalogued", [changes.CATALOGUE]))
+        self.assertEqual((found["pending"], found["unprepared"], found["catalogued"]), ([], ["901"], ["900"]))
+        self.assertIn("catalog entries, to set up first: 900", self.run_main()[1])
+
     def test_a_row_says_where_the_change_is_and_what_asked_for_it(self):
         self.example("900", provenance="/prove-java-change on 2026-01-02: made-up/repo#12, the gate still denies")
         row = self.rows()["900"]
@@ -197,7 +261,7 @@ class CommandTest(Checkout):
     def test_an_empty_checkout_says_so_and_pending_prints_an_empty_line(self):
         self.assertIn("no example numbered 900 to 999", self.run_main()[1])
         self.assertEqual(self.run_main("--pending"), (0, "\n"))
-        self.assertEqual(json.loads(self.run_main("--json")[1]), {"examples": [], "pending": [], "unprepared": []})
+        self.assertEqual(json.loads(self.run_main("--json")[1]), {"examples": [], "pending": [], "unprepared": [], "catalogued": []})
 
     def test_something_that_is_not_a_number_is_refused(self):
         with self.assertRaises(SystemExit) as refused, contextlib.redirect_stderr(io.StringIO()):

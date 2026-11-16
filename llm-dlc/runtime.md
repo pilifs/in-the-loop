@@ -46,7 +46,7 @@ this repository with its own release.
 **In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
 plugin, so `/prove-java-change NNN [NNN ...]` runs the copy being worked on. The bootstrap answers `development`,
 stage 1 doesn't apply (the checkout is the home and its machine is known), and the request names
-[examples that are already prepared](#examples-that-are-already-prepared): the watcher starts the verification
+[examples by number](#examples-named-by-number): the watcher starts the verification
 loop, checks them, and takes them to stage 4 in the order given, with traces as for any loop here. The fixed session is a new one (`watch.py session --new`) unless the request names a session to
 continue (`watch.py session --use ID`), such as the one an earlier moonshot ran in, which then keeps what it learned.
 Every moonshot over examples is run this way from now on.
@@ -62,7 +62,8 @@ its pin.
 /in-the-loop:prove-java-change [--wait-for-proofs] [--instruction "TEXT"] NNN [NNN ...]
 ```
 
-The second form names [examples that are already prepared](#examples-that-are-already-prepared), by number.
+The second form names [examples by number](#examples-named-by-number): ones that are already prepared, and
+catalog entries, which are set up first.
 `--instruction` gives [the proof loop](#the-proof-loop) the user's own text in place of its one line.
 
 - **A list.** Stage 2 understands and sizes every change before an example is added for any. Then it orders them, the
@@ -85,7 +86,8 @@ The second form names [examples that are already prepared](#examples-that-are-al
   stop after the example under way (`watch.py stop-after example`), look at its report, and go on with another run.
 
 [`changes.py`](tools/changes.py) is what the skill reads for all of this. It derives each example's state from its
-folder alone (its sidecar, its claims and its receipts), so nothing is kept in step by hand:
+folder (its sidecar, its claims and its receipts) and the verification results its sidecar cites, so nothing is kept
+in step by hand:
 
 ```bash
 python3 llm-dlc/tools/changes.py [NNN ...]             # each example: its state, its change, the request it came from
@@ -94,12 +96,31 @@ python3 llm-dlc/tools/changes.py --pending [NNN ...]   # the numbers still to pr
 
 | State | What it means | A proof loop |
 |---|---|---|
-| `unprepared` | The scaffold is incomplete, and `why` says where: a revision that does not materialize, no replay, a claim that is not frozen, no proof task | leaves it out |
+| `catalogued` | A catalog entry: its revisions are pinned and its sidecar has no task, so nothing is built and nothing states a claim | leaves it out until it is [set up](#examples-named-by-number) |
+| `unprepared` | The scaffold is incomplete, and `why` says where: a revision that does not materialize, no replay, a claim that is not frozen, tasks and no proof task among them | leaves it out |
 | `prepared` | The scaffold is complete and at least one claim has no answer yet, or was left open | takes it |
-| `decided` | Every claim is established or refuted by a current receipt. A refuted claim decides: it is a finding, not work left | leaves it out |
+| `decided` | Every claim is established or refuted. A refuted claim decides: it is a finding, not work left | leaves it out |
 | `unknown` | No target sidecar (a constructed example, named in a development checkout) | takes it when it is named |
 
 Without numbers it lists the checkout's own examples, 900 to 999, by number; with numbers, those, in the order given.
+
+**A claim's answer** is the route's, from a current receipt (`build.py`), or one given beside the route. A session
+may decide a claim through an adapter entry and a script of the example's own, run as a verification job, as the
+`prove-examples` loop did for examples 286 and 287 (`proofs/prove.py`). That leaves no receipt, so the session
+records it in the sidecar, on the task:
+
+```json
+"besideRoute": {"answer": "established", "job": "20261115-234439-example-286-fixed-security-through-the-a",
+                "by": "proofs/prove.py fixed-security: the frozen claim through the adapter entry, with a lemma",
+                "recorded": "2026-11-15"}
+```
+
+The record alone decides nothing. `changes.py` counts the answer only while that job's result is in the checkout
+(`verification/results/`), `passed`, and the job names the example in its `links.examples`; otherwise the claim
+stays open and the row says what is missing. A receipt of the route, once there is one, outranks it. A claim that
+is still open also carries `blocked`: the kinds of the observed gaps of the verifier its task stops at. An example
+whose open claims all stop at such a gap is still `prepared`: whether a loop has anything left to do on it is a
+judgement, [the watcher's](#watching-the-loop).
 
 ## Where things are
 
@@ -236,7 +257,8 @@ keeps the user informed, and judges what a script can't. [`watch.py`](tools/watc
 ```bash
 python3 llm-dlc/tools/watch.py stage evaluate "PROMPT"        # stage 2, in the fixed session
 python3 llm-dlc/tools/watch.py stage setup "PROMPT"           # stage 3, in a new session
-python3 llm-dlc/tools/watch.py preflight NNN ...              # examples already prepared: what each lacks
+python3 llm-dlc/tools/watch.py preflight NNN ...              # examples named by number: what to set up, what each lacks
+python3 llm-dlc/tools/watch.py claims NNN ...                 # what each example claims, for the user to confirm
 python3 llm-dlc/tools/watch.py verification start|stop|status # the verification loop, on Sonnet 5.5
 python3 llm-dlc/tools/watch.py loop --memory SIZE NNN ...     # stage 4: the proof loop, detached, in the fixed session
 python3 llm-dlc/tools/watch.py wait                           # block until there is something for the watcher
@@ -303,30 +325,66 @@ It is done when `changes.py` calls each example `prepared`. You decide nothing t
 claim: what does not work as the plan says (a revision that won't build, a replay that shows something else) goes
 into your report as a question, with what you found.
 
-### Examples that are already prepared
+### Examples named by number
 
 A request may name examples by number in place of changes: ones an earlier `--scaffold-only` run, another agent or a
-person prepared. Stages 2 and 3 don't run for them. The watcher checks them first, and nothing is started on any
-until all of them pass:
+person prepared, and catalog entries, which have their revisions pinned and nothing else (examples 288 to 300 are
+such). Stage 2 doesn't run for them. The watcher checks them first, and the loop starts on none until the check
+passes:
 
 ```bash
 python3 llm-dlc/tools/watch.py preflight NNN [NNN ...]
 ```
 
-It is a cursory check, from the files alone, and prints for each example what it lacks, of two kinds:
+It is a cursory check, from the files alone, and prints for each example what it lacks, by kind:
 
-| Kind | What is checked | For instance |
-|---|---|---|
-| `artifacts` | What a proof needs is there: each revision materializes from its lock, and the change has run once on a JVM | no receipt binds a revision to prepared artifacts; no validated replay |
-| `form` | The example is formed correctly: `example.json` validates against its schema, the target sidecar loads, every proof task has its claim frozen, and there is a proof task at all | a sidecar that is not JSON; a claim not frozen; no proof task |
+| Kind | What is checked | For instance | The watcher |
+|---|---|---|---|
+| `absent` | There is an example of that number | no folder `950-…` | aborts at once: nothing says what it would be |
+| `artifacts` | What a proof needs is there: each revision materializes from its lock, and the change has run once on a JVM | no receipt binds a revision to prepared artifacts; no validated replay | one repair, else aborts |
+| `form` | The example is formed correctly: `example.json` validates against its schema, the target sidecar loads, every proof task has its claim frozen, and its tasks include a proof task | a sidecar that is not JSON; a claim not frozen | one repair, else aborts |
+| `catalogue` | The example is more than a catalog entry: its sidecar has tasks | `"tasks": []` | has it set up; one that fails is left out |
 
-- **Exit 0:** nothing is lacking. The loop takes `toProve`, in the order given; an example already `decided` is left
-  out, and the watcher says so. An example without a target sidecar (a constructed one) passes with a note: only its
-  `example.json` was checked.
-- **Exit 1:** something is lacking. The watcher makes one attempt to put it right: a setup session
-  (`watch.py stage setup`, Opus 5.5 at high effort) given the check's output and the brief below. Then it checks
-  again, and if anything is still lacking it aborts: it says which example lacks what, and starts nothing.
-- **Exit 2:** an example named is not there at all. Nothing says what it would be, so the watcher aborts at once.
+The watcher acts in this order, and its output's lists say which examples each step is for:
+
+1. **`absent` (exit 2):** it aborts, naming the example.
+2. **`toRepair`:** a prepared example that lacks something is a fault. The watcher makes one attempt to put it
+   right: a setup session (`watch.py stage setup`, Opus 5.5 at high effort) given the check's output and the
+   repair's brief below. Then it checks again, and if `toRepair` still names anything it aborts: it says which
+   example lacks what, and starts nothing.
+3. **`toSetUp`:** a catalog entry is not a fault. The watcher has every one set up before the loop starts, one
+   setup session for each, one after another in the order given, each with the catalog entry's brief below. Then it
+   checks again with `--after-setup NNN,NNN`, naming them: an entry that is still not prepared is in `leftOut` and
+   no longer counts against the others. The watcher says which was left out and why, and goes on without it.
+4. **The claims, once.** When anything was set up, or a repair wrote a claim, the watcher shows the user what those
+   examples claim before the loop starts, all in one list (`watch.py claims NNN ...`: each claim in its file's own
+   words, its bounds and assumptions, and the answer expected on each revision), and asks for their word once. A
+   correction goes back to a setup session for that example, and an example the user turns down is left out.
+5. **Exit 0:** nothing is lacking. The loop takes `toProve`, in the order given; an example already `decided` is
+   left out, and the watcher says so. An example without a target sidecar (a constructed one) passes with a note:
+   only its `example.json` was checked.
+
+With `--scaffold-only` the skill ends after step 4.
+
+**A catalog entry's brief,** for the session `watch.py stage setup` starts with one entry's number. You set that
+one example up, as [stage 3](#stage-3-set-the-examples-up) does for a change, and what stands in for the plan is
+the entry itself: its `example.json` (the summary says what the fix is meant to guarantee), its sidecar (the
+revisions, already pinned, and the hand-off's blockers, which are predictions, not findings) and its README.
+Examples [285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) to 287 were
+entries like it and are the model.
+
+1. Prepare the revisions (`build.py --plan NNN`), write the driver and the oracle, and run the change once on a
+   JVM: the replay task on the release pair, and a mutant of the fix with its own replay.
+2. State the claims the entry's summary and its upstream advisory state, and no others: the property on the
+   vulnerable revision (expected refuted), the same property on the fix (expected established) and on the mutant
+   (expected refuted), and preservation outside the allowed change. Say each in words in its claim file, with its
+   bounds and assumptions, then freeze it. Where the summary leaves open what is claimed, take the narrowest
+   reading and say so in the claim's notes: the user reads every claim before a proof starts.
+3. Prove nothing. A probe that shows where the verifier stops belongs to the proof loop.
+4. Done when `changes.py NNN` calls the example `prepared`. Commit it by itself, run `build.py --index-only`, and
+   reply with each claim in a sentence and anything that did not work as the entry predicted. An entry that can't
+   be set up (a revision that does not build, a change no replay shows) is left as it was, with the reason in its
+   notes and in your reply.
 
 **The repair's brief,** for the session `watch.py stage setup` starts with a check's output. You put right what the
 check names, in the examples it names, and nothing else:
@@ -353,13 +411,14 @@ check names, in the examples it names, and nothing else:
 | The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
 
 **After each cycle** the loop asks whether the example is done (`cycle`, five minutes to answer). `wait` prints the
-example's state beside the question: its claims by answer, its jobs not in yet, and the example's own words on its
-outcome (its verdict label and its hand-off). The claims' answers are the route's receipts
-([`changes.py`](#many-changes-and-preparing-without-proving)). A session may also decide a claim beside the route,
-through an adapter entry and a script of the example's own, as the `prove-examples` loop did for examples 286 and
-287: that leaves no receipt, the task stays open in the listing, and only the example's own words and the cycle's
-report say it is decided. The watcher reads them before it answers `continue` for an example whose route tasks are
-open.
+example's state beside the question: its claims by answer, which of those answers were given beside the route
+(`besideRoute`), which open claims stop at an observed gap of the verifier (`blocked`), its jobs not in yet, and
+the example's own words on its outcome (its verdict label and its hand-off). The answers are
+[`changes.py`](#many-changes-and-preparing-without-proving)'s: the route's receipts, and answers given beside the
+route that a passed job confirms. A session that has just decided a claim beside the route and not yet recorded it
+in the sidecar shows as open: the cycle's report says so, and the watcher answers `continue` so the next cycle
+records it. An example whose open claims all stop at an observed gap is the judgement this question exists for:
+`finished` when closing the gap is more than this run should take on, `continue` when the session is closing it.
 
 - `finished`: every claim has its answer, or what is left needs a person.
 - `continue`: the session can still make real progress on it. It gets another cycle, with the same instruction.
@@ -390,6 +449,16 @@ first to come in. `--wait-for-proofs` in the request turns this off: the example
 
 **No answer** never stops the work: a judge of the loop's own answers the cycle question, and the other two default
 to going on. So a watcher that is busy, or gone, costs minutes, not the run.
+
+**Every answer is also a decision the user can review.** `conductor.py decide` adds it to the run's decision
+record, [`llm-dlc/decisions/`](decisions/)`prove-change.jsonl` (`local-prove-change` in a runtime checkout, so a
+user's record never meets one a release carries), with the question, the answers it could have been, the watcher's
+reason, and how it is taken back. The user reads them with `python3 llm-dlc/tools/decisions.py list`, and accepts
+or overturns one with `decisions.py review`. The loop does not read the record: an overturned verdict is the user's
+word to the watcher, whose next summary names it under what needs attention. The watcher then acts as the entry's
+undo line says and records what it did as the decision that supersedes it (`decisions.py record`). It adds
+`--confidence medium` to an answer it is not sure of, which flags it for review, and puts to the user a question it
+is less sure of than that. The record is committed with the run's other changes.
 
 ### What the watcher may fix
 
@@ -451,7 +520,7 @@ there leaves the run unmeasured). It works the same in both modes, and the watch
 This conductor is a moonshot's: the session outside one loop. The conductor of a parallel run of streams
 ([`loops/stream-conductor.md`](loops/stream-conductor.md): inboxes, the integration line, the decision record) is
 another thing with the same name, and its brief's own design of a moonshot conductor (its Design 7) is what this
-section is.
+section is. The two share the decision record: this conductor's verdicts are decisions in it.
 
 [`conductor.py`](tools/conductor.py) is how the loop and the session outside it talk: the loop appends an event to
 `events.jsonl` and waits for a verdict file, and the watcher answers with `decide`. The watcher never writes to the
@@ -472,7 +541,8 @@ names, the commits and the working copy's diff, the jobs, and whether the same f
 `stop` ends the turn and the loop. Lean towards `continue` while the work is moving: an example left unfinished is
 fine, since a later run can return to it, and a stop costs a person's attention.
 
-The verdicts and their reasons go into the run's record under the cycle's line. `conductor.py command` leaves the
+The verdicts and their reasons go into the run's record under the cycle's line, and, for a run directory in a
+checkout, into [the decision record](#watching-the-loop) as well. `conductor.py command` leaves the
 loop a line as if it were typed in its terminal (`stop`, `item`, a count), which is how `watch.py stop-after` works.
 
 ## Contributing back

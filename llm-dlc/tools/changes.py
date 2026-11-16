@@ -13,20 +13,28 @@ A row carries the example's `source` (the change on GitHub), its `revisions` (th
 `provenance`, which for an example the skill prepared is the request it was prepared from: together they say
 whether a change asked for again already has its example.
 
-Each example is in one of four states, derived from its folder alone (its sidecar, its claims and its receipts, by
-examples/tools/targets/workflow.py), so nothing has to be kept in step by hand:
+Each example is in one of five states, derived from its folder alone (its sidecar, its claims and its receipts, by
+examples/tools/targets/workflow.py) and from the verification results a sidecar cites, so nothing has to be kept in
+step by hand:
 
+    catalogued   a catalog entry: its revisions are pinned, and its sidecar has no task, so nothing is built and
+                 nothing states a claim. Setting it up is stage 3's work (llm-dlc/runtime.md), not a repair.
     unprepared   its scaffold is incomplete: a revision that does not materialize, no oracle run, a claim not
-                 frozen, or no proof task at all. `why` says which. Not ready for a proof loop.
+                 frozen, or tasks and no proof task among them. `why` says which. Not ready for a proof loop.
     prepared     the scaffold is complete and at least one claim has no answer yet (none, or left open). This is
                  where `/prove-java-change --scaffold-only` leaves an example, and what a proof loop takes.
-    decided      every claim is established or refuted by a current receipt. A proof loop has nothing to do.
-                 A receipt is the route's (build.py's): a claim proved beside the route, by a script of the
-                 example's own (286 and 287 have one), has no receipt, so its task stays open here. Each row
-                 therefore also carries the example's own words on its outcome, `verdict` (its verdictLabel) and
-                 `next` (its hand-off), for whoever judges whether work is left.
+    decided      every claim is established or refuted. A proof loop has nothing to do.
     unknown      no target sidecar (a constructed example): its state is not derived, and it counts as still to
                  prove when it is named.
+
+A claim's answer is the route's (build.py's), from a current receipt, or one given beside the route: by a script of
+the example's own (286 and 287 have one, proofs/prove.py), run as a verification job, which leaves no receipt. The
+sidecar records such an answer on its task (`besideRoute`: the answer, the job, how it was run), and it counts here
+only while that job's result is in this checkout, passed, and the job names the example; otherwise the claim stays
+open and `beside.why` says what is missing. A claim still open also carries `blocked`, the kinds of the observed
+verifier gaps its task stops at, and each row the example's own words on its outcome, `verdict` (its verdictLabel)
+and `next` (its hand-off): whether a loop has anything left to do on an example with open claims is a judgment, and
+those are what it is made from.
 
 It only reads. Standard library only.
 """
@@ -44,13 +52,46 @@ ANSWERS = ("established", "refuted")
 # What an unprepared example lacks, by kind, for whoever checks one before a proof loop takes it (watch.py
 # preflight): an artifact that is not there (a revision that does not materialize, no oracle run, no lock), the
 # example's form (a file that does not load or validate, a claim not frozen, no proof task), or the example itself.
-ARTIFACTS, FORM, ABSENT = "artifacts", "form", "absent"
+ARTIFACTS, FORM, ABSENT, CATALOGUE = "artifacts", "form", "absent", "catalogue"
 FORM_MILESTONES = ("claimFrozen",)
+KINDS = (ARTIFACTS, FORM, ABSENT, CATALOGUE)
+
+
+TO_PROVE = ("prepared", "unknown")
 
 
 def gap(kind: str, what: str, task: str | None = None) -> dict:
     return {"kind": kind, "task": task, "what": what}
-TO_PROVE = ("prepared", "unknown")
+
+
+def beside(root: Path, number: str, record: dict) -> dict:
+    """A task's `besideRoute` record with whether it counts: its job's result is here and passed, and the job names
+    this example. The record is the sidecar's word; the job's result is what makes it more than that."""
+    out = {"answer": record.get("answer"), "job": record.get("job"), "by": record.get("by"), "confirmed": False}
+    name = str(record.get("job"))
+    if "/" in name or name.startswith("."):
+        return {**out, "why": f"{name!r} is not a job's id"}
+    try:
+        result = json.loads((root / "verification/results" / name / "result.json").read_text())
+    except (OSError, ValueError):
+        return {**out, "why": f"no result of job {name} in this checkout (verification/results)"}
+    if result.get("status") != "passed":
+        return {**out, "why": f"job {name} ended {result.get('status')}, not passed"}
+    try:
+        job = json.loads((root / "verification/jobs" / f"{name}.json").read_text())
+    except (OSError, ValueError):
+        return {**out, "why": f"job {name}'s file is not in this checkout (verification/jobs)"}
+    if number not in ((job.get("links") or {}).get("examples") or []):
+        return {**out, "why": f"job {name} does not name example {number} (links.examples)"}
+    return {**out, "confirmed": True}
+
+
+def answer(claim: dict) -> str | None:
+    """A claim's answer: the route's when it has one, else one given beside the route that its job confirms."""
+    if claim["status"] in ANSWERS:
+        return claim["status"]
+    b = claim.get("beside") or {}
+    return b["answer"] if b.get("confirmed") and b.get("answer") in ANSWERS else None
 
 
 def folders(root: Path, numbers: list[str]) -> list[tuple[str, Path | None]]:
@@ -91,11 +132,23 @@ def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
     finally:
         sys.path.remove(TOOLS)
     r["next"] = (target.get("handoff") or {}).get("next")
+    capability = workflow.CAPABILITY_KINDS
     revisions = (target.get("history") or {}).get("revisions") or {}
     r["revisions"] = {name: v["commit"] for name, v in revisions.items() if isinstance(v, dict) and v.get("commit")}
     r["readiness"] = ready["summary"]
     r["claims"] = {task: {"status": status, "expected": projected["expected"].get(task)}
                    for task, status in projected["claims"].items()}
+    for t in target.get("tasks") or []:
+        if t.get("besideRoute") and t["id"] in r["claims"]:
+            r["claims"][t["id"]]["beside"] = beside(root, number, t["besideRoute"])
+    for task, c in r["claims"].items():
+        stops = sorted({b["kind"] for b in ready["tasks"].get(task, {}).get("blockers", [])
+                        if b.get("observed") and b["kind"] in capability})
+        if stops and answer(c) is None:
+            c["blocked"] = stops
+    if not target.get("tasks"):
+        what = "a catalog entry: its sidecar has no task, so nothing is built and nothing states a claim"
+        return {**r, "state": "catalogued", "why": [what], "gaps": [gap(CATALOGUE, what)]}
     why, gaps = [], []
     for task, t in ready["tasks"].items():
         if t["summary"] in ("partial", "catalogued"):
@@ -114,7 +167,7 @@ def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
         gaps.append(gap(FORM, "no proof task: nothing here states a claim"))
     if why:
         return {**r, "state": "unprepared", "why": why, "gaps": gaps}
-    decided = all(c["status"] in ANSWERS for c in r["claims"].values())
+    decided = all(answer(c) for c in r["claims"].values())
     return {**r, "state": "decided" if decided else "prepared"}
 
 
@@ -122,7 +175,8 @@ def listing(root: Path, numbers: list[str]) -> dict:
     rows = [row(root, n, f) for n, f in folders(root, numbers)]
     return {"examples": rows,
             "pending": [r["id"] for r in rows if r["state"] in TO_PROVE],
-            "unprepared": [r["id"] for r in rows if r["state"] == "unprepared"]}
+            "unprepared": [r["id"] for r in rows if r["state"] == "unprepared"],
+            "catalogued": [r["id"] for r in rows if r["state"] == "catalogued"]}
 
 
 def claims_line(r: dict) -> str:
@@ -131,7 +185,12 @@ def claims_line(r: dict) -> str:
         return "; ".join(r.get("why", []))[:120]
     counts: dict[str, int] = {}
     for c in claims.values():
-        name = c["status"] if c["status"] in ANSWERS else ("left open" if c["status"] else "no answer yet")
+        if c["status"] in ANSWERS:
+            name = c["status"]
+        elif answer(c):
+            name = f"{answer(c)} beside the route"
+        else:
+            name = ("left open" if c["status"] else "no answer yet") + (", at an observed gap" if c.get("blocked") else "")
         counts[name] = counts.get(name, 0) + 1
     text = ", ".join(f"{n} {name}" for name, n in counts.items())
     return text if r["state"] != "unprepared" else f"{text}; {'; '.join(r['why'])}"[:160]
@@ -163,6 +222,8 @@ def main(argv: list[str] | None = None) -> int:
         print("to prove, in order: " + (" ".join(found["pending"]) or "nothing"))
         if found["unprepared"]:
             print("not prepared: " + " ".join(found["unprepared"]))
+        if found["catalogued"]:
+            print("catalog entries, to set up first: " + " ".join(found["catalogued"]))
     return 0
 
 

@@ -18,13 +18,12 @@ from unittest import mock
 
 import changes
 import conductor
+import decisions
 import watch
 from test_changes import PROOFS, Checkout
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.append(str(REPO / "lib/tools"))
-from cost_tier import cost  # noqa: E402
-sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
 STANDIN = r'''#!/usr/bin/env python3
@@ -248,6 +247,38 @@ class PreflightTest(Checkout):
         status, found, by = self.check("900", "950")
         self.assertEqual((status, found["absent"], by["950"]["ok"]), (2, ["950"], False))
 
+    def test_a_catalog_entry_is_to_set_up_and_one_still_lacking_after_its_setup_is_left_out(self):
+        self.example("900")
+        self.catalog_entry("901")
+        self.example("902", replays=False)
+        status, found, by = self.check("900", "901")
+        self.assertEqual((status, found["toSetUp"], found["toRepair"], found["toProve"]), (1, ["901"], [], ["900"]))
+        self.assertEqual([g["kind"] for g in by["901"]["catalogue"]], [changes.CATALOGUE])
+        status, found, _ = self.check("--after-setup", "901", "900", "901")
+        self.assertEqual((status, found["ok"], found["leftOut"], found["toSetUp"], found["toProve"]),
+                         (0, True, ["901"], [], ["900"]), "the others go on without it")
+        status, found, _ = self.check("--after-setup", "901", "900", "901", "902")
+        self.assertEqual((status, found["leftOut"], found["toRepair"]), (1, ["901"], ["902"]),
+                         "an example that was prepared and lacks something still stops the run")
+        self.assertEqual(self.check("--after-setup", "950", "900", "950")[0], 2, "one that is not there is never left out")
+
+    def test_claims_lists_each_claim_once_with_the_answer_expected_on_each_revision(self):
+        self.example("900")
+        self.catalog_entry("901")
+        found = {e["id"]: e for e in watch.claims(watch.Run(self.root), ["900", "901"])}
+        by_file = {c["file"]: c for c in found["900"]["claims"]}
+        self.assertEqual(sorted(by_file), ["claims/gate-preservation.json", "claims/gate-security.json", "claims/regex-probe.json"])
+        self.assertEqual([(t["task"], t["expected"]) for t in by_file["claims/gate-security.json"]["tasks"]],
+                         [("vulnerable-security", "refuted"), ("fixed-security", "established"), ("mutant-security", "refuted")])
+        self.assertTrue(all(c["statement"] for c in by_file.values()), "each in its claim file's own words")
+        self.assertEqual((found["901"]["state"], found["901"]["claims"]), ("catalogued", []))
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(watch.main(["--root", str(self.root), "claims", "900", "901"]), 0)
+        self.assertIn(by_file["claims/gate-security.json"]["statement"], out.getvalue())
+        self.assertIn("expected established on after (task fixed-security)", out.getvalue())
+        self.assertIn("No claim: the example is catalogued.", out.getvalue())
+
     def test_an_example_json_that_breaks_its_schema_is_a_fault_in_the_form(self):
         folder = self.example("900")
         (self.root / "examples/schema").mkdir()
@@ -308,7 +339,23 @@ class WaitTest(Made):
         self.assertEqual((status, thing["kind"], thing["event"]["type"]), (0, "question", "cycle"))
         self.assertIn("decide llm-dlc/loop-summaries/prove-change 1 finished|continue|waiting --reason", thing["answer"])
         self.assertEqual(thing["assessment"]["jobsNotIn"], 1)
-        self.assertEqual({"verdict", "next"} - thing["assessment"].keys(), set(), "the example's own word on its outcome")
+        self.assertEqual({"verdict", "next", "besideRoute", "blocked"} - thing["assessment"].keys(), set(),
+                         "the example's own word on its outcome, and which claims were answered beside the route or stop at a gap")
+
+    def test_the_summary_says_which_answers_the_user_overturned_or_is_asked_to_review(self):
+        for n, confidence in ((1, "high"), (2, "medium")):
+            self.note("cycle", needsVerdict=True, answers=["finished", "continue", "waiting"], deadline=time.time() + 300,
+                      cycle=n, item="901", itemCycle=n)
+            with contextlib.redirect_stdout(io.StringIO()):
+                conductor.cmd_decide(self.run.dir, n, "continue", "a claim is open", confidence)
+        records = self.root / "llm-dlc/decisions"
+        with contextlib.redirect_stdout(io.StringIO()):
+            decisions.main(["review", "overturn", "prove-change-D001", "--note", "it was finished"], root=records)
+        found = watch.state(self.run)["decisions"]
+        self.assertEqual(found, {"record": "prove-change", "flagged": 1, "unreviewed": 0, "overturned": ["prove-change-D001"]})
+        out = self.call("summary")[1]
+        self.assertIn("the user overturned prove-change-D001", out)
+        self.assertIn("1 of the watcher's answers are flagged", out)
 
     def test_a_proof_that_has_come_in_is_announced_once(self):
         self.note("item", item="901", state="waiting", cycle=1)
@@ -368,7 +415,11 @@ class RequestsTest(Made):
         (tools / "verification-loop.sh").write_text(  # a stand-in: it runs until it is asked to stop, as the loop does
             "#!/usr/bin/env bash\ntrap 'echo asked to stop; exit 0' USR1\necho started\nwhile :; do sleep 0.1; done\n")
         (tools / "verification-loop.sh").chmod(0o755)
-        self.assertIn("not running", self.call("verification", "status")[1])
+        window = subprocess.Popen(["bash", "-c", "sleep 30; : llm-dlc/tools/verification-loop.sh ended"], cwd=self.root)
+        self.addCleanup(window.wait)
+        self.addCleanup(window.kill)
+        self.assertIn("not running", self.call("verification", "status")[1],
+                      "a shell that only mentions the script, as the window a loop ended in does, is not the loop")
         self.assertIn("started the verification loop", self.call("verification", "start")[1])
         pid = self.run.read()["verification"]["pid"]
         self.addCleanup(lambda: watch.alive(pid) and os.kill(pid, 9))
