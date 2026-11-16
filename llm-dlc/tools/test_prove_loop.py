@@ -113,7 +113,7 @@ class ProveLoopTest(unittest.TestCase):
                      "FEATURE_LOOP_AUTOCOMPACT", "FEATURE_LOOP_MEMORY_MAX", "FEATURE_LOOP_STOP_ON_COMPACT",
                      "FEATURE_LOOP_CONDUCTOR_WAIT", "LOOP_CONDUCTOR", "IN_THE_LOOP_MODE", "FEATURE_LOOP_ITEM_JUDGE",
                      "FEATURE_LOOP_ITEM_CYCLES", "FEATURE_LOOP_CONTINUE_WHILE_PROVING", "FEATURE_LOOP_COPY",
-                     "PROVE_LOOP_COPY", "STANDIN_JUDGE", "FEATURE_LOOP_INSTRUCTION"):
+                     "PROVE_LOOP_COPY", "STANDIN_JUDGE", "FEATURE_LOOP_INSTRUCTION", "FEATURE_LOOP_RECORD_AS"):
             self.env.pop(name, None)
         subprocess.run(["jj", "--quiet", "git", "init", str(self.root)], env=self.env, check=True, capture_output=True)
         subprocess.run(["jj", "--quiet", "describe", "-m", "The made-up checkout"], cwd=self.root, env=self.env, check=True)
@@ -527,6 +527,24 @@ class ProveLoopTest(unittest.TestCase):
         self.assertEqual(self.instructions(), [text.replace("{}", n) for n in ("901", "902")])
         self.assertIn("> " + text, self.record(), "the record keeps the text, which the statistics read")
         self.assertEqual(json.loads((self.run_dir / "run.json").read_text())["instruction"], text)
+
+    @cost("tool")
+    def test_a_run_may_be_filed_under_another_loops_name_whose_list_it_continues(self):
+        summaries = self.root / "llm-dlc/loop-summaries"
+        summaries.mkdir(parents=True, exist_ok=True)
+        (summaries / "2026-01-01-000000-prove-examples.md").write_text(
+            "# Feature loop: prove-examples\n\n## Commits\n\n- cycle 1, item 901, 2026-01-01 01:00:00, `abc`: done\n")
+        r = self.loop("--record-as", "prove-examples", "901")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION],
+                         "an example the request names is taken, whatever that loop's earlier records say of it")
+        records = sorted(p.name for p in summaries.glob("*.md"))
+        self.assertEqual([n.split("-", 4)[-1] for n in records], ["prove-examples.md", "prove-examples.md"], records)
+        self.assertIn("# Feature loop: prove-examples", (summaries / records[-1]).read_text())
+        state = json.loads((self.run_dir / "run.json").read_text())
+        self.assertEqual(state["recordAs"], "prove-examples")
+        self.assertTrue(conductor.read_events(self.run_dir)[-1]["record"].endswith("-prove-examples.md"), "the run's own state stays in prove-change/")
+        self.assertEqual(self.loop("--record-as", "Not A Name", "901").returncode, 2)
 
     @cost("tool")
     def test_a_text_that_does_not_name_the_example_starts_nothing(self):

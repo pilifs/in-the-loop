@@ -36,7 +36,9 @@
 # Templated moonshots, one item of a list at a time:
 #   prove-examples  formally prove examples 285 to 300, each for as many cycles as it takes, as elegantly and efficiently as possible
 #   prove-change    the same instruction, or FEATURE_LOOP_INSTRUCTION's, over the examples FEATURE_LOOP_ITEMS
-#                   names: the last stage of /prove-java-change, started by llm-dlc/tools/prove-loop.sh
+#                   names: the last stage of /prove-java-change, started by llm-dlc/tools/prove-loop.sh.
+#                   FEATURE_LOOP_RECORD_AS=NAME files the run under another loop's name (its record,
+#                   its scope and so its statistics), for a run that continues that loop's list.
 # Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
@@ -290,6 +292,13 @@ case "$PROMPT" in
     EVERY_ITEM=1
     SESSION_ID=new
     MODEL=claude-fable-5-2
+    if [[ -n "${FEATURE_LOOP_RECORD_AS:-}" ]]; then
+      [[ "$FEATURE_LOOP_RECORD_AS" =~ ^[a-z0-9][a-z0-9-]*$ ]] || {
+        echo "feature-loop.sh: FEATURE_LOOP_RECORD_AS is a loop's name, as prove-examples: $FEATURE_LOOP_RECORD_AS" >&2
+        exit 2
+      }
+      PROMPT=$FEATURE_LOOP_RECORD_AS
+    fi
     ;;
   *) usage ;;
 esac

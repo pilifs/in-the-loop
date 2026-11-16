@@ -22,6 +22,9 @@ keeps the user informed, and judges what a script can't:
     watch.py claims NNN ...                what each example claims, in its own words, for the user to confirm
                                            before the loop: every claim's statement, bounds, and the answer expected
                                            on each revision
+    watch.py claims NNN ... --accept "REASON"   the watcher's own word for them, in a run the user is away from: a
+                                           decision for each example in the run's decision record, flagged for
+                                           the user to review afterwards
     watch.py verification start|stop|status   the verification loop, on Sonnet 5.5, which runs the jobs the
                                            sessions queue; started once, before the examples are set up
     watch.py loop [OPTION ...] NNN ...     start the proof loop on these examples, continuing the fixed session at
@@ -33,7 +36,7 @@ keeps the user informed, and judges what a script can't:
                                            the example under way and the verification jobs stand, with what changed
                                            since the last summary first
     watch.py status [--json]               everything the summary is made from, for a question about the run
-    watch.py interval SECONDS              how often `wait` gives a summary (600 by default)
+    watch.py interval SECONDS              how often `wait` gives a summary (1800 by default)
     watch.py merge add|done|list [NAME]    workspaces the user asked to have merged: the loop waits for the watcher
                                            between two examples while one is queued
     watch.py stop-after example|cycle|never   end the loop once the example, or the cycle, under way is done
@@ -69,7 +72,7 @@ import mode           # llm-dlc/tools/mode.py
 REPO = Path(__file__).resolve().parents[2]
 RUN = "llm-dlc/loop-summaries/prove-change"
 TEMPLATE = "llm-dlc/watch-summary-template.md"
-INTERVAL = 600
+INTERVAL = 1800  # a run of days is watched by a session whose context every summary adds to
 STAGES = {"evaluate": {"model": "claude-fable-5-2", "effort": "medium", "fixed": True},
           "setup": {"model": "claude-opus-5-5", "effort": "high", "fixed": False}}
 SILENT = 20 * 60  # a session that has written nothing for this long may be stuck: the summary says so
@@ -250,7 +253,7 @@ def claims(run: Run, numbers: list[str]) -> list[dict]:
     out = []
     for row in changes.listing(run.root, list(dict.fromkeys(numbers)))["examples"]:
         entry = {"id": row["id"], "title": row.get("title"), "source": row.get("source"), "state": row["state"],
-                 "claims": []}
+                 "path": row.get("path"), "claims": []}
         out.append(entry)
         if not row.get("path"):
             continue
@@ -307,6 +310,64 @@ def cmd_claims(run: Run, numbers: list[str], as_json: bool) -> int:
             if c["file"]:
                 print(f"   - {c['file']}")
         print()
+    return 0
+
+
+def accept_claims(run: Run, numbers: list[str], reason: str) -> tuple[list[str], list[str]]:
+    """The watcher's own word for the claims of examples it had set up, in a run the user is away from (the skill's
+    --unattended): one decision for each example in the run's decision record, flagged for the user because proving
+    the wrong claim costs the loop's hours. Returns the decisions' ids, and instead of any of them what stands in
+    the way: an example that states no claim, or a claim with no claim file, is not the watcher's to accept."""
+    found = claims(run, numbers)
+    missing = [f"{e['id']}: it states no claim (the example is {e['state']})" for e in found if not e["claims"]]
+    missing += [f"{e['id']}: a task names no claim file" for e in found if any(not c["statement"] for c in e["claims"])]
+    where = conductor.decision_record(run.dir)
+    if where is None:
+        missing.append(f"{run.dir} is in no checkout, so there is no decision record")
+    if missing:
+        return [], missing
+    import decisions
+    name, root = where
+    current, stamp, taken, lines = decisions.fold(decisions.read(name, root)), decisions.now(), [], []
+    events = conductor.read_events(run.dir)
+    for e in found:
+        folder = Path(e["path"] or "")
+        patch = {
+            "state": "decided",
+            "asked": {"by": run.dir.name, "at": stamp,
+                      "question": f"The setup of example {e['id']} stated {len(e['claims'])} claim(s): does the loop "
+                                  "prove them as stated, while the user is away?"},
+            "context": {"files": sorted(str(folder / c["file"]) for c in e["claims"])},
+            "options": [
+                {"id": "accept", "summary": "prove the claims as stated",
+                 "consequences": "the loop's hours and tokens go to these claims, and the user reads them afterwards"},
+                {"id": "hold", "summary": "leave the example out until the user has read its claims",
+                 "consequences": "the example is not proved in this run"}],
+            "decision": {"option": "accept", "by": "conductor", "rationale": reason,
+                         "confidence": {"level": "high",
+                                        "basis": "the claims as `watch.py claims` prints them, read against the "
+                                                 "example's source and its change"},
+                         "recovery": {"class": "costly",
+                                      "undo": "have another setup session state the claim the user meant, and name the "
+                                              "example in a later run; what was proved stays, of the claim as it was"}},
+        }
+        lines.append(decisions.conductor_line(name, patch, current, events[0]["time"] if events else None, stamp, taken))
+    decisions.write(name, root, lines)
+    return [line["id"] for line in lines], []
+
+
+def cmd_accept_claims(run: Run, numbers: list[str], reason: str) -> int:
+    try:
+        ids, missing = accept_claims(run, numbers, reason)
+    except Exception as e:  # decisions.py refuses a line it finds a problem in
+        print(f"not recorded: {e}", file=sys.stderr)
+        return 1
+    for line in missing:
+        print(f"not accepted: {line}", file=sys.stderr)
+    if missing:
+        return 1
+    print(f"accepted the claims of {' '.join(numbers)} for the user to review afterwards: {' '.join(ids)} "
+          "(python3 llm-dlc/tools/decisions.py list --group flagged)")
     return 0
 
 
@@ -723,6 +784,7 @@ def main(argv: list[str] | None = None) -> int:
     cl = sub.add_parser("claims")
     cl.add_argument("examples", nargs="+", metavar="NNN")
     cl.add_argument("--json", action="store_true")
+    cl.add_argument("--accept", metavar="REASON")
     sub.add_parser("verification").add_argument("action", choices=("start", "stop", "status"))
     sub.add_parser("loop").add_argument("arguments", nargs="*")
     w = sub.add_parser("wait")
@@ -738,9 +800,12 @@ def main(argv: list[str] | None = None) -> int:
     pr = sub.add_parser("proof")
     pr.add_argument("item")
     pr.add_argument("--timeout", type=float, default=3300)
-    args, options = ap.parse_known_args(argv)
-    if options and args.command != "loop":
-        ap.error(f"unrecognized arguments: {' '.join(options)}")
+    # What follows `loop` is prove-loop.sh's own, in the order given: argparse would take the options out from
+    # between their values (`--memory 12G --wait-for-proofs 288` as `--memory --wait-for-proofs 12G 288`).
+    argv = list(sys.argv[1:] if argv is None else argv)
+    at = 2 if argv[:1] == ["--root"] else 0
+    loop_arguments = argv[at + 1:] if argv[at:at + 1] == ["loop"] else []
+    args = ap.parse_args(argv[:at + 1] if argv[at:at + 1] == ["loop"] else argv)
     run = Run(args.root.resolve())
     if args.command == "session":
         print(fixed_session(run, args.new, args.use))
@@ -752,12 +817,16 @@ def main(argv: list[str] | None = None) -> int:
         if bad:
             ap.error(f"not an example's number: {' '.join(bad)}")
         if args.command == "claims":
+            if args.accept is not None:
+                if not args.accept.strip():
+                    ap.error("--accept takes the reason the claims are the ones to prove")
+                return cmd_accept_claims(run, args.examples, args.accept)
             return cmd_claims(run, args.examples, args.json)
         return cmd_preflight(run, args.examples, set_up)
     elif args.command == "verification":
         return cmd_verification(run, args.action)
     elif args.command == "loop":
-        return cmd_loop(run, options + args.arguments)  # prove-loop.sh's own options, then the examples
+        return cmd_loop(run, loop_arguments)
     elif args.command == "wait":
         return cmd_wait(run, args.interval, args.timeout)
     elif args.command == "summary":

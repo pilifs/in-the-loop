@@ -25,6 +25,8 @@ from test_changes import PROOFS, Checkout
 REPO = Path(__file__).resolve().parents[2]
 sys.path.append(str(REPO / "lib/tools"))
 from cost_tier import cost  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 STANDIN = r'''#!/usr/bin/env python3
 import json, os, sys
@@ -279,6 +281,24 @@ class PreflightTest(Checkout):
         self.assertIn("expected established on after (task fixed-security)", out.getvalue())
         self.assertIn("No claim: the example is catalogued.", out.getvalue())
 
+    def test_claims_the_watcher_accepts_with_the_user_away_are_decisions_flagged_for_their_review(self):
+        self.example("900")
+        self.catalog_entry("901")
+        run, err = watch.Run(self.root), io.StringIO()
+        with mock.patch.dict(os.environ, {"IN_THE_LOOP_MODE": "development"}), contextlib.redirect_stdout(io.StringIO()):
+            with contextlib.redirect_stderr(err):
+                self.assertEqual(watch.main(["--root", str(self.root), "claims", "900", "901", "--accept", "as the advisory says"]), 1)
+            self.assertIn("901: it states no claim", err.getvalue())
+            self.assertFalse((self.root / "llm-dlc/decisions").exists(), "one example that can't be accepted, and none is")
+            self.assertEqual(watch.main(["--root", str(self.root), "claims", "900", "--accept", "as the advisory says"]), 0)
+        (line,) = decisions.fold(decisions.read("prove-change", self.root / "llm-dlc/decisions")).values()
+        self.assertEqual((line["decision"]["option"], line["decision"]["by"], line["decision"]["rationale"]),
+                         ("accept", "conductor", "as the advisory says"))
+        self.assertEqual(line["review"], {"state": "flagged", "why": "costly"}, "the hours go to these claims: the user reads them")
+        folder = next((run.root / "examples").glob("900-*")).relative_to(run.root)
+        self.assertEqual(line["context"]["files"], [f"{folder}/claims/{c}.json" for c in ("gate-preservation", "gate-security", "regex-probe")])
+        self.assertIn("example 900", line["asked"]["question"])
+
     def test_an_example_json_that_breaks_its_schema_is_a_fault_in_the_form(self):
         folder = self.example("900")
         (self.root / "examples/schema").mkdir()
@@ -445,6 +465,13 @@ class RequestsTest(Made):
         while not log.exists() and time.time() < until:
             time.sleep(0.05)
         self.assertEqual(log.read_text().strip(), f"--session {session} --memory 12G 902 900")
+        log.unlink()
+        given = ["--memory", "12G", "--record-as", "prove-examples", "--wait-for-proofs", "--instruction", "Prove {} briefly", "902"]
+        self.assertEqual(self.call("loop", *given)[0], 0)
+        until = time.time() + 10
+        while not log.exists() and time.time() < until:
+            time.sleep(0.05)
+        self.assertEqual(log.read_text().strip(), f"--session {session} " + " ".join(given), "every option beside its value")
         self.loop("902", "900")  # a run under way, as prove-loop.sh records it
         self.assertEqual(self.call("loop", "902")[0], 1)
 

@@ -216,7 +216,7 @@ def status() -> dict:
             skill = None
         return {"skill": skill, "needs": needs, "blockers": [], "mode": "development", "home": str(dev),
                 "state": "development",
-                "note": "a development checkout: steps 1 and 2 of the skill don't apply; work in this checkout"}
+                "note": "a development checkout: stage 1 of the skill doesn't apply; work in this checkout"}
     pin = load_pin()
     out = {"skill": {"version": pin["version"], "digest": pin["digest"], "path": str(HERE)}, "needs": needs,
            "blockers": []}

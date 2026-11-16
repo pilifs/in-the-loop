@@ -1,8 +1,7 @@
 ---
 name: prove-java-change
-description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof. It also takes examples by number: ones already prepared, which it checks before it starts, and catalog entries, which it has set up first.
-argument-hint: "[--scaffold-only] [--wait-for-proofs] [--instruction \"TEXT with {}\"] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it | examples by number, prepared or catalogued: NNN ...>"
-disable-model-invocation: true
+description: Formally prove one change to Java code on GitHub, or a list of them (each a pull request, a commit or a range of commits), with the in-the-loop project's verifier. Start it only when the user asks for this skill or for such a proof run, with their request as its arguments, never as a step of other work: a run takes hours and spends their tokens. A watcher session sets up and checks the machine, has each change evaluated and prepared as an example with its claims, runs an unattended proof loop over them while reporting at intervals, and reports what was proved, refuted or left open. With --scaffold-only it prepares the examples and stops before the proof. It also takes examples by number: ones already prepared, which it checks before it starts, and catalog entries, which it has set up first.
+argument-hint: "[--scaffold-only] [--wait-for-proofs] [--unattended] [--summary-interval SECONDS] [--record-as NAME] [--instruction \"TEXT with {}\"] <one change or a list: each a pull request, a commit or a range on GitHub, and what to prove about it | examples by number, prepared or catalogued: NNN ...>"
 model: claude-opus-5-5
 effort: high
 ---
@@ -44,6 +43,16 @@ It names one change or a list of them, each with what to prove about it, or exam
   example meanwhile.
 - `--instruction "TEXT"` is the user's own text for the proof loop, in place of its one line. It must be one line
   with `{}` where the example's number goes; if it is not, say so and stop before anything starts.
+- `--summary-interval SECONDS` is how often you print a summary: run `python3 llm-dlc/tools/watch.py interval SECONDS`
+  before the loop starts. Without it a summary comes every 30 minutes, or as often as an earlier run here set.
+- `--unattended` means the user is away for the whole run, and it goes with examples named by number: you don't
+  wait for their word on the claims (step 4 there says what you do instead), and you put nothing to them that you
+  can decide and record. What is theirs alone still waits for them, and the rest of the run goes on around it.
+- `--record-as NAME` files the run under another loop's name (its record and statistics), for a run that continues
+  that loop's list: pass it to `watch.py loop` before the numbers.
+
+If you were started by the session itself and not by the user typing the command, the request above is what they
+asked for in their own words: if it leaves out what to prove or which examples, ask before anything starts.
 
 ## 0. Where you are
 
@@ -52,9 +61,12 @@ python3 ${CLAUDE_SKILL_DIR}/bootstrap.py status
 ```
 
 `state: development` means the skill is running inside a development checkout of the repository itself. Stage 1
-doesn't apply there and the request names examples by number: start the verification loop and go to "Examples
-named by number", with a new fixed session (`watch.py session --new`) or, when the request names a session to
-continue, that one (`watch.py session --use ID`). Any other state is a user's machine: start at stage 1.
+doesn't apply there and the request names examples by number: run `python3 llm-dlc/tools/doctor.py --json` for
+the budget (stage 4 takes its memory cap from it; stop if it lists anything `blocking`), start the verification
+loop (`watch.py verification start`, which leaves one that is already running alone), and go to "Examples named
+by number", with a new fixed session (`watch.py session --new`) or, when the request names a session to continue,
+that one (`watch.py session --use ID`). Every session of the run is traced there, as the checkout's `CLAUDE.md`
+says, and nothing is pushed unless the user asks. Any other state is a user's machine: start at stage 1.
 `home` is the checkout every later command runs in; when it is outside this session's working directories, have the
 user add it once (`/add-dir`).
 
@@ -137,6 +149,10 @@ It prints what each lacks, and the lists to act on. Go through them in this orde
 4. **The claims.** If anything was set up, or the repair wrote a claim, run `watch.py claims NNN ...` for those
    examples, show the user every claim as printed, in one list, and get their word once. A correction goes to
    another setup session for that example, and an example they turn down is left out.
+   With `--unattended`, print the list all the same and read it in their place, each example's claims against its
+   `example.json` summary and its advisory. Where they say what the entry says and no more, run
+   `watch.py claims NNN --accept "REASON"`, which records your word as a decision flagged for their review. Where
+   you are not sure, leave that example out and name it, with its claims, in the report: it waits for them.
 
 Then go to stage 4 with `toProve`, in the order given, starting with the first. Say which examples were left out as
 already decided. With `--scaffold-only` the skill ends after step 4.
@@ -148,13 +164,14 @@ python3 llm-dlc/tools/watch.py loop --memory SIZE NNN [NNN ...]
 ```
 
 with the examples still to prove, in order (`changes.py --pending NNN ...` leaves out what is decided), the memory
-cap the doctor's budget proposes, and, before the numbers, `--wait-for-proofs` and `--instruction "TEXT"` if the
-request has them. It starts the
+cap the doctor's budget proposes, and, before the numbers, `--wait-for-proofs`, `--record-as NAME` and
+`--instruction "TEXT"` if the request has them. It starts the
 proof loop detached, continuing the fixed session at high effort, and returns at once. Then watch it: run
 `python3 llm-dlc/tools/watch.py wait` as a background task, act on what it returns as "Watching the loop" in
 `llm-dlc/runtime.md` says, and run it again, until the loop has ended.
 
-- **A summary** (every 10 minutes, or as the user asks with `watch.py interval`): print it as it is.
+- **A summary** (every 30 minutes, or as the request's `--summary-interval` or the user says, with
+  `watch.py interval`): print it as it is.
 - **After a cycle**, the loop asks whether the example is done. Judge it from the example's own state, the cycle's
   report and the queue, and answer `finished`, `continue`, or `waiting` when all that is left is a proof still
   running. For `waiting`, start `watch.py proof NNN` as a background task of its own: the loop takes the next example

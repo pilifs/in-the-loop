@@ -4,6 +4,7 @@ and what `check` concludes. Run: python3 llm-dlc/tools/test_claude_setup.py
 No model is called and nothing of this machine's Claude Code setup is read: the directories are made up,
 CLAUDE_CONFIG_DIR points at one of them, and `check` runs against a stand-in `claude` on PATH that answers a probe
 with a start-up report chosen by its flags."""
+import fnmatch
 import json
 import os
 import subprocess
@@ -67,6 +68,11 @@ class CleanFlagsTest(Made):
         self.assertIn(str(self.tmp / "work/CLAUDE.md"), excluded)
         self.assertIn(str(self.tmp / "work/.claude/rules/style.md"), excluded)
         self.assertFalse(any(e.startswith(str(self.home)) for e in excluded), "the checkout's own memory stays")
+        notes = self.config / "projects" / "".join(c if c.isalnum() else "-" for c in str(self.home)) / "memory"
+        self.assertFalse(any(fnmatch.fnmatch(str(notes / name), e) for e in excluded for name in ("MEMORY.md", "a-note.md")),
+                         "and so do the notes Claude Code keeps for the checkout's folder")
+        self.assertFalse(any(k != "claudeMdExcludes" for flag in claude_setup.clean_flags(self.home) if flag.startswith("{")
+                             for k in json.loads(flag)), "no other setting, such as one that turns the notes off")
 
     def test_each_flag_is_one_line_for_a_shell_to_read(self):
         self.assertFalse(any("\n" in flag for flag in claude_setup.clean_flags(self.home)))

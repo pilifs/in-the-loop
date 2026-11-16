@@ -10,7 +10,9 @@ Claude Code setup in step 1 of the skill (llm-dlc/runtime.md#what-claude-code-ha
 A clean session loads this checkout (its CLAUDE.md, its settings and its skills) and nothing of the user's own
 setup: no other plugin, no MCP server or claude.ai connector, no memory file of the user's or of a directory above,
 no user skill, command, agent or hook. It is a matter of launch flags only (clean_flags()), so nothing in the user's
-configuration is changed, and nothing has to be put back afterwards.
+configuration is changed, and nothing has to be put back afterwards. The checkout's own memory always stays: its
+CLAUDE.md and rules, and the notes Claude Code keeps for the checkout's folder (its auto memory, in the configuration
+directory's projects/), which hold what earlier sessions learned about this work.
 
 `check` asks Claude Code itself. It starts two one-word sessions on the smallest model, without tools and without a
 transcript, and reads what each reports at start-up: one started the way the session running this was (its

@@ -58,13 +58,20 @@ its pin.
 ### Many changes, and preparing without proving
 
 ```
-/in-the-loop:prove-java-change [--scaffold-only] [--wait-for-proofs] [--instruction "TEXT"] <one change, or a list of them, each with what to prove about it>
-/in-the-loop:prove-java-change [--wait-for-proofs] [--instruction "TEXT"] NNN [NNN ...]
+/in-the-loop:prove-java-change [--scaffold-only] [--wait-for-proofs] [--summary-interval SECONDS] [--instruction "TEXT"] <one change, or a list of them, each with what to prove about it>
+/in-the-loop:prove-java-change [--wait-for-proofs] [--unattended] [--summary-interval SECONDS] [--record-as NAME] [--instruction "TEXT"] NNN [NNN ...]
 ```
 
 The second form names [examples by number](#examples-named-by-number): ones that are already prepared, and
 catalog entries, which are set up first.
 `--instruction` gives [the proof loop](#the-proof-loop) the user's own text in place of its one line.
+`--summary-interval` says how often the watcher prints a summary (every 30 minutes otherwise).
+`--unattended` is for a run the user is away from: the watcher accepts the claims of the catalog entries it had set
+up itself, as decisions flagged for the user's review, in place of asking.
+`--record-as NAME` files the run under another loop's name, for a run that continues that loop's list.
+
+The skill may also be started by the session itself when the user asks for it in their own words, with the request
+as its arguments. Nothing else starts it: a run spends hours and tokens, and that is the user's to ask for.
 
 - **A list.** Stage 2 understands and sizes every change before an example is added for any. Then it orders them, the
   most accessible first: a proof that lands early can extend the verifier under the later ones, and a hard one first
@@ -226,6 +233,11 @@ python3 llm-dlc/tools/claude_setup.py flags            # the clean launch's flag
   out every MCP server and connector; and the memory files of the user and of the directories above the checkout
   are excluded by path (`claudeMdExcludes`). Nothing in the user's configuration is edited, so nothing has to be put
   back afterwards. Logging in, the model and permissions work as usual.
+- **The checkout's own memory always stays**, in both modes: its `CLAUDE.md` and rules, and the notes Claude Code
+  keeps for the checkout's folder by itself (its auto memory, under `~/.claude/projects/`). They are what earlier
+  sessions learned about this work, and no flag here leaves them out. Seen on 2026-11-16 with Claude Code 2.1.325
+  and made-up notes: a clean session held the folder's own `CLAUDE.md` and its auto memory, and not the `CLAUDE.md`
+  of the directory above. The user's own memory file was not part of that probe (this machine has none).
 - **The sessions the watcher starts are clean by themselves** in a runtime checkout: the evaluation and the setup
   of the examples ([`watch.py`](tools/watch.py)'s stages), the proof loop's cycles, compactions and judge, and the
   verification loop's runs ([`loop-common.sh`](tools/loop-common.sh)'s `isolation`). So everything that states a
@@ -360,6 +372,11 @@ The watcher acts in this order, and its output's lists say which examples each s
    examples claim before the loop starts, all in one list (`watch.py claims NNN ...`: each claim in its file's own
    words, its bounds and assumptions, and the answer expected on each revision), and asks for their word once. A
    correction goes back to a setup session for that example, and an example the user turns down is left out.
+   With `--unattended` the watcher reads the claims in the user's place. It still prints the list. For an example
+   whose claims say what its entry's summary and advisory say, and no more, it runs
+   `watch.py claims NNN --accept "REASON"`: a decision in the run's record, flagged because proving the wrong claim
+   costs the loop's hours, which the user reviews afterwards (`decisions.py review`). An example whose claims it is
+   not sure of is left out of the loop and named in the report, with its claims: that one waits for the user.
 5. **Exit 0:** nothing is lacking. The loop takes `toProve`, in the order given; an example already `decided` is
    left out, and the watcher says so. An example without a target sidecar (a constructed one) passes with a note:
    only its `example.json` was checked.
@@ -374,7 +391,10 @@ Examples [285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-
 entries like it and are the model.
 
 1. Prepare the revisions (`build.py --plan NNN`), write the driver and the oracle, and run the change once on a
-   JVM: the replay task on the release pair, and a mutant of the fix with its own replay.
+   JVM: the replay task on the release pair, and a mutant of the fix with its own replay. A replay task runs
+   inline; a preparation that takes more than a minute or 1 GB (a revision's own build, for one) is queued as a
+   job (`pipeline.py submit --example NNN --task T`), and you wait for its result before going on, since the
+   verification loop is running.
 2. State the claims the entry's summary and its upstream advisory state, and no others: the property on the
    vulnerable revision (expected refuted), the same property on the fix (expected established) and on the mutant
    (expected refuted), and preservation outside the allowed change. Say each in words in its claim file, with its
@@ -405,7 +425,7 @@ check names, in the examples it names, and nothing else:
 
 | It prints | What the watcher does |
 |---|---|
-| A summary | Prints it as it is. One comes every 10 minutes (`watch.py interval SECONDS` changes that), from [`watch-summary-template.md`](watch-summary-template.md): what changed since the last one first, then the loop (the cycle, how long it has run, the session's tool calls and its last output), the examples (done, waiting on a proof, not started), the example under way (its claims by answer), the verification jobs, and what needs attention |
+| A summary | Prints it as it is. One comes every 30 minutes (`--summary-interval SECONDS` in the request, or `watch.py interval SECONDS` at any time, changes that; the number is kept for later runs in the same checkout), from [`watch-summary-template.md`](watch-summary-template.md): what changed since the last one first, then the loop (the cycle, how long it has run, the session's tool calls and its last output), the examples (done, waiting on a proof, not started), the example under way (its claims by answer), the verification jobs, and what needs attention |
 | A question of the loop's | Judges it and answers with the `conductor.py decide` line printed beside it. The three questions are below |
 | A proof that has come in | Tells the user. The loop takes the example up again by itself when it next changes example |
 | The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
@@ -482,7 +502,7 @@ acts.
 ## The proof loop
 
 ```bash
-llm-dlc/tools/prove-loop.sh --session SESSION --memory SIZE [--instruction TEXT] [--wait-for-proofs] [--no-isolation] NNN [NNN ...]
+llm-dlc/tools/prove-loop.sh --session SESSION --memory SIZE [--instruction TEXT] [--record-as NAME] [--wait-for-proofs] [--no-isolation] NNN [NNN ...]
 ```
 
 [`prove-loop.sh`](tools/prove-loop.sh) runs [`feature-loop.sh`](tools/feature-loop.sh)'s `prove-change` moonshot over

@@ -1,6 +1,6 @@
 # The watcher's summary
 
-What the watcher of a `/prove-java-change` run prints at each interval (every 10 minutes unless
+What the watcher of a `/prove-java-change` run prints at each interval (every 30 minutes unless
 `watch.py interval` says otherwise), filled in by [`tools/watch.py`](tools/watch.py)'s `summary`. Everything below
 the marker is the template; a `{name}` is replaced, and the rest is printed as it is. What changed since the last
 summary comes first, so a reader who looks only at the top still sees what moved.

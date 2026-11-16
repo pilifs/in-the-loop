@@ -3,8 +3,8 @@
 # (llm-dlc/runtime.md#the-proof-loop), in a development or a runtime checkout.
 #
 # Usage: llm-dlc/tools/prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE]
-#                                    [--instruction TEXT] [--wait-for-proofs] [--no-verification]
-#                                    [--no-isolation] EXAMPLE [EXAMPLE ...]
+#                                    [--instruction TEXT] [--record-as NAME] [--wait-for-proofs]
+#                                    [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]
 #
 # It gives each example to feature-loop.sh's `prove-change` moonshot: "Formally
 # prove example {} as elegantly and efficiently as possible", on Fable 5.2 at high
@@ -21,6 +21,11 @@
 #   --instruction TEXT  what each cycle tells the session, in place of the line
 #                    above: one line, with {} where the example's number goes. It is
 #                    still the only thing the session is given.
+#   --record-as NAME  file the run under another loop's name: its record is
+#                    llm-dlc/loop-summaries/TIME-NAME.md and the loop statistics count it
+#                    with that loop's runs. For a run that continues another loop's list,
+#                    as examples 288 onwards continue prove-examples. The run's own state
+#                    stays where it is, below.
 #   --fork SESSION   the loop's session starts as a fork of that one: the session
 #                    that prepared the example hands on what it learned. The fork is
 #                    made in one turn without tools, then compacted, and the cycles
@@ -73,7 +78,7 @@ VERIFY=1
 EXAMPLES=()
 
 usage() {
-  echo "usage: prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE] [--instruction TEXT] [--wait-for-proofs] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
+  echo "usage: prove-loop.sh [--session SESSION | --fork SESSION] [--cycles N] [--memory SIZE] [--instruction TEXT] [--record-as NAME] [--wait-for-proofs] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
   exit 2
 }
 
@@ -83,6 +88,7 @@ while (( $# )); do
     --session) [[ $# -ge 2 ]] || usage; CONTINUE=$2; shift 2 ;;
     --wait-for-proofs) export FEATURE_LOOP_CONTINUE_WHILE_PROVING=0; shift ;;
     --instruction) [[ $# -ge 2 ]] || usage; export FEATURE_LOOP_INSTRUCTION=$2; shift 2 ;;
+    --record-as) [[ $# -ge 2 && "$2" =~ ^[a-z0-9][a-z0-9-]*$ ]] || usage; export FEATURE_LOOP_RECORD_AS=$2; shift 2 ;;
     --cycles) [[ $# -ge 2 && "$2" =~ ^[1-9][0-9]*$ ]] || usage; CYCLES=$2; shift 2 ;;
     --memory) [[ $# -ge 2 ]] || usage; export FEATURE_LOOP_MEMORY_MAX=$2; shift 2 ;;
     --no-verification) VERIFY=; shift ;;
@@ -172,7 +178,7 @@ python3 - "$RUN/run.json" "$SESSION" "$FORK" "$$" "${EXAMPLES[@]}" <<'EOF' || ex
 import json, os, sys, time
 path, session, fork, pid, *examples = sys.argv[1:]
 json.dump({"session": session, "forkedFrom": fork or None, "pid": int(pid), "examples": examples,
-           "instruction": os.environ.get("FEATURE_LOOP_INSTRUCTION"),
+           "instruction": os.environ.get("FEATURE_LOOP_INSTRUCTION"), "recordAs": os.environ.get("FEATURE_LOOP_RECORD_AS"),
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "ended": None}, open(path, "w"), indent=1)
 EOF
 
@@ -188,6 +194,8 @@ verification_running() {
   local pid mine theirs
   mine=$(store "$ROOT")
   for pid in $(pgrep -u "$(id -u)" -f 'llm-dlc/tools/verification-loop\.sh'); do
+    # The script as a word of its own: a shell that only mentions it (the window a loop ended in) is not the loop.
+    tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | grep -q 'verification-loop\.sh$' || continue
     theirs=$(store "$(readlink -f "/proc/$pid/cwd" 2>/dev/null)")
     [[ -n "$theirs" && "$theirs" == "$mine" ]] && return 0
   done
@@ -224,7 +232,7 @@ export LOOP_CONDUCTOR=$RUN
 FEATURE_LOOP_ITEMS="${EXAMPLES[*]}" llm-dlc/tools/feature-loop.sh prove-change ${CYCLES:+"$CYCLES"}
 status=$?
 
-record=$(ls -t llm-dlc/loop-summaries/*-prove-change.md 2>/dev/null | head -n 1)
+record=$(ls -t llm-dlc/loop-summaries/*-"${FEATURE_LOOP_RECORD_AS:-prove-change}".md 2>/dev/null | head -n 1)
 python3 - "$RUN" "$status" "$record" <<'EOF'
 import json, sys, time
 sys.path.insert(0, "llm-dlc/tools")

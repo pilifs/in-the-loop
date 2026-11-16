@@ -38,7 +38,7 @@ and reports. You confirm the plan once, and the rest is unattended:
 | 4. Prove them | Fable 5.2, high effort: the session of stage 2, continued | It runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result. While an example's last proof runs, the loop starts the next one and comes back when the proof is in | ask the watcher anything, any time |
 | Report | the watcher | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
 
-While stage 4 runs, the watcher prints a summary every 10 minutes (ask it for another interval), with what changed
+While stage 4 runs, the watcher prints a summary every 30 minutes (`--summary-interval SECONDS` in the request, or ask it for another interval), with what changed
 since the last one first: the loop, the example under way and the verification jobs. Between two examples it merges
 whatever workspace you asked it to, and stops if you asked it to. It can also look into any part of the run for
 you, and fix what is small: a job that hangs, a loop that died.
