@@ -1,0 +1,290 @@
+[
+  {
+    "verdict": "violation",
+    "target": "example290.adapter.MatcherSelectionAdapter#select",
+    "domain": "servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array",
+    "assume": "servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8",
+    "assert": "false",
+    "throws": [
+      "java.lang.IllegalArgumentException when true"
+    ],
+    "throws_checked": [
+      "java.lang.IllegalArgumentException when true"
+    ],
+    "counterexample": {
+      "input": "select(servlets=[1, 0], method=0, patterns={})",
+      "outcome": "0",
+      "values": [
+        "[1, 0]",
+        "0",
+        "{}"
+      ],
+      "shrink_runs": 0,
+      "inputs": [
+        {
+          "name": "servlets",
+          "type": "int[]",
+          "value": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "method",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "patterns",
+          "type": "java.lang.String[]",
+          "value": []
+        }
+      ],
+      "call": {
+        "class": "example290.adapter.MatcherSelectionAdapter",
+        "class_file": "example290/adapter/MatcherSelectionAdapter.class",
+        "classes": "after",
+        "method": "select",
+        "descriptor": "([II[Ljava/lang/String;)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "servlets",
+            "type": "int[]",
+            "value": [
+              1,
+              0
+            ],
+            "from": "servlets"
+          },
+          {
+            "name": "method",
+            "type": "int",
+            "value": 0,
+            "from": "method"
+          },
+          {
+            "name": "patterns",
+            "type": "java.lang.String[]",
+            "value": [],
+            "from": "patterns"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 6.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array",
+    "problem": null,
+    "statement": "verification/.work-290/mutant-security/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:\n  select(servlets=[1, 0], method=0, patterns={})\n    outcome: 0",
+        "uri": null,
+        "line": 55
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:\n  select(servlets=[1, 0], method=0, patterns={})\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 6.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.\n",
+    "work": "verification/.work-290/mutant-security/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 6.701280913,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 8,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 708,
+        "merges": 138,
+        "solver_calls": 1758,
+        "solving_seconds": 0.204097671,
+        "gates_evaluated": 97926,
+        "evaluating_seconds": 0.003217801,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 15905,
+        "clauses": 49037,
+        "seconds": 5.9202507109999996,
+        "loading_seconds": 0.004970137,
+        "decoding_seconds": 0.000448122,
+        "encoding_seconds": 3.481680386,
+        "witness_seconds": 0.000779342,
+        "assumed": [
+          "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+          "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of javax.servlet.http.HttpServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-25.0.5",
+          "kind": "jdk-static-method",
+          "call": "java.lang.Character.isWhitespace(char)",
+          "sites": [
+            "org.springframework.util.StringUtils.containsText:183"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 1800.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 1799.233,
+          "seconds": 5.92,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.0,
+            "symbolic": 2.228,
+            "encoding": 3.482,
+            "solving": 0.204,
+            "trace": 0.001,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 15905,
+            "clauses": 49037
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 7.712,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 5.92,
+        "replay": 0.001,
+        "jvm": 0.295,
+        "other": 1.495
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "servlets",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 8
+          },
+          {
+            "name": "method",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "patterns",
+            "type": "java.lang.String[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 8
+          }
+        ],
+        "shared_arrays": false,
+        "text": "servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of javax.servlet.http.HttpServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against false",
+        "exceptions": "none may be thrown but as a throws clause says: java.lang.IllegalArgumentException when true"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": 8,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:28cf5914033da1c9c8ee6235137131f4d2a213c49b4408dab5cb7e553f07b95e",
+        "classes": 29,
+        "jdk": "25.0.5",
+        "values": [
+          {
+            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

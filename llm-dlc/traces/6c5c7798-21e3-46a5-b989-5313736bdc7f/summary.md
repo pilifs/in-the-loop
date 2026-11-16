@@ -700,6 +700,12 @@ mutant-security: an inline probe at the frozen bound refuted the claim on the mu
 
 vulnerable-security has no verdict: the checker stops, by name, at new ArrayList(int) in createMvcMatchers, and 5.8.4 collects its matchers in ArrayLists on every path. A model of ArrayList written in this session gave the expected witness on 5.8.4 (select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM) and was taken out again before any commit: lib/tests/conformance.rs and lib/tests/values.rs record ArrayList as a class with no model and the contract library holds a contract for ArrayList(int), so making it a model changes recorded verdicts, which is a step to make and review on its own. preservation is not attempted; it needs that model, the matchers' constructors, and --observed-initializer for equivalence. The page (README.md), target.json's handoff and the blockers' notes say all of this.
 
+### Record verification results: example 290 mutant-security passed
+
+change `zklwynpumvln` · [log `1b82b97a73b2`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/1b82b97a73b22b6a77298b07862f1c3730f481582468d208057cacaf071aa89a.jsonl.gz)
+
+Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/1b82b97a73b22b6a77298b07862f1c3730f481582468d208057cacaf071aa89a.jsonl.gz) has every step in between: reasoning, tool calls and their results.
