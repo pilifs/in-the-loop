@@ -490,7 +490,7 @@ right what the check names, in the examples it names, and nothing else:
 
 ### Watching the loop
 
-`watch.py wait` blocks until one of seven things, prints it, and is run again:
+`watch.py wait` blocks until one of eight things, prints it, and is run again:
 
 | It prints | What the watcher does |
 |---|---|
@@ -499,6 +499,7 @@ right what the check names, in the examples it names, and nothing else:
 | A proof that has come in | Tells the user. The loop takes the example up again by itself when it next changes example |
 | The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
 | A setup that has ended (`"kind": "setup"`) | Checks it (`preflight --after-setup`); for one in a workspace, queues its merge and, once it is merged, `watch.py add NNN` |
+| A default test run that has come in (`"kind": "default-tests"`) | Triages a failure, since nobody waited on the run: a small, mechanical one (an inventory row, a lint, a stale index or count) it fixes in the side workspace, merged at the next change of example; one in the area the loop works on it writes to `test-findings.md` in the run's state, which the loop's session may read; anything else goes to the user. A pass needs nothing |
 | A setup gone quiet (`"kind": "setup-quiet"`) | A setup with one command running past ten minutes, or nothing written for twenty: looks at its stream before acting, since a build or a replay often takes long |
 | A verification loop it started (`"kind": "verification"`) | Tells the user: none was running while jobs waited, and `wait` has started one. Nothing else to do |
 
@@ -525,7 +526,10 @@ runs from a private copy of its scripts, so a merge can't pull them from under i
   watcher merges each queued workspace into the loop's line, in the loop's checkout: a merge commit of the line's
   tip and the workspace's (`jj new @- NAME@-`), its conflicts resolved, `python3 llm-dlc/tools/sync.py regenerate`
   in a development checkout, what came in checked (`examples/tools/validate_example.py NNN` for the examples it
-  brings, the default tests run when it brings shared code), the merge committed, then `watch.py merge done NAME`. A merge
+  brings, the tests of the shared code it brings), the merge committed, the default run queued at it as a job
+  (`verification/default_tests.py queue --rev @- --why "the merge of NAME"`, committed in the side workspace, so
+  nothing waits on it), then `watch.py merge done NAME`. Leave nothing of a merge uncommitted while the
+  verification loop runs in the same working copy: its next commit takes whatever is there. A merge
   that does not come out clean is undone (`jj abandon`), left queued, and reported to the user.
 - The user asks to stop after the example under way at any time: `watch.py stop-after example` (`cycle` ends it
   sooner, `never` takes it back). The loop then ends by itself at this point. The watcher answers `stop` here only
@@ -598,10 +602,13 @@ there leaves the run unmeasured). It works the same in both modes, and the watch
   A cycle that makes no commit ends the run, as in every loop.
 - **The order** is the order of its arguments, with a waiting example taken up again as its proof comes in. Every
   example it is given is worked on, decided or not: `changes.py --pending` gives the ones still to prove.
-- **Tests.** No session of a run runs the default test run before each commit: it takes about 16 minutes, and a
-  cycle commits often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN` for an
-  example's own files, and the tests of any shared code it touched. The default run comes once an example is done
-  and before anything is published, and what it finds is fixed then ([`CLAUDE.md`](../CLAUDE.md#tests)).
+- **Tests.** No session of a run runs the default test run inline: it takes about 16 minutes, and a cycle commits
+  often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN` for an example's own
+  files, and the tests of any shared code it touched. The default run is queued as a job nobody waits for
+  ([`verification/default_tests.py`](../verification/default_tests.py) `queue`) when an example is done and at
+  every merge between examples; it runs in a clean export of that commit, and of several waiting together only the
+  newest runs. The watcher triages what it finds, and a push requires a passed one covering the commit it pushes
+  ([`CLAUDE.md`](../CLAUDE.md#tests)).
 - **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
   does. The watcher's verification loop runs them; started by hand, `prove-loop.sh` starts one itself unless one
   already runs for this repository.

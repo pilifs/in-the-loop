@@ -47,7 +47,9 @@ Commands:
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
-                                exactly the checked files and uploaded logs; leaves @ empty (alias: jj trace-push)
+                                exactly the checked files and uploaded logs; leaves @ empty (alias: jj trace-push).
+                                It first requires a passed default test run covering @- (verification/
+                                default_tests.py gate); --skip-tests REASON is the user's word to push without
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -3259,8 +3261,45 @@ def cmd_push(args: list[str]) -> int:
     if work := uncommitted_work():
         print("uncommitted work in @; commit it first with `sync.py commit`:\n  " + "\n  ".join(work), file=sys.stderr)
         return 1
+    args, skipped = without_skip_tests(args)
+    if not tests_gate(skipped):
+        return 1
     with journaled("publish", stage="sync") as step:
         return publish(args, step)
+
+
+def without_skip_tests(args: list[str]) -> tuple[list[str], str | None]:
+    """ARGS without `--skip-tests REASON`, and the reason: the user's word that a push goes out without a passed
+    default run covering it. An agent doesn't pass it."""
+    out, reason, rest = [], None, iter(args)
+    for a in rest:
+        if a == "--skip-tests":
+            reason = next(rest, "") or "no reason given"
+        elif a.startswith("--skip-tests="):
+            reason = a.split("=", 1)[1] or "no reason given"
+        else:
+            out.append(a)
+    return out, reason
+
+
+def tests_gate(skipped: str | None) -> bool:
+    """The default test run runs as a job nobody waits for (verification/default_tests.py), so a push is where it is
+    required: a passed run at the commit pushed, or at an ancestor that differs from it only in files no test reads.
+    Any merge or change after the last run may have broken what the suite is there to catch."""
+    tool = REPO / "verification/default_tests.py"
+    if not tool.exists():
+        return True
+    if skipped is not None:
+        print(f"pushing without a passed default test run, as asked: {skipped}", file=sys.stderr)
+        return True
+    r = subprocess.run([sys.executable, str(tool), "gate", "--rev", "@-"], cwd=REPO, capture_output=True, text=True)
+    sys.stderr.write(r.stderr)
+    if r.returncode:
+        print("not pushing: the default test run is required before a push (CLAUDE.md, Tests). "
+              "`--skip-tests REASON` is for the user alone.", file=sys.stderr)
+        return False
+    print(r.stdout.strip())
+    return True
 
 
 def publish(args: list[str], step: str | None) -> int:
