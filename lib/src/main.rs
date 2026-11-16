@@ -488,6 +488,17 @@ struct EquivalenceArgs {
     /// quantifiers may range over an array parameter.
     #[arg(long = "unchanged-unless")]
     unchanged_unless: Option<String>,
+    /// The inputs the check is about: a Java boolean expression over the parameters, which javac compiles. With it,
+    /// with --lemmas, or for a method with a String[] parameter or a String named --nullable, the check is made as a
+    /// property of the pair of versions (one generated method that calls both and says whether they agree), by the
+    /// tool's own checker: a static method over integral and boolean values, arrays of them, Strings and String[].
+    #[arg(long)]
+    assume: Option<String>,
+    /// Lemmas for a check made as a property of the pair of versions, as `prove --lemmas`: a properties file whose
+    /// declarations are proved first and stand in for their methods' calls. The previous version's classes are
+    /// named under `before.`.
+    #[arg(long)]
+    lemmas: Option<PathBuf>,
     /// The previous version's method, `pkg.Class#method`, when it is not the target's: a method renamed or moved.
     #[arg(long = "before-target")]
     before_target: Option<String>,
@@ -856,6 +867,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
         Command::Equivalence(args) => {
             let mut options = equivalence::Options::new(&args.before, &args.after, &args.target);
             options.unchanged_unless = args.unchanged_unless;
+            options.assume = args.assume;
+            options.lemmas = args.lemmas;
             options.classpath = args.classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect();
             if !args.before_classpath.is_empty() {
                 options.before_classpath = Some(args.before_classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect());

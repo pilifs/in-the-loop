@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-201436-example-288-vulnerable-security-through",
+  "title": "Example 288 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 6.1.13, expected refuted",
+  "description": "The frozen claim claims/disallowed-field-denied-in-every-locale.json, unchanged, run by examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example288.adapter.LocaleDecisionAdapter#allowed(int configLocale, int bindLocale, String[] allowedPatterns, String[] disallowedPatterns, String field), the entry the claim's first assumption names, with the claim's assumption and assertion as they are written, compiled by javac and run as bytecode, at the claim's bound of 8 (each array and each String). The adapter sets the default locale to LOCALES[configLocale] (the root locale, en-US, tr-TR, az-AZ, lt-LT) while it configures a DataBinder through its public setters, and to LOCALES[bindLocale] while it asks the original isAllowed. The class path is the revision's four pinned JARs, each checked against its SHA-256, and the check is given the lemma proofs/simple-match.contract (what PatternMatchUtils.simpleMatch computes on ASCII Strings), which it proves first by induction on the release's own bytecode. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). What changed in the verifier: the default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's constants and Locale.forLanguageTag of a constant plain tag are Locales it knows the one fact of that changes how an ASCII String is lowered (whether the language is tr or az, which lower I to U+0131), Locale.setDefault sets the default on the path, and String.toLowerCase() and toLowerCase(Locale) lower under it; a reference read from an array at a computed index is a choice among the cells, so the two locale indices split no path. At bounds 2, 3 and 5 the three tasks gave their expected verdicts inline (fixed-security in 0.9 s and 47 s at 2 and 5; the refutations in 8 s and 6 s at 3, each witness under tr-TR and run on a JVM). 6.1.13 lower-cases both sides with toLowerCase(), the default locale's; expected refuted on a witness with a capital I lowered under tr-TR or az-AZ.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "288"
+    ],
+    "paths": [
+      "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+      "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match.contract",
+      "lib/src/bmc/locale.rs",
+      "lib/src/bmc/strings.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM'",
+  "submitted": {
+    "at": "2026-11-16T20:14:36+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "25m",
+    "timeout": "1h",
+    "notes": "example 286's same claim under the root locale alone took 920 s (fixed), 409 s and 398 s (refuted) at this bound, at 1.41 GiB; here fixed-security took 47 s at bound 5 against 286's 189 s at 6, so the locale adds little. The time besides is the release build of lib/ if its tree isn't cached and the fetch of four JARs"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-288",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-288/vulnerable-security/outcome.json",
+    "verification/.work-288/vulnerable-security/work/harness/PropertyHarness.java",
+    "verification/.work-288/vulnerable-security/work/harness/PropertyClaim.java"
+  ]
+}

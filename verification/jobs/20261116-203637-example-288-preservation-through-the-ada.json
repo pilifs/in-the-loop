@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-203637-example-288-preservation-through-the-ada",
+  "title": "Example 288 preservation through the adapter entry: 6.1.13 against 6.1.14 outside the allowed change, expected established",
+  "description": "The frozen claim claims/permitted-fields-preserved.json and the task's allowed change (target.json), unchanged, run by examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py: jvmcontract equivalence (own checker, strict gaps) of example288.adapter.LocaleDecisionAdapter#allowed(int configLocale, int bindLocale, String[] allowedPatterns, String[] disallowedPatterns, String field), the adapter compiled against each release and each release on its own four pinned JARs (--before-classpath), the claim's assumption as --assume and the allowed change as --unchanged-unless, at the claim's bound of 8. Until this change a regression check refused a String[] parameter and had no assumption. It is now made as a property of the pair of versions (lib/src/pairing.rs): one generated method calls 6.1.13, relocated under before, and then 6.1.14 on the same inputs, each array a copy of its own, and says whether they returned the same value or threw in the same category; javac compiles it against both, and the property check proves it returns true on every input of the assumption outside the allowed change. The check is given proofs/simple-match-pair.contract, the lemma for each release's own simpleMatch, 6.1.13's stated over ASCII and U+0131 (what a Turkish lower-casing leaves), each proved first by induction. Inline, at bound 4, it was established in 48 s, and with no change allowed it was refuted at bound 2 on allowed(configLocale=2, bindLocale=2, allowedPatterns={null, \"I\"}, disallowedPatterns={null, \"i\"}, field=\"I\"), run on a JVM. Expected established for every pair of the table's five locales.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "288"
+    ],
+    "paths": [
+      "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+      "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match-pair.contract",
+      "lib/src/pairing.rs",
+      "lib/src/bmc/locale.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: verified (expected verified)'",
+  "submitted": {
+    "at": "2026-11-16T20:36:37+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "8G",
+    "duration": "1h",
+    "timeout": "2h30m",
+    "notes": "48 s at bound 4 against fixed-security's 47 s at bound 5: both releases run on every input, the previous one with a lower-casing that depends on two symbolic locales, so a few times fixed-security's time at 8 (286's was 920 s) is a guess, and so is the memory"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py preservation --timeout 5400 --work verification/.work-288",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-288/preservation/outcome.json",
+    "verification/.work-288/preservation/work/pair/RegressionPair.java"
+  ]
+}

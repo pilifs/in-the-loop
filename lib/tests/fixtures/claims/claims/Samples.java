@@ -11,6 +11,8 @@ public final class Samples {
     private Samples() {}
 
     static final char[] POOL = {'$', '2', 'a', 'b', 'y', 'c', 'x', '0', '1', '3', '4', '9', '.', '/', 'A', 'Z', 'z', '+', '-', ' ', '\n', '\u007f', '\u0080', '߿', 'ࠀ', '\ud800', '\udbff', '\udc00', '\udfff', '￿', '٣', 'k'};
+    /** What lower-casing turns on: the capitals a locale may lower its own way, and the units beside the letters. */
+    static final String CAPITALS = "IiJjAZaz[@`{ \u007f0";
     static String text(Random r, int most) {
         int n = r.nextInt(most + 1);
         StringBuilder b = new StringBuilder();
@@ -57,6 +59,16 @@ public final class Samples {
             check(B.equal(a, b) && B.equal(a, a.clone()), "equal");
             check(B.copied(a, r.nextInt(8) - 2), "copied");
             check(B.appended(s, (char) r.nextInt(65536), r.nextInt(2400) - 1200), "appended");
+            // Lower-casing under a locale (C), on ASCII text with capitals: the default locale is put back after.
+            StringBuilder t = new StringBuilder();
+            for (int k = r.nextInt(7); k > 0; k--) t.append(r.nextInt(3) == 0 ? CAPITALS.charAt(r.nextInt(CAPITALS.length())) : (char) r.nextInt(128));
+            java.util.Locale own = java.util.Locale.getDefault();
+            int j = r.nextInt(C.LOCALES.length + 2) - 1, k = r.nextInt(C.LOCALES.length + 2) - 1;
+            check(C.given(k, t.toString()), "given " + k + " " + t);
+            check(C.underTheDefault(j, k, t.toString()), "underTheDefault " + j + " " + k + " " + t);
+            check(C.nulls(t.toString()) && C.itself(k), "nulls " + t);
+            check(C.given(k, s) && C.underTheDefault(j, k, s), "lowered outside ASCII " + s);
+            java.util.Locale.setDefault(own);
         }
         check(B.digits(), "digits");
         System.out.println("all hold on " + samples + " samples");

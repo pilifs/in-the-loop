@@ -16,11 +16,14 @@
 //! - `indexOf(String)`, `indexOf(String, int)`: `NullPointerException` for null; the first index at or after the
 //!   start (held to the length) where the other's units all are; the start itself for the empty String.
 //! - `endsWith(String)`: `NullPointerException` for null; the other's units at the end.
-//! - `toLowerCase()`: of a String whose units are all ASCII, each of `A` to `Z` lowered, and the String itself
-//!   when none is. That is the JDK's answer under every default locale but Turkish, Azeri and Lithuanian, whose
-//!   rules differ for `I`: the run assumes the default locale is none of the three and says so
-//!   ([`LOCALE_ASSUMPTION`]). A String with a unit outside ASCII is lowered by Unicode's tables and its context
-//!   (a final sigma), which the engine has not: there the call is the gap it was.
+//! - `toLowerCase()` and `toLowerCase(Locale)`: of a String whose units are all ASCII, each of `A` to `Z` lowered,
+//!   and the String itself when none is. Under a Turkish or an Azeri locale `I` is lowered to U+0131, the dotless
+//!   i, and under every other, Lithuanian included, an ASCII String is lowered alike ([`super::locale`]). The
+//!   locale is the one given, or the default the path set last (`Locale.setDefault`); where the path set none it is
+//!   the JVM's own, which the run assumes is none of Turkish, Azeri and Lithuanian and says so
+//!   ([`LOCALE_ASSUMPTION`]). A String with a unit outside ASCII is lowered by Unicode's tables, its context (a
+//!   final sigma) and the locale's rules, which the engine has not: there the call is the gap it was, as it is
+//!   under a Locale the engine knows nothing of.
 //!
 //! A `StringBuilder` is an object with a content of its own, which its methods change: `StringBuilder()`,
 //! `StringBuilder(String)` (`NullPointerException` for null), `length()`, `charAt(int)`
@@ -43,7 +46,8 @@ pub const BUILDER: &str = "java/lang/StringBuilder";
 /// The most code units a builder the engine holds the content of has a cell for.
 pub const MOST_BUILDER_CONTENT: usize = 1024;
 
-/// What a run that lowered a String's case took for granted about the JVM's default locale.
+/// What a run that lowered a String's case under the JVM's own default locale took for granted about it: a run
+/// that set the default itself before it lowered anything assumes nothing ([`super::locale`]).
 pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered";
 
 /// Whether the engine models `String.name(descriptor)` here.
@@ -306,7 +310,26 @@ impl Engine<'_> {
                 self.push_truth(path, truth);
                 Ok(None)
             }
-            ("toLowerCase", _, []) => {
+            ("toLowerCase", _, [] | [Val::R(_)]) => {
+                // The locale's one fact that matters to an ASCII String ([`locale`]): the default the path set, or
+                // the argument's. A locale the engine knows nothing of leaves the call the JDK's.
+                let dotless = match args {
+                    [Val::R(None)] => return self.raise(path, "java/lang/NullPointerException"),
+                    [Val::R(Some(given))] => self.argument_dotless(path, *given),
+                    _ => self.default_dotless(path),
+                };
+                let Some(dotless) = dotless else {
+                    return match self.meet(path, GapKind::JdkReferenceMethod, STRING, name, descriptor) {
+                        Some(end) => Ok(Some(end)),
+                        None => {
+                            let r = self.alloc(path, STRING);
+                            self.push(path, Val::R(Some(r)));
+                            self.advance(path);
+                            Ok(None)
+                        }
+                    };
+                };
+                let (capital_i, dotless_i) = (self.b.constant(i64::from(b'I'), 16), self.b.constant(0x131, 16));
                 let ascii_limit = self.b.constant(128, 16);
                 let mut outside = Vec::new();
                 let mut changes = Vec::new();
@@ -318,11 +341,13 @@ impl Engine<'_> {
                     outside.push(self.b.and(inside, -ascii));
                     let (is_upper, lowered) = self.lowered_ascii(cell);
                     changes.push(self.b.and(inside, is_upper));
-                    cells.push(lowered);
+                    // Turkish and Azeri lower `I` to the dotless i; every other ASCII letter as any locale does.
+                    let is_i = self.b.eq(cell, &capital_i);
+                    let to_dotless = self.b.and(dotless, is_i);
+                    cells.push(self.b.ite_bits(to_dotless, &dotless_i, &lowered));
                 }
                 let beyond_ascii = self.any(&outside);
                 let changed = self.any(&changes);
-                self.assumed.insert(LOCALE_ASSUMPTION.to_string());
                 let (owner, name, descriptor) = (STRING, name.to_string(), descriptor.to_string());
                 let length = s.length.clone();
                 let original = s.clone();
@@ -332,7 +357,11 @@ impl Engine<'_> {
                     } else {
                         // The new String remembers the units it is the lower case of ([`regex::Regex::Lowered`]).
                         let lowered = engine.new_string(path, length, cells, vec![(-changed, o)]);
-                        path.objects[lowered].regex = Some(Rc::new(regex::Regex::lowered(&original)));
+                        // Its units are the original's with the ASCII capitals lowered only where no locale lowers
+                        // `I` otherwise.
+                        if dotless == FALSE {
+                            path.objects[lowered].regex = Some(Rc::new(regex::Regex::lowered(&original)));
+                        }
                         lowered
                     };
                     engine.push(path, Val::R(Some(value)));

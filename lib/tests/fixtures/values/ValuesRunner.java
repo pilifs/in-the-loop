@@ -64,10 +64,14 @@ public final class ValuesRunner {
 
     private static String render(Method target, Object[] values) throws IllegalAccessException {
         Object result;
+        // A case may set the default locale (toLowerCaseUnder): every case starts under the JVM's own.
+        java.util.Locale locale = java.util.Locale.getDefault();
         try {
             result = target.invoke(null, values);
         } catch (InvocationTargetException e) {
             return "throws " + e.getCause().getClass().getName();
+        } finally {
+            java.util.Locale.setDefault(locale);
         }
         if (result == null) {
             return "null";

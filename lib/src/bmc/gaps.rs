@@ -1139,10 +1139,14 @@ impl<'a> Walker<'a> {
                         // A model the engine runs although it is only for JBMC's class path (`List.of`), as it does.
                         self.initialise(&c.name, &site);
                         self.enqueue(&c.name, &member.name, &member.descriptor);
-                    } else if (member.owner.as_str(), member.name.as_str()) == ("java/util/regex/Pattern", "compile") && super::models_jdk_reference_static(&member.owner, &member.name, &member.descriptor) && !loaded.is_some_and(|units| crate::jdk_facts::plain_regex(&units) || super::regex::compiles_constant(&units)) {
+                    } else if (member.owner.as_str(), member.name.as_str()) == ("java/util/regex/Pattern", "compile") && super::models_jdk_reference_static(&member.owner, &member.name, &member.descriptor) && !loaded.as_ref().is_some_and(|units| crate::jdk_facts::plain_regex(units) || super::regex::compiles_constant(units)) {
                         // The engine compiles a constant regex of the plain form ([`crate::jdk_facts::plain_regex`]) or of
                         // its own syntax with a class, a group or a count ([`super::regex::compiles_constant`]) alone:
                         // any other, or one this walk doesn't see loaded just before the call, may be the gap it meets.
+                        self.gap(GapKind::JdkStaticMethod, &member.owner, &member.name, &member.descriptor, site);
+                    } else if (member.owner.as_str(), member.name.as_str()) == (super::locale::LOCALE, "forLanguageTag") && super::locale::models_static(&member.owner, &member.name, &member.descriptor) && !loaded.as_ref().is_some_and(|units| super::locale::plain_tag_language(units).is_some()) {
+                        // The engine reads a constant language tag of the plain form alone ([`super::locale`]): any
+                        // other, or one this walk doesn't see loaded just before the call, may be the gap it meets.
                         self.gap(GapKind::JdkStaticMethod, &member.owner, &member.name, &member.descriptor, site);
                     } else {
                         match jdk_static_call(&member.owner, &member.name, &member.descriptor) {
@@ -1198,6 +1202,10 @@ impl<'a> Walker<'a> {
     /// wrappers' bounds, or an application field with a `ConstantValue` attribute.
     fn constant(&self, owner: &str, name: &str) -> bool {
         if matches!((owner, name), ("java/lang/Integer" | "java/lang/Long", "MAX_VALUE" | "MIN_VALUE")) {
+            return true;
+        }
+        // The JDK's objects the engine has one of for a run: the UTF-8 charset and `Locale`'s constants.
+        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) {
             return true;
         }
         let Ok(Some(cf)) = self.cp.bytecode(owner) else { return false };

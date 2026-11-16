@@ -143,6 +143,45 @@ fn text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out() 
     }
 }
 
+/// Lower-casing under a locale that is an input (`lib/src/bmc/locale.rs`): the default locale a path sets is state,
+/// a Locale picked from a table at a computed index is a choice among its cells and splits no path, and Turkish and
+/// Azeri lower `I` to the dotless i. Each model is its definition written out, on every index and every ASCII String
+/// of the bound, and each definition is the JDK's on a JVM, on samples (`Samples`, with the bytes' definitions).
+/// What the model does not say is refused by name.
+#[test]
+fn lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for method in ["given", "underTheDefault", "nulls", "itself"] {
+        let o = run(&options(classes, &format!("claims.C#{method}"), 3, &format!("C-{method}")));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        // The locale is read from what the path set: nothing is assumed of the JVM's own default.
+        let assumed = o.stated.as_ref().is_some_and(|s| s.assumptions.iter().any(|a| a.text.contains("the default locale's language is not Turkish")));
+        assert!(!assumed, "{method}: {:?}", o.stated.map(|s| s.assumptions));
+    }
+    // A wrong claim is refuted on a Turkish or Azeri locale, and the witness is run on a JVM.
+    let mut wrong = options(classes, "claims.C#given", 3, "C-given-wrong");
+    wrong.assume = Some("k >= 0 && k < 8".into());
+    wrong.assert = Some("result && (!s.equals(\"I\") || s.toLowerCase(claims.C.LOCALES[k]).equals(\"i\"))".into());
+    let o = run(&wrong);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.output.contains("run on a JVM") && ["k=2", "k=3", "k=6"].iter().any(|k| o.output.contains(k)), "{}", o.output);
+    // Whether two Locales are one object is refused by name; a Locale another constructor made is one the engine
+    // knows nothing of, and with that constructor assumed, `toLowerCase()` under it is the JDK's call, a gap.
+    let o = run(&options(classes, "claims.C#identical", 3, "C-identical"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("a comparison of two Locale objects by reference"), "{}", o.output);
+    for (method, gap) in [("underAnUnknownDefault", "jdk-constructor:java.util.Locale.<init>(Ljava/lang/String;)V"), ("outsideAscii", "jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;")] {
+        let o = run(&options(classes, &format!("claims.C#{method}"), 3, &format!("C-{method}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains(gap), "{}", o.output);
+    }
+    let mut assumed = options(classes, "claims.C#underAnUnknownDefault", 3, "C-unknown-assumed");
+    assumed.gaps = jvmcontract::bmc::gaps::GapMode::Assume;
+    let o = run(&assumed);
+    assert!(o.output.contains("java.lang.String.toLowerCase()") && o.output.contains("java.util.Locale.<init>"), "{}", o.output);
+}
+
 /// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is
 /// compiled by javac, proved, and a wrong one refuted on a witness the harness fails on a JVM.
 #[test]

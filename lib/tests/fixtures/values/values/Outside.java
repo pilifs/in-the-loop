@@ -44,6 +44,19 @@ public final class Outside {
         }
     }
 
+    /** A language tag with a variant is the JDK's parser's to read. */
+    public static void localeOfAVariantTag(String s) {
+        if (s != null && java.util.Locale.forLanguageTag("de-DE-1996") == null) {
+            throw new AssertionError();
+        }
+    }
+
+    public static void defaultLocale(String s) {
+        if (s != null && java.util.Locale.getDefault() == null) {
+            throw new AssertionError();
+        }
+    }
+
     public static void trim(String s) {
         if (s != null && s.trim().length() > s.length()) {
             throw new AssertionError();

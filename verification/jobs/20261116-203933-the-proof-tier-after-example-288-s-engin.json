@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-203933-the-proof-tier-after-example-288-s-engin",
+  "title": "The proof tier after example 288's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+  "description": "Runs the proof tier's command (lib/tools/test_costs.py run --tier proof prints it) with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as the job after example 287 did. The change behind it touches what nearly every proof-tier test runs, the own checker (lib/src/bmc): an aaload at a computed index now gives a symbolic reference among the array's cells where it split the path per cell, String.toLowerCase() reads the default locale the path set (and assumes what it assumed where the path set none), toLowerCase(Locale), Locale.forLanguageTag, Locale.setDefault and Locale's constants are modelled (lib/src/bmc/locale.rs), and a comparison of two Locales by reference is refused. The tests of what changed (claims, values, the unit tests) pass inline. There are no Python proof tests (test_costs.py estimate counts none), which is what VF-030 still asked for.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/bmc/locale.rs",
+      "lib/src/bmc/strings.rs"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test but VF-018's three passes",
+  "submitted": {
+    "at": "2026-11-16T20:39:33+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "priority": -1,
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "1h15m",
+    "timeout": "4h",
+    "notes": "the same job after example 287 took 1h07m at 3.3 GiB peak"
+  },
+  "steps": [
+    {
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

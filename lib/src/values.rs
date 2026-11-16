@@ -163,8 +163,10 @@ const LIST: &str = "java/util/List";
 /// the JVM dispatches it: a map's keys are compared so. Model 3 added `endsWith`, `indexOf`, `substring`,
 /// `toLowerCase` on ASCII, `split` at one character and `chars` (for example 286's claims, which state a wildcard
 /// match with them), each with its record. Model 4 added `getBytes(UTF_8)`, `matches` of a constant regular
-/// expression and `toString` (for example 287's claims, over a password's bytes and a stored hash's shape).
-pub const STRING_MODEL: &str = "jvmcontract String model 4: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+/// expression and `toString` (for example 287's claims, over a password's bytes and a stored hash's shape). Model 5
+/// lowers an ASCII String under the default locale the path set, and under a Locale it is given (`toLowerCase(Locale)`),
+/// Turkish and Azeri among them (for example 288's claims, which make the default locale an input).
+pub const STRING_MODEL: &str = "jvmcontract String model 5: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -186,7 +188,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap".into(),
             "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -783,6 +785,7 @@ const NPE: &str = "java.lang.NullPointerException";
 const SIOOBE: &str = "java.lang.StringIndexOutOfBoundsException";
 const STRINGS_SOURCE: &str = "the own checker: bmc::strings, formulas over the String's content; the interpreter: interp::natives (string_method); JBMC: its own String model, not this one";
 const REGEX_SOURCE: &str = "the own checker: bmc::regex (Engine::string_split, Engine::string_matches); the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
+const LOCALE_SOURCE: &str = "the own checker: bmc::strings and bmc::locale, a formula over the String's content and what the path knows of the Locale; the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
 const BYTES_SOURCE: &str = "the own checker: bmc::bytes (Engine::string_bytes), a formula over the String's content; the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
 const STREAM_SOURCE: &str = "the stream models' bytecode (lib/models/java/util/stream/CharsStream.java, IntStream.java), run by the own checker alone; the interpreter: none, a witness is run on a JVM; JBMC: not given the models";
 const STRING_SOURCE: &str = "the own checker: bmc::Engine::string_method on the String's content; the interpreter: interp::JStr; JBMC: its own String model, not this one";
@@ -955,12 +958,23 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         operation: "java.lang.String.toLowerCase()Ljava/lang/String;",
         family: Family::String,
         source: STRINGS_SOURCE,
-        admits: "a String whose code units are all ASCII, under a default locale whose language is not tr, az or lt (bmc::strings::LOCALE_ASSUMPTION, which a statement lists): A to Z lowered, and the String itself when it has none",
+        admits: "a String whose code units are all ASCII: A to Z lowered, and the String itself when it has none, I lowered to U+0131 where the default locale is Turkish or Azeri. The default is the Locale the path set last with Locale.setDefault(Locale), one of Locale's constants or of Locale.forLanguageTag of a constant plain tag (bmc::locale); where the path set none, the JVM's own, taken to be none of tr, az and lt (bmc::strings::LOCALE_ASSUMPTION, which a statement lists)",
         throws: &[NPE],
-        leaves_out: &["a String with a code unit outside ASCII, lowered by Unicode's tables and its context (a final sigma): a named gap", "toLowerCase(Locale)", "the three locales whose rules change an ASCII letter: assumed away, and stated"],
+        leaves_out: &["a String with a code unit outside ASCII, lowered by Unicode's tables, its context (a final sigma) and the locale's rules: a named gap", "a default that is a Locale the engine knows nothing of (one a JDK call it does not model made): a named gap", "the JVM's own default locale where its language is tr, az or lt: assumed away, and stated", "a default set through Locale.setDefault(Locale.Category, Locale), which toLowerCase() does not read, and Locale.getDefault(): the JDK calls they were"],
         level: EvidenceLevel::Tested,
-        sampled_by: &["toLowerCase"],
+        sampled_by: &["toLowerCase", "toLowerCaseUnder"],
         calls: &["toLowerCase()Ljava/lang/String;"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;",
+        family: Family::String,
+        source: LOCALE_SOURCE,
+        admits: "a String whose code units are all ASCII and a Locale that is one of Locale's constants or Locale.forLanguageTag of a constant tag of the plain form (a language, then optionally a script, then optionally a region): A to Z lowered, I to U+0131 where the language is tr or az, and the String itself when it has no capital",
+        throws: &[NPE],
+        leaves_out: &["a String with a code unit outside ASCII: a named gap", "any other Locale (new Locale(...), a builder's, a tag with a variant or an extension): the JDK calls they were", "whether two Locales are one object: a comparison of two by reference is refused"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["toLowerCaseIn"],
+        calls: &["toLowerCase(Ljava/util/Locale;)Ljava/lang/String;"],
     },
     OperationEvidence {
         operation: "java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;",
@@ -1243,7 +1257,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 21);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 22);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

@@ -51,7 +51,7 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again), and a path that needs another iteration goes on from an invariant of the loop where the engine finds one ([`loops`], [`Options::invariants`]); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
-//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
+//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
@@ -70,10 +70,10 @@
 //! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
-//! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` of a String with a unit outside ASCII, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
+//! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
 //! | `invokestatic` of `Arrays.stream(Object[])` and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -94,6 +94,7 @@ pub mod bitwuzla;
 pub mod bits;
 pub mod gaps;
 pub mod bytes;
+pub mod locale;
 mod loops;
 mod regex;
 pub mod runtime;
@@ -465,7 +466,8 @@ fn cell_width(element: &Type) -> usize {
 ///
 /// A reference whose target is known is `R`, the fast path every reference took before symbolic ones: nothing
 /// about it is a formula. A `C` is made only where paths that differ in a reference merge ([`Engine::absorb`]),
-/// or where a read through a `C` gives references ([`Engine::get_field`]); a field or an array's cell may then hold one.
+/// where a read through a `C` gives references ([`Engine::get_field`]), or where an `aaload` reads a cell at a
+/// computed index; a field or an array's cell may then hold one.
 #[derive(Debug, Clone)]
 enum Val {
     I(Bits),
@@ -497,7 +499,8 @@ impl Val {
 /// guard that holds. Options are sorted by target, each target once, at least two of them ([`choice`]), so that two
 /// choices of the same guards and targets are equal.
 ///
-/// `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas over the guards, `getfield` reads each
+/// `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas over the guards (but for two Locales,
+/// whose identity the JDK's cache decides: [`locale`]), `getfield` reads each
 /// candidate's field and chooses among the values by the guards, and `putfield` writes each candidate's field
 /// under its guard ([`Engine::put_field`]); an `aastore` stores one into a cell as it is when every candidate is of
 /// the element type, and an `aaload` gives the one a cell holds. Every other instruction that needs to know the
@@ -781,6 +784,8 @@ enum Literal {
     Logger(Vec<u16>),
     /// A charset of `java.nio.charset.StandardCharsets`, by its field's name ([`bytes`]).
     Charset(&'static str),
+    /// A constant of `java.util.Locale`, by its field's name ([`locale`]).
+    Locale(String),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -2166,6 +2171,7 @@ impl<'a> Engine<'a> {
                         Literal::Loader => "java/lang/ClassLoader",
                         Literal::Logger(_) => "java/util/logging/Logger",
                         Literal::Charset(_) => bytes::CHARSET,
+                        Literal::Locale(_) => locale::LOCALE,
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -2489,9 +2495,6 @@ impl<'a> Engine<'a> {
                 if let Some(step) = self.concrete_ref(path, 1) {
                     return step;
                 }
-                if let Some(step) = self.concrete_index(path, 0) {
-                    return step;
-                }
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
                     Ok(o) => o,
@@ -2501,9 +2504,28 @@ impl<'a> Engine<'a> {
                 if !holds_references(&array.element) {
                     return unsupported(format!("an aaload from a {}[]", array.element.java_name()));
                 }
-                let Some(value) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).and_then(|k| array.refs.get(k).cloned()) else {
-                    // No cell there: out of bounds whatever the length.
-                    return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                let value = match self.b.constant_value(&index) {
+                    Some(k) => {
+                        let Some(value) = usize::try_from(k).ok().and_then(|k| array.refs.get(k).cloned()) else {
+                            // No cell there: out of bounds whatever the length.
+                            return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                        };
+                        value
+                    }
+                    // At a computed index, the reference is the one of the cell the index names: a choice among the
+                    // cells' references, each under `index == i` (and under its own guard, where the cell holds a
+                    // choice). In bounds one of them holds, since the array's length is at most its cells.
+                    None => {
+                        let mut options = Vec::new();
+                        for (i, cell) in array.refs.iter().enumerate() {
+                            let k = self.b.constant(i as i64, 32);
+                            let here = self.b.eq(&index, &k);
+                            for (g, t) in cell.options().expect("a cell of references") {
+                                options.push((self.b.and(here, g), t));
+                            }
+                        }
+                        choice(&mut self.b, options)
+                    }
                 };
                 let in_bounds = self.b.ult(&index, &array.length);
                 self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", value)
@@ -2709,9 +2731,10 @@ impl<'a> Engine<'a> {
         })
     }
 
-    /// Makes the index of an `aaload` (`depth` 0) or an `aastore` (`depth` 1, under the value) a constant, when
-    /// it is not one and the array below it is an array: a reference is not a choice among bits, as an int is, so
-    /// the path is split on `index == i` for each cell `i` in turn, as a switch is. Each side that takes a cell
+    /// Makes the index of an `aastore` (`depth` 1, under the value) a constant, when it is not one and the array
+    /// below it is an array: which cell is written is not a choice among bits, as an int is, so the path is split
+    /// on `index == i` for each cell `i` in turn, as a switch is. (An `aaload` at such an index reads a choice
+    /// among the cells and splits nothing.) Each side that takes a cell
     /// runs the instruction again with `i` in place of the index, and the path on which the index is none of
     /// them throws `ArrayIndexOutOfBoundsException`, since the array's length is at most its cells. `None` when
     /// there is nothing to split, and the instruction goes on (or throws, on a null array).
@@ -2876,6 +2899,8 @@ impl<'a> Engine<'a> {
     /// one target, both guards holding.
     fn same_lit(&mut self, path: &Path, x: &Val, y: &Val) -> Result<Lit, Stop> {
         let (Some(xs), Some(ys)) = (x.options(), y.options()) else { return unsupported(format!("expected two references on the stack, found {x:?} and {y:?}")) };
+        // One reference is itself, whatever it may be: two options of one choice never hold together.
+        let one = xs == ys;
         // Each option as the object it is ([`Obj::same`]): itself, or another under a guard.
         let xs = self.identities(path, &xs);
         let ys = self.identities(path, &ys);
@@ -2884,6 +2909,11 @@ impl<'a> Engine<'a> {
             for (h, u) in &ys {
                 if t == u {
                     pairs.push(self.b.and(*g, *h));
+                } else if let (Some(t), Some(u)) = (t, u) {
+                    // Whether two Locales are one object is the JDK's cache's to say ([`locale`]).
+                    if !one && Self::is_known_locale(path, *t) && Self::is_known_locale(path, *u) && self.b.and(*g, *h) != FALSE {
+                        return unsupported("a comparison of two Locale objects by reference: whether Locale.forLanguageTag returns one of Locale's constants, or the object an earlier call returned, is the JDK's cache's to say");
+                    }
                 }
             }
         }
@@ -3373,6 +3403,13 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
+                // Each of `Locale`'s constants is one object ([`locale`]).
+                if locale::constant(&declaring, &member.name) {
+                    let constant = self.locale_constant(path, &member.name);
+                    self.push(path, Val::R(Some(constant)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if let Some(step) = self.initialise(path, &declaring) {
                     return step;
                 }
@@ -3560,7 +3597,7 @@ impl<'a> Engine<'a> {
         }
         let limited = |obj: &Obj| obj.limit.clone().map(|why| unsupported(why));
         let Some(s) = path.objects[o].content().cloned() else { return limited(&path.objects[o]) };
-        if strings::models(name, descriptor) {
+        if strings::models(name, descriptor) || locale::models_string(name, descriptor) {
             return Some(self.string_method_on_content(path, o, &s, name, descriptor, args));
         }
         if name == "matches" && regex::models_string(name, descriptor) {
@@ -3972,7 +4009,7 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) => self.alloc(path, class),
         };
         path.literals.insert(literal, o);
         o
@@ -4080,10 +4117,13 @@ impl<'a> Engine<'a> {
             let args = self.pop_args(path, descriptor.params.len())?;
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
-        // The JDK's methods and the intrinsics take known references.
-        for depth in 0..descriptor.params.len() {
-            if let Some(step) = self.concrete_ref(path, depth) {
-                return step;
+        // The JDK's methods and the intrinsics take known references, but for a call that only stores the
+        // reference ([`locale::takes_a_choice`]).
+        if !locale::takes_a_choice(&member.owner, &member.name, &member.descriptor) {
+            for depth in 0..descriptor.params.len() {
+                if let Some(step) = self.concrete_ref(path, depth) {
+                    return step;
+                }
             }
         }
         let args = self.pop_args(path, descriptor.params.len())?;
@@ -4541,9 +4581,11 @@ impl<'a> Engine<'a> {
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         // The JVM's own objects ([`runtime`]): a class by name, a logger. Where the arguments are not ones it
         // answers for, the call is the gap it was.
-        if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) || bytes::models_static(owner, name, descriptor) {
+        if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) || bytes::models_static(owner, name, descriptor) || locale::models_static(owner, name, descriptor) {
             let modelled = if runtime::models_static(owner, name, descriptor) {
                 self.runtime_static(path, owner, name, &args)
+            } else if locale::models_static(owner, name, descriptor) {
+                self.locale_static(path, name, &args)
             } else if bytes::models_static(owner, name, descriptor) {
                 self.bytes_static(path, owner, name, descriptor, &args)
             } else {
@@ -4744,7 +4786,7 @@ impl<'a> Engine<'a> {
 /// Whether the engine models the String method `owner.name(descriptor)` on a String whose content it holds
 /// ([`Engine::string_method`]); the engine and the gap scan share it.
 pub fn models_string_method(owner: &str, name: &str, descriptor: &str) -> bool {
-    owner == STRING && (matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("hashCode", "()I") | ("startsWith", "(Ljava/lang/String;)Z") | ("toString", "()Ljava/lang/String;")) || strings::models(name, descriptor) || regex::models_string(name, descriptor) || bytes::models_string(name, descriptor) || crate::models::entry(STRING, name, descriptor).is_some())
+    owner == STRING && (matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("hashCode", "()I") | ("startsWith", "(Ljava/lang/String;)Z") | ("toString", "()Ljava/lang/String;")) || strings::models(name, descriptor) || locale::models_string(name, descriptor) || regex::models_string(name, descriptor) || bytes::models_string(name, descriptor) || crate::models::entry(STRING, name, descriptor).is_some())
 }
 
 /// Whether [`Engine::call_jdk_static`] models `owner.name`: the arms of its match, for [`gaps::scan`], which counts
@@ -4771,6 +4813,7 @@ pub fn models_jdk_reference_static(owner: &str, name: &str, descriptor: &str) ->
     ) || runtime::models_static(owner, name, descriptor)
         || regex::models_static(owner, name, descriptor)
         || bytes::models_static(owner, name, descriptor)
+        || locale::models_static(owner, name, descriptor)
         || crate::models::entry(owner, name, descriptor).is_some()
 }
 

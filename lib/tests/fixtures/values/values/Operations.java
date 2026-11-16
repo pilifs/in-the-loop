@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -122,6 +123,43 @@ public final class Operations {
     }
 
     static int toLowerCase(int n, int a, int b, int c, int m, int d, int e, int f) {
+        String s = of(n, a, b, c);
+        return made(s, s.toLowerCase(), of(m, d, e, f));
+    }
+
+    /** The locales of the lower-casing cases, by index: constants and plain language tags, and null for any other index. */
+    static Locale locale(int k) {
+        switch (k) {
+            case 0:
+                return Locale.ROOT;
+            case 1:
+                return Locale.forLanguageTag("en-US");
+            case 2:
+                return Locale.forLanguageTag("tr-TR");
+            case 3:
+                return Locale.forLanguageTag("az-Latn-AZ");
+            case 4:
+                return Locale.forLanguageTag("lt-LT");
+            case 5:
+                return Locale.US;
+            case 6:
+                return Locale.forLanguageTag("TR");
+            case 7:
+                return Locale.forLanguageTag("tur");
+            default:
+                return null;
+        }
+    }
+
+    static int toLowerCaseIn(int k, int n, int a, int b, int c, int m, int d, int e, int f) {
+        String s = of(n, a, b, c);
+        return made(s, s.toLowerCase(locale(k)), of(m, d, e, f));
+    }
+
+    /** Under a default locale the case sets, the second of two: the runner puts the JVM's own back after each case. */
+    static int toLowerCaseUnder(int j, int k, int n, int a, int b, int c, int m, int d, int e, int f) {
+        Locale.setDefault(locale(j));
+        Locale.setDefault(locale(k));
         String s = of(n, a, b, c);
         return made(s, s.toLowerCase(), of(m, d, e, f));
     }

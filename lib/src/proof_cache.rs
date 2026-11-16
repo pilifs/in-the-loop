@@ -553,6 +553,7 @@ impl<'a> Regression<'a> {
             stated: Some(statement),
             advice: None,
             reuse: Some(Reuse::Exact { key: place.key.clone(), from: record.provenance }),
+            pair: None,
         }))
     }
 }
