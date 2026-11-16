@@ -604,7 +604,7 @@ there leaves the run unmeasured). It works the same in both modes, and the watch
   example it is given is worked on, decided or not: `changes.py --pending` gives the ones still to prove.
 - **Tests.** No session of a run runs the default test run inline: it takes about 16 minutes, and a cycle commits
   often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN` for an example's own
-  files, and the tests of any shared code it touched. The default run is queued as a job nobody waits for
+  files, and the tests of any shared code it touched (`lib/tools/test_costs.py run --changed`). The default run is queued as a job nobody waits for
   ([`verification/default_tests.py`](../verification/default_tests.py) `queue`) when an example is done and at
   every merge between examples; it runs in a clean export of that commit, and of several waiting together only the
   newest runs. The watcher triages what it finds, and a push requires a passed one covering the commit it pushes

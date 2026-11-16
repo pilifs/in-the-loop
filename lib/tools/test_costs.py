@@ -685,35 +685,226 @@ def _shown(argv, env):
     return " ".join([f"{k}={v}" for k, v in env.items()] + [Path(a).name if a == sys.executable else a for a in argv])
 
 
-def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=None, dry_run=False):
-    """Run TIER's commands one after another: cargo's output as it comes, one line per Python file (its output in
-    full when it fails). Returns 0 if every command passed."""
+# --- choosing the tests of what changed --------------------------------------------------------------------------
+
+# What makes `cargo test` worth running: lib/ but its Python tools and pages, and the two Python files tests/tiers.rs
+# reads for its lint.
+RUST_INPUTS = re.compile(r"^lib/(?!tools/|README\.md$|.*\.md$)|^lib/tools/(test_costs|cost_tier)\.py$")
+SKIP_DIRS = {".git", ".jj", "target", "node_modules", "__pycache__", ".state"}
+# Files a test is not taken to read by naming them: records and generated files that every few modules name (the
+# trace index, the decision records, job results), and the test inventory, which every test file names through the
+# shared cost decorator. A test of them is chosen as any other, by changing or importing what changed.
+NOT_BY_NAME = re.compile(r"^(llm-dlc/traces/|llm-dlc/index\.json$|llm-dlc/README\.md$|llm-dlc/decisions/|verification/results/|"
+                         r"verification/jobs/|lib/tests/costs\.json$|examples/index\.json$|examples/README\.md$)")
+SHARED = {"cost_tier.py"}  # imported by every test file: what it names says nothing of one test
+
+
+def changed_paths(root, since=None):
+    """The files changed in @ (`jj diff`), or since revision SINCE."""
+    argv = ["jj", "--quiet", "diff", "--name-only"] + (["--from", since, "--to", "@"] if since else [])
+    r = subprocess.run(argv, cwd=root, capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"jj diff: {r.stderr.strip()}")
+    return sorted(set(r.stdout.split()))
+
+
+def _python_modules(root):
+    """Every Python file of the repository by its module name's last part: an import names a module, not a path, and
+    the tests put several folders on sys.path, so a name is taken to mean every file of that name (more is chosen,
+    never less)."""
+    out = {}
+    for dirpath, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
+        for f in files:
+            if f.endswith(".py"):
+                path = Path(dirpath) / f
+                out.setdefault(path.stem if f != "__init__.py" else path.parent.name, []).append(path)
+    return out
+
+
+def _imports(path):
+    import ast
+    try:
+        tree = ast.parse(Path(path).read_text())
+    except (OSError, SyntaxError, ValueError):
+        return set()
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names |= {part for a in node.names for part in a.name.split(".")}
+        elif isinstance(node, ast.ImportFrom):
+            names |= set((node.module or "").split(".")) | {a.name for a in node.names}
+    return names - {""}
+
+
+def _strings(path, cache={}):
+    """The string literals of a Python file's code, its docstrings left out: where a test names a file it reads or
+    runs, as opposed to a page its prose points at."""
+    import ast
+    path = Path(path)
+    if path not in cache:
+        try:
+            tree = ast.parse(path.read_text())
+        except (OSError, SyntaxError, ValueError):
+            cache[path] = ""
+            return ""
+        docs = {id(n.body[0].value) for n in ast.walk(tree)
+                if isinstance(n, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and n.body
+                and isinstance(n.body[0], ast.Expr) and isinstance(n.body[0].value, ast.Constant)}
+        cache[path] = "\n".join(n.value for n in ast.walk(tree)
+                                if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs)
+    return cache[path]
+
+
+def closure(path, modules, cache):
+    """The repository's Python files a test file imports, itself included, transitively."""
+    seen, todo = set(), [Path(path).resolve()]
+    while todo:
+        p = todo.pop()
+        if p in seen:
+            continue
+        seen.add(p)
+        if p not in cache:
+            cache[p] = _imports(p)
+        todo += [m.resolve() for name in cache[p] for m in modules.get(name, [])]
+    return seen
+
+
+def changed_selection(root, doc, changed):
+    """What the change in CHANGED (repository paths) asks to run: (`cargo test` arguments or None, the Python test
+    files with why each). A Python file is chosen when it changed, when a module it imports (transitively) changed,
+    or when its source or that of a module it imports names a changed file by its path or, for a distinctive name,
+    by its file name: a test that reads a schema, a sidecar or a script it runs. Naming counts in the test file and
+    the modules it imports directly, and not for the files NOT_BY_NAME lists. Rust runs when lib/ changed beyond
+    its Python tools and pages; only the test binaries that changed, when nothing else of lib/ did."""
+    root = Path(root)
+    rust_changed = [c for c in changed if RUST_INPUTS.search(c)]
+    rust = None
+    if rust_changed:
+        only_tests = all(re.fullmatch(r"lib/tests/[^/]+\.rs", c) for c in rust_changed)
+        rust = [Path(c).stem for c in rust_changed] if only_tests else []
+    modules, cache, chosen = _python_modules(root), {}, {}
+    changed_abs = {(root / c).resolve(): c for c in changed}
+    names = [(c, Path(c).name) for c in changed]
+    for rel in sorted({r["file"] for r in doc["python"]}):
+        test = (root / rel).resolve()
+        if not test.exists():
+            continue
+        files = closure(test, modules, cache)
+        why = None
+        if test in changed_abs:
+            why = "it changed"
+        elif hit := next((changed_abs[f] for f in files if f in changed_abs), None):
+            why = f"it imports {hit}"
+        else:
+            direct = [test] + [m.resolve() for n in cache.get(test, set()) for m in modules.get(n, [])
+                               if m.name not in SHARED]
+            text = "\n".join(_strings(f) for f in dict.fromkeys(direct))
+            for c, name in names:
+                if NOT_BY_NAME.search(c):
+                    continue
+                if c in text or (len(name) >= 10 and name != "README.md" and name in text):
+                    why = f"it names {c}"
+                    break
+        if why:
+            chosen[rel] = why
+    return rust, chosen
+
+
+RUST_FAILED = re.compile(r"^test (\S+) \.\.\. FAILED$", re.M)
+
+
+def _python_file(label, argv, env, cwd):
+    """Run one Python test file: (exit code, the line for it, its output)."""
+    p = subprocess.run(argv, env={**os.environ, **env}, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    ran, outcome = PY_RAN_LINE.findall(p.stdout), PY_OUTCOME_LINE.findall(p.stdout)
+    line = f"{label}: {ran[-1] if ran else 'no tests ran'}{', ' + outcome[-1] if outcome else ''}"
+    return p.returncode, line, p.stdout
+
+
+def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=None, dry_run=False,
+             serial=False, retry=True, changed=None):
+    """Run TIER's commands: cargo's, and one line per Python file (its output in full when it fails). `cargo test`
+    runs beside the Python files unless SERIAL (its output, kept in a file meanwhile, is printed when it ends), which
+    takes the wall time from Rust's plus Python's to the longer of the two. With RETRY, what fails is run once more,
+    a Python file whole and Rust's failed tests by name, and what passes then is reported as flaky (`FLAKY ...`) and
+    counted as passed: a run then stops failing on noise, and the flaky tests are named to be fixed. Returns 0 if
+    every command passed."""
     doc = json.loads(Path(path).read_text())
     runs = tier_runs(tier, doc, root, only, tests, test_threads)
+    if changed is not None:  # only the tests of what changed (CHANGED: repository paths)
+        rust, chosen = changed_selection(root, doc, changed)
+        print(f"{len(changed)} changed file(s): " + (f"cargo test{' --test ' + ' --test '.join(rust) if rust else ''}"
+              if rust is not None else "no cargo test") + f", {len(chosen)} Python test file(s)")
+        for rel, why in chosen.items():
+            print(f"  {rel}: {why}")
+        if rust:
+            runs = [r for r in runs if r[0] != "cargo test"] + tier_runs(tier, doc, root, "rust", rust, test_threads)
+        runs = [r for r in runs if (r[0] == "cargo test" and rust is not None) or r[0] in chosen]
+        if not runs:
+            print(f"{tier} tier: nothing to run for what changed")
+            return 0
     if tier == "proof" and not any(label != "cargo test" for label, *_ in runs) and only != "rust":
         print("python: no proof-tier tests")
-    failed = []
-    for label, argv, env, cwd in runs:
-        if dry_run:
+    if dry_run:
+        for label, argv, env, cwd in runs:
             print(_shown(argv, env))
-            continue
-        full = {**os.environ, **env}
+        return 0
+    failed, flaky = [], []
+    cargo = next((r for r in runs if r[0] == "cargo test"), None)
+    background = None
+    if cargo and not serial and len(runs) > 1:
+        import tempfile
+        log = tempfile.NamedTemporaryFile("w+", prefix="cargo-test-", suffix=".log", delete=False)
+        print(f"$ {_shown(cargo[1], cargo[2])} (beside the Python files; its output when it ends)", flush=True)
+        background = (subprocess.Popen(cargo[1], env={**os.environ, **cargo[2]}, cwd=cargo[3], stdout=log,
+                                       stderr=subprocess.STDOUT), log)
+    elif cargo:
+        print(f"$ {_shown(cargo[1], cargo[2])}", flush=True)
+    for label, argv, env, cwd in runs:
         if label == "cargo test":
-            print(f"$ {_shown(argv, env)}", flush=True)
-            code = subprocess.run(argv, env=full, cwd=cwd).returncode
-        else:
-            p = subprocess.run(argv, env=full, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-            code = p.returncode
-            ran, outcome = PY_RAN_LINE.findall(p.stdout), PY_OUTCOME_LINE.findall(p.stdout)
-            print(f"{'ok  ' if code == 0 else 'FAIL'} {label}: {ran[-1] if ran else 'no tests ran'}"
-                  f"{', ' + outcome[-1] if outcome else ''}", flush=True)
-            if code:
-                print(p.stdout)
+            continue
+        code, line, output = _python_file(label, argv, env, cwd)
+        if code and retry:
+            again, line_again, _ = _python_file(label, argv, env, cwd)
+            if again == 0:
+                print(f"FLAKY {line} (failed, then passed on a second run)", flush=True)
+                flaky.append(label)
+                continue
+        print(f"{'ok  ' if code == 0 else 'FAIL'} {line}", flush=True)
         if code:
+            print(output)
             failed.append(label)
-    if not dry_run:
-        print(f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
-              + (f"; failed: {', '.join(failed)}" if failed else ""))
+    if cargo:
+        if background:
+            proc, log = background
+            code = proc.wait()
+            log.seek(0)
+            output = log.read()
+            log.close()
+            os.unlink(log.name)
+            sys.stdout.write(output if code else "\n".join(output.splitlines()[-3:]) + "\n")
+        else:
+            p = subprocess.run(cargo[1], env={**os.environ, **cargo[2]}, cwd=cargo[3], stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, text=True)
+            code, output = p.returncode, p.stdout
+            sys.stdout.write(output)
+        names = sorted(set(RUST_FAILED.findall(output)))
+        if code and retry and names:
+            argv = cargo[1][:cargo[1].index("--")] if "--" in cargo[1] else list(cargo[1])
+            after = cargo[1][cargo[1].index("--") + 1:] if "--" in cargo[1] else []
+            again = subprocess.run(argv + ["--", *after, "--exact", *names], env={**os.environ, **cargo[2]},
+                                   cwd=cargo[3], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            if again.returncode == 0:
+                print(f"FLAKY cargo test: {', '.join(names)} (failed, then passed on a second run)", flush=True)
+                flaky.append("cargo test")
+                code = 0
+            else:
+                print(f"cargo test: {', '.join(names)} failed again on a second run", flush=True)
+        if code:
+            failed.insert(0, "cargo test")
+    print(f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
+          + (f"; failed: {', '.join(failed)}" if failed else "") + (f"; flaky: {', '.join(flaky)}" if flaky else ""))
     return 1 if failed else 0
 
 
@@ -873,6 +1064,11 @@ def main(argv=None):
     r.add_argument("--test", action="append", default=[], metavar="NAME", help="a Rust test binary (repeatable)")
     r.add_argument("--test-threads", type=int, help="Rust tests at once")
     r.add_argument("--dry-run", action="store_true", help="print the commands, run nothing")
+    r.add_argument("--serial", action="store_true", help="cargo test after the Python files, not beside them")
+    r.add_argument("--no-retry", action="store_true", help="what fails is not run a second time")
+    r.add_argument("--changed", action="store_true", help="only the tests of what changed in @ (jj diff): the files that "
+                   "changed, import what changed, or name a changed file; cargo test when lib/ changed")
+    r.add_argument("--from", dest="since", metavar="REV", help="with --changed: what changed since REV, not only in @")
     r.add_argument("--path", default=str(INVENTORY))
     lt = sub.add_parser("lint", help="check that the tests' tier tags, their sources and the inventory agree")
     lt.add_argument("--only", choices=("rust", "python"), help="one language")
@@ -900,7 +1096,8 @@ def main(argv=None):
                     print(f"  unlisted: {r['file']}::{r['name']}: {r['unlisted']}")
         return 0
     if a.command == "run":
-        return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run)
+        changed = changed_paths(ROOT, a.since) if a.changed or a.since else None
+        return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run, a.serial, not a.no_retry, changed)
     if a.command == "lint":
         problems = lint(a.path, ROOT, a.only)
         for line in problems:

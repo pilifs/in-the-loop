@@ -99,12 +99,102 @@ def cmd_step() -> int:
         return 0
     env = {**os.environ, "CARGO_TARGET_DIR": str(CARGO_TARGET)}
     CARGO_TARGET.mkdir(parents=True, exist_ok=True)
-    p = subprocess.run([sys.executable, "lib/tools/test_costs.py", "run"], env=env, stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT, text=True)
-    sys.stdout.write(p.stdout)
-    tally = re.findall(r"^default tier: .*$", p.stdout, re.M)
-    print(f"{MARK} {'passed' if p.returncode == 0 else 'failed'}: {tally[-1] if tally else 'no tally'}", flush=True)
-    return p.returncode
+    # Streamed, so the log shows where the run is and the runner sees it is not stalled; kept, to read the verdict.
+    p = subprocess.Popen([sys.executable, "lib/tools/test_costs.py", "run"], env=env, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT, text=True)
+    lines = []
+    for line in p.stdout:
+        sys.stdout.write(line)
+        sys.stdout.flush()
+        lines.append(line)
+    code, output = p.wait(), "".join(lines)
+    tally = re.findall(r"^default tier: .*$", output, re.M)
+    print(f"{MARK} {'passed' if code == 0 else 'failed'}: {tally[-1] if tally else 'no tally'}", flush=True)
+    if code and os.environ.get("VERIFY_SOURCE_COMMIT"):
+        bisect(runner_root, os.environ["VERIFY_SOURCE_COMMIT"], output, env)
+    return code
+
+
+# -- which commit broke it
+
+BISECT_SECONDS = 20 * 60  # within the job's hour: what a failure's culprit is worth waiting for
+
+
+def failing(output: str) -> tuple[list[str], list[str]]:
+    """(the Python test files, the Rust tests by name) a default run's output says failed, flaky ones apart."""
+    failed = failures_in(output)
+    files = [f for f in failed if f != "cargo test"]
+    rust = sorted(set(re.findall(r"^test (\S+) \.\.\. FAILED$", output, re.M))) if "cargo test" in failed else []
+    return files, rust
+
+
+def fails_at(runner_root: Path, commit: str, files: list[str], rust: list[str], env: dict) -> set[str]:
+    """Which of these failing tests fail at COMMIT, run in an export of it: a Python file whole, the Rust tests by
+    name (with the warm cargo target directory, so a commit builds only what changed)."""
+    import tarfile
+    import tempfile
+    failed = set()
+    with tempfile.TemporaryDirectory(prefix="bisect-") as tmp:
+        archive = subprocess.run(["git", "-C", str(runner_root), "archive", "--format=tar", commit], capture_output=True)
+        if archive.returncode:
+            return set(files) | ({"cargo test"} if rust else set())  # can't look: counts as failing, so it says less
+        import io
+        with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as t:
+            t.extractall(tmp, filter="data")
+        root = Path(tmp)
+        sys.path.insert(0, str(root / "lib/tools"))
+        try:
+            import importlib
+            import test_costs
+            importlib.reload(test_costs)
+            doc = json.loads((root / "lib/tests/costs.json").read_text())
+            for label, argv, run_env, cwd in test_costs.tier_runs("default", doc, root):
+                if label in files:
+                    if subprocess.run(argv, env={**env, **run_env}, cwd=cwd, capture_output=True).returncode:
+                        failed.add(label)
+                elif label == "cargo test" and rust:
+                    cut = argv.index("--") if "--" in argv else len(argv)
+                    r = subprocess.run(argv[:cut] + ["--", *argv[cut + 1:], "--exact", *rust], env={**env, **run_env},
+                                       cwd=cwd, capture_output=True)
+                    if r.returncode:
+                        failed.add("cargo test")
+        except (OSError, ValueError, ImportError):
+            return set(files) | ({"cargo test"} if rust else set())
+        finally:
+            sys.path.remove(str(root / "lib/tools"))
+    return failed
+
+
+def bisect(runner_root: Path, commit: str, output: str, env: dict) -> None:
+    """For each test that failed at COMMIT, the first commit it fails at since the last passed default run: the
+    first-parent commits between, halved until one is left or the time is up. Each finding is a line,
+    `default tests: culprit TEST: COMMIT` or `default tests: culprit TEST: between A and B`, for the watcher."""
+    import time
+    files, rust = failing(output)
+    tests = files + (["cargo test"] if rust else [])
+    passed = next((r["commit"] for r in runs(runner_root) if r["verdict"] == "passed" and r["commit"]), None)
+    if not tests or not passed:
+        print(f"{MARK} no culprit sought: {'no passed run to start from' if tests else 'no failing test named'}", flush=True)
+        return
+    listed = subprocess.run(["git", "-C", str(runner_root), "rev-list", "--first-parent", "--reverse", f"{passed}..{commit}"],
+                            capture_output=True, text=True)
+    commits = listed.stdout.split() if listed.returncode == 0 else []
+    if commit not in commits:
+        print(f"{MARK} no culprit sought: the last passed run ({passed[:12]}) is not on {commit[:12]}'s first-parent line",
+              flush=True)
+        return
+    until = time.monotonic() + BISECT_SECONDS
+    for test in tests:
+        low, high = -1, len(commits) - 1  # passes at low (the passed run), fails at high
+        while high - low > 1 and time.monotonic() < until:
+            mid = (low + high) // 2
+            if test in fails_at(runner_root, commits[mid], [t for t in files if t == test],
+                                rust if test == "cargo test" else [], env):
+                high = mid
+            else:
+                low = mid
+        where = commits[high][:12] if high - low == 1 else f"between {(commits[low] if low >= 0 else passed)[:12]} and {commits[high][:12]}"
+        print(f"{MARK} culprit {test}: {where}", flush=True)
 
 
 # -- reading the runs that have come in
@@ -121,14 +211,30 @@ def runs(root: Path = ROOT) -> list[dict]:
         logs = sorted((d / "logs").glob("*.log")) if (d / "logs").exists() else []
         text = "".join(p.read_text(errors="replace") for p in logs)
         marks = re.findall(rf"^{re.escape(MARK)} (\w+)(.*)$", text, re.M)
+        marks = [m for m in marks if m[0] in ("passed", "failed", "superseded")]
         verdict = marks[-1][0] if marks else ("failed" if result.get("status") != "passed" else "unknown")
         out.append({"job": d.name, "commit": result.get("sourceCommit"), "status": result.get("status"),
                     "verdict": verdict, "tally": marks[-1][1].strip(": ") if marks else None,
-                    "failed": failures_in(text)})
+                    "failed": failures_in(text),
+                    "flaky": flaky_in(text),
+                    "culprits": dict(re.findall(rf"^{re.escape(MARK)} culprit (.+?): (.+)$", text, re.M))})
     return out
 
 
+def flaky_in(text: str) -> list[str]:
+    """What failed and then passed on its second run, from the tally line."""
+    tally = re.findall(r"^default tier: \d+ of \d+ passed(.*)$", text, re.M)
+    m = re.search(r"; flaky: ([^;]+)", tally[-1]) if tally else None
+    return [f.strip() for f in m[1].split(",")] if m else []
+
+
 def failures_in(text: str) -> list[str]:
+    """What a run failed at, from its tally line (`... passed; failed: A, B; flaky: C`), which counts a test that
+    passed on its second run as passed; from the FAIL lines and cargo's summary when there is no tally."""
+    tally = re.findall(r"^default tier: \d+ of \d+ passed(.*)$", text, re.M)
+    if tally:
+        m = re.search(r"; failed: ([^;]+)", tally[-1])
+        return [f.strip() for f in m[1].split(",")] if m else []
     files = re.findall(r"^FAIL (\S+?):", text, re.M)
     if re.search(r"^test result: FAILED", text, re.M) or re.search(r"^error: test failed", text, re.M):
         files.insert(0, "cargo test")

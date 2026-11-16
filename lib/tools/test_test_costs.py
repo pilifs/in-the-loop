@@ -260,6 +260,72 @@ class RunningATier(unittest.TestCase):
         self.assertEqual(lines[-1], "unit tier: 1 of 2 passed; failed: tools/test_y.py")
 
 
+    def run_both(self, cargo_body, *flags):
+        """run_tier over a stand-in cargo on PATH (cargo_body is its Python) and the two files the test writes."""
+        bin = self.root / "bin"
+        bin.mkdir(exist_ok=True)
+        (bin / "cargo").write_text("#!" + sys.executable + "\nimport os, sys, time\n" + cargo_body)
+        (bin / "cargo").chmod(0o755)
+        inventory = self.root / "costs.json"
+        inventory.write_text(json.dumps(self.DOC))
+        env = {**os.environ, "PATH": f"{bin}:{os.environ['PATH']}", "MARKS": str(self.root)}
+        call = (f"'unit', {str(inventory)!r}, __import__('pathlib').Path({str(self.root)!r}), None"
+                + "".join(f", {f}={v}" for f, v in flags))
+        return subprocess.run([sys.executable, "-c", f"import sys, test_costs as tc; sys.exit(tc.run_tier({call}))"],
+                              cwd=HERE, capture_output=True, text=True, env=env)
+
+    @cost("tool")
+    def test_cargo_runs_beside_the_python_files_and_what_passes_on_a_second_run_is_flaky(self):
+        body = "import os, unittest\nclass {c}(unittest.TestCase):\n    def test_{t}(self):\n        {b}\n"
+        flaky = ("import pathlib, time; m = pathlib.Path(os.environ['MARKS']) / 'x-ran'; first = not m.exists(); "
+                 "m.write_text(''); time.sleep(0.5); self.assertFalse(first, 'made-up flake')")
+        (self.root / "tools/targets/test_x.py").write_text(body.format(c="X", t="unit", b=flaky))
+        (self.root / "tools/test_y.py").write_text(body.format(c="Y", t="tool", b="pass"))
+        cargo = ("m = os.path.join(os.environ['MARKS'], 'cargo-ran')\nfirst = not os.path.exists(m)\nopen(m, 'a').write(str(time.time()) + '\\n')\n"
+                 "if first:\n    print('test a::b ... FAILED'); sys.exit(101)\nprint('test a::b ... ok'); sys.exit(0)\n")
+        out = self.run_both(cargo)
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        self.assertIn("FLAKY tools/targets/test_x.py", out.stdout)
+        self.assertIn("FLAKY cargo test: a::b", out.stdout)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 3 of 3 passed; flaky: tools/targets/test_x.py, cargo test")
+        started = float((self.root / "cargo-ran").read_text().split()[0])
+        self.assertLess(started, (self.root / "x-ran").stat().st_mtime, "cargo started before the first Python file ended")
+        (self.root / "cargo-ran").unlink()
+        (self.root / "x-ran").unlink()
+        out = self.run_both(cargo, ("retry", "False"), ("serial", "True"))
+        self.assertEqual(out.returncode, 1)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 1 of 3 passed; failed: cargo test, tools/targets/test_x.py")
+
+
+class Changed(unittest.TestCase):
+    """run --changed: the tests a change asks for, chosen statically from the files alone."""
+
+    def test_a_test_is_chosen_by_changing_by_importing_what_changed_or_by_naming_it_in_code(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = {
+                "tools/helper.py": "def f():\n    return 1\n",
+                "tools/test_imports.py": "import helper\n",
+                "tools/test_reads.py": '"""It reads schema/thing.schema.json, says the docstring."""\nPATH = "data/thing.json"\n',
+                "tools/test_docstring_only.py": '"""See schema/thing.schema.json and pages/guide.md."""\n',
+                "tools/test_other.py": "x = 1\n",
+                "tools/test_edited.py": "y = 2\n",
+                "tools/cost_tier.py": 'INVENTORY = "lib/tests/costs.json"\n',
+                "tools/test_with_costs.py": "import cost_tier\n",
+            }
+            for rel, text in files.items():
+                (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                (root / rel).write_text(text)
+            doc = {"python": [{"file": rel, "name": "T.test", "tier": "unit"} for rel in files if "/test_" in rel]}
+            rust, chosen = tc.changed_selection(root, doc, ["tools/helper.py", "data/thing.json", "tools/test_edited.py",
+                                                            "schema/thing.schema.json", "lib/tests/costs.json"])
+            self.assertEqual(chosen, {"tools/test_edited.py": "it changed", "tools/test_imports.py": "it imports tools/helper.py",
+                                      "tools/test_reads.py": "it names data/thing.json"})
+            self.assertEqual(rust, [], "the inventory is read by the Rust tier test: all of cargo test")
+            self.assertEqual(tc.changed_selection(root, doc, ["lib/tests/pairing.rs"])[0], ["pairing"])
+            self.assertIsNone(tc.changed_selection(root, doc, ["lib/README.md", "tools/helper.py"])[0])
+
+
 class Watching(unittest.TestCase):
     """The process sampling, on made-up commands of well under a second."""
 

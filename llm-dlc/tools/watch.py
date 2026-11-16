@@ -1113,8 +1113,12 @@ def next_thing(run: Run, interval: float) -> dict | None:
                     "note": "nobody waits on this run: triage it. A small, mechanical failure (an inventory row, a lint, "
                             "a stale index or count) you fix in the side workspace, merged at the next change of "
                             "example; one in the area the loop works on goes to "
-                            f"{RUN}/test-findings.md for its next cycle to read; anything else to the user"}
-        return {"kind": "default-tests", "run": r, "note": "passed: nothing to do"}
+                            f"{RUN}/test-findings.md for its next cycle to read; anything else to the user. "
+                            "`culprits` names the commit each failing test first fails at since the last passed run, "
+                            "where the job had time to find it"}
+        return {"kind": "default-tests", "run": r,
+                "note": ("passed, but these failed once and passed on a second run: name them to the user as flaky, "
+                         "to be fixed" if r.get("flaky") else "passed: nothing to do")}
     told = set(data.get("setupsTold") or [])
     for a in data.get("setups") or []:
         key = f"{a['example']}#{a['attempt']}:{a['stage']}"

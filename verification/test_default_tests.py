@@ -33,8 +33,9 @@ class StepTest(unittest.TestCase):
         out = io.StringIO()
         with mock.patch.dict("os.environ", {"VERIFY_JOB_ID": MINE}), \
                 mock.patch.object(default_tests, "queue_status", return_value=status), \
-                mock.patch.object(default_tests.subprocess, "run") as run, contextlib.redirect_stdout(out):
-            run.return_value = mock.Mock(returncode=0, stdout="ok   a.py: Ran 1 test\ndefault tier: 48 of 48 passed\n")
+                mock.patch.object(default_tests.subprocess, "Popen") as run, contextlib.redirect_stdout(out):
+            run.return_value = mock.Mock(stdout=iter(["ok   a.py: Ran 1 test\n", "default tier: 48 of 48 passed\n"]))
+            run.return_value.wait.return_value = 0
             code = default_tests.cmd_step()
         return code, out.getvalue(), run
 
@@ -65,6 +66,33 @@ class ResultsTest(unittest.TestCase):
         newest, oldest = default_tests.runs(self.root)
         self.assertEqual((newest["job"], newest["verdict"]), (NEWER, "superseded"))
         self.assertEqual((oldest["verdict"], oldest["failed"]), ("failed", ["cargo test", "llm-dlc/tools/test_watch.py"]))
+
+    def test_a_test_that_passed_on_its_second_run_is_flaky_not_failed(self):
+        result(self.root, MINE, "c1", "test a::b ... FAILED\ntest result: FAILED. 1 failed\nFLAKY cargo test: a::b (failed, "
+                                      "then passed on a second run)\ndefault tier: 48 of 48 passed; flaky: cargo test\n"
+                                      "default tests: passed: default tier: 48 of 48 passed; flaky: cargo test\n")
+        [run] = default_tests.runs(self.root)
+        self.assertEqual((run["verdict"], run["failed"], run["flaky"]), ("passed", [], ["cargo test"]))
+
+    def test_a_failure_is_traced_to_the_first_commit_it_fails_at_since_the_last_pass(self):
+        result(self.root, NEWER, "p0", "default tests: passed: default tier: 48 of 48 passed\n")
+        line = [f"c{i}" for i in range(1, 9)]  # first-parent commits after p0; the test breaks at c5
+        output = ("FAIL tools/test_x.py: Ran 3 tests\ntest m::t ... FAILED\n"
+                  "default tier: 46 of 48 passed; failed: cargo test, tools/test_x.py\n")
+        asked = []
+
+        def fails_at(root, commit, files, rust, env):
+            asked.append(commit)
+            broken = {"tools/test_x.py": "c5", "cargo test": "c2"}
+            return {t for t in files + (["cargo test"] if rust else []) if line.index(commit) >= line.index(broken[t])}
+
+        out = io.StringIO()
+        with mock.patch.object(default_tests.subprocess, "run", return_value=mock.Mock(returncode=0, stdout="\n".join(line))), \
+                mock.patch.object(default_tests, "fails_at", side_effect=fails_at), contextlib.redirect_stdout(out):
+            default_tests.bisect(self.root, "c8", output, {})
+        self.assertIn("default tests: culprit tools/test_x.py: c5", out.getvalue())
+        self.assertIn("default tests: culprit cargo test: c2", out.getvalue())
+        self.assertLessEqual(len(asked), 6, "halved, not walked: about log2(8) runs each")
 
     def test_a_run_covers_its_commit_and_a_descendant_that_changes_only_files_no_test_reads(self):
         with mock.patch.object(default_tests.subprocess, "run", return_value=mock.Mock(returncode=0, stdout="c1")), \
