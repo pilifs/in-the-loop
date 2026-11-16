@@ -16,10 +16,10 @@ loop or not.
 
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| moonshot | 6 | 7 | 54 | 51 | 83 | 58 (46 passed, 6 failed, 6 pending) | 2.2 d | 6,915,627 | $808.50 | $15.85 |
+| moonshot | 6 | 7 | 54 | 51 | 84 | 58 (50 passed, 6 failed, 2 pending) | 2.2 d | 6,931,247 | $811.23 | $15.91 |
 | brief | 28 | 54 | 303 | 300 | 372 | 205 (160 passed, 45 failed) | 3.3 d | 13,238,252 | $1,113.55 | $3.71 |
-| verification | 1 | 55 | 0 | 0 | 187 | 0 | 14 h 40 min | 235,304 | $14.47 | n/a |
-| **all** | 35 | 116 | 357 | 351 | 642 | 263 (206 passed, 51 failed, 6 pending) | 6.1 d | 20,389,183 | $1,936.52 | $5.52 |
+| verification | 1 | 55 | 0 | 0 | 188 | 0 | 15 h 07 min | 236,080 | $14.52 | n/a |
+| **all** | 35 | 116 | 357 | 351 | 644 | 263 (210 passed, 51 failed, 2 pending) | 6.1 d | 20,405,579 | $1,939.30 | $5.53 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -32,7 +32,7 @@ The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person 
 | `tla` | 1 | 17 | 16 | 16 | 0 | `claude-fable-5-1` | 2026-11-02 | 18 h 24 min | 8 h 52 min | 28 min | 1,874,477 | $217.38 | $12.53 | $13.59 |
 | `spring` | 1 | 10 | 10 | 14 | 10 (10 passed) | `claude-fable-5-1` | 2026-11-03 | 5 h 29 min | 4 h 35 min | 29 min | 928,810 | $102.28 | $10.59 | $7.31 |
 | `relational` | 1 | 14 | 13 | 15 | 20 (20 passed) | `claude-fable-5-1` | 2026-11-04 | 5 h 50 min | 5 h 28 min | 23 min | 1,175,603 | $137.35 | $10.61 | $9.16 |
-| `prove-examples` | 2 | 5 | 5 | 31 | 28 (16 passed, 6 failed, 6 pending) | `claude-fable-5-2` | 2026-11-15 to 11-16 | 17 h 22 min | 16 h 31 min | 2 h 56 min | 1,879,016 | $231.02 | $60.29 | $7.45 |
+| `prove-examples` | 2 | 5 | 5 | 32 | 28 (20 passed, 6 failed, 2 pending) | `claude-fable-5-2` | 2026-11-15 to 11-16 | 17 h 45 min | 16 h 54 min | 2 h 56 min | 1,894,636 | $233.74 | $60.29 | $7.30 |
 
 - `examples-by-hand`, typed by hand, a different wording each cycle:
   - "Create more novel examples of formal verification against Java bytecode using the jvmcontract library that feel exciting to expert Java distributed systems principals."
@@ -128,7 +128,7 @@ Oldest first. A cycle is one turn of the instruction, then the commit, then the 
 | `2026-11-15-161311-prove-examples` | 2 | 286 | 2026-11-15 19:14 | 5 h 00 min | 4 h 53 min | 482 | 489 | 0 | 626,867 | 465,997 | $70.45 | 2 | 4 (3 passed, 1 failed) | Example 286's decision claim is decided beside the route: established… |
 | `2026-11-15-161311-prove-examples` | 3 | 287 | 2026-11-16 00:14 | 7 h 13 min | 7 h 08 min | 424 | 431 | 7 | 536,774 | 466,279 | $60.29 | 8 | 8 (6 passed, 2 failed) | Example 287's guard lemma is decided by the route: established on 6.3… |
 | `2026-11-16-194140-prove-examples` | 1 | 288 | 2026-11-16 19:41 | 70 min | 66 min | 122 | 126 | 3 | 130,767 | 566,568 | $20.16 | 8 | 5 (2 passed, 2 failed, 1 pending) | Example 288: the default locale is an input the own checker follows,… |
-| `2026-11-16-194140-prove-examples` | 2 |  | 2026-11-16 21:17 | 30 min | 27 min | 89 | 95 | 3 | 107,210 | 324,512 | $12.98 | 8 | 5 (5 pending) | Example 289: a pattern that is an input is modelled where the own che… |
+| `2026-11-16-194140-prove-examples` | 2 |  | 2026-11-16 21:17 | 53 min | 49 min | 110 | 118 | 3 | 122,830 | 364,989 | $15.70 | 9 | 5 (4 passed, 1 pending) | Example 289 is decided beside the route: the security claim refuted o… |
 
 ## Briefs
 
@@ -173,7 +173,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 
 ## Verification loop
 
-55 runs from 2026-11-03 to 11-16, on `claude-sonnet-5-5`: 14 h 40 min active, 187 commits, 235,304 tokens written, $14.47 ($0.26 a run). Of the 310 verification jobs on record, 263 are tied to the loop cycle that submitted them.
+55 runs from 2026-11-03 to 11-16, on `claude-sonnet-5-5`: 15 h 07 min active, 188 commits, 236,080 tokens written, $14.52 ($0.26 a run). Of the 310 verification jobs on record, 263 are tied to the loop cycle that submitted them.
 
 ## Runs
 
@@ -242,7 +242,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-15 12:23 | [`2026-11-15-122338-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-122338-test-cost.md) | brief | `claude-opus-5-5` | 2 | 2 | 17 min | 16 min | $4.46 | interrupted | record |
 | 2026-11-15 13:01 | [`2026-11-15-130104-test-cost`](72d38e75-aae0-402e-9b8a-881beec53824/runs/2026-11-15-130104-test-cost.md) | brief | `claude-opus-5-5` | 9 | 10 | 2 h 12 min | 99 min | $21.23 | work done | record |
 | 2026-11-15 16:13 | [`2026-11-15-161311-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-15-161311-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 3 | 15 | 15 h 16 min | 14 h 58 min | $197.88 | cycle count reached | record |
-| 2026-11-16 19:41 | [`2026-11-16-194140-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-16-194140-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 2 | 16 | 2 h 06 min | 93 min | $33.13 | no end recorded | record |
+| 2026-11-16 19:41 | [`2026-11-16-194140-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-16-194140-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 2 | 17 | 2 h 28 min | 1 h 56 min | $35.86 | no end recorded | record |
 
 ## Reading these numbers
 

@@ -1,0 +1,249 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-214344-example-289-preservation-through-the-ada",
+  "title": "Example 289 preservation through the adapter entry: 5.6.3 against 5.6.4 outside the allowed change, expected established",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m05s, peak 550.6 MiB (estimated 10m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-214344-example-289-preservation-through-the-ada.json",
+    "sha256": "73780e5823ace7451f5d4cff19960d46a404b4f7d715e74b8065c4c13a8adb91",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-214344-example-289-preservation-through-the-ada",
+      "title": "Example 289 preservation through the adapter entry: 5.6.3 against 5.6.4 outside the allowed change, expected established",
+      "description": "The frozen claim claims/prefix-classification-preserved.json and the task's allowed change (target.json), unchanged, run by examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py: jvmcontract equivalence (own checker, strict gaps), the adapter compiled against each release and each release on its own five pinned JARs (--before-classpath), the claim's assumption as --assume and the task's allowed change as --unchanged-unless, checked as a property of the pair of versions (lib/src/pairing.rs). The entry is example289.adapter.RegexMatchAdapter#matches(String pattern, boolean caseInsensitive, String servletPath, String pathInfo, String query), the one the claim's first assumption names: it builds the original RegexRequestMatcher(pattern, null, caseInsensitive) and asks matches of a request carrying the three Strings (example289.carrier.PathOnlyRequest). The claim's expressions are passed as they are written, compiled by javac and run as bytecode, at the claim's bound of 8 code units for each String; loops are followed exactly for 26 turns, the longest any can go (the URL is three Strings and a '?'). The class path is the revision's five pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given: the constructor and matches run as the release's bytecode, so the flags are the ones the release computes. What changed in the verifier for it (lib/src/bmc/regex.rs): Pattern.compile(String, int) of a String that is an input is modelled where the solver shows that on the path it can only be characters that stand for themselves followed by '.*' (the Pattern is then those characters as a quoted text and '.' any number of times; any other pattern stays the JDK's call, a gap refused by name); the flags CASE_INSENSITIVE and DOTALL are formulas, so a constructor may choose them by an input; one '.*' that ends an expression takes surrogates, where matching by unit is the JDK's matching by code point. Beside it: Character.isLetter of an ASCII char, IntStream.range for the claim's own expression, and Logger.isLoggable below INFO as false under a stated assumption (the matcher's debug line through spring-jcl is not written). Each rule is proved to be its definition written out in Java on every input of a bound and the definition sampled against the JDK on a JVM (lib/tests/claims.rs, claims.P). The claim's predicates as javac compiles them agree with the oracle on all 44 probes (examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/predicates.py). Expected established: outside a URL that begins with the prefix and holds a line terminator, the two releases return the same value. Inline, with no change allowed, the pair was refuted at bound 3 on a URL holding U+2028, run on a JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "289"
+        ],
+        "paths": [
+          "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/runtime.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: verified (expected verified)'",
+      "submitted": {
+        "at": "2026-11-16T21:43:44+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "10m",
+        "timeout": "1h",
+        "notes": "an inline probe at this bound took 47 s (1,373 paths); at bound 4, 12 s. With the checker's default of 16 loop turns it ended with no verdict at this bound (the allowed change's loop over a URL of 18 units was covered by an invariant), which is why prove.py passes 26. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 8",
+          "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-289/preservation/outcome.json",
+        "verification/.work-289/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "3bd0de65d77369a7d94b593b7403a5c11ee5916a",
+  "startedAt": "2026-11-16T21:47:20+00:00",
+  "finishedAt": "2026-11-16T21:51:33+00:00",
+  "wallSeconds": 253.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1021415,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 600.0,
+    "notes": "an inline probe at this bound took 47 s (1,373 paths); at bound 4, 12 s. With the checker's default of 16 loop turns it ended with no verdict at this bound (the allowed change's loop over a URL of 18 units was covered by an invariant), which is why prove.py passes 26. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 577355776,
+    "wallSeconds": 66.0,
+    "cpuSeconds": 66.7,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 185.183,
+      "cpuSeconds": 185.416,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1927094272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "93aa580a62647a2172e607b55a17db0fc4262ca56dfaf1401c3ccf0c70ee4c0f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261116-214344-example-289-preservation-through-the-ada/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 05s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 65.96,
+      "cpuSeconds": 66.711,
+      "cpuThrottledSeconds": 0.53,
+      "peakMemoryBytes": 577355776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 7,
+        "bytes": 3624,
+        "sha256": "507fc7ab3c4a4cfc29212a437bad166fdb5443f30e1b8f1eb250083be00e6840",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-'",
+          "groups": [
+            "example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null, outside `((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i)))) && (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).chars().anyMatch(c -> c == '\\n' || c == '\\r' || c == 0x85 || c == 0x2028 || c == 0x2029)` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 4,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath ",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 61.2 s; loops unwound 26 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-289/preservation/work/pair/RegressionPair.java) calls the previous version's example289.adapter.RegexMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, each on its ow",
+        "✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-'",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath ",
+        "  not vacuous: agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 1373, solver calls 2194, variables 415833; outcome in verification/.work-289/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-289/preservation/outcome.json",
+      "change": "added",
+      "bytes": 23308,
+      "sha256": "8026eb58800f047b4665edccc81c60f1e1db359c5ca163635505ad83dedaa964",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 3717,
+      "sha256": "6a66ab1faba705e315d9d2f243e3f8e8f229b51ecb08e82d6a6b17ec247f79ae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T21:51:36+00:00",
+    "applied": [
+      "verification/.work-289/preservation/outcome.json",
+      "verification/.work-289/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "86246b4cfea2958ad95a2d921b3bd243a42d3cdf",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/86246b4cfea2958ad95a2d921b3bd243a42d3cdf/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

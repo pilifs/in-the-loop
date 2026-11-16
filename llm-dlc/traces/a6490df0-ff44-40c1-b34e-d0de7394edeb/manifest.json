@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-16T20:48:37.353Z",
-  "ended": "2026-11-16T21:42:42.662Z",
-  "duration_seconds": 3245,
+  "ended": "2026-11-16T22:09:42.132Z",
+  "duration_seconds": 4865,
   "stats": {
     "turns": 1,
-    "api_calls": 18,
-    "tool_calls": 20,
+    "api_calls": 24,
+    "tool_calls": 26,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 51111,
+    "peak_context_tokens": 53195,
     "usage": {
-      "input_tokens": 36,
-      "output_tokens": 3490,
-      "cache_read_input_tokens": 731329,
-      "cache_creation_input_tokens": 39739
+      "input_tokens": 48,
+      "output_tokens": 4266,
+      "cache_read_input_tokens": 1043950,
+      "cache_creation_input_tokens": 41823
     }
   },
   "tools": {
-    "Bash": 20
+    "Bash": 26
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-16T20:48:37.353Z",
-      "ended": "2026-11-16T21:42:42.662Z",
+      "ended": "2026-11-16T22:09:42.132Z",
       "turns": 1,
-      "api_calls": 18,
+      "api_calls": 24,
       "usage": {
-        "input_tokens": 36,
-        "output_tokens": 3490,
-        "cache_read_input_tokens": 731329,
-        "cache_creation_input_tokens": 39739
+        "input_tokens": 48,
+        "output_tokens": 4266,
+        "cache_read_input_tokens": 1043950,
+        "cache_creation_input_tokens": 41823
       },
-      "peak_context_tokens": 51111
+      "peak_context_tokens": 53195
     }
   ],
   "log": {
-    "sha256": "d9327317b7c7d6f1c076ccc152befd76fe6aa68c9996773325512797574775ea",
-    "bytes": 461761,
-    "lines": 124,
-    "gzip_bytes": 97479,
-    "path": "llm-dlc/traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/logs/d9327317b7c7d6f1c076ccc152befd76fe6aa68c9996773325512797574775ea.jsonl.gz"
+    "sha256": "9d53ea8eb68adcb8610ea0d9f7863151e6319c6828f145d6dde9f9822e9066fc",
+    "bytes": 502824,
+    "lines": 147,
+    "gzip_bytes": 101231,
+    "path": "llm-dlc/traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/logs/9d53ea8eb68adcb8610ea0d9f7863151e6319c6828f145d6dde9f9822e9066fc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -88,6 +88,14 @@
       "summary": "Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)",
       "body": "Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.\n\nThe verifier's own checker (lib/src/bmc) gained one guarded rule and what the path needs beside it. regex.rs: Pattern.compile(String, int) of a String that is no constant is modelled only where the solver shows that on the path the String can only be characters that stand for themselves followed by .*; the Pattern is then those characters as a quoted text and . any number of times, and any other pattern stays the JDK's call, a gap refused by name. The flags CASE_INSENSITIVE and DOTALL are formulas (a constructor chooses them by an input, and paths that chose differently may have merged before the call); that no other flag is set is the solver's to show. One .* that ends an expression takes surrogates: what comes before it matched none, so it never begins inside a pair, and neither a pair nor a surrogate alone is a line terminator, so matching by unit is the JDK's matching by code point there; a dot anywhere else still makes an input with a surrogate the JDK's call. strings.rs: Character.isLetter of an ASCII char, the JDK's call of any other. runtime.rs: the java.util.logging levels below INFO as constants and Logger.isLoggable of one as false, under an assumption each outcome states (the matcher's debug line through spring-jcl is not written). models: IntStream.range(int, int) enters a model the checker runs (RangeStream), as String.chars() does.\n\nEvidence for the rules: lib/tests/claims.rs has a new tool-tier test over a new fixture, claims.P. It proves the rule is its definition written out in Java (begins with the literal, ASCII case folded under CASE_INSENSITIVE, no line terminator after it without DOTALL) under each flag combination and with the flags chosen by an input, on every pattern and String of the bound; refutes a wrong claim on a witness run on a JVM; shows the refusals by name (any pattern, any text before the dot, another flag, a dot inside with a surrogate in the input, isLetter outside ASCII, isLoggable at INFO); and samples the definitions against the JDK on a JVM, with the five line terminators, surrogates alone and in pairs, the letters that fold outside ASCII, and isLetter on every char. lib/README.md and lib/models/README.md describe the rules.\n\nThe example: proofs/prove.py passes each frozen claim to jvmcontract through the adapter entry on the release's own bytecode, with no lemma and nothing put in a method's place, and builds the mutant by the replay route's recipe (the JAR it gives has the SHA-256 the mutant replay's receipt records). It follows loops for 26 turns where the default is 16: the allowed change reads a URL of up to 25 units, and at 16 the preservation check ended with no verdict, saying a loop was covered by an invariant. proofs/predicates.py compiles the claims' assumption, assertion and allowed change with javac and evaluates them on the 44 probes: they read each as controls/oracle.py does. target.json, example.json and the README record the queue, the probes and what became of the four predicted blockers.\n\nVerified: inline probes at the frozen bound, each one capped run, gave every expected verdict (fixed-security established in 28 s, vulnerable-security and mutant-security refuted in 3 s each on witnesses run on a JVM, the mutant's with caseInsensitive true; preservation established in 47 s, and refuted at bound 3 with no allowed change). The unit tests (285) and the claims, values, pairing, conformance, loops, object_strings, string_literals, tiers and value_parameters tests pass; test_costs.py lint agrees; validate_example.py 289 passes. The default test run was not run: it is owed when the example is decided.\n\nJobs queued, the results of record: 20261116-214343-example-289-fixed-security-through-the-a, 20261116-214344-example-289-vulnerable-security-through, 20261116-214344-example-289-mutant-security-through-the, 20261116-214344-example-289-preservation-through-the-ada, and the proof tier after the engine changes, 20261116-214344-the-proof-tier-after-example-289-s-engin.\n\nAlso in this commit, collected by the pipeline's runner and found uncommitted in the working copy: the results of three of example 288's jobs. The proof tier after 288's engine changes passed (35m47s). 288's vulnerable-security and mutant-security ended on the checker's own 30-minute limit with no verdict, not with a wrong one; they are to be resubmitted larger in 288's next cycle, as its handoff says. The watcher's decision log is committed with it.",
       "log_sha256": "d9327317b7c7d6f1c076ccc152befd76fe6aa68c9996773325512797574775ea"
+    },
+    {
+      "change_id": "ukstuotlookomtusowprsmysvnrxxkpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 is decided beside the route: the security claim refuted on 5.6.3 and on the mutant, established on 5.6.4, and preservation established, each at the frozen bound",
+      "body": "The four proof jobs queued in the commit before this one passed, each with its expected verdict on the unchanged claim files, through the adapter entry on the releases' own bytecode (examples/289-.../proofs/prove.py), at the frozen bound of 8 code units for each String, strict gaps, loops followed for 26 turns. fixed-security (job 20261116-214343-example-289-fixed-security-through-the-a): established on Spring Security 5.6.4 in 36 s, 1,003 paths, 265 MiB, not vacuous. vulnerable-security (20261116-214344-example-289-vulnerable-security-through): refuted on 5.6.3 in 2 s at matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null), which returns false. mutant-security (20261116-214344-example-289-mutant-security-through-the): refuted on the mutant in 2 s at a witness with caseInsensitive true and U+2029 in the path info; the mutant the job built has the SHA-256 the mutant replay's receipt records. Each witness was run on a JVM. preservation (20261116-214344-example-289-preservation-through-the-ada): established on the release pair in 61 s, 1,373 paths, 551 MiB.\n\nRecorded: each task's besideRoute in target.json (answer, job, by, recorded), the handoff and the blockers' notes; example.json's verdict label, summary and a note with the figures, what the verdicts rest on and what they do not say; the README's verdict row and results table. changes.py 289 now says decided: 2 refuted and 2 established beside the route. The jobs' results, logs and outputs (verification/results, verification/.work-289) are committed with it. The route itself still has no adapter entry, so these are not route receipts.",
+      "log_sha256": "9d53ea8eb68adcb8610ea0d9f7863151e6319c6828f145d6dde9f9822e9066fc"
     }
   ],
   "logs": {
@@ -107,6 +115,12 @@
       "bytes": 359938,
       "lines": 75,
       "gzip_bytes": 85774,
+      "url": null
+    },
+    "9d53ea8eb68adcb8610ea0d9f7863151e6319c6828f145d6dde9f9822e9066fc": {
+      "bytes": 502824,
+      "lines": 147,
+      "gzip_bytes": 101231,
       "url": null
     },
     "d9327317b7c7d6f1c076ccc152befd76fe6aa68c9996773325512797574775ea": {
