@@ -243,7 +243,10 @@ python3 llm-dlc/tools/watch.py status                         # where everything
 - **A stage** is a `claude -p` of its own, started in the checkout, clean in a runtime checkout
   ([what Claude Code has loaded](#what-claude-code-has-loaded)) and traced like any session in a development one. It
   can't ask the user anything: what it can't settle it reports, the watcher asks, and the answer goes back with
-  another call of the same stage. Its stream is kept in the run's state (`stage-NAME.jsonl`).
+  another call of the same stage. Its stream is kept in the run's state (`stage-NAME.jsonl`). In a checkout Claude
+  Code has never been opened in, a headless session ignores the allow list of the checkout's settings and says so
+  on its first line (seen with Claude Code 2.1.325 on 2026-11-16); it runs in auto mode either way, as the loop's
+  sessions do.
 - **The verification loop** runs the [jobs](../verification/README.md) the sessions queue, on Sonnet 5.5. The
   watcher starts it before stage 2, since setting an example up already queues work, and stops it once the run has
   ended and the queue is clear. One per repository is enough: `start` leaves a running one alone.

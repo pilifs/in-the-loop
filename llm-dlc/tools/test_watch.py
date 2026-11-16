@@ -292,6 +292,28 @@ class RequestsTest(Made):
             self.assertEqual(watch.merge_queue(self.run), ["default"])
             self.assertIn("nothing", self.call("merge", "done", "default")[1])
 
+    @cost("tool")
+    def test_the_verification_loop_is_started_once_and_asked_to_end_after_the_job_under_way(self):
+        subprocess.run(["jj", "--quiet", "git", "init", str(self.root)], check=True, capture_output=True,
+                       env={**os.environ, "JJ_CONFIG": os.devnull, "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid"})
+        tools = self.root / "llm-dlc/tools"
+        tools.mkdir(parents=True)
+        (tools / "verification-loop.sh").write_text(  # a stand-in: it runs until it is asked to stop, as the loop does
+            "#!/usr/bin/env bash\ntrap 'echo asked to stop; exit 0' USR1\necho started\nwhile :; do sleep 0.1; done\n")
+        (tools / "verification-loop.sh").chmod(0o755)
+        self.assertIn("not running", self.call("verification", "status")[1])
+        self.assertIn("started the verification loop", self.call("verification", "start")[1])
+        pid = self.run.read()["verification"]["pid"]
+        self.addCleanup(lambda: watch.alive(pid) and os.kill(pid, 9))
+        self.assertIn(f"running (pid {pid}), started by this run", self.call("verification", "status")[1])
+        self.assertIn("already running", self.call("verification", "start")[1])
+        self.assertEqual(self.run.read()["verification"]["pid"], pid, "a second start leaves the first alone")
+        self.assertIn("asked the verification loop", self.call("verification", "stop")[1])
+        until = time.time() + 10
+        while "asked to stop" not in (self.run.dir / "verification.log").read_text() and time.time() < until:
+            time.sleep(0.05)
+        self.assertEqual((self.run.dir / "verification.log").read_text(), "started\nasked to stop\n")
+
     def test_loop_starts_the_proof_loop_detached_in_the_fixed_session_and_refuses_a_second(self):
         tools = self.root / "llm-dlc/tools"
         tools.mkdir(parents=True)
