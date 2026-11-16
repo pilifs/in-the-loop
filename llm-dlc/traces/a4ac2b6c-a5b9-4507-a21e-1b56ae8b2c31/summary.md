@@ -370,12 +370,6 @@ So that a merge between two examples can't rewrite the script under the loop, fe
 
 Verified: test_prove_loop.py runs the loop against a stand-in claude, now also a stand-in judge and a made-up job queue (26 tests): the watcher's verdict keeps or ends an example, silence falls back on the judge, an example that waits lets the next start and is taken up again when its jobs are in (order 901, 902, 901, 903), the loop waits when only waiting examples are left, waiting with nothing outstanding is another cycle, --wait-for-proofs removes the third answer, a stop between examples and a queued merge's longer wait, a command line, --session, and a script rewritten mid-run that does not affect the loop. test_conductor.py has five new tests (15). The Python half of the default run passes, 41 of 41 suites. Not verified: any of this with a real model in the loop; the Rust tests were not run (nothing in lib/ changed). The pages (runtime.md, the skill) still describe the previous design and are rewritten with the watcher in the next commit, which also cuts the release.
 
-### stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop
-
-change `ulzlppqmvslt` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
-
-At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.
-
 ### feature-loop.sh: a moonshot compacts at 600k tokens, and every compaction is logged
 
 change `uzporttnlrtk` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
@@ -395,6 +389,12 @@ At the user's request: complex examples can take more than one cycle, but a temp
 Now, after each commit of a templated moonshot, a judge outside the session decides whether the item is finished: a separate claude -p call (FEATURE_LOOP_JUDGE_MODEL, claude-sonnet-5-5 by default) with no tools, only the user's settings and no transcript reads the cycle's final report and commit messages and answers ITEM: finished (the goal is met, or what is left needs a person or only waits on jobs) or ITEM: continue (the session itself can still make real progress). Nothing is added to the moonshot's own session, so its instruction stays the only thing it is given. An unfinished item gets the next cycle with the same instruction; an unclear answer moves on, as before. The record keeps the verdict and its reason under each commit line, and a later run resumes at the first item that has no commit or whose last verdict was continues. FEATURE_LOOP_ITEM_CYCLES caps an item's cycles in a run (no cap by default, the user's choice), and FEATURE_LOOP_ITEM_JUDGE=0 restores one cycle per item. Typing "item" in the loop's terminal ends the run once the item under way is finished, however many cycles that takes; a count typed after it replaces it. loop_stats.py reads the new record header and verdicts, so an item the judge left open counts as attempted, not done, and the verdict is not published as a column.
 
 Verified: test_loop_stats (22, two new) and test_runs pass, and the cost lint agrees. End to end, in a scratch jj repo with a stand-in claude that commits and answers as the judge from a script, the patched script (its own three-item list, no systemd scope): the judge kept item 1 for two cycles and the run went on to 2 and 3 and ended with no items left; a record whose last verdict was continues resumed at that item; an unclear answer moved on; a cap of 2 moved on after two continues; FEATURE_LOOP_ITEM_JUDGE=0 kept the old header and one cycle per item; a bad cap exits 2; and "item" typed during cycle 1, on a private tmux server, ended the run after cycle 2, once the judge found item 1 finished. Three real judge calls on made-up reports answered finished for a decided example, continue for one with work the session could do, and finished for one blocked on a person's decision.
+
+### stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop
+
+change `ulzlppqmvslt` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+
+At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.
 
 ## Conversation
 

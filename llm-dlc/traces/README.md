@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 116, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-16 09:05 UTC |
-| Prompts | 2,629 |
-| Model calls | 26,120 |
-| Tool calls | 27,139 (473 failed) |
-| Compactions | 406 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-16 10:01 UTC |
+| Prompts | 2,631 |
+| Model calls | 26,125 |
+| Tool calls | 27,144 (473 failed) |
+| Compactions | 408 |
 | Subagents | 19 |
-| Tokens written | 26,471,455 |
-| Tokens read | 4,182,892,751 (97.9% from cache) |
+| Tokens written | 26,476,685 |
+| Tokens read | 4,184,764,312 (97.9% from cache) |
 | Commits with a trace | 786 |
-| Log snapshots | 996 (2268.3 MB gzipped, 942 uploaded) |
+| Log snapshots | 998 (2271.1 MB gzipped, 942 uploaded) |
 
 ## Sessions
 
@@ -139,9 +139,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | ended | 3 h 33 min | `claude-opus-5-5` | 61 | 471 | 470 | 9 | 10 | 190,640 | 21 |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | ended | 1 h 21 min | `claude-fable-5-2` | 11 | 116 | 117 | 2 | 0 | 415,695 | 11 |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | ended | 15 h 16 min | `claude-fable-5-2` | 21 | 1,396 | 1,424 | 10 | 9 | 466,839 | 38 |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | ended | 15 h 27 min | `claude-opus-5-5` | 38 | 252 | 219 | 4 | 1 | 237,996 | 42 |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | ended | 16 h 22 min | `claude-opus-5-5` | 39 | 252 | 219 | 4 | 2 | 237,996 | 44 |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | ended | 1 h 25 min | `claude-sonnet-5-5` | 1 | 36 | 36 | 2 | 0 | 70,286 | 6 |
-| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | open | 13 h 41 min | `claude-fable-5-2` | 15 | 439 | 472 | 17 | 3 | 466,382 | 37 |
+| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | ended | 14 h 37 min | `claude-fable-5-2` | 16 | 444 | 477 | 17 | 4 | 466,382 | 37 |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | ended | 1 h 35 min | `claude-sonnet-5-5` | 3 | 29 | 27 | 2 | 0 | 66,255 | 3 |
 | 2026-11-16 05:44 UTC | [55c8cba6-01ea-400f-bee3-52e9db3aaba0](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | ended | 1 h 24 min | `claude-sonnet-5-5` | 1 | 21 | 20 | 1 | 0 | 56,304 | 8 |
 
@@ -266,7 +266,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 1,641,039 | 2,792 | 3,840,368 | 353,858,416 | 98.9% | 218 |
 | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 185,243 | 596 | 413,189 | 36,674,916 | 98.9% | 200 |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 8,843 | 72 | 58,914 | 1,664,716 | 96.6% | 195 |
-| [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 651,247 | 896 | 1,459,552 | 113,993,636 | 98.7% | 177 |
+| [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 656,477 | 906 | 1,466,309 | 115,858,430 | 98.7% | 179 |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 7,824 | 60 | 54,883 | 1,238,636 | 95.8% | 165 |
 | [`55c8cba6`](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | 5,004 | 42 | 44,932 | 858,026 | 95.0% | 180 |
 
@@ -274,10 +274,10 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 23,923 | 88.1% | 116 |
+| `Bash` | 23,927 | 88.1% | 116 |
 | `Read` | 1,236 | 4.6% | 51 |
 | `Edit` | 931 | 3.4% | 49 |
-| `Write` | 595 | 2.2% | 47 |
+| `Write` | 596 | 2.2% | 47 |
 | `ToolSearch` | 149 | 0.5% | 38 |
 | `Monitor` | 118 | 0.4% | 47 |
 | `AskUserQuestion` | 47 | 0.2% | 14 |
@@ -1074,15 +1074,15 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 775 | change `rvpsvkwm` | Release 0.6.0 of /prove-java-change | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)), [`55c8cba6`](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) ([log](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)) |
 | 776 | change `vurtkmrv` | feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)), [`55c8cba6`](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) ([log](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)) |
 | 777 | change `xzwozoqz` | feature-loop.sh: a conductor judges each cycle, an item that waits on its proof lets the next one start, and the loop asks before it changes items | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)) |
-| 778 | change `ulzlppqm` | stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) ([log](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)) |
-| 779 | change `uzporttn` | feature-loop.sh: a moonshot compacts at 600k tokens, and every compaction is logged | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7.jsonl.gz)), [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) ([log](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)) |
-| 780 | change `tlzowkqv` | feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)), [`55c8cba6`](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) ([log](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)) |
+| 778 | change `uzporttn` | feature-loop.sh: a moonshot compacts at 600k tokens, and every compaction is logged | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7.jsonl.gz)), [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) ([log](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)) |
+| 779 | change `tlzowkqv` | feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)), [`55c8cba6`](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) ([log](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)) |
+| 780 | change `ulzlppqm` | stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) ([log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)), [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) ([log](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)) |
 | 781 | change `notyxmuk` | /prove-java-change is started by a watcher on Opus 5.5, which starts each stage in a session of its own and watches the proof loop | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)) |
 | 782 | change `zzttlskn` | Release 0.7.0 of /prove-java-change | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)) |
 | 783 | change `qpyvxyux` | watch.py: a test of starting and stopping the verification loop, and a note on headless sessions in a checkout not yet trusted | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)) |
 | 784 | change `yxwmtlsl` | Merge /prove-java-change and the stream conductor's steps 1-3 into the default line | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/adec07668f0851a2fe2c52c4a167359d28f5aac201f425dcc3ffb8364142c238.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz)) |
-| 785 | change `xwyxlmvl` | /prove-java-change takes examples that are already prepared, checks them before it starts, and the proof loop's text may be the user's | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4.jsonl.gz)) |
-| 786 | change `msltxsmk` | Release 0.8.0 of /prove-java-change | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c.jsonl.gz)) |
+| 785 | change `xwyxlmvl` | /prove-java-change takes examples that are already prepared, checks them before it starts, and the proof loop's text may be the user's | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/95ddce54a87e1664af34fa54b43b7eb739cd0636a86b9b828226f6735755ba11.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4.jsonl.gz)) |
+| 786 | change `msltxsmk` | Release 0.8.0 of /prove-java-change | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/95ddce54a87e1664af34fa54b43b7eb739cd0636a86b9b828226f6735755ba11.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c.jsonl.gz)) |
 
 ## Logs
 
@@ -1201,9 +1201,9 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 19 | 19 | 30.8 MB | [`899d4403f2b2`](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941.jsonl.gz) |
 | [`0c1ceb11`](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 6 | 5 | 2.5 MB | `c1c42ffaf7db`, not uploaded |
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 15 | 0 | 44.9 MB | `1d17a0489ddb`, not uploaded |
-| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 12 | 0 | 6.8 MB | `adec07668f08`, not uploaded |
+| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 13 | 0 | 7.6 MB | `95ddce54a87e`, not uploaded |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 4 | 0 | 0.4 MB | `1d7e417218bd`, not uploaded |
-| [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 11 | 0 | 13.9 MB | `a6acf0d0026c`, not uploaded |
+| [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 12 | 0 | 15.9 MB | `8aad75c45abe`, not uploaded |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 0 | 0.3 MB | `fdebcf4957a5`, not uploaded |
 | [`55c8cba6`](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | 4 | 0 | 0.4 MB | `9020e4013a05`, not uploaded |
 
