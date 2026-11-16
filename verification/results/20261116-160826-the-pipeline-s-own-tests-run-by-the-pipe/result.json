@@ -1,0 +1,153 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe",
+  "title": "The pipeline's own tests, run by the pipeline: the queue is read again during a run",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m24s, peak 119.7 MiB (estimated 3m00s, 1.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe.json",
+    "sha256": "85cad72c0207357d700c8a72dd2cbab24031c4e959526e419edc422adff6b9d6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe",
+      "title": "The pipeline's own tests, run by the pipeline: the queue is read again during a run",
+      "description": "The runner now reads the queue again while it runs (at a nudge and every poll_seconds), so a job committed during a run starts beside the others, and pipeline.py gained nudge and wait. This job runs verification/test_pipeline.py inside the runner, at the commit that made the change. It was also queued to see the new path work on the real queue once: its commit announces it, and the verification loop, waiting for work, should start its run within seconds and not at its next 60 s look.",
+      "kind": "other",
+      "capabilities": [
+        "pipeline:run"
+      ],
+      "links": {
+        "paths": [
+          "verification/pipeline.py",
+          "llm-dlc/tools/verification-loop.sh"
+        ]
+      },
+      "expected": "Every test of verification/test_pipeline.py passes",
+      "submitted": {
+        "at": "2026-11-16T16:08:26+00:00",
+        "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+      },
+      "requires": [],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "python3 -m unittest test_pipeline",
+          "run": "python3 -m unittest test_pipeline",
+          "cwd": "verification"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4fc4824f816d3c234ede2cc5213112549116d493",
+  "startedAt": "2026-11-16T16:09:18+00:00",
+  "finishedAt": "2026-11-16T16:10:43+00:00",
+  "wallSeconds": 85.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3866981,
+    "workers": 14,
+    "cpus": 28.0,
+    "memoryBudgetBytes": 98784247808,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 125550592,
+    "wallSeconds": 84.8,
+    "cpuSeconds": 29.8,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.47
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -m unittest test_pipeline",
+      "run": "python3 -m unittest test_pipeline",
+      "cwd": "verification",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 84.778,
+      "cpuSeconds": 29.751,
+      "cpuThrottledSeconds": 0.538,
+      "peakMemoryBytes": 125550592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-m-unittest-test-pipeli.log",
+        "lines": 5,
+        "bytes": 138,
+        "sha256": "f9b54abafa102656ce9725dae82fb7f175b71378c5c0ae15abf8dd3b0b0ea9a9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "......................................",
+        "----------------------------------------------------------------------",
+        "Ran 38 tests in 84.524s",
+        "",
+        "OK"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-16T16:10:46+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}
