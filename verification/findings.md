@@ -134,7 +134,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-018: JBMC doesn't finish within 600 s on four of H5's regression proofs over objects under a correspondence
 
-- **Status**: open
+- **Status**: closed by job `20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an` (see **Closed** below)
 - **Raised**: 2026-11-07 on `vm-1`. Four of the heap stream's H5 jobs, each one ignored test of `lib/tests/heap.rs`
   under `--engine jbmc` and `auto --confirm`, each failed after about 22 minutes:
   - `20261107-080218-output-relations-under-a-correspondence` at `9b9c3a34`: `objects.Kernel#price` (`heap.rs:986`);
@@ -224,6 +224,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   `raised` and `raise-relation` more than 30 s), so it may still need the longer limit. Job
   `20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an` runs the nine tests unchanged at the 600 s limit:
   the closing condition. Still open until it is in.
+- **Closed** 2026-11-16 on `vm-1`: job `20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an` (at `d3db6d8bd8d2`,
+  `cargo test --release --test heap -- --ignored`, nine tests unchanged at the default 600 s JBMC limit) passed:
+  9 passed, 0 failed in 536 s of tests (job 11m52s, peak 2.0 GiB, estimated 1h30m and 4 GiB). That includes the
+  three that failed at 1800 s (`objects.Kernel#price`, `lines.Lines#reprice`, `orders.Orders#reprice`) and the prices
+  test. The second attempt on Z3 with congruence lemmas settles it. The estimate was about 7 times too long.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 

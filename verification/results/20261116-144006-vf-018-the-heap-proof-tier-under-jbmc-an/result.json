@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an",
+  "title": "VF-018: the heap proof tier under JBMC and auto --confirm, with the second attempt on Z3 for products JBMC's SAT solver can't relate",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11m52s, peak 2.0 GiB (estimated 1h30m, 4.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an.json",
+    "sha256": "606daaecedb8cb46a3c9827b446ca1b6ec0e0cfd534be18d6a8c8415aa55d3f9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an",
+      "title": "VF-018: the heap proof tier under JBMC and auto --confirm, with the second attempt on Z3 for products JBMC's SAT solver can't relate",
+      "description": "The nine ignored tests of lib/tests/heap.rs, unchanged, at JBMC's default limit of 600 s. Four of them have failed since 2026-11-07 because JBMC gave no verdict on a regression proof over objects (objects.Kernel#price, lines.Lines#reprice, orders.Orders#reprice within 1800 s, prices.Prices#total within 600 s): finding VF-018. The change under test (lib/src/congruence.rs, used by lib/src/jbmc.rs): a JBMC run without a verdict after 30 s is held still, JBMC writes its formula as SMT-LIB, jvmcontract adds a congruence lemma for every two multiplications of one width (equal operands, in either order, give equal products), and JBMC runs again with Z3 answering that formula; only a proof is taken, otherwise the held run goes on. A probe of lines.Lines#reprice through this path gave Verified in 30.2 s (6 lemmas, 0.2 s of it the attempt), and its defect twin still gave its counterexample from JBMC's own solver in 0.1 s. This job is the finding's closing condition: the tests pass unchanged, including every defect's JVM witness. Some proofs in the prices test are harder for Z3 as well (21 s to more than 30 s with the lemmas), so that test may still meet the 600 s limit on a case other than Prices#total; if it does, the log says which.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/heap.rs",
+          "lib/src/congruence.rs",
+          "lib/src/jbmc.rs"
+        ]
+      },
+      "expected": "cargo exits 0: 9 passed, 0 failed. The three proofs that timed out now end Verified with a checker that reads 'JBMC 6.11.0, its formula decided by Z3 ... multiplication congruence lemma(s)'",
+      "submitted": {
+        "at": "2026-11-16T14:40:06+00:00",
+        "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+      },
+      "requires": [
+        "jbmc",
+        "z3",
+        "cargo",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "1h30m",
+        "timeout": "3h",
+        "notes": "the same job took 50m12s on 2026-11-15 with four tests failing at 600 s timeouts (20261115-173209); the three stubborn proofs now take about 30 s each, the prices test is the unknown"
+      },
+      "steps": [
+        {
+          "name": "heap proof tier",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test heap -- --ignored",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "d3db6d8bd8d2ba7125312b80749d798cfd449b21",
+  "startedAt": "2026-11-16T15:14:40+00:00",
+  "finishedAt": "2026-11-16T15:26:33+00:00",
+  "wallSeconds": 713.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3379603,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 5400.0,
+    "notes": "the same job took 50m12s on 2026-11-15 with four tests failing at 600 s timeouts (20261115-173209); the three stubborn proofs now take about 30 s each, the prices test is the unknown"
+  },
+  "usage": {
+    "peakMemoryBytes": 2099978240,
+    "wallSeconds": 712.5,
+    "cpuSeconds": 1260.8,
+    "memoryOfEstimate": 0.49,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "heap proof tier",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test heap -- --ignored",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 712.483,
+      "cpuSeconds": 1260.755,
+      "cpuThrottledSeconds": 11.772,
+      "peakMemoryBytes": 2099978240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-heap-proof-tier.log",
+        "lines": 74,
+        "bytes": 3410,
+        "sha256": "22f11200901238746b1c9b9e56034b8ad6827433bdd8bad207c8d0eed36ca5f7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 73,
+          "text": "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 536.51s",
+          "groups": [
+            "ok",
+            "9",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling serde v1.0.229",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 55s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 9 tests",
+        "test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_field_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_identity_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_field_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_previous_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_same_shape_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_previous_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "",
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 49 filtered out; finished in 536.51s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-16T15:26:44+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}
