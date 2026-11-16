@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Formally prove example 285 as elegantly and efficiently as possible",
   "client": {
@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T20:51:55.094Z",
-  "duration_seconds": 103123,
+  "ended": "2026-11-16T21:30:15.647Z",
+  "duration_seconds": 105423,
   "stats": {
-    "turns": 28,
-    "api_calls": 1545,
-    "tool_calls": 1581,
+    "turns": 29,
+    "api_calls": 1586,
+    "tool_calls": 1624,
     "tool_errors": 13,
     "compactions": 11,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3090,
-      "output_tokens": 1895195,
-      "cache_read_input_tokens": 404456188,
-      "cache_creation_input_tokens": 4477641
+      "input_tokens": 3172,
+      "output_tokens": 1947842,
+      "cache_read_input_tokens": 410020613,
+      "cache_creation_input_tokens": 4676850
     }
   },
   "tools": {
-    "Bash": 1515,
-    "Read": 35,
-    "Write": 20,
+    "Bash": 1556,
+    "Read": 36,
+    "Write": 21,
     "ToolSearch": 5,
     "Monitor": 4,
     "TaskStop": 2
@@ -46,6 +46,7 @@
     "/tmp/e290/gen/plan_gen.py",
     "/tmp/e290/gen/plan_rev.py",
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+    "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
     "lib/src/bmc/bytes.rs",
     "lib/src/bmc/locale.rs",
     "lib/src/bmc/loops.rs",
@@ -215,24 +216,24 @@
     {
       "index": 11,
       "started": "2026-11-16T20:51:55.086Z",
-      "ended": "2026-11-16T20:51:55.094Z",
-      "turns": 3,
-      "api_calls": 0,
+      "ended": "2026-11-16T21:30:15.647Z",
+      "turns": 4,
+      "api_calls": 41,
       "usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 0
+        "input_tokens": 82,
+        "output_tokens": 52647,
+        "cache_read_input_tokens": 5564425,
+        "cache_creation_input_tokens": 199209
       },
-      "peak_context_tokens": 0
+      "peak_context_tokens": 210581
     }
   ],
   "log": {
-    "sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4",
-    "bytes": 33777069,
-    "lines": 12761,
-    "gzip_bytes": 5083344,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz"
+    "sha256": "2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e",
+    "bytes": 35208355,
+    "lines": 13159,
+    "gzip_bytes": 5342333,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -643,6 +644,22 @@
       "summary": "watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once",
       "body": "The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).",
       "log_sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4"
+    },
+    {
+      "change_id": "urqorxxswwuuwtxmnmnqrwsuoytlqklo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result: example 288 fixed-security through the adapter entry passed",
+      "body": "Job 20261116-201436-example-288-fixed-security-through-the-a passed in 19m42s (peak 1.4 GiB, estimated 25m, 6 GiB) on vm-1, jvmcontract holds as expected; 3 outputs applied.",
+      "log_sha256": "2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e"
+    },
+    {
+      "change_id": "nvlyyytuquxxknltyzqksxsvozslpmwx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup",
+      "body": "The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.",
+      "log_sha256": "2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e"
     }
   ],
   "logs": {
@@ -657,6 +674,12 @@
       "lines": 11373,
       "gzip_bytes": 4321147,
       "url": "https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz"
+    },
+    "2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e": {
+      "bytes": 35208355,
+      "lines": 13159,
+      "gzip_bytes": 5342333,
+      "url": null
     },
     "32d7fd7d3bad082e21f5b0775bd45fbbabd565fdfb282695d247798617807754": {
       "bytes": 19532427,
