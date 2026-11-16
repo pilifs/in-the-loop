@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-16T09:04:42.614Z",
-  "duration_seconds": 49241,
+  "ended": "2026-11-16T09:05:02.721Z",
+  "duration_seconds": 49261,
   "stats": {
     "turns": 15,
-    "api_calls": 438,
-    "tool_calls": 471,
+    "api_calls": 439,
+    "tool_calls": 472,
     "tool_errors": 17,
     "compactions": 3,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 894,
-      "output_tokens": 650154,
-      "cache_read_input_tokens": 113624599,
-      "cache_creation_input_tokens": 1457946
+      "input_tokens": 896,
+      "output_tokens": 651247,
+      "cache_read_input_tokens": 113993636,
+      "cache_creation_input_tokens": 1459552
     }
   },
   "tools": {
-    "Bash": 403,
+    "Bash": 404,
     "Write": 36,
     "Read": 13,
     "Edit": 7,
@@ -114,24 +114,24 @@
     {
       "index": 3,
       "started": "2026-11-16T07:41:21.453Z",
-      "ended": "2026-11-16T09:04:42.614Z",
+      "ended": "2026-11-16T09:05:02.721Z",
       "turns": 3,
-      "api_calls": 127,
+      "api_calls": 128,
       "usage": {
-        "input_tokens": 258,
-        "output_tokens": 114138,
-        "cache_read_input_tokens": 31962157,
-        "cache_creation_input_tokens": 337917
+        "input_tokens": 260,
+        "output_tokens": 115231,
+        "cache_read_input_tokens": 32331194,
+        "cache_creation_input_tokens": 339523
       },
-      "peak_context_tokens": 369039
+      "peak_context_tokens": 370645
     }
   ],
   "log": {
-    "sha256": "ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4",
-    "bytes": 11683035,
-    "lines": 3913,
-    "gzip_bytes": 1976436,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4.jsonl.gz"
+    "sha256": "a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c",
+    "bytes": 11707352,
+    "lines": 3926,
+    "gzip_bytes": 1978887,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c.jsonl.gz"
   },
   "subagents": [
     {
@@ -477,6 +477,14 @@
       "summary": "/prove-java-change takes examples that are already prepared, checks them before it starts, and the proof loop's text may be the user's",
       "body": "A request may now name examples by number in place of changes: ones an earlier --scaffold-only run, another agent or a person prepared. Stages 2 and 3 don't run for them. The watcher checks them all first with the new watch.py preflight NNN ..., which reads only the files and says for each example what it lacks, of two kinds: artifacts a proof needs (a revision that does not materialize from its lock, no validated replay) and faults in its form (example.json against its schema, a sidecar that does not load, a claim not frozen, no proof task). Exit 0 means nothing is lacking and the loop takes the examples in the order given, leaving out any already decided; exit 1 means something is, and the watcher makes one attempt to put it right with a setup session (Opus 5.5, high effort) under 'The repair's brief' in llm-dlc/runtime.md, checks again, and aborts with nothing started if anything is still lacking; exit 2 means an example is not there at all, and it aborts at once. A repair may write a missing claim only where the example's own pages state it in words, and the watcher shows such claims to the user before the loop starts. changes.py now reports what an unprepared example lacks by kind (gaps), which the check reads.\n\n--instruction \"TEXT\" in the request gives the proof loop the user's own text in place of 'Formally prove example {} as elegantly and efficiently as possible': prove-loop.sh --instruction, FEATURE_LOOP_INSTRUCTION for feature-loop.sh's prove-change. It is one line with {} where the example's number goes, refused otherwise before anything starts, still the only thing the session is given, and kept in run.json and the run's record. In development the skill takes this path for the examples it is given, where it went straight to the loop before.\n\nVerified with stand-ins and fixtures only: test_watch.py (27 tests: prepared, decided, a missing artifact, a broken sidecar, a schema fault, an absent example, one without a sidecar), test_changes.py (17), test_prove_loop.py (28: the user's text reaches every cycle and the record; a text without {} starts nothing), the Python default run (45 of 45 suites) and the Rust tier test. On this repository's own examples the check passes 285 to 287 and reports 288 to 300 as lacking a proof task: they are catalogued, with no claim stated yet. No model has run the repair or the loop with a text of the user's.",
       "log_sha256": "ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4"
+    },
+    {
+      "change_id": "msltxsmkvqvusukokquppswtxtqqzskx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Release 0.8.0 of /prove-java-change",
+      "body": "The skill at 0.8.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (4eedd7ba6164eb1343fb111bc18a18ab71839b346bc50c1d71a991441b6aa709, 5530 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Merged with the default line (examples 286 and 287, the verifier's work for them) and the stream conductor's tools. The skill also takes examples that are already prepared, by number: it checks that each has what a proof needs and is formed correctly, tries once to put right what is not, and starts with the first or starts nothing. --instruction gives the proof loop the user's own line. The watcher's cycle assessment carries each example's own verdict, for claims decided beside the route.",
+      "log_sha256": "a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c"
     }
   ],
   "logs": {
@@ -520,6 +528,12 @@
       "bytes": 11492168,
       "lines": 3817,
       "gzip_bytes": 1955164,
+      "url": null
+    },
+    "a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c": {
+      "bytes": 11707352,
+      "lines": 3926,
+      "gzip_bytes": 1978887,
       "url": null
     },
     "b811c6ecd3667145545c1758b8eed5bc7407e79e5697bf4c27ff938d3ab0ea6f": {
