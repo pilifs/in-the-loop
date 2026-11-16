@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-231724-example-290-mutant-security-through-the",
+  "title": "Example 290 mutant-security through the adapter entry: the frozen claim on the mutant of 5.8.5 (only the first registration is looked at), expected refuted",
+  "description": "The frozen claim claims/ambiguous-servlet-configuration-rejected.json, unchanged, run by examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py: jvmcontract prove (own checker, strict gaps). The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), the one the claim's first assumption names: it fills a LinkedHashMap with one registration per element of servlets (a table of class names: DispatcherServlet, a plain servlet), puts it in carriers for the servlet context and the web application context, and makes one call of the original requestMatchers on a fresh minimal registry. The claim's expressions are passed as they are written (the assumption, assert false, throws IllegalArgumentException when true), compiled by javac and run as bytecode, at the claim's bound of 8; loops are followed exactly for 64 turns. The class path is the revision's ten pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given. Three library initializers with no input that the checker does not run (Spring's ClassUtils; the servlet API's GenericServlet and HttpServlet) are observed on a JVM on the revision's class path and their static state taken from there (prove --observed-initializer, lib/src/observed.rs), which the outcome states; the registry's own initializer runs as written. What changed in the verifier since fixed-security's job (20261116-225709-example-290-fixed-security-through-the-a, established in 6.9 s): Arrays.asList(T...) enters a model for the checker alone (lib/models/java/util/lists/ArrayAsList.java: a view of the array with size, get and toArray(), over the JDK's AbstractList, so any other method is the JDK call it names), and Collections.emptyMap() is the JDK's one empty map. The mutant, where it finds no DispatcherServlet first, hands its matchers on through Arrays.asList, which is where its refutation stopped before. The model is proved to be its definition written out on every input of a bound, and the definition holds on a JVM (lib/tests/claims.rs, claims.M#listed). The mutant is built by the replay route's recipe (the fixed release's AbstractRequestMatcherRegistry.java, patched and recompiled with the release's own --release and debugging flags into a copy of its JAR, its nested class with it); inline the copy's SHA-256 was the one the mutant replay's receipt records. Expected refuted only where another servlet is registered before the DispatcherServlet.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "290"
+    ],
+    "paths": [
+      "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py",
+      "lib/src/observed.rs",
+      "lib/models/java/util/lists/ArrayAsList.java"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM', with a servlet registered before the DispatcherServlet",
+  "submitted": {
+    "at": "2026-11-16T23:17:24+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "1h",
+    "notes": "an inline probe at this bound took 6.0 s (708 paths): select(servlets=[1, 0], method=0, patterns={}) returns 0, run on a JVM. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-290/mutant-security/outcome.json",
+    "verification/.work-290/mutant-security/work/harness/PropertyHarness.java",
+    "verification/.work-290/mutant-security/work/harness/PropertyClaim.java"
+  ]
+}

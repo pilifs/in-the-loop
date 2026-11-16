@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-231725-the-proof-tier-after-example-290-s-engin",
+  "title": "The proof tier after example 290's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+  "description": "Runs the proof tier's command with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as the jobs after examples 287, 288 and 289 did. The change behind it is in the own checker (lib/src/bmc) and its models, which nearly every proof-tier test runs: new LinkedHashMap() runs a model over the HashMap model's entries, whose first field is no longer private; Arrays.asList, Arrays.stream(int[]) and Collections.emptyMap() are modelled where each was a gap; an int, short or byte in the compiler's concatenation is its decimal digits where the String had no content; Class.forName(String) of a constant name initializes the class, Class.isAssignableFrom of two class literals and the thread's context class loader are answered, and either form of forName is left to the JDK where a supertype is missing from the class path; and a class initializer named by --observed-initializer is neither run nor a gap (no test of the tier names one, so this path should be unchanged for them). ArrayList is as it was. The tests of what changed (the unit tests, claims, values, conformance, pairing, object_strings, string_literals, loops, value_parameters) pass inline.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/runtime.rs",
+      "lib/src/bmc/observed.rs",
+      "lib/src/models.rs",
+      "lib/models/java/util/lists/ArrayAsList.java",
+      "lib/models/java/util/LinkedHashMap.java"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test but VF-018's three passes",
+  "submitted": {
+    "at": "2026-11-16T23:17:25+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "priority": -1,
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "40m",
+    "timeout": "4h",
+    "notes": "the same job after example 289 took 35m23s at 3.4 GiB peak"
+  },
+  "steps": [
+    {
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

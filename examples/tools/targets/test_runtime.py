@@ -1273,7 +1273,9 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(prove["argv"], argv[1:])
         self.assertEqual(Path(prove["cwd"]), self.attempt.resolve(), "paths are relative to the attempt directory")
         jdk = runtime_jdk.identity(runtime_jdk.home("25"))
-        self.assertEqual(set(prove["env"]) - {"LC_CTYPE"},  # LC_CTYPE: Python's own locale coercion, if any
+        # LC_CTYPE: Python's own locale coercion, if any. JVMCONTRACT_JBMC_MEMORY_MB: the runner's other memory setting
+        # (runtime.VERIFIER_PASS), there when the caller's environment has it, as a verification job's has (VF-032).
+        self.assertEqual(set(prove["env"]) - {"LC_CTYPE", "JVMCONTRACT_JBMC_MEMORY_MB"},
                          {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAVA_OPTS"})
         self.assertNotIn("JAVA_TOOL_OPTIONS", prove["env"], "the verifier inherited the caller's JVM options")
         self.assertEqual(prove["env"]["JAVA_HOME"], jdk["home"])

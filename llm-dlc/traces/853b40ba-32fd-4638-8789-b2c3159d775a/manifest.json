@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "853b40ba-32fd-4638-8789-b2c3159d775a",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.326"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-16T23:20:56.965Z",
+  "ended": "2026-11-16T23:21:05.668Z",
+  "duration_seconds": 9,
+  "stats": {
+    "turns": 1,
+    "api_calls": 3,
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 34096,
+    "usage": {
+      "input_tokens": 6,
+      "output_tokens": 585,
+      "cache_read_input_tokens": 78402,
+      "cache_creation_input_tokens": 20783
+    }
+  },
+  "tools": {
+    "Bash": 4
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-16T23:20:56.965Z",
+      "ended": "2026-11-16T23:21:05.668Z",
+      "turns": 1,
+      "api_calls": 3,
+      "usage": {
+        "input_tokens": 6,
+        "output_tokens": 585,
+        "cache_read_input_tokens": 78402,
+        "cache_creation_input_tokens": 20783
+      },
+      "peak_context_tokens": 34096
+    }
+  ],
+  "log": {
+    "sha256": "e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468",
+    "bytes": 284671,
+    "lines": 44,
+    "gzip_bytes": 77075,
+    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "mqoqmvttwklvknxxktpwvtktyvzpnvmu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: fixed-security is established beside the route at the frozen bound, mutant-security is queued after its probe refuted it, and the page says where the other two stand (verification pending)",
+      "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5). Job 20261116-225709-example-290-fixed-security-through-the-a passed: the frozen security claim is established on 5.8.5 at the bound of 8, through the adapter entry, in 6.9 s (659 paths, 8,509 variables, 131 MiB). target.json records it as the task's besideRoute answer; changes.py still lists the example as to prove, since three tasks are open. The verdict rests on three library initializers observed on a JVM in place of run by the checker (Spring's ClassUtils, the servlet API's GenericServlet and HttpServlet), which the outcome states and the page explains: weaker evidence than an initializer the checker ran, and said so.\n\nmutant-security: an inline probe at the frozen bound refuted the claim on the mutant in 6.1 s, on select(servlets=[1, 0], method=0, patterns={}) returning 0, run on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. Queued as 20261116-231724-example-290-mutant-security-through-the, and not recorded as decided until that job is in. What it needed since the last commit: Arrays.asList(T...) as a model for the checker alone (lib/models/java/util/lists/ArrayAsList.java: a view of its array with size, get and toArray(), compiled against the JDK's List in a run of its own) and Collections.emptyMap() as the JDK's one empty map, with their evidence in lib/tests/claims.rs (claims.M#listed and #emptied, in the checker on every input of a bound and on a JVM). Those files of lib/ are in the commit before this one, pptopklk: the pipeline's commit of collected results took a snapshot of the shared working copy while they were being written.\n\nvulnerable-security has no verdict: the checker stops, by name, at new ArrayList(int) in createMvcMatchers, and 5.8.4 collects its matchers in ArrayLists on every path. A model of ArrayList written in this session gave the expected witness on 5.8.4 (select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM) and was taken out again before any commit: lib/tests/conformance.rs and lib/tests/values.rs record ArrayList as a class with no model and the contract library holds a contract for ArrayList(int), so making it a model changes recorded verdicts, which is a step to make and review on its own. preservation is not attempted; it needs that model, the matchers' constructors, and --observed-initializer for equivalence. The page (README.md), target.json's handoff and the blockers' notes say all of this.",
+      "log_sha256": "e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468"
+    }
+  ],
+  "logs": {
+    "e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468": {
+      "bytes": 284671,
+      "lines": 44,
+      "gzip_bytes": 77075,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
