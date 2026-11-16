@@ -3,6 +3,7 @@
 //! (`examples/apps/boxoffice/`), checked against golden text and the facts read off its source.
 
 use std::collections::BTreeMap;
+use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::{Mutex, OnceLock};
@@ -368,23 +369,49 @@ fn the_command_compares_against_an_earlier_builds_specs() {
 /// Box Office's Spring modules, built by its own Gradle build (offline, no daemon) in a copy under the target folder,
 /// as `examples/tools/build.py`'s B12 runner builds them: the copy's root, and the union of the modules' runtime class
 /// paths (the extra jars change no spec). `None`, after `missing`, when the build can't run here.
+///
+/// The build is kept from one run to the next: the copy's folder is named by a hash of everything copied into it
+/// (each file's path, mode and bytes), of the Gradle tasks and of `java -version`, and a finished build leaves its
+/// class path in `classpath.txt` there, written last. A run that finds that file builds nothing; any change to the
+/// application, the contracts tooling or the JDK gives another name, and the copies under other names are removed.
+/// The tests only read the copy.
 fn boxoffice() -> Option<&'static (PathBuf, String)> {
     static BUILT: OnceLock<Option<(PathBuf, String)>> = OnceLock::new();
     BUILT
         .get_or_init(|| {
             let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
-            let copy = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("observations-boxoffice");
-            let _ = std::fs::remove_dir_all(&copy);
-            for dir in ["examples/apps/boxoffice", "examples/tools/contracts"] {
-                copy_tree(&repo.join(dir), &copy.join(dir));
-            }
-            let root = copy.join("examples/apps/boxoffice");
+            const SOURCES: [&str; 2] = ["examples/apps/boxoffice", "examples/tools/contracts"];
             let mut tasks = vec![":messaging:jar", ":contracts:jar", ":ticketing-domain:jar", ":ticketing-service:compileJava", ":payment-service:compileJava"];
             tasks.extend(MODULES.iter().map(|(m, _)| match *m {
                 "ticketing-service" => ":ticketing-service:printRuntimeClasspath",
                 "payment-service" => ":payment-service:printRuntimeClasspath",
                 _ => ":messaging:printRuntimeClasspath",
             }));
+            let mut key = std::collections::hash_map::DefaultHasher::new();
+            "observations-boxoffice, recipe 1".hash(&mut key);
+            tasks.hash(&mut key);
+            // The JDK that compiles: `java -version` writes to stderr; no JDK at all is found out by the build.
+            Command::new("java").arg("-version").output().map(|o| o.stderr).unwrap_or_default().hash(&mut key);
+            for dir in SOURCES {
+                hash_tree(&repo.join(dir), Path::new(dir), &mut key);
+            }
+            let tmp = PathBuf::from(env!("CARGO_TARGET_TMPDIR"));
+            let name = format!("observations-boxoffice-{:016x}", key.finish());
+            let copy = tmp.join(&name);
+            let root = copy.join("examples/apps/boxoffice");
+            let kept = copy.join("classpath.txt");
+            if let Ok(classpath) = std::fs::read_to_string(&kept) {
+                return Some((root, classpath));
+            }
+            // Not built, or not to the end: from nothing, and the copies of other sources go.
+            for entry in std::fs::read_dir(&tmp).into_iter().flatten().flatten() {
+                if entry.file_name().to_str().is_some_and(|n| n == "observations-boxoffice" || n.starts_with("observations-boxoffice-")) {
+                    let _ = std::fs::remove_dir_all(entry.path());
+                }
+            }
+            for dir in SOURCES {
+                copy_tree(&repo.join(dir), &copy.join(dir));
+            }
             let out = Command::new(root.join("gradlew")).args(["-q", "--offline", "--no-daemon"]).args(&tasks).current_dir(&root).output();
             let Some(out) = out.ok().filter(|o| o.status.success()) else {
                 missing("Box Office's Gradle build, offline (examples/apps/boxoffice/gradlew --offline)");
@@ -393,7 +420,9 @@ fn boxoffice() -> Option<&'static (PathBuf, String)> {
             let mut entries: Vec<String> = String::from_utf8_lossy(&out.stdout).lines().flat_map(|l| l.trim().split(':').map(str::to_string).collect::<Vec<_>>()).filter(|e| !e.is_empty()).collect();
             entries.sort();
             entries.dedup();
-            Some((root, entries.join(":")))
+            let classpath = entries.join(":");
+            std::fs::write(&kept, &classpath).unwrap();
+            Some((root, classpath))
         })
         .as_ref()
 }
@@ -401,6 +430,31 @@ fn boxoffice() -> Option<&'static (PathBuf, String)> {
 fn missing(what: &str) {
     let skip = std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1");
     assert!(skip, "{what} not available: set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip the tests that need it");
+}
+
+/// Everything `copy_tree` would copy from `from`, into `key`: each file's path under `rel`, its mode and its bytes,
+/// in the order of their names.
+fn hash_tree(from: &Path, rel: &Path, key: &mut impl Hasher) {
+    let mut entries: Vec<_> = std::fs::read_dir(from).unwrap().map(|e| e.unwrap()).collect();
+    entries.sort_by_key(|e| e.file_name());
+    for entry in entries {
+        let name = entry.file_name();
+        if matches!(name.to_str(), Some("build" | ".gradle" | ".kotlin")) {
+            continue;
+        }
+        let path = entry.path();
+        if path.is_dir() {
+            hash_tree(&path, &rel.join(&name), key);
+        } else {
+            rel.join(&name).hash(key);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::metadata(&path).unwrap().permissions().mode().hash(key);
+            }
+            std::fs::read(&path).unwrap().hash(key);
+        }
+    }
 }
 
 fn copy_tree(from: &Path, to: &Path) {
@@ -640,9 +694,24 @@ fn box_office_examples_compare_as_their_boundary_diffs_say() {
         assert_eq!(base[module], specs, "{module}");
     }
     let examples = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples");
+    // Each example's specs are its own work (a copy of the sources, the patch, javac, the walk) in its own folder,
+    // and one after another they were nearly all of this test binary's time: four at a time, then the comparisons
+    // below in the examples' order as before.
+    let todo: Mutex<Vec<&str>> = Mutex::new(EXPECTED.iter().map(|(number, _)| *number).collect());
+    let afters: Mutex<BTreeMap<&str, Option<BTreeMap<&'static str, Vec<EntryPointSpec>>>>> = Mutex::new(BTreeMap::new());
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| loop {
+                let Some(number) = todo.lock().unwrap().pop() else { break };
+                let folder = std::fs::read_dir(&examples).unwrap().map(|e| e.unwrap().path()).find(|p| p.file_name().unwrap().to_string_lossy().starts_with(&format!("{number}-"))).unwrap();
+                let after = patched_specs(number, Some(&folder.join("change.patch")));
+                afters.lock().unwrap().insert(number, after);
+            });
+        }
+    });
+    let mut afters = afters.into_inner().unwrap();
     for (number, expected) in EXPECTED {
-        let folder = std::fs::read_dir(&examples).unwrap().map(|e| e.unwrap().path()).find(|p| p.file_name().unwrap().to_string_lossy().starts_with(&format!("{number}-"))).unwrap();
-        let Some(after) = patched_specs(number, Some(&folder.join("change.patch"))) else { return };
+        let Some(after) = afters.remove(number).unwrap() else { return };
         let mut found = Vec::new();
         let mut all = BTreeMap::new();
         for (module, _) in MODULES {

@@ -171,6 +171,20 @@ Of several waiting together only the newest runs; the others' step says `default
 `default_tests.py last` says which run covers a commit (one at it, or at an ancestor that differs from it only in
 files no test reads), and `sync.py push` refuses without a passed one (`default_tests.py gate`).
 
+Which files no test reads is partly a fixed list (the traces, the decisions, job files and results) and partly
+what a passed run saw for itself. The job runs in a fresh export, so when it ends a file's access time says whether
+anything in the run opened it (a test, or a script or JVM a test started), and a folder's whether anything listed
+it. The step prints what was left untouched as one packed line, `default tests: unread zlib:...`
+(`default_tests.py unread JOB` lists it), and the run then also covers
+a later commit that only modifies those files, or adds and removes files inside folders the run never listed. A
+file added to a folder a test walks is not covered, nor is a rename, nor anything under `lib/`, which always counts
+as read because cargo's warm build decides from dates without opening a source. A run on a filesystem that keeps no
+access times prints no such line, and covers by the fixed list alone.
+
+`default_tests.py flaky` counts, over the collected runs, the tests that failed and then passed on their second run
+(a Python test file, or a Rust test by name). One that appears in more than one run is no longer noise: fix it, or
+ask for it to be marked.
+
 ## For the agent managing the pipeline
 
 The procedure is in the [`/run-verification` skill](../.claude/skills/run-verification/SKILL.md). In short: `status`,

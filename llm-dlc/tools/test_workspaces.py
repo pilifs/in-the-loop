@@ -151,6 +151,8 @@ class Workspaces(unittest.TestCase):
             self.assertIn(f"took session-b: log {sha_good[:12]}", out)
             self.assertEqual(gzip.decompress(sync.log_path("session-b", sha_good).read_bytes()), good)
             self.assertFalse(sync.log_path("session-c", sha_bad).exists(), "a copy that isn't the log its name says is left")
+            self.assertTrue(sync.log_path("session-b", sha_good).samefile(b / sync.log_path("session-b", sha_good).relative_to(sync.REPO)),
+                            "taken as a hard link: one file under two names, no second copy on the disk")
         with self.at(b):  # an uploaded log is still an input of its session's metrics: b takes a's too
             sync.log_path("session-a", "a" * 64).parent.mkdir(parents=True, exist_ok=True)
         with self.at(self.a):

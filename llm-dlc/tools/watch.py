@@ -1107,6 +1107,7 @@ def next_thing(run: Run, interval: float) -> dict | None:
     fresh = [r for r in default_runs(run.root) if r["job"] not in seen and r["verdict"] in ("passed", "failed")]
     if fresh:
         r = fresh[-1]  # the oldest not yet told: they come in order
+        r = {k: v for k, v in r.items() if k != "unread"}  # hundreds of paths the gate reads, and nobody else
         run.update(defaultRunsTold=sorted(seen | {r["job"]}))
         if r["verdict"] == "failed":
             return {"kind": "default-tests", "run": r,

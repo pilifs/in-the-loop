@@ -97,12 +97,77 @@ class ResultsTest(unittest.TestCase):
     def test_a_run_covers_its_commit_and_a_descendant_that_changes_only_files_no_test_reads(self):
         with mock.patch.object(default_tests.subprocess, "run", return_value=mock.Mock(returncode=0, stdout="c1")), \
                 mock.patch.object(default_tests, "jj") as jj:
-            jj.return_value = "llm-dlc/traces/x/summary.md\nverification/results/j/result.json\n"
+            jj.return_value = "M llm-dlc/traces/x/summary.md\nA verification/results/j/result.json\n"
             self.assertTrue(default_tests.covers("c1", "c2"))
-            jj.return_value = "llm-dlc/traces/x/summary.md\nlib/src/bmc/mod.rs\n"
+            jj.return_value = "M llm-dlc/traces/x/summary.md\nM lib/src/bmc/mod.rs\n"
             self.assertFalse(default_tests.covers("c1", "c2"), "a code change after the run is what the suite catches")
         self.assertTrue(default_tests.covers("c2", "c2"))
         self.assertFalse(default_tests.covers(None, "c2"))
+
+    def test_a_run_also_covers_changes_to_what_it_left_unread(self):
+        unread = ["docs/notes.md", "papers/", "lib/benchmark/old/"]
+        cases = (("M docs/notes.md", True, "a file nothing in the run opened"),
+                 ("M docs/guide.md", False, "a file the run read, or may have"),
+                 ("A docs/new.md", False, "a new file in a folder the run listed: a test that walks it would see it"),
+                 ("D docs/notes.md", False, "a file removed from a folder the run listed"),
+                 ("A papers/2026/draft.md", True, "a new file in a folder nothing listed"),
+                 ("D papers/old.md", True, "and one removed there"),
+                 ("M papers/a.md\nM llm-dlc/traces/x/summary.md", True, "with the records no test reads"),
+                 ("M lib/benchmark/old/run.py", False, "lib/ always counts as read: cargo's warm build opens nothing"),
+                 ("R docs/{notes.md => notes2.md}", False, "a rename is two paths: not covered"),
+                 ("M papers/a.md\nM CLAUDE.md", False, "one read file among them is enough"))
+        with mock.patch.object(default_tests.subprocess, "run", return_value=mock.Mock(returncode=0, stdout="c1")), \
+                mock.patch.object(default_tests, "jj") as jj:
+            for summary, covered, why in cases:
+                jj.return_value = summary + "\n"
+                self.assertEqual(default_tests.covers("c1", "c2", unread), covered, why)
+            jj.return_value = "M docs/notes.md\n"
+            self.assertFalse(default_tests.covers("c1", "c2"), "a run that recorded nothing covers only the records")
+
+    def test_what_a_run_left_unread_is_told_by_access_times_folders_whole_when_nothing_in_them_was_touched(self):
+        import os
+        import time
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = ["verification/default_tests.py", "docs/read.md", "docs/unread.md", "papers/a.md", "papers/deep/b.md",
+                     "listed/c.md", "lib/src/x.rs", "lib/README.md", "verification/results/j/result.json"]
+            for rel in files:
+                (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                (root / rel).write_text("x")
+            # As a fresh export: everything written a while ago and not read since (the change time is now).
+            old = time.time_ns() - 3600 * 10**9
+            for path in [root / f for f in files] + [d for d in root.rglob("*") if d.is_dir()]:
+                os.utime(path, ns=(old, old))
+            self.assertIsNone(default_tests.unread(root), "the step's own file unread: access times say nothing here")
+            later = time.time_ns() + 10**9
+            for rel in ("verification/default_tests.py", "verification", "docs/read.md", "listed"):  # opened, or listed
+                os.utime(root / rel, ns=(later, old))
+            self.assertEqual(default_tests.unread(root), ["docs/unread.md", "listed/c.md", "papers/"])
+
+    def test_a_collected_run_says_what_it_left_unread_and_then_covers_a_change_to_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result(root, MINE, "c1", f'default tests: unread {default_tests.pack(["docs/notes.md", "papers/"])}\n'
+                                     "default tests: passed: default tier: 49 of 49 passed\n")
+            result(root, NEWER, "c0", "default tests: unread zlib:not-packed\ndefault tests: passed: default tier: 49 of 49 passed\n")
+            newer, mine = default_tests.runs(root)
+            self.assertEqual(mine["unread"], ["docs/notes.md", "papers/"])
+            self.assertEqual(newer["unread"], [])
+
+    def test_the_flaky_tests_are_counted_over_the_runs_that_ran(self):
+        flaky_x = ("FLAKY tools/test_x.py: Ran 3 tests in 1.0s, FAILED (failures=1) (failed, then passed on a second run)\n"
+                   "FLAKY cargo test: heap::a_made_up_test, values::another (failed, then passed on a second run)\n"
+                   "default tier: 49 of 49 passed; flaky: tools/test_x.py, cargo test\ndefault tests: passed: x\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result(root, "20261116-220000-default-test-run-at-cccc", "c0", flaky_x)
+            result(root, MINE, "c1", "FLAKY tools/test_x.py: Ran 3 tests in 1.0s, FAILED (errors=1) (failed, then passed on a second run)\n"
+                                     "default tests: failed: default tier: 48 of 49 passed; failed: tools/test_y.py; flaky: tools/test_x.py\n")
+            result(root, NEWER, "c2", "default tests: superseded by 20261116-233000-default-test-run-at-dddd\n")
+            record = default_tests.flaky_record(default_tests.runs(root))
+        self.assertEqual([(e["test"], len(e["runs"]), e["of"]) for e in record],
+                         [("tools/test_x.py", 2, 2), ("cargo test: heap::a_made_up_test", 1, 2), ("cargo test: values::another", 1, 2)])
+        self.assertEqual(record[0]["runs"][-1], MINE)
 
     def test_the_gate_lets_a_push_through_only_on_a_passed_run(self):
         for found, code in (({"verdict": "passed", "job": MINE, "commit": "c1" * 6}, 0),

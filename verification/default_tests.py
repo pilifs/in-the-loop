@@ -10,13 +10,25 @@ result when it comes in, and a push is where it is required.
                                                       newer default-run job is queued, which makes this one moot
     default_tests.py last [--rev REV] [--json]        the latest run that covers REV: a passed or failed run at REV or
                                                       at an ancestor that differs from it only in files no test reads
+                                                      (the UNTESTED records, and the files the run itself left unread)
     default_tests.py gate [--rev REV]                 exit 0 when such a run passed (sync.py push asks this), 1 with
                                                       what to do otherwise
     default_tests.py failures JOB                     the files a collected run failed at, one per line
+    default_tests.py unread JOB                       what a collected run left unread, one path per line (a folder,
+                                                      `name/`, stands for everything under it)
+    default_tests.py flaky [--json]                   the tests that failed and then passed on their second run, over
+                                                      every collected run: how often each, and in which runs
 
 Superseding: of default-run jobs waiting together, only the newest is worth running. The pipeline can't withdraw a
 committed job, so each run's step asks the queue first, and one with a newer default-run job pending or running
 says so and exits at once (its log says `default tests: superseded by ID`).
+
+What a run read: the step runs in a fresh export of its commit, so afterwards a file's access time says whether
+anything in the run (a test, a script or a JVM it started) opened it, and a folder's whether anything listed it. The
+step prints the files and whole folders nothing touched (`default tests: unread zlib:...`, the list packed; `default_tests.py unread JOB` prints it), and a run then also covers a
+later commit that only modifies such files, or adds and removes files inside such folders: a page no test reads no
+longer costs a push another run. lib/ always counts as read (cargo's warm build looks at dates, not contents), and
+a filesystem that doesn't keep access times records nothing, which leaves the UNTESTED list alone.
 
 Standard library only.
 """
@@ -37,6 +49,7 @@ MARK = "default tests:"  # the step's verdict line, which `last` reads from a re
 # Paths whose changes no test reads: a run at an ancestor still covers a commit that differs from it only here.
 UNTESTED = ("llm-dlc/traces/", "llm-dlc/index.json", "llm-dlc/decisions/", "verification/results/",
             "verification/jobs/", "verification/findings.md", "llm-dlc/loop-summaries/")
+ALWAYS_READ = ("lib/",)  # cargo's warm build decides from dates what to rebuild, without opening an unchanged source
 CARGO_TARGET = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "in-the-loop" / "default-tests-target"
 
 
@@ -109,10 +122,96 @@ def cmd_step() -> int:
         lines.append(line)
     code, output = p.wait(), "".join(lines)
     tally = re.findall(r"^default tier: .*$", output, re.M)
+    if code == 0 and os.environ.get("VERIFY_SOURCE_COMMIT"):  # in the pipeline's export: what the run left unread
+        left = unread(Path.cwd())
+        if left is not None:
+            print(f"{MARK} unread {pack(left)}", flush=True)
     print(f"{MARK} {'passed' if code == 0 else 'failed'}: {tally[-1] if tally else 'no tally'}", flush=True)
     if code and os.environ.get("VERIFY_SOURCE_COMMIT"):
         bisect(runner_root, os.environ["VERIFY_SOURCE_COMMIT"], output, env)
     return code
+
+
+# -- what the run read
+
+def _touched(st) -> bool:
+    """Whether a file or folder was read (or changed) since it was written: its access time is past its change
+    time (relatime moves the access time on the first read after a write), or it was written again."""
+    return st.st_atime_ns > st.st_ctime_ns or st.st_mtime_ns >= st.st_ctime_ns
+
+
+def unread(root: Path) -> list[str] | None:
+    """The files of the export ROOT no process opened and the folders (`name/`) no process listed or opened
+    anything in, as repository paths: a folder stands for everything under it. None when access times say nothing
+    here: this very file, which the step has just run, does not show as read."""
+    root = Path(root)
+    try:
+        if not _touched((root / "verification/default_tests.py").stat()):
+            return None
+    except OSError:
+        return None
+
+    def walk(folder: Path, rel: str) -> tuple[bool, list[str]]:
+        """(whether FOLDER is wholly untouched, what is untouched in it when it is not)."""
+        try:
+            whole = not _touched(folder.stat()) if rel else False  # before listing it, which is itself a read
+            entries = sorted(os.scandir(folder), key=lambda e: e.name)
+        except OSError:
+            return False, []
+        left = []
+        for e in entries:
+            path = f"{rel}{e.name}"
+            if any((path + "/").startswith(a) for a in ALWAYS_READ) or e.name in (".git", ".jj", ".state"):
+                whole = False
+                continue
+            if any((path + "/").startswith(u) or path == u for u in UNTESTED):
+                continue  # covered whatever the run read: not worth a place in the list
+            try:
+                if e.is_dir(follow_symlinks=False):
+                    sub_whole, sub_left = walk(Path(e.path), path + "/")
+                    whole = whole and sub_whole
+                    left += [path + "/"] if sub_whole else sub_left
+                elif _touched(e.stat(follow_symlinks=False)):
+                    whole = False
+                else:
+                    left.append(path)
+            except OSError:
+                whole = False
+        return whole, left
+
+    # Listing a folder here moves its access time too, but each folder is judged (stat) before it is listed.
+    return walk(root, "")[1]
+
+
+def pack(paths: list[str]) -> str:
+    """A list of paths as one short word for a log line: a real run leaves some 500 unread, 40 kB as they stand and
+    a quarter of that so. `default_tests.py unread JOB` prints them."""
+    import base64
+    import zlib
+    return "zlib:" + base64.b64encode(zlib.compress(json.dumps(paths).encode(), 9)).decode()
+
+
+def unpack(word: str) -> list[str]:
+    """The paths `pack` wrote; nothing from anything else."""
+    import base64
+    import binascii
+    import zlib
+    if not word.startswith("zlib:"):
+        return []
+    try:
+        paths = json.loads(zlib.decompress(base64.b64decode(word[5:], validate=True)))
+    except (ValueError, zlib.error, binascii.Error):
+        return []
+    return [p for p in paths if isinstance(p, str)] if isinstance(paths, list) else []
+
+
+def left_unread(unread_paths: list[str], status: str, path: str) -> bool:
+    """Whether a change to PATH (STATUS: M, A or D, as `jj diff --summary` says) is one the run could not have seen:
+    a modified file it left unread, or a file added or removed inside a folder it never listed."""
+    if any(path.startswith(a) for a in ALWAYS_READ):
+        return False
+    inside = any(u.endswith("/") and path.startswith(u) for u in unread_paths)
+    return inside or (status == "M" and path in unread_paths)
 
 
 # -- which commit broke it
@@ -217,8 +316,16 @@ def runs(root: Path = ROOT) -> list[dict]:
                     "verdict": verdict, "tally": marks[-1][1].strip(": ") if marks else None,
                     "failed": failures_in(text),
                     "flaky": flaky_in(text),
+                    "flakyTests": flaky_tests_in(text),
+                    "unread": unread_in(text),
                     "culprits": dict(re.findall(rf"^{re.escape(MARK)} culprit (.+?): (.+)$", text, re.M))})
     return out
+
+
+def unread_in(text: str) -> list[str]:
+    """What a run's step said it left unread; nothing when it said nothing, or nothing `unpack` reads."""
+    found = re.findall(rf"^{re.escape(MARK)} unread (\S+)$", text, re.M)
+    return unpack(found[-1]) if found else []
 
 
 def flaky_in(text: str) -> list[str]:
@@ -226,6 +333,42 @@ def flaky_in(text: str) -> list[str]:
     tally = re.findall(r"^default tier: \d+ of \d+ passed(.*)$", text, re.M)
     m = re.search(r"; flaky: ([^;]+)", tally[-1]) if tally else None
     return [f.strip() for f in m[1].split(",")] if m else []
+
+
+def flaky_tests_in(text: str) -> list[str]:
+    """The tests a run's FLAKY lines name: a Python test file, or each Rust test by name (`cargo test: a::b`)."""
+    out = []
+    for what in re.findall(r"^FLAKY (.+?) \(failed, then passed on a second run\)$", text, re.M):
+        if what.startswith("cargo test: "):
+            out += [f"cargo test: {name.strip()}" for name in what[len("cargo test: "):].split(",")]
+        else:
+            out.append(what.split(": ")[0])
+    return list(dict.fromkeys(out))
+
+
+def flaky_record(all_runs: list[dict]) -> list[dict]:
+    """Over the runs that ran (not the superseded): each flaky test, the runs it was flaky in, and of how many;
+    the most often first. A test here twice is no longer noise: it is worth a fix, or a mark for a person to give."""
+    ran = [r for r in all_runs if r["verdict"] in ("passed", "failed")]
+    seen: dict[str, list[str]] = {}
+    for r in ran:
+        for test in r.get("flakyTests", []):
+            seen.setdefault(test, []).append(r["job"])
+    return sorted(({"test": t, "runs": sorted(jobs), "of": len(ran)} for t, jobs in seen.items()),
+                  key=lambda e: (-len(e["runs"]), e["test"]))
+
+
+def cmd_flaky(as_json: bool) -> int:
+    record = flaky_record(runs())
+    if as_json:
+        print(json.dumps(record, indent=1))
+        return 0
+    for e in record:
+        print(f"{e['test']}: flaky in {len(e['runs'])} of {e['of']} runs"
+              + (" (repeats: fix it, or ask for a mark)" if len(e["runs"]) > 1 else "") + f"; last in {e['runs'][-1]}")
+    if not record:
+        print("no test was flaky in a collected run")
+    return 0
 
 
 def failures_in(text: str) -> list[str]:
@@ -241,8 +384,10 @@ def failures_in(text: str) -> list[str]:
     return list(dict.fromkeys(files))
 
 
-def covers(run_commit: str, target: str) -> bool:
-    """A run at RUN_COMMIT covers TARGET when it is TARGET, or an ancestor that differs from it only in UNTESTED."""
+def covers(run_commit: str, target: str, unread_paths: list[str] | tuple = ()) -> bool:
+    """A run at RUN_COMMIT covers TARGET when it is TARGET, or an ancestor that differs from it only in UNTESTED and
+    in what the run left unread (UNREAD_PATHS, from its log): modified files it never opened, and files added or
+    removed in folders it never listed."""
     if not run_commit:
         return False
     if run_commit == target:
@@ -251,22 +396,31 @@ def covers(run_commit: str, target: str) -> bool:
                        cwd=ROOT, capture_output=True, text=True)
     if r.returncode or not r.stdout.strip():
         return False
-    changed = jj("diff", "--from", run_commit, "--to", target, "--name-only").split()
-    return all(any(p.startswith(u) or p == u.rstrip("/") for u in UNTESTED) for p in changed)
+    for line in jj("diff", "--from", run_commit, "--to", target, "--summary").splitlines():
+        status, _, path = line.partition(" ")
+        if not path:
+            continue
+        if any(p.startswith(u) or p == u.rstrip("/") for p in [path] for u in UNTESTED):
+            continue
+        # A rename or a copy is written `R {old => new}`: two paths, and nothing here reads that form, so it is not
+        # covered (a record that moves is rare, and another run is the safe answer).
+        if status not in ("M", "A", "D") or not left_unread(list(unread_paths), status, path):
+            return False
+    return True
 
 
 def last(rev: str) -> dict | None:
     target, _, _ = commit_of(rev)
     for r in runs():
-        if r["verdict"] in ("passed", "failed") and covers(r["commit"], target):
+        if r["verdict"] in ("passed", "failed") and covers(r["commit"], target, r["unread"]):
             return r
     return None
 
 
 def cmd_last(rev: str, as_json: bool) -> int:
     r = last(rev)
-    if as_json:
-        print(json.dumps(r, indent=1))
+    if as_json:  # the unread paths as their count: `unread JOB` lists them
+        print(json.dumps(r and {**r, "unread": len(r["unread"])}, indent=1))
     elif r is None:
         print(f"no default run covers {rev}")
     else:
@@ -290,10 +444,10 @@ def cmd_gate(rev: str) -> int:
     return 1
 
 
-def cmd_failures(job: str) -> int:
+def cmd_failures(job: str, what: str = "failed") -> int:
     for r in runs():
         if r["job"] == job:
-            print("\n".join(r["failed"]))
+            print("\n".join(r[what]))
             return 0
     print(f"no collected default run {job}", file=sys.stderr)
     return 1
@@ -313,6 +467,10 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--rev", default="@-")
     f = sub.add_parser("failures")
     f.add_argument("job")
+    un = sub.add_parser("unread")
+    un.add_argument("job")
+    fl = sub.add_parser("flaky")
+    fl.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     if a.command == "queue":
         return cmd_queue(a.rev, a.why)
@@ -322,7 +480,9 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_last(a.rev, a.json)
     if a.command == "gate":
         return cmd_gate(a.rev)
-    return cmd_failures(a.job)
+    if a.command == "flaky":
+        return cmd_flaky(a.json)
+    return cmd_failures(a.job, "unread" if a.command == "unread" else "failed")
 
 
 if __name__ == "__main__":

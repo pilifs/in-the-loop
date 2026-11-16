@@ -3634,7 +3634,8 @@ def adopt_logs() -> list[str]:
     from the workspace that stores them. One not uploaded would be an error in check; one uploaded is still an input of
     the session's metrics, which a workspace holding fewer of its logs would compute otherwise. A snapshot is named by the sha256 of its uncompressed
     content, so each copy is checked against its name before it is kept, and one that doesn't match is left out:
-    nothing is taken on trust, and nothing already here is touched."""
+    nothing is taken on trust, and nothing already here is touched. A log taken is a hard link where the filesystem
+    allows one (it costs no space; a hundred sessions' logs are over a gigabyte), and a copy where it doesn't."""
     roots, adopted = workspace_roots(), []
     for sid, m in all_manifests().items():
         for sha, info in (m.get("logs") or {}).items():
@@ -3651,7 +3652,11 @@ def adopt_logs() -> list[str]:
                     continue
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 tmp = dest.with_name(dest.name + ".tmp")
-                tmp.write_bytes(data)
+                tmp.unlink(missing_ok=True)
+                try:
+                    os.link(src, tmp)  # one file under two names: workspaces share a filesystem, and a log is
+                except OSError:        # never rewritten in place (it is named by its content), so no copy is needed
+                    tmp.write_bytes(data)
                 os.replace(tmp, dest)
                 adopted.append(f"{sid}: log {sha[:12]}, from {root}")
                 break
