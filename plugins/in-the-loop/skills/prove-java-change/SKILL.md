@@ -158,11 +158,15 @@ It prints what each lacks, and the lists to act on. Go through them in this orde
    A remark that a claim misstates the example's own pages goes to the setup with the plan, to be corrected; a
    suggestion to claim more is the user's, so name it in the report and go on with the claims as they stand. Where
    you are not sure, leave that example out and name it, with its claims, in the report: it waits for them.
-4. **`toSetUp`** and the corrections, catalog entries first: have every one set up before its proof starts. For
-   each, in the plan's order and one after another, run `watch.py stage setup "PROMPT"` as a background task, where
-   the prompt names the entry and the plan and gives one instruction: do "A catalog entry's brief" of
-   `llm-dlc/runtime.md` for it. Then check again with `--after-setup NNN,NNN` naming them. An entry that is still
-   not prepared is in `leftOut`: say which and why, and go on without it.
+4. **`toSetUp`** and the corrections: have every one set up before its proof starts, one setup at a time, in the
+   plan's order, each with `watch.py stage setup "PROMPT" --example NNN` as a background task, where the prompt
+   names the entry and the plan and gives one instruction: do "A catalog entry's brief" of `llm-dlc/runtime.md`
+   for it. Check each with `--after-setup NNN,...` when it ends; an entry still not prepared is in `leftOut`: say
+   which and why, and go on without it. Preparing overlaps proving: once the claims are accepted and one example is
+   ready to prove, start the loop (stage 4) on what is ready, and set the rest up beside it, each in the workspace
+   `prove-setup` (`--workspace prove-setup`), so that the two never share a working copy. When such a setup ends,
+   queue its merge (`watch.py merge add prove-setup`), which you make between two examples, and then give the loop
+   the example (`watch.py add NNN`). If the loop has ended meanwhile, start it again on what is left.
 5. **`toRepair`** and **`toClassify`**, prepared examples that lack `artifacts`, have a fault in their `form`, or
    don't record how a proof task is invoked: make one attempt to put them right. Run `watch.py stage setup "PROMPT"`,
    where the prompt is the check's output and the plan, and one instruction: do "The repair's brief" of
@@ -194,6 +198,9 @@ proof loop detached, continuing the fixed session at high effort, and returns at
 - **Between two examples**, merge whatever workspace the user has queued, then answer `stop` if they asked the loop
   to end there, else `continue`.
 - **A compaction with no commit**: `continue` while the work is moving, `stop` when it is stuck.
+- **A setup that has ended** (`"kind": "setup"`): check it as step 4 says, and for one in a workspace queue its
+  merge. **A setup gone quiet** (`"kind": "setup-quiet"`): look at its stream before acting; a build or a replay
+  often takes long.
 - **A verification loop it started** (`"kind": "verification"`): none was running while jobs waited, and `wait`
   has started one. Say so, and go on.
 

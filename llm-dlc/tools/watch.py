@@ -9,8 +9,14 @@ keeps the user informed, and judges what a script can't:
                                            proves them (made on first use, kept in the run's state); --use
                                            takes an existing session instead, such as an earlier moonshot's
     watch.py stage evaluate PROMPT         run the evaluation in the fixed session, on Fable 5.2 at high effort
-    watch.py stage setup PROMPT            run the examples' setup in a new session, on Opus 5.5 at high effort
-                                           (both print the session's report; --model, --effort and --memory override)
+    watch.py stage setup PROMPT [--example NNN] [--workspace NAME]
+                                           run the examples' setup in a new session, on Opus 5.5 at high effort
+                                           (both print the session's report; --model, --effort and --memory override).
+                                           --example records the attempt as that example's, for the summary and
+                                           the measures; --workspace runs it in the jj workspace NAME (made beside
+                                           the checkout, from the loop's line, when there is none), so that it can
+                                           run while the loop proves: its commits come in by `merge`, and `add`
+                                           gives the loop the example
     watch.py preflight [--after-setup NNN,...] NNN ...
                                            check examples named by number before a loop takes them: which are
                                            catalog entries still to set up (toSetUp), and what a prepared one lacks,
@@ -48,6 +54,8 @@ keeps the user informed, and judges what a script can't:
     watch.py merge add|done|list [NAME]    workspaces the user asked to have merged: the loop waits for the watcher
                                            between two examples while one is queued
     watch.py stop-after example|cycle|never   end the loop once the example, or the cycle, under way is done
+    watch.py add NNN ...                   give the running loop more examples, after the ones it has: an example
+                                           a setup prepared while the loop proved, once it is merged
     watch.py proof NNN                     block until the verification jobs of example NNN are in: the shell the
                                            watcher keeps on an example the loop has left to wait for its proof
 
@@ -86,6 +94,7 @@ INTERVAL = 1800  # a run of days is watched by a session whose context every sum
 STAGES = {"evaluate": {"model": "claude-fable-5-2", "effort": "high", "fixed": True},
           "setup": {"model": "claude-opus-5-5", "effort": "high", "fixed": False}}
 SILENT = 20 * 60  # a session that has written nothing for this long may be stuck: the summary says so
+LONG_COMMAND = 10 * 60  # a setup's command still running after this long is told to the watcher
 LEFT = ("finished", "capped")  # item states that end an example in this run
 
 
@@ -183,17 +192,48 @@ def stage_command(run: Run, name: str, prompt: str, model: str | None, effort: s
     return command
 
 
-def cmd_stage(run: Run, name: str, prompt: str, model: str | None, effort: str | None, memory: str | None) -> int:
+def workspace_root(run: Run, name: str) -> Path:
+    """The jj workspace NAME's folder, made beside the checkout from the loop's line (@-) when there is none."""
+    listed = subprocess.run(["jj", "--quiet", "workspace", "list"], capture_output=True, text=True, cwd=run.root).stdout
+    if re.search(rf"^{re.escape(name)}( \(current\))?:", listed, re.M):
+        r = subprocess.run(["jj", "--quiet", "workspace", "root", "--name", name], capture_output=True, text=True, cwd=run.root)
+        if r.returncode == 0 and r.stdout.strip():
+            return Path(r.stdout.strip())
+    path = run.root.parent / f"{run.root.name}-{name}"
+    subprocess.run(["jj", "--quiet", "workspace", "add", "--name", name, "-r", "@-", str(path)],
+                   cwd=run.root, check=True, capture_output=True, text=True)
+    return path
+
+
+def head_change(where: Path) -> str | None:
+    r = subprocess.run(["jj", "--quiet", "log", "--no-graph", "-r", "@-", "-T", 'change_id.short(8) ++ " " ++ description.first_line()'],
+                       capture_output=True, text=True, cwd=where)
+    return r.stdout.strip() or None if r.returncode == 0 else None
+
+
+def cmd_stage(run: Run, name: str, prompt: str, model: str | None, effort: str | None, memory: str | None,
+              example: str | None = None, workspace: str | None = None) -> int:
     command = stage_command(run, name, prompt, model, effort, memory)
     run.dir.mkdir(parents=True, exist_ok=True)
     log = run.dir / f"stage-{name}.jsonl"
+    cwd = workspace_root(run, workspace) if workspace else run.root
     env = {**os.environ, **(claude_setup.CLEAN_ENV if mode.mode(run.root) == "runtime" else {})}
     stages = run.read().get("stages") or {}
     stages[name] = {"started": conductor.now(), "log": str(log), "command": [c for c in command if c != prompt]}
+    attempt = None
+    if example:
+        setups = run.read().get("setups") or []
+        attempt = {"example": example, "stage": name,
+                   "attempt": 1 + sum(1 for a in setups if a["example"] == example and a["stage"] == name),
+                   "started": conductor.now(), "log": str(log), "offset": log.stat().st_size if log.exists() else 0,
+                   "workspace": workspace, "cwd": str(cwd)}
+        run.update(setups=setups + [attempt])
     run.update(stages=stages)
     result = None
     with open(log, "a") as out:
-        p = subprocess.Popen(command, cwd=run.root, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, text=True)
+        p = subprocess.Popen(command, cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, text=True)
+        if attempt:
+            set_attempt(run, attempt, pid=p.pid)
         for line in p.stdout:
             out.write(line)
             out.flush()
@@ -205,10 +245,74 @@ def cmd_stage(run: Run, name: str, prompt: str, model: str | None, effort: str |
                 result = event
         status = p.wait()
     ok = status == 0 and result is not None and result.get("subtype") == "success" and not result.get("is_error")
-    stages[name].update(ended=conductor.now(), ok=ok, session=(result or {}).get("session_id"))
-    run.update(stages=stages)
+    stages = run.read().get("stages") or stages
+    stages[name] = {**stages.get(name, {}), "ended": conductor.now(), "ok": ok, "session": (result or {}).get("session_id"),
+                    "cost": (result or {}).get("total_cost_usd")}
+    run.update(stages=stages, costs={**(run.read().get("costs") or {}),
+                                     f"{name}-{conductor.now()}": (result or {}).get("total_cost_usd") or 0})
+    if attempt:
+        row = (changes.listing(cwd, [example])["examples"] or [{}])[0]
+        set_attempt(run, attempt, ended=conductor.now(), ok=ok, session=(result or {}).get("session_id"),
+                    cost=(result or {}).get("total_cost_usd"), commit=head_change(cwd), state=row.get("state"),
+                    invocation=uninvoked(cwd, row) if row.get("path") else [],
+                    report=((result or {}).get("result") or "")[-600:])
     print((result or {}).get("result") or f"the {name} session ended with status {status} and no report: see {log}")
     return 0 if ok else 1
+
+
+def set_attempt(run: Run, attempt: dict, **fields) -> None:
+    setups = run.read().get("setups") or []
+    for a in setups:
+        if (a["example"], a["stage"], a["attempt"], a["started"]) == (attempt["example"], attempt["stage"], attempt["attempt"], attempt["started"]):
+            a.update(fields)
+    run.update(setups=setups)
+
+
+def activity(attempt: dict) -> dict:
+    """Where a setup attempt stands from its stream: its tool calls, the command under way and for how long, the last
+    run of validate_example.py and whether it passed, and when it last wrote anything."""
+    out = {"toolCalls": 0, "command": None, "commandSince": None, "validation": None, "lastOutput": None}
+    try:
+        path = Path(attempt["log"])
+        out["lastOutput"] = path.stat().st_mtime
+        with open(path) as f:
+            f.seek(attempt.get("offset") or 0)
+            lines = f.readlines()
+    except (OSError, KeyError):
+        return out
+    open_calls: dict[str, tuple[str, float]] = {}
+    validating = set()
+    for line in lines:
+        try:
+            e = json.loads(line)
+        except ValueError:
+            continue
+        for c in ((e.get("message") or {}).get("content") or []) if isinstance(e, dict) else []:
+            if not isinstance(c, dict):
+                continue
+            if c.get("type") == "tool_use":
+                out["toolCalls"] += 1
+                i = c.get("input") or {}
+                what = f"{c.get('name')}: {i.get('description') or i.get('command') or i.get('file_path') or ''}"[:160]
+                open_calls[c.get("id")] = (what, time.time())
+                if "validate_example.py" in str(i.get("command") or ""):
+                    validating.add(c.get("id"))
+            elif c.get("type") == "tool_result":
+                open_calls.pop(c.get("tool_use_id"), None)
+                if c.get("tool_use_id") in validating:
+                    text = json.dumps(c.get("content"))
+                    out["validation"] = "passed" if "passed" in text and "FAIL" not in text else "failed"
+    if open_calls:
+        what, _ = list(open_calls.values())[-1]
+        out["command"] = what
+        out["commandSince"] = out["lastOutput"]
+    return out
+
+
+def setups_state(run: Run) -> dict:
+    setups = run.read().get("setups") or []
+    active = [a for a in setups if not a.get("ended")]
+    return {"active": [{**a, **activity(a)} for a in active], "done": [a for a in setups if a.get("ended")]}
 
 
 # -- examples that are already prepared
@@ -685,6 +789,45 @@ def decisions_state(run: Run) -> dict:
     return {"record": where[0], "flagged": len(by["flagged"]), "unreviewed": len(by["unreviewed"]), "overturned": by["overturned"]}
 
 
+def cycle_cost(event: dict) -> float | None:
+    """The cost of the cycle a cycle-start event began, from the result its turn file ends with."""
+    try:
+        lines = Path(event.get("turn") or "").read_text().splitlines()
+    except OSError:
+        return None
+    for line in reversed(lines):
+        try:
+            e = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(e, dict) and e.get("type") == "result":
+            return e.get("total_cost_usd")
+    return None
+
+
+def measures(run: Run, events: list[dict], claims: dict) -> dict:
+    """Whether the stronger review pays for itself: the time from the run's first stage to the loop's first cycle,
+    the setups each example needed beyond its first, how many examples' first setup left every proof task's
+    invocation recorded, and the claims answered for each dollar the run's sessions cost so far."""
+    data = run.read()
+    starts = [stamp(st.get("started")) for st in (data.get("stages") or {}).values()]
+    starts += [stamp(a.get("started")) for a in data.get("setups") or []]
+    starts = [t for t in starts if t]
+    first_cycle = next((stamp(e.get("time")) for e in events if e.get("type") == "cycle-start"), None)
+    setups = [a for a in data.get("setups") or [] if a.get("stage") == "setup"]
+    by_example: dict[str, list[dict]] = {}
+    for a in setups:
+        by_example.setdefault(a["example"], []).append(a)
+    first = [v[0] for v in by_example.values() if v[0].get("ended")]
+    cost = sum(v or 0 for v in (data.get("costs") or {}).values()) + sum(v or 0 for v in (data.get("cycleCosts") or {}).values())
+    answered = sum(1 for statuses in claims.values() for status in statuses.values() if status in changes.ANSWERS)
+    return {"toFirstCycle": (first_cycle - min(starts)) if first_cycle and starts else None,
+            "setupRework": {k: len(v) - 1 for k, v in by_example.items() if len(v) > 1},
+            "firstAttemptInvoked": [sum(1 for a in first if a.get("ok") and not a.get("invocation")), len(first)],
+            "cost": round(cost, 2), "claimsAnswered": answered,
+            "claimsPerDollar": round(answered / cost, 4) if cost else None}
+
+
 def state(run: Run) -> dict:
     events = conductor.read_events(run.dir)
     loop = run.run_json()
@@ -711,7 +854,8 @@ def state(run: Run) -> dict:
             "unfinished": conductor.unfinished_jobs(run.root),
             "loopAlive": alive(loop.get("pid")) if loop else False, "ended": ended,
             "verification": verification_running(run.root),
-            "mergeQueue": merge_queue(run), "asked": conductor.pending(run.dir), "decisions": decisions_state(run)}
+            "mergeQueue": merge_queue(run), "asked": conductor.pending(run.dir), "decisions": decisions_state(run),
+            "setups": setups_state(run), "measures": measures(run, events, claims)}
 
 
 # -- the summary
@@ -764,6 +908,14 @@ def attention(s: dict) -> list[str]:
     last_output = (s["turn"] or {}).get("lastOutput")
     if s["item"] and last_output and s["time"] - last_output > SILENT:
         out.append(f"the session has written nothing for {span(s['time'] - last_output)}: it may be waiting on a long command, or stuck")
+    for a in (s.get("setups") or {}).get("active", []):
+        quiet = s["time"] - a["lastOutput"] if a.get("lastOutput") else None
+        if a.get("command") and quiet and quiet > LONG_COMMAND:
+            out.append(f"example {a['example']}'s setup has had one command running for {span(quiet)}: {a['command']}")
+        elif quiet and quiet > SILENT:
+            out.append(f"example {a['example']}'s setup has written nothing for {span(quiet)}")
+        if a.get("validation") == "passed" and not a.get("commandSince"):
+            out.append(f"example {a['example']}'s setup has passed its validation and is waiting only to commit")
     if (s["jobs"]["pending"] or s["jobs"]["running"]) and not s["verification"]:
         out.append("jobs are queued and no verification loop is running: `watch.py verification start`")
     out += [f"job {job} came back {result}" for job, result in s["jobs"]["collected"].items()
@@ -807,10 +959,38 @@ def render(s: dict, last: dict | None, root: Path = REPO) -> str:
     values = {"time": clock(s["time"]), "elapsed": span(s["time"] - (s["started"] or s["time"])), "since": since,
               "changed": "\n".join(f"- {line}" for line in changed(s, last, root)),
               "loop": loop, "examples": examples, "item": s["item"] or "none", "example": example,
-              "jobs": jobs_line, "attention": "\n".join(f"- {line}" for line in attention(s)) or "- nothing"}
+              "jobs": jobs_line, "attention": "\n".join(f"- {line}" for line in attention(s)) or "- nothing",
+              "setup": setup_line(s), "measures": measures_line(s)}
     template = (root / TEMPLATE).read_text() if (root / TEMPLATE).exists() else DEFAULT_TEMPLATE
     body = template.split("<!-- template -->", 1)[-1].strip("\n")
     return body.format_map(values)
+
+
+def setup_line(s: dict) -> str:
+    st = s.get("setups") or {}
+    parts = []
+    for a in st.get("active", []):
+        bit = f"{a['example']} (attempt {a['attempt']}{', in ' + a['workspace'] if a.get('workspace') else ''}, {a['toolCalls']} tool calls"
+        bit += f", now {a['command']}" if a.get("command") else ""
+        bit += f", validation {a['validation']}" if a.get("validation") else ""
+        parts.append(bit + ")")
+    done = st.get("done", [])
+    if done:
+        parts.append("done: " + ", ".join(f"{a['example']} #{a['attempt']} {'ok' if a.get('ok') else 'failed'}"
+                                          f"{' at ' + a['commit'].split()[0] if a.get('commit') else ''}"
+                                          f"{', invocation not recorded for ' + str(len(a['invocation'])) + ' task(s)' if a.get('invocation') else ''}"
+                                          for a in done[-4:]))
+    return "; ".join(parts) or "none"
+
+
+def measures_line(s: dict) -> str:
+    m = s.get("measures") or {}
+    first = f"{span(m['toFirstCycle'])} to the first proof cycle" if m.get("toFirstCycle") else "no proof cycle yet"
+    invoked, of = m.get("firstAttemptInvoked") or [0, 0]
+    rework = ", ".join(f"{k} ×{v}" for k, v in (m.get("setupRework") or {}).items()) or "none"
+    per = f"{m['claimsPerDollar']} claims answered per dollar" if m.get("claimsPerDollar") is not None else "no cost recorded yet"
+    return (f"{first} · setups redone: {rework} · invocation recorded at the first setup: {invoked} of {of} · "
+            f"{m.get('claimsAnswered', 0)} claims answered for ${m.get('cost', 0)}, {per}")
 
 
 DEFAULT_TEMPLATE = """### {time} UTC · {elapsed} into the run · {since}
@@ -822,6 +1002,8 @@ DEFAULT_TEMPLATE = """### {time} UTC · {elapsed} into the run · {since}
 **Examples:** {examples}
 **Example {item}:** {example}
 **Verification jobs:** {jobs}
+**Setup:** {setup}
+**Measures:** {measures}
 
 **Needs attention**
 {attention}
@@ -870,10 +1052,31 @@ def next_thing(run: Run, interval: float) -> dict | None:
                "answer": f"python3 llm-dlc/tools/conductor.py decide {RUN} {event['n']} {'|'.join(conductor.answers(event))} --reason TEXT [--confidence medium]"}
         if event.get("type") == "cycle":
             out["assessment"] = assessment(run, event)
+            started = [e for e in conductor.read_events(run.dir) if e.get("type") == "cycle-start"]
+            if started and (cost := cycle_cost(started[-1])) is not None:
+                run.update(cycleCosts={**(run.read().get("cycleCosts") or {}), str(started[-1].get("cycle")): cost})
         if event.get("type") == "example":
             out["mergeQueue"] = merge_queue(run)
         return out
     data = run.read()
+    told = set(data.get("setupsTold") or [])
+    for a in data.get("setups") or []:
+        key = f"{a['example']}#{a['attempt']}:{a['stage']}"
+        if a.get("ended") and key + ":ended" not in told:
+            run.update(setupsTold=sorted(told | {key + ":ended"}))
+            return {"kind": "setup", "attempt": {k: a.get(k) for k in ("example", "attempt", "workspace", "ok", "commit",
+                                                                         "state", "invocation", "cost", "report")},
+                    "note": "a setup in a workspace: queue its merge (`watch.py merge add NAME`), and once merged, "
+                            "`watch.py add NNN` gives the loop the example" if a.get("workspace") else
+                            "check it again with `watch.py preflight --after-setup NNN ...`"}
+        if not a.get("ended"):
+            act = activity(a)
+            quiet = now() - act["lastOutput"] if act.get("lastOutput") else 0
+            if quiet > (LONG_COMMAND if act.get("command") else SILENT) and key + ":quiet" not in told:
+                run.update(setupsTold=sorted(told | {key + ":quiet"}))
+                return {"kind": "setup-quiet", "example": a["example"], "attempt": a["attempt"], "for": span(quiet),
+                        "command": act.get("command"), "validation": act.get("validation"),
+                        "note": "look at its stream before acting: a long build or replay is usual"}
     waiting = {e["item"] for e in conductor.read_events(run.dir) if e.get("type") == "item" and e.get("state") == "waiting"}
     announced = set(data.get("announced") or [])
     if waiting - announced:
@@ -941,6 +1144,19 @@ def cmd_stop_after(run: Run, what: str) -> int:
     return 0
 
 
+def cmd_add(run: Run, items: list[str]) -> int:
+    """Leave the loop a line that adds examples after the ones it has (feature-loop.sh's `add`)."""
+    loop = run.run_json()
+    if not loop or not alive(loop.get("pid")):
+        print("no proof loop is running: start one with these examples (`watch.py loop`)", file=sys.stderr)
+        return 1
+    conductor.cmd_command(run.dir, "add " + " ".join(items))
+    loop["examples"] = list(dict.fromkeys((loop.get("examples") or []) + items))  # what the summary lists
+    (run.dir / "run.json").write_text(json.dumps(loop, indent=1) + "\n")
+    print(f"the loop takes {' '.join(items)} after the examples it has, when it next changes example")
+    return 0
+
+
 def cmd_proof(run: Run, item: str, timeout: float) -> int:
     until = time.monotonic() + timeout
     while True:
@@ -969,6 +1185,9 @@ def main(argv: list[str] | None = None) -> int:
     st.add_argument("--model")
     st.add_argument("--effort")
     st.add_argument("--memory")
+    st.add_argument("--example", metavar="NNN")
+    st.add_argument("--workspace", metavar="NAME")
+    sub.add_parser("add").add_argument("items", nargs="+", metavar="NNN")
     pf = sub.add_parser("preflight")
     pf.add_argument("examples", nargs="+", metavar="NNN")
     pf.add_argument("--after-setup", default="", metavar="NNN,...")
@@ -1002,7 +1221,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "session":
         print(fixed_session(run, args.new, args.use))
     elif args.command == "stage":
-        return cmd_stage(run, args.name, args.prompt, args.model, args.effort, args.memory)
+        return cmd_stage(run, args.name, args.prompt, args.model, args.effort, args.memory, args.example, args.workspace)
+    elif args.command == "add":
+        return cmd_add(run, args.items)
     elif args.command in ("preflight", "claims"):
         set_up = [n for n in getattr(args, "after_setup", "").split(",") if n]
         bad = [n for n in args.examples + set_up if not (len(n) == 3 and n.isdigit())]

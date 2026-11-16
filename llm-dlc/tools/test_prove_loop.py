@@ -502,6 +502,26 @@ class ProveLoopTest(unittest.TestCase):
         self.assertIn("stopped once item 901 was finished, as asked", self.record())
 
     @cost("tool")
+    def test_an_example_added_while_the_loop_runs_is_taken_after_the_ones_it_has(self):
+        # watch.py add: an example a setup prepared in its own workspace while the loop proved, merged since
+        self.more_examples("902")
+        self.run_dir.mkdir(parents=True)
+
+        def leave():
+            until = time.time() + 60
+            while time.time() < until and not self.events("cycle-start"):
+                time.sleep(0.05)
+            conductor.cmd_command(self.run_dir, "add 902 901")
+        thread = threading.Thread(target=leave, daemon=True)
+        thread.start()
+        r = self.loop("901")
+        thread.join(5)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.instructions(), [INSTRUCTION, INSTRUCTION.replace("901", "902")])
+        self.assertIn("item 901: the loop has it already", r.stdout + r.stderr)
+        self.assertIn("  - item 902 added to the list", self.record())
+
+    @cost("tool")
     def test_session_continues_the_session_that_evaluated_the_changes(self):
         fixed = "1a1a1a1a-2222-4333-8444-555566667777"
         here = self.config / "projects" / str(self.root).replace("/", "-").replace(".", "-").replace("_", "-")

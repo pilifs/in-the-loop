@@ -511,7 +511,9 @@ HELP='while it runs, type a command and Enter:
   inf       run until stopped
   ?         show where the loop stands'
 [[ -n "$TEMPLATE" ]] && HELP+='
-  item      end once the item under way is finished, however many cycles it takes'
+  item      end once the item under way is finished, however many cycles it takes
+  add X Y   take items X and Y after the ones the loop has (from the conductor:
+            watch.py add, for an example a setup prepared while the loop ran)'
 
 # The loop and the terminal reader share "cycle remaining" in a state file:
 # the cycle under way, and how many cycles start after it ("inf" for no limit).
@@ -549,7 +551,34 @@ standing() {
   return 0
 }
 
+# Items the loop takes after the ones it has: only where PENDING lives, the
+# loop's own shell (apply_commands), not the terminal reader's subshell.
+add_items() {
+  local item have
+  if [[ -z "$TEMPLATE" ]]; then log "this loop has no items to add to"; return; fi
+  if [[ "$BASHPID" != "$$" ]]; then
+    log "add reaches the loop through its conductor (watch.py add), not the terminal"; return
+  fi
+  for item in "$@"; do
+    have=
+    for i in "${PENDING[@]}" "${WAITING[@]}" "$current"; do [[ "$i" == "$item" ]] && have=1; done
+    if [[ -n "$have" ]] || grep -qxF -- "$item" <<<"$(done_items)"; then
+      log "item $item: the loop has it already"
+      continue
+    fi
+    PENDING+=("$item")
+    ITEMS+=("$item")
+    log "item $item added: it comes after ${PENDING[*]:0:${#PENDING[@]}-1}"
+    note "  - item $item added to the list"
+  done
+}
+
 apply() {
+  if [[ "${1,,}" =~ ^[[:space:]]*add[[:space:]]+(.+)$ ]]; then
+    # shellcheck disable=SC2086  # the items are words
+    add_items ${BASH_REMATCH[1]}
+    return
+  fi
   local line=${1,,} n
   line=${line// /}
   case "$line" in

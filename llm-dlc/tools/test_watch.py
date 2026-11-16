@@ -218,6 +218,54 @@ class SummaryTest(Made):
         self.assertEqual(shipped, watch.DEFAULT_TEMPLATE.strip("\n"), "the page and the fallback say the same")
 
 
+@cost("tool")
+class SetupTest(Made):
+    def test_each_setup_attempt_is_recorded_with_its_example_and_told_to_the_watcher_once(self):
+        self.call("stage", "setup", "Set 290 up", "--example", "290")
+        with mock.patch.dict(os.environ, {"STANDIN_FAIL": "1"}):
+            self.call("stage", "setup", "Set 290 up again", "--example", "290")
+        first, second = self.run.read()["setups"]
+        self.assertEqual((first["example"], first["attempt"], first["ok"], second["attempt"], second["ok"]),
+                         ("290", 1, True, 2, False))
+        self.assertIn("three changes", first["report"])
+        self.run.update(lastSummary={"time": watch.now()})  # no summary due
+        told = [watch.next_thing(self.run, 10**9) for _ in range(3)]
+        self.assertEqual([t and t["kind"] for t in told], ["setup", "setup", None])
+        self.assertEqual(told[0]["attempt"]["attempt"], 1)
+        m = watch.measures(self.run, [], {})
+        self.assertEqual((m["setupRework"], m["firstAttemptInvoked"], m["toFirstCycle"]), ({"290": 1}, [1, 1], None))
+
+    def test_a_setup_under_way_says_its_command_and_its_last_validation(self):
+        log = self.run.dir / "stage-setup.jsonl"
+        self.run.dir.mkdir(parents=True)
+        lines = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "id": "a", "name": "Bash",
+                  "input": {"command": "python3 examples/tools/validate_example.py --replay 290", "description": "Check 290"}}]}},
+                 {"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "a", "content": "ok   290 form\npassed"}]}},
+                 {"type": "assistant", "message": {"content": [{"type": "tool_use", "id": "b", "name": "Bash",
+                  "input": {"command": "build.py 290 --task replay", "description": "Replay 290 on a JVM"}}]}}]
+        log.write_text("".join(json.dumps(line) + "\n" for line in lines))
+        attempt = {"example": "290", "stage": "setup", "attempt": 1, "started": conductor.now(), "log": str(log), "offset": 0}
+        self.run.update(setups=[attempt])
+        os.utime(log, (time.time() - 700, time.time() - 700))
+        (a,) = watch.setups_state(self.run)["active"]
+        self.assertEqual((a["toolCalls"], a["command"], a["validation"]), (2, "Bash: Replay 290 on a JVM", "passed"))
+        s = {"time": time.time(), "setups": watch.setups_state(self.run), "ended": None, "examples": [], "asked": None,
+             "turn": {}, "item": None, "jobs": {"pending": [], "running": [], "collected": {}}, "verification": 1,
+             "mergeQueue": [], "decisions": {}}
+        self.assertTrue(any("one command running for" in line for line in watch.attention(s)), watch.attention(s))
+        self.run.update(lastSummary={"time": watch.now()})  # no summary due
+        told = watch.next_thing(self.run, 10**9)
+        self.assertEqual((told["kind"], told["command"]), ("setup-quiet", "Bash: Replay 290 on a JVM"))
+        self.assertIsNone(watch.next_thing(self.run, 10**9), "told once")
+
+    def test_add_gives_a_running_loop_more_examples_and_refuses_when_none_runs(self):
+        self.assertEqual(self.call("add", "290")[0], 1)
+        self.loop("288", "289")
+        self.assertEqual(self.call("add", "290")[0], 0)
+        self.assertEqual((self.run.dir / "commands").read_text(), "add 290\n")
+        self.assertEqual(self.run.run_json()["examples"], ["288", "289", "290"])
+
+
 class PlanTest(Made):
     PLAN = {"schema": "prove-plan/v1", "request": "290", "order": ["290"], "examples": [
         {"id": "290", "review": "designed", "entry": {"target": "a.B#c()Z", "invocation": "route"},

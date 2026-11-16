@@ -424,9 +424,17 @@ The watcher acts in this order:
    claims: that one waits for the user. Either way the acceptance keeps the claim files' hashes, so a later run
    reuses the review while they are unchanged.
 4. **`toSetUp`:** a catalog entry is not a fault. The watcher has every one set up before its proof starts, one
-   setup session for each, one after another in the plan's order, each with the catalog entry's brief below. Then it
-   checks again with `--after-setup NNN,NNN`, naming them: an entry that is still not prepared is in `leftOut` and
-   no longer counts against the others. The watcher says which was left out and why, and goes on without it.
+   setup session for each (`watch.py stage setup --example NNN`, which records the attempt), one at a time in the
+   plan's order, each with the catalog entry's brief below. Then it checks again with `--after-setup NNN,NNN`,
+   naming them: an entry that is still not prepared is in `leftOut` and no longer counts against the others. The
+   watcher says which was left out and why, and goes on without it.
+   Preparing overlaps proving. Once the claims are accepted, the loop starts as soon as one example is ready, and
+   the next ones are set up beside it, one setup worker and one proof worker, each setup in the jj workspace
+   `prove-setup` (`--workspace prove-setup`; `watch.py` makes it from the loop's line), so that they never share a
+   working copy and each commit says which worker made it. A setup there that ends is told by `wait`; the watcher
+   queues its merge (`watch.py merge add prove-setup`), makes it between two examples as below, and gives the loop
+   the example (`watch.py add NNN`, which the loop takes after the ones it has). A loop that has ended meanwhile is
+   started again on what is left. The claims are still accepted once, for the batch, before any setup.
 5. **`toRepair` and `toClassify`:** a prepared example that lacks something is a fault, and one that doesn't record
    how a proof task is invoked lacks the setup's last deliverable. The watcher makes one attempt to put them right:
    a setup session (`watch.py stage setup`, Opus 5.5 at high effort) given the check's output, the plan and the
@@ -479,14 +487,16 @@ right what the check names, in the examples it names, and nothing else:
 
 ### Watching the loop
 
-`watch.py wait` blocks until one of five things, prints it, and is run again:
+`watch.py wait` blocks until one of seven things, prints it, and is run again:
 
 | It prints | What the watcher does |
 |---|---|
-| A summary | Prints it as it is. One comes every 30 minutes (`--summary-interval SECONDS` in the request, or `watch.py interval SECONDS` at any time, changes that; the number is kept for later runs in the same checkout), from [`watch-summary-template.md`](watch-summary-template.md): what changed since the last one first, then the loop (the cycle, how long it has run, the session's tool calls and its last output), the examples (done, waiting on a proof, not started), the example under way (its claims by answer), the verification jobs, and what needs attention |
+| A summary | Prints it as it is. One comes every 30 minutes (`--summary-interval SECONDS` in the request, or `watch.py interval SECONDS` at any time, changes that; the number is kept for later runs in the same checkout), from [`watch-summary-template.md`](watch-summary-template.md): what changed since the last one first, then the loop (the cycle, how long it has run, the session's tool calls and its last output), the examples (done, waiting on a proof, not started), the example under way (its claims by answer), the verification jobs, the setups (each under way and the last done) and the measures of the run (the time to the first proof cycle, the setups redone, the examples whose first setup recorded every invocation, the claims answered per dollar), and what needs attention |
 | A question of the loop's | Judges it and answers with the `conductor.py decide` line printed beside it. The three questions are below |
 | A proof that has come in | Tells the user. The loop takes the example up again by itself when it next changes example |
 | The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
+| A setup that has ended (`"kind": "setup"`) | Checks it (`preflight --after-setup`); for one in a workspace, queues its merge and, once it is merged, `watch.py add NNN` |
+| A setup gone quiet (`"kind": "setup-quiet"`) | A setup with one command running past ten minutes, or nothing written for twenty: looks at its stream before acting, since a build or a replay often takes long |
 | A verification loop it started (`"kind": "verification"`) | Tells the user: none was running while jobs waited, and `wait` has started one. Nothing else to do |
 
 **After each cycle** the loop asks whether the example is done (`cycle`, five minutes to answer). `wait` prints the
@@ -511,7 +521,8 @@ runs from a private copy of its scripts, so a merge can't pull them from under i
 - The user asks for a merge at any time, and the watcher queues it: `watch.py merge add NAME`. At this question the
   watcher merges each queued workspace into the loop's line, in the loop's checkout: a merge commit of the line's
   tip and the workspace's (`jj new @- NAME@-`), its conflicts resolved, `python3 llm-dlc/tools/sync.py regenerate`
-  in a development checkout, the default tests run, the merge committed, then `watch.py merge done NAME`. A merge
+  in a development checkout, what came in checked (`examples/tools/validate_example.py NNN` for the examples it
+  brings, the default tests run when it brings shared code), the merge committed, then `watch.py merge done NAME`. A merge
   that does not come out clean is undone (`jj abandon`), left queued, and reported to the user.
 - The user asks to stop after the example under way at any time: `watch.py stop-after example` (`cycle` ends it
   sooner, `never` takes it back). The loop then ends by itself at this point. The watcher answers `stop` here only
