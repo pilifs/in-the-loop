@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-15T23:45:06.295Z",
-  "duration_seconds": 27114,
+  "ended": "2026-11-16T00:12:55.883Z",
+  "duration_seconds": 28784,
   "stats": {
     "turns": 10,
-    "api_calls": 942,
-    "tool_calls": 960,
+    "api_calls": 963,
+    "tool_calls": 981,
     "tool_errors": 3,
     "compactions": 5,
     "peak_context_tokens": 466839,
     "usage": {
-      "input_tokens": 1884,
-      "output_tokens": 1074985,
-      "cache_read_input_tokens": 245286562,
-      "cache_creation_input_tokens": 2571732
+      "input_tokens": 1926,
+      "output_tokens": 1095040,
+      "cache_read_input_tokens": 253263052,
+      "cache_creation_input_tokens": 2604107
     }
   },
   "tools": {
-    "Bash": 919,
+    "Bash": 939,
     "Read": 24,
-    "Write": 10,
+    "Write": 11,
     "Monitor": 4,
     "ToolSearch": 3
   },
@@ -40,6 +40,7 @@
     "/tmp/e285/commit2-body.txt",
     "/tmp/e285/stage2/interface_regression.rs",
     "/tmp/e286/readme-section.md",
+    "/tmp/e286/records.py",
     "/tmp/e286/submit.sh",
     "lib/src/bmc/strings.rs",
     "lib/src/given.rs",
@@ -121,24 +122,24 @@
     {
       "index": 5,
       "started": "2026-11-15T22:19:27.416Z",
-      "ended": "2026-11-15T23:45:06.295Z",
+      "ended": "2026-11-16T00:12:55.883Z",
       "turns": 1,
-      "api_calls": 182,
+      "api_calls": 203,
       "usage": {
-        "input_tokens": 364,
-        "output_tokens": 135589,
-        "cache_read_input_tokens": 37466301,
-        "cache_creation_input_tokens": 349813
+        "input_tokens": 406,
+        "output_tokens": 155644,
+        "cache_read_input_tokens": 45442791,
+        "cache_creation_input_tokens": 382188
       },
-      "peak_context_tokens": 364473
+      "peak_context_tokens": 396848
     }
   ],
   "log": {
-    "sha256": "32d7fd7d3bad082e21f5b0775bd45fbbabd565fdfb282695d247798617807754",
-    "bytes": 19532427,
-    "lines": 7467,
-    "gzip_bytes": 2851251,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/32d7fd7d3bad082e21f5b0775bd45fbbabd565fdfb282695d247798617807754.jsonl.gz"
+    "sha256": "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a",
+    "bytes": 19856474,
+    "lines": 7630,
+    "gzip_bytes": 2889884,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -189,6 +190,14 @@
       "summary": "jvmcontract: claims javac compiles, String and String[] inputs, String, stream and regex models, induction and lemmas, for example 286's decision claim (verification pending)",
       "body": "Example 286 (CVE-2022-22968, Spring Framework 5.3.18 to 5.3.19) states its decision claim in Java over the adapter entry allowed(String[] allowedPatterns, String[] disallowedPatterns, String field): a field some disallowed pattern matches ignoring ASCII case is denied, the match written with streams, lambdas and java.util.regex. Until now jvmcontract refused it at the String[] parameters, at the expressions, and at every String, StringBuilder, stream and regex call on the way. With this change the unchanged claim is proved on 5.3.19 and refuted on 5.3.18 and on the constructed mutant at small bounds inline (3 code units and 3 elements: 8 s, 7 s and 6 s in an unoptimized build), each witness run in the harness on a JVM; the frozen bound of 8 is queued.\n\nWhat a property check gained. A String parameter is a String of its own of at most --max-array-length code units, and a String[] an array of such Strings or nulls. An assumption or assertion the tool's own expression compiler does not take is compiled by javac into a class beside the harness and run as bytecode, as the target is; a witness of such a claim is run in the harness on a JVM, so a refutation rests on Java's own libraries and not on a model. prove --decreases EXPR proves a method that calls itself by induction on a measure: a recursive call on arguments within the assumption and the bound whose measure is smaller is taken to satisfy the property, and any other recursive call ends the check with no verdict. prove --lemmas FILE proves each lemma first and then lets its statement stand in for the calls of its method where the arguments are within the bound it was proved at, the method running as written elsewhere; a method that writes a field or compares its arguments by identity is refused as a lemma's subject.\n\nWhat the own checker gained. String.substring, indexOf, endsWith, toLowerCase on ASCII (under the stated assumption that the default locale is not Turkish, Azeri or Lithuanian), split at one character and chars; StringBuilder's constructors, length, indexOf, substring, delete and toString; lambdas, method references and four stream model classes run as the loops they stand for; Pattern.quote, String.join, Pattern.compile, matcher and matches as far as a claim states a glob with them, a pattern held as its pieces so that a case-insensitive match and an exact match of lower-cased Strings are one formula; class literals, Class.forName and the class path's loader under a stated assumption, for spring-jcl's logging probes. Each new String method has an evidence record in values::OPERATIONS (String model 3) whose 85 boundary cases give one outcome on the JVM, in the interpreter and in the checker; the interpreter's substring and toLowerCase now return the JDK's objects (the String itself, the literal empty String). What a model takes for granted about the JVM is listed among a statement's assumptions.\n\nPaths. Once more than 1024 paths have been explored (Options::merge_heaps_after), paths whose heaps are not of one shape are merged into the union of their heaps, each first rid of dead locals and unreachable objects; a loop's exit is then a join, and waiting paths are resumed in the order of the loops they are in. Below that count the engine merges as before. The count is a measured compromise: merging heaps from the first path took the values sweep's list totals from 0.07 s to over a minute at 6 lines, since the two sums are then no longer one formula by gate hashing, and waiting for 1024 paths costs example 286's decision 1.7 times its time at 5 code units against 512. An array of computed size is taken within one more than the bound (a table over a bounded String's positions).\n\nTwo leaks found by the default run and closed. The new StringBuilder, Class and ArrayList models had been added to gaps::exact_jdk_call, which JBMC's gap listing and the contract reader also ask: JBMC's stubs for those calls would have counted as exact, and a contract for StringBuilder.<init>() was refused. They are now gaps::modelled_jdk_call, the own checker's alone, and a contract given for a modelled call is applied in place of the model, so the three contract tests of lib/tests/integration.rs pass unchanged. And a call the checker has no model of on a builder it holds the content of (append, reverse) now drops that content: a later modelled call on the builder is refused by name instead of answering from stale content.\n\nexamples/286-.../proofs/prove.py TASK runs vulnerable-security, fixed-security or mutant-security from target.json and the frozen claim file, on the revision's pinned JARs (each checked against its SHA-256) with the adapter compiled against them, and builds the mutant as sources.lock.json says. proofs/simple-match.contract is the lemma: PatternMatchUtils.simpleMatch on ASCII Strings is the claim's own regular expression, by induction on the pattern's length. These are proofs beside the example route, which runs the verifier on the original artifact alone and still stops at DataBinder's receiver (VF-027); the example's records are not changed in this commit and follow with the results.",
       "log_sha256": "32d7fd7d3bad082e21f5b0775bd45fbbabd565fdfb282695d247798617807754"
+    },
+    {
+      "change_id": "vurkswvtpmyqxlwmznmvvtxnrtpplsuk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's decision claim is decided beside the route: established on 5.3.19, refuted on 5.3.18 and on the mutant, at the frozen bound",
+      "body": "The three decision jobs queued with zrzuurtk have finished, each as expected, on the unchanged claim claims/disallowed-field-denied-ignoring-case.json through the adapter entry its first assumption names, with maxArrayLength 8, unwind 16, the own checker and strict gaps. fixed-security (job 20261115-234439-example-286-fixed-security-through-the-a): established on Spring Framework 5.3.19 in 920 s after the simpleMatch lemma's own proof in 92 s (4,889 paths, 2.6 million variables, 8.7 million clauses, 1.41 GiB), not vacuous; its trial at 6 took 189 s. vulnerable-security (20261115-234439-example-286-vulnerable-security-through): refuted on 5.3.18 in 409 s at allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\"), which returns true. mutant-security (20261115-234440-example-286-mutant-security-through-the): refuted on the constructed mutant in 398 s at allowed(allowedPatterns=null, disallowedPatterns={null, null, null, null, null, null, \"*Y\"}, field=\" yzzy\"). Both witnesses were run in the harness on a JVM (JDK 25.0.5), so the refutations rest on the releases' bytecode and Java's own java.util.regex, not on a model. The results themselves are collected by the verification loop; this commit cites them by job.\n\nThe example's records say what was decided and what was not. README.md has a section with the verdicts, the witnesses, how to rerun (python3 proofs/prove.py TASK), what the proof is (the lemma by induction, one meaning for a regular expression) and what the verdicts rest on (the lemma, the checker's models of the JDK calls on the way, and two stated assumptions about the locale and the class loader). example.json has four dated notes and a verdict label. In target.json the three predicted blockers the proofs reached each keep their text and gain a dated note saying they were reached and closed outside the route, the fourth (the bean wrapper's reflection) a note that it is still not reached, and handoff.next says what is next. VF-027 has an update line.\n\nNot decided, and said so: these are proofs beside the route, not route receipts. The route runs the verifier on the original artifact alone, has no adapter entry and passes no lemma, so all six proof tasks stay blocked there, their packets and rerun checks unchanged. preservation, tried through the adapter entry, stops at the String[] parameter in the regression check; the protected-state tasks stop at java.util.ArrayList.<init>(int) in MutablePropertyValues.<init>, before the bean wrapper's reflection. The proof-tier job queued with zrzuurtk (20261115-234440-the-proof-tier-after-example-286-s-engin) is still running.",
+      "log_sha256": "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a"
     }
   ],
   "logs": {
@@ -208,6 +217,12 @@
       "bytes": 9172326,
       "lines": 3189,
       "gzip_bytes": 1373766,
+      "url": null
+    },
+    "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a": {
+      "bytes": 19856474,
+      "lines": 7630,
+      "gzip_bytes": 2889884,
       "url": null
     },
     "876286c9c8daef8b911794c6c7df1853c3d838c29acb5c39dcb790b7e568f4d5": {
