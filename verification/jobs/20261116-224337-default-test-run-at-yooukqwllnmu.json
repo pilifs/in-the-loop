@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-224337-default-test-run-at-yooukqwllnmu",
+  "title": "Default test run at yooukqwllnmu",
+  "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change yooukqwllnmu, \"The default test run is a verification job nobody waits for, only the newest of those waiting runs, the watcher triages \", queued to check the job end to end, in the workspace prove-setup. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+  "kind": "other",
+  "capabilities": [
+    "tests:default"
+  ],
+  "links": {
+    "commits": [
+      "yooukqwllnmu"
+    ]
+  },
+  "expected": "exits 0: every test of the default run passes",
+  "submitted": {
+    "at": "2026-11-16T22:43:37+00:00",
+    "session": "6c5c7798-21e3-46a5-b989-5313736bdc7f"
+  },
+  "revision": "76862913606eab9d654ee63d319f3795accd8462",
+  "requires": [
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "6G",
+    "duration": "25m",
+    "timeout": "1h",
+    "notes": "the default run took about 16 minutes inline in 2026-11 (11 Rust, 5 Python), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "steps": [
+    {
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
