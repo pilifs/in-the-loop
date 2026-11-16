@@ -261,6 +261,7 @@ cd "$ROOT" || exit 1
 
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
+isolation || exit 1
 
 # A brief for a stream of parallel work names its jj workspace: run anywhere else,
 # its commits would land on another stream's branch. The script runs from the
@@ -495,7 +496,7 @@ run_claude() {
   FRESH=
   (
     [[ -n "${LOOP_WATCH_PID:-}" ]] && printf '%s\n' "$BASHPID" >"$LOOP_WATCH_PID"
-    exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" \
+    exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" "${ISOLATION[@]}" \
       --permission-mode auto --output-format stream-json --verbose </dev/null
   ) | tee ${2:+"$2"} | show_progress
 }

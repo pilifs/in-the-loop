@@ -25,7 +25,7 @@ repository holds what the steps stand on.
 
 | Step | Runs in | Stands on |
 |---|---|---|
-| 1. Set up, verify and measure the machine | a subagent on Opus, only when something needs setting up | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough) |
+| 1. Set up, verify and measure the machine | a subagent on Opus, only when something needs setting up; the check of Claude Code in the orchestrating session, every run | [the checkout](#the-checkout-on-a-users-machine), [the machine](#is-the-machine-enough), [what Claude Code has loaded](#what-claude-code-has-loaded) |
 | 2. Assess the changes and set the examples up | the orchestrating session | what the [example-targets loop](loops/example-targets.md) did for examples 285 to 300, for each change. [`examples/README.md`](../examples/README.md#add-an-example): past examples as the measure (`find.py`, their notes and receipts, `pipeline.py report`'s calibration), a target sidecar with its claims, `build.py --plan` and a replay task. [`changes.py`](#many-changes-and-preparing-without-proving) says what is already prepared |
 | 3. Prove it | a fork of that session, in a moonshot loop it conducts | [the proof loop](#the-proof-loop) |
 | 4. Report, and offer to contribute | the orchestrating session | [contributing back](#contributing-back) |
@@ -101,6 +101,7 @@ Without numbers it lists the checkout's own examples, 900 to 999, by number; wit
 | `.claude/skills/prove-java-change` | A link to the skill's folder, which makes it a project skill in this repository |
 | [`tools/mode.py`](tools/mode.py) | Which [mode](#runtime-mode-and-prove-java-change) a checkout is in; `sync.py` asks it |
 | [`tools/doctor.py`](tools/doctor.py) | [Whether the machine is enough](#is-the-machine-enough), and a budget for it |
+| [`tools/claude_setup.py`](tools/claude_setup.py) | [What Claude Code has loaded](#what-claude-code-has-loaded) besides the plugin, and the clean launch |
 | [`tools/changes.py`](tools/changes.py) | [Which examples are prepared, decided or still to prove](#many-changes-and-preparing-without-proving) |
 | [`tools/prove-loop.sh`](tools/prove-loop.sh), [`tools/feature-loop.sh`](tools/feature-loop.sh) | [The proof loop](#the-proof-loop), and the loop under it |
 | [`tools/conductor.py`](tools/conductor.py) | [The conductor's](#the-conductor) side of that loop |
@@ -175,10 +176,49 @@ describes: a reserve for the person and the operating system, one loop's memory 
 runner. It is a proposal: the runner's share goes into `verification/pipeline.local.toml` (not committed), and the
 loop's is its memory cap (`FEATURE_LOOP_MEMORY_MAX`).
 
+## What Claude Code has loaded
+
+Anything a session holds besides the plugin and the checkout is context from somewhere else: another plugin's
+skills, an MCP server's or a claude.ai connector's tools and instructions, the user's memory files, their own
+skills, agents and hooks. Step 2 writes the claims in the session the user started, and the proof loop is a fork of
+it, so that context reaches both, and it may lead to unexpected results. Step 1 checks for it on every run:
+
+```bash
+python3 llm-dlc/tools/claude_setup.py check [--json]   # the warning, what is loaded, whether a clean launch works here
+python3 llm-dlc/tools/claude_setup.py launch [ARG ...] # start a clean session in this checkout
+python3 llm-dlc/tools/claude_setup.py flags            # the clean launch's flags, one per line, for the loop scripts
+```
+
+- **A clean session** loads this checkout (its `CLAUDE.md`, its settings, its skills) and nothing of the user's own
+  setup. It is a matter of launch flags: `--setting-sources project,local` leaves the user's settings out, and with
+  them their plugins, hooks, skills and agents; `--strict-mcp-config` and `ENABLE_CLAUDEAI_MCP_SERVERS=false` leave
+  out every MCP server and connector; and the memory files of the user and of the directories above the checkout
+  are excluded by path (`claudeMdExcludes`). Nothing in the user's configuration is edited, so nothing has to be put
+  back afterwards. Logging in, the model and permissions work as usual.
+- **The sessions the skill starts are clean by themselves** in a runtime checkout: the proof loop's fork, its
+  compactions and its cycles, and the verification loop's runs ([`loop-common.sh`](tools/loop-common.sh)'s
+  `isolation`). This is the part the skill can turn off without asking, and `check` proves it on the machine by
+  starting one. `prove-loop.sh --no-isolation` starts them as a plain `claude`, for a machine where a clean launch
+  does not answer (a login kept in the user's settings, for one). A development checkout's loops are not isolated:
+  its authors' setup is theirs.
+- **The session the user is in can't unload what it holds.** `check` starts two one-word sessions on the smallest
+  model, without tools or a transcript, and compares what each reports at start-up: one started as the user's
+  session was (its directory and launch flags, from the process `CLAUDE_PID` names), one clean. What only the first
+  has is what the session has loaded, with the memory files and hooks it reads and the plugins Claude Code's own
+  listing calls enabled. When that is not empty, `check` prints the command of a clean session (`launch`, on
+  Fable 5.2 at high effort), where the skill is run again as `/prove-java-change`: the checkout carries the skill
+  as a project skill. The user may continue in the session they have instead, which is not recommended.
+- **What it can't do.** Settings an administrator manages (`/etc/claude-code/`) apply to every session, and `check`
+  lists them. A non-interactive probe can report less than an interactive session holds (it has been seen to
+  report no connectors in a directory with a memory file of its own), so the skill adds what the session can see
+  in its own context: nothing listed is wrong, and something may be missing. The first probe starts the user's MCP
+  servers and runs their session hooks once, as starting Claude Code there does. In a development checkout `check`
+  refuses: its hooks would trace the probes.
+
 ## The proof loop
 
 ```bash
-llm-dlc/tools/prove-loop.sh --fork SESSION --memory SIZE NNN [NNN ...]
+llm-dlc/tools/prove-loop.sh --fork SESSION --memory SIZE [--no-isolation] NNN [NNN ...]
 ```
 
 [`prove-loop.sh`](tools/prove-loop.sh) runs [`feature-loop.sh`](tools/feature-loop.sh)'s `prove-change` moonshot over
@@ -195,6 +235,9 @@ Fable 5.2 at high effort, the instruction and nothing else. It works the same in
 - **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
   does. `prove-loop.sh` starts the [verification loop](README.md#unattended-loops) for them unless one already runs
   for this repository, and stops it when the loop has ended and the queue is clear.
+- **Clean sessions.** In a runtime checkout every session of the loop starts with this checkout only, and none of
+  the user's own Claude Code setup ([what Claude Code has loaded](#what-claude-code-has-loaded)); `--no-isolation`
+  starts them as a plain `claude`.
 - **The cap.** The loop runs in a systemd scope with a memory cap (`--memory`; `doctor.py`'s budget proposes one). On
   a machine without systemd user scopes it refuses to start unless `FEATURE_LOOP_UNCAPPED=1` says to run with none.
 - **The run's state** is in `llm-dlc/loop-summaries/prove-change/` (gitignored): `run.json` (the session, the

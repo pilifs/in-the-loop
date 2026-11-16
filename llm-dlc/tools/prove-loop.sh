@@ -3,7 +3,7 @@
 # (llm-dlc/runtime.md#the-proof-loop), in a development or a runtime checkout.
 #
 # Usage: llm-dlc/tools/prove-loop.sh [--fork SESSION] [--cycles N] [--memory SIZE]
-#                                    [--no-verification] EXAMPLE [EXAMPLE ...]
+#                                    [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]
 #
 # It gives each example, one per cycle, to feature-loop.sh's `prove-change`
 # moonshot: "Formally prove example {} as elegantly and efficiently as
@@ -21,6 +21,12 @@
 #                    By default one is started unless one already runs on this
 #                    machine, and stopped when the loop has ended and the queue is
 #                    clear, or after PROVE_LOOP_DRAIN seconds (default 3600).
+#
+#   --no-isolation   start the loop's sessions as a plain `claude`. By default, in a
+#                    runtime checkout, they start clean: this checkout only, with
+#                    none of the user's own Claude Code setup (claude_setup.py). For a
+#                    machine where a clean launch does not work, which the skill's
+#                    check reports; not recommended otherwise.
 #
 # The run's state is in llm-dlc/loop-summaries/prove-change/ (gitignored):
 #   lock            held while a run is under way: one at a time in a checkout
@@ -42,7 +48,7 @@ VERIFY=1
 EXAMPLES=()
 
 usage() {
-  echo "usage: prove-loop.sh [--fork SESSION] [--cycles N] [--memory SIZE] [--no-verification] EXAMPLE [EXAMPLE ...]" >&2
+  echo "usage: prove-loop.sh [--fork SESSION] [--cycles N] [--memory SIZE] [--no-verification] [--no-isolation] EXAMPLE [EXAMPLE ...]" >&2
   exit 2
 }
 
@@ -52,6 +58,7 @@ while (( $# )); do
     --cycles) [[ $# -ge 2 && "$2" =~ ^[1-9][0-9]*$ ]] || usage; CYCLES=$2; shift 2 ;;
     --memory) [[ $# -ge 2 ]] || usage; export FEATURE_LOOP_MEMORY_MAX=$2; shift 2 ;;
     --no-verification) VERIFY=; shift ;;
+    --no-isolation) export LOOP_ISOLATION=0; shift ;;
     -*) usage ;;
     *) EXAMPLES+=("$1"); shift ;;
   esac
@@ -63,6 +70,11 @@ UUID='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
 cd "$ROOT" || exit 1
 source llm-dlc/tools/loop-common.sh
+isolation || exit 1
+# The fork's one turn must not run a development checkout's hooks, which would trace the copied transcript as a
+# session of this repository: there it reads the user's settings only. A clean launch reads none of the user's.
+FORK_SOURCES=(--setting-sources user)
+(( ${#ISOLATION[@]} )) && FORK_SOURCES=("${ISOLATION[@]}")
 
 for example in "${EXAMPLES[@]}"; do
   [[ "$example" =~ ^[0-9]{3}$ ]] && compgen -G "examples/$example-*/example.json" >/dev/null || {
@@ -108,7 +120,7 @@ if [[ -n "$FORK" ]]; then
   log "starting session $SESSION as a fork of $FORK"
   claude -p "This conversation goes on, from here, as the proof loop it prepared: you are now the session that proves example(s) ${EXAMPLES[*]} in the checkout at \`$ROOT\`, and no longer the one orchestrating. The conversation you were forked from carries on separately and watches this loop from outside; it will not talk to you, and you don't report to it. From now on work only in that checkout and follow its CLAUDE.md. Tools are off for this one turn: reply in a few sentences with what you know about the change and the example that the proof will need. The loop's instruction follows." \
     --resume "$FORK" --fork-session --session-id "$SESSION" --model "$MODEL" --effort "$EFFORT" \
-    --setting-sources user --tools "" --output-format stream-json --verbose </dev/null | show_progress
+    "${FORK_SOURCES[@]}" --tools "" --output-format stream-json --verbose </dev/null | show_progress
   [[ -n "$copied" ]] && rm -f -- "${here:?}/${FORK:?}.jsonl"
   if [[ ! -f "$here/$SESSION.jsonl" ]]; then
     log "the fork of session $FORK made no session $SESSION"
@@ -116,7 +128,7 @@ if [[ -n "$FORK" ]]; then
   fi
   log "compacting the fork"
   claude -p "/compact Keep what proving example(s) ${EXAMPLES[*]} needs: the change, its revisions and sources, the claims and their bounds, what was prepared and where, the machine's budget, and anything learned about the code. Drop the setup and installation steps." \
-    --resume "$SESSION" --model "$MODEL" --effort "$EFFORT" \
+    --resume "$SESSION" --model "$MODEL" --effort "$EFFORT" "${ISOLATION[@]}" \
     --permission-mode auto --output-format stream-json --verbose </dev/null | show_progress
   (( PIPESTATUS[0] == 0 )) || { log "the compact failed; nothing started"; exit 1; }
 fi

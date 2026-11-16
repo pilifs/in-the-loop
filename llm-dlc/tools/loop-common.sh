@@ -3,6 +3,26 @@
 
 log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*"; }
 
+# ISOLATION: the launch flags of a session that loads this checkout and nothing of
+# the user's own Claude Code setup (claude_setup.py; llm-dlc/runtime.md, "What Claude
+# Code has loaded"). Set in a runtime checkout, where the session works for a user
+# whose plugins, MCP servers and memory files are no part of the task, and empty in
+# a development one, where the authors' setup is theirs. LOOP_ISOLATION=1 or 0 says
+# otherwise. Call it from the root of the repo, before the first claude.
+isolation() {
+  ISOLATION=()
+  local on=${LOOP_ISOLATION:-}
+  [[ -z "$on" && "$(python3 llm-dlc/tools/mode.py 2>/dev/null)" == runtime ]] && on=1
+  [[ "$on" == 1 ]] || return 0
+  mapfile -t ISOLATION < <(python3 llm-dlc/tools/claude_setup.py flags)
+  if (( ${#ISOLATION[@]} == 0 )); then
+    log "claude_setup.py gave no flags: the sessions can't be started clean (LOOP_ISOLATION=0 starts them as a plain claude)"
+    return 1
+  fi
+  export ENABLE_CLAUDEAI_MCP_SERVERS=false
+  log "sessions start clean: this checkout only, none of the user's own Claude Code setup"
+}
+
 # Print each stream-json event as it arrives: a turn in text mode stays silent
 # until it ends, which can be hours. This only displays, so it must outlive any
 # line it cannot read, or a closed pipe would kill claude.

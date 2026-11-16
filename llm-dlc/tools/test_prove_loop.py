@@ -280,6 +280,38 @@ class ProveLoopTest(unittest.TestCase):
         self.assertEqual(self.instructions(), [INSTRUCTION])
         self.assertEqual(conductor.read_events(self.run_dir)[-1]["status"], 1)
 
+    def runtime(self):
+        """Make the made-up checkout one that can start clean sessions, and return the environment of a runtime one."""
+        for name in ("mode.py", "claude_setup.py"):
+            shutil.copy(REPO / "llm-dlc/tools" / name, self.root / "llm-dlc/tools" / name)
+        return {"IN_THE_LOOP_MODE": "runtime"}
+
+    @cost("tool")
+    def test_in_a_runtime_checkout_every_session_of_the_loop_starts_clean(self):
+        r = self.loop("--fork", PARENT, "901", **self.runtime())
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        calls = self.calls()
+        self.assertEqual(len(calls), 5)  # fork, compact, cycle, the compact after it, summary
+        for call in calls:
+            self.assertEqual(call["args"][call["args"].index("--setting-sources") + 1], "project,local", call["args"])
+            self.assertEqual(call["args"].count("--setting-sources"), 1)
+            self.assertIn("--strict-mcp-config", call["args"])
+            excluded = json.loads(call["args"][call["args"].index("--settings") + 1])["claudeMdExcludes"]
+            self.assertIn(str(self.config / "CLAUDE.md"), excluded)
+        self.assertIn("sessions start clean", r.stdout)
+
+    @cost("tool")
+    def test_no_isolation_and_a_development_checkout_start_the_sessions_as_a_plain_claude(self):
+        for args, env in ((["--no-isolation"], self.runtime()), ([], {})):
+            self.log.unlink(missing_ok=True)
+            r = self.loop(*args, "--fork", PARENT, "901", **env)
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            fork, *others = self.calls()
+            self.assertEqual(fork["args"][fork["args"].index("--setting-sources") + 1], "user")
+            for call in others:
+                self.assertNotIn("--setting-sources", call["args"])
+                self.assertNotIn("--strict-mcp-config", call["args"])
+
     @cost("tool")
     def test_an_example_that_is_not_there_starts_nothing(self):
         r = self.loop("902")

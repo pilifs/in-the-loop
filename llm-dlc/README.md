@@ -40,6 +40,9 @@ llm-dlc/
                                     sync.py does in a runtime one
   tools/doctor.py                   whether a machine can prove a change here: hardware, operating system and tools, what
                                     blocks and what only limits, and a budget for it; test_doctor.py tests it
+  tools/claude_setup.py             what a user's Claude Code session has loaded besides the plugin, and the flags and
+                                    launch of a clean one, which the loops use in a runtime checkout
+                                    (runtime.md#what-claude-code-has-loaded); test_claude_setup.py tests it
   tools/changes.py                  the examples a checkout holds for /prove-java-change, each unprepared, prepared or
                                     decided from its own folder, and the ones still to prove, in order
                                     (runtime.md#many-changes-and-preparing-without-proving); test_changes.py tests it

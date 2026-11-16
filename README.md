@@ -29,7 +29,7 @@ unattended:
 
 | Step | What happens | You |
 |---|---|---|
-| 1. Set up and measure | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools | confirm |
+| 1. Set up and measure | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools. It also checks what else Claude Code has loaded (other plugins, MCP servers, memory files), warns that this may lead to unexpected results, and offers a clean session without it | confirm |
 | 2. State the claims | It pins each change to two exact commits, sizes it against the closest past examples, compiles it, runs it once on a JVM, and writes each claim in full | confirm the claims and the estimate, in hours and tokens |
 | 3. Prove it | A fork of the session runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result | |
 | 4. Report | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
@@ -66,7 +66,7 @@ unchanged claims on the same JARs, and each came out as expected.
 
 ## What is in the repository
 
-The skill is a page of about 120 lines. What it stands on is the rest of the repository, and each part's page has its own
+The skill is a page of about 130 lines. What it stands on is the rest of the repository, and each part's page has its own
 layout that says where things are. The folders will be reorganized at some point, so follow the links from these
 pages instead of remembered paths.
 

@@ -54,9 +54,20 @@ uploaded: a runtime checkout has no Langfuse and no Cloudflare, and setup adds n
 
 A hardware limit that blocks is final: no setup removes it. Say which, and stop.
 
+Then check Claude Code itself, in this session, on every run: `python3 llm-dlc/tools/claude_setup.py check`, in the
+home. Show the user its warning as printed. It lists what this session has loaded besides this plugin and the
+checkout (other plugins, MCP servers and connectors, memory files, skills, agents, hooks); add what you can see in
+your own context that it missed. The proof loop's sessions are started without any of it, and the check says whether
+that works on this machine. This session can't unload what it already holds, and you don't edit the user's Claude
+Code configuration to try: the way to be rid of it is the one command the check prints, which starts a clean session
+in the home, where the user runs the skill again.
+
 Then tell the user where things stand (the release and its digest, the machine, what limits it, the budget, what was
-installed or still needs them, such as a tool that needs sudo) and ask them to confirm before step 2. A blocker is
-fixed first: by another setup session, or by the user, who then runs the skill again.
+installed or still needs them, such as a tool that needs sudo, and what the check found) and ask them to confirm
+before step 2. A blocker is fixed first: by another setup session, or by the user, who then runs the skill again.
+When the check listed anything, the choice is theirs: start the clean session, which you recommend, or continue in
+this one, which you don't. If the loop's sessions can't start clean either and they continue, step 3 adds
+`--no-isolation`.
 
 ## 2. Assess the changes and set the examples up
 
