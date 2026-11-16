@@ -59,6 +59,11 @@ Submit a job for anything that runs a prover or a model checker, or that takes m
 proof tier of the tests in `lib/` and the Python suites, a real-world example's proof. Keep doing inline what is quick
 and what you need in order to go on: compiling, the default test run (`python3 lib/tools/test_costs.py run`, the unit
 and tool tiers), `jvmcontract tla` (which only generates), a TLC run over a few hundred states while you write a model.
+A probe is the one exception to the limits above: a single run of a prover or model checker on one claim, to see where
+it stops or whether a change helps, may run inline for up to 5 minutes and 4 GB, one at a time, under a cap it cannot
+exceed (`systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 COMMAND`). Real-world claims
+often need more than 1 GB to show where a checker stops; the cap keeps a runaway probe off the memory loops and jobs count on. Don't
+tune memory or time just to fit under it: a run that needs more is a job. The tool tier of the tests keeps its 1 GB.
 
 The slow tests are the proof tier: the ignored Rust tests, tagged `cost:proof:`, and the Python tests tagged
 `@cost("proof", ...)`, each with its cost in `lib/tests/costs.json` (see [`lib/README.md`](../lib/README.md#tests)).

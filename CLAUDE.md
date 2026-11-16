@@ -17,10 +17,11 @@ This repo publishes every LLM session alongside the code it produced. Follow the
 
 ## Verification jobs
 
-Don't run proofs and model checks inline: JBMC, TLC, `build.py` on a B9, B11 or D1 example, an app's `verify.sh`, or anything that takes more than a minute or 1 GB, the proof tier of the tests included (one narrow exception, under [Tests](#tests)). Queue them, as described in [`verification/README.md`](verification/README.md):
+Don't run proofs and model checks inline: JBMC, TLC, `build.py` on a B9, B11 or D1 example, an app's `verify.sh`, or anything that takes more than a minute or 1 GB, the proof tier of the tests included (two narrow exceptions: a probe, below, and one under [Tests](#tests)). Queue them, as described in [`verification/README.md`](verification/README.md):
 
 - Describe the work with `python3 verification/pipeline.py submit` (`--example ID` for a demo example), with a title, a description for a reader who did not see the session, the capabilities it exercises, and a rough estimate of CPUs, memory and duration.
 - Commit the job with the change, with `(verification pending)` at the end of the summary line and the job id in a paragraph, then carry on. Compiling and the default test run still run inline.
+- A probe is the exception: a single run of a prover or model checker on one claim, to see where it stops or whether a change helps, may run inline for up to 5 minutes and 4 GB, one at a time, capped so it cannot take more: `systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 COMMAND`. Don't tune memory or time just to fit a probe under that cap: a run that needs more is a job. The default test run and the tool tier keep their 1 GB.
 - The pipeline is run by the agent managing it (`/run-verification`), not by the agent that submits. Results come back in `verification/results/`; read them with `python3 verification/pipeline.py report`.
 
 ## Tests
