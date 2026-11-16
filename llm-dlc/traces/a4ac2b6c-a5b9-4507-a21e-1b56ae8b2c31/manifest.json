@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T06:01:28.332Z",
-  "duration_seconds": 49696,
+  "ended": "2026-11-16T06:26:02.769Z",
+  "duration_seconds": 51170,
   "stats": {
     "turns": 17,
-    "api_calls": 1333,
-    "tool_calls": 1358,
-    "tool_errors": 7,
+    "api_calls": 1351,
+    "tool_calls": 1376,
+    "tool_errors": 8,
     "compactions": 8,
     "peak_context_tokens": 466839,
     "usage": {
-      "input_tokens": 2666,
-      "output_tokens": 1583053,
-      "cache_read_input_tokens": 339260300,
-      "cache_creation_input_tokens": 3702117
+      "input_tokens": 2702,
+      "output_tokens": 1599261,
+      "cache_read_input_tokens": 343239482,
+      "cache_creation_input_tokens": 3735643
     }
   },
   "tools": {
-    "Bash": 1306,
+    "Bash": 1324,
     "Read": 31,
     "Write": 14,
     "Monitor": 4,
@@ -167,24 +167,24 @@
     {
       "index": 8,
       "started": "2026-11-16T04:12:15.423Z",
-      "ended": "2026-11-16T06:01:28.332Z",
+      "ended": "2026-11-16T06:26:02.769Z",
       "turns": 1,
-      "api_calls": 107,
+      "api_calls": 125,
       "usage": {
-        "input_tokens": 214,
-        "output_tokens": 70933,
-        "cache_read_input_tokens": 13973623,
-        "cache_creation_input_tokens": 190957
+        "input_tokens": 250,
+        "output_tokens": 87141,
+        "cache_read_input_tokens": 17952805,
+        "cache_creation_input_tokens": 224483
       },
-      "peak_context_tokens": 205617
+      "peak_context_tokens": 239143
     }
   ],
   "log": {
-    "sha256": "b48ab24a8602dd7a3343106ecafbc8395b2ba910cee2b7bb65b5434874f126fa",
-    "bytes": 27949604,
-    "lines": 10808,
-    "gzip_bytes": 4097986,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/b48ab24a8602dd7a3343106ecafbc8395b2ba910cee2b7bb65b5434874f126fa.jsonl.gz"
+    "sha256": "3e543b1c69091127bec6a30c28cbc318f4ec76cb69c0515163b5a6d207c954c0",
+    "bytes": 28256285,
+    "lines": 10957,
+    "gzip_bytes": 4136721,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/3e543b1c69091127bec6a30c28cbc318f4ec76cb69c0515163b5a6d207c954c0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -275,6 +275,14 @@
       "summary": "Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)",
       "body": "The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.\n\ntest_packets.py read example 287's review note as the last of its notes, which the note added with the previous commit displaced: it now finds the note by the review item it names. That failure was in the previous commit, whose default run was made before the note was added. Verified inline by the Python half of the default run (33 of 33 after the fix; the Rust sources are unchanged since the full run before the previous commit).\n\nThe three security jobs of the previous commit passed and are not collected yet: fixed-security established on 6.3.8 in 641 s, vulnerable-security and mutant-security refuted on a candidate of 25 code units and 73 bytes with a hash of cost 04, run on a JVM. Jobs queued here: 20261116-06*-example-287-fixed-guard-again-for-its-receipt and 20261116-06*-example-287-vulnerable-guard-again-for-its-recei (the ids are in verification/jobs).",
       "log_sha256": "b48ab24a8602dd7a3343106ecafbc8395b2ba910cee2b7bb65b5434874f126fa"
+    },
+    {
+      "change_id": "yzkrwktyktruwxpktxkslnlwlquoskzr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 287's public claim is decided beside the route: established on 6.3.8, refuted on 6.3.7 and on the mutant, at the frozen bound",
+      "body": "The three security jobs passed. fixed-security (20261116-053832-example-287-fixed-security-through-the-a): BCryptPasswordEncoder.matches on 6.3.8, through the adapter entry the claim names, throws IllegalArgumentException exactly when the candidate has more than 72 UTF-8 bytes and never returns true for one, for every candidate of up to 80 code units and every valid stored hash; 641 s, 641 paths, 3.0 GiB, six of bcrypt's loops covered by invariants the checker found and proved. vulnerable-security and mutant-security (20261116-053832-example-287-vulnerable-security-through, 20261116-053832-example-287-mutant-security-through-the): refuted in 819 s and 821 s on the least violating input, a candidate of 25 code units and 73 bytes with a hash of cost 04, where matches returns false instead of throwing; each witness was run on a JVM.\n\nThe example's README has a section on these proofs (what they are, what they rest on, how to run them, what is open), its entry a verdict label and a note, and target.json dated notes on the four predicted blockers, which were reached and closed, and on the observed ones. These are proofs beside the route, not route receipts: the route has no adapter entry. The two guard tasks, which do run through the route, reached verdicts and are queued again for their receipts (20261116-060128-example-287-fixed-guard-again-for-its-re, 20261116-060128-example-287-vulnerable-guard-again-for-i); their refusal packets stay as recorded until those are collected. Not attempted: preservation, and the guard claim on the mutant. Verified by the Python half of the default run (33 of 33).",
+      "log_sha256": "3e543b1c69091127bec6a30c28cbc318f4ec76cb69c0515163b5a6d207c954c0"
     }
   ],
   "logs": {
@@ -288,6 +296,12 @@
       "bytes": 19532427,
       "lines": 7467,
       "gzip_bytes": 2851251,
+      "url": null
+    },
+    "3e543b1c69091127bec6a30c28cbc318f4ec76cb69c0515163b5a6d207c954c0": {
+      "bytes": 28256285,
+      "lines": 10957,
+      "gzip_bytes": 4136721,
       "url": null
     },
     "4adea8f9f6ca4d6a267f087d6cba9d30115b44f18669bdaf07dce773a9a50ff0": {

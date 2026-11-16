@@ -12,29 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T06:01:42.633Z",
-  "duration_seconds": 45256,
+  "ended": "2026-11-16T06:19:42.129Z",
+  "duration_seconds": 46335,
   "stats": {
-    "turns": 35,
-    "api_calls": 171,
-    "tool_calls": 144,
-    "tool_errors": 3,
+    "turns": 36,
+    "api_calls": 235,
+    "tool_calls": 206,
+    "tool_errors": 4,
     "compactions": 1,
-    "peak_context_tokens": 219038,
+    "peak_context_tokens": 221620,
     "usage": {
-      "input_tokens": 416,
-      "output_tokens": 122533,
-      "cache_read_input_tokens": 21603784,
-      "cache_creation_input_tokens": 296539
+      "input_tokens": 552,
+      "output_tokens": 177190,
+      "cache_read_input_tokens": 32759754,
+      "cache_creation_input_tokens": 399715
     }
   },
   "tools": {
-    "Bash": 130,
-    "ToolSearch": 4,
+    "Bash": 189,
+    "ToolSearch": 5,
+    "SendMessage": 4,
     "ListAgents": 3,
-    "SendMessage": 3,
     "Monitor": 2,
-    "TaskStop": 2
+    "TaskStop": 2,
+    "AskUserQuestion": 1
   },
   "files_touched": [],
   "context_windows": [
@@ -55,24 +56,24 @@
     {
       "index": 1,
       "started": "2026-11-15T23:09:43.277Z",
-      "ended": "2026-11-16T06:01:42.633Z",
-      "turns": 14,
-      "api_calls": 56,
+      "ended": "2026-11-16T06:19:42.129Z",
+      "turns": 15,
+      "api_calls": 120,
       "usage": {
-        "input_tokens": 136,
-        "output_tokens": 34336,
-        "cache_read_input_tokens": 4786300,
-        "cache_creation_input_tokens": 123309
+        "input_tokens": 272,
+        "output_tokens": 88993,
+        "cache_read_input_tokens": 15942270,
+        "cache_creation_input_tokens": 226485
       },
-      "peak_context_tokens": 116066
+      "peak_context_tokens": 221620
     }
   ],
   "log": {
-    "sha256": "b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88",
-    "bytes": 3161025,
-    "lines": 1260,
-    "gzip_bytes": 627833,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88.jsonl.gz"
+    "sha256": "5ba60ac0a27f107bab9a938f838cb76c9e7618d17d55a0f84d86a98b39b55f8b",
+    "bytes": 4093839,
+    "lines": 1667,
+    "gzip_bytes": 770429,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/5ba60ac0a27f107bab9a938f838cb76c9e7618d17d55a0f84d86a98b39b55f8b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -163,6 +164,14 @@
       "summary": "Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)",
       "body": "The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.\n\ntest_packets.py read example 287's review note as the last of its notes, which the note added with the previous commit displaced: it now finds the note by the review item it names. That failure was in the previous commit, whose default run was made before the note was added. Verified inline by the Python half of the default run (33 of 33 after the fix; the Rust sources are unchanged since the full run before the previous commit).\n\nThe three security jobs of the previous commit passed and are not collected yet: fixed-security established on 6.3.8 in 641 s, vulnerable-security and mutant-security refuted on a candidate of 25 code units and 73 bytes with a hash of cost 04, run on a JVM. Jobs queued here: 20261116-06*-example-287-fixed-guard-again-for-its-receipt and 20261116-06*-example-287-vulnerable-guard-again-for-its-recei (the ids are in verification/jobs).",
       "log_sha256": "b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88"
+    },
+    {
+      "change_id": "yzkrwktyktruwxpktxkslnlwlquoskzr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 287's public claim is decided beside the route: established on 6.3.8, refuted on 6.3.7 and on the mutant, at the frozen bound",
+      "body": "The three security jobs passed. fixed-security (20261116-053832-example-287-fixed-security-through-the-a): BCryptPasswordEncoder.matches on 6.3.8, through the adapter entry the claim names, throws IllegalArgumentException exactly when the candidate has more than 72 UTF-8 bytes and never returns true for one, for every candidate of up to 80 code units and every valid stored hash; 641 s, 641 paths, 3.0 GiB, six of bcrypt's loops covered by invariants the checker found and proved. vulnerable-security and mutant-security (20261116-053832-example-287-vulnerable-security-through, 20261116-053832-example-287-mutant-security-through-the): refuted in 819 s and 821 s on the least violating input, a candidate of 25 code units and 73 bytes with a hash of cost 04, where matches returns false instead of throwing; each witness was run on a JVM.\n\nThe example's README has a section on these proofs (what they are, what they rest on, how to run them, what is open), its entry a verdict label and a note, and target.json dated notes on the four predicted blockers, which were reached and closed, and on the observed ones. These are proofs beside the route, not route receipts: the route has no adapter entry. The two guard tasks, which do run through the route, reached verdicts and are queued again for their receipts (20261116-060128-example-287-fixed-guard-again-for-its-re, 20261116-060128-example-287-vulnerable-guard-again-for-i); their refusal packets stay as recorded until those are collected. Not attempted: preservation, and the guard claim on the mutant. Verified by the Python half of the default run (33 of 33).",
+      "log_sha256": "5ba60ac0a27f107bab9a938f838cb76c9e7618d17d55a0f84d86a98b39b55f8b"
     }
   ],
   "logs": {
@@ -176,6 +185,12 @@
       "bytes": 2732690,
       "lines": 997,
       "gzip_bytes": 569797,
+      "url": null
+    },
+    "5ba60ac0a27f107bab9a938f838cb76c9e7618d17d55a0f84d86a98b39b55f8b": {
+      "bytes": 4093839,
+      "lines": 1667,
+      "gzip_bytes": 770429,
       "url": null
     },
     "8b0373ab0bf7c4ebb56ee8f720527cff0a6eb17e4584f158fe4919ab48c88d24": {
