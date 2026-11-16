@@ -61,7 +61,7 @@
   "commits": [
     {
       "change_id": "kzqntlsowxyopsxulmnloxzrvqvzwmwp",
-      "commit_id": null,
+      "commit_id": "bbd0578e1ec3f3d52346eb30e2255a7cfcb2697b",
       "immutable": false,
       "summary": "Verification results: the heap proof tier passes under JBMC at 600 s, closing VF-018",
       "body": "Job 20261116-144006-vf-018-the-heap-proof-tier-under-jbmc-an ran the nine ignored heap.rs tests unchanged with the Z3 second attempt: 9 passed in 11m52s, peak 2.0 GiB (estimated 1h30m, 4 GiB). VF-018 is closed in verification/findings.md.",
@@ -69,7 +69,7 @@
     },
     {
       "change_id": "ootztwnnypkqqxkklplqvuswpprszumw",
-      "commit_id": null,
+      "commit_id": "bf8d2634df7746d9eb7b0740c0520945310514a1",
       "immutable": false,
       "summary": "/prove-java-change: summaries every 30 minutes, a run the user is away from, one loop name, and the model may start the skill",
       "body": "Before the first real run of the skill (examples 288 onwards, in this development checkout), the user asked for four things. The watcher's summaries come every 30 minutes by default instead of 10, since nobody reads them as they come and each adds to the watcher's context; --summary-interval SECONDS in the request, or watch.py interval, sets another. The skill no longer forbids the model to start it, so the user can ask an open session for a run in their own words; its description says to start it only when the user asks. The run is to be as autonomous as it can: --unattended has the watcher read the claims of the catalog entries it had set up in the user's place, and accept them with watch.py claims NNN --accept REASON, which writes a decision for each example into the run's decision record, flagged as costly so the user reviews it afterwards; an example whose claims the watcher is not sure of is left out and reported. That flag is my reading of 'autonomous as possible': without it the run still waits for the user's one confirmation of the claims. And --record-as NAME (prove-loop.sh, FEATURE_LOOP_RECORD_AS) files a run under another loop's name, so 288 onwards are counted with 285 to 287 as prove-examples.\n\nFound on the way: watch.py loop handed its arguments to argparse, which took the options out from between their values, so --memory 12G --wait-for-proofs 288 reached prove-loop.sh as --memory --wait-for-proofs 12G 288. One option worked, which is all the tests had; two or more would have failed the first real run. The arguments now go through in the order given. prove-loop.sh also took the window an ended loop was started in for a running verification loop, as watch.py did before its fix. In a development checkout the skill now runs the doctor for the loop's memory cap, and the catalog entry's brief says that a preparation over the inline limits is queued and waited for.\n\nThe user also asked that a clean launch never drop the memory of the project's own folder. It does not: probed on Claude Code 2.1.325 in a scratch folder with made-up markers, a session started with the clean flags held the folder's CLAUDE.md and its auto memory and not the CLAUDE.md of the directory above. runtime.md and claude_setup.py now say that the checkout's own memory always stays, and a test holds the flags to it. The user's own memory file was not in the probe, as this machine has none.\n\nVerified by the default test run (46 of 46), with new tests of the accepted claims as flagged decisions, of a run filed under another loop's name, and of several options passed through in order. A new release is owed for the skill's folder and follows.",
@@ -81,13 +81,13 @@
       "bytes": 443641,
       "lines": 117,
       "gzip_bytes": 98699,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/9680123920a27070b8afef19101da1f02b388e50970e6db94f5bf920efcfaa77.jsonl.gz"
     },
     "a3470a801ec8774e8c5c1e90609e450c9fa4ff5e1bc193f443fb7d13810ca77f": {
       "bytes": 482946,
       "lines": 146,
       "gzip_bytes": 103549,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/a3470a801ec8774e8c5c1e90609e450c9fa4ff5e1bc193f443fb7d13810ca77f.jsonl.gz"
     }
   },
   "redaction_policy": 4,

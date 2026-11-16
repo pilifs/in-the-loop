@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "919d1317-7c09-476f-aee3-b72638b3aff0",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
   "client": {
@@ -12,20 +12,20 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-16T16:09:11.642Z",
-  "ended": "2026-11-16T16:10:48.919Z",
-  "duration_seconds": 97,
+  "ended": "2026-11-16T16:10:58.728Z",
+  "duration_seconds": 107,
   "stats": {
     "turns": 1,
-    "api_calls": 4,
+    "api_calls": 5,
     "tool_calls": 6,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 39747,
+    "peak_context_tokens": 40476,
     "usage": {
-      "input_tokens": 8,
-      "output_tokens": 905,
-      "cache_read_input_tokens": 111777,
-      "cache_creation_input_tokens": 28375
+      "input_tokens": 10,
+      "output_tokens": 1277,
+      "cache_read_input_tokens": 151522,
+      "cache_creation_input_tokens": 29104
     }
   },
   "tools": {
@@ -36,30 +36,30 @@
     {
       "index": 0,
       "started": "2026-11-16T16:09:11.642Z",
-      "ended": "2026-11-16T16:10:48.919Z",
+      "ended": "2026-11-16T16:10:58.728Z",
       "turns": 1,
-      "api_calls": 4,
+      "api_calls": 5,
       "usage": {
-        "input_tokens": 8,
-        "output_tokens": 905,
-        "cache_read_input_tokens": 111777,
-        "cache_creation_input_tokens": 28375
+        "input_tokens": 10,
+        "output_tokens": 1277,
+        "cache_read_input_tokens": 151522,
+        "cache_creation_input_tokens": 29104
       },
-      "peak_context_tokens": 39747
+      "peak_context_tokens": 40476
     }
   ],
   "log": {
-    "sha256": "240e99c5862ea551939b4461bb6cd9962c7aba95a59c33302c75baaec659784d",
-    "bytes": 328938,
-    "lines": 65,
-    "gzip_bytes": 82109,
-    "path": "llm-dlc/traces/919d1317-7c09-476f-aee3-b72638b3aff0/logs/240e99c5862ea551939b4461bb6cd9962c7aba95a59c33302c75baaec659784d.jsonl.gz"
+    "sha256": "4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7",
+    "bytes": 339417,
+    "lines": 73,
+    "gzip_bytes": 83954,
+    "path": "llm-dlc/traces/919d1317-7c09-476f-aee3-b72638b3aff0/logs/4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
     {
       "change_id": "uosmqmoxlpwntkypypnqspnllmvnkpps",
-      "commit_id": null,
+      "commit_id": "4365ee9883c0910ba0c9ce2cfa208ce14700b270",
       "immutable": false,
       "summary": "Release 0.10.0 of /prove-java-change",
       "body": "The skill at 0.10.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (edd95d299add28cb690fc8a22e116b3a30dc1c22232239623722d76a678b5674, 5536 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Summaries every 30 minutes (--summary-interval), --unattended, --record-as, the model may start the skill, watch.py loop passes its options in order, and the verification queue is worked together: a queued job is announced by its commit and starts beside the jobs running",
@@ -67,11 +67,19 @@
     },
     {
       "change_id": "ykqrsqwumpkknzqkzvxmnvuqrnlnqtml",
-      "commit_id": null,
+      "commit_id": "c82d4ae2613db0244e87f87ef6a42a4f5b8cb139",
       "immutable": false,
       "summary": "Verification results: the pipeline's own tests pass with the queue read again during a run",
       "body": "Job 20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe passed (1 step, 1m24s, peak 120 MiB; estimated 3m00s, 1.0 GiB) on vm-1 at 4fc4824f. No outputs to apply. No new findings.",
       "log_sha256": "240e99c5862ea551939b4461bb6cd9962c7aba95a59c33302c75baaec659784d"
+    },
+    {
+      "change_id": "nvsxqxwkwltqunykroyyrlumkwpzypso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7"
     }
   ],
   "logs": {
@@ -79,13 +87,19 @@
       "bytes": 328938,
       "lines": 65,
       "gzip_bytes": 82109,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/919d1317-7c09-476f-aee3-b72638b3aff0/240e99c5862ea551939b4461bb6cd9962c7aba95a59c33302c75baaec659784d.jsonl.gz"
+    },
+    "4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7": {
+      "bytes": 339417,
+      "lines": 73,
+      "gzip_bytes": 83954,
+      "url": "https://terminalvalue.net/raw-traces/919d1317-7c09-476f-aee3-b72638b3aff0/4e33a252274b9cf11fe659b3797b6e44b9912b6d689a3265ac25d3d43bf970b7.jsonl.gz"
     },
     "60194c3d266668baa7972d696ad321562ce45fbdce06fc07144925e784dd935b": {
       "bytes": 291124,
       "lines": 47,
       "gzip_bytes": 77095,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/919d1317-7c09-476f-aee3-b72638b3aff0/60194c3d266668baa7972d696ad321562ce45fbdce06fc07144925e784dd935b.jsonl.gz"
     }
   },
   "redaction_policy": 4,
