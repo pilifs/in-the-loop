@@ -3630,15 +3630,16 @@ def workspace_roots() -> list[Path]:
 
 
 def adopt_logs() -> list[str]:
-    """After a merge of another workspace's line: the logs its sessions' manifests name that are neither stored here
-    nor uploaded, copied from the workspace that stores them. A snapshot is named by the sha256 of its uncompressed
+    """After a merge of another workspace's line: the logs its sessions' manifests name that aren't stored here, copied
+    from the workspace that stores them. One not uploaded would be an error in check; one uploaded is still an input of
+    the session's metrics, which a workspace holding fewer of its logs would compute otherwise. A snapshot is named by the sha256 of its uncompressed
     content, so each copy is checked against its name before it is kept, and one that doesn't match is left out:
     nothing is taken on trust, and nothing already here is touched."""
     roots, adopted = workspace_roots(), []
     for sid, m in all_manifests().items():
         for sha, info in (m.get("logs") or {}).items():
             dest = log_path(sid, sha)
-            if dest.exists() or info.get("url") or info.get("withdrawn"):
+            if dest.exists() or info.get("withdrawn"):
                 continue
             for root in roots:
                 src = root / dest.relative_to(REPO)

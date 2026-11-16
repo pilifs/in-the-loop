@@ -151,6 +151,14 @@ class Workspaces(unittest.TestCase):
             self.assertIn(f"took session-b: log {sha_good[:12]}", out)
             self.assertEqual(gzip.decompress(sync.log_path("session-b", sha_good).read_bytes()), good)
             self.assertFalse(sync.log_path("session-c", sha_bad).exists(), "a copy that isn't the log its name says is left")
+        with self.at(b):  # an uploaded log is still an input of its session's metrics: b takes a's too
+            sync.log_path("session-a", "a" * 64).parent.mkdir(parents=True, exist_ok=True)
+        with self.at(self.a):
+            m = sync.load_manifest("session-b")
+            m["logs"][sha_good]["url"] = sync.log_url("session-b", sha_good)
+            sync.manifest_path("session-b").write_text(json.dumps(m, indent=2) + "\n")
+            sync.log_path("session-b", sha_good).unlink()
+            self.assertEqual(sync.adopt_logs(), [f"session-b: log {sha_good[:12]}, from {b}"])
 
     def test_after_the_merge_both_lines_are_checked(self):
         self.two_lines()
