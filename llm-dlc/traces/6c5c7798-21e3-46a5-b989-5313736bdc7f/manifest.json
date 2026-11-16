@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "ended",
+  "status": "open",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T05:14:59.795Z",
-  "duration_seconds": 42453,
+  "ended": "2026-11-16T06:01:42.633Z",
+  "duration_seconds": 45256,
   "stats": {
-    "turns": 32,
-    "api_calls": 161,
-    "tool_calls": 136,
+    "turns": 35,
+    "api_calls": 171,
+    "tool_calls": 144,
     "tool_errors": 3,
     "compactions": 1,
     "peak_context_tokens": 219038,
     "usage": {
-      "input_tokens": 392,
-      "output_tokens": 118416,
-      "cache_read_input_tokens": 20479025,
-      "cache_creation_input_tokens": 290288
+      "input_tokens": 416,
+      "output_tokens": 122533,
+      "cache_read_input_tokens": 21603784,
+      "cache_creation_input_tokens": 296539
     }
   },
   "tools": {
-    "Bash": 122,
+    "Bash": 130,
     "ToolSearch": 4,
     "ListAgents": 3,
     "SendMessage": 3,
@@ -55,24 +55,24 @@
     {
       "index": 1,
       "started": "2026-11-15T23:09:43.277Z",
-      "ended": "2026-11-16T05:14:59.795Z",
-      "turns": 11,
-      "api_calls": 46,
+      "ended": "2026-11-16T06:01:42.633Z",
+      "turns": 14,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 112,
-        "output_tokens": 30219,
-        "cache_read_input_tokens": 3661541,
-        "cache_creation_input_tokens": 117058
+        "input_tokens": 136,
+        "output_tokens": 34336,
+        "cache_read_input_tokens": 4786300,
+        "cache_creation_input_tokens": 123309
       },
-      "peak_context_tokens": 108809
+      "peak_context_tokens": 116066
     }
   ],
   "log": {
-    "sha256": "9f9d2f78e7ad4959dacc5eee283e86dcf2cd141a71f1afa944b6448db2b3261f",
-    "bytes": 3064284,
-    "lines": 1194,
-    "gzip_bytes": 615602,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/9f9d2f78e7ad4959dacc5eee283e86dcf2cd141a71f1afa944b6448db2b3261f.jsonl.gz"
+    "sha256": "b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88",
+    "bytes": 3161025,
+    "lines": 1260,
+    "gzip_bytes": 627833,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -155,6 +155,14 @@
       "summary": "jvmcontract: loops beyond the bound covered by invariants, constant regexes, text as bytes and digits, for example 287's bcrypt claims (verification pending)",
       "body": "Example 287 (CVE-2025-22228: BCrypt.hashpw ignores bytes past 72) asks whether checkpw rejects a password of more than 72 bytes for every valid stored hash. The tool's own checker stopped at the claim's regular expression, at the text-to-bytes calls and at bcrypt's loops, which go round 18, 512, 2^cost and 64 times against --unwind 16. It now runs the claims as they are written. A loop that goes round more often than the bound is covered by an invariant the checker finds and proves by induction (lib/src/bmc/loops.rs: what one iteration writes is set to any value, candidate facts about each written number are dropped until the rest is kept by an iteration, and the loop is shown to end by a counter or said not to be); a verdict names the loops so covered, a violation past one is believed only when its witness, the least violating input, reproduces on a JVM, and otherwise the answer is no verdict with the loop named. Also new: String.matches and Pattern.compile of a constant regular expression with classes, groups, alternatives and counts (lib/src/bmc/regex.rs); String.getBytes(UTF_8), MessageDigest.isEqual, Arrays.copyOf, Integer.parseInt and StringBuilder's charAt and appends (lib/src/bmc/bytes.rs, strings.rs); Object.getClass of an object the run made, String.toString, an initializer that keeps method references, and a throws clause whose condition javac compiles. The solver side defers clauses until a call depends on them, checks lazy divisions only in the cone a question reads, and shares a path's models by pages. The search for the least witness takes at most half the time the run has left, so a violation found late is not lost to it.\n\nThe String model is model 4, the reference calls model 2: getBytes, matches and toString have evidence records sampled on the JVM and in the checker (lib/tests/values.rs), the gap scan counts Pattern.compile of a constant in the checker's syntax as reproduced, and the interpreter's String.toString returns the String itself. Tests that relied on a class regex, toString or a builder append being a gap now use forms that still are (a reluctant or possessive quantifier, trim, append(CharSequence), append(long)); the calibration fixture's RegexGate uses a possessive quantifier and its records were remade. New tests: lib/tests/loops.rs (four, on a small fixture with the same loop shapes), three in lib/tests/claims.rs (each model against a definition written out in Java and sampled on a JVM), three unit tests in bits.rs. Verified inline by the default run (python3 lib/tools/test_costs.py run: 34 of 34 passed).\n\nExample 287 has proofs/prove.py, which runs the three security tasks beside the route through the adapter entry the claim names, and a dated note. One capped probe (5 minutes, 4 GiB) proved the byte-array guard claim on 6.3.8 at the route's bound in 250 s with six loops covered; the probe on 6.3.7 found its violating path and ran out of time minimising the witness, and the probe of the security claim through the adapter did not finish. None of these is a receipt. Jobs: 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar (through the route), 20261116-053832-example-287-fixed-security-through-the-a, 20261116-053832-example-287-vulnerable-security-through and 20261116-053832-example-287-mutant-security-through-the (prove.py), and 20261116-053833-the-proof-tier-after-example-287-s-engin (the proof tier with --no-fail-fast and VF-018's three heap tests skipped, as VF-030 asks). Not attempted: the preservation task.",
       "log_sha256": "9f9d2f78e7ad4959dacc5eee283e86dcf2cd141a71f1afa944b6448db2b3261f"
+    },
+    {
+      "change_id": "uznmvyqqxrpzvqtszqwxxvmwowlwksop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)",
+      "body": "The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.\n\ntest_packets.py read example 287's review note as the last of its notes, which the note added with the previous commit displaced: it now finds the note by the review item it names. That failure was in the previous commit, whose default run was made before the note was added. Verified inline by the Python half of the default run (33 of 33 after the fix; the Rust sources are unchanged since the full run before the previous commit).\n\nThe three security jobs of the previous commit passed and are not collected yet: fixed-security established on 6.3.8 in 641 s, vulnerable-security and mutant-security refuted on a candidate of 25 code units and 73 bytes with a hash of cost 04, run on a JVM. Jobs queued here: 20261116-06*-example-287-fixed-guard-again-for-its-receipt and 20261116-06*-example-287-vulnerable-guard-again-for-its-recei (the ids are in verification/jobs).",
+      "log_sha256": "b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88"
     }
   ],
   "logs": {
@@ -186,6 +194,12 @@
       "bytes": 1006601,
       "lines": 340,
       "gzip_bytes": 196552,
+      "url": null
+    },
+    "b6cde556caca56640607d0f0e6d5d70e95bc7f8dc325db900e89cb3dfe57ec88": {
+      "bytes": 3161025,
+      "lines": 1260,
+      "gzip_bytes": 627833,
       "url": null
     },
     "f720acba22b42aec0b3ce3431e36902d54676d6e2ea5e53f49b4e5bebed98440": {

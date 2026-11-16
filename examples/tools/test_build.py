@@ -2117,6 +2117,25 @@ class DeadlineTest(unittest.TestCase):
         with self.assertRaises(jsonschema.ValidationError):
             jsonschema.validate({**record, "runs": [{**record["runs"][0], "ended": "timeout"}]}, schema["properties"]["search"])
 
+    def test_what_the_own_checker_says_in_words_is_kept_beside_its_numbers(self):
+        """The loops an invariant covers and what the models assume are lists of words: fields of the record, with
+        `native` the numbers the schema says it is."""
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        search = {"engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 250.4, "properties": 1, "unwind": 16,
+                  "max_array_length": 80, "stage": None,
+                  "native": {"paths": 345, "solver_calls": 3082, "seconds": 250.4, "loops": ["B.rounds at pc 130", "B.key at pc 39"],
+                             "assumed": ["the default locale is not Turkish"]}}
+        record = build.search_record({"search": search})
+        self.assertEqual(record["native"], {"paths": 345, "solverCalls": 3082, "seconds": 250.4})
+        self.assertEqual(record["loopsCoveredByInvariants"], ["B.rounds at pc 130", "B.key at pc 39"])
+        self.assertEqual(record["modelsAssume"], ["the default locale is not Turkish"])
+        jsonschema.validate(record, schema["properties"]["search"])
+        plain = build.search_record({"search": {**search, "native": {"paths": 1}}})
+        self.assertNotIn("loopsCoveredByInvariants", plain)
+        self.assertNotIn("modelsAssume", plain)
+        jsonschema.validate(plain, schema["properties"]["search"])
+
     def test_a_run_keeps_how_the_checker_said_it_ended(self):
         """Step 4b: JBMC's kinds of no verdict stay apart in the record, read from its --json-ui output."""
         import jsonschema

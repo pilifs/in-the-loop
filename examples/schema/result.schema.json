@@ -887,6 +887,18 @@
             }
           }
         },
+        "loopsCoveredByInvariants": {
+          "description": "Since 2026-11-16: the loops that go round more often than `unwind` and that the own checker covered by an invariant it found and proved by induction (lib/src/bmc/loops.rs), each as `Class.method at pc N`, as the verdict's statement names them. What such a loop writes is any value after it, so a proof holds for every number of iterations and a refutation only once its witness is replayed. Absent when every loop was unwound.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "modelsAssume": {
+          "description": "Since 2026-11-16: what the own checker's models of JDK calls took for granted in this run (a default locale, for one), in its words. Absent when they took nothing.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
         "native": {
           "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds), and since 2026-11-06 the seconds of its other phases (loadingSeconds, decodingSeconds, encodingSeconds, witnessSeconds; lib/src/phases.rs).",
           "type": "object",

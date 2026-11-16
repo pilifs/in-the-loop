@@ -101,7 +101,10 @@ class PacketMutantTest(unittest.TestCase):
         self.assertEqual([t["id"] for t in on_mutant], ["mutant-security"])
         self.assertNotEqual(on_mutant[0]["target"], guard["target"])
         self.assertNotEqual(on_mutant[0]["claim"], guard["claim"])
-        for where, text in (("handoff.next", target["handoff"]["next"]), ("notes", example["notes"][-1]),
+        # The note is the one that names the review item, wherever later notes put it (it was read as the last one
+        # until example 287's proof attempt added a note after it).
+        note = next((n for n in example["notes"] if n.startswith("Review item 10 ")), "")
+        for where, text in (("handoff.next", target["handoff"]["next"]), ("notes", note),
                             ("README", (folder / "README.md").read_text())):
             with self.subTest(where):
                 self.assertIn("missing sensitivity control", text.lower())

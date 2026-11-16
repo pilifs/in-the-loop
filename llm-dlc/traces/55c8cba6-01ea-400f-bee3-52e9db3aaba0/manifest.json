@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "55c8cba6-01ea-400f-bee3-52e9db3aaba0",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-16T05:44:24.446Z",
+  "ended": "2026-11-16T05:54:47.565Z",
+  "duration_seconds": 623,
+  "stats": {
+    "turns": 1,
+    "api_calls": 5,
+    "tool_calls": 5,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 37187,
+    "usage": {
+      "input_tokens": 10,
+      "output_tokens": 829,
+      "cache_read_input_tokens": 143975,
+      "cache_creation_input_tokens": 25815
+    }
+  },
+  "tools": {
+    "Bash": 5
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-16T05:44:24.446Z",
+      "ended": "2026-11-16T05:54:47.565Z",
+      "turns": 1,
+      "api_calls": 5,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 829,
+        "cache_read_input_tokens": 143975,
+        "cache_creation_input_tokens": 25815
+      },
+      "peak_context_tokens": 37187
+    }
+  ],
+  "log": {
+    "sha256": "e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d",
+    "bytes": 307369,
+    "lines": 56,
+    "gzip_bytes": 78481,
+    "path": "llm-dlc/traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/logs/e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uznmvyqqxrpzvqtszqwxxvmwowlwksop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)",
+      "body": "The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.\n\ntest_packets.py read example 287's review note as the last of its notes, which the note added with the previous commit displaced: it now finds the note by the review item it names. That failure was in the previous commit, whose default run was made before the note was added. Verified inline by the Python half of the default run (33 of 33 after the fix; the Rust sources are unchanged since the full run before the previous commit).\n\nThe three security jobs of the previous commit passed and are not collected yet: fixed-security established on 6.3.8 in 641 s, vulnerable-security and mutant-security refuted on a candidate of 25 code units and 73 bytes with a hash of cost 04, run on a JVM. Jobs queued here: 20261116-06*-example-287-fixed-guard-again-for-its-receipt and 20261116-06*-example-287-vulnerable-guard-again-for-its-recei (the ids are in verification/jobs).",
+      "log_sha256": "e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d"
+    }
+  ],
+  "logs": {
+    "e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d": {
+      "bytes": 307369,
+      "lines": 56,
+      "gzip_bytes": 78481,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

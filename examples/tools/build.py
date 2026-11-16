@@ -1761,7 +1761,13 @@ def search_record(outcome):
         record["deadlineSeconds"] = s["deadline_seconds"]
         record["runs"] = camel(s["runs"])
     if s.get("native"):
-        record["native"] = {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): v for k, v in s["native"].items()}
+        # Its numbers; what it says in words has fields of its own (a receipt with a loop covered by an invariant
+        # was refused at check_result while these were copied with the numbers: example 287's fixed-guard).
+        record["native"] = {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): v for k, v in s["native"].items() if not isinstance(v, list)}
+        if s["native"].get("loops"):
+            record["loopsCoveredByInvariants"] = s["native"]["loops"]
+        if s["native"].get("assumed"):
+            record["modelsAssume"] = s["native"]["assumed"]
     if s.get("gap_mode"):
         record["gapMode"] = s["gap_mode"]
     if s.get("gaps"):
