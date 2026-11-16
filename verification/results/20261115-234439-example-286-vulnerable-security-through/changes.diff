@@ -1,0 +1,404 @@
+--- /dev/null
++++ b/verification/.work-286/frozen/vulnerable-security/outcome.json
+@@ -0,0 +1,349 @@
++[
++  {
++    "verdict": "violation",
++    "target": "example286.adapter.BinderDecisionAdapter#allowed",
++    "domain": "allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array",
++    "assume": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++    "assert": "!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\")",
++      "outcome": "true",
++      "values": [
++        "{\"**\", null, null, null, null, \"\", \"\", \"\"}",
++        "{\"_Y[]*US\"}",
++        "\"_Y[]  uS\""
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "allowedPatterns",
++          "type": "java.lang.String[]",
++          "value": [
++            {
++              "kind": "string",
++              "units": [
++                42,
++                42
++              ]
++            },
++            null,
++            null,
++            null,
++            null,
++            {
++              "kind": "string",
++              "units": []
++            },
++            {
++              "kind": "string",
++              "units": []
++            },
++            {
++              "kind": "string",
++              "units": []
++            }
++          ]
++        },
++        {
++          "name": "disallowedPatterns",
++          "type": "java.lang.String[]",
++          "value": [
++            {
++              "kind": "string",
++              "units": [
++                95,
++                89,
++                91,
++                93,
++                42,
++                85,
++                83
++              ]
++            }
++          ]
++        },
++        {
++          "name": "field",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              95,
++              89,
++              91,
++              93,
++              32,
++              32,
++              117,
++              83
++            ]
++          }
++        }
++      ],
++      "call": {
++        "class": "example286.adapter.BinderDecisionAdapter",
++        "class_file": "example286/adapter/BinderDecisionAdapter.class",
++        "classes": "after",
++        "method": "allowed",
++        "descriptor": "([Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "allowedPatterns",
++            "type": "java.lang.String[]",
++            "value": [
++              {
++                "kind": "string",
++                "units": [
++                  42,
++                  42
++                ]
++              },
++              null,
++              null,
++              null,
++              null,
++              {
++                "kind": "string",
++                "units": []
++              },
++              {
++                "kind": "string",
++                "units": []
++              },
++              {
++                "kind": "string",
++                "units": []
++              }
++            ],
++            "from": "allowedPatterns"
++          },
++          {
++            "name": "disallowedPatterns",
++            "type": "java.lang.String[]",
++            "value": [
++              {
++                "kind": "string",
++                "units": [
++                  95,
++                  89,
++                  91,
++                  93,
++                  42,
++                  85,
++                  83
++                ]
++              }
++            ],
++            "from": "disallowedPatterns"
++          },
++          {
++            "name": "field",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                95,
++                89,
++                91,
++                93,
++                32,
++                32,
++                117,
++                83
++              ]
++            },
++            "from": "field"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 409.6 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array",
++    "problem": null,
++    "statement": "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of example286.adapter.BinderDecisionAdapter#allowed violated: `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())` where field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))):\n  allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\")\n    outcome: true",
++        "uri": null,
++        "line": 14
++      }
++    ],
++    "output": "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 87.0 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nnote: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above by induction on `pattern.length()` in 88.3 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✗ Property of example286.adapter.BinderDecisionAdapter#allowed violated: `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())` where field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))):\n  allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\")\n    outcome: true\n  (found by jvmcontract's own checker (CaDiCaL) in 409.6 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verification/.work-286/frozen/vulnerable-security/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 409.608815597,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 4894,
++        "merges": 4371,
++        "solver_calls": 8157,
++        "solving_seconds": 374.228904848,
++        "gates_evaluated": 74396592,
++        "evaluating_seconds": 1.615800085,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 2552872,
++        "clauses": 8722838,
++        "seconds": 409.42194769,
++        "loading_seconds": 0.004090665,
++        "decoding_seconds": 0.000437803,
++        "encoding_seconds": 10.438188898,
++        "witness_seconds": 0.034011717,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 3300.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 3300.0,
++          "seconds": 409.422,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.0,
++            "symbolic": 24.716,
++            "encoding": 10.438,
++            "solving": 374.229,
++            "trace": 0.034,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 2552872,
++            "clauses": 8722838
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 499.639,
++        "setup": 0.041,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 409.422,
++        "replay": 0.0,
++        "jvm": 0.152,
++        "other": 90.023
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "allowedPatterns",
++            "type": "java.lang.String[]",
++            "kind": "array",
++            "null": true,
++            "max_length": 8
++          },
++          {
++            "name": "disallowedPatterns",
++            "type": "java.lang.String[]",
++            "kind": "array",
++            "null": true,
++            "max_length": 8
++          },
++          {
++            "name": "field",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        },
++        {
++          "kind": "summary",
++          "text": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
++          "basis": "proved"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against !result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": 8,
++        "complete": false,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:6dc58a376c89a75e706c74a223cf661b88075e79f8a4424df89d3e8dc48f2f27",
++        "classes": 23,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 3: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; regex's split), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII, split at one character and chars), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap",
++              "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/.work-286/frozen/vulnerable-security/work/harness/PropertyHarness.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(java.lang.String[] allowedPatterns, java.lang.String[] disallowedPatterns, java.lang.String field) {
++        if (!(field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))))) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = example286.adapter.BinderDecisionAdapter.allowed(allowedPatterns, disallowedPatterns, field); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(".*", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split("\\*", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())); // no exception, and the property
++    }
++}
+--- /dev/null
++++ b/verification/.work-286/frozen/vulnerable-security/work/harness/PropertyClaim.java
+@@ -0,0 +1,36 @@
++/** Generated by jvmcontract: the expressions of a claim, compiled by javac as they are written. */
++public final class PropertyClaim {
++    private PropertyClaim() {
++    }
++
++    public static boolean assume(java.lang.String[] allowedPatterns, java.lang.String[] disallowedPatterns, java.lang.String field) {
++        return field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)));
++    }
++
++    public static boolean holds(java.lang.String[] allowedPatterns, java.lang.String[] disallowedPatterns, java.lang.String field, boolean result) {
++        return !result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(".*", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split("\\*", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches());
++    }
++
++    public static boolean lemma0_assume(java.lang.String pattern, java.lang.String str) {
++        return pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128);
++    }
++
++    public static boolean lemma0_holds(java.lang.String pattern, java.lang.String str, boolean result) {
++        return result == java.util.regex.Pattern.compile(String.join(".*", java.util.Arrays.stream(pattern.split("\\*", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches();
++    }
++
++    /**
++     * The summary of org.springframework.util.PatternMatchUtils.simpleMatch, proved beside this check: on arguments within its assumption and the bounds it was
++     * proved at, any result its assertion holds of; on any other, the method as written.
++     */
++    public static boolean lemma0(java.lang.String pattern, java.lang.String str) {
++        if (!(pattern != null && pattern.length() <= 8 && str != null && str.length() <= 8 && lemma0_assume(pattern, str))) {
++            return org.springframework.util.PatternMatchUtils.simpleMatch(pattern, str);
++        }
++        boolean $result = jvmcontract.GapIntrinsics.anyBoolean();
++        if (!lemma0_holds(pattern, str, $result)) {
++            jvmcontract.GapIntrinsics.infeasible();
++        }
++        return $result;
++    }
++}

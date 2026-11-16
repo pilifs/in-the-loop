@@ -18,6 +18,24 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-030: the proof-tier job after example 286's engine changes stopped at `heap.rs`, so the tests after it and every Python proof test never ran
+
+- **Status**: open
+- **Raised**: 2026-11-16 on `vm-1`, job `20261115-234440-the-proof-tier-after-example-286-s-engin` at `8594e6b7adb1`
+  (`lib/tools/test_costs.py run --tier proof`, 1h34m, peak 3.3 GiB).
+- **Found**: `cargo test` stops at the first failing test binary. `heap.rs` failed (VF-018's three JBMC
+  timeouts), and the binaries after it alphabetically and the Python proof-tier tests did not run. What ran and
+  passed: `conformance.rs` (2 passed, 1228 s) and every earlier binary (nothing ignored in them). So the job's
+  question, whether the engine changes made a proof-tier check that explores over 1024 paths slow or out of time,
+  is answered only for `conformance` and `heap` (the heap failures are VF-018's, unchanged), not for the rest.
+  The three example-286 jobs of the same commit passed as expected.
+- **Needs**: the submitter (prove-examples loop) to resubmit the proof tier so that a failure doesn't hide the rest
+  (cargo's `--no-fail-fast`, or one job per test file, with the three VF-018 tests excluded or expected to fail),
+  and the Python proof tests as their own job. I did not change the job's steps myself.
+- **Tracked in**: VF-018.
+- **Closes when**: a proof-tier job covering the binaries after `heap` and the Python proof tests passes at a commit
+  with these engine changes.
+
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 
 - **Status**: closed by job `20261108-141443-vf-023-rerun-the-conformance-corpus-unde` (at `13f3e9a0dac8`, passed 2026-11-08 on `vm-1`, 23m18s, peak 1.8 GiB: the `auto --confirm` conformance corpus step, after a JBMC refutation through a stub that doesn't reproduce was made no verdict under `--confirm`). Its one output, `lib/target/conformance-confirm.log`, was not applied (the file changed since the commit); it is a build log, so nothing is lost.
@@ -170,6 +188,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   so nothing from the harness changes since has made them tractable. Log:
   `verification/results/20261115-173209-object-comparisons-under-jbmc-and-auto-c/logs/1-heap-proof-tier.log`. The
   moonshot (prove-examples loop) plans to diagnose it. Still open.
+- **Rerun** 2026-11-16 on `vm-1`: job `20261115-234440-the-proof-tier-after-example-286-s-engin` (at `8594e6b7adb1`, the
+  whole proof tier, 1800 s JBMC limit) failed in 1h34m at `lib/tests/heap.rs`: 6 passed, 3 failed, namely
+  `the_output_relations_…` (`objects.Kernel#price`, `heap.rs:1178`), `the_parameter_reads_…` (`lines.Lines#reprice`,
+  `heap.rs:1691`) and `the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm`
+  (`orders.Orders#reprice`, `heap.rs:1871`), each "JBMC did not finish within 1800 s". The same three that failed at
+  1800 s on 2026-11-07; `the_computed_equations_…` (`prices.Prices#total`) passed. Not caused by example 286's engine
+  changes. Still open. See VF-030 for what this job did not run.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 

@@ -1,0 +1,417 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-234440-the-proof-tier-after-example-286-s-engin",
+  "title": "The proof tier after example 286's engine changes: every ignored Rust test in release and every Python test tagged proof",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1h34m, peak 3.3 GiB (estimated 1h30m, 8.0 GiB); signals: cargo:tests×17; jvmcontract:fails×3",
+  "attention": [
+    "step 1 (proof tier) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261115-234440-the-proof-tier-after-example-286-s-engin.json",
+    "sha256": "e309bd80e422f7947628ae8c9332dd108ddf439bba0db46b6889210493df09bd",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-234440-the-proof-tier-after-example-286-s-engin",
+      "title": "The proof tier after example 286's engine changes: every ignored Rust test in release and every Python test tagged proof",
+      "description": "Runs lib/tools/test_costs.py run --tier proof. The change behind it touches what nearly every proof-tier test runs, the own checker (lib/src/bmc): String, StringBuilder, stream and regex models, lambdas, String[] inputs, paths merged across heaps of two shapes once more than 1024 have been explored (with a new order in which waiting paths are resumed, and a loop's exit a join), an array of computed size taken within one more than the bound, and a contract applied in place of a model of the same call. The default run passes inline; the values sweep showed that merging heaps from the first path turns a proof by gate hashing into a hard equivalence, which is why it now waits for 1024 paths, so a proof-tier check that explores more than that (the heap and conformance suites) may take longer or run out of time where it did not: this job is where that would show.",
+      "kind": "library",
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/strings.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "expected": "exits 0: every proof-tier test passes",
+      "submitted": {
+        "at": "2026-11-15T23:44:40+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "cargo",
+        "javac",
+        "java",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "8G",
+        "duration": "1h30m",
+        "timeout": "3h",
+        "notes": "past jobs, one test file or test each: heap's tests 3 s to 42 min (up to 61 min at a 1800 s limit), conformance's 11 and 20 min, the benchmark under a minute, each at 1.2 to 1.9 GiB peak; four at a time"
+      },
+      "steps": [
+        {
+          "name": "proof tier",
+          "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 python3 lib/tools/test_costs.py run --tier proof --test-threads 4",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "8594e6b7adb1fc631f5dac87cd1fccdf09e5652f",
+  "startedAt": "2026-11-15T23:46:21+00:00",
+  "finishedAt": "2026-11-16T01:20:25+00:00",
+  "wallSeconds": 5644.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3751981,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 12884901888,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 5400.0,
+    "notes": "past jobs, one test file or test each: heap's tests 3 s to 42 min (up to 61 min at a 1800 s limit), conformance's 11 and 20 min, the benchmark under a minute, each at 1.2 to 1.9 GiB peak; four at a time"
+  },
+  "usage": {
+    "peakMemoryBytes": 3543912448,
+    "wallSeconds": 5642.7,
+    "cpuSeconds": 18154.3,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 1.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "proof tier",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 python3 lib/tools/test_costs.py run --tier proof --test-threads 4",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 5642.679,
+      "cpuSeconds": 18154.348,
+      "cpuThrottledSeconds": 28.868,
+      "peakMemoryBytes": 3543912448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-proof-tier.log",
+        "lines": 230,
+        "bytes": 9489,
+        "sha256": "9b53dd0938fa5f427b53e32e557217fc59970d1221ca88f75f1a09ed8c15d0a8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 17,
+        "jvmcontract:fails": 3
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 82,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 267 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 88,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 94,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 100,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 106,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 112,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 118,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 124,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 130,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 140,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1227.66s",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 146,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 152,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 158,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 164,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 170,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 176,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 203,
+          "text": "✗ objects.Kernel#price cannot be verified: JBMC did not finish within 1800 s",
+          "groups": [
+            "objects.Kernel#price cannot be verified: JBMC did not finish within 1800 s"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 211,
+          "text": "✗ orders.Orders#reprice cannot be verified: JBMC did not finish within 1800 s",
+          "groups": [
+            "orders.Orders#reprice cannot be verified: JBMC did not finish within 1800 s"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 218,
+          "text": "✗ lines.Lines#reprice cannot be verified: JBMC did not finish within 1800 s",
+          "groups": [
+            "lines.Lines#reprice cannot be verified: JBMC did not finish within 1800 s"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 227,
+          "text": "test result: FAILED. 6 passed; 3 failed; 0 ignored; 0 measured; 49 filtered out; finished in 3925.98s",
+          "groups": [
+            "FAILED",
+            "6",
+            "3"
+          ]
+        }
+      ],
+      "tail": [
+        "test the_previous_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_same_shape_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "test the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "test the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "---- the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm' (4182141) panicked at tests/heap.rs:1178:5:",
+        "Jbmc confirm=false after objects.Kernel#price: Unverifiable (expected Verified, on a JVM false)",
+        "✗ objects.Kernel#price cannot be verified: JBMC did not finish within 1800 s",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "---- the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm' (4181676) panicked at tests/heap.rs:1871:5:",
+        "Jbmc confirm=false after reprice: Unverifiable (expected Verified, on a JVM false)",
+        "✗ orders.Orders#reprice cannot be verified: JBMC did not finish within 1800 s",
+        "",
+        "",
+        "---- the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm' (8426) panicked at tests/heap.rs:1691:5:",
+        "Jbmc confirm=false after reprice: Unverifiable (expected Verified, on a JVM false)",
+        "✗ lines.Lines#reprice cannot be verified: JBMC did not finish within 1800 s",
+        "",
+        "",
+        "",
+        "failures:",
+        "    the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "    the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "    the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "",
+        "test result: FAILED. 6 passed; 3 failed; 0 ignored; 0 measured; 49 filtered out; finished in 3925.98s",
+        "",
+        "error: test failed, to rerun pass `--test heap`",
+        "proof tier: 0 of 1 passed; failed: cargo test"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-16T01:20:45+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261115-234440-the-proof-tier-after-example-286-s-engin"
+}

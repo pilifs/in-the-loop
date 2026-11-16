@@ -2,6 +2,144 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261115-234440-the-proof-tier-after-example-286-s-engin",
+      "title": "The proof tier after example 286's engine changes: every ignored Rust test in release and every Python test tagged proof",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 1h34m, peak 3.3 GiB (estimated 1h30m, 8.0 GiB); signals: cargo:tests×17; jvmcontract:fails×3",
+      "attention": [
+        "step 1 (proof tier) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/strings.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "8594e6b7adb1fc631f5dac87cd1fccdf09e5652f",
+      "finishedAt": "2026-11-16T01:20:25+00:00",
+      "wallSeconds": 5642.7,
+      "peakMemoryBytes": 3543912448,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 5400.0,
+        "notes": "past jobs, one test file or test each: heap's tests 3 s to 42 min (up to 61 min at a 1800 s limit), conformance's 11 and 20 min, the benchmark under a minute, each at 1.2 to 1.9 GiB peak; four at a time"
+      },
+      "host": "vm-1",
+      "result": "20261115-234440-the-proof-tier-after-example-286-s-engin/result.json"
+    },
+    {
+      "id": "20261115-234439-example-286-fixed-security-through-the-a",
+      "title": "Example 286 fixed-security through the adapter entry: the frozen decision claim on Spring Framework 5.3.19 with the simpleMatch lemma, expected established",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 20m38s, peak 1.4 GiB (estimated 45m00s, 8.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "lib/src/summary.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "8594e6b7adb1fc631f5dac87cd1fccdf09e5652f",
+      "finishedAt": "2026-11-16T00:09:40+00:00",
+      "wallSeconds": 1238.6,
+      "peakMemoryBytes": 1510699008,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 2700.0,
+        "notes": "time grew about threefold per unit of the bound between 3 and 5 in an unoptimized build (7, 15, 51 s); a release build is a few times faster in the engine and no faster in the solver, which is most of it. Memory is a guess from 0.6 million variables and 2 million clauses at 5."
+      },
+      "host": "vm-1",
+      "result": "20261115-234439-example-286-fixed-security-through-the-a/result.json"
+    },
+    {
+      "id": "20261115-234439-example-286-vulnerable-security-through",
+      "title": "Example 286 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 5.3.18, expected refuted",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 8m21s, peak 1.5 GiB (estimated 30m00s, 8.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "lib/src/summary.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "8594e6b7adb1fc631f5dac87cd1fccdf09e5652f",
+      "finishedAt": "2026-11-15T23:57:23+00:00",
+      "wallSeconds": 501.3,
+      "peakMemoryBytes": 1662021632,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 1800.0,
+        "notes": "a refutation stops at the first violating path, so it should take less than the proof of the same bound (see the fixed-security job); the lemma is proved first either way."
+      },
+      "host": "vm-1",
+      "result": "20261115-234439-example-286-vulnerable-security-through/result.json"
+    },
+    {
+      "id": "20261115-234440-example-286-mutant-security-through-the",
+      "title": "Example 286 mutant-security through the adapter entry: the frozen decision claim on the constructed mutant of 5.3.19, expected refuted",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 8m11s, peak 1.6 GiB (estimated 30m00s, 8.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/controls/pattern-side-unnormalized.patch",
+          "lib/src/summary.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "8594e6b7adb1fc631f5dac87cd1fccdf09e5652f",
+      "finishedAt": "2026-11-15T23:57:14+00:00",
+      "wallSeconds": 491.8,
+      "peakMemoryBytes": 1697660928,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 1800.0,
+        "notes": "as the vulnerable-security job: a refutation, after the lemma's proof."
+      },
+      "host": "vm-1",
+      "result": "20261115-234440-example-286-mutant-security-through-the/result.json"
+    },
+    {
       "id": "20261115-181427-example-285-preservation-the-known-metho",
       "title": "Example 285 preservation: the known method labels preserved between 2.7.17 and 2.7.18, each release on its own closure, expected established",
       "status": "passed",

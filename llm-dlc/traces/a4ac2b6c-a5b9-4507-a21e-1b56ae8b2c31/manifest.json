@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T00:12:55.883Z",
-  "duration_seconds": 28784,
+  "ended": "2026-11-16T01:18:18.691Z",
+  "duration_seconds": 32706,
   "stats": {
-    "turns": 10,
-    "api_calls": 963,
-    "tool_calls": 981,
+    "turns": 15,
+    "api_calls": 1029,
+    "tool_calls": 1049,
     "tool_errors": 3,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 466839,
     "usage": {
-      "input_tokens": 1926,
-      "output_tokens": 1095040,
-      "cache_read_input_tokens": 253263052,
-      "cache_creation_input_tokens": 2604107
+      "input_tokens": 2058,
+      "output_tokens": 1244754,
+      "cache_read_input_tokens": 268130065,
+      "cache_creation_input_tokens": 2955656
     }
   },
   "tools": {
-    "Bash": 939,
-    "Read": 24,
-    "Write": 11,
+    "Bash": 1000,
+    "Read": 29,
+    "Write": 13,
     "Monitor": 4,
     "ToolSearch": 3
   },
@@ -42,6 +42,8 @@
     "/tmp/e286/readme-section.md",
     "/tmp/e286/records.py",
     "/tmp/e286/submit.sh",
+    "lib/src/bmc/bytes.rs",
+    "lib/src/bmc/loops.rs",
     "lib/src/bmc/strings.rs",
     "lib/src/given.rs",
     "lib/tests/claims.rs",
@@ -122,24 +124,38 @@
     {
       "index": 5,
       "started": "2026-11-15T22:19:27.416Z",
-      "ended": "2026-11-16T00:12:55.883Z",
-      "turns": 1,
-      "api_calls": 203,
+      "ended": "2026-11-16T00:13:45.147Z",
+      "turns": 2,
+      "api_calls": 206,
       "usage": {
-        "input_tokens": 406,
-        "output_tokens": 155644,
-        "cache_read_input_tokens": 45442791,
-        "cache_creation_input_tokens": 382188
+        "input_tokens": 412,
+        "output_tokens": 158808,
+        "cache_read_input_tokens": 46638814,
+        "cache_creation_input_tokens": 386250
       },
-      "peak_context_tokens": 396848
+      "peak_context_tokens": 400910
+    },
+    {
+      "index": 6,
+      "started": "2026-11-16T00:14:50.812Z",
+      "ended": "2026-11-16T01:18:18.691Z",
+      "turns": 4,
+      "api_calls": 63,
+      "usage": {
+        "input_tokens": 126,
+        "output_tokens": 146550,
+        "cache_read_input_tokens": 13670990,
+        "cache_creation_input_tokens": 347487
+      },
+      "peak_context_tokens": 362147
     }
   ],
   "log": {
-    "sha256": "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a",
-    "bytes": 19856474,
-    "lines": 7630,
-    "gzip_bytes": 2889884,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a.jsonl.gz"
+    "sha256": "75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86",
+    "bytes": 22094358,
+    "lines": 8290,
+    "gzip_bytes": 3254048,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -198,6 +214,22 @@
       "summary": "Example 286's decision claim is decided beside the route: established on 5.3.19, refuted on 5.3.18 and on the mutant, at the frozen bound",
       "body": "The three decision jobs queued with zrzuurtk have finished, each as expected, on the unchanged claim claims/disallowed-field-denied-ignoring-case.json through the adapter entry its first assumption names, with maxArrayLength 8, unwind 16, the own checker and strict gaps. fixed-security (job 20261115-234439-example-286-fixed-security-through-the-a): established on Spring Framework 5.3.19 in 920 s after the simpleMatch lemma's own proof in 92 s (4,889 paths, 2.6 million variables, 8.7 million clauses, 1.41 GiB), not vacuous; its trial at 6 took 189 s. vulnerable-security (20261115-234439-example-286-vulnerable-security-through): refuted on 5.3.18 in 409 s at allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\"), which returns true. mutant-security (20261115-234440-example-286-mutant-security-through-the): refuted on the constructed mutant in 398 s at allowed(allowedPatterns=null, disallowedPatterns={null, null, null, null, null, null, \"*Y\"}, field=\" yzzy\"). Both witnesses were run in the harness on a JVM (JDK 25.0.5), so the refutations rest on the releases' bytecode and Java's own java.util.regex, not on a model. The results themselves are collected by the verification loop; this commit cites them by job.\n\nThe example's records say what was decided and what was not. README.md has a section with the verdicts, the witnesses, how to rerun (python3 proofs/prove.py TASK), what the proof is (the lemma by induction, one meaning for a regular expression) and what the verdicts rest on (the lemma, the checker's models of the JDK calls on the way, and two stated assumptions about the locale and the class loader). example.json has four dated notes and a verdict label. In target.json the three predicted blockers the proofs reached each keep their text and gain a dated note saying they were reached and closed outside the route, the fourth (the bean wrapper's reflection) a note that it is still not reached, and handoff.next says what is next. VF-027 has an update line.\n\nNot decided, and said so: these are proofs beside the route, not route receipts. The route runs the verifier on the original artifact alone, has no adapter entry and passes no lemma, so all six proof tasks stay blocked there, their packets and rerun checks unchanged. preservation, tried through the adapter entry, stops at the String[] parameter in the regression check; the protected-state tasks stop at java.util.ArrayList.<init>(int) in MutablePropertyValues.<init>, before the bean wrapper's reflection. The proof-tier job queued with zrzuurtk (20261115-234440-the-proof-tier-after-example-286-s-engin) is still running.",
       "log_sha256": "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a"
+    },
+    {
+      "change_id": "yylrxtponomokwvtmqpktkkqquqmqovy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86"
+    },
+    {
+      "change_id": "plpurxpmnllomylxlnswxypzuvtysqpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verification results for 4 jobs: example 286's three claims pass as expected, the proof tier stops at heap.rs on VF-018's three timeouts",
+      "body": "Jobs 20261115-234439 (fixed-security: established; vulnerable-security and mutant-security: refuted, all as expected, applying their outputs) passed. The proof-tier job 20261115-234440 failed at lib/tests/heap.rs: three JBMC timeouts at 1800 s, the VF-018 tests, so the binaries after heap and the Python proof tests did not run (VF-030, VF-018 updated). Conformance passed.",
+      "log_sha256": "75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86"
     }
   ],
   "logs": {
@@ -217,6 +249,12 @@
       "bytes": 9172326,
       "lines": 3189,
       "gzip_bytes": 1373766,
+      "url": null
+    },
+    "75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86": {
+      "bytes": 22094358,
+      "lines": 8290,
+      "gzip_bytes": 3254048,
       "url": null
     },
     "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a": {

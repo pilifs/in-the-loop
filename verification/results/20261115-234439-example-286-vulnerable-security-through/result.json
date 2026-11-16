@@ -1,0 +1,258 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261115-234439-example-286-vulnerable-security-through",
+  "title": "Example 286 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 5.3.18, expected refuted",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8m21s, peak 1.5 GiB (estimated 30m00s, 8.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261115-234439-example-286-vulnerable-security-through.json",
+    "sha256": "bc8339fecd5b6109534f1012185b10d6b361093934264e8005210870b3f67239",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261115-234439-example-286-vulnerable-security-through",
+      "title": "Example 286 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 5.3.18, expected refuted",
+      "description": "The frozen claim claims/disallowed-field-denied-ignoring-case.json, unchanged, run by examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example286.adapter.BinderDecisionAdapter#allowed(String[] allowedPatterns, String[] disallowedPatterns, String field), the entry the claim's first assumption names, with the claim's assumption, assertion and nullable parameters as they are written (streams, lambdas and java.util.regex, compiled by javac and run as bytecode) and the lemma examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract (PatternMatchUtils.simpleMatch on ASCII Strings is the claim's regular expression, proved first by induction on the pattern's length and applied where it was proved). The class path is the revision's pinned JARs, each checked against its SHA-256, and the adapter compiled against them. This is a proof beside the example route, whose own attempt of the task stops at DataBinder's receiver (VF-027): the route runs the verifier on the original artifact alone and has no adapter entry. Until this change jvmcontract refused the claim at its String[] parameters, its expressions and every String, StringBuilder, stream and regex call on the way. Here on 5.3.18 (vulnerable-release), expected refuted, at the frozen bound of 8: a field a disallowed pattern matches only ignoring case is allowed. The witness is run in the harness on a JVM, where the release's bytecode and Java's own java.util.regex decide it, so the refutation rests on no model of the checker. Inline at 3 code units the claim was refuted in 7 s at allowed(allowedPatterns=null, disallowedPatterns={null, \"J\", \"*p\"}, field=\"*\\u0018P\"): the pattern *p against a field that ends in P.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "lib/src/summary.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM'",
+      "submitted": {
+        "at": "2026-11-15T23:44:39+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "8G",
+        "duration": "30m",
+        "timeout": "2h",
+        "notes": "a refutation stops at the first violating path, so it should take less than the proof of the same bound (see the fixed-security job); the lemma is proved first either way."
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 8",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-security --timeout 3300 --work verification/.work-286/frozen",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-286/frozen/vulnerable-security/outcome.json",
+        "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyHarness.java",
+        "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyClaim.java"
+      ]
+    }
+  },
+  "sourceCommit": "8594e6b7adb1fc631f5dac87cd1fccdf09e5652f",
+  "startedAt": "2026-11-15T23:46:21+00:00",
+  "finishedAt": "2026-11-15T23:57:23+00:00",
+  "wallSeconds": 662.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3751981,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 12884901888,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 1800.0,
+    "notes": "a refutation stops at the first violating path, so it should take less than the proof of the same bound (see the fixed-security job); the lemma is proved first either way."
+  },
+  "usage": {
+    "peakMemoryBytes": 1662021632,
+    "wallSeconds": 501.3,
+    "cpuSeconds": 500.6,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.28
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 159.75,
+      "cpuSeconds": 159.429,
+      "cpuThrottledSeconds": 0.279,
+      "peakMemoryBytes": 2509332480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 3,
+        "bytes": 263,
+        "sha256": "49825b24c81a5c64bf7cccd84a51371041d7f752eb348d9ab3b5407556bffe62",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Blocking waiting for file lock on package cache",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261115-234439-example-286-vulnerable-security-through/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 39s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-security --timeout 3300 --work verification/.work-286/frozen",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 501.254,
+      "cpuSeconds": 500.601,
+      "cpuThrottledSeconds": 4.23,
+      "peakMemoryBytes": 1662021632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 14,
+        "bytes": 4179,
+        "sha256": "c7737b30abdc1699f6ae596d4b04fce4effb3bc5b3b1d56910d7abc78111b768",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 7,
+          "text": "✗ Property of example286.adapter.BinderDecisionAdapter#allowed violated: `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.cano",
+          "groups": [
+            "Property of example286.adapter.BinderDecisionAdapter#allowed violated: `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())` where field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))):"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 88.3 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "✗ Property of example286.adapter.BinderDecisionAdapter#allowed violated: `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.cano",
+        "  allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\")",
+        "    outcome: true",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 409.6 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: S",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.",
+        "",
+        "verdict: violation (expected violation); paths 4894, solver calls 8157, variables 2552872; outcome in verification/.work-286/frozen/vulnerable-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-286/frozen/vulnerable-security/outcome.json",
+      "change": "added",
+      "bytes": 18835,
+      "sha256": "2863c17ca7d0874fc8ca837a9a7ba541d67e783c88f25a204437e495be5c7f7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 2315,
+      "sha256": "8aa7dab8002ac07e13da01a979cfbff49efcafd0f4f0b6bf5109a629ed56cd35",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 2715,
+      "sha256": "65e0a18d0994b40c6f64d96105fbb1ad48a1621edb382f72ab0e5eca1336311e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T01:20:45+00:00",
+    "applied": [
+      "verification/.work-286/frozen/vulnerable-security/outcome.json",
+      "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyHarness.java",
+      "verification/.work-286/frozen/vulnerable-security/work/harness/PropertyClaim.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7d41ccebcd8671b2a5d575905d2865a9552234b0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7d41ccebcd8671b2a5d575905d2865a9552234b0/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}
