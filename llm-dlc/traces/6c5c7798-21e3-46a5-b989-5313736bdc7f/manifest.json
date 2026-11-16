@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T20:41:48.346Z",
-  "duration_seconds": 98062,
+  "ended": "2026-11-16T20:52:00.548Z",
+  "duration_seconds": 98674,
   "stats": {
-    "turns": 60,
-    "api_calls": 455,
-    "tool_calls": 415,
+    "turns": 62,
+    "api_calls": 461,
+    "tool_calls": 423,
     "tool_errors": 7,
     "compactions": 2,
-    "peak_context_tokens": 379834,
+    "peak_context_tokens": 387194,
     "usage": {
-      "input_tokens": 1044,
-      "output_tokens": 347867,
-      "cache_read_input_tokens": 83757237,
-      "cache_creation_input_tokens": 797020
+      "input_tokens": 1060,
+      "output_tokens": 351625,
+      "cache_read_input_tokens": 86054338,
+      "cache_creation_input_tokens": 803713
     }
   },
   "tools": {
-    "Bash": 389,
+    "Bash": 397,
     "ToolSearch": 6,
     "SendMessage": 5,
     "ListAgents": 4,
@@ -79,24 +79,24 @@
     {
       "index": 2,
       "started": "2026-11-16T09:49:36.548Z",
-      "ended": "2026-11-16T20:41:48.346Z",
-      "turns": 22,
-      "api_calls": 203,
+      "ended": "2026-11-16T20:52:00.548Z",
+      "turns": 24,
+      "api_calls": 209,
       "usage": {
-        "input_tokens": 448,
-        "output_tokens": 162624,
-        "cache_read_input_tokens": 47082321,
-        "cache_creation_input_tokens": 383831
+        "input_tokens": 464,
+        "output_tokens": 166382,
+        "cache_read_input_tokens": 49379422,
+        "cache_creation_input_tokens": 390524
       },
-      "peak_context_tokens": 379834
+      "peak_context_tokens": 387194
     }
   ],
   "log": {
-    "sha256": "c59a622d4faf0af0a791fd6accf9c5968aa5fccead418097808cb54f1fa226eb",
-    "bytes": 8482664,
-    "lines": 3622,
-    "gzip_bytes": 1459396,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/c59a622d4faf0af0a791fd6accf9c5968aa5fccead418097808cb54f1fa226eb.jsonl.gz"
+    "sha256": "41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6",
+    "bytes": 8584936,
+    "lines": 3684,
+    "gzip_bytes": 1473276,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -603,6 +603,14 @@
       "summary": "Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)",
       "body": "Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.\n\nExample 288's proofs/prove.py runs each frozen claim, unchanged, through the adapter entry its first assumption names, beside the route (which has no adapter entry), with the simpleMatch lemma of example 286 and, for preservation, a lemma for each release's simpleMatch. Inline probes at smaller bounds gave every expected verdict: fixed-security established at 2 and 5 (47 s); vulnerable-security and mutant-security refuted at 3 in 8 s and 5 s, each witness decided under tr-TR with a capital I and run on a JVM; preservation established at 2, 3 and 4 (48 s), and refuted at 2 when given no allowed change. The frozen bound, 8, is queued: jobs 20261116-201436-example-288-fixed-security-through-the-a, 20261116-201436-example-288-vulnerable-security-through, 20261116-201436-example-288-mutant-security-through-the and 20261116-203637-example-288-preservation-through-the-ada; and, because the checker's array read changed under nearly every proof-tier test, 20261116-203933-the-proof-tier-after-example-288-s-engin. The example's target.json, example.json and README record the queued state and close the four predicted blockers outside the route; no verdict label changes until the jobs report.",
       "log_sha256": "c59a622d4faf0af0a791fd6accf9c5968aa5fccead418097808cb54f1fa226eb"
+    },
+    {
+      "change_id": "krmvzrytnpwvqpsrlnwsnttrtwvprvtm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher's decisions on the run of 288-290 so far",
+      "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
+      "log_sha256": "41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6"
     }
   ],
   "logs": {
@@ -640,6 +648,12 @@
       "bytes": 6155837,
       "lines": 2562,
       "gzip_bytes": 1133668,
+      "url": null
+    },
+    "41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6": {
+      "bytes": 8584936,
+      "lines": 3684,
+      "gzip_bytes": 1473276,
       "url": null
     },
     "42934dbec4fe2e3f0bf82bf220ebc474ea2930e744795da7ac708bf695c850e6": {

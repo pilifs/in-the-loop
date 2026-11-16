@@ -12,28 +12,29 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T20:47:59.184Z",
-  "duration_seconds": 102887,
+  "ended": "2026-11-16T20:51:55.094Z",
+  "duration_seconds": 103123,
   "stats": {
-    "turns": 25,
-    "api_calls": 1535,
-    "tool_calls": 1569,
-    "tool_errors": 12,
-    "compactions": 10,
+    "turns": 28,
+    "api_calls": 1545,
+    "tool_calls": 1581,
+    "tool_errors": 13,
+    "compactions": 11,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3070,
-      "output_tokens": 1890461,
-      "cache_read_input_tokens": 403555195,
-      "cache_creation_input_tokens": 4462544
+      "input_tokens": 3090,
+      "output_tokens": 1895195,
+      "cache_read_input_tokens": 404456188,
+      "cache_creation_input_tokens": 4477641
     }
   },
   "tools": {
-    "Bash": 1507,
+    "Bash": 1515,
     "Read": 35,
     "Write": 20,
+    "ToolSearch": 5,
     "Monitor": 4,
-    "ToolSearch": 3
+    "TaskStop": 2
   },
   "files_touched": [
     "/tmp/e285/commit1-body1.txt",
@@ -200,24 +201,38 @@
     {
       "index": 10,
       "started": "2026-11-16T20:39:19.059Z",
-      "ended": "2026-11-16T20:47:59.184Z",
+      "ended": "2026-11-16T20:50:44.578Z",
       "turns": 1,
-      "api_calls": 13,
+      "api_calls": 23,
       "usage": {
-        "input_tokens": 26,
-        "output_tokens": 11685,
-        "cache_read_input_tokens": 800285,
-        "cache_creation_input_tokens": 66980
+        "input_tokens": 46,
+        "output_tokens": 16419,
+        "cache_read_input_tokens": 1701278,
+        "cache_creation_input_tokens": 82077
       },
-      "peak_context_tokens": 81640
+      "peak_context_tokens": 96737
+    },
+    {
+      "index": 11,
+      "started": "2026-11-16T20:51:55.086Z",
+      "ended": "2026-11-16T20:51:55.094Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7",
-    "bytes": 33527200,
-    "lines": 12650,
-    "gzip_bytes": 5029330,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz"
+    "sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4",
+    "bytes": 33777069,
+    "lines": 12761,
+    "gzip_bytes": 5083344,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -588,6 +603,14 @@
       "summary": "Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)",
       "body": "Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.\n\nExample 288's proofs/prove.py runs each frozen claim, unchanged, through the adapter entry its first assumption names, beside the route (which has no adapter entry), with the simpleMatch lemma of example 286 and, for preservation, a lemma for each release's simpleMatch. Inline probes at smaller bounds gave every expected verdict: fixed-security established at 2 and 5 (47 s); vulnerable-security and mutant-security refuted at 3 in 8 s and 5 s, each witness decided under tr-TR with a capital I and run on a JVM; preservation established at 2, 3 and 4 (48 s), and refuted at 2 when given no allowed change. The frozen bound, 8, is queued: jobs 20261116-201436-example-288-fixed-security-through-the-a, 20261116-201436-example-288-vulnerable-security-through, 20261116-201436-example-288-mutant-security-through-the and 20261116-203637-example-288-preservation-through-the-ada; and, because the checker's array read changed under nearly every proof-tier test, 20261116-203933-the-proof-tier-after-example-288-s-engin. The example's target.json, example.json and README record the queued state and close the four predicted blockers outside the route; no verdict label changes until the jobs report.",
       "log_sha256": "5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7"
+    },
+    {
+      "change_id": "krmvzrytnpwvqpsrlnwsnttrtwvprvtm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher's decisions on the run of 288-290 so far",
+      "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
+      "log_sha256": "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4"
     }
   ],
   "logs": {
@@ -625,6 +648,12 @@
       "bytes": 33527200,
       "lines": 12650,
       "gzip_bytes": 5029330,
+      "url": null
+    },
+    "5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4": {
+      "bytes": 33777069,
+      "lines": 12761,
+      "gzip_bytes": 5083344,
       "url": null
     },
     "75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86": {
