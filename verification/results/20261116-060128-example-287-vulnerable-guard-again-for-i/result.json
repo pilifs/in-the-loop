@@ -1,0 +1,289 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-060128-example-287-vulnerable-guard-again-for-i",
+  "title": "Example 287 vulnerable-guard again, for its receipt: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected refuted",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m20s, peak 2.2 GiB (estimated 8m00s, 6.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-060128-example-287-vulnerable-guard-again-for-i.json",
+    "sha256": "8f4d81516822fe72035e00f9cee257fa509ef33f3e31a30ebe7a7a2d5a689616",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-060128-example-287-vulnerable-guard-again-for-i",
+      "title": "Example 287 vulnerable-guard again, for its receipt: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected refuted",
+      "description": "The frozen claim claims/overlong-bytes-rejected.json on the task's pinned release, by jvmcontract's own checker under strict gaps, through the example route with no adapter: BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes and never returns true for such an array, for every valid stored hash (minor a, b or y, cost 04 to 30). The task's recorded refusal was at checkpw's String parameter in a property check (VF-027), which example 286's change lifted; the check then stopped at String.matches in the claim's assumption, at Integer.parseInt, and at the key schedule's first loop beyond the bound. jvmcontract's own checker now runs the claim as it is written: the assumption's regular expression (classes, a group of alternatives, a count of 53) is a formula over the hash's 60 code units, Integer.parseInt, Arrays.copyOf, the StringBuilder appends, String.getBytes(UTF_8) and MessageDigest.isEqual are modelled, and the loops that go round more often than --unwind 16 (the key schedule's 18 and 512 iterations, the 2^cost rounds, the 64 encryptions) are covered by invariants the checker finds and proves by induction (lib/src/bmc/loops.rs), with the S-boxes any values past them. Nothing in the claim, its bound (arrays and Strings of up to 80) or the route's command changed. 6.3.7 has no such guard and returns for an array of 73 bytes; expected refuted on a witness the route runs: the least violating input, so a hash of cost 04 that a JVM runs at once.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/regex.rs"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "expected": "example 287 task vulnerable-guard gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-16T06:01:28+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "8m",
+        "timeout": "1h",
+        "notes": "the first run of this task (20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict and was refused when the receipt was checked: the loops an invariant covers were copied into search.native, which the result schema keeps for numbers. build.py now keeps them in search.loopsCoveredByInvariants. That run took 6m00s at 2.2 GiB peak"
+      },
+      "steps": [
+        {
+          "name": "example 287 task vulnerable-guard (prove)",
+          "run": "python3 examples/tools/build.py 287 --task vulnerable-guard",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard"
+      ]
+    }
+  },
+  "sourceCommit": "8d0b787e26975a34fdc718001af8b976007a9f72",
+  "startedAt": "2026-11-16T07:00:48+00:00",
+  "finishedAt": "2026-11-16T07:08:29+00:00",
+  "wallSeconds": 461.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3431342,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 480.0,
+    "notes": "the first run of this task (20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict and was refused when the receipt was checked: the loops an invariant covers were copied into search.native, which the result schema keeps for numbers. build.py now keeps them in search.loopsCoveredByInvariants. That run took 6m00s at 2.2 GiB peak"
+  },
+  "usage": {
+    "peakMemoryBytes": 2344812544,
+    "wallSeconds": 320.2,
+    "cpuSeconds": 321.9,
+    "memoryOfEstimate": 0.36,
+    "durationOfEstimate": 0.67
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 287 task vulnerable-guard (prove)",
+      "run": "python3 examples/tools/build.py 287 --task vulnerable-guard",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 320.216,
+      "cpuSeconds": 321.934,
+      "cpuThrottledSeconds": 0.266,
+      "peakMemoryBytes": 2344812544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-287-task-vulnerable-gu.log",
+        "lines": 2,
+        "bytes": 304,
+        "sha256": "c08f28432a83943e8d73b8153f270f3c06337993c45c36fd3a5cd4f52d78a55b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-guard: refuted (completed; as expected), receipt receipts/vulnerable-guard/20261116T070828Z-a709a564/result.json",
+          "groups": [
+            "287",
+            "vulnerable-guard",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task vulnerable-guard (target route)",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: task vulnerable-guard: refuted (completed; as expected), receipt receipts/vulnerable-guard/20261116T070828Z-a709a564/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/plan.json",
+      "change": "added",
+      "bytes": 13251,
+      "sha256": "175ace70f84c86702b3fb330bb417ebdb62ab212a64e8cb799f7c05da5c59461",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 215,
+      "sha256": "eae5b315b2b676b080cd9af421fa26963ff357686434373f030961a26fd7c337",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk25.stderr",
+      "change": "added",
+      "bytes": 215,
+      "sha256": "eae5b315b2b676b080cd9af421fa26963ff357686434373f030961a26fd7c337",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk25.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/controls.json",
+      "change": "added",
+      "bytes": 2260,
+      "sha256": "a363311b9d38bc193192ad39c7bf358ca4bf1afe73d9e5369e5c186bda95822e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/execution.json",
+      "change": "added",
+      "bytes": 28496,
+      "sha256": "853dee5192a31aee196aa09e5a5c8fcb03df1e3cb121c684d5c004343931fc0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/streams.json",
+      "change": "added",
+      "bytes": 2787,
+      "sha256": "77bd5d4a0896aa8ecdc6b3c4fd6fcaf2d44814d19fbe84aeec41e87e89d3d14a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1506,
+      "sha256": "1c3172e0e5cd375d1698c0d656ff723a4799bd09770dee3b8fcfb199c56b05f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier.json",
+      "change": "added",
+      "bytes": 26202,
+      "sha256": "6e999221207550972eb78b02492d2134a5e54dd1520fb3f3a6213bcce2024da9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier.stdout",
+      "change": "added",
+      "bytes": 16300,
+      "sha256": "c0032fb07eb821e8188a6c6d3c69e6fe71df6644bb7c414bf5b4b03b68884bf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/result.json",
+      "change": "added",
+      "bytes": 38761,
+      "sha256": "fb81c4abfb2a5ec2cf2370c67f0983db65650c49bbc73616abf4bc75f3fbeb1f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T07:08:32+00:00",
+    "applied": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/plan.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk21.stderr",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk21.stdout",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk25.stderr",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/control-vulnerable-release-jdk25.stdout",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/controls.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/execution.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/streams.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier-output.txt",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier.json",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier.stderr",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/records/verifier.stdout",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/vulnerable-guard/20261116T070828Z-a709a564/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ce06b0c12656772b9cb5b947362919739f470dca",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ce06b0c12656772b9cb5b947362919739f470dca/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

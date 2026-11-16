@@ -35,6 +35,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: VF-018.
 - **Closes when**: a proof-tier job covering the binaries after `heap` and the Python proof tests passes at a commit
   with these engine changes.
+- **Update 2026-11-16** (job `20261116-053833-the-proof-tier-after-example-287-s-engin`, at `26a42d401510`, passed on
+  `vm-1`, 1h07m, peak 3.3 GiB): the Rust half is settled. Run with `--no-fail-fast` and VF-018's three tests skipped, every
+  ignored Rust test passed (`conformance` 2, `heap` 6, `preparation` 1; no binary after `heap` has an ignored test left), none
+  hidden by a failure, with example 287's engine changes. The Python proof-tier tests are still not covered: that job
+  ran `cargo test` only. The entry stays open for them; the submitter should queue them as a job of their own.
 
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 

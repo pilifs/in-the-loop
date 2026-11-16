@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-053832-example-287-fixed-security-through-the-a",
+  "title": "Example 287 fixed-security through the adapter entry: the frozen public claim on 6.3.8, expected established",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10m58s, peak 3.0 GiB (estimated 30m00s, 12.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-053832-example-287-fixed-security-through-the-a.json",
+    "sha256": "9c6667a5e465080d4f7e1738544b07e3af9a91bf448073e160ff676120966991",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-053832-example-287-fixed-security-through-the-a",
+      "title": "Example 287 fixed-security through the adapter entry: the frozen public claim on 6.3.8, expected established",
+      "description": "The frozen claim claims/overlong-candidate-rejected.json, unchanged, run by examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example287.adapter.PasswordMatchAdapter#matches(String candidate, String storedHash), the entry the claim's first assumption names (one call of new BCryptPasswordEncoder().matches), with the claim's assumption, assertion and throws clause as they are written, compiled by javac and run as bytecode (a throws clause's condition is now compiled as the other two are), at the claim's bound of 80 code units. The class path is the revision's pinned JARs, each checked against its SHA-256, and the adapter compiled against them. This is a proof beside the example route, whose own attempt of the task stops at BCryptPasswordEncoder's receiver (seven constructors, no construction plan, VF-027). Until this change the checker refused the encoder's constructor (Object.getClass, spring-jcl 6's LogAdapter initializer, which keeps a method reference per logging library), CharSequence.toString, the encoder's pattern, String.getBytes(UTF_8) and every loop of bcrypt beyond the bound; the loops are now covered by invariants it finds and proves (lib/src/bmc/loops.rs). Expected established for every candidate of up to 80 code units.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: verified (expected verified)'",
+      "submitted": {
+        "at": "2026-11-16T05:38:32+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "12G",
+        "duration": "30m",
+        "timeout": "1h30m",
+        "notes": "as the guard jobs, with the candidate's UTF-8 encoding (80 code units, 240 byte cells) and the encoder's constructor before it. One capped probe of fixed-security (280 s, 4 GiB, beside a test run) did not finish: 345 paths, 9.4 million variables and five loops covered by then, so the time and memory here are a guess from the guard's 250 s"
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 80",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-287",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-287/fixed-security/outcome.json",
+        "verification/.work-287/fixed-security/work/harness/PropertyHarness.java",
+        "verification/.work-287/fixed-security/work/harness/PropertyClaim.java"
+      ]
+    }
+  },
+  "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+  "startedAt": "2026-11-16T05:44:50+00:00",
+  "finishedAt": "2026-11-16T05:58:15+00:00",
+  "wallSeconds": 805.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2826898,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 19327352832,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 12884901888,
+    "durationSeconds": 1800.0,
+    "notes": "as the guard jobs, with the candidate's UTF-8 encoding (80 code units, 240 byte cells) and the encoder's constructor before it. One capped probe of fixed-security (280 s, 4 GiB, beside a test run) did not finish: 345 paths, 9.4 million variables and five loops covered by then, so the time and memory here are a guess from the guard's 250 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 3242795008,
+    "wallSeconds": 658.7,
+    "cpuSeconds": 659.1,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.37
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 80",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-287",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 658.719,
+      "cpuSeconds": 659.15,
+      "cpuThrottledSeconds": 0.147,
+      "peakMemoryBytes": 3242795008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 5,
+        "bytes": 1815,
+        "sha256": "28f328e474dab807ed78c125d77cb8ec70e8ce007eff873072147a1dda3b15b9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example287.adapter.PasswordMatchAdapter#matches satisfies `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` on every input where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws ja",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches satisfies `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` on every input where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.lang.IllegalArgumentException when candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72 (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, not null × storedHash: String of ≤ 80 code units, not null in 641.1 s; loops unwound 16 times with unwinding assertions; 6 loops beyond the bound covered by invariants the checker found and proved (org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130, org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165, org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260, org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60, org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151, org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39))"
+          ]
+        }
+      ],
+      "tail": [
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter candidate has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode,",
+        "✓ example287.adapter.PasswordMatchAdapter#matches satisfies `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` on every input where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws ja",
+        "  not vacuous: matches(candidate=\"\\u7ea0\\ufea0\\u407c}}\\ufea0\\u06a0\\ufea0\\udbfd\\udea0\\u7ea0\", storedHash=\"$2a$09$ppppppppppppppppppppppppppppppppppppppppppppppppppppp\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 641, solver calls 4709, variables 13455404, loops covered by invariants 6; outcome in verification/.work-287/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 11255,
+      "sha256": "a7262d16ea25e873276939e400eec1d92c4b1a3819456ab7d40cb42379cced01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/fixed-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "9e983bef3df94d102534c3a466567bd9db7cd98ac093d27baff877eebeda3d74",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/fixed-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 809,
+      "sha256": "b29f524b03c1946de62d20fd7829880b81d9b2848c715207feee22f01fbe1128",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T07:08:32+00:00",
+    "applied": [
+      "verification/.work-287/fixed-security/outcome.json",
+      "verification/.work-287/fixed-security/work/harness/PropertyHarness.java",
+      "verification/.work-287/fixed-security/work/harness/PropertyClaim.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "aaf4c16571085341b8d147d1ab127ce3cd46d9f5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/aaf4c16571085341b8d147d1ab127ce3cd46d9f5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

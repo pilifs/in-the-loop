@@ -2,6 +2,278 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261116-060128-example-287-vulnerable-guard-again-for-i",
+      "title": "Example 287 vulnerable-guard again, for its receipt: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected refuted",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 5m20s, peak 2.2 GiB (estimated 8m00s, 6.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/regex.rs"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "sourceCommit": "8d0b787e26975a34fdc718001af8b976007a9f72",
+      "finishedAt": "2026-11-16T07:08:29+00:00",
+      "wallSeconds": 320.2,
+      "peakMemoryBytes": 2344812544,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 480.0,
+        "notes": "the first run of this task (20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict and was refused when the receipt was checked: the loops an invariant covers were copied into search.native, which the result schema keeps for numbers. build.py now keeps them in search.loopsCoveredByInvariants. That run took 6m00s at 2.2 GiB peak"
+      },
+      "host": "vm-1",
+      "result": "20261116-060128-example-287-vulnerable-guard-again-for-i/result.json"
+    },
+    {
+      "id": "20261116-060128-example-287-fixed-guard-again-for-its-re",
+      "title": "Example 287 fixed-guard again, for its receipt: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected established",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 4m06s, peak 2.2 GiB (estimated 8m00s, 6.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/regex.rs"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "sourceCommit": "8d0b787e26975a34fdc718001af8b976007a9f72",
+      "finishedAt": "2026-11-16T07:07:14+00:00",
+      "wallSeconds": 246.1,
+      "peakMemoryBytes": 2345013248,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 480.0,
+        "notes": "the first run of this task (20261116-053832-example-287-fixed-guard-the-byte-array-g) ran the verifier to its verdict and was refused when the receipt was checked: the loops an invariant covers were copied into search.native, which the result schema keeps for numbers. build.py now keeps them in search.loopsCoveredByInvariants. That run took 4m42s at 2.2 GiB peak"
+      },
+      "host": "vm-1",
+      "result": "20261116-060128-example-287-fixed-guard-again-for-its-re/result.json"
+    },
+    {
+      "id": "20261116-053833-the-proof-tier-after-example-287-s-engin",
+      "title": "The proof tier after example 287's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1h07m, peak 3.3 GiB (estimated 2h00m, 8.0 GiB); signals: cargo:tests×33",
+      "attention": [],
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bits.rs",
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+      "finishedAt": "2026-11-16T06:59:50+00:00",
+      "wallSeconds": 4069.5,
+      "peakMemoryBytes": 3583721472,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 7200.0,
+        "notes": "the job after example 286 ran conformance and heap in 1h34m at 3.3 GiB peak before stopping; the three skipped tests were about an hour each of that, and the binaries after heap have not been timed together"
+      },
+      "host": "vm-1",
+      "result": "20261116-053833-the-proof-tier-after-example-287-s-engin/result.json"
+    },
+    {
+      "id": "20261116-053832-example-287-mutant-security-through-the",
+      "title": "Example 287 mutant-security through the adapter entry: the frozen public claim on the constructed mutant of 6.3.8 (controls/char-count-guard.patch: the limit counted in UTF-16 units), expected refuted",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 13m42s, peak 2.5 GiB (estimated 30m00s, 12.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+      "finishedAt": "2026-11-16T06:00:59+00:00",
+      "wallSeconds": 822.7,
+      "peakMemoryBytes": 2709155840,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 12884901888,
+        "durationSeconds": 1800.0,
+        "notes": "as the guard jobs, with the candidate's UTF-8 encoding (80 code units, 240 byte cells) and the encoder's constructor before it. One capped probe of fixed-security (280 s, 4 GiB, beside a test run) did not finish: 345 paths, 9.4 million variables and five loops covered by then, so the time and memory here are a guess from the guard's 250 s"
+      },
+      "host": "vm-1",
+      "result": "20261116-053832-example-287-mutant-security-through-the/result.json"
+    },
+    {
+      "id": "20261116-053832-example-287-vulnerable-security-through",
+      "title": "Example 287 vulnerable-security through the adapter entry: the frozen public claim on 6.3.7, expected refuted",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 13m40s, peak 3.0 GiB (estimated 30m00s, 12.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+      "finishedAt": "2026-11-16T06:00:57+00:00",
+      "wallSeconds": 820.5,
+      "peakMemoryBytes": 3240382464,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 12884901888,
+        "durationSeconds": 1800.0,
+        "notes": "as the guard jobs, with the candidate's UTF-8 encoding (80 code units, 240 byte cells) and the encoder's constructor before it. One capped probe of fixed-security (280 s, 4 GiB, beside a test run) did not finish: 345 paths, 9.4 million variables and five loops covered by then, so the time and memory here are a guess from the guard's 250 s"
+      },
+      "host": "vm-1",
+      "result": "20261116-053832-example-287-vulnerable-security-through/result.json"
+    },
+    {
+      "id": "20261116-053832-example-287-fixed-security-through-the-a",
+      "title": "Example 287 fixed-security through the adapter entry: the frozen public claim on 6.3.8, expected established",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 10m58s, peak 3.0 GiB (estimated 30m00s, 12.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+      "finishedAt": "2026-11-16T05:58:15+00:00",
+      "wallSeconds": 658.7,
+      "peakMemoryBytes": 3242795008,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 12884901888,
+        "durationSeconds": 1800.0,
+        "notes": "as the guard jobs, with the candidate's UTF-8 encoding (80 code units, 240 byte cells) and the encoder's constructor before it. One capped probe of fixed-security (280 s, 4 GiB, beside a test run) did not finish: 345 paths, 9.4 million variables and five loops covered by then, so the time and memory here are a guess from the guard's 250 s"
+      },
+      "host": "vm-1",
+      "result": "20261116-053832-example-287-fixed-security-through-the-a/result.json"
+    },
+    {
+      "id": "20261116-053832-example-287-vulnerable-guard-the-byte-ar",
+      "title": "Example 287 vulnerable-guard: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected refuted",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 6m00s, peak 2.2 GiB (estimated 15m00s, 6.0 GiB); signals: example:not-executed×1",
+      "attention": [
+        "step 1 (example 287 task vulnerable-guard (prove)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/regex.rs"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+      "finishedAt": "2026-11-16T05:53:17+00:00",
+      "wallSeconds": 360.9,
+      "peakMemoryBytes": 2346823680,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 900.0,
+        "notes": "one capped probe each (5 minutes, 4 GiB, the verifier alone on the pinned JARs, beside a test run): on 6.3.8 the claim was proved in 250 s with six loops covered by invariants; on 6.3.7 the violating path was found after about 237 s and the search for the least witness, some 300 solver questions at 0.2 s each, was cut by the probe's limit, so the route's 600 s should hold both. The time besides is the acquisition, the gap scan, the JVM runs and the release build of lib/ if its tree isn't cached"
+      },
+      "host": "vm-1",
+      "result": "20261116-053832-example-287-vulnerable-guard-the-byte-ar/result.json"
+    },
+    {
+      "id": "20261116-053832-example-287-fixed-guard-the-byte-array-g",
+      "title": "Example 287 fixed-guard: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected established",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 4m42s, peak 2.2 GiB (estimated 15m00s, 6.0 GiB); signals: example:not-executed×1",
+      "attention": [
+        "step 1 (example 287 task fixed-guard (prove)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/regex.rs"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+      "finishedAt": "2026-11-16T05:51:59+00:00",
+      "wallSeconds": 282.5,
+      "peakMemoryBytes": 2344873984,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 900.0,
+        "notes": "one capped probe each (5 minutes, 4 GiB, the verifier alone on the pinned JARs, beside a test run): on 6.3.8 the claim was proved in 250 s with six loops covered by invariants; on 6.3.7 the violating path was found after about 237 s and the search for the least witness, some 300 solver questions at 0.2 s each, was cut by the probe's limit, so the route's 600 s should hold both. The time besides is the acquisition, the gap scan, the JVM runs and the release build of lib/ if its tree isn't cached"
+      },
+      "host": "vm-1",
+      "result": "20261116-053832-example-287-fixed-guard-the-byte-array-g/result.json"
+    },
+    {
       "id": "20261115-234440-the-proof-tier-after-example-286-s-engin",
       "title": "The proof tier after example 286's engine changes: every ignored Rust test in release and every Python test tagged proof",
       "status": "failed",

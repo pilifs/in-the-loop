@@ -1,0 +1,185 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-053832-example-287-fixed-guard-the-byte-array-g",
+  "title": "Example 287 fixed-guard: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected established",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4m42s, peak 2.2 GiB (estimated 15m00s, 6.0 GiB); signals: example:not-executed×1",
+  "attention": [
+    "step 1 (example 287 task fixed-guard (prove)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261116-053832-example-287-fixed-guard-the-byte-array-g.json",
+    "sha256": "fe637a614622f32447d9dfceb9e978da5d4fe9e125f4f0f05908ec20282c13e9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-053832-example-287-fixed-guard-the-byte-array-g",
+      "title": "Example 287 fixed-guard: the byte-array guard lemma on BCrypt.checkpw as the route runs it, expected established",
+      "description": "The frozen claim claims/overlong-bytes-rejected.json on the task's pinned release, by jvmcontract's own checker under strict gaps, through the example route with no adapter: BCrypt.checkpw(byte[], String) throws IllegalArgumentException exactly when the array is longer than 72 bytes and never returns true for such an array, for every valid stored hash (minor a, b or y, cost 04 to 30). The task's recorded refusal was at checkpw's String parameter in a property check (VF-027), which example 286's change lifted; the check then stopped at String.matches in the claim's assumption, at Integer.parseInt, and at the key schedule's first loop beyond the bound. jvmcontract's own checker now runs the claim as it is written: the assumption's regular expression (classes, a group of alternatives, a count of 53) is a formula over the hash's 60 code units, Integer.parseInt, Arrays.copyOf, the StringBuilder appends, String.getBytes(UTF_8) and MessageDigest.isEqual are modelled, and the loops that go round more often than --unwind 16 (the key schedule's 18 and 512 iterations, the 2^cost rounds, the 64 encryptions) are covered by invariants the checker finds and proves by induction (lib/src/bmc/loops.rs), with the S-boxes any values past them. Nothing in the claim, its bound (arrays and Strings of up to 80) or the route's command changed. 6.3.8's hashpw(byte[], String, boolean) refuses more than 72 bytes before the salt is read; expected established for every array of up to 80 bytes, with the loops named in the verdict.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/bytes.rs",
+          "lib/src/bmc/regex.rs"
+        ],
+        "examples": [
+          "287"
+        ]
+      },
+      "expected": "example 287 task fixed-guard gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-16T05:38:32+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "15m",
+        "timeout": "1h",
+        "notes": "one capped probe each (5 minutes, 4 GiB, the verifier alone on the pinned JARs, beside a test run): on 6.3.8 the claim was proved in 250 s with six loops covered by invariants; on 6.3.7 the violating path was found after about 237 s and the search for the least witness, some 300 solver questions at 0.2 s each, was cut by the probe's limit, so the route's 600 s should hold both. The time besides is the acquisition, the gap scan, the JVM runs and the release build of lib/ if its tree isn't cached"
+      },
+      "steps": [
+        {
+          "name": "example 287 task fixed-guard (prove)",
+          "run": "python3 examples/tools/build.py 287 --task fixed-guard",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard"
+      ]
+    }
+  },
+  "sourceCommit": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
+  "startedAt": "2026-11-16T05:44:50+00:00",
+  "finishedAt": "2026-11-16T05:51:59+00:00",
+  "wallSeconds": 429.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2826898,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "one capped probe each (5 minutes, 4 GiB, the verifier alone on the pinned JARs, beside a test run): on 6.3.8 the claim was proved in 250 s with six loops covered by invariants; on 6.3.7 the violating path was found after about 237 s and the search for the least witness, some 300 solver questions at 0.2 s each, was cut by the probe's limit, so the route's 600 s should hold both. The time besides is the acquisition, the gap scan, the JVM runs and the release build of lib/ if its tree isn't cached"
+  },
+  "usage": {
+    "peakMemoryBytes": 2344873984,
+    "wallSeconds": 282.5,
+    "cpuSeconds": 284.2,
+    "memoryOfEstimate": 0.36,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 287 task fixed-guard (prove)",
+      "run": "python3 examples/tools/build.py 287 --task fixed-guard",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 282.481,
+      "cpuSeconds": 284.236,
+      "cpuThrottledSeconds": 0.209,
+      "peakMemoryBytes": 2344873984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-287-task-fixed-guard-p.log",
+        "lines": 3,
+        "bytes": 1067,
+        "sha256": "550c52f67191e008fccb0c0a4c04d021aec174eec81b114d158957dbb37d3777",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:not-executed": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 2,
+          "text": "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: not-executed (task fixed-guard: unsupported: ingest (example-targets-workflow): the receipt doesn't pass check_result: /home/filip/code/in-the-loop/verification/.state/work/20261116-053832-example-287-fixed-guard-the-byte-array-g/examp",
+          "groups": [
+            "287",
+            "task fixed-guard: unsupported: ingest (example-targets-workflow): the receipt doesn't pass check_result: /home/filip/code/in-the-loop/verification/.state/work/20261116-053832-example-287-fixed-guard-the-byte-array-g/examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/receipts/fixed-guard/.20261116T055158Z-e01cdbda.publishing/result.json: ['org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130', 'org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165', 'org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260', 'org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60', 'org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151', 'org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39'] is not of type 'number'"
+          ]
+        }
+      ],
+      "tail": [
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: running task fixed-guard (target route)",
+        "287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72: not-executed (task fixed-guard: unsupported: ingest (example-targets-workflow): the receipt doesn't pass check_result: /home/filip/code/in-the-loop/verification/.state/work/20261116-053832-example-287-fixed-guard-the-byte-array-g/examp",
+        "Not executed: 287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-16T07:08:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "aaf4c16571085341b8d147d1ab127ce3cd46d9f5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/aaf4c16571085341b8d147d1ab127ce3cd46d9f5/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261116-053832-example-287-fixed-guard-the-byte-array-g"
+}
