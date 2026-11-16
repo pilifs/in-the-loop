@@ -12,25 +12,25 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T22:10:03.221Z",
-  "duration_seconds": 107811,
+  "ended": "2026-11-16T22:21:05.860Z",
+  "duration_seconds": 108474,
   "stats": {
-    "turns": 29,
-    "api_calls": 1655,
-    "tool_calls": 1699,
-    "tool_errors": 16,
-    "compactions": 11,
+    "turns": 33,
+    "api_calls": 1690,
+    "tool_calls": 1735,
+    "tool_errors": 17,
+    "compactions": 12,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3310,
-      "output_tokens": 2018025,
-      "cache_read_input_tokens": 430108465,
-      "cache_creation_input_tokens": 4831258
+      "input_tokens": 3380,
+      "output_tokens": 2054346,
+      "cache_read_input_tokens": 434379248,
+      "cache_creation_input_tokens": 4994548
     }
   },
   "tools": {
-    "Bash": 1631,
-    "Read": 36,
+    "Bash": 1666,
+    "Read": 37,
     "Write": 21,
     "ToolSearch": 5,
     "Monitor": 4,
@@ -216,24 +216,38 @@
     {
       "index": 11,
       "started": "2026-11-16T20:51:55.086Z",
-      "ended": "2026-11-16T22:10:03.221Z",
+      "ended": "2026-11-16T22:11:04.661Z",
       "turns": 4,
-      "api_calls": 110,
+      "api_calls": 112,
       "usage": {
-        "input_tokens": 220,
-        "output_tokens": 122830,
-        "cache_read_input_tokens": 25652277,
-        "cache_creation_input_tokens": 353617
+        "input_tokens": 224,
+        "output_tokens": 125280,
+        "cache_read_input_tokens": 26383519,
+        "cache_creation_input_tokens": 356717
       },
-      "peak_context_tokens": 364989
+      "peak_context_tokens": 368089
+    },
+    {
+      "index": 12,
+      "started": "2026-11-16T22:12:26.174Z",
+      "ended": "2026-11-16T22:21:05.860Z",
+      "turns": 4,
+      "api_calls": 33,
+      "usage": {
+        "input_tokens": 66,
+        "output_tokens": 33871,
+        "cache_read_input_tokens": 3539541,
+        "cache_creation_input_tokens": 160190
+      },
+      "peak_context_tokens": 171562
     }
   ],
   "log": {
-    "sha256": "fe16117e408334988877414ca0b94ea3282cb37ba62f2e7c62cb395b18b76c39",
-    "bytes": 36491606,
-    "lines": 13742,
-    "gzip_bytes": 5503139,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/fe16117e408334988877414ca0b94ea3282cb37ba62f2e7c62cb395b18b76c39.jsonl.gz"
+    "sha256": "5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516",
+    "bytes": 37771762,
+    "lines": 14098,
+    "gzip_bytes": 5749442,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -676,6 +690,14 @@
       "summary": "Example 289 is decided beside the route: the security claim refuted on 5.6.3 and on the mutant, established on 5.6.4, and preservation established, each at the frozen bound",
       "body": "The four proof jobs queued in the commit before this one passed, each with its expected verdict on the unchanged claim files, through the adapter entry on the releases' own bytecode (examples/289-.../proofs/prove.py), at the frozen bound of 8 code units for each String, strict gaps, loops followed for 26 turns. fixed-security (job 20261116-214343-example-289-fixed-security-through-the-a): established on Spring Security 5.6.4 in 36 s, 1,003 paths, 265 MiB, not vacuous. vulnerable-security (20261116-214344-example-289-vulnerable-security-through): refuted on 5.6.3 in 2 s at matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null), which returns false. mutant-security (20261116-214344-example-289-mutant-security-through-the): refuted on the mutant in 2 s at a witness with caseInsensitive true and U+2029 in the path info; the mutant the job built has the SHA-256 the mutant replay's receipt records. Each witness was run on a JVM. preservation (20261116-214344-example-289-preservation-through-the-ada): established on the release pair in 61 s, 1,373 paths, 551 MiB.\n\nRecorded: each task's besideRoute in target.json (answer, job, by, recorded), the handoff and the blockers' notes; example.json's verdict label, summary and a note with the figures, what the verdicts rest on and what they do not say; the README's verdict row and results table. changes.py 289 now says decided: 2 refuted and 2 established beside the route. The jobs' results, logs and outputs (verification/results, verification/.work-289) are committed with it. The route itself still has no adapter entry, so these are not route receipts.",
       "log_sha256": "fe16117e408334988877414ca0b94ea3282cb37ba62f2e7c62cb395b18b76c39"
+    },
+    {
+      "change_id": "wwqnoqtlkttyyvoqwsllspoktlrnvrun",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for examples 288 and 289 and the two proof-tier jobs; VF-031 for example 288's timeouts",
+      "body": "Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-security and preservation ran out of the engine's own --timeout with no verdict (VF-031, not resubmitted since the fix is a step change); 289 vulnerable/mutant/fixed/preservation passed; the proof-tier jobs after 288's and 289's engine changes passed (33 cargo tests each).",
+      "log_sha256": "5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516"
     }
   ],
   "logs": {
@@ -714,6 +736,12 @@
       "lines": 3189,
       "gzip_bytes": 1373766,
       "url": "https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4adea8f9f6ca4d6a267f087d6cba9d30115b44f18669bdaf07dce773a9a50ff0.jsonl.gz"
+    },
+    "5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516": {
+      "bytes": 37771762,
+      "lines": 14098,
+      "gzip_bytes": 5749442,
+      "url": null
     },
     "5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7": {
       "bytes": 33527200,

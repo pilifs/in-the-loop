@@ -18,6 +18,29 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-031: example 288's three adapter-entry proofs that were expected to be decided ran out of engine time (two refutations at 1800 s, the preservation claim at 5400 s)
+
+- **Status**: open
+- **Raised**: 2026-11-16 on `vm-1`, jobs `20261116-201436-example-288-vulnerable-security-through`,
+  `20261116-201436-example-288-mutant-security-through-the` and `20261116-203637-example-288-preservation-through-the-ada`,
+  at `b74b820d0837`.
+- **Found**: the fixed-security job (`...-fixed-security-through-the-a`) passed: verified, as expected, in 19m42s. The
+  other three stop with no verdict. Vulnerable-security (6.1.13, expected refuted) and mutant-security (expected
+  refuted) both ran the simpleMatch lemma (85 s and 93 s), then `LocaleDecisionAdapter#allowed cannot be verified: the
+  engine did not finish within the time limit` after 31 min (paths 6761 and 6886, 12761 and 14400 solver calls),
+  `verdict: unverifiable (expected violation)`. The step's own `prove.py ... --timeout 1800` was reached, not the job's
+  1h limit. Preservation (6.1.13 against 6.1.14, `--timeout 5400`) ran 1h32m and ended `RegressionPair#agree cannot be
+  verified: the solver did not finish within the time limit` (paths 5846, 11737 solver calls, expected verified). Peak
+  memory was 2 GiB in each, far below the 6 and 8 GiB asked for, so the limit is the engine's time, not memory.
+  I did not resubmit: resubmitting unchanged repeats the same timeout, and raising `--timeout` changes the job's step,
+  which is the submitter's to decide.
+- **Needs**: the example 288 owner (the prove-examples loop, cycle 288) decides whether to raise `--timeout` for the
+  two refutations (the fixed release's proof took 19m42s, so the refuting path search is slower than the full proof) or
+  to change the claim's bounds or the engine search order so the violating path is found early; likewise for
+  preservation. Then queue the jobs with the new step.
+- **Tracked in**: the three jobs' `logs/1-the-claim-at-the-frozen-bound.log` and `outcome.json` under their outputs.
+- **Closes when**: the three tasks, rerun, give refuted, refuted and established.
+
 ### VF-030: the proof-tier job after example 286's engine changes stopped at `heap.rs`, so the tests after it and every Python proof test never ran
 
 - **Status**: open

@@ -1,0 +1,563 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-214344-the-proof-tier-after-example-289-s-engin",
+  "title": "The proof tier after example 289's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 35m23s, peak 3.4 GiB (estimated 40m00s, 8.0 GiB); signals: cargo:tests×33",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-214344-the-proof-tier-after-example-289-s-engin.json",
+    "sha256": "42d50e508ed2d002d54bb2cb234fddf69bd814cc76ef22ebd1f1b7c84a876f5a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-214344-the-proof-tier-after-example-289-s-engin",
+      "title": "The proof tier after example 289's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+      "description": "Runs the proof tier's command with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as the jobs after examples 287 and 288 did. The change behind it is in the own checker (lib/src/bmc), which nearly every proof-tier test runs: in regex.rs the flags of a Pattern are formulas where they were a constant (the same formulas where they are constant), Pattern.compile(String, int) of a String that is no constant asks the solver whether it can only be a literal followed by '.*' before it stays the gap it was, and one '.*' that ends an expression no longer makes an input with a surrogate the JDK's call; Character.isLetter of an ASCII char, Logger.isLoggable below INFO, the logging levels below INFO as constants and IntStream.range are modelled where each was a gap or refused. The tests of what changed (the unit tests, claims, values, pairing, object_strings, string_literals, loops, conformance, value_parameters) pass inline.",
+      "kind": "library",
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/src/bmc/strings.rs",
+          "lib/src/models.rs"
+        ]
+      },
+      "expected": "exits 0: every proof-tier test but VF-018's three passes",
+      "submitted": {
+        "at": "2026-11-16T21:43:44+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "priority": -1,
+      "requires": [
+        "cargo",
+        "javac",
+        "java",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "8G",
+        "duration": "40m",
+        "timeout": "4h",
+        "notes": "the same job after example 288 took 35m47s at 3.4 GiB peak"
+      },
+      "steps": [
+        {
+          "name": "proof tier, no fail fast, VF-018's three skipped",
+          "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3bd0de65d77369a7d94b593b7403a5c11ee5916a",
+  "startedAt": "2026-11-16T21:47:20+00:00",
+  "finishedAt": "2026-11-16T22:22:45+00:00",
+  "wallSeconds": 2125.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1021415,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 12884901888,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 2400.0,
+    "notes": "the same job after example 288 took 35m47s at 3.4 GiB peak"
+  },
+  "usage": {
+    "peakMemoryBytes": 3666763776,
+    "wallSeconds": 2123.1,
+    "cpuSeconds": 4596.9,
+    "memoryOfEstimate": 0.43,
+    "durationOfEstimate": 0.88
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 2123.093,
+      "cpuSeconds": 4596.865,
+      "cpuThrottledSeconds": 9.947,
+      "peakMemoryBytes": 3666763776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-proof-tier-no-fail-fast-vf-018.log",
+        "lines": 286,
+        "bytes": 10341,
+        "sha256": "13b2798b88e4a142a23b76982a06075dc1c7aaabf718cdf7c0c07518b5c6274d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 33
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 79,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 285 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 85,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 91,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 97,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 103,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 109,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 115,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 121,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 127,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 137,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1228.54s",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 143,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 149,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 155,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 161,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 167,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 173,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 188,
+          "text": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 52 filtered out; finished in 294.56s",
+          "groups": [
+            "ok",
+            "6",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 194,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 65 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 200,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 206,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 212,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 218,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 224,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 230,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 237,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 40.97s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 243,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 249,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 255,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 261,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 40 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 267,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 273,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 279,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 285,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s",
+        "",
+        "     Running tests/string_literals.rs (lib/target/release/deps/string_literals-1d34d60923ae8464)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+        "",
+        "     Running tests/summaries.rs (lib/target/release/deps/summaries-0e4620e3f224a691)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 40 filtered out; finished in 0.00s",
+        "",
+        "     Running tests/tiers.rs (lib/target/release/deps/tiers-e1255339be6f3439)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+        "",
+        "     Running tests/value_parameters.rs (lib/target/release/deps/value_parameters-835d37b7a60c9f97)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s",
+        "",
+        "     Running tests/values.rs (lib/target/release/deps/values-6efadc9446fb4d4f)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.00s",
+        "",
+        "   Doc-tests jvmcontract",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-16T22:22:48+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

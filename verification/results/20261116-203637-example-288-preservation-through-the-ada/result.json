@@ -1,0 +1,227 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-203637-example-288-preservation-through-the-ada",
+  "title": "Example 288 preservation through the adapter entry: 6.1.13 against 6.1.14 outside the allowed change, expected established",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1h32m, peak 1.9 GiB (estimated 1h00m, 8.0 GiB); 2 output file(s) changed; signals: jvmcontract:fails×2",
+  "attention": [
+    "step 1 (the claim at the frozen bound, 8) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261116-203637-example-288-preservation-through-the-ada.json",
+    "sha256": "b2d6b6052b20799d69c5ed2a8769b888226d5c7efe6fd40ea7a28e134d38695e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-203637-example-288-preservation-through-the-ada",
+      "title": "Example 288 preservation through the adapter entry: 6.1.13 against 6.1.14 outside the allowed change, expected established",
+      "description": "The frozen claim claims/permitted-fields-preserved.json and the task's allowed change (target.json), unchanged, run by examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py: jvmcontract equivalence (own checker, strict gaps) of example288.adapter.LocaleDecisionAdapter#allowed(int configLocale, int bindLocale, String[] allowedPatterns, String[] disallowedPatterns, String field), the adapter compiled against each release and each release on its own four pinned JARs (--before-classpath), the claim's assumption as --assume and the allowed change as --unchanged-unless, at the claim's bound of 8. Until this change a regression check refused a String[] parameter and had no assumption. It is now made as a property of the pair of versions (lib/src/pairing.rs): one generated method calls 6.1.13, relocated under before, and then 6.1.14 on the same inputs, each array a copy of its own, and says whether they returned the same value or threw in the same category; javac compiles it against both, and the property check proves it returns true on every input of the assumption outside the allowed change. The check is given proofs/simple-match-pair.contract, the lemma for each release's own simpleMatch, 6.1.13's stated over ASCII and U+0131 (what a Turkish lower-casing leaves), each proved first by induction. Inline, at bound 4, it was established in 48 s, and with no change allowed it was refuted at bound 2 on allowed(configLocale=2, bindLocale=2, allowedPatterns={null, \"I\"}, disallowedPatterns={null, \"i\"}, field=\"I\"), run on a JVM. Expected established for every pair of the table's five locales.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match-pair.contract",
+          "lib/src/pairing.rs",
+          "lib/src/bmc/locale.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: verified (expected verified)'",
+      "submitted": {
+        "at": "2026-11-16T20:36:37+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "8G",
+        "duration": "1h",
+        "timeout": "2h30m",
+        "notes": "48 s at bound 4 against fixed-security's 47 s at bound 5: both releases run on every input, the previous one with a lower-casing that depends on two symbolic locales, so a few times fixed-security's time at 8 (286's was 920 s) is a guess, and so is the memory"
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 8",
+          "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py preservation --timeout 5400 --work verification/.work-288",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-288/preservation/outcome.json",
+        "verification/.work-288/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "b74b820d083756906d9ceef4508a19ec8807aa88",
+  "startedAt": "2026-11-16T20:48:45+00:00",
+  "finishedAt": "2026-11-16T22:23:49+00:00",
+  "wallSeconds": 5704.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1021415,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 12884901888,
+    "timeoutSeconds": 9000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 3600.0,
+    "notes": "48 s at bound 4 against fixed-security's 47 s at bound 5: both releases run on every input, the previous one with a lower-casing that depends on two symbolic locales, so a few times fixed-security's time at 8 (286's was 920 s) is a guess, and so is the memory"
+  },
+  "usage": {
+    "peakMemoryBytes": 2005209088,
+    "wallSeconds": 5537.3,
+    "cpuSeconds": 5537.6,
+    "memoryOfEstimate": 0.23,
+    "durationOfEstimate": 1.54
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py preservation --timeout 5400 --work verification/.work-288",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 5537.268,
+      "cpuSeconds": 5537.645,
+      "cpuThrottledSeconds": 0.533,
+      "peakMemoryBytes": 2005209088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 16,
+        "bytes": 5946,
+        "sha256": "c8a63cc2e3fd332a09ecce0d247eea7dbf1b180603bae3fe70576b1c4ea99100",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 2,
+          "text": "✗ example288.adapter.LocaleDecisionAdapter#allowed cannot be verified as a property of the pair of versions (below)",
+          "groups": [
+            "example288.adapter.LocaleDecisionAdapter#allowed cannot be verified as a property of the pair of versions (below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 14,
+          "text": "✗ RegressionPair#agree cannot be verified: the solver did not finish within the time limit",
+          "groups": [
+            "RegressionPair#agree cannot be verified: the solver did not finish within the time limit"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-288/preservation/work/pair/RegressionPair.java) calls the previous version's example288.adapter.LocaleDecisionAdapter#allowed, relocated under `before`, and then the new one's on the same inputs, each on it",
+        "✗ example288.adapter.LocaleDecisionAdapter#allowed cannot be verified as a property of the pair of versions (below)",
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.re",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 94.9 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "note: lemma, proved above by induction on `pattern.length()` in 37.8 s: before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.u",
+        "✗ RegressionPair#agree cannot be verified: the solver did not finish within the time limit",
+        "",
+        "verdict: unverifiable (expected verified); paths 5846, solver calls 11737, variables 3418639; outcome in verification/.work-288/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-288/preservation/outcome.json",
+      "change": "added",
+      "bytes": 29568,
+      "sha256": "d9ba50c4bde90f4bd3caf22c6792cc2ea1d5891a339667d343ff1bed47968c95",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 3907,
+      "sha256": "17b19b4310f09bff1ff0b241a9765bdddcd7caa11b1fc479fd801431b33b17cd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T22:23:52+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/.work-288/preservation/outcome.json",
+      "verification/.work-288/preservation/work/pair/RegressionPair.java"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "eeb485c509c48e970ca7896e0274fc3c01a59b36",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eeb485c509c48e970ca7896e0274fc3c01a59b36/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261116-203637-example-288-preservation-through-the-ada"
+}

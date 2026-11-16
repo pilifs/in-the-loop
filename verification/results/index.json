@@ -2,6 +2,72 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261116-203637-example-288-preservation-through-the-ada",
+      "title": "Example 288 preservation through the adapter entry: 6.1.13 against 6.1.14 outside the allowed change, expected established",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 1h32m, peak 1.9 GiB (estimated 1h00m, 8.0 GiB); 2 output file(s) changed; signals: jvmcontract:fails×2",
+      "attention": [
+        "step 1 (the claim at the frozen bound, 8) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match-pair.contract",
+          "lib/src/pairing.rs",
+          "lib/src/bmc/locale.rs"
+        ]
+      },
+      "sourceCommit": "b74b820d083756906d9ceef4508a19ec8807aa88",
+      "finishedAt": "2026-11-16T22:23:49+00:00",
+      "wallSeconds": 5537.3,
+      "peakMemoryBytes": 2005209088,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 3600.0,
+        "notes": "48 s at bound 4 against fixed-security's 47 s at bound 5: both releases run on every input, the previous one with a lower-casing that depends on two symbolic locales, so a few times fixed-security's time at 8 (286's was 920 s) is a guess, and so is the memory"
+      },
+      "host": "vm-1",
+      "result": "20261116-203637-example-288-preservation-through-the-ada/result.json"
+    },
+    {
+      "id": "20261116-214344-the-proof-tier-after-example-289-s-engin",
+      "title": "The proof tier after example 289's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 35m23s, peak 3.4 GiB (estimated 40m00s, 8.0 GiB); signals: cargo:tests×33",
+      "attention": [],
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/regex.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/src/bmc/strings.rs",
+          "lib/src/models.rs"
+        ]
+      },
+      "sourceCommit": "3bd0de65d77369a7d94b593b7403a5c11ee5916a",
+      "finishedAt": "2026-11-16T22:22:45+00:00",
+      "wallSeconds": 2123.1,
+      "peakMemoryBytes": 3666763776,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 2400.0,
+        "notes": "the same job after example 288 took 35m47s at 3.4 GiB peak"
+      },
+      "host": "vm-1",
+      "result": "20261116-214344-the-proof-tier-after-example-289-s-engin/result.json"
+    },
+    {
       "id": "20261116-214344-example-289-preservation-through-the-ada",
       "title": "Example 289 preservation through the adapter entry: 5.6.3 against 5.6.4 outside the allowed change, expected established",
       "status": "passed",

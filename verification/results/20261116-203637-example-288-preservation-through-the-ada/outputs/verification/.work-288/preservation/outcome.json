@@ -1,0 +1,401 @@
+{
+  "verdict": "unverifiable",
+  "target": "example288.adapter.LocaleDecisionAdapter#allowed",
+  "domain": "configLocale: int × bindLocale: int × allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array",
+  "counterexample": null,
+  "proof": null,
+  "problem": "the solver did not finish within the time limit",
+  "statement": "verification/.work-288/preservation/work/pair/RegressionPair.java",
+  "findings": [
+    {
+      "rule_id": "unverifiable",
+      "message": "RegressionPair#agree cannot be verified: the solver did not finish within the time limit",
+      "uri": null,
+      "line": 15
+    }
+  ],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-288/preservation/work/pair/RegressionPair.java) calls the previous version's example288.adapter.LocaleDecisionAdapter#allowed, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`(((bindLocale == 2 || bindLocale == 3) && field.indexOf('I') >= 0) || ((configLocale == 2 || configLocale == 3) && disallowedPatterns != null && java.util.Arrays.stream(disallowedPatterns).anyMatch(p -> p != null && p.indexOf('I') >= 0))) && disallowedPatterns != null && java.util.Arrays.stream(disallowedPatterns).anyMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw in the same category. The two share the JDK and its state (a default locale one sets is the other's to start under); the previous version runs first\n✗ example288.adapter.LocaleDecisionAdapter#allowed cannot be verified as a property of the pair of versions (below)\nlemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 94.2 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nlemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128 || c == 0x131) && str.chars().allMatch(c -> c < 128 || c == 0x131) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 37.2 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nnote: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above by induction on `pattern.length()` in 94.9 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\nnote: lemma, proved above by induction on `pattern.length()` in 37.8 s: before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128 || c == 0x131) && str.chars().allMatch(c -> c < 128 || c == 0x131), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✗ RegressionPair#agree cannot be verified: the solver did not finish within the time limit\n",
+  "work": "verification/.work-288/preservation/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 5400.161339879,
+    "properties": 1,
+    "unwind": 16,
+    "max_array_length": 8,
+    "stage": null,
+    "native": {
+      "paths": 5846,
+      "merges": 5307,
+      "solver_calls": 11737,
+      "solving_seconds": 5290.537595116,
+      "gates_evaluated": 212942047,
+      "evaluating_seconds": 5.266996034,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 3418639,
+      "clauses": 11669270,
+      "seconds": 5400.000061561,
+      "loading_seconds": 0.00673202,
+      "decoding_seconds": 0.000803113,
+      "encoding_seconds": 15.217232722,
+      "witness_seconds": 0.0,
+      "assumed": [
+        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+      ]
+    },
+    "gap_mode": "strict",
+    "deadline_seconds": 5400.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 5399.998,
+        "seconds": 5400.0,
+        "ended": "out-of-time",
+        "ending": "timeout",
+        "phases": {
+          "loading": 0.007,
+          "lowering": 0.001,
+          "symbolic": 94.238,
+          "encoding": 15.217,
+          "solving": 5290.538,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 3418639,
+          "clauses": 11669270
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "configLocale",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        },
+        {
+          "name": "bindLocale",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        },
+        {
+          "name": "allowedPatterns",
+          "type": "java.lang.String[]",
+          "kind": "array",
+          "null": true,
+          "max_length": 8
+        },
+        {
+          "name": "disallowedPatterns",
+          "type": "java.lang.String[]",
+          "kind": "array",
+          "null": true,
+          "max_length": 8
+        },
+        {
+          "name": "field",
+          "type": "java.lang.String",
+          "kind": "value",
+          "null": false,
+          "max_length": 8
+        }
+      ],
+      "shared_arrays": false,
+      "text": "configLocale: int × bindLocale: int × allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+        "basis": "engine"
+      },
+      {
+        "kind": "summary",
+        "text": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+        "basis": "proved"
+      },
+      {
+        "kind": "summary",
+        "text": "before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128 || c == 0x131) && str.chars().allMatch(c -> c < 128 || c == 0x131), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+        "basis": "proved"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 16,
+      "max_array_length": 8,
+      "complete": false,
+      "max_value_length": 8
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:6dc58a376c89a75e706c74a223cf661b88075e79f8a4424df89d3e8dc48f2f27",
+      "classes": 23,
+      "jdk": "25.0.5",
+      "values": [
+        {
+          "source": "jvmcontract String model 5: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+          "jdk": "25.0.5",
+          "level": "tested",
+          "leaves_out": [
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap",
+            "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict",
+            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+          ]
+        }
+      ]
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  },
+  "pair": {
+    "verdict": "unverifiable",
+    "target": "RegressionPair#agree",
+    "domain": "configLocale: int × bindLocale: int × allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array",
+    "assume": "configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the solver did not finish within the time limit",
+    "statement": "verification/.work-288/preservation/work/pair-work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "RegressionPair#agree cannot be verified: the solver did not finish within the time limit",
+        "uri": null,
+        "line": 15
+      }
+    ],
+    "output": "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 94.2 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nlemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128 || c == 0x131) && str.chars().allMatch(c -> c < 128 || c == 0x131) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 37.2 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nnote: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above by induction on `pattern.length()` in 94.9 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\nnote: lemma, proved above by induction on `pattern.length()` in 37.8 s: before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128 || c == 0x131) && str.chars().allMatch(c -> c < 128 || c == 0x131), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✗ RegressionPair#agree cannot be verified: the solver did not finish within the time limit\n",
+    "work": "verification/.work-288/preservation/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 5400.161339879,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 5846,
+        "merges": 5307,
+        "solver_calls": 11737,
+        "solving_seconds": 5290.537595116,
+        "gates_evaluated": 212942047,
+        "evaluating_seconds": 5.266996034,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 3418639,
+        "clauses": 11669270,
+        "seconds": 5400.000061561,
+        "loading_seconds": 0.00673202,
+        "decoding_seconds": 0.000803113,
+        "encoding_seconds": 15.217232722,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 5400.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 5399.998,
+          "seconds": 5400.0,
+          "ended": "out-of-time",
+          "ending": "timeout",
+          "phases": {
+            "loading": 0.007,
+            "lowering": 0.001,
+            "symbolic": 94.238,
+            "encoding": 15.217,
+            "solving": 5290.538,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 3418639,
+            "clauses": 11669270
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 5534.526,
+        "setup": 0.003,
+        "harness": 0.001,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 5400.0,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 134.522
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "configLocale",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "bindLocale",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "allowedPatterns",
+            "type": "java.lang.String[]",
+            "kind": "array",
+            "null": true,
+            "max_length": 8
+          },
+          {
+            "name": "disallowedPatterns",
+            "type": "java.lang.String[]",
+            "kind": "array",
+            "null": true,
+            "max_length": 8
+          },
+          {
+            "name": "field",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": false,
+            "max_length": 8
+          }
+        ],
+        "shared_arrays": false,
+        "text": "configLocale: int × bindLocale: int × allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128)))",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        },
+        {
+          "kind": "summary",
+          "text": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+          "basis": "proved"
+        },
+        {
+          "kind": "summary",
+          "text": "before.org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128 || c == 0x131) && str.chars().allMatch(c -> c < 128 || c == 0x131), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+          "basis": "proved"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": 8,
+        "complete": false,
+        "max_value_length": 8
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:6dc58a376c89a75e706c74a223cf661b88075e79f8a4424df89d3e8dc48f2f27",
+        "classes": 23,
+        "jdk": "25.0.5",
+        "values": [
+          {
+            "source": "jvmcontract String model 5: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap",
+              "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict",
+              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+}
