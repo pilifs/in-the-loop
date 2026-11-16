@@ -247,6 +247,67 @@ fn a_throws_clause_over_a_strings_bytes_is_compiled_by_javac_and_checked() {
 }
 
 /// What a library asks of the JVM before anything else, as far as Spring Security's encoder does: a String's own
+/// What a registry that looks through a servlet context's registrations asks of the JDK (`claims.M`, example 290):
+/// a stream over an int array, a number in a name, a `LinkedHashMap`'s values in order with their fail-fast
+/// iterator, a class by its name with its initialization, whether one class is below another, and the thread's
+/// context class loader, each against its definition on every input of the bound.
+#[test]
+fn registrations_in_order_and_classes_by_name_are_the_definitions_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for method in ["ints", "numbered", "ordered", "failsFast", "loaded", "erroneous", "assignable"] {
+        proved(classes, &format!("claims.M#{method}"), 3);
+    }
+    let o = run(&options(classes, "claims.M#threaded", 3, "threaded"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.contains("whose context class loader is the class loader of the check's class path")), "{:?}", stated.assumptions);
+}
+
+/// An initializer the checker does not run (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
+/// and with `--observed-initializer` the state a JVM left: what the observation holds is read as the JVM has it,
+/// the result says what it rests on, and a field it holds no value of is refused by name.
+#[test]
+fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let unobserved = run(&options(classes, "claims.M#observed", 3, "unobserved"));
+    assert_eq!(unobserved.verdict, Verdict::Unverifiable, "{}", unobserved.output);
+    assert!(unobserved.output.contains("class-initializer:claims.Tables.<clinit>()V"), "{}", unobserved.output);
+
+    let observing = |target: &str, work: &str, class: &str| {
+        let mut o = options(classes, target, 3, work);
+        o.observed_initializers = vec![class.to_string()];
+        o
+    };
+    let o = run(&observing("claims.M#observed", "observed", "claims.Tables"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    let rests_on = "the class initializer of claims.Tables was not run by the checker: its static state is the one a JVM (JDK ";
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with(rests_on) && a.text.contains("it is taken to leave that state in every run")), "{:?}", stated.assumptions);
+
+    let unheld = run(&observing("claims.M#unheld", "unheld", "claims.Tables"));
+    assert_eq!(unheld.verdict, Verdict::Unverifiable, "{}", unheld.output);
+    assert!(unheld.output.contains("reads the static field claims.Tables.WRAPPERS, which the class's observed initializer left as an object of java.util.IdentityHashMap"), "{}", unheld.output);
+
+    // A class of a JDK package on the class path: the JDK's to the checker, and its statics no check's to read,
+    // unless its initializer is observed, which a class below it then waits for.
+    let taken_for_the_jdks = run(&options(classes, "claims.M#served", 3, "served-unobserved"));
+    assert_eq!(taken_for_the_jdks.verdict, Verdict::Unverifiable, "{}", taken_for_the_jdks.output);
+    let served = run(&observing("claims.M#served", "served", "javax.claims.Library"));
+    assert_eq!(served.verdict, Verdict::Verified, "{}", served.output);
+    assert!(served.stated.as_ref().expect("a statement").assumptions.iter().any(|a| a.text.starts_with("the class initializer of javax.claims.Library was not run by the checker")), "{}", served.output);
+
+    // An initializer that throws on the JVM, and a class the class path does not have, are no observation.
+    let threw = property::run(&observing("claims.M#thrown", "thrown", "claims.Fails")).unwrap_err().to_string();
+    assert!(threw.contains("--observed-initializer claims.Fails: on the JVM the class's initialization threw java.lang.IllegalStateException"), "{threw}");
+    let absent = property::run(&observing("claims.M#thrown", "absent", "claims.Absent")).unwrap_err().to_string();
+    assert!(absent.contains("--observed-initializer claims.Absent") && absent.contains("java.lang.ClassNotFoundException"), "{absent}");
+    let mut cached = observing("claims.M#observed", "cached", "claims.Tables");
+    cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
+    assert!(property::run(&cached).unwrap_err().to_string().contains("--observed-initializer with --cache"));
+}
+
 /// `toString()`, the class of an object the run made, and an initializer that keeps a method reference for the
 /// logging library the class path has (the reference it does not keep is never called, and is not walked).
 #[test]

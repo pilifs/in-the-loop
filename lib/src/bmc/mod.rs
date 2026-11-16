@@ -58,6 +58,7 @@
 //! | `getstatic`, `putstatic` of an application class's field; `getstatic` of a JDK compile-time constant (`Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`, or a field with a `ConstantValue`) | implemented: a field is resolved as the JVM resolves it, and holds what the path wrote, else its `ConstantValue`, else zero or null |
 //! | class initialization (JVMS §5.5), at the first `new`, `getstatic`, `putstatic` or `invokestatic` of an application class | implemented ([`Engine::initialise`]): the class's superclass, then the superinterfaces that declare a default method ([`gaps::initialization_supers`]), then its `<clinit>`, run as bytecode; a use from inside its own initialization goes on; an exception that leaves a `<clinit>` is thrown as an `ExceptionInInitializerError` (an `Error` as it is), and a later use of the class, or of one that waited on it, throws `NoClassDefFoundError`. A JDK class is taken to be initialized already |
 //! | a `<clinit>` outside the fragment ([`gaps::runs_initializer`]: one that reaches what the engine refuses, or reads or writes a static of a class whose `<clinit>` is outside; a gap inside one it runs is met there) | gap: `class-initializer`, met where the JVM would run it; under assume, or closed by a contract that it throws nothing, taken to have run, its static fields then known only as constants |
+//! | the `<clinit>` of a class named by `--observed-initializer` ([`Options::observed`], [`crate::observed`]) | not run and no gap: the path takes the static state the initializer left on a JVM, as far as the observation holds it (a field it holds no value of is refused where it is read), and the run states what that rests on ([`Outcome::assumed`]) |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
@@ -69,11 +70,12 @@
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
 //! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
-//! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
+//! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s, `int`s, `short`s and `byte`s (their decimal digits) and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a `long`, a floating-point number or a boolean converted gives an opaque String (their formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
 //! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
-//! | `invokestatic` of `Arrays.stream(Object[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` below `INFO`, `Logger.isLoggable(Level)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
+//! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` below `INFO`, `Logger.isLoggable(Level)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -96,6 +98,7 @@ pub mod gaps;
 pub mod bytes;
 pub mod locale;
 mod loops;
+mod observed;
 mod regex;
 pub mod runtime;
 pub mod sat;
@@ -161,6 +164,10 @@ pub struct Options {
     /// The method the check proves a summary of (its class, name and descriptor): the run then also shows that it
     /// leaves the state as it was, and refuses one it can't show it of ([`Engine::in_summary`]).
     pub pure: Option<(String, String, String)>,
+    /// The classes whose initializer the engine does not run, by internal name, each with the static state the
+    /// initializer left on a JVM ([`crate::observed`], `--observed-initializer`): a use that initializes one gives
+    /// the path that state, and the run states what that rests on ([`Outcome::assumed`]).
+    pub observed: std::sync::Arc<crate::observed::Observations>,
 }
 
 /// A static method whose calls run a method of the claim's class ([`crate::harness::expr::CLAIM_CLASS`]) of the same
@@ -176,7 +183,7 @@ pub struct Summary {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, observed: Default::default() }
     }
 }
 
@@ -788,6 +795,8 @@ enum Literal {
     Locale(String),
     /// A level of `java.util.logging.Level` below `INFO`, by its field's name ([`runtime`]).
     Level(&'static str),
+    /// The one thread of the run ([`runtime`]).
+    Thread,
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -1198,6 +1207,10 @@ struct Engine<'a> {
     supers: HashMap<String, Rc<Vec<String>>>,
     /// Whether the engine runs a class's `<clinit>`, by class ([`gaps::runs_initializer`]).
     runs: HashMap<String, bool>,
+    /// The observed initializers ([`Options::observed`]), and the static fields an observation taken so far holds
+    /// no value of, each with what it was ([`Engine::unheld_static`]).
+    observed: std::sync::Arc<crate::observed::Observations>,
+    unheld: HashMap<(String, String), String>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
     witness: Duration,
@@ -1286,9 +1299,17 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         hides: HashMap::new(),
         supers: HashMap::new(),
         runs: HashMap::new(),
+        observed: options.observed.clone(),
+        unheld: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
     };
+    // An observed initializer is one the engine has the result of: an initializer that uses the class's static
+    // fields is no further outside the fragment for it ([`gaps::runs_initializer`]), which is decided anew.
+    if *cp.observed_initializers.borrow() != options.observed.keys().cloned().collect() {
+        *cp.observed_initializers.borrow_mut() = options.observed.keys().cloned().collect();
+        cp.initializer_runs.borrow_mut().clear();
+    }
     let loading_before = cp.loading();
     let solver = engine.b.signature();
     let jdk = gaps::jdk_release();
@@ -1572,7 +1593,7 @@ pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, 
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -2175,6 +2196,7 @@ impl<'a> Engine<'a> {
                         Literal::Charset(_) => bytes::CHARSET,
                         Literal::Locale(_) => locale::LOCALE,
                         Literal::Level(_) => runtime::LEVEL,
+                        Literal::Thread => "java/lang/Thread",
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -3705,9 +3727,10 @@ impl<'a> Engine<'a> {
     }
 
     /// The String a compiler-generated concatenation (`StringConcatFactory.makeConcatWithConstants`, or
-    /// `makeConcat`) makes of its arguments: Strings (`null` as "null"), `char`s, and the recipe's constants, with
-    /// the content of each in order. A number or a boolean converted, or a String with no content, makes one with
-    /// no content (numeric formatting is outside the model), and one that could have more than
+    /// `makeConcat`) makes of its arguments: Strings (`null` as "null"), `char`s, `int`s, `short`s and `byte`s (their
+    /// decimal digits, [`Engine::decimal`]), and the recipe's constants, with the content of each in order. A
+    /// `long`, a floating-point number or a boolean converted, or a String with no content, makes one with no
+    /// content (their formatting is outside the model), and one that could have more than
     /// [`MAX_STRING_CONTENT`] code units has none either, its limit named.
     fn concatenation(&mut self, path: &mut Path, bootstrap: Option<&crate::classfile::BootstrapMethod>, descriptor: &MethodDescriptor, args: Vec<Val>) -> Result<usize, Stop> {
         enum Piece {
@@ -3732,6 +3755,11 @@ impl<'a> Engine<'a> {
                 (Type::Char, Val::I(bits)) => {
                     let length = engine.b.constant(1, 32);
                     pieces.push(Piece::Content(Array { element: Type::Char, length, cells: vec![engine.b.trunc(&bits, 16)], refs: Vec::new() }));
+                }
+                // An int, a short or a byte is converted as `Integer.toString` converts it (JLS §5.1.11).
+                (Type::Int | Type::Short | Type::Byte, Val::I(bits)) => {
+                    let (length, cells) = engine.decimal(&bits);
+                    pieces.push(Piece::Content(Array { element: Type::Char, length, cells, refs: Vec::new() }));
                 }
                 _ => return Ok(Some(None)),
             }
@@ -3947,6 +3975,14 @@ impl<'a> Engine<'a> {
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
         };
+        if self.is_observed(class) {
+            if self.in_summary(path) {
+                return unsupported(format!("a summary's method initializes the class {}, whose initializer is observed: it is not a method a summary can stand in for", class.replace('/', ".")));
+            }
+            self.take_observed(path, class)?;
+            path.classes.insert(class.to_string(), ClassState::Done);
+            return Ok(Initialising::Ready);
+        }
         if cf.method("<clinit>", "()V").is_none() {
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
@@ -3991,6 +4027,9 @@ impl<'a> Engine<'a> {
         if let Some(v) = path.statics.get(&(declaring.to_string(), name.to_string())) {
             return Some(Ok(v.clone()));
         }
+        if let Some(refused) = self.unheld_static(path, declaring, name) {
+            return Some(unsupported(refused));
+        }
         let constant = self.cp.checker_class(declaring).and_then(|cf| {
             let field = cf.field(name).filter(|f| f.is_static())?;
             let attr = field.attributes.iter().find(|a| a.name == "ConstantValue").filter(|a| a.data.len() == 2)?;
@@ -4019,7 +4058,7 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread => self.alloc(path, class),
         };
         path.literals.insert(literal, o);
         o
@@ -4304,6 +4343,10 @@ impl<'a> Engine<'a> {
             }
             // A class literal's name and loader ([`runtime`]).
             if let Some(step) = self.class_method(path, o, &member.owner, &member.name, &member.descriptor) {
+                return step;
+            }
+            // Whether a class is another's or below it, of two class literals ([`runtime`]).
+            if let Some(step) = self.class_relation(path, o, &member.name, &member.descriptor, &args) {
                 return step;
             }
             // Whether a Logger logs a level below `INFO` ([`runtime`]).

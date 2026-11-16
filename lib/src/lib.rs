@@ -82,6 +82,7 @@ pub mod spec;
 pub mod statemachine;
 pub mod statement;
 pub mod observations;
+pub mod observed;
 pub mod reach;
 pub mod store;
 pub mod test_tier;

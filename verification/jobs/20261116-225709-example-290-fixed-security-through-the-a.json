@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-225709-example-290-fixed-security-through-the-a",
+  "title": "Example 290 fixed-security through the adapter entry: the frozen claim on Spring Security 5.8.5, expected established",
+  "description": "The frozen claim claims/ambiguous-servlet-configuration-rejected.json, unchanged, run by examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py: jvmcontract prove (own checker, strict gaps). The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), the one the claim's first assumption names: it fills a LinkedHashMap with one registration per element of servlets (a table of class names: DispatcherServlet, a plain servlet), puts it in carriers for the servlet context and the web application context, and makes one call of the original requestMatchers on a fresh minimal registry. The claim's expressions are passed as they are written (the assumption, assert false, throws IllegalArgumentException when true), compiled by javac and run as bytecode, at the claim's bound of 8 (up to 8 registrations, 8 patterns of 8 code units); loops are followed exactly for 64 turns (the longest is the map model's walk of ClassUtils's 47 common classes). The class path is the revision's ten pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given: the registry's class initializer, setApplicationContext, requestMatchers and hasDispatcherServlet run as the release's bytecode. What changed in the verifier for it: (1) prove --observed-initializer CLASS (lib/src/observed.rs): a class initializer with no input that the checker does not run is run on a JVM instead, first thing, on the check's class path, its static fields read by reflection, and the checker takes that state (a HashMap of String keys, Strings, Classes, numbers and arrays; anything else is not held and a read of it is refused by name); the result states it as what it rests on. prove.py names three: Spring's ClassUtils (tables built through an IdentityHashMap, a HashSet and a map of soft references) and the servlet API's GenericServlet and HttpServlet (a resource bundle each), never the registry's own. (2) a model of LinkedHashMap for the checker (insertion order, values() with a fail-fast iterator) and of Arrays.stream(int[]); (3) the compiler's concatenation of an int as its decimal digits; (4) Class.forName(String) of a constant name with its initialization, Class.isAssignableFrom of two class literals, and the current thread's context class loader as the class path's under a stated assumption. Each is proved to be its definition written out in Java on every input of a bound, and the definition holds on a JVM (lib/tests/claims.rs, claims.M and claims.Tables). The claims' predicates as javac compiles them agree with the oracle on all 27 select probes (examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/predicates.py). 5.8.5 looks through the registrations for a DispatcherServlet and requires exactly one registration when it finds one; expected established: with a DispatcherServlet registered beside one to seven other loadable servlets, in any order, both implicit overloads throw IllegalArgumentException, for every method and every array of patterns.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "290"
+    ],
+    "paths": [
+      "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py",
+      "lib/src/observed.rs",
+      "lib/src/bmc/runtime.rs",
+      "lib/models/java/util/LinkedHashMap.java"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: verified (expected verified)'",
+  "submitted": {
+    "at": "2026-11-16T22:57:09+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "1h",
+    "notes": "an inline probe at this bound took 6.9 s (659 paths); at bound 3, 1 s. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-290/fixed-security/outcome.json",
+    "verification/.work-290/fixed-security/work/harness/PropertyHarness.java",
+    "verification/.work-290/fixed-security/work/harness/PropertyClaim.java"
+  ]
+}

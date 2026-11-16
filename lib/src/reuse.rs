@@ -96,6 +96,7 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("decreases", "how the claim is proved, by induction: refused under the cache, which does not key it"),
     ("lemmas", "what the proof rests on: refused under the cache, which does not key the lemmas"),
     ("summary", "set only by a check that uses the lemma: refused under the cache"),
+    ("observed_initializers", "what the proof rests on, an observation on a JVM: refused under the cache, which does not key it (property::run)"),
 ];
 
 /// The first assumption of every property claim: no regression claim has it, so the two never share a key.

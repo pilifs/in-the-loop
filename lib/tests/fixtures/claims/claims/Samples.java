@@ -97,6 +97,27 @@ public final class Samples {
             check(P.chosen(p, r.nextBoolean(), u) && P.anotherFlag(p, u), "protective, chosen " + shown);
             check(P.constant(u) && P.constant("/a" + u), "protective, constant " + shown);
             check(L.range(r.nextInt(9) - 4, r.nextInt(9) - 4, r.nextInt(9) - 4), "range");
+            // Registrations in order and a number in a name (M).
+            int[] keys = new int[r.nextInt(7)];
+            for (int q = 0; q < keys.length; q++) keys[q] = r.nextInt();
+            check(M.ordered(keys) && M.ints(keys, r.nextInt()) && M.failsFast(r.nextBoolean()), "ordered " + java.util.Arrays.toString(keys));
+            int[] few = new int[r.nextInt(5)];
+            for (int q = 0; q < few.length; q++) few[q] = r.nextInt(3);
+            check(M.ints(few, r.nextInt(3)), "ints " + java.util.Arrays.toString(few));
+            int n = r.nextInt(4) == 0 ? r.nextInt() : r.nextInt(2400) - 1200;
+            check(M.numbered(n, (short) r.nextInt(), (byte) r.nextInt()), "numbered " + n);
+        }
+        check(M.numbered(Integer.MIN_VALUE, Short.MIN_VALUE, Byte.MIN_VALUE) && M.numbered(Integer.MAX_VALUE, Short.MAX_VALUE, Byte.MAX_VALUE) && M.numbered(0, (short) 0, (byte) 0), "numbered, the ends");
+        // Classes by name (M): each class is initialized once in this JVM, so every case is asked twice.
+        try {
+            for (int twice = 0; twice < 2; twice++) {
+                for (int k = 0; k < 4; k++) check(M.loaded(k) && M.observed(k), "loaded and observed " + k);
+                for (int k = 0; k < 3; k++) check(M.assignable(k), "assignable " + k);
+                check(M.erroneous() && M.threaded() && M.served(), "erroneous, threaded, served");
+            }
+        }
+        catch (ClassNotFoundException e) {
+            throw new AssertionError(e);
         }
         check(P.quiet(0), "quiet");
         for (int c = 0; c < 65536; c++) check(P.letter((char) c) && P.letterOutsideAscii((char) c), "letter " + c);

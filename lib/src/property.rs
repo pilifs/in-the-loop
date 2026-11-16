@@ -117,6 +117,10 @@ pub struct Options {
     /// Whether the check proves a lemma, which also shows the method leaves the state as it was
     /// ([`crate::bmc::Options::pure`]): set by the check that uses the lemma, never by a command line.
     pub summary: bool,
+    /// The classes whose initializer the tool's own checker does not run (`--observed-initializer CLASS`): each is
+    /// initialized on a JVM, on the check's class path, and the checker takes the static state it left there
+    /// ([`crate::observed`]). The result states it.
+    pub observed_initializers: Vec<String>,
 }
 
 impl Options {
@@ -155,6 +159,7 @@ impl Options {
             decreases: None,
             lemmas: None,
             summary: false,
+            observed_initializers: Vec::new(),
         }
     }
 }
@@ -245,6 +250,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // The proof cache (`reuse::property_lookup`, `reuse::property_store`): a stored result for the same property
     // claim is the result, and a verified or refuted one is stored. The claim's key reads a construction plan whole,
     // and roots its makers and setup calls in the code it covers, so a planned check is cached as any other.
+    if options.cache.is_some() && !options.observed_initializers.is_empty() {
+        crate::phases::end(0.0);
+        return Err(Error::new("--observed-initializer with --cache: a claim's key does not hold an observation, so such a result is not stored"));
+    }
     if options.cache.is_some() {
         match crate::reuse::property_lookup(options) {
             Err(u) => {
@@ -778,6 +787,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+    // The initializers the checker is to take the observed state of: each run on a JVM now, on this class path.
+    if !options.observed_initializers.is_empty() && options.engine == crate::Engine::Jbmc {
+        return Err(Error::new("--observed-initializer is for the tool's own checker (--engine native or auto): JBMC runs no observation"));
+    }
+    let observed = std::sync::Arc::new(crate::observed::observe_for(&options.observed_initializers, &entries, &work)?);
+    gap_setting.observed = observed.clone();
     let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
     let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
     let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on {every}{where_}"), harness: statement.clone() };
@@ -801,6 +816,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let scanned = if options.gaps == crate::bmc::gaps::GapMode::Advised { Some(crate::advice::scan_harness(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD)?) } else { None };
         let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, &contract_options, scanned.as_ref().map(|(_, s)| s), &entries, options.models, &work)?;
         gap_setting = setting;
+        gap_setting.observed = observed.clone();
         out.push_str(&notes);
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
             let (cp, scan) = scanned.as_ref().expect("scanned under advised");

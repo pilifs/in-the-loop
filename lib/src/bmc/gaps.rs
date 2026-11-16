@@ -39,12 +39,16 @@
 //! form or of the checker's own syntax ([`super::models_jdk_reference_static`], [`crate::jdk_facts::plain_regex`],
 //! [`super::regex::compiles_constant`]), nor the calls of the
 //! `HashMap` model (`lib/models/java/util/HashMap.java`: its two constructors, `put`, `get`, `containsKey`,
-//! `size`, `isEmpty`), each with an evidence record of `values::OPERATIONS`. Nor are the
+//! `size`, `isEmpty`), each with an evidence record of `values::OPERATIONS`, nor those of the `LinkedHashMap`
+//! model over it (its constructor, `values()`, the collection's `size` and `iterator`, the iterator's `hasNext`
+//! and `next`), whose evidence is `claims.M` (`lib/tests/claims.rs`). Nor are the
 //! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples (`List.of`'s fixed forms,
 //! `copyOf`, `size`, `isEmpty`, `get`, the iterator's path and the changes they refuse), which it runs as the
 //! models' bytecode; any other method the models implement, called from outside them (`contains`, `equals`,
 //! `hashCode`, `addAll`, `List.of(E...)` …), is outside the values models, and both the engine and the scan take it
 //! for the JDK call it names ([`outside_the_list_records`]), a gap of its kind.
+//! Nor is an initializer the check has the observed state of (`--observed-initializer`, [`crate::observed`]): it is
+//! neither run nor walked, and what the run then rests on is stated with its result.
 //! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
 //! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
@@ -384,6 +388,9 @@ pub struct GapSetting {
     pub mode: GapMode,
     pub contracts: std::sync::Arc<BTreeMap<Gap, Closure>>,
     pub class_dir: Option<std::path::PathBuf>,
+    /// The class initializers the engine takes the observed state of in place of running them
+    /// ([`crate::observed`]), in any mode.
+    pub observed: std::sync::Arc<crate::observed::Observations>,
 }
 
 impl From<GapMode> for GapSetting {
@@ -648,15 +655,21 @@ fn initializers_of(cp: &ClassPath, class: &str, out: &mut Vec<String>, seen: &mu
 /// What the JVM initializes before `class` (JVMS §5.5, step 7), in order: for a class, its superclass, then each of
 /// its superinterfaces, direct or indirect, that declares a non-abstract instance method (a default method), in the
 /// order of a recursive enumeration that lists an interface's superinterfaces before it; for an interface, nothing.
-/// Application classes only: a JDK class is taken to be initialized already.
+/// Application classes only: a JDK class is taken to be initialized already, and so is a class of a JDK package
+/// that an entry of the class path holds (`javax.servlet`'s), unless the check has the observed state of its
+/// initializer ([`crate::observed`]).
 pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
     let Ok(Some(cf)) = cp.application(class) else { return Vec::new() };
     if cf.is_interface() {
         return Vec::new();
     }
-    let mut out: Vec<String> = cf.super_class.iter().filter(|s| !crate::classpath::is_jdk_name(s) && cp.is_application(s)).cloned().collect();
+    // A class of a JDK package counts as the JDK's unless the check has the observed state of its initializer.
+    fn of_the_jdk(cp: &ClassPath, name: &str) -> bool {
+        crate::classpath::is_jdk_name(name) && !cp.observed_initializers.borrow().contains(name)
+    }
+    let mut out: Vec<String> = cf.super_class.iter().filter(|s| !of_the_jdk(cp, s) && cp.is_application(s)).cloned().collect();
     fn enumerate(cp: &ClassPath, i: &str, out: &mut Vec<String>, seen: &mut BTreeSet<String>) {
-        if crate::classpath::is_jdk_name(i) || !seen.insert(i.to_string()) {
+        if of_the_jdk(cp, i) || !seen.insert(i.to_string()) {
             return;
         }
         let Ok(Some(icf)) = cp.application(i) else { return };
@@ -685,6 +698,11 @@ pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
 /// path, whoever asks: deciding one again for each chain of initializers that led to it took the scan of a method
 /// that reaches a `Map` call minutes.
 pub fn runs_initializer(cp: &ClassPath, class: &str) -> bool {
+    // One the check has the observed state of: the engine has what it leaves, and a use of its static fields
+    // puts nothing outside the fragment.
+    if cp.observed_initializers.borrow().contains(class) {
+        return true;
+    }
     if let Some(&runs) = cp.initializer_runs.borrow().get(class) {
         return runs;
     }
@@ -910,7 +928,7 @@ impl<'a> Walker<'a> {
     /// initializer already known not to run decides it; any other is walked with it, and runs if the walk finds
     /// nothing outside the fragment.
     fn runs(&mut self, class: &str) -> bool {
-        if !self.deciding {
+        if !self.deciding || self.cp.observed_initializers.borrow().contains(class) {
             return runs_initializer(self.cp, class);
         }
         if let Some(&runs) = self.cp.initializer_runs.borrow().get(class) {
@@ -1035,6 +1053,10 @@ impl<'a> Walker<'a> {
         }
         for c in initializers(self.cp, class) {
             if self.initialised.insert(c.clone()) {
+                // An observed initializer is not the engine's to run, and not walked.
+                if self.cp.observed_initializers.borrow().contains(&c) {
+                    continue;
+                }
                 if self.runs(&c) {
                     self.enqueue(&c, "<clinit>", "()V");
                     continue;

@@ -114,6 +114,9 @@ pub struct ClassPath {
     /// Whether the own checker runs each class initializer asked about ([`crate::bmc::gaps::runs_initializer`]): a
     /// function of the class path alone.
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
+    /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
+    /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
+    pub(crate) observed_initializers: RefCell<std::collections::BTreeSet<String>>,
     /// The time spent reading and parsing class files, for a checker's phases ([`crate::phases`]).
     loading: std::cell::Cell<std::time::Duration>,
 }
@@ -128,7 +131,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), loading: Default::default() }
+        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), loading: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -388,7 +391,9 @@ impl ClassPath {
         if crate::models::CHECKER_RUNS.contains(&name) {
             return self.checker_model(name);
         }
-        if is_jdk_name(name) {
+        // A class of a JDK package is the JDK's, initialized already, whichever entry holds it (`javax.servlet`'s are
+        // a library's): unless the check has the observed state of its initializer, which is then the class's.
+        if is_jdk_name(name) && !self.observed_initializers.borrow().contains(name) {
             return None;
         }
         self.application(name).ok().flatten()
@@ -510,6 +515,26 @@ impl ClassPath {
             return true;
         }
         matches!(self.load(name), Ok(Some(_))) || crate::jdk_facts::superclass(name).is_some() || name == "java/lang/Object"
+    }
+
+    /// Whether the class can be loaded (JVMS §5.3.5): it exists, and so does each class and interface above it. A
+    /// JDK class is taken to have what is above it. An application class that names a superclass or an interface
+    /// neither the entries nor the JDK have cannot: the JVM throws `NoClassDefFoundError` where it is loaded.
+    pub fn loads(&self, name: &str) -> bool {
+        let mut seen = std::collections::BTreeSet::new();
+        let mut todo = vec![name.to_string()];
+        while let Some(class) = todo.pop() {
+            if !seen.insert(class.clone()) {
+                continue;
+            }
+            match self.load(&class) {
+                Ok(Some(Loaded { class: cf, origin: Origin::Application })) => todo.extend(cf.super_class.iter().chain(&cf.interfaces).cloned()),
+                Ok(Some(_)) => {}
+                _ if self.exists(&class) => {}
+                _ => return false,
+            }
+        }
+        true
     }
 
     /// The direct superclass, from the class file or the built-in JDK facts.

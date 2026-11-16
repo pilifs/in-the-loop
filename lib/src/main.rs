@@ -709,6 +709,15 @@ struct ProveArgs {
     /// a caller could see, which the proof of each also shows; with the tool's own checker (`--engine native`).
     #[arg(long)]
     lemmas: Option<PathBuf>,
+    /// A class whose initializer the tool's own checker is not to run, `pkg.Class`; may be repeated. The class is
+    /// initialized on a JVM of the check's JDK, first thing, on the check's class path, and the checker takes the
+    /// static state it left there: of each static field a null, a number, a String, a Class, a java.util.HashMap
+    /// of String keys or an array of those; a field holding anything else has no value, and a read of it is
+    /// refused by name. For an initializer with no input that the checker can't run (a library's tables, built
+    /// through collections it has no model of). The result states it as what it rests on: one observation, taken
+    /// to be what the initializer leaves in every run. Never for the class under proof. Not with --cache.
+    #[arg(long = "observed-initializer")]
+    observed_initializer: Vec<String>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
     /// claim's key (the code closure of the target and of what its inputs are made by, a construction plan's makers
     /// and setup calls included, the assertion, the assumptions, the domain, the plan whole, the bounds, the models,
@@ -966,6 +975,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.cache = args.cache.clone();
                 options.decreases = declaration.decreases.clone();
                 options.lemmas = args.lemmas.clone();
+                options.observed_initializers = args.observed_initializer.clone();
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

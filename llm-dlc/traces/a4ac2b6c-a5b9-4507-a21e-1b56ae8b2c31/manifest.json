@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T22:21:05.860Z",
-  "duration_seconds": 108474,
+  "ended": "2026-11-16T22:58:23.781Z",
+  "duration_seconds": 110711,
   "stats": {
     "turns": 33,
-    "api_calls": 1690,
-    "tool_calls": 1735,
+    "api_calls": 1778,
+    "tool_calls": 1826,
     "tool_errors": 17,
     "compactions": 12,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3380,
-      "output_tokens": 2054346,
-      "cache_read_input_tokens": 434379248,
-      "cache_creation_input_tokens": 4994548
+      "input_tokens": 3556,
+      "output_tokens": 2183307,
+      "cache_read_input_tokens": 462218567,
+      "cache_creation_input_tokens": 5248595
     }
   },
   "tools": {
-    "Bash": 1666,
+    "Bash": 1756,
     "Read": 37,
-    "Write": 21,
+    "Write": 22,
     "ToolSearch": 5,
     "Monitor": 4,
     "TaskStop": 2
@@ -52,6 +52,7 @@
     "lib/src/bmc/loops.rs",
     "lib/src/bmc/strings.rs",
     "lib/src/given.rs",
+    "lib/src/observed.rs",
     "lib/src/pairing.rs",
     "lib/tests/claims.rs",
     "lib/tests/interface_parameters.rs",
@@ -230,24 +231,24 @@
     {
       "index": 12,
       "started": "2026-11-16T22:12:26.174Z",
-      "ended": "2026-11-16T22:21:05.860Z",
+      "ended": "2026-11-16T22:58:23.781Z",
       "turns": 4,
-      "api_calls": 33,
+      "api_calls": 121,
       "usage": {
-        "input_tokens": 66,
-        "output_tokens": 33871,
-        "cache_read_input_tokens": 3539541,
-        "cache_creation_input_tokens": 160190
+        "input_tokens": 242,
+        "output_tokens": 162832,
+        "cache_read_input_tokens": 31378860,
+        "cache_creation_input_tokens": 414237
       },
-      "peak_context_tokens": 171562
+      "peak_context_tokens": 425609
     }
   ],
   "log": {
-    "sha256": "5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516",
-    "bytes": 37771762,
-    "lines": 14098,
-    "gzip_bytes": 5749442,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516.jsonl.gz"
+    "sha256": "6051281aeba9e8453d8668d51037007bbe1c23b7cb624adcb7d6b8ab47cf82d1",
+    "bytes": 39496837,
+    "lines": 14814,
+    "gzip_bytes": 5975205,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/6051281aeba9e8453d8668d51037007bbe1c23b7cb624adcb7d6b8ab47cf82d1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -698,6 +699,14 @@
       "summary": "Record verification results for examples 288 and 289 and the two proof-tier jobs; VF-031 for example 288's timeouts",
       "body": "Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-security and preservation ran out of the engine's own --timeout with no verdict (VF-031, not resubmitted since the fix is a step change); 289 vulnerable/mutant/fixed/preservation passed; the proof-tier jobs after 288's and 289's engine changes passed (33 cargo tests each).",
       "log_sha256": "5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516"
+    },
+    {
+      "change_id": "optkyymtxunxqzprsmwpmvvpxorxpkvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: a library initializer the checker does not run is observed on a JVM, registrations are a LinkedHashMap in order and classes are found by name, and fixed-security is queued through the adapter entry (verification pending)",
+      "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5: requestMatchers(String...) chooses a matcher type by the servlet context's registrations) gets its proof script, proofs/prove.py, which passes the frozen claims to jvmcontract through the adapter entry on the releases' own bytecode, beside the route, and proofs/predicates.py, which shows that the claims' expressions as javac compiles them agree with the oracle on the 27 select probes. An inline probe established fixed-security at the frozen bound of 8 in 6.9 s (659 paths). It is queued as job 20261116-225709-example-290-fixed-security-through-the-a. The two refutations and preservation are not decided: target.json's handoff says where each stops (Collections.emptyMap, Arrays.asList, ArrayList's addAll and toArray; then the matchers' constructors).\n\nWhat the verifier gained for it (lib/). The new kind: prove --observed-initializer CLASS (src/observed.rs, src/bmc/observed.rs). Spring's ClassUtils builds its tables through an IdentityHashMap, a HashSet and a map of soft references, which the checker does not run (identity hash order, a float load factor, reference queues), and the servlet API's GenericServlet and HttpServlet each load a resource bundle. Such an initializer has no input, so the tool runs it on a JVM instead: the class is initialized in a JVM of its own, first thing, on the check's class path, its static fields are read by reflection, and the checker takes that state where a use initializes the class. Held: null, integral and boolean primitives, Strings (and whether each is the pooled one), Classes, a java.util.HashMap of String keys (as the HashMap model's entries) and arrays of those; any other value is not held, and a read of such a field is refused by name. A result that used one states it among what it rests on: one observation on the check's JDK, taken to be what the initializer leaves in every run. It is asked for class by class, is refused with --cache and for an initializer that throws, and is never used for the class under proof: the registry's own initializer runs as written. A class of a JDK package that the class path holds (javax.servlet's) is the JDK's to the checker, initialized already; naming it as observed is how its initializer is now accounted for.\n\nBeside it: a model of java.util.LinkedHashMap for the checker alone (models/java/util/LinkedHashMap.java: the HashMap model's chain, which is in insertion order, with values(), its size and a fail-fast iterator); Arrays.stream(int[]) as a stream model; an int, short or byte in the compiler's concatenation as its decimal digits (String model 6; such a String had no content before); Class.forName(String) of a constant name with its initialization, and both forms of forName left to the JDK where a supertype is missing from the class path; Class.isAssignableFrom of two class literals; Thread.currentThread() and its context class loader as the class path's, under a stated assumption.\n\nVerified by: lib/tests/claims.rs, two new tests over the new fixtures claims.M, claims.Tables, claims.Fails and javax.claims.Library (each model against its definition written out on every input of a bound; the observed state read as the JVM has it, an unheld field refused by name, the gap without the option, a throwing initializer and --cache refused), with claims.Samples running the same methods on a JVM; the unit tests (288 pass, three new in observed.rs); and the test files of the changed code (claims 14, values 18, conformance 10, loops, object_strings, pairing, string_literals, tiers, value_parameters). Two values tests that pinned the old behaviour were updated: a concatenated int now has content (a boolean is the gap that remains), and LinkedHashMap() is modelled (LinkedHashMap(Map) is the gap that remains). test_costs.py lint agrees; validate_example.py 290 passes. The default test run and the proof tier job follow once the example's remaining engine work is in.",
+      "log_sha256": "6051281aeba9e8453d8668d51037007bbe1c23b7cb624adcb7d6b8ab47cf82d1"
     }
   ],
   "logs": {
@@ -753,6 +762,12 @@
       "bytes": 33777069,
       "lines": 12761,
       "gzip_bytes": 5083344,
+      "url": null
+    },
+    "6051281aeba9e8453d8668d51037007bbe1c23b7cb624adcb7d6b8ab47cf82d1": {
+      "bytes": 39496837,
+      "lines": 14814,
+      "gzip_bytes": 5975205,
       "url": null
     },
     "75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86": {

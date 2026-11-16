@@ -105,10 +105,19 @@ states what a call does, for the own checker, and says at which level that is kn
    version does not fail it) and that the interpreter and JBMC compute the same function on the fixture.
 
 A model only the tool's own checker runs (`model!(checker ...)`: the stream models, `java.util.stream.Stream`,
-`SequentialArrayStream`, `IntStream`, `CharsStream` and `RangeStream`) is never on JBMC's class path and never
-replaces a JDK class: a JDK call enters it by a method of its own (`models::entry`: `Arrays.stream(Object[])`,
-`String.chars()`, `IntStream.range(int, int)`), and the checker runs its bytecode as an application's. Its
-conformance is the proofs of `tests/claims.rs`, where each stream operation is the loop it stands for.
+`SequentialArrayStream`, `IntStream`, `CharsStream`, `RangeStream` and `IntArrayStream`) is never on JBMC's class
+path and never replaces a JDK class there: a JDK call enters a stream model by a method of its own
+(`models::entry`: `Arrays.stream(Object[])`, `Arrays.stream(int[])`, `String.chars()`, `IntStream.range(int, int)`),
+and the checker runs its bytecode as an application's. Its conformance is the proofs of `tests/claims.rs`, where
+each stream operation is the loop it stands for.
+
+`java.util.LinkedHashMap` (with its `LinkedValues` and `LinkedValueIterator`) is such a model too, entered by its
+own constructor: it extends the `HashMap` model, whose one chain of entries is in insertion order, and adds
+`values()`, the collection's `size()` and `iterator()`, and the iterator's `hasNext()` and fail-fast `next()`.
+Left out, each the JDK call it names: the other constructors (a capacity, a load factor, access order, another
+map), `keySet`, `entrySet`, `remove`, `clear`, the rest of the collection (it extends the JDK's
+`AbstractCollection`) and the iterator's `remove`. Its conformance is `claims.M` in `tests/claims.rs`: the values
+against the order written out over an array, on every input of a bound, and the same method on a JVM.
 
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken

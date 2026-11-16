@@ -17,6 +17,21 @@
 //!   neither the class path nor the JDK has. A name the JDK has stays the JDK's call (which of its modules a run
 //!   resolves is the launcher's to say), as does a name that is no constant, an array's, or `true`.
 //!   `NullPointerException` for a null name.
+//! - `Class.forName(String)`, called by a class of the check's class path, with a name that is a constant: as the
+//!   form above with that class's loader, and with initialization (JLS §12.4, JVMS §5.5): the class literal of a
+//!   class of the class path, initialized first as any use initializes it (its superclasses before it; an
+//!   exception its initializer throws leaves as `ExceptionInInitializerError`, and an erroneous class is
+//!   `NoClassDefFoundError`).
+//! - Both forms load the class, which needs each class and interface above it (JVMS §5.3.5): where one of those is
+//!   on neither the class path nor in the JDK, the JVM throws a `NoClassDefFoundError` the engine does not model,
+//!   and the call stays the JDK's.
+//! - `Class.isAssignableFrom(Class)` of two class literals, each of a class or an interface the class path or the
+//!   JDK has: whether the argument's class is the receiver's or below it, as `instanceof` decides it
+//!   ([`ClassPath::is_subtype`]). `NullPointerException` for a null argument. Of a primitive type's or an array's
+//!   `Class` it is the JDK call it was.
+//! - `Thread.currentThread()`: the one thread of the run, the same object on every call. Its
+//!   `getContextClassLoader()`: the loader of the check's class path, under the assumption the run states
+//!   ([`CONTEXT_LOADER_ASSUMPTION`]). Every other method of the thread is the JDK call it was.
 //! - `java.util.logging.Logger.getLogger(String)` of a constant name: a Logger, the same object for the same name,
 //!   never null (its Javadoc: find or create); `NullPointerException` for null. The object has no content: every
 //!   method of it is the JDK call it was. The logging configuration it reads is JDK state no check observes.
@@ -31,6 +46,9 @@ use super::*;
 
 /// What a run that asked for a class by name, or for a class's loader, took for granted.
 pub const CLASS_PATH_ASSUMPTION: &str = "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)";
+
+/// What a run that asked the current thread for its context class loader took for granted.
+pub const CONTEXT_LOADER_ASSUMPTION: &str = "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path";
 
 /// What a run that asked a logger whether a level below `INFO` is logged took for granted.
 pub const LOGGING_ASSUMPTION: &str = "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)";
@@ -52,15 +70,27 @@ pub fn models_logger(owner: &str, name: &str, descriptor: &str) -> bool {
 const CLASS: &str = "java/lang/Class";
 const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
+const THREAD: &str = "java/lang/Thread";
+const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
 
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
-    matches!((owner, name, descriptor), (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;") | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;"))
+    matches!(
+        (owner, name, descriptor),
+        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;")
+    )
 }
 
 /// Whether the engine models the instance call here, on a class literal, or `getClass()` on an object it made.
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
-    matches!((owner, name, descriptor), (CLASS, "getName", "()Ljava/lang/String;") | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;") | ("java/lang/Object", "getClass", "()Ljava/lang/Class;"))
+    matches!(
+        (owner, name, descriptor),
+        (CLASS, "getName", "()Ljava/lang/String;")
+            | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
+            | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
+            | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
+            | (THREAD, "getContextClassLoader", "()Ljava/lang/ClassLoader;")
+    )
 }
 
 /// The JDK constructors that only set their object's own fields, throw nothing and take nothing: the object is
@@ -98,7 +128,18 @@ impl Engine<'_> {
             self.advance(path);
             return Some(Ok(None));
         }
-        if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) {
+        if (name, descriptor) == ("getContextClassLoader", "()Ljava/lang/ClassLoader;") {
+            if path.literals.get(&Literal::Thread) != Some(&o) {
+                return None;
+            }
+            self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
+            self.assumed.insert(CONTEXT_LOADER_ASSUMPTION.to_string());
+            let loader = self.literal(path, Literal::Loader, LOADER);
+            self.push(path, Val::R(Some(loader)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) || name == "isAssignableFrom" {
             return None;
         }
         let class = self.class_named(path, o)?;
@@ -116,6 +157,29 @@ impl Engine<'_> {
             }
         };
         self.push(path, Val::R(Some(value)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// `Class.isAssignableFrom(other)` on the class literal `o`: see the module's notes. `None` where the call stays
+    /// the JDK's.
+    pub(super) fn class_relation(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if path.objects[o].class != CLASS || (name, descriptor) != ("isAssignableFrom", "(Ljava/lang/Class;)Z") {
+            return None;
+        }
+        let [Val::R(other)] = args else { return None };
+        let above = self.class_named(path, o)?;
+        let Some(other) = *other else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+        let below = self.class_named(path, other)?;
+        // A class or an interface by its internal name, with everything above it at hand: no primitive type
+        // (`int` has no `/`, and neither has a class of the unnamed package, which is left to the JDK with it)
+        // and no array.
+        let known = |cp: &ClassPath, class: &str| class.contains('/') && !class.starts_with('[') && cp.loads(class);
+        if !known(self.cp, &above) || !known(self.cp, &below) {
+            return None;
+        }
+        let value = self.b.constant(i64::from(self.cp.is_subtype(&below, &above)), 32);
+        self.push(path, Val::I(value));
         self.advance(path);
         Some(Ok(None))
     }
@@ -139,10 +203,13 @@ impl Engine<'_> {
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
-            (CLASS, "forName", [Val::R(named), Val::I(initialize), Val::R(Some(loader))]) => {
-                if self.b.constant_value(initialize) != Some(0) || path.literals.get(&Literal::Loader) != Some(loader) {
-                    return None;
-                }
+            (CLASS, "forName", [Val::R(named), rest @ ..]) => {
+                // With a loader and no initialization, or by the caller's loader and with it.
+                let initializes = match rest {
+                    [Val::I(initialize), Val::R(Some(loader))] if self.b.constant_value(initialize) == Some(0) && path.literals.get(&Literal::Loader) == Some(loader) => false,
+                    [] if self.cp.is_application(&path.frames.last().expect("a frame").class.name) => true,
+                    _ => return None,
+                };
                 let Some(named) = *named else { return Some(self.raise(path, "java/lang/NullPointerException")) };
                 let text = String::from_utf16(&self.constant_units(path, named)?).ok()?;
                 if text.starts_with('[') {
@@ -151,14 +218,30 @@ impl Engine<'_> {
                 // A binary name has no `/`: one that does names no class.
                 let internal = text.replace('.', "/");
                 let found = !text.contains('/') && self.cp.exists(&internal);
+                if found && (!self.cp.is_application(&internal) || !self.cp.loads(&internal)) {
+                    return None;
+                }
                 self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 if !found {
                     return Some(self.raise(path, "java/lang/ClassNotFoundException"));
                 }
-                if !self.cp.is_application(&internal) {
-                    return None;
+                if initializes {
+                    // The call runs again once an initializer it starts has returned, its argument where it was.
+                    self.push(path, Val::R(Some(named)));
+                    if let Some(step) = self.initialise(path, &internal) {
+                        return Some(step);
+                    }
+                    if let Err(stop) = self.pop(path) {
+                        return Some(Err(stop));
+                    }
                 }
                 let o = self.literal(path, Literal::Class(internal), CLASS);
+                self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (THREAD, "currentThread", []) => {
+                let o = self.literal(path, Literal::Thread, THREAD);
                 self.push(path, Val::R(Some(o)));
                 self.advance(path);
                 Some(Ok(None))

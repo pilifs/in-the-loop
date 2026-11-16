@@ -194,9 +194,17 @@ public final class Checks {
         }
     }
 
-    /** A number made into a String: numeric formatting is outside the model, so its length is a named gap. */
+    /** An int made into a String: its decimal digits, so at least one unit after the constant. */
     public static void numbered(int n) {
         String t = "n" + n;
+        if (t.length() < 2 || t.charAt(0) != 'n' || (n >= 0 && n < 10 && t.charAt(1) != '0' + n)) {
+            throw new AssertionError();
+        }
+    }
+
+    /** A boolean made into a String: its formatting is outside the model, so the String's length is a named gap. */
+    public static void truthNamed(int n) {
+        String t = "n" + (n > 0);
         if (t.length() == 0) {
             throw new AssertionError();
         }

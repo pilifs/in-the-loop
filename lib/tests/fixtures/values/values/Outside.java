@@ -208,7 +208,7 @@ public final class Outside {
     }
 
     public static void linkedMap(String s) {
-        Map<String, String> m = new LinkedHashMap<>();
+        Map<String, String> m = new LinkedHashMap<>(new HashMap<String, String>());
         if (!m.isEmpty()) {
             throw new AssertionError();
         }

@@ -17,13 +17,15 @@ package java.util;
  * {@code compareTo}), and resizing. Neither is observed by a key whose {@code equals} and {@code hashCode} only
  * compute, and a map is not iterated here: {@code keySet}, {@code values}, {@code entrySet}, {@code remove},
  * {@code putAll}, {@code clear}, the {@code compute} family and every other method are left out, so that JBMC stubs
- * them as before and the gap scan names them.
+ * them as before and the gap scan names them. ({@link LinkedHashMap}'s model, for the own checker alone, iterates
+ * its values in the chain's order, which is that map's.)
  *
  * <p>The interpreter keeps its own natives for {@code HashMap}, which behave the same (the values corpus,
  * {@code lib/tests/values.rs}, checks all three against a JVM).
  */
 public abstract class HashMap<K, V> implements Map<K, V> {
-    private Node first;
+    /** The entries, the first put first: {@link LinkedHashMap}'s model iterates them. */
+    Node first;
     private Node last;
     private int size;
 

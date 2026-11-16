@@ -71,6 +71,9 @@ pub const MODELS: &[Model] = &[
     model!(jbmc "java/lang/Enum", "java/lang/Enum.java", "java/lang/Enum.class", "an enum constant's name and ordinal, set by Enum.<init>(String, int) and read by name, ordinal and toString; equals by identity; JBMC only"),
     model!(jbmc "java/util/HashMap", "java/util/HashMap.java", "java/util/HashMap.class", "a HashMap as its entries in insertion order: HashMap() and HashMap(int), get, containsKey, put, size and isEmpty, a key found by hashCode and equals as the JDK finds one; no iteration, removal or resizing; JBMC only"),
     model!(jbmc "java/util/HashMap$Node", "java/util/HashMap.java", "java/util/HashMap$Node.class", "an entry of the HashMap model: its key, the key's hash and its value; JBMC only"),
+    model!(checker "java/util/LinkedHashMap", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap.class", "a LinkedHashMap as the HashMap model's entries, iterated in insertion order: LinkedHashMap(), what the HashMap model has, and values() with its size and fail-fast iterator; the own checker only"),
+    model!(checker "java/util/LinkedHashMap$LinkedValues", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValues.class", "the values collection of the LinkedHashMap model: size and iterator; the own checker only"),
+    model!(checker "java/util/LinkedHashMap$LinkedValueIterator", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValueIterator.class", "the iterator of the LinkedHashMap model's values: hasNext and next, fail-fast; the own checker only"),
     model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
@@ -79,7 +82,7 @@ pub const MODELS: &[Model] = &[
     model!(jbmc "java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListN.class", "an immutable list of none or three or more elements over an array of its own, as the JDK's; JBMC only"),
     model!(checker "java/util/stream/Stream", "java/util/stream/Stream.java", "java/util/stream/Stream.class", "a sequential stream's allMatch, anyMatch, noneMatch, map and toArray(IntFunction), declared for the model's stream over an array; the own checker only"),
     model!(checker "java/util/stream/SequentialArrayStream", "java/util/stream/SequentialArrayStream.java", "java/util/stream/SequentialArrayStream.class", "what Arrays.stream(T[]) returns: the array's elements one at a time through each map, a match stopped where it is decided, a stream used once; not a JDK class; the own checker only"),
-    model!(checker "java/util/stream/IntStream", "java/util/stream/IntStream.java", "java/util/stream/IntStream.class", "an int stream's allMatch, anyMatch and noneMatch, declared for the models' streams of a String's code units and of a range of ints; the own checker only"),
+    model!(checker "java/util/stream/IntStream", "java/util/stream/IntStream.java", "java/util/stream/IntStream.class", "an int stream's allMatch, anyMatch and noneMatch, declared for the models' streams of a String's code units, of a range of ints and of an array of ints; the own checker only"),
     model!(checker "java/util/stream/CharsStream", "java/util/stream/CharsStream.java", "java/util/stream/CharsStream.class", "what String.chars() returns: the code units in order, each zero-extended; not a JDK class; the own checker only"),
     model!(checker "java/util/stream/RangeStream", "java/util/stream/RangeStream.java", "java/util/stream/RangeStream.class", "what IntStream.range(int, int) returns: the ints from the start up to the end, in order; not a JDK class; the own checker only"),
     model!(checker "java/util/stream/IntArrayStream", "java/util/stream/IntArrayStream.java", "java/util/stream/IntArrayStream.class", "what Arrays.stream(int[]) returns: the array's ints in order; not a JDK class; the own checker only"),
@@ -90,7 +93,8 @@ pub const MODELS: &[Model] = &[
 /// constructor and accessors an enum's initializer and methods call, and the immutable lists `List.of` and
 /// `List.copyOf` make (`List`'s factories, `ImmutableCollections`, its `List12`, `ListN`, `AbstractImmutableList` and
 /// `ListItr`), written without a JDK call so that the checker runs every step as JBMC does, and `java.util.HashMap`
-/// with its entries (`HashMap$Node`), whose only calls out are its keys' `hashCode` and `equals`. Their state is fields of
+/// with its entries (`HashMap$Node`), whose only calls out are its keys' `hashCode` and `equals`, and
+/// `java.util.LinkedHashMap` over it, with its values and their iterator. Their state is fields of
 /// their own objects (an enum's name and ordinal, a list's elements) and `ImmutableCollections`' two statics (the one
 /// empty list, the sentinel of a list of one), which the checker holds as an application class's
 /// ([`ClassPath::checker_class`](crate::classpath::ClassPath::checker_class)); the interpreter keeps its natives for
@@ -99,6 +103,9 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/lang/Enum",
     "java/util/HashMap",
     "java/util/HashMap$Node",
+    "java/util/LinkedHashMap",
+    "java/util/LinkedHashMap$LinkedValues",
+    "java/util/LinkedHashMap$LinkedValueIterator",
     "java/util/List",
     "java/util/ImmutableCollections",
     "java/util/ImmutableCollections$AbstractImmutableList",

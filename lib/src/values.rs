@@ -165,8 +165,10 @@ const LIST: &str = "java/util/List";
 /// match with them), each with its record. Model 4 added `getBytes(UTF_8)`, `matches` of a constant regular
 /// expression and `toString` (for example 287's claims, over a password's bytes and a stored hash's shape). Model 5
 /// lowers an ASCII String under the default locale the path set, and under a Locale it is given (`toLowerCase(Locale)`),
-/// Turkish and Azeri among them (for example 288's claims, which make the default locale an input).
-pub const STRING_MODEL: &str = "jvmcontract String model 5: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+/// Turkish and Azeri among them (for example 288's claims, which make the default locale an input). Model 6 gives
+/// an `int`, a `short` or a `byte` in the compiler's concatenation its decimal digits, where the String it made had
+/// no content before (for example 290, whose registrations are named `"servlet" + i`).
+pub const STRING_MODEL: &str = "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -188,8 +190,8 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars and constants: each is a named gap".into(),
-            "the content of a number or a boolean made into a String (numeric formatting), which has none: asking for it ends the path with no verdict".into(),
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
+            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
         ],
@@ -370,8 +372,8 @@ pub fn map_model() -> ModelEvidence {
         jdk: MAP_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every Map but a java.util.HashMap made by HashMap() or HashMap(int): another map's constructor (LinkedHashMap, TreeMap, HashMap(int, float), HashMap(Map)) is the JDK call it names".into(),
-            "every method but put, get, containsKey, size and isEmpty: the model has no other (remove, clear, putAll, keySet, values, entrySet, the compute family), so each is the JDK call it names, a gap".into(),
+            "every Map but a java.util.HashMap made by HashMap() or HashMap(int): another map's constructor (TreeMap, HashMap(int, float), HashMap(Map)) is the JDK call it names. The own checker alone also has a java.util.LinkedHashMap made by LinkedHashMap(), with its values in insertion order (lib/models/java/util/LinkedHashMap.java, whose evidence is claims.M in lib/tests/claims.rs)".into(),
+            "every method but put, get, containsKey, size and isEmpty: the model has no other (remove, clear, putAll, keySet, values, entrySet, the compute family), so each is the JDK call it names, a gap (values() of the own checker's LinkedHashMap apart)".into(),
             "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and a key of an application class runs its own hashCode and equals, but Object's hashCode (an identity) is a named gap".into(),
             "the table: the order in which the entries of one hash are compared, and resizing, which a key whose equals and hashCode only compute does not observe".into(),
             "a map as an input: no adapter makes one, so a map parameter or a map inside an object is refused".into(),

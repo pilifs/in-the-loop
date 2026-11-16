@@ -431,9 +431,9 @@ fn a_string_parameters_bound_is_explicit_and_every_length_up_to_it_is_an_input()
     no_verdict(&cp, "atMostFour", Parameters::default(), "a java.lang.String parameter with no bound on its length");
 }
 
-/// A compiler-generated concatenation of Strings, chars and constants has their content, `null` as "null"; one
-/// that could pass the content cap has none, and is a named limit where its content is asked for, and a number
-/// converted (numeric formatting, outside the model) is the gap it was.
+/// A compiler-generated concatenation of Strings, chars, ints and constants has their content, `null` as "null"
+/// and an int as its decimal digits; one that could pass the content cap has none, and is a named limit where
+/// its content is asked for, and a boolean converted (its formatting is outside the model) is the gap it was.
 #[test]
 fn a_concatenation_has_its_parts_content_up_to_a_named_cap() {
     jvmcontract::tool_tier!();
@@ -445,7 +445,8 @@ fn a_concatenation_has_its_parts_content_up_to_a_named_cap() {
     assert_ne!(a, b);
     verified(&cp, "longJoin", bounded(7));
     no_verdict(&cp, "longJoin", bounded(8), "a concatenation of up to 72 code units, beyond the own checker's content cap of 64");
-    no_verdict(&cp, "numbered", bounded(3), "jdk-primitive-method");
+    verified(&cp, "numbered", bounded(3));
+    no_verdict(&cp, "truthNamed", bounded(3), "jdk-primitive-method");
 }
 
 /// The gap scan agrees with the engine: a String method the engine models on content is no gap, counted among the
@@ -1220,7 +1221,7 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("mapRemove", "jdk-reference-method:java.util.Map.remove(Ljava/lang/Object;)Ljava/lang/Object;"),
     ("mapGetOrDefault", "jdk-reference-method:java.util.Map.getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
     ("mapKeyOfIdentity", "jdk-primitive-method:java.lang.Object.hashCode()I"),
-    ("linkedMap", "jdk-constructor:java.util.LinkedHashMap.<init>()V"),
+    ("linkedMap", "jdk-constructor:java.util.LinkedHashMap.<init>(Ljava/util/Map;)V"),
     ("mapOfAMap", "jdk-constructor:java.util.HashMap.<init>(Ljava/util/Map;)V"),
     ("patternOutsideTheSyntax", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
     ("patternOfAnInput", "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;"),
