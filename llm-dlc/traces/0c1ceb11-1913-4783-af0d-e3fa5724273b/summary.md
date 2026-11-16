@@ -120,6 +120,12 @@ Verified: the default run's Python half, python3 lib/tools/test_costs.py run --o
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
+### Record session traces
+
+change `vxmvptkukxmm` · [log `c1c42ffaf7db`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c1c42ffaf7db4e4760ae1c502150d8043c016b95e69700ecace0c390f02645af.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c1c42ffaf7db4e4760ae1c502150d8043c016b95e69700ecace0c390f02645af.jsonl.gz) has every step in between: reasoning, tool calls and their results.

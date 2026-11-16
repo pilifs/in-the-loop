@@ -59,7 +59,7 @@
   "commits": [
     {
       "change_id": "uznmvyqqxrpzvqtszqwxxvmwowlwksop",
-      "commit_id": null,
+      "commit_id": "8d0b787e26975a34fdc718001af8b976007a9f72",
       "immutable": false,
       "summary": "Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)",
       "body": "The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.\n\ntest_packets.py read example 287's review note as the last of its notes, which the note added with the previous commit displaced: it now finds the note by the review item it names. That failure was in the previous commit, whose default run was made before the note was added. Verified inline by the Python half of the default run (33 of 33 after the fix; the Rust sources are unchanged since the full run before the previous commit).\n\nThe three security jobs of the previous commit passed and are not collected yet: fixed-security established on 6.3.8 in 641 s, vulnerable-security and mutant-security refuted on a candidate of 25 code units and 73 bytes with a hash of cost 04, run on a JVM. Jobs queued here: 20261116-06*-example-287-fixed-guard-again-for-its-receipt and 20261116-06*-example-287-vulnerable-guard-again-for-its-recei (the ids are in verification/jobs).",
@@ -67,7 +67,7 @@
     },
     {
       "change_id": "yzkrwktyktruwxpktxkslnlwlquoskzr",
-      "commit_id": null,
+      "commit_id": "e0bf66e53eaf7dd8315ccda7b7bfe93de6c76d99",
       "immutable": false,
       "summary": "Example 287's public claim is decided beside the route: established on 6.3.8, refuted on 6.3.7 and on the mutant, at the frozen bound",
       "body": "The three security jobs passed. fixed-security (20261116-053832-example-287-fixed-security-through-the-a): BCryptPasswordEncoder.matches on 6.3.8, through the adapter entry the claim names, throws IllegalArgumentException exactly when the candidate has more than 72 UTF-8 bytes and never returns true for one, for every candidate of up to 80 code units and every valid stored hash; 641 s, 641 paths, 3.0 GiB, six of bcrypt's loops covered by invariants the checker found and proved. vulnerable-security and mutant-security (20261116-053832-example-287-vulnerable-security-through, 20261116-053832-example-287-mutant-security-through-the): refuted in 819 s and 821 s on the least violating input, a candidate of 25 code units and 73 bytes with a hash of cost 04, where matches returns false instead of throwing; each witness was run on a JVM.\n\nThe example's README has a section on these proofs (what they are, what they rest on, how to run them, what is open), its entry a verdict label and a note, and target.json dated notes on the four predicted blockers, which were reached and closed, and on the observed ones. These are proofs beside the route, not route receipts: the route has no adapter entry. The two guard tasks, which do run through the route, reached verdicts and are queued again for their receipts (20261116-060128-example-287-fixed-guard-again-for-its-re, 20261116-060128-example-287-vulnerable-guard-again-for-i); their refusal packets stay as recorded until those are collected. Not attempted: preservation, and the guard claim on the mutant. Verified by the Python half of the default run (33 of 33).",
@@ -75,7 +75,7 @@
     },
     {
       "change_id": "uwvylonzknlvwotrxmqoozrutswkkzyz",
-      "commit_id": null,
+      "commit_id": "03b801ce0797bcbdfdf5ff1b165ccb61dd9f54bb",
       "immutable": false,
       "summary": "Example 287: where the preservation claim stops beside the route",
       "body": "Tried once through the adapter entry with each release's own class path (jvmcontract equivalence --before-classpath, which gets past the route's recorded gap of two dependency closures): a regression check refuses a nullable String parameter, and without the nullable parameters it refuses the allowed change as written, because a regression's scope is in the tool's own expression language, which has no getBytes. Recorded in the example's README and notes with the two refusals' words, and with what is predicted behind them and was not reached (pairing bcrypt's unchanged callees, since invariants that forget the S-boxes on each side cannot show two results equal). No code changed; the example's tests (test_packets, test_acceptance, test_gap_inventory, test_workflow_refusal, test_targets_contract, test_build, test_alignment) pass.",
@@ -83,7 +83,7 @@
     },
     {
       "change_id": "nkzzototrlykxzynzlwssvptozsysokk",
-      "commit_id": null,
+      "commit_id": "4209a1b83cfee241cd87a5ec9b7869a4b986011b",
       "immutable": false,
       "summary": "Record verification results for 8 jobs: example 287's three security claims as expected, the Rust proof tier passes with VF-018's three apart",
       "body": "Jobs at 26a42d401510: 287's frozen public claim is established on 6.3.8 and refuted on 6.3.7 and on the char-count-guard mutant (as expected, 3 outputs each applied). The first two guard-lemma jobs failed with 'not-executed' (the receipt did not pass check_result); the submitter's reruns at c63eabcbd18b, 'again, for its receipt', passed as expected and applied the receipts. The proof-tier job (cargo --no-fail-fast, VF-018's three skipped) passed in 1h07m: conformance, heap and preparation ignored tests all ok. VF-030 updated: Rust half closed, Python proof tests still unrun, so it stays open. Rest of the working copy is the collect output (verification/.work-287 outputs, 287 receipts, examples index).",
@@ -91,7 +91,7 @@
     },
     {
       "change_id": "xrsnmkwttrqpxrttmvspyusknvxlmlpp",
-      "commit_id": null,
+      "commit_id": "fe74a7d1edfd82eaed4bc65c62c924d328139cf5",
       "immutable": false,
       "summary": "/prove-java-change checks what else Claude Code has loaded, and the sessions it starts load only the checkout",
       "body": "Step 1 of the skill now checks the user's Claude Code setup on every run. New tool llm-dlc/tools/claude_setup.py: check prints a warning that any extraneous context from external sources may lead to unexpected results, then lists what the session running it has loaded besides the plugin and the checkout (other plugins, MCP servers and claude.ai connectors, memory files, skills, agents, commands, hooks, managed settings). It asks Claude Code itself: two one-word sessions on the smallest model, without tools or a transcript, one started as the user's session was (its directory and launch flags, read from the process CLAUDE_PID names) and one clean in the checkout, compared by what each reports at start-up; memory files, hooks and the plugins Claude Code's own listing calls enabled are added from disk. It prints names and paths only, never a setting's value.\n\nDisabling is done by launch flags, not by editing the user's configuration, so nothing has to be put back: --setting-sources project,local, --strict-mcp-config, ENABLE_CLAUDEAI_MCP_SERVERS=false, and claudeMdExcludes for the memory files of the user and of the directories above the checkout. In a runtime checkout every session the skill starts now uses them (loop-common.sh's isolation: the proof loop's fork, compactions and cycles, and the verification loop's runs), and check proves on the machine that such a launch answers. The session the user is already in can't unload what it holds, so when anything is listed the skill offers the one command check prints (claude_setup.py launch: a clean session in the checkout, on Fable 5.2 at high effort, where the skill runs as the checkout's project skill) or, not recommended, to continue as it is. prove-loop.sh --no-isolation starts the loop's sessions as a plain claude for a machine where a clean launch does not work. A development checkout's loops are unchanged, and check refuses there because its hooks would trace the probes.\n\nVerified: test_claude_setup.py (21 tests, the check itself against a stand-in claude and made-up directories) and two new tests in test_prove_loop.py (in a runtime checkout all five sessions of a run carry the clean flags; with --no-isolation or in a development checkout none does). With the real Claude Code 2.1.325, from scratch directories: the flags leave no MCP server, connector, user skill or plugin in the start-up report, a memory file excluded by path is not read while the checkout's own is, the checkout's project skills still load, the login still works, and launch started from another project answers with the checkout's memory and not that project's. The Python half of the default run passes (41 of 41 suites), cargo test --test tiers passes, claude plugin validate passes, and the edited pages' links resolve. Not verified: whether --setting-sources alone drops the user's own memory file (Claude Code's documentation does not say, and this machine has none, hence the exclusion by path); a real proof loop under the clean flags; and the skill's new step run by a model. A known limit, documented: a non-interactive probe was seen to report no connectors in a directory that has a memory file, where an interactive session has them, so the skill also adds what the session sees in its own context. The skill's folder changed, so a release follows.",
@@ -99,7 +99,7 @@
     },
     {
       "change_id": "rvpsvkwmznurmkyyytpwxssmzrzouowx",
-      "commit_id": null,
+      "commit_id": "9fcb974d2b7f6b56d1d96e58b4515ea5153f7d24",
       "immutable": false,
       "summary": "Release 0.6.0 of /prove-java-change",
       "body": "The skill at 0.6.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (6058a0d22f1cdbbf9a82ca9405ffa01953f6f74b52b423de8ac281a5decdba56, 5396 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Step 1 checks what else Claude Code has loaded, warns, and offers a clean session; the sessions the skill starts load only the checkout.",
@@ -107,7 +107,7 @@
     },
     {
       "change_id": "vurtkmrvlosvpxpumxlyylwuvkkzowps",
-      "commit_id": null,
+      "commit_id": "46b49aece68286148430cff7eaeaf5481bc83183",
       "immutable": false,
       "summary": "feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and \"item\" stops the loop once the item under way is",
       "body": "At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and \"stop\" could only end the loop after a cycle, not after an example.\n\nNow, after each commit of a templated moonshot, a judge outside the session decides whether the item is finished: a separate claude -p call (FEATURE_LOOP_JUDGE_MODEL, claude-sonnet-5-5 by default) with no tools, only the user's settings and no transcript reads the cycle's final report and commit messages and answers ITEM: finished (the goal is met, or what is left needs a person or only waits on jobs) or ITEM: continue (the session itself can still make real progress). Nothing is added to the moonshot's own session, so its instruction stays the only thing it is given. An unfinished item gets the next cycle with the same instruction; an unclear answer moves on, as before. The record keeps the verdict and its reason under each commit line, and a later run resumes at the first item that has no commit or whose last verdict was continues. FEATURE_LOOP_ITEM_CYCLES caps an item's cycles in a run (no cap by default, the user's choice), and FEATURE_LOOP_ITEM_JUDGE=0 restores one cycle per item. Typing \"item\" in the loop's terminal ends the run once the item under way is finished, however many cycles that takes; a count typed after it replaces it. loop_stats.py reads the new record header and verdicts, so an item the judge left open counts as attempted, not done, and the verdict is not published as a column.\n\nVerified: test_loop_stats (22, two new) and test_runs pass, and the cost lint agrees. End to end, in a scratch jj repo with a stand-in claude that commits and answers as the judge from a script, the patched script (its own three-item list, no systemd scope): the judge kept item 1 for two cycles and the run went on to 2 and 3 and ended with no items left; a record whose last verdict was continues resumed at that item; an unclear answer moved on; a cap of 2 moved on after two continues; FEATURE_LOOP_ITEM_JUDGE=0 kept the old header and one cycle per item; a bad cap exits 2; and \"item\" typed during cycle 1, on a private tmux server, ended the run after cycle 2, once the judge found item 1 finished. Three real judge calls on made-up reports answered finished for a decided example, continue for one with work the session could do, and finished for one blocked on a person's decision.",
@@ -115,7 +115,7 @@
     },
     {
       "change_id": "tlzowkqvqwputtppzurkqsukqwtorzrm",
-      "commit_id": null,
+      "commit_id": "c291489d4e741e06e8a7c4a4308a58fc2c2896ef",
       "immutable": false,
       "summary": "feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and \"item\" stops the loop once the item under way is",
       "body": "At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and \"stop\" could only end the loop after a cycle, not after an example.\n\nNow, after each commit of a templated moonshot, a judge outside the session decides whether the item is finished: a separate claude -p call (FEATURE_LOOP_JUDGE_MODEL, claude-sonnet-5-5 by default) with no tools, only the user's settings and no transcript reads the cycle's final report and commit messages and answers ITEM: finished (the goal is met, or what is left needs a person or only waits on jobs) or ITEM: continue (the session itself can still make real progress). Nothing is added to the moonshot's own session, so its instruction stays the only thing it is given. An unfinished item gets the next cycle with the same instruction; an unclear answer moves on, as before. The record keeps the verdict and its reason under each commit line, and a later run resumes at the first item that has no commit or whose last verdict was continues. FEATURE_LOOP_ITEM_CYCLES caps an item's cycles in a run (no cap by default, the user's choice), and FEATURE_LOOP_ITEM_JUDGE=0 restores one cycle per item. Typing \"item\" in the loop's terminal ends the run once the item under way is finished, however many cycles that takes; a count typed after it replaces it. loop_stats.py reads the new record header and verdicts, so an item the judge left open counts as attempted, not done, and the verdict is not published as a column.\n\nVerified: test_loop_stats (22, two new) and test_runs pass, and the cost lint agrees. End to end, in a scratch jj repo with a stand-in claude that commits and answers as the judge from a script, the patched script (its own three-item list, no systemd scope): the judge kept item 1 for two cycles and the run went on to 2 and 3 and ended with no items left; a record whose last verdict was continues resumed at that item; an unclear answer moved on; a cap of 2 moved on after two continues; FEATURE_LOOP_ITEM_JUDGE=0 kept the old header and one cycle per item; a bad cap exits 2; and \"item\" typed during cycle 1, on a private tmux server, ended the run after cycle 2, once the judge found item 1 finished. Three real judge calls on made-up reports answered finished for a decided example, continue for one with work the session could do, and finished for one blocked on a person's decision.",
@@ -127,25 +127,25 @@
       "bytes": 352936,
       "lines": 80,
       "gzip_bytes": 82946,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz"
     },
     "319465ed69fc09b912f348e69fcc5d39a94cbe8774b00bf81b3128968a4ed07a": {
       "bytes": 497339,
       "lines": 147,
       "gzip_bytes": 96568,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/319465ed69fc09b912f348e69fcc5d39a94cbe8774b00bf81b3128968a4ed07a.jsonl.gz"
     },
     "9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128": {
       "bytes": 512997,
       "lines": 159,
       "gzip_bytes": 99123,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz"
     },
     "e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d": {
       "bytes": 307369,
       "lines": 56,
       "gzip_bytes": 78481,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d.jsonl.gz"
     }
   },
   "redaction_policy": 4,

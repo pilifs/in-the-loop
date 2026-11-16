@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 6 | 52 | 49 | 67 | 48 (44 passed, 4 failed) | 2.1 d | 6,677,650 | $775.36 | $15.82 |
-| brief | 28 | 54 | 303 | 300 | 372 | 205 (160 passed, 45 failed) | 3.3 d | 13,237,569 | $1,113.01 | $3.71 |
+| brief | 28 | 54 | 303 | 300 | 372 | 205 (160 passed, 45 failed) | 3.3 d | 13,238,252 | $1,113.55 | $3.71 |
 | verification | 1 | 52 | 0 | 0 | 179 | 0 | 13 h 33 min | 225,023 | $13.75 | n/a |
-| **all** | 35 | 112 | 355 | 349 | 618 | 253 (204 passed, 49 failed) | 6.0 d | 20,140,242 | $1,902.12 | $5.45 |
+| **all** | 35 | 112 | 355 | 349 | 618 | 253 (204 passed, 49 failed) | 6.0 d | 20,140,925 | $1,902.66 | $5.45 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -166,7 +166,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | &nbsp;&nbsp;stream `example-targets-runtime` | 2 | 10 | 10 | 12 | 5 (4 passed, 1 failed) | `claude-opus-5-5` | 2026-11-14 | 2 h 49 min | 2 h 16 min | 13 min | 494,397 | $34.99 | $2.75 | $2.92 |
 | &nbsp;&nbsp;stream `example-targets-workflow` | 1 | 6 | 6 | 7 | 0 | `claude-opus-5-5` | 2026-11-14 | 70 min | 63 min | 10 min | 266,029 | $18.48 | $2.78 | $2.64 |
 | &nbsp;&nbsp;*with its streams* | 10 | 66 | 66 | 88 | 78 (52 passed, 26 failed) | `claude-opus-5-5` | 2026-11-14 to 11-15 | 14 h 25 min | 12 h 53 min | 11 min | 2,462,854 | $210.14 | $2.75 | $2.39 |
-| **`stream-conductor`** | 1 | 3 | 3 | 4 | 0 | `claude-opus-5-5` | 2026-11-14 | 35 min | 32 min | 12 min | 165,228 | $9.00 | $3.30 | $2.25 |
+| **`stream-conductor`** | 1 | 3 | 3 | 4 | 0 | `claude-opus-5-5` | 2026-11-14 | 37 min | 32 min | 12 min | 165,911 | $9.54 | $3.30 | $2.39 |
 | **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 
 ## Verification loop
@@ -233,7 +233,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-14 18:19 | [`2026-11-14-181912-example-targets-runtime`](3bb5a1f4-a4d5-4f4a-b511-6037ef3e1256/runs/2026-11-14-181912-example-targets-runtime.md) | brief stream | `claude-opus-5-5` | 1 | 1 | 6.1 min | 5.4 min | $0.94 | work done | record |
 | 2026-11-14 18:25 | [`2026-11-14-182520-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-182520-example-targets.md) | brief | `claude-opus-5-5` | 1 | 2 | 13 min | 13 min | $2.33 | blocked | record |
 | 2026-11-14 19:43 | [`2026-11-14-194319-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-194319-example-targets.md) | brief | `claude-opus-5-5` | 14 | 14 | 2 h 17 min | 2 h 06 min | $29.00 | waiting on jobs | record |
-| 2026-11-14 21:13 | `2026-11-14-211345-stream-conductor` | brief | `claude-opus-5-5` | 3 | 4 | 35 min | 32 min | $9.00 | no end recorded | transcript |
+| 2026-11-14 21:13 | [`2026-11-14-211335-stream-conductor`](4a47a539-a6f1-4f2d-b4c9-828596296714/runs/2026-11-14-211335-stream-conductor.md) | brief stream | `claude-opus-5-5` | 3 | 4 | 37 min | 32 min | $9.54 | blocked | record |
 | 2026-11-14 22:29 | [`2026-11-14-222909-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-14-222909-example-targets.md) | brief | `claude-opus-5-5` | 7 | 13 | 1 h 45 min | 98 min | $26.20 | brief changed (stopped) | record |
 | 2026-11-15 00:18 | [`2026-11-15-001859-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-001859-example-targets.md) | brief | `claude-opus-5-5` | 8 | 15 | 1 h 57 min | 1 h 49 min | $28.53 | waiting on jobs | record |
 | 2026-11-15 04:13 | [`2026-11-15-041307-example-targets`](051e402b-750c-4a9d-bdd2-24dfb39add84/runs/2026-11-15-041307-example-targets.md) | brief | `claude-opus-5-5` | 10 | 13 | 1 h 50 min | 98 min | $27.82 | work done | record |

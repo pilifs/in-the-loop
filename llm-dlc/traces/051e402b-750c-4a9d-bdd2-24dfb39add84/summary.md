@@ -677,7 +677,7 @@ The brief is out of date in places: its 'Where it starts from' totals came from 
 
 ### stream-conductor: run steps 1-3 now, in the workspace stream-conductor, beside example-targets' Phase 5
 
-change `rrmtvtxmkrkx` · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
+[`dee726c2c9fd`](https://github.com/pilifs/in-the-loop/commit/dee726c2c9fdca781abd1bc40159c02e3a8837ed) · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
 
 The user chose to start the conductor's first three steps (decision record, inboxes, rolling integration line) while
 example-targets' loop finishes Phase 5 in the default workspace, instead of waiting for it. The brief now says how to keep
@@ -689,7 +689,7 @@ Based on krnmkrsm, which already carries its trace line, so example-targets' lat
 
 ### stream-conductor step 1: the decision record, llm-dlc/decisions/NAME.jsonl, with decisions.py and its view
 
-change `ltmykkvxtywq` · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
+[`cd731a229364`](https://github.com/pilifs/in-the-loop/commit/cd731a229364dafb0c07b549181a1df07cb7d9ba) · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
 
 A parallel run's conductor will decide what it safely can and queue the rest for the user, who reviews afterwards rather than approving first (stream-conductor.md, Design 3 and 4). This adds the data that rests on: llm-dlc/decisions/schema.json, one JSON line per change of state, and llm-dlc/tools/decisions.py (standard library only, as sync.py) to write and read it. The conductor writes with record (a new decision, or a patch over one's current state; a decision taken without a review gets the one Design 3's table gives, flagged when costly or of medium confidence) and depend (adds what was built on a decision; at three commits or any job one still unreviewed is flagged again). The user writes review accept/overturn and answer lines, by id or range (D003-D007). list, show and counts give the projections the merge loop and a status bar will read. Every write is checked against the whole record first and refused, with nothing written, if it would leave a problem.
 
@@ -697,13 +697,13 @@ sync.py renders the view (llm-dlc/decisions/NAME.md: flagged first, then open qu
 
 ### sync.py check: a shared change stamped in another workspace is a note while that workspace's manifest lists its log
 
-change `rsmpqlswuvvn` · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
+[`6d6c938744e5`](https://github.com/pilifs/in-the-loop/commit/6d6c938744e58cf0693dbf07a66c21f80f3c52eb) · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
 
 Step 1's commit in the stream-conductor workspace reported 8 errors on example-targets commits this branch shares with the default line: they point at a log of session d34058d5 that the manifest here does not list. That session is still at work in the default workspace, and its syncs stamp the changes made while it ran, which rewrote those shared commits under this branch (jj rebased it); only the default line's copy of the manifest lists the new log, and a merge brings it here. check_trailers already left commits only another line holds to that line; this closes the remaining case. A trailer whose log the local manifest does not list is now a note when some other workspace's working-copy commit holds a manifest of that session listing the log (read with git cat-file from the commits jj recorded, snapshotting nothing), and an error otherwise, as before.
 
 ### stream-conductor step 2: inboxes, llm-dlc/tools/inbox.py, and the sentence feature-loop.sh adds to every brief's instruction
 
-change `zkyqxvtxvrmv` · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
+[`d6b34348ddcd`](https://github.com/pilifs/in-the-loop/commit/d6b34348ddcd794c770d876c09e33925c3669eb9) · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
 
 Each stream of a parallel run gets an inbox from the conductor, llm-dlc/loop-summaries/NAME-STREAM-inbox.md in the default workspace (gitignored), rendered from a JSONL of the items sent and the acknowledgements found. feature-loop.sh adds one sentence to every brief's cycle instruction (inbox.py instruction): read the inbox, acknowledge each item by its id in the Progress update, and the precedence: the brief, then the user's decisions, then the conductor's messages, so a contradiction is reported, not obeyed.
 
@@ -713,7 +713,7 @@ Verified with test_inbox.py (8 tests), including a two-stream fixture run in a t
 
 ### stream-conductor step 3: the rolling integration line, llm-dlc/tools/integration.py, in place of run-streams.sh's integrate_once
 
-change `znxmmrnvzonq` · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
+[`88c53bd9ae66`](https://github.com/pilifs/in-the-loop/commit/88c53bd9ae66641fd899bff960256278650b9fd5) · [log `695892eef314`](https://terminalvalue.net/raw-traces/051e402b-750c-4a9d-bdd2-24dfb39add84/695892eef314b55948e7bbf0504135197b9c7522240167004dfc5f1dc1bd8ebc.jsonl.gz)
 
 run-streams.sh's integration check now keeps a rolling integration line (stream-conductor.md, Design 1). In the run's NAME-integration workspace, integration.py merges every stream's @- with the line's newest passing merge as a parent, settles generated files with that tree's sync.py regenerate, and runs the brief's script, still inside the 6 GB systemd scope. A merge that passes is committed on the line, with Integration-Line and Integration-Head trailers, without whatever the script wrote, and never pushed or committed in the default workspace. integration.py line NAME names the newest.
 

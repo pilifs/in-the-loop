@@ -28,7 +28,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### jvmcontract: a property check gives an interface parameter an implementation, reads accessors and Strings, and runs a HashMap model, for example 285 (verification pending)
 
-change `lvvpsuxlnnqw` · [log `876286c9c8da`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/876286c9c8daef8b911794c6c7df1853c3d838c29acb5c39dcb790b7e568f4d5.jsonl.gz)
+[`18cfa9e637ef`](https://github.com/pilifs/in-the-loop/commit/18cfa9e637ef5207a4603f48c08a36be4b52d491) · [log `876286c9c8da`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/876286c9c8daef8b911794c6c7df1853c3d838c29acb5c39dcb790b7e568f4d5.jsonl.gz)
 
 Example 285 (CVE-2023-34055, Spring Boot's WebMvcTags.method(HttpServletRequest)) had every proof task refused before any proof (VF-027): a property check made no input of an interface type, its expressions had no String terms and read no interface, the fix resolves the method through a HashMap that HttpMethod's class initializer fills, and the gap scan of the fixed release ran into its two-minute limit. The verifier is extended so that the frozen claim is decided as stated, on the released JARs, with no wrapper and no narrower subject.
 
@@ -45,7 +45,7 @@ Verification pending: jobs 20261115-173146-example-285-vulnerable-security-the-b
 
 ### jvmcontract: a regression check runs each version on its own dependency closure and over an interface parameter, for example 285's preservation (verification pending)
 
-change `lustnxwmkxvs` · [log `4adea8f9f6ca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4adea8f9f6ca4d6a267f087d6cba9d30115b44f18669bdaf07dce773a9a50ff0.jsonl.gz)
+[`4dc3c5d1b982`](https://github.com/pilifs/in-the-loop/commit/4dc3c5d1b982626551dca659f4633aff0ba3382d) · [log `4adea8f9f6ca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4adea8f9f6ca4d6a267f087d6cba9d30115b44f18669bdaf07dce773a9a50ff0.jsonl.gz)
 
 Example 285's preservation task (Spring Boot 2.7.17 against 2.7.18, WebMvcTags.method(HttpServletRequest), the known-method-labels-preserved claim) was not executed: the two releases have dependency closures of other bytes, and jvmcontract's equivalence took one class path for both (VF-027's verifier-interface:two-dependency-closures). Behind that refusal a regression check also made no input of an interface type and compared two results of an interface type by Objects.equals, which says nothing about objects of two relocated classes. The regression check is extended so that the frozen claim is decided as stated, each release on its own pinned closure.
 
@@ -66,7 +66,7 @@ Verification pending: job 20261115-181427-example-285-preservation-the-known-met
 
 ### jvmcontract: under auto, JBMC is no fallback for a given implementation or a closure of the previous version's own
 
-change `oyvynruxytxp` · [log `a08bc2ca85f6`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/a08bc2ca85f637d4d7768fb8e221dfcb77cb6e18691fd0590b5412f35e6dc164.jsonl.gz)
+[`a824ccd2bd15`](https://github.com/pilifs/in-the-loop/commit/a824ccd2bd1595da85a3dbe7be86169a50215b91) · [log `a08bc2ca85f6`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/a08bc2ca85f637d4d7768fb8e221dfcb77cb6e18691fd0590b5412f35e6dc164.jsonl.gz)
 
 The regression check refused --engine jbmc and --confirm over a parameter given an implementation of its interface, and over a previous version on a dependency closure of its own (--before-classpath), but under --engine auto a run where the own checker had no verdict (out of time) would still have gone on to JBMC, which is given neither. It now stops there with a note, as it does for a String parameter: 'the tool's own checker gave no verdict, and JBMC is not asked: it takes an implementation of an interface the check gives, which only the own checker is given'. The assertions are in conformance.rs's test of the domains JBMC is not given (a looping method of the fixture, sourceTriangle, and a deadline of zero, for both cases); lib/tools' lint keeps a test that names JBMC out of the tool tier, which is why they are not in interface_regression.rs.
 
@@ -76,13 +76,13 @@ Verified by: the default run after the change passed 33 of 34, the one failure b
 
 ### Verification results for 6 jobs: example 285's four receipts pass, the conformance corpus passes, the object comparisons fail as in VF-018
 
-change `xkplwmyzxklu` · [log `0a079ee99fdb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07.jsonl.gz)
+[`0ee03cc2aea3`](https://github.com/pilifs/in-the-loop/commit/0ee03cc2aea3f38ddc9b370016f0fbb509c69b01) · [log `0a079ee99fdb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/0a079ee99fdb3bdf4316f29859664d036f923926530b4023d8d189cae3335a07.jsonl.gz)
 
 Ran 20261115-173146 (example 285 fixed, mutant, vulnerable: expected verdicts, outputs applied), 20261115-181427 (example 285 preservation, passed, outputs applied) and 20261115-173209-conformance (passed: JBMC and auto --confirm, 34m). 20261115-173209-object-comparisons (heap proof tier at 18cfa9e6) failed again on the same four tests as VF-018 (JBMC did not finish within 600 s), recorded there. 20261115-181435-object-comparisons was withdrawn by its submitter after it started and stopped; its leftover result was set aside, not collected (VF-029). Verified by pipeline.py status: nothing pending, running or uncollected.
 
 ### Example 285 is decided: its four proof tasks have their receipts, each as expected, and its blockers are closed
 
-change `ywytmluumutt` · [log `d8928155153d`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227.jsonl.gz)
+[`8c243ff3a840`](https://github.com/pilifs/in-the-loop/commit/8c243ff3a840e741a39a19ef9775979a92d4b649) · [log `d8928155153d`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227.jsonl.gz)
 
 Example 285 (CVE-2023-34055, Spring Boot's WebMvcTags.method(HttpServletRequest)) had every proof task refused before any proof (VF-027). With jvmcontract extended in the three commits before the pipeline's (lvvpsuxl, lustnxwm, oyvynrux), the unchanged claims were rerun on the released JARs by its own checker under strict gaps, and the pipeline collected the receipts in xkplwmyz: vulnerable-security refuted on 2.7.17 (witness request.getMethod() = "", the label ImmutableTag{key="method", value=""}, run on a JVM), fixed-security established on 2.7.18, mutant-security refuted on the mutant (the same witness), and preservation established between 2.7.17 and 2.7.18, each release on its own pinned closure. Each is as expected and not vacuous; the verifier's runs took 0.2 to 0.4 s.
 
@@ -94,7 +94,7 @@ A correction to the previous commit's message (oyvynrux): it said the second hea
 
 ### jvmcontract: claims javac compiles, String and String[] inputs, String, stream and regex models, induction and lemmas, for example 286's decision claim (verification pending)
 
-change `zrzuurtknzpv` · [log `32d7fd7d3bad`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/32d7fd7d3bad082e21f5b0775bd45fbbabd565fdfb282695d247798617807754.jsonl.gz)
+[`8594e6b7adb1`](https://github.com/pilifs/in-the-loop/commit/8594e6b7adb1fc631f5dac87cd1fccdf09e5652f) · [log `32d7fd7d3bad`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/32d7fd7d3bad082e21f5b0775bd45fbbabd565fdfb282695d247798617807754.jsonl.gz)
 
 Example 286 (CVE-2022-22968, Spring Framework 5.3.18 to 5.3.19) states its decision claim in Java over the adapter entry allowed(String[] allowedPatterns, String[] disallowedPatterns, String field): a field some disallowed pattern matches ignoring ASCII case is denied, the match written with streams, lambdas and java.util.regex. Until now jvmcontract refused it at the String[] parameters, at the expressions, and at every String, StringBuilder, stream and regex call on the way. With this change the unchanged claim is proved on 5.3.19 and refuted on 5.3.18 and on the constructed mutant at small bounds inline (3 code units and 3 elements: 8 s, 7 s and 6 s in an unoptimized build), each witness run in the harness on a JVM; the frozen bound of 8 is queued.
 
@@ -110,7 +110,7 @@ examples/286-.../proofs/prove.py TASK runs vulnerable-security, fixed-security o
 
 ### Example 286's decision claim is decided beside the route: established on 5.3.19, refuted on 5.3.18 and on the mutant, at the frozen bound
 
-change `vurkswvtpmyq` · [log `80cb746f2359`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a.jsonl.gz)
+[`3ac819e30817`](https://github.com/pilifs/in-the-loop/commit/3ac819e30817422b92de7864cf353772941dbbac) · [log `80cb746f2359`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a.jsonl.gz)
 
 The three decision jobs queued with zrzuurtk have finished, each as expected, on the unchanged claim claims/disallowed-field-denied-ignoring-case.json through the adapter entry its first assumption names, with maxArrayLength 8, unwind 16, the own checker and strict gaps. fixed-security (job 20261115-234439-example-286-fixed-security-through-the-a): established on Spring Framework 5.3.19 in 920 s after the simpleMatch lemma's own proof in 92 s (4,889 paths, 2.6 million variables, 8.7 million clauses, 1.41 GiB), not vacuous; its trial at 6 took 189 s. vulnerable-security (20261115-234439-example-286-vulnerable-security-through): refuted on 5.3.18 in 409 s at allowed(allowedPatterns={"**", null, null, null, null, "", "", ""}, disallowedPatterns={"_Y[]*US"}, field="_Y[]  uS"), which returns true. mutant-security (20261115-234440-example-286-mutant-security-through-the): refuted on the constructed mutant in 398 s at allowed(allowedPatterns=null, disallowedPatterns={null, null, null, null, null, null, "*Y"}, field=" yzzy"). Both witnesses were run in the harness on a JVM (JDK 25.0.5), so the refutations rest on the releases' bytecode and Java's own java.util.regex, not on a model. The results themselves are collected by the verification loop; this commit cites them by job.
 
@@ -120,19 +120,19 @@ Not decided, and said so: these are proofs beside the route, not route receipts.
 
 ### CLAUDE.md: a probe of a prover or model checker may run inline up to 5 minutes and 4 GB, under a cap
 
-change `upkxonlzouws` · [log `9a8ca680cf51`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/9a8ca680cf51555032f999e644cae3dbbf75de4921c8ab3dcf4672468339ccc7.jsonl.gz)
+[`48e341653f52`](https://github.com/pilifs/in-the-loop/commit/48e341653f52577631fe8f778ebab83dbfc0fe76) · [log `9a8ca680cf51`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/9a8ca680cf51555032f999e644cae3dbbf75de4921c8ab3dcf4672468339ccc7.jsonl.gz)
 
 At the user's request: the 1 GB line between inline runs and verification jobs had agents tuning a checker's memory to fit a quick probe before knowing whether the real proof works (prove-examples, example 287), and real-world claims often need more than 1 GB just to show where a checker stops. A single probe on one claim may now run inline, one at a time, for up to 5 minutes and 4 GB, inside systemd-run --scope with MemoryMax=4G and a timeout, so it cannot take more. A run that needs more is still a job, and the default test run and the tool tier keep their 1 GB. CLAUDE.md and verification/README.md say the same.
 
 ### Verification results for 4 jobs: example 286's three claims pass as expected, the proof tier stops at heap.rs on VF-018's three timeouts
 
-change `plpurxpmnllo` · [log `75472954f1b9`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86.jsonl.gz)
+[`e973861b6a1c`](https://github.com/pilifs/in-the-loop/commit/e973861b6a1cc76e283ae1f05df29c9a62627f41) · [log `75472954f1b9`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86.jsonl.gz)
 
 Jobs 20261115-234439 (fixed-security: established; vulnerable-security and mutant-security: refuted, all as expected, applying their outputs) passed. The proof-tier job 20261115-234440 failed at lib/tests/heap.rs: three JBMC timeouts at 1800 s, the VF-018 tests, so the binaries after heap and the Python proof tests did not run (VF-030, VF-018 updated). Conformance passed.
 
 ### jvmcontract: loops beyond the bound covered by invariants, constant regexes, text as bytes and digits, for example 287's bcrypt claims (verification pending)
 
-change `xkypqtmssloo` · [log `9a8ca680cf51`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/9a8ca680cf51555032f999e644cae3dbbf75de4921c8ab3dcf4672468339ccc7.jsonl.gz)
+[`26a42d401510`](https://github.com/pilifs/in-the-loop/commit/26a42d4015101c295cc50896bfc8fc9a9a017c92) · [log `9a8ca680cf51`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/9a8ca680cf51555032f999e644cae3dbbf75de4921c8ab3dcf4672468339ccc7.jsonl.gz)
 
 Example 287 (CVE-2025-22228: BCrypt.hashpw ignores bytes past 72) asks whether checkpw rejects a password of more than 72 bytes for every valid stored hash. The tool's own checker stopped at the claim's regular expression, at the text-to-bytes calls and at bcrypt's loops, which go round 18, 512, 2^cost and 64 times against --unwind 16. It now runs the claims as they are written. A loop that goes round more often than the bound is covered by an invariant the checker finds and proves by induction (lib/src/bmc/loops.rs: what one iteration writes is set to any value, candidate facts about each written number are dropped until the rest is kept by an iteration, and the loop is shown to end by a counter or said not to be); a verdict names the loops so covered, a violation past one is believed only when its witness, the least violating input, reproduces on a JVM, and otherwise the answer is no verdict with the loop named. Also new: String.matches and Pattern.compile of a constant regular expression with classes, groups, alternatives and counts (lib/src/bmc/regex.rs); String.getBytes(UTF_8), MessageDigest.isEqual, Arrays.copyOf, Integer.parseInt and StringBuilder's charAt and appends (lib/src/bmc/bytes.rs, strings.rs); Object.getClass of an object the run made, String.toString, an initializer that keeps method references, and a throws clause whose condition javac compiles. The solver side defers clauses until a call depends on them, checks lazy divisions only in the cone a question reads, and shares a path's models by pages. The search for the least witness takes at most half the time the run has left, so a violation found late is not lost to it.
 
@@ -142,7 +142,7 @@ Example 287 has proofs/prove.py, which runs the three security tasks beside the 
 
 ### Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)
 
-change `uznmvyqqxrpz` · [log `b48ab24a8602`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/b48ab24a8602dd7a3343106ecafbc8395b2ba910cee2b7bb65b5434874f126fa.jsonl.gz)
+[`8d0b787e2697`](https://github.com/pilifs/in-the-loop/commit/8d0b787e26975a34fdc718001af8b976007a9f72) · [log `b48ab24a8602`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/b48ab24a8602dd7a3343106ecafbc8395b2ba910cee2b7bb65b5434874f126fa.jsonl.gz)
 
 The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.
 
@@ -152,7 +152,7 @@ The three security jobs of the previous commit passed and are not collected yet:
 
 ### Example 287's public claim is decided beside the route: established on 6.3.8, refuted on 6.3.7 and on the mutant, at the frozen bound
 
-change `yzkrwktyktru` · [log `3e543b1c6909`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/3e543b1c69091127bec6a30c28cbc318f4ec76cb69c0515163b5a6d207c954c0.jsonl.gz)
+[`e0bf66e53eaf`](https://github.com/pilifs/in-the-loop/commit/e0bf66e53eaf7dd8315ccda7b7bfe93de6c76d99) · [log `3e543b1c6909`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/3e543b1c69091127bec6a30c28cbc318f4ec76cb69c0515163b5a6d207c954c0.jsonl.gz)
 
 The three security jobs passed. fixed-security (20261116-053832-example-287-fixed-security-through-the-a): BCryptPasswordEncoder.matches on 6.3.8, through the adapter entry the claim names, throws IllegalArgumentException exactly when the candidate has more than 72 UTF-8 bytes and never returns true for one, for every candidate of up to 80 code units and every valid stored hash; 641 s, 641 paths, 3.0 GiB, six of bcrypt's loops covered by invariants the checker found and proved. vulnerable-security and mutant-security (20261116-053832-example-287-vulnerable-security-through, 20261116-053832-example-287-mutant-security-through-the): refuted in 819 s and 821 s on the least violating input, a candidate of 25 code units and 73 bytes with a hash of cost 04, where matches returns false instead of throwing; each witness was run on a JVM.
 
@@ -160,19 +160,19 @@ The example's README has a section on these proofs (what they are, what they res
 
 ### Example 287: where the preservation claim stops beside the route
 
-change `uwvylonzknlv` · [log `fab51c4844d4`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/fab51c4844d4db93161d7f8c6a5fd141112684b0ae30074f9bbc699e72168861.jsonl.gz)
+[`03b801ce0797`](https://github.com/pilifs/in-the-loop/commit/03b801ce0797bcbdfdf5ff1b165ccb61dd9f54bb) · [log `fab51c4844d4`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/fab51c4844d4db93161d7f8c6a5fd141112684b0ae30074f9bbc699e72168861.jsonl.gz)
 
 Tried once through the adapter entry with each release's own class path (jvmcontract equivalence --before-classpath, which gets past the route's recorded gap of two dependency closures): a regression check refuses a nullable String parameter, and without the nullable parameters it refuses the allowed change as written, because a regression's scope is in the tool's own expression language, which has no getBytes. Recorded in the example's README and notes with the two refusals' words, and with what is predicted behind them and was not reached (pairing bcrypt's unchanged callees, since invariants that forget the S-boxes on each side cannot show two results equal). No code changed; the example's tests (test_packets, test_acceptance, test_gap_inventory, test_workflow_refusal, test_targets_contract, test_build, test_alignment) pass.
 
 ### Record verification results for 8 jobs: example 287's three security claims as expected, the Rust proof tier passes with VF-018's three apart
 
-change `nkzzototrlyk` · [log `db8eb9736227`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/db8eb973622779f72188fe7817e3f0b95ebe957326a6abc088c3ad5fe53c9aab.jsonl.gz)
+[`4209a1b83cfe`](https://github.com/pilifs/in-the-loop/commit/4209a1b83cfee241cd87a5ec9b7869a4b986011b) · [log `db8eb9736227`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/db8eb973622779f72188fe7817e3f0b95ebe957326a6abc088c3ad5fe53c9aab.jsonl.gz)
 
 Jobs at 26a42d401510: 287's frozen public claim is established on 6.3.8 and refuted on 6.3.7 and on the char-count-guard mutant (as expected, 3 outputs each applied). The first two guard-lemma jobs failed with 'not-executed' (the receipt did not pass check_result); the submitter's reruns at c63eabcbd18b, 'again, for its receipt', passed as expected and applied the receipts. The proof-tier job (cargo --no-fail-fast, VF-018's three skipped) passed in 1h07m: conformance, heap and preparation ignored tests all ok. VF-030 updated: Rust half closed, Python proof tests still unrun, so it stays open. Rest of the working copy is the collect output (verification/.work-287 outputs, 287 receipts, examples index).
 
 ### Example 287's guard lemma is decided by the route: established on 6.3.8, refuted on 6.3.7, and its two blockers are closed
 
-change `rzyzyqxwmwmm` · [log `8b05c8b8b5ba`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/8b05c8b8b5bae377c6605ff10fcfadff8641e53d157063ae5a13457f6f6b88ba.jsonl.gz)
+[`6a6651ff3112`](https://github.com/pilifs/in-the-loop/commit/6a6651ff3112c945545af423855ecc21910b7aad) · [log `8b05c8b8b5ba`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/8b05c8b8b5bae377c6605ff10fcfadff8641e53d157063ae5a13457f6f6b88ba.jsonl.gz)
 
 The two guard tasks ran through the example route on the claim as frozen (claims/overlong-bytes-rejected.json on BCrypt.checkpw(byte[], String), arrays and Strings of up to 80, --unwind 16, own checker, strict gaps) and the pipeline collected their receipts in nkzzotot. fixed-guard (job 20261116-060128-example-287-fixed-guard-again-for-its-re, receipts/fixed-guard/20261116T070714Z-80d2813b): established in 244 s, not vacuous, six of bcrypt's loops covered by invariants. vulnerable-guard (job 20261116-060128-example-287-vulnerable-guard-again-for-i, receipts/vulnerable-guard/20261116T070828Z-a709a564): refuted in 318 s on 73 bytes with a hash of cost 04, where checkpw returns false and throws nothing, run on a JVM. The proof tier of the Rust tests after the engine changes passed as well (job 20261116-053833-the-proof-tier-after-example-287-s-engin, 1h07m, with --no-fail-fast and VF-018's three heap tests skipped, which is what VF-030 asked for).
 
@@ -182,7 +182,7 @@ Still open for example 287: the three security tasks have no route receipt (the 
 
 ### Remove the jvmcontract plugin and its two skills
 
-change `zxukowpmwzlr` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`5bd6e166f7a5`](https://github.com/pilifs/in-the-loop/commit/5bd6e166f7a5b157d54c7eee715055d8ab8bbd18) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 /verify-bytecode and /add-tla-model are removed, with everything that existed only for them: plugins/jvmcontract (both skills, their references, templates and scripts, the installer and the plugin's README), the marketplace file that listed the plugin, and lib/tests/skill.rs, the test that held the skill's commands to the CLI. They were written for the tool as it was on 2026-11-01 and no longer describe how a change is verified here; /prove-java-change replaces them in the commits that follow, and the history keeps the old files.
 
@@ -194,7 +194,7 @@ Verified: examples/tools/build.py --index-only leaves no example stale; lib/tool
 
 ### Two modes of a checkout: development, and runtime on a user's machine
 
-change `ymlptsqyklmx` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`88f38b478762`](https://github.com/pilifs/in-the-loop/commit/88f38b47876220ef2e73f70ef6d5569c45b3303f) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 /prove-java-change will install a released copy of this repository on a user's machine. That copy must not trace, redact or publish anything, yet the agents working in it follow this repository's procedure, which says to commit with sync.py commit. So the procedure stays one and the checkout decides: llm-dlc/tools/mode.py tells a runtime checkout by a marker file at its root, .in-the-loop-runtime.json (written by the skill's bootstrap, gitignored, a fact about one copy), and anything else is a development checkout that behaves as it always has. IN_THE_LOOP_MODE overrides the marker for tests. A marker that can't be read is an error, never a development checkout, since tracing a user's sessions by mistake would publish them.
 
@@ -206,7 +206,7 @@ Verified: test_mode.py (13 tests, in the cost inventory as unit tier) covers the
 
 ### A release process with a hash, and the bootstrap that installs a release
 
-change `pvokroqypwtl` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`bd66079171f8`](https://github.com/pilifs/in-the-loop/commit/bd66079171f867de904ef88709464abbb0664ca9) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 /prove-java-change runs on a released copy of this repository, and the copy has to be the one the running skill was released with. A release is therefore one commit, the skill at a version and the repository beside it, pinned to each other by the sha256 digest of the commit's tree, which the skill carries in release.json beside its bootstrap. The pin can't name the commit's id, because it is in that commit, so it names the content: the digest is over one line per file (mode, sha256 of its bytes, path) and leaves out the pin itself and the files sync.py regenerates on every commit (llm-dlc/traces/, llm-dlc/index.json, llm-dlc/README.md), which the pin lists. It is of content only, so the trace lines sync.py adds to a commit's message later leave it as it was.
 
@@ -218,7 +218,7 @@ Verified: test_release.py, 11 tests (8 at the tool tier, with git and jj on a ma
 
 ### doctor.py: whether a machine can prove a change, and what blocks it
 
-change `xrvmqunvtvlq` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`cc7a5bb0fa85`](https://github.com/pilifs/in-the-loop/commit/cc7a5bb0fa8502a67d0ba5015c23abcaa51e0fdf) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 Step 1 of /prove-java-change has to say, in numbers, whether the user's machine is enough, and to tell what no setup can fix from what a setup fixes. llm-dlc/tools/doctor.py measures the machine and looks for the tools, installs and changes nothing, and gives each check one of three levels. Blocking: a proof can't run here; a hardware limit (under 8 GiB of memory, 2 CPUs or 10 GiB of free disk, a margin below the 8-core, 9 GB laptop that is the smallest machine this repository has run on) or an operating system other than Linux is blocking by itself, and so is a missing tool every proof needs (Python 3.11 with jsonschema, git, jj, a Java 25 JDK, cargo, and a Claude Code with the flags the loop uses). Limits: the machine works with less, and the check says what is lost (no JBMC, no systemd user scopes for memory caps, no JDK 21 and 25 under sdkman for replays, no Maven, gh or tmux). Ok otherwise. It exits 1 when something blocks, and --json gives the same as data.
 
@@ -228,7 +228,7 @@ Verified: test_doctor.py, 11 unit tests over made-up machines (which sizes block
 
 ### feature-loop.sh: a moonshot compacts at 600k tokens, and a compaction with no commit stops the loop
 
-change `srxmyvovzxts` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`4aca04cf1ff4`](https://github.com/pilifs/in-the-loop/commit/4aca04cf1ff429092fa6606f9f7f078a91d0e52d) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 A moonshot has no acceptance criteria, so one context window is its measure. Each moonshot turn (named or templated, not a brief) now passes --autocompact 600k (FEATURE_LOOP_AUTOCOMPACT overrides it, 100k to 1M or auto). During the cycle's instruction, show_progress in loop-common.sh watches the stream for an automatic compact_boundary: if no commit has landed at @- since the cycle began, or since the previous such compaction, it ends the turn (SIGTERM to claude and its descendants), and the loop records 'Stopped ...: cycle N (item X) compacted with no commit at T tokens; session ... needs attention' and exits 1 for a person to look at. The session stays chained across cycles; manual /compact turns and the decide, status and summary turns are not watched. loop_stats.py counts the new ending as 'compacted, no commit'.
 
@@ -236,7 +236,7 @@ Verified with a stand-in claude on PATH that emits a compact_boundary event: an 
 
 ### prove-loop.sh: a proof loop forked from the session that prepared the example, with that session as its conductor
 
-change `tprnppkuzlto` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`4da1371e024c`](https://github.com/pilifs/in-the-loop/commit/4da1371e024cd9a56612d5375d9e05211b31df3e) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 Step 3 of /prove-java-change. llm-dlc/tools/prove-loop.sh [--fork SESSION] [--memory SIZE] NNN... runs a new templated moonshot of feature-loop.sh, prove-change, over the examples it is given: the instruction of prove-examples, one example per cycle, on Fable 5.2 at high effort, every example given whether an earlier run committed for it or not. With --fork the loop's session starts as a fork of the session that prepared the example: the parent's transcript is found wherever that session ran, copied beside this checkout's sessions for one turn that runs without tools or the repository's hooks, and removed; the fork is then compacted and the cycles follow in it, so the loop needs no brief. The script starts the verification loop for the jobs the proof queues unless one already runs for the same jj repository, gives the queue an hour to clear after the loop ends, and keeps the run's state in llm-dlc/loop-summaries/prove-change/. It works the same in a development and a runtime checkout.
 
@@ -248,7 +248,7 @@ Verified with a stand-in claude, no model called: test_prove_loop.py (8 tool-tie
 
 ### contribute.py: what of a runtime checkout's work can go upstream, and a check of a prepared pull request
 
-change `rlrxnosywkvs` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`cea1a937220d`](https://github.com/pilifs/in-the-loop/commit/cea1a937220dfca78f5d8650d9afa6c9ebe74973) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 Step 4 of /prove-java-change ends by offering to send upstream what a proof added to the tool. A runtime checkout's commits have no traces, so they can't follow this repository's own commit procedure; llm-dlc/runtime.md now has the process that is theirs, and llm-dlc/tools/contribute.py is the part of it that can be checked by a program. It only reads: preparing the branch and opening the pull request stay with the agent, and only after the user agrees.
 
@@ -258,7 +258,7 @@ Verified: test_contribute.py, 10 unit tests over made-up commits and diffs (the 
 
 ### /prove-java-change: the skill
 
-change `otlruumyooms` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`63a7efccf595`](https://github.com/pilifs/in-the-loop/commit/63a7efccf595c43df775879d97fb51cda04b7ca2) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The skill that replaces /verify-bytecode and /add-tla-model, and supersedes the planned conductor loop: plugins/in-the-loop/skills/prove-java-change/SKILL.md, in the plugin in-the-loop beside its bootstrap. It proves a change to Java code on a user's machine in four steps and is kept short on purpose, since it is locked to Fable 5.2 at high effort and runs inside this repository: it says what each step is for and when to stop, and the repository holds the rest. Step 0 asks the bootstrap where it is. Step 1 (set up, verify and measure the machine) is skipped when the checkout is current and doctor.py finds nothing blocking, and otherwise goes to one subagent on Opus; a hardware limit ends the run; the user confirms. Step 2 (assess the change, add the example with its claims, run it once on a JVM) stays in the orchestrating session, because the proof loop is forked from it; the user confirms. Step 3 starts prove-loop.sh --fork with the session's own id and conducts the loop from outside. Step 4 reports each claim as established, refuted or left open and offers to send what the proof added to the tool upstream. The orchestrator decides what it can and asks only for what is the user's.
 
@@ -270,13 +270,13 @@ Verified: claude plugin validate passes for the marketplace and the plugin; the 
 
 ### Release 0.4.0 of /prove-java-change
 
-change `zpmywssrlsmx` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`f844c7756172`](https://github.com/pilifs/in-the-loop/commit/f844c775617242ed887602f0aeab1c86d1692eba) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The skill at 0.4.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (e071b6300d027cee230697780b57337a9b6a961a911e1e08935dae68472e8ae0, 5392 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. The first release: for trying the install and the skill before it is merged, not yet pushed.
 
 ### /prove-java-change takes changes on GitHub only, and step 2 is what the example-targets loop did
 
-change `yrprrlwmvntt` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`c3d385192663`](https://github.com/pilifs/in-the-loop/commit/c3d38519266364c182e9d423acd028f2b104feb6) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 Two answers from the user on 2026-11-15, written into the skill and its pages. First, the official plugin proves changes whose revisions are commits on github.com and nothing else: a local or private repository as a revision's source is not a gap to close now but a decision, and private runs are for a fork of this repository with its own release, or for later. The routes that prepare a revision already refuse any other source; the skill now says so up front (its description and argument hint name GitHub, and step 2 treats a change that is not there as a blocker the user settles by pushing it, not something to work around), and llm-dlc/runtime.md states the policy where it had listed a missing route and suggested a fixture as a way round. Second, step 2 of the skill is what the example-targets loop did for examples 285 to 300, for one change; runtime.md's table of steps now points at that brief.
 
@@ -284,13 +284,13 @@ Verified: every Python suite passes (39 of 39) and cargo test --test tiers; only
 
 ### Release 0.4.1 of /prove-java-change
 
-change `ukykwuxlxuol` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`6135ed4bfd0f`](https://github.com/pilifs/in-the-loop/commit/6135ed4bfd0f9ccd1c65c1da567f442a903a1fc2) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The skill at 0.4.1 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (45bb92eafb34fa73ebeba54cd2d7c0e432afdcb5a8c8160d4b22ab84cc5dd786, 5392 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. GitHub is the only source of a change, by the user's decision of 2026-11-15. Not yet pushed.
 
 ### feature-loop.sh: a compaction with no commit stops a moonshot only on a conductor's word, or with FEATURE_LOOP_STOP_ON_COMPACT=1
 
-change `lmmrntlskxvp` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`2da2110938a7`](https://github.com/pilifs/in-the-loop/commit/2da2110938a78c1fcb712f3142286334884d0f99) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 This line carries a copy (srxmyvov) of the change that made a moonshot compact at 600k tokens and stop at a compaction with no commit. The original, uzporttn in the moonshot workspace, was amended on 2026-11-15 at the user's request: the stop became opt-in, because cycle 2 of the prove-examples run compacted with no commit while making good progress, so the rule would have stopped good work. This commit brings this line to the same behaviour and fits the conductor to it, so that uzporttn can be abandoned at the merge instead of merged.
 
@@ -300,7 +300,7 @@ Verified with the stand-in claude: test_prove_loop.py has 11 tool-tier tests (8.
 
 ### README: the repository's page is about /prove-java-change, and each part's page carries its own layout
 
-change `tzousuxuwotl` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`e919a9af2de1`](https://github.com/pilifs/in-the-loop/commit/e919a9af2de1136203d5e6f934b1935c4f54468e) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The repository's primary purpose is now the plugin, and the top README still introduced a set of demos with the skill as its last section. It is rewritten around the skill, at the user's request and with the work-in-progress landing page for the skill in the website's repository as a model for the order (that page was only read): what the skill does in three sentences and the command; how to install it and the four steps, with the two confirmations; what it needs (Linux, 8 GB, 2 CPUs, 10 GB of disk, Claude Code with Fable 5.2) and that it takes changes on GitHub only; the three answers a claim can get and that a model checker gives them, not the model; example 285 as the proof loop's first real target, with its three verdicts and its witness as the example's page records them; then a short table of what is in the repository, a few lines for agents (CLAUDE.md, the two modes, find.py, the job queue, the skill in this repository), the background and the licence.
 
@@ -310,13 +310,13 @@ Numbers on the page are the index's (183 examples, 159 constructed and 24 real-w
 
 ### README: proofs are queued as jobs, and CLAUDE.md says what may run inline
 
-change `vrqwrmlruywq` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`994924224a20`](https://github.com/pilifs/in-the-loop/commit/994924224a20a706f415f028d7591a8ea197d3e5) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The top README said proofs and model checks are never run inline, in its table and in its list for agents. The default line now has a rule (change upkxonlz) that lets one capped probe of a prover or model checker run inline for up to 5 minutes and 4 GB, so the absolute wording would contradict CLAUDE.md once this branch is merged. Both sentences now say that proofs are queued as jobs, and the agents' line points at CLAUDE.md for the exceptions instead of restating them. The skill's own pages (SKILL.md, llm-dlc/runtime.md) name no inline limit and did not change, so no release is owed. Verified with the Python half of the default test run: 39 of 39 suites pass.
 
 ### /prove-java-change takes a list of changes, orders them by how accessible they are, and prepares without proving with --scaffold-only
 
-change `yvvkzplruqll` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`50c414430a4e`](https://github.com/pilifs/in-the-loop/commit/50c414430a4eb1ef5c9c12319f20ad09e21cdbd6) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The skill's request is now one change or a list of them. Step 2 understands and sizes every change, orders them with the most accessible first (a proof that lands early can extend the verifier under the later ones), and adds the examples in that order on the next free numbers from 900, so the numbers carry the order and no separate record of it exists. Each example's provenance is the request it came from and its notes hold what the preparation learned, because its proof may start in a session that never saw the preparation. A change that can't be prepared is set aside with its reason and the others go on.
 
@@ -328,13 +328,13 @@ Verified: test_changes.py (15 unit tests on copies of the made-up target fixture
 
 ### Release 0.5.0 of /prove-java-change
 
-change `vuxlvnqzulzs` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`7793873d5eb2`](https://github.com/pilifs/in-the-loop/commit/7793873d5eb23de6cf17059875a3416cb7bfc7d1) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The skill at 0.5.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (d6a0d457f1c8c93bc47e013b73355768be91626e75987ca16b53ae2408199bf4, 5394 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. The skill takes a list of changes, orders them by how accessible they are, and with --scaffold-only prepares the examples and stops before the proof; changes.py says which examples are prepared, decided or still to prove.
 
 ### /prove-java-change checks what else Claude Code has loaded, and the sessions it starts load only the checkout
 
-change `xrsnmkwttrqp` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`fe74a7d1edfd`](https://github.com/pilifs/in-the-loop/commit/fe74a7d1edfd82eaed4bc65c62c924d328139cf5) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 Step 1 of the skill now checks the user's Claude Code setup on every run. New tool llm-dlc/tools/claude_setup.py: check prints a warning that any extraneous context from external sources may lead to unexpected results, then lists what the session running it has loaded besides the plugin and the checkout (other plugins, MCP servers and claude.ai connectors, memory files, skills, agents, commands, hooks, managed settings). It asks Claude Code itself: two one-word sessions on the smallest model, without tools or a transcript, one started as the user's session was (its directory and launch flags, read from the process CLAUDE_PID names) and one clean in the checkout, compared by what each reports at start-up; memory files, hooks and the plugins Claude Code's own listing calls enabled are added from disk. It prints names and paths only, never a setting's value.
 
@@ -344,13 +344,13 @@ Verified: test_claude_setup.py (21 tests, the check itself against a stand-in cl
 
 ### Release 0.6.0 of /prove-java-change
 
-change `rvpsvkwmznur` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`9fcb974d2b7f`](https://github.com/pilifs/in-the-loop/commit/9fcb974d2b7f6b56d1d96e58b4515ea5153f7d24) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 The skill at 0.6.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (6058a0d22f1cdbbf9a82ca9405ffa01953f6f74b52b423de8ac281a5decdba56, 5396 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Step 1 checks what else Claude Code has loaded, warns, and offers a clean session; the sessions the skill starts load only the checkout.
 
 ### feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is
 
-change `vurtkmrvlosv` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`46b49aece682`](https://github.com/pilifs/in-the-loop/commit/46b49aece68286148430cff7eaeaf5481bc83183) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and "stop" could only end the loop after a cycle, not after an example.
 
@@ -360,7 +360,7 @@ Verified: test_loop_stats (22, two new) and test_runs pass, and the cost lint ag
 
 ### feature-loop.sh: a conductor judges each cycle, an item that waits on its proof lets the next one start, and the loop asks before it changes items
 
-change `xzwozoqztxto` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`d7cbe1334d14`](https://github.com/pilifs/in-the-loop/commit/d7cbe1334d145209fec278b655703c9df1476f35) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 This folds the moonshot branch into the /prove-java-change line. The commit below this one is a duplicate of tlzowkqv (workspace moonshot: an item keeps a templated moonshot until a judge outside the session finds it finished), with its six conflicts against this line resolved; this commit reconciles and extends it. The user asked on 2026-11-16 for everything about moonshot loops from the moonshot and conductor branches to be folded in here, for the loop to be run by a watcher session, and for a loop that goes on while an example waits on its final proof.
 
@@ -372,7 +372,7 @@ Verified: test_prove_loop.py runs the loop against a stand-in claude, now also a
 
 ### feature-loop.sh: a moonshot compacts at 600k tokens, and every compaction is logged
 
-change `uzporttnlrtk` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`980d6ac709dd`](https://github.com/pilifs/in-the-loop/commit/980d6ac709ddded91b91b7151e60b5fd86766f39) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 Each moonshot turn (named or templated, not a brief) now passes --autocompact 600k, so a long item has more room before compacting than Claude Code's default (about 470k for these sessions); FEATURE_LOOP_AUTOCOMPACT overrides it (100k to 1M, or auto). show_progress in loop-common.sh prints each compaction with its trigger and size, so whoever watches the loop sees it.
 
@@ -382,7 +382,7 @@ Verified with a stand-in claude on PATH emitting a compact_boundary event: witho
 
 ### feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is
 
-change `tlzowkqvqwpu` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`c291489d4e74`](https://github.com/pilifs/in-the-loop/commit/c291489d4e741e06e8a7c4a4308a58fc2c2896ef) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and "stop" could only end the loop after a cycle, not after an example.
 
@@ -392,7 +392,7 @@ Verified: test_loop_stats (22, two new) and test_runs pass, and the cost lint ag
 
 ### stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop
 
-change `ulzlppqmvslt` · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
+[`d85cc5286b48`](https://github.com/pilifs/in-the-loop/commit/d85cc5286b4851689828860f3ae448b5835d6c83) · [log `1d17a0489ddb`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/1d17a0489ddbe375e9cf7553fe8cd2962cf96dd9c4a158024287e396a4642668.jsonl.gz)
 
 At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.
 

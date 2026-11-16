@@ -60,7 +60,7 @@
   "commits": [
     {
       "change_id": "vurkswvtpmyqxlwmznmvvtxnrtpplsuk",
-      "commit_id": null,
+      "commit_id": "3ac819e30817422b92de7864cf353772941dbbac",
       "immutable": false,
       "summary": "Example 286's decision claim is decided beside the route: established on 5.3.19, refuted on 5.3.18 and on the mutant, at the frozen bound",
       "body": "The three decision jobs queued with zrzuurtk have finished, each as expected, on the unchanged claim claims/disallowed-field-denied-ignoring-case.json through the adapter entry its first assumption names, with maxArrayLength 8, unwind 16, the own checker and strict gaps. fixed-security (job 20261115-234439-example-286-fixed-security-through-the-a): established on Spring Framework 5.3.19 in 920 s after the simpleMatch lemma's own proof in 92 s (4,889 paths, 2.6 million variables, 8.7 million clauses, 1.41 GiB), not vacuous; its trial at 6 took 189 s. vulnerable-security (20261115-234439-example-286-vulnerable-security-through): refuted on 5.3.18 in 409 s at allowed(allowedPatterns={\"**\", null, null, null, null, \"\", \"\", \"\"}, disallowedPatterns={\"_Y[]*US\"}, field=\"_Y[]  uS\"), which returns true. mutant-security (20261115-234440-example-286-mutant-security-through-the): refuted on the constructed mutant in 398 s at allowed(allowedPatterns=null, disallowedPatterns={null, null, null, null, null, null, \"*Y\"}, field=\" yzzy\"). Both witnesses were run in the harness on a JVM (JDK 25.0.5), so the refutations rest on the releases' bytecode and Java's own java.util.regex, not on a model. The results themselves are collected by the verification loop; this commit cites them by job.\n\nThe example's records say what was decided and what was not. README.md has a section with the verdicts, the witnesses, how to rerun (python3 proofs/prove.py TASK), what the proof is (the lemma by induction, one meaning for a regular expression) and what the verdicts rest on (the lemma, the checker's models of the JDK calls on the way, and two stated assumptions about the locale and the class loader). example.json has four dated notes and a verdict label. In target.json the three predicted blockers the proofs reached each keep their text and gain a dated note saying they were reached and closed outside the route, the fourth (the bean wrapper's reflection) a note that it is still not reached, and handoff.next says what is next. VF-027 has an update line.\n\nNot decided, and said so: these are proofs beside the route, not route receipts. The route runs the verifier on the original artifact alone, has no adapter entry and passes no lemma, so all six proof tasks stay blocked there, their packets and rerun checks unchanged. preservation, tried through the adapter entry, stops at the String[] parameter in the regression check; the protected-state tasks stop at java.util.ArrayList.<init>(int) in MutablePropertyValues.<init>, before the bean wrapper's reflection. The proof-tier job queued with zrzuurtk (20261115-234440-the-proof-tier-after-example-286-s-engin) is still running.",
@@ -68,7 +68,7 @@
     },
     {
       "change_id": "plpurxpmnllomylxlnswxypzuvtysqpv",
-      "commit_id": null,
+      "commit_id": "e973861b6a1cc76e283ae1f05df29c9a62627f41",
       "immutable": false,
       "summary": "Verification results for 4 jobs: example 286's three claims pass as expected, the proof tier stops at heap.rs on VF-018's three timeouts",
       "body": "Jobs 20261115-234439 (fixed-security: established; vulnerable-security and mutant-security: refuted, all as expected, applying their outputs) passed. The proof-tier job 20261115-234440 failed at lib/tests/heap.rs: three JBMC timeouts at 1800 s, the VF-018 tests, so the binaries after heap and the Python proof tests did not run (VF-030, VF-018 updated). Conformance passed.",
@@ -76,7 +76,7 @@
     },
     {
       "change_id": "xkypqtmssloonzukwmuxwlmumxrprtzw",
-      "commit_id": null,
+      "commit_id": "26a42d4015101c295cc50896bfc8fc9a9a017c92",
       "immutable": false,
       "summary": "jvmcontract: loops beyond the bound covered by invariants, constant regexes, text as bytes and digits, for example 287's bcrypt claims (verification pending)",
       "body": "Example 287 (CVE-2025-22228: BCrypt.hashpw ignores bytes past 72) asks whether checkpw rejects a password of more than 72 bytes for every valid stored hash. The tool's own checker stopped at the claim's regular expression, at the text-to-bytes calls and at bcrypt's loops, which go round 18, 512, 2^cost and 64 times against --unwind 16. It now runs the claims as they are written. A loop that goes round more often than the bound is covered by an invariant the checker finds and proves by induction (lib/src/bmc/loops.rs: what one iteration writes is set to any value, candidate facts about each written number are dropped until the rest is kept by an iteration, and the loop is shown to end by a counter or said not to be); a verdict names the loops so covered, a violation past one is believed only when its witness, the least violating input, reproduces on a JVM, and otherwise the answer is no verdict with the loop named. Also new: String.matches and Pattern.compile of a constant regular expression with classes, groups, alternatives and counts (lib/src/bmc/regex.rs); String.getBytes(UTF_8), MessageDigest.isEqual, Arrays.copyOf, Integer.parseInt and StringBuilder's charAt and appends (lib/src/bmc/bytes.rs, strings.rs); Object.getClass of an object the run made, String.toString, an initializer that keeps method references, and a throws clause whose condition javac compiles. The solver side defers clauses until a call depends on them, checks lazy divisions only in the cone a question reads, and shares a path's models by pages. The search for the least witness takes at most half the time the run has left, so a violation found late is not lost to it.\n\nThe String model is model 4, the reference calls model 2: getBytes, matches and toString have evidence records sampled on the JVM and in the checker (lib/tests/values.rs), the gap scan counts Pattern.compile of a constant in the checker's syntax as reproduced, and the interpreter's String.toString returns the String itself. Tests that relied on a class regex, toString or a builder append being a gap now use forms that still are (a reluctant or possessive quantifier, trim, append(CharSequence), append(long)); the calibration fixture's RegexGate uses a possessive quantifier and its records were remade. New tests: lib/tests/loops.rs (four, on a small fixture with the same loop shapes), three in lib/tests/claims.rs (each model against a definition written out in Java and sampled on a JVM), three unit tests in bits.rs. Verified inline by the default run (python3 lib/tools/test_costs.py run: 34 of 34 passed).\n\nExample 287 has proofs/prove.py, which runs the three security tasks beside the route through the adapter entry the claim names, and a dated note. One capped probe (5 minutes, 4 GiB) proved the byte-array guard claim on 6.3.8 at the route's bound in 250 s with six loops covered; the probe on 6.3.7 found its violating path and ran out of time minimising the witness, and the probe of the security claim through the adapter did not finish. None of these is a receipt. Jobs: 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar (through the route), 20261116-053832-example-287-fixed-security-through-the-a, 20261116-053832-example-287-vulnerable-security-through and 20261116-053832-example-287-mutant-security-through-the (prove.py), and 20261116-053833-the-proof-tier-after-example-287-s-engin (the proof tier with --no-fail-fast and VF-018's three heap tests skipped, as VF-030 asks). Not attempted: the preservation task.",
@@ -88,19 +88,19 @@
       "bytes": 565610,
       "lines": 173,
       "gzip_bytes": 107999,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/6a1475574f6d582e0f02560f8c317f58fb5dedbb52b222ace97e95c92ca41c0c.jsonl.gz"
     },
     "f7b841b237189e0f082923a20d5be0ece27d088fd0cc5f0328085b7c9e907d34": {
       "bytes": 371267,
       "lines": 105,
       "gzip_bytes": 84781,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/f7b841b237189e0f082923a20d5be0ece27d088fd0cc5f0328085b7c9e907d34.jsonl.gz"
     },
     "fdebcf4957a593489f34ce5d5d240d8c0bc494c33a6c1c3efda1eb0013f0e7ad": {
       "bytes": 591365,
       "lines": 190,
       "gzip_bytes": 111990,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/fdebcf4957a593489f34ce5d5d240d8c0bc494c33a6c1c3efda1eb0013f0e7ad.jsonl.gz"
     }
   },
   "redaction_policy": 4,

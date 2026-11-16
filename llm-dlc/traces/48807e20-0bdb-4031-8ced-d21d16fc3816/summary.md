@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### jvmcontract: a regression check runs each version on its own dependency closure and over an interface parameter, for example 285's preservation (verification pending)
 
-change `lustnxwmkxvs` · [log `41f5e1ae64dc`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/41f5e1ae64dc3edb35e039380d2d3ae03158bb7cc4615f7a78295c41dcf59fd6.jsonl.gz)
+[`4dc3c5d1b982`](https://github.com/pilifs/in-the-loop/commit/4dc3c5d1b982626551dca659f4633aff0ba3382d) · [log `41f5e1ae64dc`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/41f5e1ae64dc3edb35e039380d2d3ae03158bb7cc4615f7a78295c41dcf59fd6.jsonl.gz)
 
 Example 285's preservation task (Spring Boot 2.7.17 against 2.7.18, WebMvcTags.method(HttpServletRequest), the known-method-labels-preserved claim) was not executed: the two releases have dependency closures of other bytes, and jvmcontract's equivalence took one class path for both (VF-027's verifier-interface:two-dependency-closures). Behind that refusal a regression check also made no input of an interface type and compared two results of an interface type by Objects.equals, which says nothing about objects of two relocated classes. The regression check is extended so that the frozen claim is decided as stated, each release on its own pinned closure.
 
@@ -41,7 +41,7 @@ Verification pending: job 20261115-181427-example-285-preservation-the-known-met
 
 ### jvmcontract: under auto, JBMC is no fallback for a given implementation or a closure of the previous version's own
 
-change `oyvynruxytxp` · [log `5fdec483d087`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/5fdec483d087645accee4cf60ac6ac3ff5f2beac0709471828a26006951fac6b.jsonl.gz)
+[`a824ccd2bd15`](https://github.com/pilifs/in-the-loop/commit/a824ccd2bd1595da85a3dbe7be86169a50215b91) · [log `5fdec483d087`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/5fdec483d087645accee4cf60ac6ac3ff5f2beac0709471828a26006951fac6b.jsonl.gz)
 
 The regression check refused --engine jbmc and --confirm over a parameter given an implementation of its interface, and over a previous version on a dependency closure of its own (--before-classpath), but under --engine auto a run where the own checker had no verdict (out of time) would still have gone on to JBMC, which is given neither. It now stops there with a note, as it does for a String parameter: 'the tool's own checker gave no verdict, and JBMC is not asked: it takes an implementation of an interface the check gives, which only the own checker is given'. The assertions are in conformance.rs's test of the domains JBMC is not given (a looping method of the fixture, sourceTriangle, and a deadline of zero, for both cases); lib/tools' lint keeps a test that names JBMC out of the tool tier, which is why they are not in interface_regression.rs.
 
@@ -51,13 +51,13 @@ Verified by: the default run after the change passed 33 of 34, the one failure b
 
 ### Verification results for 6 jobs: example 285's four receipts pass, the conformance corpus passes, the object comparisons fail as in VF-018
 
-change `xkplwmyzxklu` · [log `bf2292eda55d`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/bf2292eda55d3ddbe821c8dc27c80a42a9ebc1d054b7ab2c970b18ec7e4e7785.jsonl.gz)
+[`0ee03cc2aea3`](https://github.com/pilifs/in-the-loop/commit/0ee03cc2aea3f38ddc9b370016f0fbb509c69b01) · [log `bf2292eda55d`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/bf2292eda55d3ddbe821c8dc27c80a42a9ebc1d054b7ab2c970b18ec7e4e7785.jsonl.gz)
 
 Ran 20261115-173146 (example 285 fixed, mutant, vulnerable: expected verdicts, outputs applied), 20261115-181427 (example 285 preservation, passed, outputs applied) and 20261115-173209-conformance (passed: JBMC and auto --confirm, 34m). 20261115-173209-object-comparisons (heap proof tier at 18cfa9e6) failed again on the same four tests as VF-018 (JBMC did not finish within 600 s), recorded there. 20261115-181435-object-comparisons was withdrawn by its submitter after it started and stopped; its leftover result was set aside, not collected (VF-029). Verified by pipeline.py status: nothing pending, running or uncollected.
 
 ### feature-loop.sh: a moonshot compacts at 600k tokens, and a compaction with no commit stops the loop
 
-change `srxmyvovzxts` · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
+[`4aca04cf1ff4`](https://github.com/pilifs/in-the-loop/commit/4aca04cf1ff429092fa6606f9f7f078a91d0e52d) · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
 
 A moonshot has no acceptance criteria, so one context window is its measure. Each moonshot turn (named or templated, not a brief) now passes --autocompact 600k (FEATURE_LOOP_AUTOCOMPACT overrides it, 100k to 1M or auto). During the cycle's instruction, show_progress in loop-common.sh watches the stream for an automatic compact_boundary: if no commit has landed at @- since the cycle began, or since the previous such compaction, it ends the turn (SIGTERM to claude and its descendants), and the loop records 'Stopped ...: cycle N (item X) compacted with no commit at T tokens; session ... needs attention' and exits 1 for a person to look at. The session stays chained across cycles; manual /compact turns and the decide, status and summary turns are not watched. loop_stats.py counts the new ending as 'compacted, no commit'.
 
@@ -65,7 +65,7 @@ Verified with a stand-in claude on PATH that emits a compact_boundary event: an 
 
 ### feature-loop.sh: a moonshot compacts at 600k tokens, and every compaction is logged
 
-change `uzporttnlrtk` · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
+[`980d6ac709dd`](https://github.com/pilifs/in-the-loop/commit/980d6ac709ddded91b91b7151e60b5fd86766f39) · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
 
 Each moonshot turn (named or templated, not a brief) now passes --autocompact 600k, so a long item has more room before compacting than Claude Code's default (about 470k for these sessions); FEATURE_LOOP_AUTOCOMPACT overrides it (100k to 1M, or auto). show_progress in loop-common.sh prints each compaction with its trigger and size, so whoever watches the loop sees it.
 
@@ -75,7 +75,7 @@ Verified with a stand-in claude on PATH emitting a compact_boundary event: witho
 
 ### stream-conductor brief: Design 7 and plan step 7, a moonshot conductor that judges a compaction from outside the loop
 
-change `ulzlppqmvslt` · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
+[`d85cc5286b48`](https://github.com/pilifs/in-the-loop/commit/d85cc5286b4851689828860f3ae448b5835d6c83) · [log `1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz)
 
 At the user's request, for later: a session outside a moonshot loop judges each automatic compaction (hard but productive, or stuck and needing a person) and acts on it, with uzporttn's mechanical stop as the fallback. Steps 4-6 are unchanged.
 

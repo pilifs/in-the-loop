@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Receipts keep the loops an invariant covers beside the checker's numbers; example 287's guard tasks are queued again (verification pending)
 
-change `uznmvyqqxrpz` · [log `e8d2308a9b6f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d.jsonl.gz)
+[`8d0b787e2697`](https://github.com/pilifs/in-the-loop/commit/8d0b787e26975a34fdc718001af8b976007a9f72) · [log `e8d2308a9b6f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/e8d2308a9b6fe5a29326f0f729d760d06104ba7504c2c2ec84542348fabf0c0d.jsonl.gz)
 
 The first runs of example 287's two guard tasks through the route (jobs 20261116-053832-example-287-fixed-guard-the-byte-array-g and 20261116-053832-example-287-vulnerable-guard-the-byte-ar) ran the verifier to its verdict, in 4m42s and 6m00s at 2.2 GiB, and were refused when the receipt was checked: build.py copied everything in the checker's statistics into search.native, which the result schema keeps for numbers, and the statistics now carry the list of loops covered by invariants (and, since example 286, what the models assume). search_record keeps the numbers in native and the two lists in search.loopsCoveredByInvariants and search.modelsAssume, both added to result.schema.json, with a unit test in examples/tools/test_build.py.
 
@@ -30,7 +30,7 @@ The three security jobs of the previous commit passed and are not collected yet:
 
 ### Example 287's public claim is decided beside the route: established on 6.3.8, refuted on 6.3.7 and on the mutant, at the frozen bound
 
-change `yzkrwktyktru` · [log `0efb6ae3b58f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz)
+[`e0bf66e53eaf`](https://github.com/pilifs/in-the-loop/commit/e0bf66e53eaf7dd8315ccda7b7bfe93de6c76d99) · [log `0efb6ae3b58f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz)
 
 The three security jobs passed. fixed-security (20261116-053832-example-287-fixed-security-through-the-a): BCryptPasswordEncoder.matches on 6.3.8, through the adapter entry the claim names, throws IllegalArgumentException exactly when the candidate has more than 72 UTF-8 bytes and never returns true for one, for every candidate of up to 80 code units and every valid stored hash; 641 s, 641 paths, 3.0 GiB, six of bcrypt's loops covered by invariants the checker found and proved. vulnerable-security and mutant-security (20261116-053832-example-287-vulnerable-security-through, 20261116-053832-example-287-mutant-security-through-the): refuted in 819 s and 821 s on the least violating input, a candidate of 25 code units and 73 bytes with a hash of cost 04, where matches returns false instead of throwing; each witness was run on a JVM.
 
@@ -38,19 +38,19 @@ The example's README has a section on these proofs (what they are, what they res
 
 ### Example 287: where the preservation claim stops beside the route
 
-change `uwvylonzknlv` · [log `0efb6ae3b58f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz)
+[`03b801ce0797`](https://github.com/pilifs/in-the-loop/commit/03b801ce0797bcbdfdf5ff1b165ccb61dd9f54bb) · [log `0efb6ae3b58f`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/0efb6ae3b58fc33c0fa92198fb07b90242c6d7eddca527bfdfd111c769071618.jsonl.gz)
 
 Tried once through the adapter entry with each release's own class path (jvmcontract equivalence --before-classpath, which gets past the route's recorded gap of two dependency closures): a regression check refuses a nullable String parameter, and without the nullable parameters it refuses the allowed change as written, because a regression's scope is in the tool's own expression language, which has no getBytes. Recorded in the example's README and notes with the two refusals' words, and with what is predicted behind them and was not reached (pairing bcrypt's unchanged callees, since invariants that forget the S-boxes on each side cannot show two results equal). No code changed; the example's tests (test_packets, test_acceptance, test_gap_inventory, test_workflow_refusal, test_targets_contract, test_build, test_alignment) pass.
 
 ### Record verification results for 8 jobs: example 287's three security claims as expected, the Rust proof tier passes with VF-018's three apart
 
-change `nkzzototrlyk` · [log `319465ed69fc`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/319465ed69fc09b912f348e69fcc5d39a94cbe8774b00bf81b3128968a4ed07a.jsonl.gz)
+[`4209a1b83cfe`](https://github.com/pilifs/in-the-loop/commit/4209a1b83cfee241cd87a5ec9b7869a4b986011b) · [log `319465ed69fc`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/319465ed69fc09b912f348e69fcc5d39a94cbe8774b00bf81b3128968a4ed07a.jsonl.gz)
 
 Jobs at 26a42d401510: 287's frozen public claim is established on 6.3.8 and refuted on 6.3.7 and on the char-count-guard mutant (as expected, 3 outputs each applied). The first two guard-lemma jobs failed with 'not-executed' (the receipt did not pass check_result); the submitter's reruns at c63eabcbd18b, 'again, for its receipt', passed as expected and applied the receipts. The proof-tier job (cargo --no-fail-fast, VF-018's three skipped) passed in 1h07m: conformance, heap and preparation ignored tests all ok. VF-030 updated: Rust half closed, Python proof tests still unrun, so it stays open. Rest of the working copy is the collect output (verification/.work-287 outputs, 287 receipts, examples index).
 
 ### /prove-java-change checks what else Claude Code has loaded, and the sessions it starts load only the checkout
 
-change `xrsnmkwttrqp` · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
+[`fe74a7d1edfd`](https://github.com/pilifs/in-the-loop/commit/fe74a7d1edfd82eaed4bc65c62c924d328139cf5) · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
 
 Step 1 of the skill now checks the user's Claude Code setup on every run. New tool llm-dlc/tools/claude_setup.py: check prints a warning that any extraneous context from external sources may lead to unexpected results, then lists what the session running it has loaded besides the plugin and the checkout (other plugins, MCP servers and claude.ai connectors, memory files, skills, agents, commands, hooks, managed settings). It asks Claude Code itself: two one-word sessions on the smallest model, without tools or a transcript, one started as the user's session was (its directory and launch flags, read from the process CLAUDE_PID names) and one clean in the checkout, compared by what each reports at start-up; memory files, hooks and the plugins Claude Code's own listing calls enabled are added from disk. It prints names and paths only, never a setting's value.
 
@@ -60,13 +60,13 @@ Verified: test_claude_setup.py (21 tests, the check itself against a stand-in cl
 
 ### Release 0.6.0 of /prove-java-change
 
-change `rvpsvkwmznur` · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
+[`9fcb974d2b7f`](https://github.com/pilifs/in-the-loop/commit/9fcb974d2b7f6b56d1d96e58b4515ea5153f7d24) · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
 
 The skill at 0.6.0 and the repository it runs on, pinned to each other: plugins/in-the-loop/skills/prove-java-change/release.json records the sha256 digest of this commit's tree (6058a0d22f1cdbbf9a82ca9405ffa01953f6f74b52b423de8ac281a5decdba56, 5396 files; the pin and the generated trace files are left out), and the skill's bootstrap accepts only a commit that hashes to it. Cut with llm-dlc/tools/release.py cut, which verified the commit afterwards. Step 1 checks what else Claude Code has loaded, warns, and offers a clean session; the sessions the skill starts load only the checkout.
 
 ### feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is
 
-change `vurtkmrvlosv` · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
+[`46b49aece682`](https://github.com/pilifs/in-the-loop/commit/46b49aece68286148430cff7eaeaf5481bc83183) · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
 
 At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and "stop" could only end the loop after a cycle, not after an example.
 
@@ -76,7 +76,7 @@ Verified: test_loop_stats (22, two new) and test_runs pass, and the cost lint ag
 
 ### feature-loop.sh: a templated moonshot keeps an item for as many cycles as it takes, until a judge outside the session finds it finished, and "item" stops the loop once the item under way is
 
-change `tlzowkqvqwpu` · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
+[`c291489d4e74`](https://github.com/pilifs/in-the-loop/commit/c291489d4e741e06e8a7c4a4308a58fc2c2896ef) · [log `9020e4013a05`](https://terminalvalue.net/raw-traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/9020e4013a05029f4bdde313965252111764a894c383aeccf856b733cf46f128.jsonl.gz)
 
 At the user's request: complex examples can take more than one cycle, but a templated moonshot gave each item exactly one, moving on as soon as a cycle committed (prove-examples left 286 with tasks open), and "stop" could only end the loop after a cycle, not after an example.
 
