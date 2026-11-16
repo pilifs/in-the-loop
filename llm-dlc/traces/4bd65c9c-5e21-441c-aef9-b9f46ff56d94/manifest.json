@@ -12,20 +12,20 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-16T19:50:56.319Z",
-  "ended": "2026-11-16T20:08:05.760Z",
-  "duration_seconds": 1029,
+  "ended": "2026-11-16T20:08:55.060Z",
+  "duration_seconds": 1079,
   "stats": {
     "turns": 1,
-    "api_calls": 80,
+    "api_calls": 81,
     "tool_calls": 81,
     "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 259308,
+    "peak_context_tokens": 260820,
     "usage": {
-      "input_tokens": 160,
-      "output_tokens": 95481,
-      "cache_read_input_tokens": 12833796,
-      "cache_creation_input_tokens": 246122
+      "input_tokens": 162,
+      "output_tokens": 97118,
+      "cache_read_input_tokens": 13093102,
+      "cache_creation_input_tokens": 247634
     }
   },
   "tools": {
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-16T19:50:56.319Z",
-      "ended": "2026-11-16T20:08:05.760Z",
+      "ended": "2026-11-16T20:08:55.060Z",
       "turns": 1,
-      "api_calls": 80,
+      "api_calls": 81,
       "usage": {
-        "input_tokens": 160,
-        "output_tokens": 95481,
-        "cache_read_input_tokens": 12833796,
-        "cache_creation_input_tokens": 246122
+        "input_tokens": 162,
+        "output_tokens": 97118,
+        "cache_read_input_tokens": 13093102,
+        "cache_creation_input_tokens": 247634
       },
-      "peak_context_tokens": 259308
+      "peak_context_tokens": 260820
     }
   ],
   "log": {
-    "sha256": "8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701",
-    "bytes": 2265024,
-    "lines": 593,
-    "gzip_bytes": 354736,
-    "path": "llm-dlc/traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/logs/8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701.jsonl.gz"
+    "sha256": "75625256f7987924e1c1144870ef18cb154da2b19c4eb41107b6996405f816ba",
+    "bytes": 2303372,
+    "lines": 604,
+    "gzip_bytes": 363381,
+    "path": "llm-dlc/traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/logs/75625256f7987924e1c1144870ef18cb154da2b19c4eb41107b6996405f816ba.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -77,9 +77,23 @@
       "summary": "Example 290: the page and notes count three null-pattern probes beyond the plan, not two",
       "body": "The setup commit's README and example.json notes said two probes with a null pattern element were added beyond the plan's list; there are three (ambiguous-plain-dispatcher-null-pattern, lone-dispatcher-null-pattern, no-dispatcher-plain-null-pattern). Corrected the count and stated the lone probe's outcome. Verified with validate_example.py 290.",
       "log_sha256": "8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701"
+    },
+    {
+      "change_id": "rlosmoxonwxyyssnwqoukroqoqkrxkqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once",
+      "body": "The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).",
+      "log_sha256": "75625256f7987924e1c1144870ef18cb154da2b19c4eb41107b6996405f816ba"
     }
   ],
   "logs": {
+    "75625256f7987924e1c1144870ef18cb154da2b19c4eb41107b6996405f816ba": {
+      "bytes": 2303372,
+      "lines": 604,
+      "gzip_bytes": 363381,
+      "url": null
+    },
     "8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701": {
       "bytes": 2265024,
       "lines": 593,
