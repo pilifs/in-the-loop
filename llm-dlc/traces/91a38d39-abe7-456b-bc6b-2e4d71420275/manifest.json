@@ -1,0 +1,85 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "91a38d39-abe7-456b-bc6b-2e4d71420275",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Example 289 (examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass) is a catalog entry. Do \"A catalog entry's brief\" of llm-dlc/runtime.md for it.",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-16T17:51:00.188Z",
+  "ended": "2026-11-16T18:32:43.061Z",
+  "duration_seconds": 2503,
+  "stats": {
+    "turns": 2,
+    "api_calls": 79,
+    "tool_calls": 80,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 225287,
+    "usage": {
+      "input_tokens": 162,
+      "output_tokens": 76227,
+      "cache_read_input_tokens": 11072660,
+      "cache_creation_input_tokens": 214031
+    }
+  },
+  "tools": {
+    "Bash": 76,
+    "Write": 3,
+    "ToolSearch": 1
+  },
+  "files_touched": [
+    "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/README.md",
+    "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java",
+    "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/driver/example289/driver/RegexMatcherDriver.java"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-16T17:51:00.188Z",
+      "ended": "2026-11-16T18:32:43.061Z",
+      "turns": 2,
+      "api_calls": 79,
+      "usage": {
+        "input_tokens": 162,
+        "output_tokens": 76227,
+        "cache_read_input_tokens": 11072660,
+        "cache_creation_input_tokens": 214031
+      },
+      "peak_context_tokens": 225287
+    }
+  ],
+  "log": {
+    "sha256": "84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d",
+    "bytes": 2063492,
+    "lines": 629,
+    "gzip_bytes": 320316,
+    "path": "llm-dlc/traces/91a38d39-abe7-456b-bc6b-2e4d71420275/logs/84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "rronuyxosqyznqwktzpsuznymslyyktl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass",
+      "body": "Example 289 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, set up as llm-dlc/runtime.md's catalog entry brief asks, with 288 (the packet's shape) and 285 (its HttpServletRequest carrier) as models. The release pair is Spring Security 5.6.3 -> 5.6.4, from published JARs. Each release's RegexRequestMatcher.java is the exact-fix pair's blob (9264b56f, a334afc7). Every other class the matcher reaches is byte-identical in the two closures (Spring Framework 5.3.19 and 5.3.20). The release pair also hardens StrictHttpFirewall, in a commit before the fix; that is outside the matcher and the claims. sources.lock.json records the tags, blobs, ancestry and JAR hashes against Maven Central.\n\nThere are two claims and six tasks. The security claim covers a matcher built as RegexRequestMatcher(P + \".*\", null, caseInsensitive), where P is a literal ASCII prefix. It must match every request whose documented URL (servletPath + pathInfo, then ? and the query) begins with P, line terminators included, exactly or ignoring US-ASCII case. It is expected refuted on 5.6.3, established on 5.6.4, and refuted on a mutant that leaves DOTALL out of the case-insensitive flags. Preservation: outside a URL in the namespace that holds a line terminator, both releases decide alike. The controls are an adapter, a request carrier, a driver, 36 probes and an independent oracle with a self-test.",
+      "log_sha256": "84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d"
+    }
+  ],
+  "logs": {
+    "84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d": {
+      "bytes": 2063492,
+      "lines": 629,
+      "gzip_bytes": 320316,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
