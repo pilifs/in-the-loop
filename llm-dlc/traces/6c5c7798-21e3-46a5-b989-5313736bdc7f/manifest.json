@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "open",
+  "status": "ended",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T21:16:38.352Z",
-  "duration_seconds": 100152,
+  "ended": "2026-11-16T21:18:27.492Z",
+  "duration_seconds": 100261,
   "stats": {
-    "turns": 65,
-    "api_calls": 474,
-    "tool_calls": 433,
-    "tool_errors": 7,
+    "turns": 68,
+    "api_calls": 486,
+    "tool_calls": 443,
+    "tool_errors": 8,
     "compactions": 2,
-    "peak_context_tokens": 401284,
+    "peak_context_tokens": 412302,
     "usage": {
-      "input_tokens": 1092,
-      "output_tokens": 357692,
-      "cache_read_input_tokens": 91181991,
-      "cache_creation_input_tokens": 816708
+      "input_tokens": 1120,
+      "output_tokens": 362997,
+      "cache_read_input_tokens": 96072236,
+      "cache_creation_input_tokens": 827553
     }
   },
   "tools": {
-    "Bash": 407,
+    "Bash": 417,
     "ToolSearch": 6,
     "SendMessage": 5,
     "ListAgents": 4,
@@ -79,24 +79,24 @@
     {
       "index": 2,
       "started": "2026-11-16T09:49:36.548Z",
-      "ended": "2026-11-16T21:16:38.352Z",
-      "turns": 27,
-      "api_calls": 222,
+      "ended": "2026-11-16T21:18:27.492Z",
+      "turns": 30,
+      "api_calls": 234,
       "usage": {
-        "input_tokens": 496,
-        "output_tokens": 172449,
-        "cache_read_input_tokens": 54507075,
-        "cache_creation_input_tokens": 403519
+        "input_tokens": 524,
+        "output_tokens": 177754,
+        "cache_read_input_tokens": 59397320,
+        "cache_creation_input_tokens": 414364
       },
-      "peak_context_tokens": 401284
+      "peak_context_tokens": 412302
     }
   ],
   "log": {
-    "sha256": "9f14b84e36e9cda8f3c2b753dd477b95a8ba1e39245419d71091c1d59ec1169e",
-    "bytes": 8921435,
-    "lines": 3794,
-    "gzip_bytes": 1527653,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/9f14b84e36e9cda8f3c2b753dd477b95a8ba1e39245419d71091c1d59ec1169e.jsonl.gz"
+    "sha256": "f68bd44a0a53744b6822728a46546d87df766791f093696b5a65173a950df21b",
+    "bytes": 9090222,
+    "lines": 3891,
+    "gzip_bytes": 1552644,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/f68bd44a0a53744b6822728a46546d87df766791f093696b5a65173a950df21b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -659,6 +659,14 @@
       "summary": "The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup",
       "body": "The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.",
       "log_sha256": "9f14b84e36e9cda8f3c2b753dd477b95a8ba1e39245419d71091c1d59ec1169e"
+    },
+    {
+      "change_id": "olnsqxznyoyrvvkwpoxqrznprytsmpyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)",
+      "body": "Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.\n\nThe verifier's own checker (lib/src/bmc) gained one guarded rule and what the path needs beside it. regex.rs: Pattern.compile(String, int) of a String that is no constant is modelled only where the solver shows that on the path the String can only be characters that stand for themselves followed by .*; the Pattern is then those characters as a quoted text and . any number of times, and any other pattern stays the JDK's call, a gap refused by name. The flags CASE_INSENSITIVE and DOTALL are formulas (a constructor chooses them by an input, and paths that chose differently may have merged before the call); that no other flag is set is the solver's to show. One .* that ends an expression takes surrogates: what comes before it matched none, so it never begins inside a pair, and neither a pair nor a surrogate alone is a line terminator, so matching by unit is the JDK's matching by code point there; a dot anywhere else still makes an input with a surrogate the JDK's call. strings.rs: Character.isLetter of an ASCII char, the JDK's call of any other. runtime.rs: the java.util.logging levels below INFO as constants and Logger.isLoggable of one as false, under an assumption each outcome states (the matcher's debug line through spring-jcl is not written). models: IntStream.range(int, int) enters a model the checker runs (RangeStream), as String.chars() does.\n\nEvidence for the rules: lib/tests/claims.rs has a new tool-tier test over a new fixture, claims.P. It proves the rule is its definition written out in Java (begins with the literal, ASCII case folded under CASE_INSENSITIVE, no line terminator after it without DOTALL) under each flag combination and with the flags chosen by an input, on every pattern and String of the bound; refutes a wrong claim on a witness run on a JVM; shows the refusals by name (any pattern, any text before the dot, another flag, a dot inside with a surrogate in the input, isLetter outside ASCII, isLoggable at INFO); and samples the definitions against the JDK on a JVM, with the five line terminators, surrogates alone and in pairs, the letters that fold outside ASCII, and isLetter on every char. lib/README.md and lib/models/README.md describe the rules.\n\nThe example: proofs/prove.py passes each frozen claim to jvmcontract through the adapter entry on the release's own bytecode, with no lemma and nothing put in a method's place, and builds the mutant by the replay route's recipe (the JAR it gives has the SHA-256 the mutant replay's receipt records). It follows loops for 26 turns where the default is 16: the allowed change reads a URL of up to 25 units, and at 16 the preservation check ended with no verdict, saying a loop was covered by an invariant. proofs/predicates.py compiles the claims' assumption, assertion and allowed change with javac and evaluates them on the 44 probes: they read each as controls/oracle.py does. target.json, example.json and the README record the queue, the probes and what became of the four predicted blockers.\n\nVerified: inline probes at the frozen bound, each one capped run, gave every expected verdict (fixed-security established in 28 s, vulnerable-security and mutant-security refuted in 3 s each on witnesses run on a JVM, the mutant's with caseInsensitive true; preservation established in 47 s, and refuted at bound 3 with no allowed change). The unit tests (285) and the claims, values, pairing, conformance, loops, object_strings, string_literals, tiers and value_parameters tests pass; test_costs.py lint agrees; validate_example.py 289 passes. The default test run was not run: it is owed when the example is decided.\n\nJobs queued, the results of record: 20261116-214343-example-289-fixed-security-through-the-a, 20261116-214344-example-289-vulnerable-security-through, 20261116-214344-example-289-mutant-security-through-the, 20261116-214344-example-289-preservation-through-the-ada, and the proof tier after the engine changes, 20261116-214344-the-proof-tier-after-example-289-s-engin.\n\nAlso in this commit, collected by the pipeline's runner and found uncommitted in the working copy: the results of three of example 288's jobs. The proof tier after 288's engine changes passed (35m47s). 288's vulnerable-security and mutant-security ended on the checker's own 30-minute limit with no verdict, not with a wrong one; they are to be resubmitted larger in 288's next cycle, as its handoff says. The watcher's decision log is committed with it.",
+      "log_sha256": "f68bd44a0a53744b6822728a46546d87df766791f093696b5a65173a950df21b"
     }
   ],
   "logs": {
@@ -805,6 +813,12 @@
       "lines": 1762,
       "gzip_bytes": 807177,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d8553e8f0560d6882bb838007de82fe5e56ed7692f459c33c3394c8963a81330.jsonl.gz"
+    },
+    "f68bd44a0a53744b6822728a46546d87df766791f093696b5a65173a950df21b": {
+      "bytes": 9090222,
+      "lines": 3891,
+      "gzip_bytes": 1552644,
+      "url": null
     },
     "f720acba22b42aec0b3ce3431e36902d54676d6e2ea5e53f49b4e5bebed98440": {
       "bytes": 2225127,

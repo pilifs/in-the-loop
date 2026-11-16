@@ -20,7 +20,13 @@
 //!   element is such a quoted String: the regular expression that is the elements in sequence, the delimiter
 //!   between each two; a null element is the four characters `null`. Any other join is the JDK call it was.
 //! - `Pattern.compile(String, int)`, and `Pattern.compile(String)`, of such a String, or (the first) of a constant
-//!   in the syntax below, with no flag but `CASE_INSENSITIVE` and `DOTALL`: a Pattern of those pieces.
+//!   in the syntax below, with no flag but `CASE_INSENSITIVE` and `DOTALL`: a Pattern of those pieces. Either
+//!   flag may be chosen by an input ([`Flags`]); that no other is set is the solver's to show on the path.
+//! - `Pattern.compile(String, int)` of a String that is an input, where the solver shows that on the path it can
+//!   only be characters that stand for themselves (the syntax below) followed by `.*`, as a protective rule
+//!   `/admin/.*` is, with the same flags: a Pattern of the characters as a quoted text, then `.` any number of
+//!   times ([`Engine::literal_then_any`]). Nothing is assumed of the String: where it may be anything else, the
+//!   call is the JDK's, a gap.
 //! - `Pattern.matcher(CharSequence)` of such a Pattern and a String whose content the engine holds: a Matcher.
 //!   `NullPointerException` for null.
 //! - `Matcher.matches()` of such a Matcher: whether the pieces match the whole input.
@@ -49,14 +55,29 @@
 //! negated class, a class with one in a range). Where every atom is a set of units that has no surrogate, a
 //! surrogate in the input matches nothing by unit and nothing by code point (alone it is its own code point, in a
 //! pair it is part of a supplementary one, and neither is in the set), so matching by unit is the JDK's matching.
+//! One `.*` that ends such an expression takes surrogates too: what comes before it matched no surrogate, so it
+//! begins at the input's beginning or after a unit that is none, which is never inside a pair; from there the rest
+//! of the input is whole code points, a pair is no line terminator, and a surrogate alone is its own code point and
+//! none either, so the rest is `.*` by code point exactly when each of its units is `.` by unit.
 //! Any other method of such a Matcher makes it an object the engine knows nothing of again.
 
 use super::*;
 
 const PATTERN: &str = "java/util/regex/Pattern";
 const MATCHER: &str = "java/util/regex/Matcher";
-const CASE_INSENSITIVE: i64 = 2;
-const DOTALL: i64 = 32;
+/// The bits of `Pattern.CASE_INSENSITIVE` (2) and `Pattern.DOTALL` (32) in a flags argument.
+const CASE_INSENSITIVE: usize = 1;
+const DOTALL: usize = 5;
+
+/// The two flags the module reads, each a formula: a constructor may choose them by an input, and paths that chose
+/// differently may have met again before the Pattern is compiled.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) struct Flags {
+    insensitive: Lit,
+    dotall: Lit,
+}
+
+const NO_FLAGS: Flags = Flags { insensitive: FALSE, dotall: FALSE };
 
 /// A sequence of units: a String's content when the tag was made (a String never changes).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -268,7 +289,7 @@ impl Reader<'_> {
                 }
                 inner
             }
-            c if c.is_ascii_alphanumeric() || " !\"#%&',-/:;<=>@_`~".contains(c) => Node::One(Atom::Unit(c as u16)),
+            c if stands_for_itself(c) => Node::One(Atom::Unit(c as u16)),
             _ => return None,
         })
     }
@@ -316,6 +337,24 @@ impl Reader<'_> {
         }
         Some(Node::Repeat(Box::new(node), least, most))
     }
+}
+
+/// Whether the ASCII character is itself in a regular expression, with no flag that reads white space or `#`
+/// another way: the module's syntax.
+fn stands_for_itself(c: char) -> bool {
+    c.is_ascii_alphanumeric() || " !\"#%&',-/:;<=>@_`~".contains(c)
+}
+
+/// The units that stand for themselves ([`stands_for_itself`]), as the ranges of a class.
+fn literal_units() -> Vec<(u16, u16)> {
+    let mut ranges: Vec<(u16, u16)> = Vec::new();
+    for u in (0u8..128).filter(|u| stands_for_itself(char::from(*u))).map(u16::from) {
+        match ranges.last_mut() {
+            Some((_, high)) if *high + 1 == u => *high = u,
+            _ => ranges.push((u, u)),
+        }
+    }
+    ranges
 }
 
 /// The units of `\d`, `\w` and `\s` without `UNICODE_CHARACTER_CLASS`.
@@ -397,8 +436,8 @@ pub(super) struct Piece {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum Regex {
     Source(Vec<Piece>),
-    Pattern(Vec<Piece>, i64),
-    Matcher(Vec<Piece>, i64, Text),
+    Pattern(Vec<Piece>, Flags),
+    Matcher(Vec<Piece>, Flags, Text),
     Part(Rc<Split>, usize),
     Lowered(Text),
 }
@@ -462,7 +501,7 @@ impl Engine<'_> {
         let [Val::R(regex)] = args else { return None };
         let Some(regex) = *regex else { return Some(self.raise(path, "java/lang/NullPointerException")) };
         let pieces = self.regex_source(path, regex).filter(|_| path.objects[regex].regex.is_none())?;
-        let (truth, surrogate) = self.matches(&pieces, 0, &Text::of(s));
+        let (truth, surrogate) = self.matches(&pieces, NO_FLAGS, &Text::of(s));
         Some(self.branch_gap_or(path, surrogate, (GapKind::JdkPrimitiveMethod, STRING, "matches", "(Ljava/lang/String;)Z"), move |engine, path| engine.push_truth(path, truth)))
     }
 
@@ -604,9 +643,18 @@ impl Engine<'_> {
             }
             (PATTERN, "compile", [Val::R(regex), Val::I(flags)]) => {
                 let Some(regex) = *regex else { return null(self, path) };
-                let flags = self.b.constant_value(flags).filter(|f| f & !(CASE_INSENSITIVE | DOTALL) == 0)?;
-                let pieces = self.regex_source(path, regex)?;
-                if flags & CASE_INSENSITIVE != 0 && pieces.iter().any(|piece| matches!(&piece.kind, Kind::Node(node) if !node.folds())) {
+                let flags = match self.flags(path, flags) {
+                    Ok(flags) => flags?,
+                    Err(stop) => return Some(Err(stop)),
+                };
+                let pieces = match self.regex_source(path, regex) {
+                    Some(pieces) => pieces,
+                    None => match self.literal_then_any(path, regex) {
+                        Ok(pieces) => pieces?,
+                        Err(stop) => return Some(Err(stop)),
+                    },
+                };
+                if flags.insensitive != FALSE && pieces.iter().any(|piece| matches!(&piece.kind, Kind::Node(node) if !node.folds())) {
                     return None;
                 }
                 self.regex_object(path, PATTERN, Regex::Pattern(pieces, flags))
@@ -616,6 +664,57 @@ impl Engine<'_> {
         self.push(path, Val::R(Some(value)));
         self.advance(path);
         Some(Ok(None))
+    }
+
+    /// The flags of a `Pattern.compile`, where no bit but `CASE_INSENSITIVE`'s and `DOTALL`'s can be set on the path
+    /// (the solver's to show where the argument is no constant); `None` where another can.
+    fn flags(&mut self, path: &Path, flags: &Bits) -> Result<Option<Flags>, Stop> {
+        let others: Vec<Lit> = flags.iter().enumerate().filter(|(bit, _)| ![CASE_INSENSITIVE, DOTALL].contains(bit)).map(|(_, &l)| l).collect();
+        let other = self.any(&others);
+        if other != FALSE {
+            let mut assumptions = path.cond.clone();
+            assumptions.push(other);
+            if self.solve(&assumptions)? {
+                return Ok(None);
+            }
+        }
+        Ok(Some(Flags { insensitive: flags[CASE_INSENSITIVE], dotall: flags[DOTALL] }))
+    }
+
+    /// The pieces of the String `o`, whose content the engine holds and which is no constant, where every content
+    /// it can have on the path is characters that stand for themselves followed by `.*`: those characters as a
+    /// quoted text (the String's units, two fewer), then `.` any number of times. The solver shows it of the path,
+    /// so the rule takes nothing on trust of the String; `None` where it finds any other content, or holds none.
+    fn literal_then_any(&mut self, path: &Path, o: usize) -> Result<Option<Vec<Piece>>, Stop> {
+        let Some(s) = path.objects[o].content().cloned() else { return Ok(None) };
+        let (two, literal) = (self.b.constant(2, 32), Atom::Class(literal_units(), false));
+        let (dot, star) = (self.b.constant(i64::from(b'.'), 16), self.b.constant(i64::from(b'*'), 16));
+        // Where the String is anything else: shorter than `.*`, or a unit that is not what its place asks for.
+        let mut other = vec![self.b.slt(&s.length, &two)];
+        for (i, cell) in s.cells.iter().enumerate() {
+            let places: [(i64, Lit); 3] = [(i as i64 + 2, self.b.eq(cell, &dot)), (i as i64 + 1, self.b.eq(cell, &star)), (0, self.atom_matches(&literal, NO_FLAGS, cell, cell))];
+            for (k, (length, fits)) in places.into_iter().enumerate() {
+                let length = self.b.constant(length, 32);
+                // The unit is the `.` or the `*` of a String of exactly this length, or a character of a longer one.
+                let here = if k < 2 {
+                    self.b.eq(&s.length, &length)
+                } else {
+                    let after = self.b.constant(i as i64 + 2, 32);
+                    self.b.slt(&after, &s.length)
+                };
+                other.push(self.b.and(here, -fits));
+            }
+        }
+        let other = self.any(&other);
+        if other != FALSE {
+            let mut assumptions = path.cond.clone();
+            assumptions.push(other);
+            if self.solve(&assumptions)? {
+                return Ok(None);
+            }
+        }
+        let text = Text { length: self.b.sub(&s.length, &two), cells: s.cells };
+        Ok(Some(vec![Piece { when: TRUE, kind: Kind::Text(text, None) }, Piece { when: TRUE, kind: Kind::Star(Atom::Any) }]))
     }
 
     /// The one piece a join is when its elements are the parts of one split, each quoted, all of them and in
@@ -686,7 +785,7 @@ impl Engine<'_> {
             // ([`crate::jdk_facts::plain_regex`]) leaves out, or says nothing of the matching of.
             None => self.regex_source(path, o).filter(|pieces| pieces.iter().any(|piece| matches!(piece.kind, Kind::Node(_))))?,
         };
-        let pattern = self.regex_object(path, PATTERN, Regex::Pattern(pieces, 0));
+        let pattern = self.regex_object(path, PATTERN, Regex::Pattern(pieces, NO_FLAGS));
         self.push(path, Val::R(Some(pattern)));
         self.advance(path);
         Some(Ok(None))
@@ -719,8 +818,8 @@ impl Engine<'_> {
 
     /// Whether `pieces`, under `flags`, match the whole of `input`, and whether a surrogate is among the units
     /// compared (where matching by unit is not the JDK's matching by code point).
-    fn matches(&mut self, pieces: &[Piece], flags: i64, input: &Text) -> (Lit, Lit) {
-        let insensitive = flags & CASE_INSENSITIVE != 0;
+    fn matches(&mut self, pieces: &[Piece], flags: Flags, input: &Text) -> (Lit, Lit) {
+        let insensitive = flags.insensitive;
         let n = input.cells.len();
         let mut surrogates = Vec::new();
         let inside_surrogates = |engine: &mut Self, text: &Text, when: Lit, surrogates: &mut Vec<Lit>| {
@@ -733,7 +832,9 @@ impl Engine<'_> {
                 surrogates.push(engine.b.all(&[when, inside, is]));
             }
         };
-        if pieces.iter().any(|piece| piece.when != FALSE && piece.kind.wide()) {
+        // `.*` at the end takes the rest of the input by unit as it does by code point (the module's notes).
+        let ends_with_any = matches!(pieces.last(), Some(Piece { kind: Kind::Star(Atom::Any), .. }));
+        if pieces[..pieces.len() - usize::from(ends_with_any)].iter().any(|piece| piece.when != FALSE && piece.kind.wide()) {
             inside_surrogates(self, input, TRUE, &mut surrogates);
         }
         let units: Vec<Bits> = input.cells.iter().map(|c| self.folded(c, insensitive)).collect();
@@ -820,18 +921,18 @@ impl Engine<'_> {
         (truth, self.any(&surrogates))
     }
 
-    /// The unit as two units are compared: itself, or, ignoring ASCII case, an ASCII upper-case letter lowered
-    /// (the formula `String.toLowerCase()`'s model makes of the unit, [`Engine::lowered_ascii`]).
-    fn folded(&mut self, unit: &Bits, insensitive: bool) -> Bits {
-        if insensitive {
-            self.lowered_ascii(unit).1
-        } else {
-            unit.clone()
+    /// The unit as two units are compared: itself, or, where ASCII case is ignored, an ASCII upper-case letter
+    /// lowered (the formula `String.toLowerCase()`'s model makes of the unit, [`Engine::lowered_ascii`]).
+    fn folded(&mut self, unit: &Bits, insensitive: Lit) -> Bits {
+        if insensitive == FALSE {
+            return unit.clone();
         }
+        let lowered = self.lowered_ascii(unit).1;
+        self.b.ite_bits(insensitive, &lowered, unit)
     }
 
     /// The positions the pieces so far and then `node` reach, from those `reach`ed.
-    fn node_step(&mut self, reach: &[Lit], node: &Node, flags: i64, input: &Text, units: &[Bits]) -> Vec<Lit> {
+    fn node_step(&mut self, reach: &[Lit], node: &Node, flags: Flags, input: &Text, units: &[Bits]) -> Vec<Lit> {
         let either = |engine: &mut Self, a: &[Lit], b: &[Lit]| -> Vec<Lit> { a.iter().zip(b).map(|(x, y)| engine.b.or(*x, *y)).collect() };
         match node {
             Node::One(atom) => self.atom_step(reach, atom, false, flags, input, units),
@@ -887,7 +988,7 @@ impl Engine<'_> {
     }
 
     /// The positions the pieces so far and then `atom` reach, from those `reach`ed: once, or any number of times.
-    fn atom_step(&mut self, reach: &[Lit], atom: &Atom, starred: bool, flags: i64, input: &Text, units: &[Bits]) -> Vec<Lit> {
+    fn atom_step(&mut self, reach: &[Lit], atom: &Atom, starred: bool, flags: Flags, input: &Text, units: &[Bits]) -> Vec<Lit> {
         let n = units.len();
         let mut next = vec![FALSE; n + 1];
         if starred {
@@ -906,11 +1007,17 @@ impl Engine<'_> {
     }
 
     /// Whether `atom` matches the input unit `raw`, which is `unit` as units are compared.
-    fn atom_matches(&mut self, atom: &Atom, flags: i64, raw: &Bits, unit: &Bits) -> Lit {
+    fn atom_matches(&mut self, atom: &Atom, flags: Flags, raw: &Bits, unit: &Bits) -> Lit {
         match atom {
+            // An upper-case letter is compared lowered where the input's units are ([`Engine::folded`]).
             Atom::Unit(u) => {
-                let lowered = if flags & CASE_INSENSITIVE != 0 && (u16::from(b'A')..=u16::from(b'Z')).contains(u) { u | 0x20 } else { *u };
-                let constant = self.b.constant(i64::from(lowered), 16);
+                let exact = self.b.constant(i64::from(*u), 16);
+                let constant = if (u16::from(b'A')..=u16::from(b'Z')).contains(u) {
+                    let lowered = self.b.constant(i64::from(u | 0x20), 16);
+                    self.b.ite_bits(flags.insensitive, &lowered, &exact)
+                } else {
+                    exact
+                };
                 self.b.eq(unit, &constant)
             }
             Atom::Class(ranges, negated) => {
@@ -934,7 +1041,7 @@ impl Engine<'_> {
                     is
                 }
             }
-            Atom::Any if flags & DOTALL != 0 => TRUE,
+            Atom::Any if flags.dotall == TRUE => TRUE,
             Atom::Any => {
                 let terminators: Vec<Lit> = [0x0A, 0x0D, 0x85, 0x2028, 0x2029]
                     .into_iter()
@@ -943,7 +1050,8 @@ impl Engine<'_> {
                         self.b.eq(raw, &constant)
                     })
                     .collect();
-                -self.any(&terminators)
+                let terminator = self.any(&terminators);
+                self.b.or(flags.dotall, -terminator)
             }
         }
     }

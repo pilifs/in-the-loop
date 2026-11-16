@@ -2,6 +2,107 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261116-203933-the-proof-tier-after-example-288-s-engin",
+      "title": "The proof tier after example 288's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 35m47s, peak 3.4 GiB (estimated 1h15m, 8.0 GiB); signals: cargo:tests×33",
+      "attention": [],
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/locale.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "b74b820d083756906d9ceef4508a19ec8807aa88",
+      "finishedAt": "2026-11-16T21:24:34+00:00",
+      "wallSeconds": 2147.2,
+      "peakMemoryBytes": 3690356736,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 4500.0,
+        "notes": "the same job after example 287 took 1h07m at 3.3 GiB peak"
+      },
+      "host": "vm-1",
+      "result": "20261116-203933-the-proof-tier-after-example-288-s-engin/result.json"
+    },
+    {
+      "id": "20261116-201436-example-288-mutant-security-through-the",
+      "title": "Example 288 mutant-security through the adapter entry: the frozen decision claim on the mutant of 6.1.14 (the field lower-cased in the default locale again), expected refuted",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 31m36s, peak 2.2 GiB (estimated 25m00s, 6.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [
+        "step 1 (the claim at the frozen bound, 8) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "lib/src/bmc/locale.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "b74b820d083756906d9ceef4508a19ec8807aa88",
+      "finishedAt": "2026-11-16T21:23:08+00:00",
+      "wallSeconds": 1896.6,
+      "peakMemoryBytes": 2325352448,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 1500.0,
+        "notes": "example 286's same claim under the root locale alone took 920 s (fixed), 409 s and 398 s (refuted) at this bound, at 1.41 GiB; here fixed-security took 47 s at bound 5 against 286's 189 s at 6, so the locale adds little. The time besides is the release build of lib/ if its tree isn't cached and the fetch of four JARs"
+      },
+      "host": "vm-1",
+      "result": "20261116-201436-example-288-mutant-security-through-the/result.json"
+    },
+    {
+      "id": "20261116-201436-example-288-vulnerable-security-through",
+      "title": "Example 288 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 6.1.13, expected refuted",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 31m27s, peak 2.0 GiB (estimated 25m00s, 6.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [
+        "step 1 (the claim at the frozen bound, 8) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "lib/src/bmc/locale.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "sourceCommit": "b74b820d083756906d9ceef4508a19ec8807aa88",
+      "finishedAt": "2026-11-16T21:23:00+00:00",
+      "wallSeconds": 1888.0,
+      "peakMemoryBytes": 2172878848,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 1500.0,
+        "notes": "example 286's same claim under the root locale alone took 920 s (fixed), 409 s and 398 s (refuted) at this bound, at 1.41 GiB; here fixed-security took 47 s at bound 5 against 286's 189 s at 6, so the locale adds little. The time besides is the release build of lib/ if its tree isn't cached and the fetch of four JARs"
+      },
+      "host": "vm-1",
+      "result": "20261116-201436-example-288-vulnerable-security-through/result.json"
+    },
+    {
       "id": "20261116-201436-example-288-fixed-security-through-the-a",
       "title": "Example 288 fixed-security through the adapter entry: the frozen decision claim on Spring Framework 6.1.14, expected established",
       "status": "passed",

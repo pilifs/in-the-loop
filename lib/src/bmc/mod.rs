@@ -72,8 +72,8 @@
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
 //! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
-//! | `invokestatic` of `Arrays.stream(Object[])` and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `invokestatic` of `Arrays.stream(Object[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` below `INFO`, `Logger.isLoggable(Level)` and `new ArrayList()` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -786,6 +786,8 @@ enum Literal {
     Charset(&'static str),
     /// A constant of `java.util.Locale`, by its field's name ([`locale`]).
     Locale(String),
+    /// A level of `java.util.logging.Level` below `INFO`, by its field's name ([`runtime`]).
+    Level(&'static str),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -2172,6 +2174,7 @@ impl<'a> Engine<'a> {
                         Literal::Logger(_) => "java/util/logging/Logger",
                         Literal::Charset(_) => bytes::CHARSET,
                         Literal::Locale(_) => locale::LOCALE,
+                        Literal::Level(_) => runtime::LEVEL,
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -3410,6 +3413,13 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
+                // Each level of `java.util.logging` below `INFO` is one object ([`runtime`]).
+                if let Some(level) = runtime::level_constant(&declaring, &member.name) {
+                    let constant = self.literal(path, Literal::Level(level), runtime::LEVEL);
+                    self.push(path, Val::R(Some(constant)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if let Some(step) = self.initialise(path, &declaring) {
                     return step;
                 }
@@ -4009,7 +4019,7 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) => self.alloc(path, class),
         };
         path.literals.insert(literal, o);
         o
@@ -4294,6 +4304,10 @@ impl<'a> Engine<'a> {
             }
             // A class literal's name and loader ([`runtime`]).
             if let Some(step) = self.class_method(path, o, &member.owner, &member.name, &member.descriptor) {
+                return step;
+            }
+            // Whether a Logger logs a level below `INFO` ([`runtime`]).
+            if let Some(step) = self.logger_method(path, o, &member.owner, &member.name, &member.descriptor, &args) {
                 return step;
             }
         }
@@ -4581,6 +4595,10 @@ impl<'a> Engine<'a> {
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         // The JVM's own objects ([`runtime`]): a class by name, a logger. Where the arguments are not ones it
         // answers for, the call is the gap it was.
+        // Whether a char is a letter, of an ASCII unit ([`strings`]): the JDK's call of any other.
+        if strings::models_static(owner, name, descriptor) {
+            return self.is_letter(path, &args);
+        }
         if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) || bytes::models_static(owner, name, descriptor) || locale::models_static(owner, name, descriptor) {
             let modelled = if runtime::models_static(owner, name, descriptor) {
                 self.runtime_static(path, owner, name, &args)
@@ -4805,12 +4823,14 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
 /// Whether [`Engine::call_jdk_static`] models the static call `owner.name(descriptor)` over references:
 /// `Objects.requireNonNull` of an object, with or without a message, and `Pattern.compile` of a regex (where it is a
 /// constant of the plain form, [`crate::jdk_facts::plain_regex`]; on any other the engine meets the call as the gap it
-/// was, where it runs it).
+/// was, where it runs it); or where its arguments let it be, the gap it was elsewhere: the calls of [`runtime`],
+/// [`regex`], [`bytes`] and [`locale`], and `Character.isLetter(char)` ([`strings`]).
 pub fn models_jdk_reference_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;" | "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;") | ("java/util/regex/Pattern", "compile", "(Ljava/lang/String;)Ljava/util/regex/Pattern;")
     ) || runtime::models_static(owner, name, descriptor)
+        || strings::models_static(owner, name, descriptor)
         || regex::models_static(owner, name, descriptor)
         || bytes::models_static(owner, name, descriptor)
         || locale::models_static(owner, name, descriptor)

@@ -20,6 +20,10 @@
 //! - `java.util.logging.Logger.getLogger(String)` of a constant name: a Logger, the same object for the same name,
 //!   never null (its Javadoc: find or create); `NullPointerException` for null. The object has no content: every
 //!   method of it is the JDK call it was. The logging configuration it reads is JDK state no check observes.
+//! - `getstatic` of a level of `java.util.logging.Level` below `INFO` (`CONFIG`, `FINE`, `FINER`, `FINEST`, `ALL`):
+//!   the one object the constant is. `Logger.isLoggable(Level)` of such a Logger and such a level: false, under
+//!   the assumption the run states ([`LOGGING_ASSUMPTION`]), so a library's debug line is not written and what it
+//!   would have formatted is not run. At any other level, or on any other Logger, it is the JDK call it was.
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
 //!   as any object with no content is, its methods the JDK calls they were.
 
@@ -27,6 +31,23 @@ use super::*;
 
 /// What a run that asked for a class by name, or for a class's loader, took for granted.
 pub const CLASS_PATH_ASSUMPTION: &str = "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)";
+
+/// What a run that asked a logger whether a level below `INFO` is logged took for granted.
+pub const LOGGING_ASSUMPTION: &str = "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)";
+
+/// The levels of `java.util.logging.Level` below `INFO`, by their fields' names.
+const BELOW_INFO: [&str; 5] = ["CONFIG", "FINE", "FINER", "FINEST", "ALL"];
+pub(super) const LEVEL: &str = "java/util/logging/Level";
+
+/// Whether the static field is a level below `INFO`, which the engine has one object of for a run.
+pub fn level_constant(owner: &str, name: &str) -> Option<&'static str> {
+    BELOW_INFO.into_iter().find(|level| owner == LEVEL && *level == name)
+}
+
+/// Whether the engine models the instance call here, on a Logger it made: `isLoggable(Level)`.
+pub fn models_logger(owner: &str, name: &str, descriptor: &str) -> bool {
+    (owner, name, descriptor) == (LOGGER, "isLoggable", "(Ljava/util/logging/Level;)Z")
+}
 
 const CLASS: &str = "java/lang/Class";
 const LOADER: &str = "java/lang/ClassLoader";
@@ -95,6 +116,21 @@ impl Engine<'_> {
             }
         };
         self.push(path, Val::R(Some(value)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// `Logger.isLoggable(level)` on the object `o`, where it is a Logger of a name and the level one below `INFO`:
+    /// false, under [`LOGGING_ASSUMPTION`]. `None` where the call stays the JDK's.
+    pub(super) fn logger_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        let [Val::R(Some(level))] = args else { return None };
+        let is = |at: usize, wanted: fn(&Literal) -> bool| path.literals.iter().any(|(l, &held)| held == at && wanted(l));
+        if !models_logger(owner, name, descriptor) || !is(o, |l| matches!(l, Literal::Logger(_))) || !is(*level, |l| matches!(l, Literal::Level(_))) {
+            return None;
+        }
+        self.assumed.insert(LOGGING_ASSUMPTION.to_string());
+        let no = self.b.constant(0, 32);
+        self.push(path, Val::I(no));
         self.advance(path);
         Some(Ok(None))
     }

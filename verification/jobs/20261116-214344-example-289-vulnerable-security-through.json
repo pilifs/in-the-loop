@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-214344-example-289-vulnerable-security-through",
+  "title": "Example 289 vulnerable-security through the adapter entry: the frozen claim on Spring Security 5.6.3, expected refuted",
+  "description": "The frozen claim claims/protected-prefix-matched-across-line-terminators.json, unchanged, run by examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py: jvmcontract prove (own checker, strict gaps). The entry is example289.adapter.RegexMatchAdapter#matches(String pattern, boolean caseInsensitive, String servletPath, String pathInfo, String query), the one the claim's first assumption names: it builds the original RegexRequestMatcher(pattern, null, caseInsensitive) and asks matches of a request carrying the three Strings (example289.carrier.PathOnlyRequest). The claim's expressions are passed as they are written, compiled by javac and run as bytecode, at the claim's bound of 8 code units for each String; loops are followed exactly for 26 turns, the longest any can go (the URL is three Strings and a '?'). The class path is the revision's five pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given: the constructor and matches run as the release's bytecode, so the flags are the ones the release computes. What changed in the verifier for it (lib/src/bmc/regex.rs): Pattern.compile(String, int) of a String that is an input is modelled where the solver shows that on the path it can only be characters that stand for themselves followed by '.*' (the Pattern is then those characters as a quoted text and '.' any number of times; any other pattern stays the JDK's call, a gap refused by name); the flags CASE_INSENSITIVE and DOTALL are formulas, so a constructor may choose them by an input; one '.*' that ends an expression takes surrogates, where matching by unit is the JDK's matching by code point. Beside it: Character.isLetter of an ASCII char, IntStream.range for the claim's own expression, and Logger.isLoggable below INFO as false under a stated assumption (the matcher's debug line through spring-jcl is not written). Each rule is proved to be its definition written out in Java on every input of a bound and the definition sampled against the JDK on a JVM (lib/tests/claims.rs, claims.P). The claim's predicates as javac compiles them agree with the oracle on all 44 probes (examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/predicates.py). 5.6.3 compiles the pattern without DOTALL; expected refuted on a URL that begins with the prefix and holds a line terminator.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "289"
+    ],
+    "paths": [
+      "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
+      "lib/src/bmc/regex.rs",
+      "lib/src/bmc/runtime.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM'",
+  "submitted": {
+    "at": "2026-11-16T21:43:44+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "an inline probe at this bound took 3 s, the witness found in 1.6 s and run on a JVM. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-289",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-289/vulnerable-security/outcome.json",
+    "verification/.work-289/vulnerable-security/work/harness/PropertyHarness.java",
+    "verification/.work-289/vulnerable-security/work/harness/PropertyClaim.java"
+  ]
+}

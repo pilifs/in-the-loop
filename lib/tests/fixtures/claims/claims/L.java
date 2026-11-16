@@ -2,6 +2,7 @@ package claims;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
+import java.util.stream.IntStream;
 
 public final class L {
     private L() {}
@@ -40,6 +41,20 @@ public final class L {
             ascii &= s.charAt(i) < 128;
         }
         return s.chars().allMatch(c -> c < 128) == ascii && s.chars().anyMatch(c -> c == 'x') == (s.indexOf('x') >= 0);
+    }
+
+    /** IntStream.range is the loop from the start up to the end, none where the end is not above it. */
+    public static boolean range(int from, int to, int k) {
+        if (from < -3 || to > 3) return true;
+        boolean all = true, any = false, none = true;
+        for (int i = from; i < to; i++) {
+            all &= i < k;
+            any |= i == k;
+            none &= i != k;
+        }
+        return IntStream.range(from, to).allMatch(i -> i < k) == all
+                && IntStream.range(from, to).anyMatch(i -> i == k) == any
+                && IntStream.range(from, to).noneMatch(i -> i == k) == none;
     }
 
     public static boolean mapped(String[] a) {

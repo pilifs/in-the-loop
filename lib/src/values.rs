@@ -1015,7 +1015,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         source: REGEX_SOURCE,
         admits: "a String with content and a constant regular expression of the checker's syntax (bmc/regex.rs: characters, escapes, classes and their negations and ranges, the shorthands of ASCII, groups, alternatives, the quantifiers ? * + and {n}, {n,}, {n,m}, the anchors \\A, ^ and \\z): whether it matches the whole String",
         throws: &[NPE],
-        leaves_out: &["any other regex (a reluctant or possessive quantifier, a back reference, look-around, $, a flag, a Unicode class) and one that is not a constant: refused or the JDK call it names, never matched", "an input with a surrogate unit where the expression has something a surrogate could match (a dot, a negated class, a class with one in a range): the JDK call it names, a gap, since the JDK matches by code point", "what a group captured"],
+        leaves_out: &["any other regex (a reluctant or possessive quantifier, a back reference, look-around, $, a flag, a Unicode class) and one that is not a constant: refused or the JDK call it names, never matched", "an input with a surrogate unit where the expression has something a surrogate could match (a dot, but for one `.*` that ends the expression, which takes the rest of the input by unit as by code point; a negated class; a class with one in a range): the JDK call it names, a gap, since the JDK matches by code point", "what a group captured"],
         level: EvidenceLevel::Tested,
         sampled_by: &["matches", "matchesByNull"],
         calls: &["matches(Ljava/lang/String;)Z"],

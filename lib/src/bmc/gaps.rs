@@ -532,12 +532,15 @@ pub enum JdkCall {
 }
 
 /// Whether the own checker models an instance call of the JDK on an object whose content it holds: a
-/// `StringBuilder`'s constructors and methods ([`super::strings`]), a class literal's name and loader, and
-/// `new ArrayList()` ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
+/// `StringBuilder`'s constructors and methods ([`super::strings`]), a class literal's name and loader, whether a
+/// Logger logs a level below `INFO`, and `new ArrayList()` ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
 /// ([`crate::jbmc_gaps`] asks [`exact_jdk_call`], never this), and a contract for one is still a contract for a gap
 /// ([`unmodelled_instance_call`]), which the engine applies in place of its model where one is given.
 pub fn modelled_jdk_call(owner: &str, name: &str, descriptor: &str) -> bool {
-    super::strings::models_builder(owner, name, descriptor) || super::runtime::models_instance(owner, name, descriptor) || (name == "<init>" && super::runtime::plain_constructor(owner, descriptor))
+    super::strings::models_builder(owner, name, descriptor)
+        || super::runtime::models_instance(owner, name, descriptor)
+        || super::runtime::models_logger(owner, name, descriptor)
+        || (name == "<init>" && super::runtime::plain_constructor(owner, descriptor))
 }
 
 /// How the engine treats an instance call `owner.name(descriptor)` that runs JDK code: the one classification the
@@ -1204,8 +1207,9 @@ impl<'a> Walker<'a> {
         if matches!((owner, name), ("java/lang/Integer" | "java/lang/Long", "MAX_VALUE" | "MIN_VALUE")) {
             return true;
         }
-        // The JDK's objects the engine has one of for a run: the UTF-8 charset and `Locale`'s constants.
-        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) {
+        // The JDK's objects the engine has one of for a run: the UTF-8 charset, `Locale`'s constants and the
+        // logging levels below `INFO`.
+        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) || super::runtime::level_constant(owner, name).is_some() {
             return true;
         }
         let Ok(Some(cf)) = self.cp.bytecode(owner) else { return false };

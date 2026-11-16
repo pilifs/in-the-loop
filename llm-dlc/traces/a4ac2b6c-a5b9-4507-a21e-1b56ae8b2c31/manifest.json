@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-16T21:30:15.647Z",
-  "duration_seconds": 105423,
+  "ended": "2026-11-16T21:47:14.843Z",
+  "duration_seconds": 106443,
   "stats": {
     "turns": 29,
-    "api_calls": 1586,
-    "tool_calls": 1624,
-    "tool_errors": 13,
+    "api_calls": 1634,
+    "tool_calls": 1676,
+    "tool_errors": 16,
     "compactions": 11,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3172,
-      "output_tokens": 1947842,
-      "cache_read_input_tokens": 410020613,
-      "cache_creation_input_tokens": 4676850
+      "input_tokens": 3268,
+      "output_tokens": 2002405,
+      "cache_read_input_tokens": 422831273,
+      "cache_creation_input_tokens": 4790781
     }
   },
   "tools": {
-    "Bash": 1556,
+    "Bash": 1608,
     "Read": 36,
     "Write": 21,
     "ToolSearch": 5,
@@ -216,24 +216,24 @@
     {
       "index": 11,
       "started": "2026-11-16T20:51:55.086Z",
-      "ended": "2026-11-16T21:30:15.647Z",
+      "ended": "2026-11-16T21:47:14.843Z",
       "turns": 4,
-      "api_calls": 41,
+      "api_calls": 89,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 52647,
-        "cache_read_input_tokens": 5564425,
-        "cache_creation_input_tokens": 199209
+        "input_tokens": 178,
+        "output_tokens": 107210,
+        "cache_read_input_tokens": 18375085,
+        "cache_creation_input_tokens": 313140
       },
-      "peak_context_tokens": 210581
+      "peak_context_tokens": 324512
     }
   ],
   "log": {
-    "sha256": "2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e",
-    "bytes": 35208355,
-    "lines": 13159,
-    "gzip_bytes": 5342333,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e.jsonl.gz"
+    "sha256": "a945559d1d0e7382a35a75b7047f73e70fb93871f0e1c749ef5dca2090e26ebb",
+    "bytes": 36138024,
+    "lines": 13578,
+    "gzip_bytes": 5458255,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/a945559d1d0e7382a35a75b7047f73e70fb93871f0e1c749ef5dca2090e26ebb.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -660,6 +660,14 @@
       "summary": "The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup",
       "body": "The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.",
       "log_sha256": "2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e"
+    },
+    {
+      "change_id": "olnsqxznyoyrvvkwpoxqrznprytsmpyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)",
+      "body": "Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.\n\nThe verifier's own checker (lib/src/bmc) gained one guarded rule and what the path needs beside it. regex.rs: Pattern.compile(String, int) of a String that is no constant is modelled only where the solver shows that on the path the String can only be characters that stand for themselves followed by .*; the Pattern is then those characters as a quoted text and . any number of times, and any other pattern stays the JDK's call, a gap refused by name. The flags CASE_INSENSITIVE and DOTALL are formulas (a constructor chooses them by an input, and paths that chose differently may have merged before the call); that no other flag is set is the solver's to show. One .* that ends an expression takes surrogates: what comes before it matched none, so it never begins inside a pair, and neither a pair nor a surrogate alone is a line terminator, so matching by unit is the JDK's matching by code point there; a dot anywhere else still makes an input with a surrogate the JDK's call. strings.rs: Character.isLetter of an ASCII char, the JDK's call of any other. runtime.rs: the java.util.logging levels below INFO as constants and Logger.isLoggable of one as false, under an assumption each outcome states (the matcher's debug line through spring-jcl is not written). models: IntStream.range(int, int) enters a model the checker runs (RangeStream), as String.chars() does.\n\nEvidence for the rules: lib/tests/claims.rs has a new tool-tier test over a new fixture, claims.P. It proves the rule is its definition written out in Java (begins with the literal, ASCII case folded under CASE_INSENSITIVE, no line terminator after it without DOTALL) under each flag combination and with the flags chosen by an input, on every pattern and String of the bound; refutes a wrong claim on a witness run on a JVM; shows the refusals by name (any pattern, any text before the dot, another flag, a dot inside with a surrogate in the input, isLetter outside ASCII, isLoggable at INFO); and samples the definitions against the JDK on a JVM, with the five line terminators, surrogates alone and in pairs, the letters that fold outside ASCII, and isLetter on every char. lib/README.md and lib/models/README.md describe the rules.\n\nThe example: proofs/prove.py passes each frozen claim to jvmcontract through the adapter entry on the release's own bytecode, with no lemma and nothing put in a method's place, and builds the mutant by the replay route's recipe (the JAR it gives has the SHA-256 the mutant replay's receipt records). It follows loops for 26 turns where the default is 16: the allowed change reads a URL of up to 25 units, and at 16 the preservation check ended with no verdict, saying a loop was covered by an invariant. proofs/predicates.py compiles the claims' assumption, assertion and allowed change with javac and evaluates them on the 44 probes: they read each as controls/oracle.py does. target.json, example.json and the README record the queue, the probes and what became of the four predicted blockers.\n\nVerified: inline probes at the frozen bound, each one capped run, gave every expected verdict (fixed-security established in 28 s, vulnerable-security and mutant-security refuted in 3 s each on witnesses run on a JVM, the mutant's with caseInsensitive true; preservation established in 47 s, and refuted at bound 3 with no allowed change). The unit tests (285) and the claims, values, pairing, conformance, loops, object_strings, string_literals, tiers and value_parameters tests pass; test_costs.py lint agrees; validate_example.py 289 passes. The default test run was not run: it is owed when the example is decided.\n\nJobs queued, the results of record: 20261116-214343-example-289-fixed-security-through-the-a, 20261116-214344-example-289-vulnerable-security-through, 20261116-214344-example-289-mutant-security-through-the, 20261116-214344-example-289-preservation-through-the-ada, and the proof tier after the engine changes, 20261116-214344-the-proof-tier-after-example-289-s-engin.\n\nAlso in this commit, collected by the pipeline's runner and found uncommitted in the working copy: the results of three of example 288's jobs. The proof tier after 288's engine changes passed (35m47s). 288's vulnerable-security and mutant-security ended on the checker's own 30-minute limit with no verdict, not with a wrong one; they are to be resubmitted larger in 288's next cycle, as its handoff says. The watcher's decision log is committed with it.",
+      "log_sha256": "a945559d1d0e7382a35a75b7047f73e70fb93871f0e1c749ef5dca2090e26ebb"
     }
   ],
   "logs": {
@@ -746,6 +754,12 @@
       "lines": 3393,
       "gzip_bytes": 1414456,
       "url": "https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/a08bc2ca85f637d4d7768fb8e221dfcb77cb6e18691fd0590b5412f35e6dc164.jsonl.gz"
+    },
+    "a945559d1d0e7382a35a75b7047f73e70fb93871f0e1c749ef5dca2090e26ebb": {
+      "bytes": 36138024,
+      "lines": 13578,
+      "gzip_bytes": 5458255,
+      "url": null
     },
     "b48ab24a8602dd7a3343106ecafbc8395b2ba910cee2b7bb65b5434874f126fa": {
       "bytes": 27949604,

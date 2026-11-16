@@ -25,6 +25,9 @@
 //!   final sigma) and the locale's rules, which the engine has not: there the call is the gap it was, as it is
 //!   under a Locale the engine knows nothing of.
 //!
+//! `Character.isLetter(char)` of a unit below 128 is whether it is one of ASCII's 52 letters, as a formula; of any
+//! other unit it is the JDK's table's to say, and the call is the gap it was.
+//!
 //! A `StringBuilder` is an object with a content of its own, which its methods change: `StringBuilder()`,
 //! `StringBuilder(String)` (`NullPointerException` for null), `length()`, `charAt(int)`
 //! (`StringIndexOutOfBoundsException` outside the length), `append(String)` (the four units `null` for null),
@@ -43,6 +46,8 @@ use super::*;
 /// The builder's class.
 pub const BUILDER: &str = "java/lang/StringBuilder";
 
+const CHARACTER: &str = "java/lang/Character";
+
 /// The most code units a builder the engine holds the content of has a cell for.
 pub const MOST_BUILDER_CONTENT: usize = 1024;
 
@@ -56,6 +61,11 @@ pub fn models(name: &str, descriptor: &str) -> bool {
         (name, descriptor),
         ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
+}
+
+/// Whether the engine models the static call here, where its argument lets it: `Character.isLetter(char)`.
+pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    (owner, name, descriptor) == (CHARACTER, "isLetter", "(C)Z")
 }
 
 /// Whether the engine models `StringBuilder.name(descriptor)`, its two constructors included.
@@ -226,6 +236,21 @@ impl Engine<'_> {
         let case_bit = self.b.constant(0x20, 16);
         let lowered = self.b.or_bits(unit, &case_bit);
         (is_upper, self.b.ite_bits(is_upper, &lowered, unit))
+    }
+
+    /// `Character.isLetter(char)`: of an ASCII unit, whether it is one of the 52 letters of ASCII (the units below
+    /// 128 whose general category is a letter's); of any other unit it is the JDK's table's to say, the gap the
+    /// call was.
+    pub(super) fn is_letter(&mut self, path: &mut Path, args: &[Val]) -> Step {
+        let [Val::I(c)] = args else { return unsupported(format!("Character.isLetter with arguments {args:?}")) };
+        let unit = self.b.trunc(c, 16);
+        let lowered = self.lowered_ascii(&unit).1;
+        let (a, z, limit) = (self.b.constant(i64::from(b'a'), 16), self.b.constant(i64::from(b'z'), 16), self.b.constant(128, 16));
+        let below = self.b.ult(&lowered, &a);
+        let above = self.b.ult(&z, &lowered);
+        let letter = self.b.and(-below, -above);
+        let ascii = self.b.ult(&unit, &limit);
+        self.branch_gap_or(path, -ascii, (GapKind::JdkStaticMethod, CHARACTER, "isLetter", "(C)Z"), move |engine, path| engine.push_truth(path, letter))
     }
 
     /// Pushes a truth value as the int the JVM holds it as.

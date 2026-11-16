@@ -1,0 +1,255 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-201436-example-288-vulnerable-security-through",
+  "title": "Example 288 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 6.1.13, expected refuted",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 31m27s, peak 2.0 GiB (estimated 25m00s, 6.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+  "attention": [
+    "step 1 (the claim at the frozen bound, 8) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261116-201436-example-288-vulnerable-security-through.json",
+    "sha256": "a7249d9ea9af75abeb5b33654f63fc5e6eb57333136803e9010fbb041e10d335",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-201436-example-288-vulnerable-security-through",
+      "title": "Example 288 vulnerable-security through the adapter entry: the frozen decision claim on Spring Framework 6.1.13, expected refuted",
+      "description": "The frozen claim claims/disallowed-field-denied-in-every-locale.json, unchanged, run by examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py: jvmcontract prove (own checker, strict gaps) of example288.adapter.LocaleDecisionAdapter#allowed(int configLocale, int bindLocale, String[] allowedPatterns, String[] disallowedPatterns, String field), the entry the claim's first assumption names, with the claim's assumption and assertion as they are written, compiled by javac and run as bytecode, at the claim's bound of 8 (each array and each String). The adapter sets the default locale to LOCALES[configLocale] (the root locale, en-US, tr-TR, az-AZ, lt-LT) while it configures a DataBinder through its public setters, and to LOCALES[bindLocale] while it asks the original isAllowed. The class path is the revision's four pinned JARs, each checked against its SHA-256, and the check is given the lemma proofs/simple-match.contract (what PatternMatchUtils.simpleMatch computes on ASCII Strings), which it proves first by induction on the release's own bytecode. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). What changed in the verifier: the default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's constants and Locale.forLanguageTag of a constant plain tag are Locales it knows the one fact of that changes how an ASCII String is lowered (whether the language is tr or az, which lower I to U+0131), Locale.setDefault sets the default on the path, and String.toLowerCase() and toLowerCase(Locale) lower under it; a reference read from an array at a computed index is a choice among the cells, so the two locale indices split no path. At bounds 2, 3 and 5 the three tasks gave their expected verdicts inline (fixed-security in 0.9 s and 47 s at 2 and 5; the refutations in 8 s and 6 s at 3, each witness under tr-TR and run on a JVM). 6.1.13 lower-cases both sides with toLowerCase(), the default locale's; expected refuted on a witness with a capital I lowered under tr-TR or az-AZ.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/simple-match.contract",
+          "lib/src/bmc/locale.rs",
+          "lib/src/bmc/strings.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM'",
+      "submitted": {
+        "at": "2026-11-16T20:14:36+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "25m",
+        "timeout": "1h",
+        "notes": "example 286's same claim under the root locale alone took 920 s (fixed), 409 s and 398 s (refuted) at this bound, at 1.41 GiB; here fixed-security took 47 s at bound 5 against 286's 189 s at 6, so the locale adds little. The time besides is the release build of lib/ if its tree isn't cached and the fetch of four JARs"
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 8",
+          "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-288",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-288/vulnerable-security/outcome.json",
+        "verification/.work-288/vulnerable-security/work/harness/PropertyHarness.java",
+        "verification/.work-288/vulnerable-security/work/harness/PropertyClaim.java"
+      ]
+    }
+  },
+  "sourceCommit": "b74b820d083756906d9ceef4508a19ec8807aa88",
+  "startedAt": "2026-11-16T20:48:45+00:00",
+  "finishedAt": "2026-11-16T21:23:00+00:00",
+  "wallSeconds": 2055.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1021415,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "example 286's same claim under the root locale alone took 920 s (fixed), 409 s and 398 s (refuted) at this bound, at 1.41 GiB; here fixed-security took 47 s at bound 5 against 286's 189 s at 6, so the locale adds little. The time besides is the release build of lib/ if its tree isn't cached and the fetch of four JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 2172878848,
+    "wallSeconds": 1888.0,
+    "cpuSeconds": 1888.5,
+    "memoryOfEstimate": 0.34,
+    "durationOfEstimate": 1.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 165.176,
+      "cpuSeconds": 165.35,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1935450112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "1352a5b603c5135630c848fb58417da9b8a5a6cd80611caeb7d18ee72fa5e23f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261116-201436-example-288-vulnerable-security-through/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 44s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-288",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 1887.958,
+      "cpuSeconds": 1888.464,
+      "cpuThrottledSeconds": 0.514,
+      "peakMemoryBytes": 2172878848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 9,
+        "bytes": 2510,
+        "sha256": "02c671a29b080a123f15284dc26ac95582651d0c047f8db4a32bb511b859eaa2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 7,
+          "text": "✗ example288.adapter.LocaleDecisionAdapter#allowed cannot be verified: the engine did not finish within the time limit",
+          "groups": [
+            "example288.adapter.LocaleDecisionAdapter#allowed cannot be verified: the engine did not finish within the time limit"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 85.4 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "✗ example288.adapter.LocaleDecisionAdapter#allowed cannot be verified: the engine did not finish within the time limit",
+        "",
+        "verdict: unverifiable (expected violation); paths 6761, solver calls 12761, variables 3237465; outcome in verification/.work-288/vulnerable-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-288/vulnerable-security/outcome.json",
+      "change": "added",
+      "bytes": 12745,
+      "sha256": "9db29fdd4e84286479e8251cd5f143c240e285b39a5ae13fe6a0fe17e10febb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/vulnerable-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 2453,
+      "sha256": "e6b2ce9661e60f0b2af3a7563cbb4f2edcf0a04887b4308d746510b72d8c7f19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/vulnerable-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 2861,
+      "sha256": "532f4c3789d4116c3fade9af92a244638e7eb36b67baba3480bb12eee55cbf4c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T21:23:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/.work-288/vulnerable-security/outcome.json",
+      "verification/.work-288/vulnerable-security/work/harness/PropertyHarness.java",
+      "verification/.work-288/vulnerable-security/work/harness/PropertyClaim.java"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "eeb485c509c48e970ca7896e0274fc3c01a59b36",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eeb485c509c48e970ca7896e0274fc3c01a59b36/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261116-201436-example-288-vulnerable-security-through"
+}

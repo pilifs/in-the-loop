@@ -105,7 +105,7 @@ fn a_string_array_parameter_is_strings_of_their_own_or_null_and_a_witness_runs_o
 fn lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_for() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["lambda", "streams", "chars", "mapped"] {
+    for method in ["lambda", "streams", "chars", "range", "mapped"] {
         proved(classes, &format!("claims.L#{method}"), 3);
     }
 }
@@ -180,6 +180,49 @@ fn lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out() 
     assumed.gaps = jvmcontract::bmc::gaps::GapMode::Assume;
     let o = run(&assumed);
     assert!(o.output.contains("java.lang.String.toLowerCase()") && o.output.contains("java.util.Locale.<init>"), "{}", o.output);
+}
+
+/// A protective pattern that is an input (`Engine::literal_then_any` in `lib/src/bmc/regex.rs`): characters that
+/// stand for themselves followed by `.*`, under each combination of `CASE_INSENSITIVE` and `DOTALL`, either chosen by
+/// an input, on any String, line terminators and surrogates included. Each model is its definition written out, on
+/// every input of the bound, and each definition is the JDK's on a JVM, on samples (`Samples`). The rule is taken
+/// only where the solver shows the pattern to be of the family: any other pattern, and any other flag, is the
+/// JDK's call, refused by name. With it, what such a claim asks besides: whether an ASCII char is a letter, and
+/// that a logger logs nothing below `INFO`, which the run states as an assumption.
+#[test]
+fn a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for method in ["exact", "exactDotall", "folded", "foldedDotall", "chosen", "constant"] {
+        let o = run(&options(classes, &format!("claims.P#{method}"), 4, &format!("P-{method}")));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+    }
+    // A wrong claim is refuted on a line terminator after the literal, and the witness is run on a JVM.
+    let mut wrong = options(classes, "claims.P#exact", 4, "P-exact-wrong");
+    wrong.assume = Some("p.equals(\"/a.*\")".into());
+    wrong.assert = Some("result && (!s.startsWith(\"/a\") || java.util.regex.Pattern.compile(p, 0).matcher(s).matches())".into());
+    let o = run(&wrong);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.output.contains("run on a JVM"), "{}", o.output);
+    for method in ["anyPattern", "anyBeforeTheDot", "anotherFlag"] {
+        let o = run(&options(classes, &format!("claims.P#{method}"), 4, &format!("P-{method}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains("jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;"), "{method}: {}", o.output);
+    }
+    let o = run(&options(classes, "claims.P#dotInside", 4, "P-dotInside"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("jdk-primitive-method:java.lang.String.matches(Ljava/lang/String;)Z"), "{}", o.output);
+    proved(classes, "claims.P#letter", 3);
+    let o = run(&options(classes, "claims.P#letterOutsideAscii", 3, "P-letterOutsideAscii"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("jdk-static-method:java.lang.Character.isLetter(C)Z"), "{}", o.output);
+    let o = run(&options(classes, "claims.P#quiet", 3, "P-quiet"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.contains("nothing below INFO is logged")), "{:?}", stated.assumptions);
+    let o = run(&options(classes, "claims.P#loud", 3, "P-loud"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("java.util.logging.Level.INFO"), "{}", o.output);
 }
 
 /// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is

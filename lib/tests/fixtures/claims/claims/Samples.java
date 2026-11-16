@@ -3,7 +3,7 @@ package claims;
 import java.util.Random;
 
 /**
- * The definitions of {@link B} against the JDK's methods on a JVM: each method of B returns whether the JDK's answer
+ * The definitions of {@link B}, {@link C}, {@link P} and {@link L}'s range against the JDK's methods on a JVM: each method returns whether the JDK's answer
  * is its definition's, so that it returns true on every sample says the definition is the JDK's there. The engine
  * proves the same methods return true of its models, on every input of a bound.
  */
@@ -35,6 +35,27 @@ public final class Samples {
         int n = r.nextInt(4);
         for (int i = 0; i < n; i++) s += r.nextInt(8) == 0 ? '!' : salt.charAt(r.nextInt(salt.length()));
         return s;
+    }
+    /** What a protective pattern's matching turns on: the line terminators, surrogates alone and in pairs, and letters that fold outside ASCII. */
+    static final String AFTER = "\n\r\u0085\u2028\u2029\ud800\udc00\ud83d\ude00aAkK\u212a\u017f\u0130\u0131/?x\u000b\u000c\u001c";
+    static final String LITERAL = "/adminADMINkKsSiI-_09 ~";
+    /** A pattern of the family, or (one time in eight) any text. */
+    static String protective(Random r) {
+        if (r.nextInt(8) == 0) return text(r, 4);
+        StringBuilder b = new StringBuilder();
+        for (int k = r.nextInt(5); k > 0; k--) b.append(LITERAL.charAt(r.nextInt(LITERAL.length())));
+        return b.append(".*").toString();
+    }
+    /** A text that begins as the pattern does, in either case of a letter, or nearly, and goes on with what matching turns on. */
+    static String guarded(Random r, String pattern) {
+        StringBuilder b = new StringBuilder();
+        int n = Math.max(0, pattern.length() - 2) - (r.nextInt(6) == 0 ? 1 : 0);
+        for (int i = 0; i < n; i++) {
+            char c = pattern.charAt(i);
+            b.append(r.nextInt(4) == 0 && Character.isLetter(c) ? (char) (c ^ 0x20) : r.nextInt(12) == 0 ? AFTER.charAt(r.nextInt(AFTER.length())) : c);
+        }
+        for (int k = r.nextInt(5); k > 0; k--) b.append(r.nextInt(3) == 0 ? POOL[r.nextInt(POOL.length)] : AFTER.charAt(r.nextInt(AFTER.length())));
+        return b.toString();
     }
     static void check(boolean ok, String what) { if (!ok) throw new AssertionError(what); }
     /** Samples as many inputs as the argument says (20000 with none), from a fixed seed. */
@@ -69,7 +90,16 @@ public final class Samples {
             check(C.nulls(t.toString()) && C.itself(k), "nulls " + t);
             check(C.given(k, s) && C.underTheDefault(j, k, s), "lowered outside ASCII " + s);
             java.util.Locale.setDefault(own);
+            // A protective pattern under each flag combination (P), and the range stream (L).
+            String p = protective(r), u = r.nextInt(4) == 0 ? s : guarded(r, p);
+            String shown = p + " on " + u.chars().boxed().toList();
+            check(P.exact(p, u) && P.exactDotall(p, u) && P.folded(p, u) && P.foldedDotall(p, u), "protective " + shown);
+            check(P.chosen(p, r.nextBoolean(), u) && P.anotherFlag(p, u), "protective, chosen " + shown);
+            check(P.constant(u) && P.constant("/a" + u), "protective, constant " + shown);
+            check(L.range(r.nextInt(9) - 4, r.nextInt(9) - 4, r.nextInt(9) - 4), "range");
         }
+        check(P.quiet(0), "quiet");
+        for (int c = 0; c < 65536; c++) check(P.letter((char) c) && P.letterOutsideAscii((char) c), "letter " + c);
         check(B.digits(), "digits");
         System.out.println("all hold on " + samples + " samples");
     }

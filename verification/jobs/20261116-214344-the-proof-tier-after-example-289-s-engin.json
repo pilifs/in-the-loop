@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-214344-the-proof-tier-after-example-289-s-engin",
+  "title": "The proof tier after example 289's engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+  "description": "Runs the proof tier's command with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as the jobs after examples 287 and 288 did. The change behind it is in the own checker (lib/src/bmc), which nearly every proof-tier test runs: in regex.rs the flags of a Pattern are formulas where they were a constant (the same formulas where they are constant), Pattern.compile(String, int) of a String that is no constant asks the solver whether it can only be a literal followed by '.*' before it stays the gap it was, and one '.*' that ends an expression no longer makes an input with a surrogate the JDK's call; Character.isLetter of an ASCII char, Logger.isLoggable below INFO, the logging levels below INFO as constants and IntStream.range are modelled where each was a gap or refused. The tests of what changed (the unit tests, claims, values, pairing, object_strings, string_literals, loops, conformance, value_parameters) pass inline.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/regex.rs",
+      "lib/src/bmc/runtime.rs",
+      "lib/src/bmc/strings.rs",
+      "lib/src/models.rs"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test but VF-018's three passes",
+  "submitted": {
+    "at": "2026-11-16T21:43:44+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "priority": -1,
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "40m",
+    "timeout": "4h",
+    "notes": "the same job after example 288 took 35m47s at 3.4 GiB peak"
+  },
+  "steps": [
+    {
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

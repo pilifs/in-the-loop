@@ -79,8 +79,9 @@ pub const MODELS: &[Model] = &[
     model!(jbmc "java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListN.class", "an immutable list of none or three or more elements over an array of its own, as the JDK's; JBMC only"),
     model!(checker "java/util/stream/Stream", "java/util/stream/Stream.java", "java/util/stream/Stream.class", "a sequential stream's allMatch, anyMatch, noneMatch, map and toArray(IntFunction), declared for the model's stream over an array; the own checker only"),
     model!(checker "java/util/stream/SequentialArrayStream", "java/util/stream/SequentialArrayStream.java", "java/util/stream/SequentialArrayStream.class", "what Arrays.stream(T[]) returns: the array's elements one at a time through each map, a match stopped where it is decided, a stream used once; not a JDK class; the own checker only"),
-    model!(checker "java/util/stream/IntStream", "java/util/stream/IntStream.java", "java/util/stream/IntStream.class", "an int stream's allMatch, anyMatch and noneMatch, declared for the model's stream of a String's code units; the own checker only"),
+    model!(checker "java/util/stream/IntStream", "java/util/stream/IntStream.java", "java/util/stream/IntStream.class", "an int stream's allMatch, anyMatch and noneMatch, declared for the models' streams of a String's code units and of a range of ints; the own checker only"),
     model!(checker "java/util/stream/CharsStream", "java/util/stream/CharsStream.java", "java/util/stream/CharsStream.class", "what String.chars() returns: the code units in order, each zero-extended; not a JDK class; the own checker only"),
+    model!(checker "java/util/stream/RangeStream", "java/util/stream/RangeStream.java", "java/util/stream/RangeStream.class", "what IntStream.range(int, int) returns: the ints from the start up to the end, in order; not a JDK class; the own checker only"),
 ];
 
 /// The models only for JBMC's class path ([`Model::jbmc_only`]) that the tool's own checker runs as bytecode all the
@@ -107,15 +108,17 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/util/stream/SequentialArrayStream",
     "java/util/stream/IntStream",
     "java/util/stream/CharsStream",
+    "java/util/stream/RangeStream",
 ];
 
-/// The JDK calls that enter a model by a method of the model's own: `java.util.Arrays.stream(T[])` and
-/// `String.chars()`, whose classes the tool does not model otherwise. Each is the model's static method
+/// The JDK calls that enter a model by a method of the model's own: `java.util.Arrays.stream(T[])`,
+/// `String.chars()` and `IntStream.range(int, int)`, whose classes the tool does not model otherwise. Each is the model's static method
 /// `(class, name, descriptor)`, called with the call's receiver, if it has one, and its arguments.
 pub fn entry(owner: &str, name: &str, descriptor: &str) -> Option<(&'static str, &'static str, &'static str)> {
     match (owner, name, descriptor) {
         ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;") => Some(("java/util/stream/SequentialArrayStream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")),
         ("java/lang/String", "chars", "()Ljava/util/stream/IntStream;") => Some(("java/util/stream/CharsStream", "of", "(Ljava/lang/String;)Ljava/util/stream/IntStream;")),
+        ("java/util/stream/IntStream", "range", "(II)Ljava/util/stream/IntStream;") => Some(("java/util/stream/RangeStream", "of", "(II)Ljava/util/stream/IntStream;")),
         _ => None,
     }
 }
