@@ -1,0 +1,82 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "722674dd-f1af-42c9-a55d-4febdb90b0f1",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Example 288 (examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields) is prepared, and watch.py preflight 288 lists it in toClassify: none of its proof tasks records how it is ",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.325"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-16T19:29:24.143Z",
+  "ended": "2026-11-16T19:39:58.449Z",
+  "duration_seconds": 634,
+  "stats": {
+    "turns": 1,
+    "api_calls": 54,
+    "tool_calls": 56,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 132128,
+    "usage": {
+      "input_tokens": 108,
+      "output_tokens": 33932,
+      "cache_read_input_tokens": 4900909,
+      "cache_creation_input_tokens": 120872
+    }
+  },
+  "tools": {
+    "Bash": 52,
+    "Edit": 4
+  },
+  "files_touched": [
+    "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/controls/oracle.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-16T19:29:24.143Z",
+      "ended": "2026-11-16T19:39:58.449Z",
+      "turns": 1,
+      "api_calls": 54,
+      "usage": {
+        "input_tokens": 108,
+        "output_tokens": 33932,
+        "cache_read_input_tokens": 4900909,
+        "cache_creation_input_tokens": 120872
+      },
+      "peak_context_tokens": 132128
+    }
+  ],
+  "log": {
+    "sha256": "8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0",
+    "bytes": 1372605,
+    "lines": 451,
+    "gzip_bytes": 206990,
+    "path": "llm-dlc/traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/logs/8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "pvnkwqntllpqkqnooxpqrmvqtsxqvrml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's",
+      "body": "The repair's brief (llm-dlc/runtime.md) for example 288 (CVE-2024-38820), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 288 in toClassify, since none of its four proof tasks recorded how it is invoked. Each now records it as adapter (target.json, invocation). The route plans every task, but it enters DataBinder#isAllowed(String), and the claims' expressions name the adapter's parameters, so they can't compile there. LocaleDecisionAdapter#allowed was compiled against each revision's pinned closure and ran on the 31 decide probes on 6.1.13, 6.1.14 and the mutant, on JDK 21 and 25. There is no proof script of the example's own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/permitted-fields-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement is replaced word for word by the remark's, which states agreement between the releases only, and the remark's note on the expected answers is added to the claim's notes. Nothing else in the claim changed.\n\ncontrols/oracle.py's canonical() was a regular expression needing two quote characters. Where Spring's PropertyAccessorUtils.canonicalPropertyName turns ['] and [\"] into ], it left them unchanged. It is now a transcription of Spring's loop. It agrees with the method on a JVM (6.1.13 and 6.1.14, JDK 21 and 25) for 3928 Strings: null, every String of at most 5 characters over [ ] ' \" a, and every String of the probes. The regex disagreed on 146 of them. The self-test now checks 13 of those shapes and the new probes. Two guarded probes were added (patterns ['] and [\"], field ], root locale), and both replays ran again over the 38 probes. As the plan expected, both releases and the mutant deny ], the 14 triggers and the mutant's 8 are unchanged, and the comparison is preserved. The setup's receipts, whose controls changed, are replaced by the new ones. The page's probe counts follow.",
+      "log_sha256": "8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0"
+    }
+  ],
+  "logs": {
+    "8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0": {
+      "bytes": 1372605,
+      "lines": 451,
+      "gzip_bytes": 206990,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
