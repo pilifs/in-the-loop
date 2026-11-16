@@ -54,6 +54,12 @@ RECORD_CYCLE = re.compile(rf"^- cycle (?P<n>\d+), (?:item (?P<item>[^,]*), )?(?P
 RECORD_DECIDED = re.compile(r"^  - decided to (?P<decision>continue|stop|unclear)\b")
 RECORD_END = re.compile(rf"^(?P<how>Ended|Stopped|Interrupted) (?P<when>{STAMP})(?P<rest>.*)$", re.M)
 RECORD_ITEMS = re.compile(r"^Each cycle puts the next item in place of \{\}: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
+# Since 2026-11-16 an item may take several cycles, until a judge outside the session finds it
+# finished: the header lists the items left, not one per cycle, and each commit line is followed by
+# the judge's verdict on its item.
+RECORD_ITEMS_JUDGED = re.compile(
+    r"^Each item stays in place of \{\} until a judge outside the session finds it finished: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
+RECORD_VERDICT = re.compile(r"^  - item (?P<item>\S+) (?P<verdict>continues|finished|left after)\b")
 RECORD_BRIEF = re.compile(r"^Brief `(?P<brief>[^`]+)` at sha256 ", re.M)
 RECORD_FORK = re.compile(rf"^Session {UUID} was forked from session (?P<parent>{UUID})\.", re.M)
 REASONS = (  # how feature-loop.sh words each ending, first match wins
@@ -61,7 +67,8 @@ REASONS = (  # how feature-loop.sh words each ending, first match wins
     ("decided the work was done", "work done"), ("the brief says waiting on jobs", "waiting on jobs"),
     ("the brief says blocked", "blocked"), ("the session decided to stop", "decided to stop"),
     ("no items left", "no items left"), ("compacted with no commit", "compacted, no commit"), ("made no commit", "no commit"), ("the brief changed", "brief changed"),
-    ("gave no clear", "unclear decision"), ("the fork of session", "fork failed"))
+    ("gave no clear", "unclear decision"), ("the fork of session", "fork failed"),
+    ("was finished, as asked", "stopped after its item"))
 
 # What the script sends besides the instruction, as the transcripts hold it (metrics.py keeps the
 # first 200 characters of a prompt, whitespace collapsed).
@@ -159,13 +166,16 @@ def parse_record(name: str, text: str) -> dict | None:
     quoted = re.search(r"^> (.*)$", header[head.end():], re.M)
     instruction = _squash(quoted[1]) if quoted else ""
     items = RECORD_ITEMS.search(header)
+    judged = RECORD_ITEMS_JUDGED.search(header)
     cycles, last = {}, None
     for line in listed.split("\n"):
         if m := RECORD_CYCLE.match(line):
             last = cycles[int(m["n"])] = {"item": m["item"], "at": _record_ms(m["when"], zone), "change": m["change"],
-                                          "summary": m["summary"].strip(), "decision": None}
+                                          "summary": m["summary"].strip(), "decision": None, "verdict": None}
         elif last is not None and (m := RECORD_DECIDED.match(line)):
             last["decision"] = m["decision"]
+        elif last is not None and (m := RECORD_VERDICT.match(line)):
+            last["verdict"] = "continue" if m["verdict"] == "continues" else "finished"
     ends = list(RECORD_END.finditer(text))
     end = None
     if ends:
@@ -178,11 +188,22 @@ def parse_record(name: str, text: str) -> dict | None:
         "zone": zone, "zone_known": zone in (None, "UTC", "GMT", "Z") or bool(re.fullmatch(r"[+-]\d{4}", zone or "")),
         "cap": int(head["cap"]) if head["cap"].strip().isdigit() else None, "model": head["model"], "effort": head["effort"],
         "instruction": instruction, "prefix": instruction.split("{}")[0][:80],
-        "run_items": items["run"].split() if items else None, "all_items": items["all"].split() if items else None,
+        "run_items": items["run"].split() if items else None,
+        "all_items": items["all"].split() if items else judged["all"].split() if judged else None,
         "brief": m["brief"] if (m := RECORD_BRIEF.search(header)) else None,
         "forked_from": m["parent"] if (m := RECORD_FORK.search(text)) else None,
         "cycles": cycles, "end": end,
     }
+
+
+def _done_items(cycles: list[dict]) -> set:
+    """The items a commit closed: an item is done after a committed cycle on it, unless the judge's
+    verdict on its latest one was that it continues."""
+    state = {}
+    for c in cycles:
+        if c["outcome"] == "commit" and c["item"] is not None:
+            state[c["item"]] = not c.get("item_open")
+    return {item for item, done in state.items() if done}
 
 
 # --------------------------------------------------------------------------- a session's prompts
@@ -421,7 +442,8 @@ def _rows_of(run: _Run, chains: dict[str, dict], taken: set[str]) -> tuple[dict,
         line = record["cycles"].get(n) if record else None
         item = record["run_items"][n - 1] if record and record["run_items"] and n <= len(record["run_items"]) else \
             line["item"] if line else None
-        row = {"run": name, "loop": run.loop, "cycle": n, "item": item, "measured": found is not None}
+        row = {"run": name, "loop": run.loop, "cycle": n, "item": item, "measured": found is not None,
+               "item_open": bool(line and line.get("verdict") == "continue")}
         if found:
             work, overhead = prompts(found["work"]), prompts(found["overhead"])
             start = s.ts[found["work"][0]]
@@ -588,7 +610,7 @@ def loops(sessions: list[tuple[dict, dict]], records: list[tuple[str, str]], job
         own, own_cycles = of("loop", name)
         latest = max((r for r in parsed if r["loop"] == name), key=lambda r: r["started"], default=None)
         items = latest["all_items"] if latest and latest["all_items"] else None
-        done = {c["item"] for c in own_cycles if c["outcome"] == "commit" and c["item"] is not None}
+        done = _done_items(own_cycles)
         loop_rows.append({
             "loop": name, "category": own[0]["category"], "kind": own[-1]["kind"], "stream_of": own[-1]["stream_of"],
             "instruction": latest["instruction"] if latest and not latest["brief"] else
@@ -607,7 +629,8 @@ def loops(sessions: list[tuple[dict, dict]], records: list[tuple[str, str]], job
             kept = [c for c in tries if c["outcome"] == "commit"]
             added = _add(tries)
             item_rows.append({
-                "loop": name, "item": item, "status": "done" if kept else "attempted" if tries else "pending",
+                "loop": name, "item": item,
+                "status": "done" if item in _done_items(tries) else "attempted" if tries else "pending",
                 "attempts": len(tries), "runs": list(dict.fromkeys(c["run"] for c in tries)),
                 "started": min((c["started"] for c in tries if c["started"]), default=None),
                 "committed": kept[0]["ended"] if kept else None,
@@ -623,6 +646,8 @@ def loops(sessions: list[tuple[dict, dict]], records: list[tuple[str, str]], job
         own, own_cycles = of("category", name)
         if own:
             category_rows.append({"category": name, "loops": len({r["loop"] for r in own}), **_group(own, own_cycles)})
+    for c in cycles:  # read for the items done, not published
+        c.pop("item_open", None)
     return {
         "schema": SCHEMA,
         "pricing_as_of": pricing.get("as_of"),

@@ -95,12 +95,17 @@ class Transcript:
         return manifest, metrics.session(manifest, self.entries, [], PRICING, lambda s: s)
 
 
-def record(loop, sid, start, lines=(), end=None, instruction=None, items=None, brief=False, fork=None, cap="no limit on"):
-    """A run record as feature-loop.sh writes one. `lines` is (cycle, minute, item, decision) per commit."""
+def record(loop, sid, start, lines=(), end=None, instruction=None, items=None, brief=False, fork=None, cap="no limit on",
+           judged=False):
+    """A run record as feature-loop.sh writes one. `lines` is (cycle, minute, item, decision) per commit; with `judged`,
+    each item stays until a judge finds it finished, and `decision` is instead the judge's verdict, continues or finished."""
     out = [f"# Feature loop: {loop}", "",
            f"Started {stamp(start)} UTC, {cap} cycles, session {sid}, m-a at high effort, after change {'k' * 32}.", "",
            f"> {instruction or (BRIEF_TEXT % loop if brief else TEMPLATE)}", ""]
-    if items:
+    if items and judged:
+        out += [f"Each item stays in place of {{}} until a judge outside the session finds it finished: {' '.join(items[0])} "
+                f"(the list: {' '.join(items[1])}).", "", "The judge is m-j.", ""]
+    elif items:
         out += [f"Each cycle puts the next item in place of {{}}: {' '.join(items[0])} (the list: {' '.join(items[1])}).", ""]
     if brief:
         out += [f"Brief `llm-dlc/loops/{loop}.md` at sha256 {'ab' * 32}.", ""]
@@ -109,7 +114,9 @@ def record(loop, sid, start, lines=(), end=None, instruction=None, items=None, b
         out += [f"Session {sid} was forked from session {fork}.", ""]
     for n, minute, item, decision in lines:
         out.append(f"- cycle {n}, {f'item {item}, ' if item else ''}{stamp(minute, 35)}, `{'k' * 12}`: Made-up change {n}")
-        if decision:
+        if decision and judged:
+            out.append(f"  - item {item} {decision}: made-up reasons")
+        elif decision:
             out.append(f"  - decided to {decision}: made-up reasons")
     if end:
         out += ["", end]
@@ -148,6 +155,16 @@ class Records(unittest.TestCase):
                          ("ended", "no items left", metrics._ms(at(12))))
         self.assertIsNone(r["brief"])
         self.assertIsNone(loop_stats.parse_record("made-up-integration", "# Integration check\n\nNot a run.\n"))
+
+    def test_a_judged_record_lists_its_items_left_and_each_verdict(self):
+        text = record("made-up", SID, 0, [(1, 5, "285", "continues"), (2, 9, "285", "finished")], judged=True,
+                      items=(["285", "286"], ["285", "286", "287"]),
+                      end=f"Ended {stamp(12)} after 2 cycle(s): stopped once item 285 was finished, as asked.")
+        r = loop_stats.parse_record("2026-11-20-100000-made-up", text)
+        self.assertEqual((r["run_items"], r["all_items"]), (None, ["285", "286", "287"]))
+        self.assertEqual({n: (c["item"], c["verdict"]) for n, c in r["cycles"].items()},
+                         {1: ("285", "continue"), 2: ("285", "finished")})
+        self.assertEqual(r["end"]["reason"], "stopped after its item")
 
     def test_how_a_run_ended_is_told_by_the_scripts_words(self):
         for line, outcome, reason in (
@@ -279,6 +296,29 @@ class TemplatedMoonshot(unittest.TestCase):
         run = doc["runs"][0]
         self.assertEqual((run["measured"], run["cycles"], run["cycles_committed"], run["usd"]), (False, 2, 2, 0.0))
         self.assertIn("Not measured yet", loop_stats.page(doc))
+
+
+class JudgedItems(unittest.TestCase):
+    """An item that takes cycles until a judge finds it finished: 285 takes two, the judge keeping it open after the
+    first; 286 is left open when the run ends, so it is attempted, not done."""
+
+    def test_an_item_is_done_once_the_judge_lets_it_go(self):
+        t = Transcript()
+        t.cycle(1, TEMPLATE.replace("{}", "285"), "Prove made-up 285, part one", output=1000)
+        t.cycle(10, TEMPLATE.replace("{}", "285"), "Prove made-up 285, part two", output=2000)
+        t.cycle(20, TEMPLATE.replace("{}", "286"), "Prove made-up 286, part one", output=3000)
+        items = ["285", "286", "287"]
+        records = [("2026-11-20-100030-prove-made-up", record(
+            "prove-made-up", SID, 0, [(1, 1, "285", "continues"), (2, 10, "285", "finished"), (3, 20, "286", "continues")],
+            items=(items, items), judged=True, end=f"Ended {stamp(30)} after 3 cycle(s)."))]
+        doc = stats([t], records)
+        self.assertEqual([(c["cycle"], c["item"], c["outcome"]) for c in doc["cycles"]],
+                         [(1, "285", "commit"), (2, "285", "commit"), (3, "286", "commit")])
+        self.assertNotIn("item_open", doc["cycles"][0])
+        self.assertEqual([(i["item"], i["status"], i["attempts"]) for i in doc["items"]],
+                         [("285", "done", 2), ("286", "attempted", 1), ("287", "pending", 0)])
+        loop = one(doc["loops"], loop="prove-made-up")
+        self.assertEqual((loop["kind"], loop["items"], loop["items_done"]), ("templated moonshot", 3, 1))
 
 
 class Briefs(unittest.TestCase):

@@ -25,8 +25,8 @@
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
 #   relational  make relational verification more efficient and accurate, with examples
-# Templated moonshots, one item of a list per cycle:
-#   prove-examples  formally prove examples 285 to 300, one per cycle, as elegantly and efficiently as possible
+# Templated moonshots, one item of a list at a time:
+#   prove-examples  formally prove examples 285 to 300, each for as many cycles as it takes, as elegantly and efficiently as possible
 # Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
@@ -43,13 +43,26 @@
 #   UNTIL     instructions the session weighs after each commit to decide whether
 #             the loop goes on; a second argument that isn't a count is UNTIL
 #
-# A templated moonshot puts the next item of its list into its template, at
-# {}, each cycle. It has a session of its own, fixed here: the first run creates
-# it and every later run resumes it. An item is done once an earlier run's
-# record (llm-dlc/loop-summaries/*-NAME.md) lists a commit for it, so a run starts
-# at the first item none has committed, and ends when the list does; CYCLES still
-# caps it. A cycle that makes no commit stops the loop as usual, and leaves its
-# item for the next run.
+# A templated moonshot puts an item of its list into its template, at {}, and
+# keeps it there until the item is finished, for as many cycles as that takes.
+# It has a session of its own, fixed here: the first run creates it and every
+# later run resumes it. After each commit a judge outside the session decides
+# whether the item is finished: a separate claude -p call, with no tools and no
+# session of its own, reads the cycle's final report and commit messages and
+# answers "ITEM: finished" or "ITEM: continue". Nothing is added to the moonshot's
+# own session, so the instruction stays the only thing it is given. An item whose
+# goal is met, or whose remaining work needs a person, is finished; one the
+# session can still make real progress on gets the next cycle, with the same
+# instruction. An answer that is neither moves on, as before the judge.
+# FEATURE_LOOP_JUDGE_MODEL picks the judge's model (claude-sonnet-5-5 by default),
+# FEATURE_LOOP_ITEM_CYCLES caps the cycles one item may take in a run (no cap by default),
+# and FEATURE_LOOP_ITEM_JUDGE=0 gives each item exactly one cycle, with no judge.
+#
+# An item is done once an earlier run's record (llm-dlc/loop-summaries/*-NAME.md)
+# lists a commit for it, unless the judge's last word on it there was "continues",
+# so a run starts at the first item not done, and ends when the list does; CYCLES
+# still caps it. A cycle that makes no commit stops the loop as usual, and leaves
+# its item for the next run.
 #
 # A stopped loop is continued by running the same command again: the brief fixes
 # the session, its Progress section says what is done, and each cycle first
@@ -91,7 +104,9 @@
 #
 # While it runs, the number of cycles left can be changed by typing in its
 # terminal (see HELP below): +N, -N, =N, inf, or 0 or stop to end after the
-# cycle under way. A cycle always finishes, commit and compact included.
+# cycle under way. A templated moonshot also takes "item", to end once the item
+# under way is finished, however many cycles that takes; a count typed after it
+# replaces it. A cycle always finishes, commit and compact included.
 #
 # Each run keeps a log in llm-dlc/loop-summaries/ (gitignored, never pushed): a
 # line per commit as it lands, so it survives a restart, and when the cycles run
@@ -222,6 +237,15 @@ STOP_ON_COMPACT=
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
+# Templated moonshots only: an item takes cycles until the judge finds it finished.
+JUDGE=
+[[ -n "$TEMPLATE" && "${FEATURE_LOOP_ITEM_JUDGE:-1}" != 0 ]] && JUDGE=1
+JUDGE_MODEL=${FEATURE_LOOP_JUDGE_MODEL:-claude-sonnet-5-5}
+ITEM_CYCLES=${FEATURE_LOOP_ITEM_CYCLES:-}
+[[ -z "$ITEM_CYCLES" || "$ITEM_CYCLES" =~ ^[1-9][0-9]*$ ]] || {
+  echo "feature-loop.sh: FEATURE_LOOP_ITEM_CYCLES is not a count: $ITEM_CYCLES" >&2
+  exit 2
+}
 SCOPE=feature-loop-$PROMPT
 [[ "$SESSION_ID" == new || "$SESSION_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || {
   echo "feature-loop.sh: not a session id: $SESSION_ID" >&2
@@ -293,23 +317,40 @@ mkdir -p "$SUMMARIES" || exit 1
 stamp() { date -u '+%F %T'; }
 SUMMARY=$SUMMARIES/$(date -u +%F-%H%M%S)-$PROMPT.md
 
-# A templated moonshot: the items no earlier run of it has committed, in order.
-# A run takes one per cycle, so it runs at most that many cycles.
+# The items an earlier run committed, in the records' order (their names start
+# with the time): a commit marks its item done, and the judge's "continues" after
+# it opens the item again, until a later commit and verdict, or the cap, close it.
+done_items() {
+  cat "$SUMMARIES"/*-"$PROMPT".md 2>/dev/null | awk '
+    /^- cycle [0-9]+, item [^,]+,/ { line = $0; sub(/^- cycle [0-9]+, item /, "", line); sub(/,.*/, "", line); state[line] = 1; next }
+    /^  - item [^ ]+ continues/ { state[$3] = 0; next }
+    /^  - item [^ ]+ (finished|left after)/ { state[$3] = 1 }
+    END { for (i in state) if (state[i]) print i }'
+}
+
+# A templated moonshot: the items not done yet, in order. Without the judge a
+# run takes one per cycle, so it runs at most that many cycles.
 PENDING=()
 if [[ -n "$TEMPLATE" ]]; then
-  done_items=$(cat "$SUMMARIES"/*-"$PROMPT".md 2>/dev/null | sed -n 's/^- cycle [0-9]*, item \([^,]*\),.*/\1/p')
+  done_list=$(done_items)
   for item in "${ITEMS[@]}"; do
-    grep -qxF -- "$item" <<<"$done_items" || PENDING+=("$item")
+    grep -qxF -- "$item" <<<"$done_list" || PENDING+=("$item")
   done
   if (( ${#PENDING[@]} == 0 )); then
-    log "every item of $PROMPT has a commit (${ITEMS[*]}): nothing to do"
+    log "every item of $PROMPT is done (${ITEMS[*]}): nothing to do"
     exit 0
   fi
-  if [[ "$CYCLES" == inf ]] || (( CYCLES > ${#PENDING[@]} )); then
+  if [[ -z "$JUDGE" ]] && { [[ "$CYCLES" == inf ]] || (( CYCLES > ${#PENDING[@]} )); }; then
     CYCLES=${#PENDING[@]}
   fi
   INSTRUCTION=$TEMPLATE
-  log "$PROMPT: ${#PENDING[@]} of ${#ITEMS[@]} items left, from ${PENDING[0]}; this run takes $CYCLES"
+  if [[ -n "$JUDGE" ]]; then
+    limit="no cycle limit"
+    [[ "$CYCLES" == inf ]] || limit="at most $CYCLES cycle(s) in this run"
+    log "$PROMPT: ${#PENDING[@]} of ${#ITEMS[@]} items left, from ${PENDING[0]}; each takes cycles until the judge ($JUDGE_MODEL) finds it finished${ITEM_CYCLES:+, at most $ITEM_CYCLES}; $limit"
+  else
+    log "$PROMPT: ${#PENDING[@]} of ${#ITEMS[@]} items left, from ${PENDING[0]}; this run takes $CYCLES"
+  fi
 fi
 START=$(jj log --no-graph -r @- -T change_id) || exit 1
 
@@ -343,7 +384,12 @@ fi
   echo
   echo "> $INSTRUCTION"
   echo
-  if [[ -n "$TEMPLATE" ]]; then
+  if [[ -n "$JUDGE" ]]; then
+    echo "Each item stays in place of {} until a judge outside the session finds it finished: ${PENDING[*]} (the list: ${ITEMS[*]})."
+    echo
+    echo "The judge is $JUDGE_MODEL${ITEM_CYCLES:+, and an item takes at most $ITEM_CYCLES cycles}."
+    echo
+  elif [[ -n "$TEMPLATE" ]]; then
     echo "Each cycle puts the next item in place of {}: ${PENDING[*]:0:$CYCLES} (the list: ${ITEMS[*]})."
     echo
   fi
@@ -366,6 +412,8 @@ HELP='while it runs, type a command and Enter:
   0, stop   end after this cycle (it still commits and compacts)
   inf       run until stopped
   ?         show where the loop stands'
+[[ -n "$TEMPLATE" ]] && HELP+='
+  item      end once the item under way is finished, however many cycles it takes'
 
 # The loop and the terminal reader share "cycle remaining" in a state file:
 # the cycle under way, and how many cycles start after it ("inf" for no limit).
@@ -399,6 +447,8 @@ standing() {
   else
     log "cycle $cycle of $total: $remaining more after this one"
   fi
+  [[ -e "$STATE.item-stop" && "$remaining" != 0 ]] && log "and the loop ends once the item under way is finished"
+  return 0
 }
 
 apply() {
@@ -408,11 +458,20 @@ apply() {
     "" | "?" | status) standing; return ;;
     help | h) printf '%s\n' "$HELP"; return ;;
     stop | q | quit) line=0 ;;
-    inf | unlimited) remaining=inf; standing; return ;;
+    inf | unlimited) rm -f "$STATE.item-stop"; remaining=inf; standing; return ;;
+    item | stopitem | afteritem)
+      if [[ -z "$TEMPLATE" ]]; then
+        log "this loop has no items: stop ends it after this cycle"
+      else
+        : >"$STATE.item-stop"
+        standing
+      fi
+      return ;;
   esac
   if [[ "$line" =~ ^([-+=]?)([0-9]*)$ && -n "$line" ]]; then
     n=${BASH_REMATCH[2]:-1}
     n=$((10#$n))
+    rm -f "$STATE.item-stop"
     case "${BASH_REMATCH[1]}" in
       "" | =) remaining=$n ;;
       +) [[ "$remaining" == inf ]] && { log "no limit already; =N sets one"; return; }
@@ -444,7 +503,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.turn" "$STATE.item-stop"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -564,6 +623,36 @@ close_status() {
   note "  - recorded the status \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $status"
 }
 
+# After a committed cycle of a templated moonshot: a judge outside the session
+# reads the cycle's final report and commit messages and says whether the item is
+# finished. A claude -p of its own, with no tools, none of the repo's settings or
+# hooks and no transcript, so nothing reaches the moonshot's session or is traced.
+# Sets $item_done, and records the verdict under the cycle's commit line.
+judge_item() {
+  local report commits reply verdict reason question
+  report=$(result_text "$STATE.turn") || report="(The cycle's turn left no final report.)"
+  commits=$(jj log --no-graph -r "$before..@-" -T 'description ++ "\n"' | grep -v '^LLM-Trace' | head -c 20000)
+  question="You judge, from outside it, a loop that works through a list of items, giving a Claude Code session one instruction per item. For this item the instruction is: \"$INSTRUCTION\". The session has just finished cycle $item_turns on item $item. Its final report and the messages of the commits it made in this cycle are on standard input. Decide whether the loop moves on to the next item or gives this one another cycle, with the same instruction. Answer finished if the instruction's goal is met for this item, or if what is left can't be done by the session alone: it needs a person (a decision, credentials, access) or only waits on something outside the session, such as queued verification jobs, whose results are collected without it. Answer continue if the report shows work on this item that the session itself can still do and that another cycle would make real progress on. Polish, wider reuse, and follow-ups the report calls optional don't count. Say why in one or two sentences, then end with exactly one line: ITEM: finished or ITEM: continue."
+  reply=$(printf '## Final report\n\n%s\n\n## Commit messages\n\n%s\n' "${report:0:30000}" "$commits" |
+    claude -p "$question" --model "$JUDGE_MODEL" --effort low --setting-sources user --tools "" \
+      --no-session-persistence --output-format text 2>/dev/null) || reply=
+  verdict=$(grep -oE 'ITEM: *(finished|continue)' <<<"$reply" | tail -n 1 | sed 's/.*: *//')
+  reason=$(grep -vE 'ITEM: *(finished|continue)' <<<"$reply" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
+  (( ${#reason} > 400 )) && reason="${reason:0:400}..."
+  case "$verdict" in
+    continue)
+      item_done=
+      log "cycle $cycle: the judge says item $item continues: $reason"
+      note "  - item $item continues: $reason" ;;
+    finished)
+      log "cycle $cycle: the judge says item $item is finished: $reason"
+      note "  - item $item finished: $reason" ;;
+    *)
+      log "cycle $cycle: the judge gave no clear answer, so the loop moves on from item $item"
+      note "  - item $item finished: the judge gave no clear answer, so the loop moves on" ;;
+  esac
+}
+
 # `sync.py commit` finishes @ and starts an empty change, so a commit moves @-.
 # Change IDs, unlike commit IDs, survive a rewrite of the commit.
 last_change() { jj log --no-graph -r @- -T change_id; }
@@ -617,6 +706,9 @@ else
 fi
 with_state standing
 
+# The item under way, as an index into PENDING, and how many cycles it has had.
+item_idx=0
+item_turns=0
 while :; do
   with_state next_cycle
   before=$(last_change) || exit 1
@@ -628,8 +720,8 @@ while :; do
 
   item=
   if [[ -n "$TEMPLATE" ]]; then
-    # Only a count raised while it runs (+N, inf) gets past the end of the list.
-    if (( cycle > ${#PENDING[@]} )); then
+    # Without the judge, only a count raised while it runs (+N, inf) gets past the end of the list.
+    if (( item_idx >= ${#PENDING[@]} )); then
       cycle=$(( cycle - 1 ))
       log "no items left: stopping after cycle $cycle"
       summarize
@@ -637,19 +729,24 @@ while :; do
       log "record of the run: $SUMMARY"
       exit 0
     fi
-    item=${PENDING[cycle - 1]}
+    item=${PENDING[item_idx]}
+    item_turns=$(( item_turns + 1 ))
     INSTRUCTION=${TEMPLATE//\{\}/$item}
-    log "cycle $cycle: $PROMPT, item $item"
+    if (( item_turns > 1 )); then
+      log "cycle $cycle: $PROMPT, item $item, its cycle $item_turns"
+    else
+      log "cycle $cycle: $PROMPT, item $item"
+    fi
   else
     log "cycle $cycle: $PROMPT instruction"
   fi
   with_state standing
-  [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop, ? or help"
+  [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop${TEMPLATE:+, item to stop once this item is finished}, ? or help"
   if [[ -n "$STOP_ON_COMPACT" ]]; then
     rm -f "$STATE.compacted"
     export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted
   fi
-  run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
+  run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: claude exited with status $?"
   unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")
@@ -666,6 +763,23 @@ while :; do
   fi
   log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
   note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+
+  # A templated moonshot moves on from its item once the judge finds it finished,
+  # or at once without the judge, or when the item has had its cap of cycles.
+  item_done=
+  if [[ -n "$TEMPLATE" ]]; then
+    item_done=1
+    [[ -n "$JUDGE" ]] && judge_item
+    if [[ -z "$item_done" && -n "$ITEM_CYCLES" ]] && (( item_turns >= ITEM_CYCLES )); then
+      item_done=1
+      log "cycle $cycle: item $item has had its $ITEM_CYCLES cycles, so the loop moves on"
+      note "  - item $item left after $item_turns cycles, its cap (FEATURE_LOOP_ITEM_CYCLES)"
+    fi
+    if [[ -n "$item_done" ]]; then
+      item_idx=$(( item_idx + 1 ))
+      item_turns=0
+    fi
+  fi
 
   decision=continue
   # The last cycle of a count ends the loop anyway, so there is nothing to decide.
@@ -685,6 +799,13 @@ while :; do
   run_claude "/compact" || log "cycle $cycle: compact exited with status $?"
 
   read -r cycle remaining <"$STATE"
+  if [[ -n "$item_done" && -e "$STATE.item-stop" && "$decision" != stop ]]; then
+    log "item $item is finished: stopping after cycle $cycle, as asked"
+    summarize
+    note; note "Ended $(stamp) after $cycle cycle(s): stopped once item $item was finished, as asked."
+    log "record of the run: $SUMMARY"
+    exit 0
+  fi
   if [[ "$decision" == stop ]]; then
     log "the session decided to stop: stopping after cycle $cycle"
     summarize
