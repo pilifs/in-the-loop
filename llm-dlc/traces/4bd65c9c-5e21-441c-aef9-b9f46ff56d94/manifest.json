@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-16T19:50:56.319Z",
-  "ended": "2026-11-16T20:07:44.757Z",
-  "duration_seconds": 1008,
+  "ended": "2026-11-16T20:08:05.760Z",
+  "duration_seconds": 1029,
   "stats": {
     "turns": 1,
-    "api_calls": 78,
-    "tool_calls": 79,
+    "api_calls": 80,
+    "tool_calls": 81,
     "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 256836,
+    "peak_context_tokens": 259308,
     "usage": {
-      "input_tokens": 156,
-      "output_tokens": 93885,
-      "cache_read_input_tokens": 12318189,
-      "cache_creation_input_tokens": 243650
+      "input_tokens": 160,
+      "output_tokens": 95481,
+      "cache_read_input_tokens": 12833796,
+      "cache_creation_input_tokens": 246122
     }
   },
   "tools": {
-    "Bash": 76,
+    "Bash": 78,
     "Write": 2,
     "Read": 1
   },
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-16T19:50:56.319Z",
-      "ended": "2026-11-16T20:07:44.757Z",
+      "ended": "2026-11-16T20:08:05.760Z",
       "turns": 1,
-      "api_calls": 78,
+      "api_calls": 80,
       "usage": {
-        "input_tokens": 156,
-        "output_tokens": 93885,
-        "cache_read_input_tokens": 12318189,
-        "cache_creation_input_tokens": 243650
+        "input_tokens": 160,
+        "output_tokens": 95481,
+        "cache_read_input_tokens": 12833796,
+        "cache_creation_input_tokens": 246122
       },
-      "peak_context_tokens": 256836
+      "peak_context_tokens": 259308
     }
   ],
   "log": {
-    "sha256": "f04c18f09654eb903aa6333167572e57a9564dd99a069aaacb405ddbf08fc447",
-    "bytes": 2193932,
-    "lines": 576,
-    "gzip_bytes": 342624,
-    "path": "llm-dlc/traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/logs/f04c18f09654eb903aa6333167572e57a9564dd99a069aaacb405ddbf08fc447.jsonl.gz"
+    "sha256": "8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701",
+    "bytes": 2265024,
+    "lines": 593,
+    "gzip_bytes": 354736,
+    "path": "llm-dlc/traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/logs/8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -69,9 +69,23 @@
       "summary": "Example 290 set up from its catalog entry: claims and tasks from the plan, release pair and mutant prepared, carriers, driver and oracle, both replays as expected",
       "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 -> 5.8.5, requestMatchers(String...) in a multi-servlet application) was a catalog entry. The setup stage of /prove-java-change wrote the plan's two claims and six tasks with scaffold_example.py (unchanged from plan.json), and the rest from the entry: the release pair on the published-artifact route (spring-security-config/web/core, Spring Framework 5.3.28 and 5.3.29 with spring-webmvc, jakarta.servlet-api 4.0.4, pinned by sha256), sources.lock.json (each release's AbstractRequestMatcherRegistry.java is the exact-fix pair's blob; the other classes the replays load are byte-identical or differ outside the code reached; javap shows no subclass in either config JAR overriding the implicit overloads), and the mutant controls/first-registration-only.patch (hasDispatcherServlet looks at the first registration only).\n\nThe entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), with SelectionRegistry (the three abstract methods only), PlainServlet, ExtendedDispatcherServlet and carriers for the WebApplicationContext, servlet context and registrations whose other methods throw. controls/probes.json has 29 probes, each with the outcome expected of 5.8.4, 5.8.5 and the mutant written before the run; controls/oracle.py holds each run to its revision's expectations (told by the registry class's sha256) and its self-test tells the fix from six constructed registries. Two null-pattern probes beyond the plan show the mutant throwing IllegalArgumentException from AntPathRequestMatcher rather than a rejection.",
       "log_sha256": "f04c18f09654eb903aa6333167572e57a9564dd99a069aaacb405ddbf08fc447"
+    },
+    {
+      "change_id": "zppsuptrnwkzmxsusztpolrotxpyzmls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: the page and notes count three null-pattern probes beyond the plan, not two",
+      "body": "The setup commit's README and example.json notes said two probes with a null pattern element were added beyond the plan's list; there are three (ambiguous-plain-dispatcher-null-pattern, lone-dispatcher-null-pattern, no-dispatcher-plain-null-pattern). Corrected the count and stated the lone probe's outcome. Verified with validate_example.py 290.",
+      "log_sha256": "8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701"
     }
   ],
   "logs": {
+    "8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701": {
+      "bytes": 2265024,
+      "lines": 593,
+      "gzip_bytes": 354736,
+      "url": null
+    },
     "f04c18f09654eb903aa6333167572e57a9564dd99a069aaacb405ddbf08fc447": {
       "bytes": 2193932,
       "lines": 576,

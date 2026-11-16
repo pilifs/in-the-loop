@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 123, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-16 20:07 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-16 20:08 UTC |
 | Prompts | 2,668 |
-| Model calls | 26,919 |
-| Tool calls | 27,940 (488 failed) |
+| Model calls | 26,921 |
+| Tool calls | 27,942 (488 failed) |
 | Compactions | 410 |
 | Subagents | 19 |
-| Tokens written | 27,382,720 |
-| Tokens read | 4,327,002,075 (98.0% from cache) |
-| Commits with a trace | 806 |
-| Log snapshots | 1,031 (2316.0 MB gzipped, 1,014 uploaded) |
+| Tokens written | 27,384,316 |
+| Tokens read | 4,327,520,158 (98.0% from cache) |
+| Commits with a trace | 807 |
+| Log snapshots | 1,032 (2316.4 MB gzipped, 1,014 uploaded) |
 
 ## Sessions
 
@@ -150,7 +150,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-16 17:51 UTC | [91a38d39-abe7-456b-bc6b-2e4d71420275](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | ended | 42 min | `claude-opus-5-5` | 2 | 80 | 80 | 1 | 0 | 226,627 | 2 |
 | 2026-11-16 19:29 UTC | [722674dd-f1af-42c9-a55d-4febdb90b0f1](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | open | 10 min | `claude-opus-5-5` | 1 | 56 | 57 | 1 | 0 | 134,314 | 2 |
 | 2026-11-16 19:42 UTC | [515f8415-55b4-4a47-8fbe-978fc5054ac2](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | ended | 8 min | `claude-opus-5-5` | 1 | 45 | 45 | 1 | 0 | 142,236 | 1 |
-| 2026-11-16 19:50 UTC | [4bd65c9c-5e21-441c-aef9-b9f46ff56d94](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | open | 16 min | `claude-opus-5-5` | 1 | 78 | 79 | 3 | 0 | 256,836 | 1 |
+| 2026-11-16 19:50 UTC | [4bd65c9c-5e21-441c-aef9-b9f46ff56d94](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | open | 17 min | `claude-opus-5-5` | 1 | 80 | 81 | 3 | 0 | 259,308 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -282,13 +282,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`91a38d39`](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | 77,332 | 164 | 215,371 | 11,297,945 | 98.1% | 149 |
 | [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | 35,444 | 112 | 123,058 | 5,166,629 | 97.7% | 149 |
 | [`515f8415`](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | 35,432 | 90 | 129,050 | 4,359,143 | 97.1% | 127 |
-| [`4bd65c9c`](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | 93,885 | 156 | 243,650 | 12,318,189 | 98.1% | 134 |
+| [`4bd65c9c`](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | 95,481 | 160 | 246,122 | 12,833,796 | 98.1% | 137 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 24,683 | 88.3% | 123 |
+| `Bash` | 24,685 | 88.3% | 123 |
 | `Read` | 1,241 | 4.4% | 52 |
 | `Edit` | 938 | 3.4% | 51 |
 | `Write` | 612 | 2.2% | 51 |
@@ -1117,6 +1117,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 804 | change `lwvsvzno` | validate_example.py regenerates the router after the replays, not before | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/b72acd2a9fb9768900e0639e3c4d0302eec6133dc09ace70c524bc56ee17eafa.jsonl.gz)), [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) ([log](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/503c8de630511427d19ba1f744bc7fb7a6b6b6fc2b53a2917d96ae583f352b00.jsonl.gz)) |
 | 805 | change `qvqpqxpn` | Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging | [`515f8415`](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) ([log](https://terminalvalue.net/raw-traces/515f8415-55b4-4a47-8fbe-978fc5054ac2/266cec597a5b8e1f0fbbf2e0fd84c318bc16efd22948e9a2f4b2d469d3d8d683.jsonl.gz)) |
 | 806 | change `mlmnzmwk` | Example 290 set up from its catalog entry: claims and tasks from the plan, release pair and mutant prepared, carriers, driver and oracle, both replays as expected | [`4bd65c9c`](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) ([log](https://terminalvalue.net/raw-traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/f04c18f09654eb903aa6333167572e57a9564dd99a069aaacb405ddbf08fc447.jsonl.gz)) |
+| 807 | change `zppsuptr` | Example 290: the page and notes count three null-pattern probes beyond the plan, not two | [`4bd65c9c`](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) ([log](https://terminalvalue.net/raw-traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/8e5b8eac063e8b334ece686627ee9aeb1f3b2850712e99dddb3cd83d4838a701.jsonl.gz)) |
 
 ## Logs
 
@@ -1246,7 +1247,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`91a38d39`](91a38d39-abe7-456b-bc6b-2e4d71420275/summary.md) | 2 | 0 | 0.7 MB | `ed83e0c2f2ff`, not uploaded |
 | [`722674dd`](722674dd-f1af-42c9-a55d-4febdb90b0f1/summary.md) | 2 | 0 | 0.4 MB | `503c8de63051`, not uploaded |
 | [`515f8415`](515f8415-55b4-4a47-8fbe-978fc5054ac2/summary.md) | 2 | 0 | 0.5 MB | `f442a8ef3364`, not uploaded |
-| [`4bd65c9c`](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | 1 | 0 | 0.3 MB | `f04c18f09654`, not uploaded |
+| [`4bd65c9c`](4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | 2 | 0 | 0.7 MB | `8e5b8eac063e`, not uploaded |
 
 ## Session notes
 
