@@ -39,7 +39,8 @@ print(json.dumps({"type": "result", "subtype": "success" if ok else "error_durin
                   "result": "The stand-in's report: three changes, ordered 902 900 901."}))
 sys.exit(0 if ok else 1)
 '''
-PIPELINE = ("import json, os\n"
+PIPELINE = ("import json, os, sys\n"
+            "open(os.environ['STANDIN_QUEUE'] + '.calls', 'a').write(' '.join(sys.argv[1:]) + '\\n')\n"
             "print(open(os.environ['STANDIN_QUEUE']).read() if os.path.exists(os.environ['STANDIN_QUEUE']) else "
             "json.dumps({'pending': [], 'running': [], 'finished, not collected': [], 'collected': []}))\n")
 NOW = 1_800_000_000.0
@@ -451,6 +452,52 @@ class RequestsTest(Made):
         while "asked to stop" not in (self.run.dir / "verification.log").read_text() and time.time() < until:
             time.sleep(0.05)
         self.assertEqual((self.run.dir / "verification.log").read_text(), "started\nasked to stop\n")
+
+    def nudges(self):
+        calls = Path(str(self.queue) + ".calls")
+        return calls.read_text().splitlines().count("nudge") if calls.exists() else 0
+
+    def test_wait_announces_a_job_it_sees_queued_once_and_not_one_this_machine_cannot_run(self):
+        job, big = "20260101-000000-made-up-job", "20260101-000001-too-big-a-job"
+        self.loop("901")
+        self.run.update(lastSummary={"time": time.time()})
+        self.queue.write_text(queue(pending=[f"{big}  Too big  (1 CPU, 64G, ~1h at abc); cannot run here: needs 64G"]))
+        self.assertEqual(self.call("wait", "--timeout", 0)[0], 3)
+        self.assertEqual(self.nudges(), 0)
+        self.queue.write_text(queue(pending=[f"{job}  A job  (1 CPU, 1G, ~1m at abc)"]))
+        self.assertEqual(self.call("wait", "--timeout", 0)[0], 3)
+        self.assertEqual(self.call("wait", "--timeout", 0)[0], 3)
+        self.assertEqual((self.nudges(), self.run.read()["nudged"]), (1, [job]), "once for a job, however long it waits")
+        self.queue.write_text(queue(running=[f"{job}  A job"]))
+        self.call("wait", "--timeout", 0)
+        self.assertEqual((self.nudges(), self.run.read()["nudged"]), (1, []))
+        self.assertIn("nudge", self.call("verification", "nudge")[1] + "nudge")
+        self.assertEqual(self.nudges(), 2, "and whenever the watcher says so itself")
+
+    @cost("tool")
+    def test_wait_starts_a_verification_loop_that_is_gone_while_jobs_wait_unless_the_watcher_stopped_it(self):
+        subprocess.run(["jj", "--quiet", "git", "init", str(self.root)], check=True, capture_output=True,
+                       env={**os.environ, "JJ_CONFIG": os.devnull, "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid"})
+        tools = self.root / "llm-dlc/tools"
+        tools.mkdir(parents=True)
+        (tools / "verification-loop.sh").write_text("#!/usr/bin/env bash\ntrap 'exit 0' USR1\nwhile :; do sleep 0.1; done\n")
+        (tools / "verification-loop.sh").chmod(0o755)
+        self.loop("901")
+        self.run.update(lastSummary={"time": time.time()})
+        self.assertEqual(self.call("wait", "--timeout", 0)[0], 3, "with nothing queued, no loop is needed")
+        self.assertNotIn("verification", self.run.read())
+        self.queue.write_text(queue(pending=["20260101-000000-made-up-job  A job  (1 CPU, 1G, ~1m at abc)"]))
+        status, out = self.call("wait", "--timeout", 0)
+        pid = self.run.read()["verification"]["pid"]
+        self.addCleanup(lambda: watch.alive(pid) and os.kill(pid, 9))
+        self.assertEqual((status, json.loads(out)["kind"], json.loads(out)["pid"]), (0, "verification", pid))
+        self.assertEqual(self.call("wait", "--timeout", 0)[0], 3, "one is running now")
+        self.call("verification", "stop")
+        until = time.time() + 10
+        while watch.verification_running(self.root) and time.time() < until:
+            time.sleep(0.05)
+        self.assertEqual(self.call("wait", "--timeout", 0)[0], 3, "the watcher stopped it: it stays stopped")
+        self.assertEqual(self.run.read()["verification"]["pid"], pid)
 
     def test_loop_starts_the_proof_loop_detached_in_the_fixed_session_and_refuses_a_second(self):
         tools = self.root / "llm-dlc/tools"

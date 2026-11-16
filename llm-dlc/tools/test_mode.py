@@ -90,9 +90,29 @@ class RuntimeSyncTest(unittest.TestCase):
     def test_a_commit_is_the_message_with_the_release_s_trailer_and_a_new_change(self):
         status, out, _ = self.run_runtime("commit", "-m", "Add example 901", "-m", "What changed and how it was verified.")
         self.assertEqual(status, 0)
-        self.assertEqual(self.calls, [("describe", "-r", "@", "-m", "Add example 901\n\nWhat changed and how it was "
-                                       f"verified.\n\n{TRAILER}"), ("new",)])
+        self.assertEqual(self.calls[:2], [("describe", "-r", "@", "-m", "Add example 901\n\nWhat changed and how it was "
+                                           f"verified.\n\n{TRAILER}"), ("new",)])
+        self.assertEqual(self.calls[2:], [("diff", "-r", "@-", "--name-only", *sync.QUEUE)], "then only a look at what it changed")
         self.assertIn("0 error(s)", out)
+        self.assertNotIn("verification queue", out)
+
+    def test_a_commit_that_queues_a_job_tells_the_pipeline_and_one_that_does_not_stays_quiet(self):
+        said = []
+        def nudge(command, **_):
+            said.append(command[1:])
+            return subprocess.CompletedProcess(command, 0, "no runner is at work: a verification loop waiting for work looks at the queue now\n", "")
+        changed = subprocess.CompletedProcess([], 0, "verification/jobs/20260101-000000-made-up.json\n", "")
+        with mock.patch.object(sync.subprocess, "run", nudge):
+            with mock.patch.object(sync, "jj", lambda *args: changed if args[0] == "diff" else subprocess.CompletedProcess([], 0, "", "")):
+                status, out, _ = self.run_runtime("commit", "-m", "Queue a job (verification pending)")
+            self.assertEqual((status, said), (0, [[str(sync.REPO / "verification/pipeline.py"), "nudge"]]))
+            self.assertIn("the commit changed the verification queue: no runner is at work", out)
+            said.clear()
+            self.run_runtime("commit", "-m", "No job in this one")
+            self.assertEqual(said, [])
+            with mock.patch.object(sync, "jj", mock.Mock(side_effect=[subprocess.CompletedProcess([], 0, "", "")] * 2 + [OSError("no jj")])):
+                with mock.patch.object(sync, "log", lambda _: None):
+                    self.assertEqual(self.run_runtime("commit", "-m", "The look fails")[0], 0, "the commit stands without it")
 
     def test_a_trailer_already_there_is_not_added_twice_and_another_release_s_is_replaced(self):
         self.run_runtime("commit", "-m", "Summary", "-m", TRAILER)

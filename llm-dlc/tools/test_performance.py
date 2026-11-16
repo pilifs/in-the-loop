@@ -1130,7 +1130,8 @@ class CommitChecks(unittest.TestCase):
                  mock.patch.object(sync, "cmd_check", side_effect=lambda a, **k: calls.append(("check", k)) or found), \
                  mock.patch("sys.stdout", io.StringIO()), mock.patch("sys.stderr", io.StringIO()) as err:
                 self.assertEqual(sync.cmd_commit(["-m", "Made-up summary", "-m", "Made-up body"]), expected)
-            self.assertEqual(calls, [("jj", "describe"), ("sync",), ("jj", "new"),
+            # the diff is the look at whether the commit changed the verification queue (nudge_queue)
+            self.assertEqual(calls, [("jj", "describe"), ("sync",), ("jj", "new"), ("jj", "diff"),
                                      ("check", {"redact": redact, "notes_listed": False})])
             self.assertEqual("found errors" in err.getvalue(), bool(found))
 

@@ -179,6 +179,8 @@ proof loop detached, continuing the fixed session at high effort, and returns at
 - **Between two examples**, merge whatever workspace the user has queued, then answer `stop` if they asked the loop
   to end there, else `continue`.
 - **A compaction with no commit**: `continue` while the work is moving, `stop` when it is stuck.
+- **A verification loop it started** (`"kind": "verification"`): none was running while jobs waited, and `wait`
+  has started one. Say so, and go on.
 
 Each answer you give is also recorded as a decision the user can review afterwards (`llm-dlc/decisions/`). Add
 `--confidence medium` to an answer you are not sure of, which flags it for them; put a question you are less sure

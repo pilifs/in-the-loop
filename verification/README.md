@@ -17,7 +17,9 @@ Everything goes through [`pipeline.py`](pipeline.py):
 ```bash
 python3 verification/pipeline.py submit ...      # write verification/jobs/ID.json
 python3 verification/pipeline.py status          # the queue
-python3 verification/pipeline.py run             # run what is pending, then stop; --watch keeps polling
+python3 verification/pipeline.py run             # run what is pending and what is committed meanwhile, then stop
+python3 verification/pipeline.py nudge           # say that the queue changed: whoever waits looks at once
+python3 verification/pipeline.py wait            # block until a job has finished, or no runner is at work
 python3 verification/pipeline.py prioritize ID --priority 10 --reason "..."   # move jobs up the queue
 python3 verification/pipeline.py run --min-priority 10   # run only the jobs at that priority or above
 python3 verification/pipeline.py collect         # bring finished results into the repo
@@ -168,6 +170,25 @@ a submitter's error, a decision that changes what the results mean) goes into [`
 keeps it after the session ends; an entry is closed only by the check it names.
 
 To keep the queue empty unattended, run `llm-dlc/tools/verification-loop.sh`: it starts a fresh session on Sonnet running the skill whenever there is work this machine can do, and watches for new jobs in between (see [`llm-dlc/README.md`](../llm-dlc/README.md#unattended-loops)).
+
+**Who learns of a new job, and when.** Nobody waits out an interval for a job that was announced, and no job waits
+for a longer one to end:
+
+- **The commit that queues a job announces it.** `sync.py commit` runs `pipeline.py nudge` when its commit changed
+  `verification/jobs/` or `priorities.json`. A nudge only touches a file in the state directory.
+- **A runner at work takes the job into its run.** `run` reads the queue at its start, at once after a nudge, and
+  every `poll_seconds` (30) besides, and starts each new job beside the ones running, as the budget allows. It ends
+  when nothing runs and nothing is queued, after one last look (`--watch` keeps it going).
+- **A verification loop waiting for work looks at once** after a nudge, and every `VERIFICATION_LOOP_POLL` seconds
+  (60) besides.
+- **Each result is collected as it comes.** The agent managing a run waits with `pipeline.py wait`, which returns
+  when a job has finished, and collects, triages and commits that result while the others run. A short job's
+  result is not held back behind a long one.
+- **The watcher of a proof loop** ([`watch.py`](../llm-dlc/tools/watch.py)) announces a job it sees queued that
+  nobody announced, and starts a verification loop if none is running while jobs wait.
+
+The intervals are the backup, for a job that arrives some other way (a merge, a plain `jj commit`, another
+workspace). Reading the queue is one git call for all the job files, so a look costs a fraction of a second.
 
 ## Reading results
 

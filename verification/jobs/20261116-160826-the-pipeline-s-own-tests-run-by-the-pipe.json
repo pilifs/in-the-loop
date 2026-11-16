@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-160826-the-pipeline-s-own-tests-run-by-the-pipe",
+  "title": "The pipeline's own tests, run by the pipeline: the queue is read again during a run",
+  "description": "The runner now reads the queue again while it runs (at a nudge and every poll_seconds), so a job committed during a run starts beside the others, and pipeline.py gained nudge and wait. This job runs verification/test_pipeline.py inside the runner, at the commit that made the change. It was also queued to see the new path work on the real queue once: its commit announces it, and the verification loop, waiting for work, should start its run within seconds and not at its next 60 s look.",
+  "kind": "other",
+  "capabilities": [
+    "pipeline:run"
+  ],
+  "links": {
+    "paths": [
+      "verification/pipeline.py",
+      "llm-dlc/tools/verification-loop.sh"
+    ]
+  },
+  "expected": "Every test of verification/test_pipeline.py passes",
+  "submitted": {
+    "at": "2026-11-16T16:08:26+00:00",
+    "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+  },
+  "requires": [],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "python3 -m unittest test_pipeline",
+      "run": "python3 -m unittest test_pipeline",
+      "cwd": "verification"
+    }
+  ],
+  "outputs": []
+}

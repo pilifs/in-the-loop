@@ -435,6 +435,63 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(job["resources"]["memory"], "8G")
 
     @cost("tool")
+    def start_runner(self, repo, job_id):
+        """A runner in the background, once it has taken the job."""
+        proc = subprocess.Popen([sys.executable, "verification/pipeline.py", "run", "--rev", "HEAD"], cwd=repo.dir,
+                                env=dict(os.environ, VERIFY_REPO=str(repo.dir)), stdout=subprocess.PIPE, text=True)
+        self.addCleanup(lambda: proc.poll() is None and proc.kill())
+        deadline = time.monotonic() + 20
+        while not (repo.dir / "verification/.state/claims" / job_id).exists() and time.monotonic() < deadline:
+            time.sleep(0.1)
+        return proc
+
+    @cost("tool")
+    def test_a_job_committed_during_a_run_starts_at_a_nudge_and_its_result_can_be_collected_before_the_run_ends(self):
+        long = self.repo.submit("A long one", "--run", "sleep 6", "--memory", "512M")
+        self.repo.commit("job")
+        self.assertIn("no runner is at work, and nothing waits", self.repo.pipeline("wait", "--timeout", "0").stdout)
+        proc = self.start_runner(self.repo, long)
+        self.assertEqual(self.repo.pipeline("wait", "--timeout", "1", check=False).returncode, 3, "nothing has finished yet")
+        short = self.repo.submit("A short one", "--run", "true", "--memory", "512M")
+        self.repo.commit("another job")
+        self.assertIn("reads the queue again now", self.repo.pipeline("nudge").stdout)
+        waited = self.repo.pipeline("wait", "--timeout", "20").stdout
+        self.assertIn(f"finished, not collected: {short}", waited)
+        self.assertIn("is at work, 1 job(s) running", waited, "the long one is still running")
+        self.assertIn(f"{short}: passed", self.repo.pipeline("collect").stdout)
+        self.assertEqual(self.repo.result(short)["status"], "passed")
+        out = proc.communicate(timeout=60)[0]
+        self.assertIn(f"finished 2 job(s)", out)
+        self.assertLess(self.repo.result(short)["finishedAt"], self.repo.result(long, False)["finishedAt"])
+        self.assertIn(f"finished, not collected: {long}\nno runner is at work", self.repo.pipeline("wait", "--timeout", "5").stdout)
+        self.assertEqual(self.repo.pipeline("run", "--rev", "HEAD").stdout.count("started at"), 0, "neither runs twice")
+
+    @cost("tool")
+    def test_without_a_nudge_a_job_committed_during_a_run_is_found_at_the_next_interval(self):
+        repo = Repo(poll_seconds=1)
+        self.addCleanup(repo.close)
+        long = repo.submit("A long one", "--run", "sleep 5", "--memory", "512M")
+        repo.commit("job")
+        proc = self.start_runner(repo, long)
+        short = repo.submit("A short one", "--run", "true", "--memory", "512M")
+        repo.commit("another job")
+        self.assertIn(short, repo.pipeline("wait", "--timeout", "20").stdout)
+        proc.communicate(timeout=60)
+        self.assertLess(repo.result(short, False)["finishedAt"], repo.result(long, False)["finishedAt"])
+
+    def test_the_queue_is_read_in_one_git_call_and_a_missing_file_is_none(self):
+        job_id = self.repo.submit("Read me", "--run", "true")
+        head = self.repo.commit("job")
+        with mock.patch.object(pipeline, "ROOT", self.repo.dir):
+            found = pipeline.show_many(head, [f"verification/jobs/{job_id}.json", "verification/jobs/not-there.json", ".gitignore"])
+            self.assertEqual(json.loads(found[f"verification/jobs/{job_id}.json"])["id"], job_id)
+            self.assertIsNone(found["verification/jobs/not-there.json"])
+            self.assertEqual(found[".gitignore"], b"verification/.state/\n", "the file after a missing one is still its own")
+            jobs = pipeline.committed_jobs(head, lambda _: False)
+            self.assertEqual([(j["id"], source) for j, _, source in jobs], [(job_id, None)], "no source looked up for a job that has run")
+            self.assertEqual(pipeline.committed_jobs(head)[0][2], head)
+
+    @cost("tool")
     def test_a_stopped_runner_cancels_its_job_and_the_next_run_takes_it_again(self):
         job_id = self.repo.submit("Interrupt me", "--run", "sleep 60")
         self.repo.commit("job")

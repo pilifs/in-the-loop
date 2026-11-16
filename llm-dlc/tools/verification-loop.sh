@@ -5,9 +5,14 @@
 # collected, it starts a fresh Claude Code session on Sonnet that runs the
 # run-verification skill until the queue is clear: run, collect, triage,
 # resubmit, record what needs a person in verification/findings.md, commit. Each run gets a new session, since the work is mechanical
-# and needs no memory of the last one. When nothing is left it polls the queue
-# (verification/pipeline.py status, jobs committed at @-) and starts again
-# when new jobs arrive.
+# and needs no memory of the last one. When nothing is left it waits for the
+# queue to change and starts again when new jobs arrive: at once when someone
+# says so (verification/pipeline.py nudge, which sync.py commit runs for a
+# commit that queues a job, and the watcher of a proof loop for a job it sees
+# waiting), and by looking every VERIFICATION_LOOP_POLL seconds
+# (verification/pipeline.py status, jobs committed at @-) for a change nobody
+# announced. A job committed while a run is under way needs neither: the
+# runner takes it into that run.
 #
 # A run that leaves work behind, such as jobs it resubmitted, is followed by
 # another, up to VERIFICATION_LOOP_RUNS in a row. A run that leaves exactly the
@@ -54,6 +59,11 @@ REQUEST=$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/verification-loop.XXXXXX") || exit 1
 
 pipeline() { python3 verification/pipeline.py "$@"; }
 
+# The file a nudge touches, and the time of this loop's last look at the queue.
+NUDGE=$(pipeline nudge --where 2>/dev/null)
+LOOKED=$REQUEST.looked
+nudged() { [[ -n "$NUDGE" && "$NUDGE" -nt "$LOOKED" ]]; }
+
 apply() {
   case "${1,,}" in
     stop | q | quit)
@@ -83,7 +93,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$REQUEST"
+  rm -f "$REQUEST" "$LOOKED"
 }
 trap cleanup EXIT
 trap 'exit 130' INT TERM
@@ -114,11 +124,12 @@ run_claude() {
     --permission-mode auto --output-format stream-json --verbose </dev/null | show_progress
 }
 
-# Wait up to POLL seconds, less if a command asks.
+# Wait up to POLL seconds, less if a command asks or a nudge says the queue changed.
 wait_poll() {
   local i
   for (( i = 0; i < POLL; i += 2 )); do
     [[ -s "$REQUEST" ]] && break
+    nudged && break
     sleep 2
   done
   [[ "$(cat "$REQUEST")" == now ]] && : >"$REQUEST"
@@ -137,6 +148,7 @@ idle=          # the state last reported while waiting, so as to say it once
 while :; do
   stop_requested && { log "stopping, as requested"; exit 0; }
 
+  touch "$LOOKED"  # before the look: a nudge during it is one for the next
   if ! found=$(work 2>"$REQUEST.err"); then
     state="pipeline status failed: $(tail -1 "$REQUEST.err")"
   elif [[ -z "$found" ]]; then
@@ -150,7 +162,7 @@ while :; do
 
   if [[ -n "$state" ]]; then
     if [[ "$state" != "$idle" ]]; then
-      log "$state; checking every ${POLL}s (type now to check at once)"
+      log "$state; checking at a nudge and every ${POLL}s (type now to check at once)"
       idle=$state
     fi
     wait_poll

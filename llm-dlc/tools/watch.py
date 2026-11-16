@@ -27,6 +27,9 @@ keeps the user informed, and judges what a script can't:
                                            the user to review afterwards
     watch.py verification start|stop|status   the verification loop, on Sonnet 5.5, which runs the jobs the
                                            sessions queue; started once, before the examples are set up
+    watch.py verification nudge            say that the queue changed, so the runner or the waiting loop looks at
+                                           once; `wait` does it by itself for a job it sees queued, and starts the
+                                           verification loop again if it is gone while jobs wait
     watch.py loop [OPTION ...] NNN ...     start the proof loop on these examples, continuing the fixed session at
                                            high effort; it runs detached, and the options are prove-loop.sh's
     watch.py wait [--interval SECONDS]     block until there is something for the watcher, and print it: a question
@@ -408,6 +411,56 @@ def detached(command: list[str], root: Path, log: Path) -> int:
     return p.pid
 
 
+def start_verification(run: Run) -> int:
+    run.dir.mkdir(parents=True, exist_ok=True)
+    pid = detached([str(run.root / "llm-dlc/tools/verification-loop.sh")], run.root, run.dir / "verification.log")
+    run.update(verification={"pid": pid, "started": conductor.now()})
+    return pid
+
+
+def nudge(root: Path) -> str:
+    """Say to the pipeline that its queue changed (verification/pipeline.py nudge). What it answers, or why not."""
+    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "nudge"], capture_output=True, text=True, cwd=root)
+    return r.stdout.strip() if r.returncode == 0 else f"the pipeline took no nudge: {(r.stderr or r.stdout).strip()[-200:]}"
+
+
+QUEUE_LOOK = 30  # seconds between two looks of `wait` at the verification queue
+
+
+def tend_queue(run: Run) -> dict | None:
+    """The watcher's part in the verification queue, at each look of `wait`: a job that is queued and can run here
+    is announced to the pipeline once (most are announced already, by the commit that queued them: this is for one
+    that came another way), and if no verification loop is running while jobs wait, one is started, unless the
+    watcher was the one to stop it. Returns what to tell the watcher, if anything."""
+    r = subprocess.run([sys.executable, str(run.root / "verification/pipeline.py"), "status", "--json"],
+                       capture_output=True, text=True, cwd=run.root)
+    try:
+        rows = json.loads(r.stdout).get("pending", [])
+    except ValueError:
+        return None
+    waiting = [m[0] for row in rows if "; cannot run here:" not in row and (m := conductor.JOB_ID.search(row))]
+    data = run.read()
+    known = [j for j in data.get("nudged") or [] if j in waiting]  # forgotten once it is no longer waiting
+    if not waiting:
+        if data.get("nudged"):
+            run.update(nudged=[])
+        return None
+    if [j for j in waiting if j not in known]:
+        nudge(run.root)
+        run.update(nudged=waiting)
+    verification = data.get("verification") or {}
+    # Outside a jj repository nothing says whose loop a process is, so none is started on a guess.
+    if store(run.root) and verification_running(run.root) is None and not verification.get("stopped"):
+        try:
+            pid = start_verification(run)
+        except OSError:
+            return None
+        return {"kind": "verification", "pid": pid,
+                "note": f"no verification loop was running while {len(waiting)} job(s) waited: started one "
+                        f"(its output: {run.dir / 'verification.log'}). Tell the user; nothing else to do."}
+    return None
+
+
 def cmd_verification(run: Run, action: str) -> int:
     running = verification_running(run.root)
     ours = (run.read().get("verification") or {}).get("pid")
@@ -415,15 +468,16 @@ def cmd_verification(run: Run, action: str) -> int:
         if running:
             print(f"a verification loop is already running for this repository (pid {running}): leaving the queue to it")
             return 0
-        run.dir.mkdir(parents=True, exist_ok=True)
-        pid = detached([str(run.root / "llm-dlc/tools/verification-loop.sh")], run.root, run.dir / "verification.log")
-        run.update(verification={"pid": pid, "started": conductor.now()})
+        pid = start_verification(run)
         print(f"started the verification loop (pid {pid}; its output: {run.dir / 'verification.log'})")
+    elif action == "nudge":
+        print(nudge(run.root))
     elif action == "stop":
         if not ours or not alive(ours):
             print("this run started no verification loop that is still running")
             return 0
         os.kill(int(ours), signal.SIGUSR1)  # it ends after the job under way, as prove-loop.sh asks it to
+        run.update(verification={**run.read().get("verification", {}), "stopped": conductor.now()})  # not to be started again
         print(f"asked the verification loop (pid {ours}) to end after the job under way")
     else:
         print(f"running (pid {running})" + (", started by this run" if running == ours else "") if running else "not running")
@@ -703,9 +757,12 @@ def next_thing(run: Run, interval: float) -> dict | None:
 
 def cmd_wait(run: Run, interval: float | None, timeout: float) -> int:
     interval = interval if interval is not None else run.read().get("interval", INTERVAL)
-    until = time.monotonic() + timeout
+    until, looked = time.monotonic() + timeout, None
     while True:
         thing = next_thing(run, interval)
+        if thing is None and (looked is None or time.monotonic() - looked >= QUEUE_LOOK):
+            looked = time.monotonic()
+            thing = tend_queue(run)
         if thing is not None:
             if thing["kind"] == "summary":
                 return cmd_summary(run)
@@ -785,7 +842,7 @@ def main(argv: list[str] | None = None) -> int:
     cl.add_argument("examples", nargs="+", metavar="NNN")
     cl.add_argument("--json", action="store_true")
     cl.add_argument("--accept", metavar="REASON")
-    sub.add_parser("verification").add_argument("action", choices=("start", "stop", "status"))
+    sub.add_parser("verification").add_argument("action", choices=("start", "stop", "status", "nudge"))
     sub.add_parser("loop").add_argument("arguments", nargs="*")
     w = sub.add_parser("wait")
     w.add_argument("--interval", type=float)

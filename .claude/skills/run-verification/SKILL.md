@@ -19,7 +19,9 @@ commands by hand to see: the runner is how they run, under limits.
    one.
 
 2. **Run.** `python3 verification/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
-   until the queue is empty and a job can take an hour. Give it the budget the machine has now: check
+   until the queue is empty and a job can take an hour. It takes the jobs committed while it runs as well (it reads
+   the queue again when someone says it changed, and every 30 s besides), and starts each beside the others as the
+   budget allows, so a run ends only when nothing is left. Give it the budget the machine has now: check
    `free -h`, which feature loops are running (`systemctl --user list-units 'feature-loop-*'`), each in a scope
    of its own with its cap (3.5 GB unless its brief or `FEATURE_LOOP_MEMORY_MAX` sets another), and whether
    `run-streams.sh` is running (`pgrep -fa run-streams.sh`). A machine with `verification/pipeline.local.toml` gives,
@@ -29,11 +31,17 @@ commands by hand to see: the runner is how they run, under limits.
    killed and nothing swaps. Without a local file (the 9 GB laptop), leave the runner the machine's memory less the
    loops' caps: with one loop the defaults fit; without any, `--memory 7G --workers 3`. Use `--watch` only
    when the user asks for the pipeline to keep going; it does not stop by itself. While it runs, don't start proofs
-   of your own, and don't start a second runner: it refuses while the first holds the lock. To wait for it, wait for
-   the background task's completion notification, or poll `python3 verification/pipeline.py status` until it shows
-   `running: 0`; never wait with `pgrep -f` on a pattern, since it matches the waiting command's own command line.
+   of your own, and don't start a second runner: it refuses while the first holds the lock.
 
-3. **Collect.** When the run finishes, `python3 verification/pipeline.py collect`. It moves results into
+   **Collect each result as it comes.** Wait with `python3 verification/pipeline.py wait`: it blocks until a job has
+   finished and waits to be collected, or until no runner is at work, for up to 9 minutes (exit 3 means nothing
+   yet: run it again). When it names finished jobs, do steps 3 to 6 for them at once, while the others go on
+   running, then wait again: whoever queued a job may be waiting on its result, and a long job beside it must not
+   hold it back. When it says no runner is at work and nothing waits to be collected, the run is over; if `status`
+   then shows a pending job this machine can run, start the runner again. Never wait with `pgrep -f` on a pattern,
+   since it matches the waiting command's own command line.
+
+3. **Collect.** Each time `wait` names finished jobs, `python3 verification/pipeline.py collect`. It moves results into
    `verification/results/`, applies the outputs of jobs that passed to the working copy unless a file changed since
    the job's commit, regenerates the examples table, and prints a commit message. Its totals count the jobs whose
    outputs it applied, the ones with none, and the ones kept or in conflict: quote those numbers rather than adding
@@ -46,7 +54,8 @@ commands by hand to see: the runner is how they run, under limits.
      verdict differs from its expectation). That is a finding about the change, not about the pipeline. Report it
      with the evidence: the job, the step, the lines, the commit.
    - **Out of time or memory**: no verdict. If the usage suggests a bigger estimate would fit this machine,
-     `python3 verification/pipeline.py resubmit ID --memory ... --duration ...` and commit the new job. If it needs
+     `python3 verification/pipeline.py resubmit ID --memory ... --duration ...` and commit the new job (a runner
+     still at work takes it into its run). If it needs
      more than this runner allows (`job_memory_max`), leave it deferred and say it needs a bigger machine.
    - **An error**: the pipeline could not run it (a tool missing, jvmcontract did not build, a step's command wrong).
      Fix what is the pipeline's; tell the submitter what is theirs.

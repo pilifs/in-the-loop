@@ -290,7 +290,12 @@ python3 llm-dlc/tools/watch.py status                         # where everything
   sessions do.
 - **The verification loop** runs the [jobs](../verification/README.md) the sessions queue, on Sonnet 5.5. The
   watcher starts it before stage 2, since setting an example up already queues work, and stops it once the run has
-  ended and the queue is clear. One per repository is enough: `start` leaves a running one alone.
+  ended and the queue is clear. One per repository is enough: `start` leaves a running one alone. The three work
+  the queue together, and none waits out an interval: the commit that queues a job announces it, a runner at work
+  starts it beside the jobs already running, each result is collected when its job ends, and `watch.py wait`
+  announces a job nobody did and starts a verification loop again if none is running while jobs wait (unless the
+  watcher stopped it). [`verification/README.md`](../verification/README.md#for-the-agent-managing-the-pipeline) has the
+  details; the intervals stay as the backup.
 - **The run's state** is in `llm-dlc/loop-summaries/prove-change/` (gitignored): `watch.json` (the fixed session,
   the stages, the last summary), `plan.md`, the stages' streams, and [the loop's own files](#the-proof-loop).
 
@@ -421,7 +426,7 @@ check names, in the examples it names, and nothing else:
 
 ### Watching the loop
 
-`watch.py wait` blocks until one of four things, prints it, and is run again:
+`watch.py wait` blocks until one of five things, prints it, and is run again:
 
 | It prints | What the watcher does |
 |---|---|
@@ -429,6 +434,7 @@ check names, in the examples it names, and nothing else:
 | A question of the loop's | Judges it and answers with the `conductor.py decide` line printed beside it. The three questions are below |
 | A proof that has come in | Tells the user. The loop takes the example up again by itself when it next changes example |
 | The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
+| A verification loop it started (`"kind": "verification"`) | Tells the user: none was running while jobs waited, and `wait` has started one. Nothing else to do |
 
 **After each cycle** the loop asks whether the example is done (`cycle`, five minutes to answer). `wait` prints the
 example's state beside the question: its claims by answer, which of those answers were given beside the route
@@ -490,7 +496,10 @@ the jobs. The watcher fixes what is small and says what it did:
   far past its estimate runs in a scope of its own (`systemctl --user list-units 'vjob-*'`), which
   `systemctl --user stop` ends, and the runner records the step as failed. `pipeline.py resubmit` queues it again
   with other resources, if that is what it needs ([`verification/README.md`](../verification/README.md));
-- a verification loop that died: `watch.py verification start`;
+- a verification loop that died: `watch.py wait` starts one again by itself while jobs wait, and
+  `watch.py verification start` does it by hand;
+- a job that is queued and not starting: `watch.py verification nudge` has the runner, or the waiting loop, look
+  at the queue at once;
 - a loop that ended on a cycle with no commit: read why in its record, and start it again on what is left
   (`changes.py --pending`), the example it stopped on last, unless what stopped it would stop the others too;
 - a lock or a scope a killed run left behind.

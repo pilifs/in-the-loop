@@ -9,7 +9,10 @@ of the commit that holds it, and records what happened in verification/results/I
 Commands:
   submit    write a job file, from flags or a JSON file (--example ID fills in a demo example's job)
   status    the queue: pending (and whether they fit here), running, finished but not collected, collected
-  run       run pending jobs under the configured budget; --watch keeps polling for new ones
+  run       run pending jobs under the configured budget, taking the jobs committed meanwhile as well, until
+            none is left; --watch keeps it going after that
+  nudge     say that the queue changed: a runner looks at once, and so does a loop waiting for work
+  wait      block until a job has finished and waits to be collected, or no runner is left
   collect   move finished results into verification/results/, apply their outputs to the working copy
   report    a digest of collected results for a batch read, as Markdown or JSON
   resubmit  a new job from an old one, with other resources (after a timeout or out-of-memory, say)
@@ -286,27 +289,56 @@ def show(commit, path):
     return proc.stdout if proc.returncode == 0 else None
 
 
-def committed_jobs(rev):
+def show_many(commit, paths):
+    """The bytes of several files at the commit, by path, from one git process (None for a file that is not there).
+    A queue of a few hundred job files is read in a fraction of a second this way, where a `git show` each took
+    seconds: the runner reads the queue again while it runs."""
+    if not paths:
+        return {}
+    proc = subprocess.run(["git", "cat-file", "--batch"], cwd=ROOT, capture_output=True,
+                          input="".join(f"{commit}:{p}\n" for p in paths).encode())
+    out, at, found = proc.stdout, 0, {}
+    for path in paths:
+        end = out.find(b"\n", at)
+        header = out[at:end].split() if end >= 0 else []
+        if len(header) == 3 and header[1] == b"blob":
+            size = int(header[2])
+            found[path] = out[end + 1:end + 1 + size]
+            at = end + 1 + size + 1
+        else:  # "NAME missing", or output that stopped short
+            found[path] = None
+            at = end + 1 if end >= 0 else len(out)
+    return found
+
+
+def committed_jobs(rev, needs_source=None):
     """Every job file in the commit's tree, as (job, path, source commit). The source commit is the job's own
-    revision if it names one, else the last commit that touched the file: the code the job was written for."""
+    revision if it names one, else the last commit that touched the file: the code the job was written for. It
+    takes a git process for each job, so `needs_source(job id)` may say which jobs it is wanted for (a job that
+    has run needs none); the others come with None."""
     listing = git("ls-tree", "-r", "--name-only", rev, "--", JOBS + "/").stdout.split()
+    paths = sorted(p for p in listing if p.endswith(".json"))
+    blobs = show_many(rev, paths)
     jobs = []
-    for path in sorted(p for p in listing if p.endswith(".json")):
+    for path in paths:
         try:
-            job = json.loads(show(rev, path))
+            job = json.loads(blobs[path])
         except (TypeError, ValueError) as e:
             print(f"warn  {path}: not JSON at {rev[:12]}: {e}", file=sys.stderr)
+            continue
+        if needs_source is not None and not needs_source(job.get("id") or Path(path).stem):
+            jobs.append((job, path, None))
             continue
         source = job.get("revision") or git("log", "-1", "--format=%H", rev, "--", path).stdout.strip()
         jobs.append((job, path, resolve(source)))
     return jobs
 
 
-def queued_jobs(revs):
+def queued_jobs(revs, needs_source=None):
     """committed_jobs over several commits, each job once, as the first commit that has it holds it."""
     seen, jobs = set(), []
     for rev in revs:
-        for job, path, source in committed_jobs(rev):
+        for job, path, source in committed_jobs(rev, needs_source):
             job_id = job.get("id") or Path(path).stem
             if job_id not in seen:
                 seen.add(job_id)
@@ -799,7 +831,8 @@ class Runner:
         done, claimed = self.done_ids(), {p.name for p in (self.state / "claims").iterdir()}
         priorities = load_priorities(revs[0])
         out = []
-        for job, path, source in queued_jobs(revs):
+        settled = lambda job_id: job_id in done or job_id in claimed or job_id in self.running
+        for job, path, source in queued_jobs(revs, lambda job_id: not settled(job_id)):
             job_id = job.get("id") or Path(path).stem
             if job_id in done or job_id in claimed or job_id in self.running:
                 continue
@@ -1220,15 +1253,93 @@ def text_diff(path, old, new):
 # Commands
 
 
+NUDGE = "nudge"  # in the state directory: its time says when the queue last changed, as far as anyone said
+
+
+def nudge_time(state):
+    try:
+        return (state / NUDGE).stat().st_mtime_ns
+    except OSError:
+        return 0
+
+
+def runner_pid(state):
+    """The pid of the runner at work on this state directory, or None. Read from what the runner wrote into its lock
+    file, not by trying the lock: a lock taken to look would turn away a runner starting at that moment."""
+    try:
+        pid = int((state / "runner.lock").read_text().strip() or 0)
+        if pid and b"pipeline.py" in Path(f"/proc/{pid}/cmdline").read_bytes():
+            return pid
+    except (OSError, ValueError):
+        pass
+    return None
+
+
+def uncollected(state):
+    """The jobs that have finished and wait for `collect` (a cancelled one runs again, so it does not)."""
+    results = state / "results"
+    out = []
+    for p in sorted(results.iterdir()) if results.exists() else []:
+        try:
+            if json.loads((p / "result.json").read_text()).get("status") != "cancelled":
+                out.append(p.name)
+        except (OSError, ValueError):
+            pass  # not written yet
+    return out
+
+
+def cmd_nudge(args):
+    """Say that the queue changed, so nobody waits out an interval to find out: a job was committed, or priorities
+    were. sync.py commit does it for a commit that touches the queue, and the watcher of a proof loop for a job it
+    sees waiting. The intervals stay, for a change nobody announced."""
+    state = load_config(args)["runner"]["state_dir"]
+    if args.where:
+        print(state / NUDGE)
+        return 0
+    state.mkdir(parents=True, exist_ok=True)
+    (state / NUDGE).write_text(iso(now()) + "\n")
+    pid = runner_pid(state)
+    print(f"the runner (pid {pid}) reads the queue again now" if pid else
+          "no runner is at work: a verification loop waiting for work looks at the queue now")
+    return 0
+
+
+def cmd_wait(args):
+    """Block until there is something to do about a run under way: a job has finished and waits to be collected
+    (exit 0, naming them), or no runner is at work and nothing waits (exit 0). Exit 3 when neither happened in
+    --timeout seconds: the caller waits again. With it, whoever manages a run collects each result as it comes,
+    where waiting for the runner to end holds a short job's result back behind the longest one."""
+    state = load_config(args)["runner"]["state_dir"]
+    start = time.monotonic()
+    while True:
+        ready, pid = uncollected(state), runner_pid(state)
+        claims = len(list((state / "claims").iterdir())) if (state / "claims").exists() else 0
+        at_work = f"the runner (pid {pid}) is at work, {claims} job(s) running" if pid else "no runner is at work"
+        if ready:
+            print(f"finished, not collected: {' '.join(ready)}\n{at_work}")
+            return 0
+        # A runner started a moment ago may not have written its pid yet.
+        if not pid and time.monotonic() - start >= min(5, args.timeout):
+            print(f"{at_work}, and nothing waits to be collected")
+            return 0
+        if time.monotonic() - start >= args.timeout:
+            print(f"nothing has finished yet: {at_work}; wait again")
+            return 3
+        time.sleep(1)
+
+
 def cmd_run(args):
     config = load_config(args)
     isolation = isolation_of(config["runner"])
     runner = Runner(config, isolation)
-    lock = open(runner.state / "runner.lock", "w")
+    lock = open(runner.state / "runner.lock", "a+")
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         sys.exit(f"another runner is using {runner.state}")
+    lock.truncate(0)
+    lock.write(f"{os.getpid()}\n")  # for runner_pid: who is at work here
+    lock.flush()
     runner.clear_stale_claims()
 
     def interrupted(signum, _frame):
@@ -1242,9 +1353,12 @@ def cmd_run(args):
           f"(at most {fmt_bytes(r['job_memory_max'])} a job), isolation {isolation}, state {runner.state}", flush=True)
     wanted = set(args.ids) if args.ids else None
     told = set()
-    last_scan, queue, blocked = None, [], None
+    # The queue is read at the start, at once after a nudge, and every poll_seconds for a change nobody announced:
+    # a job committed while another runs starts beside it, within the budget, and does not wait for this run to end.
+    last_scan, queue, blocked, nudged, last_look = None, [], None, nudge_time(runner.state), False
     while not runner.stopping:
-        if last_scan is None or (args.watch and time.monotonic() - last_scan > r["poll_seconds"]):
+        if last_scan is None or nudge_time(runner.state) != nudged or time.monotonic() - last_scan > r["poll_seconds"]:
+            nudged = nudge_time(runner.state)
             revs = [resolve(args.rev)] if args.rev else queue_revs()
             with runner.lock:
                 queue = runner.pending(revs, wanted, args.min_priority)
@@ -1269,23 +1383,30 @@ def cmd_run(args):
                 why = runner.fits(job_plan["cpus"], memory)
                 if why and not runner.running and not args.watch:
                     # Nothing of ours holds the room it waits for: only the rest of the machine does.
-                    print(f"{job['id']}: not started: {why}; rerun when there is room, or use --watch to wait", flush=True)
+                    if job["id"] not in told:
+                        print(f"{job['id']}: not started: {why}; rerun when there is room, or use --watch to wait", flush=True)
+                        told.add(job["id"])
                     queue.clear()
                     break
                 if why and why != blocked and not runner.running:
                     print(f"{job['id']}: waiting: {why}", flush=True)
                 blocked = why
                 if why is None and runner.start(job, path, source, job_plan, memory):
+                    last_look = False
                     print(f"{job['id']}: started at {source[:12]} ({job_plan['cpus']:g} CPU, limit {fmt_bytes(job_plan['memoryLimit'])}, "
                           f"timeout {fmt_seconds(job_plan['timeout'])})", flush=True)
                     queue.remove((job, path, source))
                 elif why:
                     break  # in priority order: a later job does not overtake one that is waiting for room
         if not runner.running and not queue and not args.watch:
-            break
+            if last_look:
+                break
+            last_scan, last_look = None, True  # one more look: a job may have come in since the last one
+            continue
         time.sleep(1)
     for entry in list(runner.running.values()):
         entry["thread"].join()
+    lock.truncate(0)
     finished = runner.finished
     print(f"finished {len(finished)} job(s)" + (f": {', '.join(finished)}" if finished else "") +
           ("; collect them with: python3 verification/pipeline.py collect" if finished else ""))
@@ -1304,7 +1425,8 @@ def cmd_status(args):
     rows = {"pending": [], "running": [], "finished, not collected": [], "collected": []}
     seen = set()
     priorities = load_priorities(rev)
-    for job, path, source in sorted(queued_jobs(revs), key=queue_order(priorities)):
+    waiting = lambda job_id: job_id not in collected and job_id not in finished and job_id not in claims
+    for job, path, source in sorted(queued_jobs(revs, waiting), key=queue_order(priorities)):
         job_id = job.get("id")
         seen.add(job_id)
         p = plan(job, config)
@@ -1356,7 +1478,8 @@ def cmd_prioritize(args):
         for job_id, entry in sorted(jobs.items(), key=lambda kv: (-kv[1]["priority"], kv[0])):
             print(f"{entry['priority']:>4}  {job_id}  {entry.get('reason', '')}")
         return 0
-    known = {j.get("id") for j, _, _ in committed_jobs(default_rev())} | {p.stem for p in (ROOT / JOBS).glob("*.json")}
+    known = ({j.get("id") for j, _, _ in committed_jobs(default_rev(), lambda _: False)} |
+             {p.stem for p in (ROOT / JOBS).glob("*.json")})
     unknown = [i for i in args.ids if i not in known]
     if unknown and not args.clear:
         sys.exit(f"no such job: {', '.join(unknown)}")
@@ -1837,7 +1960,7 @@ def main(argv=None):
     p = sub.add_parser("run", help="run pending jobs")
     budget(p)
     p.add_argument("--rev", help="the commit whose jobs to run (default: jj's @- here and in every other workspace, else HEAD)")
-    p.add_argument("--watch", action="store_true", help="keep polling for newly committed jobs")
+    p.add_argument("--watch", action="store_true", help="keep going when the queue is empty, for jobs committed later")
     p.add_argument("--min-priority", type=int, help="only jobs at this priority or above (verification/priorities.json, else the job's own)")
     p.add_argument("ids", nargs="*", help="only these jobs")
     p.set_defaults(func=cmd_run)
@@ -1848,6 +1971,16 @@ def main(argv=None):
     p.add_argument("--reason", help="why: what waits on these jobs, or why they can wait")
     p.add_argument("--clear", action="store_true", help="drop these jobs' entries, back to their own priority")
     p.set_defaults(func=cmd_prioritize)
+
+    p = sub.add_parser("nudge", help="say that the queue changed: a runner, or a loop waiting for work, looks at once")
+    p.add_argument("--state-dir")
+    p.add_argument("--where", action="store_true", help="print the file a nudge touches, and touch nothing")
+    p.set_defaults(func=cmd_nudge)
+
+    p = sub.add_parser("wait", help="block until a job has finished and waits to be collected, or no runner is at work")
+    p.add_argument("--state-dir")
+    p.add_argument("--timeout", type=float, default=540, help="seconds (default 540); exit 3 when nothing happened")
+    p.set_defaults(func=cmd_wait)
 
     p = sub.add_parser("status", help="the queue")
     budget(p)
