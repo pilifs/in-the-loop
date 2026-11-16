@@ -41,7 +41,8 @@
 //! `HashMap` model (`lib/models/java/util/HashMap.java`: its two constructors, `put`, `get`, `containsKey`,
 //! `size`, `isEmpty`), each with an evidence record of `values::OPERATIONS`, nor those of the `LinkedHashMap`
 //! model over it (its constructor, `values()`, the collection's `size` and `iterator`, the iterator's `hasNext`
-//! and `next`), whose evidence is `claims.M` (`lib/tests/claims.rs`). Nor are the
+//! and `next`) and of the model of the list `Arrays.asList` returns (`lib/models/java/util/lists`: `size`, `get`,
+//! `toArray()`), whose evidence is `claims.M` (`lib/tests/claims.rs`). Nor are the
 //! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples (`List.of`'s fixed forms,
 //! `copyOf`, `size`, `isEmpty`, `get`, the iterator's path and the changes they refuse), which it runs as the
 //! models' bytecode; any other method the models implement, called from outside them (`contains`, `equals`,
@@ -492,8 +493,9 @@ pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str)
         return false;
     }
     // `AbstractCollection()` is the JDK's empty protected constructor, which the immutable lists' model
-    // (`ImmutableCollections.AbstractImmutableList`, run by the own checker) calls as the JDK's lists do.
-    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection") && descriptor == "()V" {
+    // (`ImmutableCollections.AbstractImmutableList`, run by the own checker) calls as the JDK's lists do; and so
+    // is `AbstractList()`, which the model of `Arrays.asList`'s list calls.
+    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection" || owner == "java/util/AbstractList") && descriptor == "()V" {
         return true;
     }
     matches!(descriptor, "()V" | "(Ljava/lang/String;)V" | "(Ljava/lang/String;Ljava/lang/Throwable;)V") && crate::classpath::is_jdk_name(owner) && cp.is_subtype(owner, "java/lang/Throwable")

@@ -2,9 +2,11 @@ package claims;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -107,6 +109,46 @@ public final class M {
         catch (ConcurrentModificationException e) {
             return adds;
         }
+    }
+
+    /**
+     * The list {@code Arrays.asList} makes of an array: a view of it, of its length, whose elements are the
+     * array's as they are when asked for, and whose {@code toArray()} is a new array of them.
+     */
+    public static boolean listed(int[] a) {
+        int n = a.length;
+        At[] made = new At[n];
+        for (int i = 0; i < n; i++) {
+            made[i] = new At(a[i]);
+        }
+        List<At> view = Arrays.asList(made);
+        Object[] plain = view.toArray();
+        if (view.size() != n || plain.length != n) {
+            return false;
+        }
+        for (int i = 0; i < n; i++) {
+            if (view.get(i) != made[i] || plain[i] != made[i]) {
+                return false;
+            }
+        }
+        if (n > 0) {
+            made[0] = new At(1);
+            if (view.get(0) != made[0] || plain[0] == made[0]) {
+                return false;
+            }
+        }
+        try {
+            view.get(n);
+            return false;
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            return true;
+        }
+    }
+
+    /** {@code Collections.emptyMap()}: one map, never null. */
+    public static boolean emptied() {
+        return Collections.emptyMap() != null && Collections.emptyMap() == Collections.emptyMap();
     }
 
     static int clock;

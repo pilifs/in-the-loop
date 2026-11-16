@@ -119,6 +119,12 @@ map), `keySet`, `entrySet`, `remove`, `clear`, the rest of the collection (it ex
 `AbstractCollection`) and the iterator's `remove`. Its conformance is `claims.M` in `tests/claims.rs`: the values
 against the order written out over an array, on every input of a bound, and the same method on a JVM.
 
+`java.util.ArrayAsList` (what `Arrays.asList(T...)` returns; not a JDK class, entered by `models::entry`) is a
+model only the checker runs too ([`java/util/lists`](java/util/lists/)). It extends the JDK's `AbstractList`, so
+`build.sh` compiles it in a run of its own, against the JDK's `List` and not the model of it in `java/util`. It
+keeps `size`, `get` and `toArray()`, over the array it is a view of. Every other method is `AbstractList`'s, which
+the checker does not run: the JDK call it names. Its conformance is `claims.M#listed`.
+
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken
 yet.

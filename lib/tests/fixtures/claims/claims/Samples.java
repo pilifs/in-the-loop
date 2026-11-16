@@ -104,6 +104,7 @@ public final class Samples {
             int[] few = new int[r.nextInt(5)];
             for (int q = 0; q < few.length; q++) few[q] = r.nextInt(3);
             check(M.ints(few, r.nextInt(3)), "ints " + java.util.Arrays.toString(few));
+            check(M.listed(few) && M.listed(keys) && M.emptied(), "listed " + java.util.Arrays.toString(few));
             int n = r.nextInt(4) == 0 ? r.nextInt() : r.nextInt(2400) - 1200;
             check(M.numbered(n, (short) r.nextInt(), (byte) r.nextInt()), "numbered " + n);
         }

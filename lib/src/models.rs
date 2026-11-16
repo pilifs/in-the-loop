@@ -74,6 +74,7 @@ pub const MODELS: &[Model] = &[
     model!(checker "java/util/LinkedHashMap", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap.class", "a LinkedHashMap as the HashMap model's entries, iterated in insertion order: LinkedHashMap(), what the HashMap model has, and values() with its size and fail-fast iterator; the own checker only"),
     model!(checker "java/util/LinkedHashMap$LinkedValues", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValues.class", "the values collection of the LinkedHashMap model: size and iterator; the own checker only"),
     model!(checker "java/util/LinkedHashMap$LinkedValueIterator", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValueIterator.class", "the iterator of the LinkedHashMap model's values: hasNext and next, fail-fast; the own checker only"),
+    model!(checker "java/util/ArrayAsList", "java/util/lists/ArrayAsList.java", "java/util/ArrayAsList.class", "what Arrays.asList(T...) returns: a list that is a view of the array, with size, get and toArray(); not a JDK class; the own checker only"),
     model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
@@ -94,7 +95,8 @@ pub const MODELS: &[Model] = &[
 /// `List.copyOf` make (`List`'s factories, `ImmutableCollections`, its `List12`, `ListN`, `AbstractImmutableList` and
 /// `ListItr`), written without a JDK call so that the checker runs every step as JBMC does, and `java.util.HashMap`
 /// with its entries (`HashMap$Node`), whose only calls out are its keys' `hashCode` and `equals`, and
-/// `java.util.LinkedHashMap` over it, with its values and their iterator. Their state is fields of
+/// `java.util.LinkedHashMap` over it, with its values and their iterator, and the list `Arrays.asList` returns,
+/// a view of its array. Their state is fields of
 /// their own objects (an enum's name and ordinal, a list's elements) and `ImmutableCollections`' two statics (the one
 /// empty list, the sentinel of a list of one), which the checker holds as an application class's
 /// ([`ClassPath::checker_class`](crate::classpath::ClassPath::checker_class)); the interpreter keeps its natives for
@@ -106,6 +108,7 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/util/LinkedHashMap",
     "java/util/LinkedHashMap$LinkedValues",
     "java/util/LinkedHashMap$LinkedValueIterator",
+    "java/util/ArrayAsList",
     "java/util/List",
     "java/util/ImmutableCollections",
     "java/util/ImmutableCollections$AbstractImmutableList",
@@ -121,8 +124,8 @@ pub const CHECKER_RUNS: &[&str] = &[
 ];
 
 /// The JDK calls that enter a model by a method of the model's own: `java.util.Arrays.stream(T[])`,
-/// `Arrays.stream(int[])`, `String.chars()` and `IntStream.range(int, int)`, whose classes the tool does not model
-/// otherwise. Each is the model's static method
+/// `Arrays.stream(int[])`, `Arrays.asList(T...)`, `String.chars()` and `IntStream.range(int, int)`, whose classes
+/// the tool does not model otherwise. Each is the model's static method
 /// `(class, name, descriptor)`, called with the call's receiver, if it has one, and its arguments.
 pub fn entry(owner: &str, name: &str, descriptor: &str) -> Option<(&'static str, &'static str, &'static str)> {
     match (owner, name, descriptor) {
@@ -130,6 +133,7 @@ pub fn entry(owner: &str, name: &str, descriptor: &str) -> Option<(&'static str,
         ("java/lang/String", "chars", "()Ljava/util/stream/IntStream;") => Some(("java/util/stream/CharsStream", "of", "(Ljava/lang/String;)Ljava/util/stream/IntStream;")),
         ("java/util/stream/IntStream", "range", "(II)Ljava/util/stream/IntStream;") => Some(("java/util/stream/RangeStream", "of", "(II)Ljava/util/stream/IntStream;")),
         ("java/util/Arrays", "stream", "([I)Ljava/util/stream/IntStream;") => Some(("java/util/stream/IntArrayStream", "of", "([I)Ljava/util/stream/IntStream;")),
+        ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;") => Some(("java/util/ArrayAsList", "of", "([Ljava/lang/Object;)Ljava/util/List;")),
         _ => None,
     }
 }
@@ -224,9 +228,11 @@ mod tests {
         }
         let models = Path::new(env!("CARGO_MANIFEST_DIR")).join("models");
         let out = tempfile::tempdir().unwrap();
-        for package in ["lang", "nio/charset", "util", "util/stream"] {
+        // `util/lists` is compiled against the JDK's `List`, as `build.sh` compiles it: with no source path.
+        for package in ["lang", "nio/charset", "util", "util/stream", "util/lists"] {
             let sources: Vec<_> = std::fs::read_dir(models.join("java").join(package)).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
-            let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g", "-d"]).arg(out.path()).args(&sources).status().unwrap();
+            let alone: &[&str] = if package == "util/lists" { &["-sourcepath", ""] } else { &[] };
+            let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g"]).args(alone).arg("-d").arg(out.path()).args(&sources).status().unwrap();
             assert!(status.success(), "the models compile");
         }
         for model in MODELS {

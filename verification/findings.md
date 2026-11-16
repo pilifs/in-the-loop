@@ -18,6 +18,24 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-032: the default test run at `76862913606e` failed one test, `test_runtime.py` (the environment of a verifier run), because `JVMCONTRACT_JBMC_MEMORY_MB` is passed through
+
+- **Status**: open
+- **Raised**: 2026-11-16 on `vm-1`, job `20261116-224337-default-test-run-at-yooukqwllnmu` at `76862913606e`. A first
+  attempt of the same job was cancelled at 10 min when my own background command hit its time limit; the rerun is the
+  one recorded.
+- **Found**: 48 of 49 default-tier files passed (all Rust suites and the other Python tests ok). `examples/tools/targets/test_runtime.py`
+  failed 1 of 73 tests, `VerifierTest.test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds`
+  (line 1276): the verifier's environment holds `JVMCONTRACT_JBMC_MEMORY_MB`, which the test's expected set
+  `{LANG, LC_ALL, TZ, JAVA_HOME, PATH, JVMCONTRACT_JAVA_OPTS}` does not list. `runtime.py:1421` has
+  `VERIFIER_PASS = ("JVMCONTRACT_JBMC_MEMORY_MB", "JVMCONTRACT_JAVA_OPTS")`, so the variable is passed through when the
+  caller's environment has it; the runner's job environment sets it, a plain shell evidently does not. Either the test
+  should exclude it as it does `LC_CTYPE`, or clear it from the environment. I did not change the test.
+- **Needs**: the owner of `examples/tools/targets/` (the prove-examples loop) to make the test independent of the
+  caller's `JVMCONTRACT_JBMC_MEMORY_MB`.
+- **Tracked in**: `verification/results/20261116-224337-default-test-run-at-yooukqwllnmu/logs/1-default-tests.log`.
+- **Closes when**: the default test run job passes unchanged under the runner.
+
 ### VF-031: example 288's three adapter-entry proofs that were expected to be decided ran out of engine time (two refutations at 1800 s, the preservation claim at 5400 s)
 
 - **Status**: open

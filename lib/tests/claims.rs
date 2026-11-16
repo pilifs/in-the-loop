@@ -249,13 +249,13 @@ fn a_throws_clause_over_a_strings_bytes_is_compiled_by_javac_and_checked() {
 /// What a library asks of the JVM before anything else, as far as Spring Security's encoder does: a String's own
 /// What a registry that looks through a servlet context's registrations asks of the JDK (`claims.M`, example 290):
 /// a stream over an int array, a number in a name, a `LinkedHashMap`'s values in order with their fail-fast
-/// iterator, a class by its name with its initialization, whether one class is below another, and the thread's
+/// iterator, the list `Arrays.asList` makes of an array, a class by its name with its initialization, whether one class is below another, and the thread's
 /// context class loader, each against its definition on every input of the bound.
 #[test]
 fn registrations_in_order_and_classes_by_name_are_the_definitions_written_out() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["ints", "numbered", "ordered", "failsFast", "loaded", "erroneous", "assignable"] {
+    for method in ["ints", "numbered", "ordered", "failsFast", "listed", "emptied", "loaded", "erroneous", "assignable"] {
         proved(classes, &format!("claims.M#{method}"), 3);
     }
     let o = run(&options(classes, "claims.M#threaded", 3, "threaded"));

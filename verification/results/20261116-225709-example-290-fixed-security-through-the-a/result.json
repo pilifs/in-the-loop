@@ -1,0 +1,250 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261116-225709-example-290-fixed-security-through-the-a",
+  "title": "Example 290 fixed-security through the adapter entry: the frozen claim on Spring Security 5.8.5, expected established",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.8s, peak 131.1 MiB (estimated 5m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261116-225709-example-290-fixed-security-through-the-a.json",
+    "sha256": "b03cf76704335a681cd0127ca96608d6997cb388a53d3359afc6e468a5829fd9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261116-225709-example-290-fixed-security-through-the-a",
+      "title": "Example 290 fixed-security through the adapter entry: the frozen claim on Spring Security 5.8.5, expected established",
+      "description": "The frozen claim claims/ambiguous-servlet-configuration-rejected.json, unchanged, run by examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py: jvmcontract prove (own checker, strict gaps). The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), the one the claim's first assumption names: it fills a LinkedHashMap with one registration per element of servlets (a table of class names: DispatcherServlet, a plain servlet), puts it in carriers for the servlet context and the web application context, and makes one call of the original requestMatchers on a fresh minimal registry. The claim's expressions are passed as they are written (the assumption, assert false, throws IllegalArgumentException when true), compiled by javac and run as bytecode, at the claim's bound of 8 (up to 8 registrations, 8 patterns of 8 code units); loops are followed exactly for 64 turns (the longest is the map model's walk of ClassUtils's 47 common classes). The class path is the revision's ten pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given: the registry's class initializer, setApplicationContext, requestMatchers and hasDispatcherServlet run as the release's bytecode. What changed in the verifier for it: (1) prove --observed-initializer CLASS (lib/src/observed.rs): a class initializer with no input that the checker does not run is run on a JVM instead, first thing, on the check's class path, its static fields read by reflection, and the checker takes that state (a HashMap of String keys, Strings, Classes, numbers and arrays; anything else is not held and a read of it is refused by name); the result states it as what it rests on. prove.py names three: Spring's ClassUtils (tables built through an IdentityHashMap, a HashSet and a map of soft references) and the servlet API's GenericServlet and HttpServlet (a resource bundle each), never the registry's own. (2) a model of LinkedHashMap for the checker (insertion order, values() with a fail-fast iterator) and of Arrays.stream(int[]); (3) the compiler's concatenation of an int as its decimal digits; (4) Class.forName(String) of a constant name with its initialization, Class.isAssignableFrom of two class literals, and the current thread's context class loader as the class path's under a stated assumption. Each is proved to be its definition written out in Java on every input of a bound, and the definition holds on a JVM (lib/tests/claims.rs, claims.M and claims.Tables). The claims' predicates as javac compiles them agree with the oracle on all 27 select probes (examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/predicates.py). 5.8.5 looks through the registrations for a DispatcherServlet and requires exactly one registration when it finds one; expected established: with a DispatcherServlet registered beside one to seven other loadable servlets, in any order, both implicit overloads throw IllegalArgumentException, for every method and every array of patterns.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "290"
+        ],
+        "paths": [
+          "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py",
+          "lib/src/observed.rs",
+          "lib/src/bmc/runtime.rs",
+          "lib/models/java/util/LinkedHashMap.java"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: verified (expected verified)'",
+      "submitted": {
+        "at": "2026-11-16T22:57:09+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "1h",
+        "notes": "an inline probe at this bound took 6.9 s (659 paths); at bound 3, 1 s. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 8",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-290/fixed-security/outcome.json",
+        "verification/.work-290/fixed-security/work/harness/PropertyHarness.java",
+        "verification/.work-290/fixed-security/work/harness/PropertyClaim.java"
+      ]
+    }
+  },
+  "sourceCommit": "7bb86e98a38c76049bfa7398778d3f69fa736b0a",
+  "startedAt": "2026-11-16T22:59:04+00:00",
+  "finishedAt": "2026-11-16T23:01:54+00:00",
+  "wallSeconds": 170.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1813293,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": "an inline probe at this bound took 6.9 s (659 paths); at bound 3, 1 s. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 137457664,
+    "wallSeconds": 9.8,
+    "cpuSeconds": 11.0,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 159.733,
+      "cpuSeconds": 159.863,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1946931200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b58fd3fa7bb9b93ec074994f5c6655b83cccaa29b692866ca629996eb3547d06",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261116-225709-example-290-fixed-security-through-the-a/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 39s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 9.819,
+      "cpuSeconds": 11.041,
+      "cpuThrottledSeconds": 0.549,
+      "peakMemoryBytes": 137457664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 7,
+        "bytes": 1531,
+        "sha256": "44b884fe816a9c2e0367bc122946bbf7b80574e09736de012689685a7a1b4226",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 4,
+          "text": "✓ example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalAr",
+          "groups": [
+            "example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 7.7 s; loops unwound 64 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261116-225709-example-290-fixed-security-through-the-a/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalAr",
+        "  not vacuous: select(servlets=[0, 0], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 659, solver calls 1699, variables 8509; outcome in verification/.work-290/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-290/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 12772,
+      "sha256": "860067bd4e026c3be3b36f1b350a64bab56dab7454b353b8b80dac0733ab8889",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/fixed-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "8143fdcd73d1027377ffd381b68653156c8d58675b4598cea72b8edf3e842a07",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/fixed-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 719,
+      "sha256": "194ea7bb389dcd5f4a992d6a67d08c05ba35b08f1f209ed510e3225d075e28d8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-16T23:01:56+00:00",
+    "applied": [
+      "verification/.work-290/fixed-security/outcome.json",
+      "verification/.work-290/fixed-security/work/harness/PropertyHarness.java",
+      "verification/.work-290/fixed-security/work/harness/PropertyClaim.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "471bbde453c2d090811e27764087ea833b28349e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/471bbde453c2d090811e27764087ea833b28349e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

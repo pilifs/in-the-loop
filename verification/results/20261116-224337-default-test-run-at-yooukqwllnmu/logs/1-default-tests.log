@@ -1,0 +1,992 @@
+$ JVMCONTRACT_TEST_TIER=tool TEST_COST=tool cargo test --manifest-path lib/Cargo.toml
+warning: unused import: `Path`
+  --> tests/foundations.rs:10:17
+   |
+10 | use std::path::{Path, PathBuf};
+   |                 ^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `std::process::Command`
+  --> tests/foundations.rs:11:5
+   |
+11 | use std::process::Command;
+   |     ^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::sync::OnceLock`
+  --> tests/foundations.rs:12:5
+   |
+12 | use std::sync::OnceLock;
+   |     ^^^^^^^^^^^^^^^^^^^
+
+warning: `jvmcontract` (test "foundations") generated 3 warnings (run `cargo fix --test "foundations" -p jvmcontract` to apply 3 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running unittests src/lib.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/jvmcontract-ac28f5d59b1b4cc7)
+
+running 285 tests
+test activation::tests::places_render_by_how_they_are_reached ... ok
+test activation::tests::a_switch_with_an_element_counts_when_set_or_defaulted_true ... ok
+test activation::tests::spring_factories_values_continue_over_lines ... ok
+test alignment::tests::a_new_run_replaces_proposals_and_keeps_what_a_person_decided ... ok
+test activation::tests::scan_packages_default_to_the_class_own ... ok
+test alignment::tests::similarity_counts_instructions_in_order ... ok
+test binding::tests::pattern_keys_drop_variable_names ... ok
+test binding::tests::variables_come_from_the_path_only ... ok
+test bmc::bits::tests::a_models_copy_shares_its_pages_until_one_of_the_two_writes ... ok
+test bmc::bits::tests::a_quotient_times_its_divisor_is_the_dividend_less_the_remainder ... ok
+test bmc::bits::tests::constants_fold_without_reaching_the_solver ... ok
+test bmc::bits::tests::an_index_that_goes_round_an_array_is_exact_without_its_division ... ok
+test bmc::bits::tests::a_path_model_evaluates_a_division_left_to_the_solver_for_real ... ok
+test bmc::bits::tests::a_multiplication_left_to_the_solver_is_built_when_its_model_is_wrong_and_not_before ... ok
+test bmc::bits::tests::deferred_gates_reach_the_solver_when_a_call_depends_on_them_and_answer_the_same ... ok
+test bmc::bits::tests::equal_operands_give_equal_results_without_building_a_circuit ... ok
+test bmc::bits::tests::a_division_left_to_the_solver_is_built_when_its_model_is_wrong_and_not_before ... ok
+test bmc::bits::tests::the_same_circuit_twice_is_one_circuit ... ok
+test bmc::bits::tests::word_level_operations_fold_constants_and_are_built_once ... ok
+test advice::tests::a_template_has_a_todo_for_each_part_a_contract_states ... ok
+test bmc::bitwuzla::tests::a_call_past_its_limit_stops_with_no_answer ... ok
+test bmc::bitwuzla::tests::bitwuzla_names_itself_and_answers_incrementally_under_assumptions ... ok
+test bmc::bitwuzla::tests::bitwuzla_records_its_version_its_build_and_its_options_as_a_results_evidence ... ok
+test bmc::bitwuzla::tests::settings_are_read_checked_against_bitwuzla_and_named_in_the_signature ... ok
+test bmc::bitwuzla::tests::the_option_info_has_the_c_layout ... ok
+test bmc::gaps::tests::a_call_whose_value_the_proof_reads_is_a_gap_with_no_assume_form ... ok
+test bmc::locale::tests::a_plain_language_tag_gives_its_language_in_lower_case_and_no_other_tag_is_taken ... ok
+test bmc::sat::tests::a_conflict_limit_stops_a_call_at_the_same_work_every_time ... ok
+test bmc::sat::tests::a_solver_is_named_with_its_options ... ok
+test bmc::sat::tests::cadical_names_itself_and_answers_incrementally_under_assumptions ... ok
+test bmc::tests::a_branch_costs_one_solver_call_and_a_condition_taken_before_none ... ok
+test bmc::bits::tests::the_encoding_estimate_does_not_count_a_large_circuit_many_times_over ... ok
+test bmc::tests::a_division_is_built_in_full_only_when_the_solver_gets_it_wrong ... ok
+test bmc::tests::a_loop_entered_again_by_an_outer_back_edge_is_bounded_by_the_outer_count ... ok
+test bmc::tests::a_loop_is_unwound_per_call_of_its_method ... ok
+test bmc::tests::a_multiplication_is_built_in_full_only_when_the_solver_gets_it_wrong ... ok
+test bmc::tests::a_new_array_is_within_the_bound_or_beyond_the_engine_and_cells_are_as_wide_as_their_elements ... ok
+test bmc::tests::a_tautology_is_verified_and_a_falsifiable_claim_refuted_with_its_input ... ok
+test bmc::tests::a_transcript_holds_every_clause_and_call_and_replays_with_the_same_answers ... ok
+test bmc::tests::a_violating_input_is_taken_from_the_first_stage_that_has_one ... ok
+test bmc::tests::an_array_of_references_holds_its_objects_and_an_input_index_splits_the_path ... ok
+test bmc::tests::an_array_parameter_has_every_length_up_to_the_bound_and_its_elements_are_inputs ... ok
+test bmc::tests::an_array_parameter_that_may_be_null_is_null_on_some_path ... ok
+test bmc::tests::an_index_out_of_bounds_is_an_exception_path_and_a_store_is_read_back ... ok
+test bmc::tests::an_inner_loop_is_unwound_per_entry_of_it ... ok
+test bmc::tests::a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls ... ok
+test bmc::tests::array_parameters_that_may_be_one_array_are_a_choice_and_the_witness_says_which ... ok
+test bmc::tests::division_by_zero_is_an_exception_path_and_handlers_catch_by_class ... ok
+test bmc::tests::loops_are_unwound_up_to_the_bound ... ok
+test bmc::tests::paths_are_merged_at_a_join_and_a_violation_through_one_is_found_with_its_input ... ok
+test bmc::tests::the_engine_gives_its_solver_nothing_but_clauses_limits_and_calls ... ok
+test bmc::tests::the_module_docs_say_what_the_engine_does_with_every_instruction ... ok
+test bmc::tests::an_overflow_check_calls_into_math ... ok
+test bmc::tests::the_stages_are_jbmcs ... ok
+test bmc::transcript::tests::a_check_without_a_file_named_writes_where_the_environment_says ... ok
+test bmc::transcript::tests::a_line_is_a_clause_a_call_an_answer_or_a_comment ... ok
+test bmc::transcript::tests::a_transcript_replays_with_the_answers_it_recorded ... ok
+test bmc::transcript::tests::a_transcript_that_is_cut_short_or_out_of_order_is_refused ... ok
+test bmc::transcript::tests::an_answer_the_solver_does_not_give_again_is_a_contradiction ... ok
+test boundaries::tests::a_contract_reads_back_as_its_entries ... ok
+test boundaries::tests::routes_compose_the_class_prefix_and_the_verb ... ok
+test capabilities::tests::classifies_entry_points ... ok
+test capabilities::tests::diff_and_parse_agree_with_the_file_format ... ok
+test classfile::bytecode::tests::decodes_branches_and_switches ... ok
+test classfile::descriptor::tests::parses_and_prints_descriptors ... ok
+test classfile::signature::tests::signatures_render_as_source_does ... ok
+test classfile::signature::tests::types_parse_as_trees ... ok
+test classfile::tests::a_string_constant_keeps_an_isolated_surrogate_unit_for_unit ... ok
+test classfile::tests::modified_utf8_round_trips ... ok
+test classfile::tests::simple_names ... ok
+test classfile::writer::tests::writes_a_class_the_reader_accepts ... ok
+test classpath::jdk_tests::jdk_classes_exist_through_the_image ... ok
+test classpath::model_tests::models_are_executed_but_shadow_neither_the_application_nor_the_jdk ... ok
+test classpath::tests::jdk_hierarchy_from_builtin_facts ... ok
+test config::tests::keys_are_relaxed_to_their_canonical_form ... ok
+test config::tests::placeholders_split_keys_and_defaults ... ok
+test config::tests::properties_files_flatten_too ... ok
+test config::tests::values_are_checked_against_their_type ... ok
+test config::tests::yaml_documents_flatten_to_keys ... ok
+test congruence::tests::a_file_it_cant_read_or_with_scopes_is_left_alone ... ok
+test congruence::tests::a_product_whose_text_may_mean_something_else_elsewhere_is_left_out ... ok
+test congruence::tests::a_proof_by_this_step_is_named_with_its_solver_and_lemmas ... ok
+test congruence::tests::names_and_strings_are_read_whole ... ok
+test congruence::tests::products_are_paired_within_a_width_only_and_each_once ... ok
+test congruence::tests::the_solver_script_answers_only_the_formula_the_lemmas_were_made_for ... ok
+test congruence::tests::the_step_waits_a_twentieth_of_the_limit_but_five_seconds_at_least_and_has_a_tenth_to_run ... ok
+test congruence::tests::too_many_products_of_a_width_are_not_paired ... ok
+test congruence::tests::two_products_of_one_width_get_the_lemma_before_check_sat_and_the_formula_is_kept ... ok
+test construction::tests::a_plan_of_the_shapes_a_check_makes_is_accepted_and_the_rest_refused_by_name ... ok
+test construction::tests::a_plans_roots_may_be_null_or_one_object_and_the_same_choices_inside_a_nested_object_are_refused ... ok
+test contract::tests::diff_names_changed_added_and_removed_cases ... ok
+test contract::tests::round_trips_through_text ... ok
+test contract_library::tests::a_record_is_about_one_contract_on_one_jdk ... ok
+test contract_library::tests::the_built_in_library_is_every_contracts_file_of_its_directory_and_reads ... ok
+test contract_testing::tests::inputs_are_boundary_values_then_seeded_random_ones_each_once ... ok
+test deadline::tests::a_check_has_one_deadline_and_each_run_a_budget_out_of_it ... ok
+test deadline::tests::a_stage_runs_only_where_its_interval_leaves_out_an_input ... ok
+test deadline::tests::each_staging_policy_runs_its_stages_and_ends_on_the_full_range ... ok
+test deadline::tests::the_tight_stage_has_a_smaller_budget_and_the_full_range_what_is_left ... ok
+test details::tests::nothing_to_say_is_empty ... ok
+test details::tests::thousands_are_grouped ... ok
+test digest::tests::sha256_matches_the_standards_vectors ... ok
+test environment::tests::a_declared_environment_is_loaded_and_checked ... ok
+test environment::tests::a_modelled_failure_adds_an_outcome_to_each_entry_and_the_default ... ok
+test environment::tests::a_per_call_choice_is_lowered_to_the_same_table_each_entry_used_once ... ok
+test environment::tests::a_query_of_a_primitive_key_is_lowered_to_a_table_of_twice_its_bound ... ok
+test environment::tests::what_the_check_does_not_encode_yet_is_refused_by_name ... ok
+test failures::tests::an_advice_with_no_selector_applies_to_every_controller ... ok
+test failures::tests::status_constants_have_their_codes ... ok
+test gap_contracts::proving_tests::a_contract_is_proved_against_the_jdk_bytecode_with_the_exception_class_exact ... ok
+test gap_contracts::tests::a_contract_the_engine_cannot_apply_is_refused_with_the_reason ... ok
+test gap_contracts::tests::a_file_is_read_by_blocks_and_its_structure_checked ... ok
+test given::tests::an_interface_is_given_its_accessors_own_first_then_inherited_and_nothing_else ... ok
+test harness::expr::tests::an_interfaces_accessors_and_a_strings_content_are_terms ... ok
+test harness::expr::tests::folds_generalized_quantifiers ... ok
+test harness::expr::tests::names_a_records_components ... ok
+test harness::expr::tests::parses_and_types_calls_of_the_method_under_proof ... ok
+test harness::expr::tests::parses_arrays_and_quantifiers ... ok
+test harness::expr::tests::parses_types_and_evaluates ... ok
+test harness::expr::tests::reads_the_pre_state_under_old ... ok
+test harness::expr::tests::rejects_bad_expressions ... ok
+test harness::tests::a_choice_of_null_or_the_same_object_is_a_flag_after_the_leaves_and_never_makes_a_non_nullable_parameter_null ... ok
+test harness::tests::a_property_over_objects_makes_them_from_their_leaves_and_reads_their_fields_now_and_before_the_call ... ok
+test harness::tests::a_shared_object_is_the_earlier_roots_object_with_no_flag ... ok
+test harness::tests::builds_the_previous_versions_receiver_from_the_new_parameters ... ok
+test harness::tests::calls_a_static_previous_version_with_the_records_components ... ok
+test harness::tests::generates_a_harness_against_a_previous_version_with_other_parameters ... ok
+test harness::tests::generates_a_harness_relating_record_results_by_their_components ... ok
+test harness::tests::generates_a_harness_relating_results_of_two_types ... ok
+test harness::tests::generates_a_harness_that_catches_the_declared_checked_exceptions ... ok
+test harness::tests::generates_a_property_harness_over_arrays ... ok
+test harness::tests::generates_a_property_harness_with_old ... ok
+test harness::tests::generates_a_property_harness_with_throws_clauses ... ok
+test harness::tests::generates_a_well_formed_harness ... ok
+test harness::tests::generates_a_well_formed_property_harness ... ok
+test harness::tests::generates_an_equivalence_harness_over_arrays ... ok
+test harness::tests::lays_out_a_record_receiver_argument_and_result_as_their_components ... ok
+test harness::tests::the_construction_roots_are_every_constructor_and_setup_call_of_each_version ... ok
+test harness::tests::the_previous_versions_parameters_are_found_and_named_as_whole_words ... ok
+test interp::natives::tests::radix_and_find ... ok
+test interp::natives::tests::string_hash_matches_java ... ok
+test interp::render::tests::numbers_print_as_java_prints_them ... ok
+test jbmc::tests::a_jbmc_without_the_solver_asked_for_is_run_again_with_its_own ... ok
+test jbmc::tests::a_relative_jbmc_path_is_made_absolute_and_a_bare_name_is_left_to_path ... ok
+test jbmc::tests::a_run_is_limited_and_goes_first_when_memory_runs_out ... ok
+test jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed ... ok
+test bmc::bits::tests::word_level_operations_on_bitwuzla_are_the_jvms ... ok
+test jbmc::tests::a_run_without_a_verdict_is_held_while_z3_proves_its_formula_with_the_lemmas ... ok
+test jbmc::tests::cadicals_version_is_read_from_its_signature_in_a_binary ... ok
+test jbmc::tests::class_path_entries_are_made_absolute ... ok
+test jbmc::tests::jbmcs_solver_is_recorded_with_its_version_and_the_options_every_run_passes ... ok
+test jbmc::tests::parses_the_values_jbmc_prints ... ok
+test jbmc::tests::reads_array_inputs_and_their_elements_from_json ... ok
+test jbmc::tests::reads_the_json_jbmc_prints ... ok
+test jbmc::tests::the_limit_is_left_out_when_turned_off ... ok
+test jbmc::tests::a_run_that_finishes_soon_or_has_no_z3_never_meets_the_second_attempt ... ok
+test jbmc_contracts::tests::a_call_site_of_each_kind_is_rewritten_in_place ... ok
+test jbmc_contracts::tests::the_intrinsics_class_declares_what_the_contract_methods_call ... ok
+test jbmc_gaps::tests::a_probe_before_each_call_site_fails_on_a_branch_of_its_own_and_makes_the_call ... ok
+test jbmc_gaps::tests::a_proof_through_a_defect_is_refused_under_every_mode_and_a_counterexample_is_left_to_the_replay ... ok
+test jbmc_gaps::tests::a_stub_behind_a_condition_only_the_solver_decides_is_no_gap ... ok
+test bmc::bits::tests::the_encoding_is_estimated_from_a_sample_of_the_operations ... ok
+test jbmc_gaps::tests::a_stub_the_harness_reaches_is_a_gap_and_one_only_a_jdk_initializer_reaches_is_not ... ok
+test jbmc_gaps::tests::a_stub_the_solver_shows_unreached_is_no_gap_and_the_note_says_why ... ok
+test jbmc_gaps::tests::a_stub_whose_every_probe_holds_is_unreached_and_nothing_else_tells ... ok
+test jbmc_gaps::tests::reads_jbmc_goto_program_as_functions_calls_and_bytecode_indices ... ok
+test bmc::tests::the_search_for_a_smaller_witness_does_not_depend_on_the_clock ... ok
+test jbmc_gaps::tests::the_functions_symbolic_execution_enters_are_read_by_the_listings_locations ... ok
+test jbmc_gaps::tests::the_preflight_names_a_class_initializer_that_throws_where_a_handler_tells_jbmc_from_the_jvm ... ok
+test jbmc_gaps::tests::the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings ... ok
+test jbmc_gaps::tests::the_preflight_names_an_initializer_jbmc_runs_where_the_jvm_does_not ... ok
+test jbmc_gaps::tests::a_stub_on_no_path_the_proof_takes_is_no_gap ... ok
+test jdk_facts::plain_regex_tests::a_plain_regex_is_literals_single_quantifiers_and_the_two_anchors_at_its_ends ... ok
+test jbmc_gaps::tests::the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm ... ok
+test jimage::tests::images_opened_on_the_same_index_share_its_classes_and_another_index_gets_its_own ... ok
+test jimage::tests::reads_classes_from_the_local_jdk ... ok
+test models::tests::every_model_parses_as_the_class_it_names ... ok
+test models::tests::the_models_are_written_as_a_class_path_entry ... ok
+test pairing::tests::another_engine_and_a_previous_method_of_another_shape_are_refused_by_name ... ok
+test pairing::tests::the_pairs_class_calls_both_versions_on_copies_and_compares_results_and_categories ... ok
+test phases::tests::a_check_counts_each_step_once_and_the_rest_as_other ... ok
+test phases::tests::a_jbmc_run_cut_off_gives_the_rest_of_its_time_to_the_phase_it_was_in ... ok
+test phases::tests::a_jbmc_run_cut_off_while_solving_gives_the_solver_the_time_after_post_processing ... ok
+test phases::tests::a_jbmc_solver_call_out_of_memory_before_the_sat_solver_started_is_encoding ... ok
+test phases::tests::each_of_jbmc_solver_calls_is_read_on_its_own ... ok
+test phases::tests::jbmc_phases_come_from_its_runtime_lines_and_the_times_of_its_messages ... ok
+test phases::tests::jbmc_post_processing_inside_its_solver_call_is_counted_once ... ok
+test phases::tests::output_without_times_has_sizes_but_no_phases ... ok
+test phases::tests::phases_past_their_run_beyond_the_tolerance_are_flagged ... ok
+test property::tests::parses_a_properties_file ... ok
+test reach::tests::side_effects_leave_out_reads_and_gets ... ok
+test reach::tests::tables_come_after_from_into_update_and_join ... ok
+test relocate::tests::a_closure_of_its_own_is_relocated_as_far_as_the_build_names_it ... ok
+test relocate::tests::a_string_constant_that_is_not_well_formed_keeps_its_bytes ... ok
+test relocate::tests::an_instance_method_is_opened_only_where_no_override_changes ... ok
+test relocate::tests::an_opened_class_is_public_with_its_fields_constructors_and_static_methods_and_nothing_else_changes ... ok
+test relocate::tests::renames_names_and_descriptors ... ok
+test reuse::footprint::tests::the_opcodes_written_are_the_ones_read ... ok
+test reuse::preparation::tests::a_ledger_is_split_into_proofs_with_a_helpers_own_proof_inside_its_callers_plan ... ok
+test reuse::preparation::tests::nothing_is_recorded_without_a_ledger_and_spans_nest_with_one ... ok
+test reuse::tests::a_field_the_projection_does_not_know_makes_the_claim_uncacheable ... ok
+test reuse::tests::a_property_claim_needs_the_native_engine ... ok
+test reuse::tests::every_field_of_the_property_options_is_named_by_the_projection ... ok
+test reuse::tests::hex_round_trips ... ok
+test reuse::tests::no_summary_is_offered_until_the_stream_builds_them ... ok
+test sarif::tests::renders_findings_with_and_without_locations ... ok
+test shared::tests::a_relocated_owner_is_mapped_back ... ok
+test shared::tests::the_stub_class_parses_and_declares_a_method_per_callee ... ok
+test shrink::tests::drops_the_same_index_from_parallel_arrays ... ok
+test shrink::tests::moves_tied_scalars_together ... ok
+test shrink::tests::shrinks_to_a_local_minimum_the_oracle_still_rejects ... ok
+test shrink::tests::steps_towards_zero_by_type ... ok
+test shrink::tests::stops_at_the_budget_and_on_an_oracle_that_cannot_tell ... ok
+test spec::heap::tests::a_parameter_of_the_same_shape_takes_relations_for_its_fields_and_keeps_equality_for_the_rest ... ok
+test spec::heap::tests::a_relation_for_a_field_path_bears_on_the_observations_at_under_and_above_it ... ok
+test spec::heap::tests::an_equation_that_computes_an_anchored_input_is_refused_unless_a_person_stated_it ... ok
+test spec::heap::tests::an_expression_may_read_another_object_parameters_leaves_as_the_arguments_it_was_made_from ... ok
+test spec::heap::tests::an_expression_may_read_the_new_versions_primitive_parameters_besides_the_objects_leaves ... ok
+test spec::heap::tests::an_expression_over_the_new_objects_leaves_gives_the_previous_leaf ... ok
+test spec::heap::tests::an_expression_the_harness_cannot_compute_is_named ... ok
+test spec::heap::tests::an_output_relation_becomes_one_between_previous_and_result ... ok
+test spec::heap::tests::an_output_relation_for_a_field_takes_the_place_of_the_equations_about_its_path ... ok
+test spec::heap::tests::an_output_relation_for_an_identity_relation_reads_it_in_each_version ... ok
+test bmc::bits::tests::int_arithmetic_is_the_jvms ... ok
+test spec::heap::tests::the_previous_object_is_made_from_the_leaves_its_equations_name ... ok
+test spec::heap::tests::what_the_narrow_case_does_not_cover_is_named ... ok
+test spec::plans::tests::a_call_model_round_trips ... ok
+test spec::plans::tests::a_construction_plan_round_trips_and_has_its_shape ... ok
+test spec::plans::tests::a_plan_that_is_no_bounded_dag_is_named ... ok
+test spec::plans::tests::a_summary_round_trips ... ok
+test spec::plans::tests::a_variant_without_fields_refuses_one ... ok
+test spec::plans::tests::an_unknown_field_or_variant_is_refused_in_every_interface ... ok
+test spec::plans::tests::values_and_witnesses_round_trip_with_every_code_unit ... ok
+test spec::tests::observation_ids_are_stable ... ok
+test spec::tests::record_components_and_calls_keep_their_names ... ok
+test spec::tests::the_flags_are_a_special_case_of_a_correspondence ... ok
+test statemachine::tests::reads_transitions_and_finds_terminal_states ... ok
+test statement::tests::a_domain_is_its_parameters_with_nullability_and_bounds ... ok
+test statement::tests::the_model_digest_names_the_bundle_and_is_absent_without_it ... ok
+test statement::tests::the_own_checkers_solver_is_the_bundled_cadical_with_the_crates_version ... ok
+test store::tests::class_signatures_split_into_supertypes ... ok
+test store::tests::field_parameters_name_the_string_argument ... ok
+test store::tests::query_documents_give_their_field_paths ... ok
+test store::tests::steps_follow_collections_and_stop_at_leaves ... ok
+test summary::tests::a_hypothesis_asks_for_the_assumption_the_bounds_and_a_smaller_measure_of_at_least_zero ... ok
+test summary::tests::a_parameter_or_a_result_a_summary_cannot_state_is_refused_by_name ... ok
+test summary::tests::a_summary_applies_within_the_bound_it_was_proved_at_and_runs_the_method_elsewhere ... ok
+test test_tier::tests::a_misspelt_tier_fails_the_run - should panic ... ok
+test test_tier::tests::only_the_unit_tier_skips_the_tool_tier ... ok
+test tla::tests::parses_a_violation_trace ... ok
+test tla::tests::parses_an_invariant_the_initial_state_violates ... ok
+test tla::tests::parses_temporal_and_action_property_violations ... ok
+test tla::tests::reads_and_rewrites_the_properties_of_a_configuration ... ok
+test tla::tests::reads_the_rows_a_step_takes_from_the_coverage_statistics ... ok
+test tla::tests::temporary_paths_are_never_shared_between_threads ... ok
+test tla::tests::translates_a_contract_into_case_arms ... ok
+test trusted::tests::the_list_is_as_documented ... ok
+test validation::tests::constraints_need_a_validator_for_the_type ... ok
+test validation::tests::groups_decide_what_runs ... ok
+test validation::tests::type_annotations_are_written_into_the_type ... ok
+test values::tests::a_claim_made_under_another_model_jdk_or_a_stronger_level_is_refused_never_resolved ... ok
+test values::tests::a_claims_value_domain_resolves_to_this_tools_model_and_keeps_its_bounds ... ok
+test values::tests::a_harness_makes_a_list_by_list_of_over_the_objects_it_picks ... ok
+test values::tests::a_list_call_runs_on_the_models_only_where_a_record_samples_it ... ok
+test values::tests::a_list_rebuilt_on_the_interpreter_is_its_list_of_and_encodes_as_the_same_nodes ... ok
+test values::tests::a_lists_domain_states_its_element_class_bound_and_the_models_digest ... ok
+test values::tests::a_string_has_its_adapter_and_a_list_is_refused_by_name_where_its_element_class_is_unknown ... ok
+test values::tests::a_string_rebuilt_on_the_interpreter_encodes_as_the_same_code_units_and_nothing_longer_is_cut ... ok
+test values::tests::a_strings_domain_states_its_bound_and_its_models_evidence ... ok
+test values::tests::a_witnessed_list_is_its_elements_as_nodes_in_order_and_never_cut ... ok
+test values::tests::a_witnessed_string_is_its_code_units_null_or_an_earlier_argument_and_never_cut ... ok
+test values::tests::each_operation_has_one_record_of_its_family_tested_never_proved_and_serialized_with_its_cases ... ok
+test values::tests::the_snapshot_rules_are_pinned_to_the_digests_the_models_identities_carry ... ok
+test wire::tests::class_refs_skip_type_variables_and_inner_names ... ok
+test wire::tests::names_follow_jackson ... ok
+test witness::tests::a_call_maps_a_records_components_to_the_inputs_they_are ... ok
+test witness::tests::a_replay_that_could_not_run_one_version_differs_in_nothing ... ok
+test witness::tests::values_are_exact_for_their_type ... ok
+test zip::tests::reads_deflated_entries ... ok
+test zip::tests::reads_stored_entries ... ok
+test spec::heap::tests::the_allocations_of_one_call_are_counted_through_calls_and_unbounded_in_a_loop_or_a_recursion ... ok
+test jbmc_gaps::tests::the_preflight_reads_jbmc_listing_by_instruction_index ... ok
+Note: /home/filip/code/in-the-loop/verification/.state/work/20261116-224337-default-test-run-at-yooukqwllnmu/lib/models/java/util/HashMap.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+test models::tests::the_embedded_class_files_match_their_sources ... ok
+test jbmc::tests::without_a_proof_from_the_lemmas_the_run_goes_on_from_where_it_was ... ok
+test bmc::bits::tests::long_arithmetic_is_the_jvms ... ok
+
+test result: ok. 285 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.04s
+
+     Running unittests src/main.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/jvmcontract-3d5782f86f911a90)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/alignment.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/alignment-b2d186e28b26c654)
+
+running 34 tests
+test a_lone_weak_candidate_is_a_question_too ... ok
+test a_method_moved_to_a_new_class_leads_and_its_callers_say_so ... ok
+test a_method_moved_into_the_value_object_takes_it_in_place_of_the_old_object ... ok
+test a_moved_method_that_reads_what_the_value_object_does_not_keep_is_not_related ... ok
+test a_record_that_gained_a_component_is_built_from_the_old_ones_and_the_new_one_left_free ... ok
+test a_renamed_field_is_related_by_its_constructor_and_a_new_one_left_free ... ok
+test a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_free ... ok
+test a_renamed_method_with_the_same_body_leads ... ok
+test a_constructor_that_shifts_what_it_stores_or_stores_a_constant_is_never_related ... ok
+test a_field_whose_own_class_changed_shape_is_related_through_that_class ... ok
+test a_stated_derivation_is_used_as_a_person_stated_it ... ok
+test approve_needs_a_rank_among_several ... ok
+test an_overloaded_name_is_written_with_its_parameter_types ... ok
+test a_value_object_the_constructor_makes_is_related_inside_it ... ok
+test code_that_did_not_change_over_a_class_that_did_is_mapped_through_the_class ... ok
+test a_result_whose_class_changed_shape_is_compared_field_by_field ... ok
+test mappings_a_proof_cannot_tell_apart_are_one_candidate ... ok
+test parameters_gathered_into_a_record_are_its_components ... ok
+test of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds ... ok
+test proved_relations_with_different_inputs_stay_a_question_with_an_input_that_separates_them ... ok
+test reordered_parameters_keep_their_names ... ok
+test the_kernel_keeps_its_methods_and_its_constructor_takes_the_value_object ... ok
+test the_kernel_s_quote_is_related_field_by_field_from_its_constructors ... ok
+test an_approved_relation_a_proof_refutes_is_listed_with_its_counterexample ... ok
+test the_offset_mapping_is_never_proposed_for_an_anchored_input ... ok
+test the_outcome_rules_count_no_vacuous_proof_and_name_a_person_s_decision ... ok
+test proved_relations_with_the_same_inputs_are_one_candidate_told_apart_by_a_result_no_input_gives ... ok
+test the_result_relations_come_from_the_catalogue ... ok
+test two_equally_good_candidates_are_a_question ... ok
+test two_inputs_only_their_type_ties_are_a_question ... ok
+test the_offset_defect_is_refuted_and_no_mapping_hides_it ... ok
+test approving_sets_the_intent_only_and_a_file_whose_decisions_are_approved_asks_nothing ... ok
+test the_command_writes_hints_and_keeps_what_a_person_approved ... ok
+test an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale has been running for over 60 seconds
+test an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 79.54s
+
+     Running tests/application_core.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/application_core-5d1414781618cf03)
+
+running 14 tests
+test j3_semantic_changes_change_the_claim_key ... ok
+test g0_an_unsupported_domain_policy_is_refused_before_any_verdict ... ok
+test every_build_compiles_and_every_case_has_its_verdict ... ok
+test o1_an_ordinary_receiver_in_the_regression_and_property_checks ... ok
+test o3_a_defect_only_a_history_reaches ... ok
+test o2_an_array_valued_constructor_faithful_to_identity ... ok
+test the_frozen_claims_are_the_shared_types ... ok
+test the_result_schema_registers_the_statements_new_kinds ... ok
+test r2_a_heap_reading_helper_on_its_own ... ok
+test v1_a_symbolic_string_crosses_the_proof_boundary ... ok
+test v2_a_bounded_supported_list_as_input ... ok
+test r1_the_native_property_cache ... ok
+test e2_a_nullable_returned_dto ... ok
+test e1_a_consumed_return_value_and_a_declared_failure has been running for over 60 seconds
+test e1_a_consumed_return_value_and_a_declared_failure ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 74.68s
+
+     Running tests/application_core_joint.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/application_core_joint-20a9642a1fb7e966)
+
+running 6 tests
+test j2_the_native_claims_without_jbmc ... ok
+test j1_r2_a_receiver_with_dependencies ... ok
+test j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string ... ok
+test h_the_throttle_family ... ok
+test l_the_basket_family ... ok
+test j1_the_quote_family_composes_the_four_streams has been running for over 60 seconds
+test j1_the_quote_family_composes_the_four_streams ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 97.97s
+
+     Running tests/application_core_objects.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/application_core_objects-2fb2a04954b8a060)
+
+running 22 tests
+test o1_a_property_over_an_ordinary_receiver ... ok
+test o1_a_plans_array_leaf_is_the_constructors_argument ... ok
+test o1_a_receiver_outside_the_construction_is_refused_by_name ... ok
+test o1_a_plan_selects_one_of_several_constructors_by_descriptor ... ok
+test o1_a_receiver_returned_as_a_copy_is_refuted_on_identity ... ok
+test o1_a_receiver_of_a_primitive_array_constructor_needs_no_adapter ... ok
+test o1_a_receivers_mutation_is_compared_and_replayed_on_a_jvm ... ok
+test o2_a_plans_nullable_root_is_a_choice_of_null ... ok
+test o2_a_property_over_a_plans_shared_node ... ok
+test o2_a_plans_shared_node_is_one_object_in_the_identity_relations ... ok
+test o2_a_constructors_side_effect_outside_its_object_is_refused_by_name ... ok
+test o2_a_replay_that_cannot_run_one_version_is_no_reproduction ... ok
+test o2_a_narrower_new_constructor_under_an_anchored_domain_is_never_silently_intersected ... ok
+test o2_a_shrunk_witness_reproduces_the_same_failure ... ok
+test o2_an_array_defensively_copied_before_but_leaked_after_is_refuted ... ok
+test o2_two_parameters_that_were_one_object_becoming_distinct_is_refuted ... ok
+test o3_a_property_over_the_states_a_setup_call_reaches ... ok
+test o1_a_receivers_constructor_is_part_of_the_cached_claim ... ok
+test an_inner_objects_constructor_is_part_of_the_cached_claim ... ok
+test o2_a_setup_methods_edit_alone_is_another_claim_never_reused ... ok
+test o3_a_defect_only_a_history_reaches_is_refuted_with_the_whole_history_replayed ... ok
+test o3_an_input_one_versions_setup_rejects_is_a_difference ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.90s
+
+     Running tests/claims.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/claims-d8d6a95e63751252)
+
+running 12 tests
+Note: /home/filip/code/in-the-loop/verification/.state/work/20261116-224337-default-test-run-at-yooukqwllnmu/lib/tests/fixtures/claims/claims/C.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+test a_string_array_parameter_is_strings_of_their_own_or_null_and_a_witness_runs_on_a_jvm ... ok
+test a_throws_clause_over_a_strings_bytes_is_compiled_by_javac_and_checked ... ok
+test an_objects_class_a_strings_to_string_and_an_initializer_that_keeps_a_method_reference_run ... ok
+test lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_for ... ok
+test an_expression_the_tools_compiler_does_not_take_is_compiled_by_javac_and_run_as_bytecode ... ok
+test a_method_that_calls_itself_is_proved_by_induction_on_a_measure_that_decreases ... ok
+test a_glob_stated_with_the_regex_library_matches_as_the_matcher_written_out ... ok
+test lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out ... ok
+test a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out ... ok
+test the_string_and_builder_methods_are_the_definitions_written_out_over_char_at ... ok
+test a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method ... ok
+test text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.92s
+
+     Running tests/compare.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/compare-9131f18f9a268c80)
+
+running 1 test
+test the_joint_example_passes_every_row ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.21s
+
+     Running tests/compare_domains.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/compare_domains-f484f046d84cdc7a)
+
+running 3 tests
+test a_domain_compare_cannot_read_is_refused_by_name ... ok
+test a_subjects_declared_domain_is_its_kernel_claims_domain ... ok
+test a_declared_domain_is_part_of_the_cached_claim ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.14s
+
+     Running tests/conformance.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/conformance-f1020bfd9672e731)
+
+running 12 tests
+test the_benchmark_takes_its_first_group_from_this_corpus ... ok
+test a_domain_jbmc_is_not_given_is_refused_by_name ... ok
+test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ignored, cost:proof: auto --confirm on every claim of the corpus, JBMC proving again what the own checker proves, ~20 min; proxy: the_corpus_agrees_with_the_jvm_on_the_tools_own_checker
+test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ignored, cost:proof: JBMC and auto on every claim of the corpus, each verdict against a JVM, ~11 min, up to 17 min; proxy: the_corpus_agrees_with_the_jvm_on_the_tools_own_checker
+test confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict ... ok
+test the_models_only_jbmc_runs_agree_with_the_jvm ... ok
+test confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker ... ok
+test the_statement_says_what_a_verdict_is_about ... ok
+test vacuity_is_a_status_of_a_verified_statement ... ok
+test jbmcs_staging_policy_picks_the_stages_it_runs_and_their_budgets ... ok
+test jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline ... ok
+test the_corpus_agrees_with_the_jvm_on_the_tools_own_checker ... ok
+
+test result: ok. 10 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 37.96s
+
+     Running tests/dependencies.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/dependencies-f0d7083c6127541f)
+
+running 3 tests
+test a_target_that_never_reaches_its_dependencies_is_checked_with_each_null ... ok
+test a_target_that_reaches_a_dependency_is_refused_by_name ... ok
+test a_cached_proof_over_a_null_dependency_is_never_reused_once_the_target_reaches_it ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.69s
+
+     Running tests/effects.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/effects-8e795b5fa8c4a410)
+
+running 19 tests
+test a_model_the_check_does_not_encode_is_refused_by_name ... ok
+test a_handler_given_an_application_object_is_refused_by_name ... ok
+test a_duplicated_event_is_refuted_in_exact_order ... ok
+test a_changed_total_is_refuted_in_the_response_and_the_event ... ok
+test a_handler_that_uses_a_modeled_calls_result_is_refused_by_name ... ok
+test a_dropped_event_is_refuted_by_a_witness_replayed_on_the_jvm ... ok
+test the_claim_a_spec_makes_is_the_joint_examples_claim ... ok
+test a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit ... ok
+test a_null_dependency_called_through_a_supertype_leaves_the_result_unresolved_where_reached ... ok
+test a_trace_past_its_bound_is_unresolved_not_shorter ... ok
+test the_command_checks_every_entry_point_of_two_builds ... ok
+test the_command_reports_a_refutation_with_both_builds_attempts ... ok
+test the_effect_log_plan_names_its_stubs_and_assumptions ... ok
+test what_the_analysis_cannot_see_is_unresolved ... ok
+test the_command_reports_what_the_narrow_case_refuses_and_checks_the_rest ... ok
+test payloads_of_two_classes_through_one_call_are_snapshotted_each_through_its_own_class ... ok
+test the_refactor_preserves_the_response_status_and_event_trace ... ok
+test the_command_writes_a_sarif_finding_per_refuted_entry_point_anchored_at_its_handler ... ok
+test an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.32s
+
+     Running tests/environment.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/environment-c60d86d2af3320ef)
+
+running 17 tests
+test a_call_past_the_models_bound_is_unresolved ... ok
+test a_wrong_query_key_is_refuted_under_the_environment_that_shows_it ... ok
+test a_handler_that_uses_a_modelled_rate_proves_its_rewrite ... ok
+test an_event_sent_on_the_wrong_branch_of_a_rate_is_refuted_in_the_trace ... ok
+test an_ignored_result_is_refuted ... ok
+test compare_counts_a_declared_environment_as_a_persons_decision ... ok
+test repeated_reads_of_one_key_are_functionally_consistent ... ok
+test a_dropped_retry_is_refuted_under_a_per_call_choice_and_proves_under_a_query ... ok
+test a_newly_missing_catch_of_a_modelled_failure_is_refuted_and_replayed ... ok
+test keys_asked_for_in_another_order_get_their_own_answers ... ok
+test the_command_checks_under_a_declared_environment ... ok
+test a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key ... ok
+test the_old_builds_unresolved_mark_says_only_what_happened_in_it ... ok
+test reading_more_of_a_modelled_failure_than_its_class_is_refused ... ok
+test without_a_model_a_used_result_is_never_proved ... ok
+test under_a_per_call_choice_a_second_read_of_a_key_is_its_own_answer ... ok
+test the_environment_model_is_in_the_claim_key_of_the_cached_proof ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.76s
+
+     Running tests/environment_quotes.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/environment_quotes-6380288b2146cebc)
+
+running 4 tests
+test what_the_planned_check_does_not_make_is_refused_by_name ... ok
+test a_key_or_payload_string_past_the_bound_leaves_the_result_unresolved ... ok
+test a_string_keyed_rate_and_an_events_code_are_refuted_and_replayed_by_content ... ok
+test a_planned_effect_claims_proof_is_reused_exactly_and_not_under_another_claim ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.58s
+
+     Running tests/environment_responses.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/environment_responses-6da7aadabff8142f)
+
+running 8 tests
+test a_response_plan_beyond_one_dto_of_primitive_leaves_is_refused ... ok
+test a_handler_that_reads_a_nullable_dto_response_proves_its_rewrite ... ok
+test a_wrong_field_test_is_refuted_on_a_made_response_and_replayed ... ok
+test a_changed_null_branch_is_refuted_on_a_null_response_and_replayed ... ok
+test whether_two_responses_are_one_object_is_the_models_identity_policy ... ok
+test a_response_its_constructor_rejects_leaves_the_log_unresolved ... ok
+test a_dto_responses_plan_and_identity_are_in_the_claim_key ... ok
+test a_dto_response_beyond_data_is_refused_by_name ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.97s
+
+     Running tests/foundations.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/foundations-80ad55180e1a0c31)
+
+running 5 tests
+test the_golden_claims_hold_together ... ok
+test the_golden_files_are_the_shared_types ... ok
+test a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused ... ok
+test the_allocation_bound_is_checked_against_what_the_code_makes ... ok
+test the_integration_contract ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.94s
+
+     Running tests/heap.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/heap-5b9d21e7c1292511)
+
+running 58 tests
+test a_choice_of_null_or_one_object_is_refused_by_name_outside_object_parameters ... ok
+test a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted ... ok
+test a_difference_only_where_the_constructor_refuses_is_outside_the_claim ... ok
+test a_bug_only_when_two_parameters_are_one_object_is_outside_the_default_domain_and_refuted_inside_one_that_lets_them_be ... ok
+test a_claim_over_an_equation_that_reads_another_object_is_checked_where_a_person_stated_it ... ok
+test a_changed_result_over_an_object_input_is_refuted_with_a_construction_recipe ... ok
+test a_dropped_null_check_is_refuted_with_a_null_object_where_the_domain_lets_it_be_null ... ok
+test a_property_compares_an_object_result_with_its_argument_by_identity_and_the_alias_to_copy_defect_fails_it ... ok
+test a_property_over_an_object_outside_the_supported_kinds_or_written_wrong_is_refused_by_name ... ok
+test a_property_over_an_object_that_may_be_null_is_checked_on_null_too ... ok
+test a_property_over_two_objects_that_may_be_one_is_refuted_with_one_object_where_the_bug_needs_it ... ok
+test a_property_reads_an_object_parameter_by_its_field_paths_before_and_after_the_call ... ok
+test a_property_wrong_only_where_the_constructor_refuses_holds_within_the_constructor_made_claim ... ok
+test a_read_through_a_reference_that_may_be_null_throws_where_it_is ... ok
+test a_required_field_of_a_parameter_of_the_same_shape_under_an_output_relation_is_unresolved_until_approved ... ok
+test a_claim_over_an_equation_that_reads_a_parameter_is_refused_where_the_contract_anchors_the_object_and_checked_where_a_person_stated_it ... ok
+test a_domain_made_by_a_construction_plan_is_checked_on_the_inputs_the_plan_makes ... ok
+test a_claim_whose_domain_lets_a_parameter_be_null_is_checked_over_null_too_and_a_field_path_is_not_yet ... ok
+test a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_runs_as_the_constructor_domain ... ok
+test a_result_of_a_class_made_by_its_constructor_is_compared_field_by_field ... ok
+test a_required_observation_under_an_output_relation_is_unresolved_until_a_person_approves_the_change ... ok
+test a_required_identity_relation_under_an_output_relation_is_unresolved_until_approved_and_then_changed_with_approval_or_refuted ... ok
+test a_result_that_became_a_value_object_is_related_by_the_correspondences_output_relation ... ok
+test a_witness_that_differs_only_where_the_claim_does_not_look_refutes_nothing ... ok
+test an_alias_turned_into_a_copy_with_the_same_values_is_refuted_by_its_identity_relation ... ok
+test an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation ... ok
+test a_witness_with_one_array_twice_or_null_runs_on_the_jvm_as_it_is ... ok
+test an_equations_expression_over_another_object_parameters_fields_makes_and_compares_the_previous_object ... ok
+test an_object_made_by_its_constructor_is_a_regression_input_and_the_domain_says_how_it_is_made ... ok
+test an_object_result_of_another_shape_is_related_by_its_field_paths_and_identity_is_still_compared ... ok
+test an_object_with_a_field_outside_the_supported_kinds_is_a_named_gap ... ok
+test an_offset_in_a_computed_equation_hides_a_changed_total_and_a_claim_that_anchors_the_input_refuses_it ... ok
+test an_offset_total_is_refuted_under_the_correspondence_by_a_recipe_of_the_new_shape ... ok
+test an_equations_expression_over_the_objects_fields_and_a_primitive_parameter_makes_and_compares_the_previous_object ... ok
+test an_output_relation_for_a_field_of_a_parameter_of_the_same_shape_compares_it_in_place_of_equality ... ok
+test an_output_relation_for_an_identity_relation_compares_it_in_place_of_holds_before_iff_it_holds_now ... ok
+test instanceof_is_a_formula_over_the_choice_and_a_call_on_it_splits_the_path ... ok
+test paths_that_differ_in_a_reference_merge_and_a_write_through_it_is_seen_through_every_name ... ok
+test the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_be_made ... ok
+test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on 5 computed equations, ~38 min, up to 53 min; proxy: a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_of_a_price
+test the_equivalence_command_takes_a_correspondence_file_in_the_irs_form ... ok
+test the_field_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on 4 field relations, ~4 min; proxy: an_output_relation_for_a_parameters_field_compares_it_as_the_call_leaves_it_in_place_of_the_equation
+test the_identity_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on the identity relations, ~5 s in its one job; proxy: an_output_relation_for_an_identity_relation_compares_it_in_place_of_holds_before_iff_it_holds_now
+test the_jbmc_tests_take_their_time_limit_from_the_environment ... ok
+test the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on 8 object properties, ~4 s in its one job; proxy: a_property_reads_an_object_parameter_by_its_field_paths_before_and_after_the_call, a_property_compares_an_object_result_with_its_argument_by_identity_and_the_alias_to_copy_defect_fails_it, a_property_over_an_object_that_may_be_null_is_checked_on_null_too, a_property_over_two_objects_that_may_be_one_is_refuted_with_one_object_where_the_bug_needs_it
+test the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on the equations that read another object, ~41 min, up to 61 min; proxy: an_equations_expression_over_another_object_parameters_fields_makes_and_compares_the_previous_object
+test the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on 5 output relations, ~40 min, up to 60 min; proxy: a_result_that_became_a_value_object_is_related_by_the_correspondences_output_relation, an_object_result_of_another_shape_is_related_by_its_field_paths_and_identity_is_still_compared
+test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on the equations that read a parameter, ~42 min, up to 61 min; proxy: an_equations_expression_over_the_objects_fields_and_a_primitive_parameter_makes_and_compares_the_previous_object
+test the_previous_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on the result relations over the previous version's parameters, ~2 min; proxy: a_result_relation_reads_the_previous_versions_primitive_parameters_and_its_objects_as_the_call_left_them
+test the_same_object_handed_back_is_compared_by_its_identity_relations_within_each_version ... ok
+test the_same_shape_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ignored, cost:proof: JBMC and auto --confirm on the same-shape field relations, ~3 s in its one job; proxy: an_output_relation_for_a_field_of_a_parameter_of_the_same_shape_compares_it_in_place_of_equality
+test the_two_shapes_of_quote_are_related_by_the_correspondence_and_total_is_proved_over_them ... ok
+test what_the_correspondence_leaves_out_and_bounds_it_exceeds_are_never_proved ... ok
+test a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_of_a_price ... ok
+test a_required_result_under_a_relation_that_reads_the_previous_version_is_unresolved_until_approved ... ok
+test a_result_relation_reads_the_previous_versions_primitive_parameters_and_its_objects_as_the_call_left_them ... ok
+test an_output_relation_for_a_parameters_field_compares_it_as_the_call_leaves_it_in_place_of_the_equation ... ok
+test a_required_field_under_an_output_relation_is_unresolved_until_approved_and_then_changed_with_approval_or_refuted ... ok
+
+test result: ok. 49 passed; 0 failed; 9 ignored; 0 measured; 0 filtered out; finished in 22.70s
+
+     Running tests/integration.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/integration-021159b12c7dda2d)
+
+running 65 tests
+test a_callee_unchanged_in_both_versions_is_one_function_in_the_proof ... ok
+test a_catch_around_a_shared_callee_is_still_a_difference ... ok
+test a_boolean_that_became_a_remaining_time_is_proved_under_the_stated_relation ... ok
+test a_check_lost_in_the_move_to_a_record_is_found_on_the_components ... ok
+test a_change_confined_to_its_declared_inputs_is_proved_and_refuted_without_the_declaration ... ok
+test a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecode ... ok
+test a_method_moved_and_renamed_is_proved_against_its_previous_name ... ok
+test a_law_may_call_the_method_and_a_boolean_method_is_its_own_property ... ok
+test a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness ... ok
+test a_pure_finite_method_gets_a_complete_contract ... ok
+test a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume ... ok
+test a_method_whose_parameters_were_reordered_is_proved_against_the_previous_order ... ok
+test a_record_that_gained_a_component_is_related_by_building_the_previous_record ... ok
+test a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found ... ok
+test a_contract_closes_its_gap_and_the_verdict_rests_on_it ... ok
+test a_record_result_is_compared_component_by_component ... ok
+test a_relative_jbmc_path_is_found_from_the_current_directory ... ok
+test a_record_result_of_other_components_is_related_by_a_relation_over_them ... ok
+test a_records_method_made_static_is_related_by_building_its_receiver ... ok
+test a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_the_relation ... ok
+test a_rewrite_under_a_reordering_that_changes_a_tie_is_found ... ok
+test a_method_of_a_record_is_proved_on_its_components ... ok
+test a_rounding_refactor_is_refuted_with_a_replayed_counterexample ... ok
+test a_small_callee_is_computed_as_written_rather_than_shared ... ok
+test a_string_parameter_is_refused_under_jbmc ... ok
+test a_static_method_that_became_a_records_method_is_related_by_the_components ... ok
+test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok
+test an_overloaded_method_is_named_by_its_parameter_types ... ok
+test a_record_whose_constructor_changed_is_not_identical ... ok
+test a_target_identical_in_both_versions_needs_no_proof ... ok
+test capability_contracts_list_each_entry_point_with_its_call_site ... ok
+test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok
+test details_print_the_statement_and_where_the_time_went ... ok
+test draws_the_state_machine_of_a_contract ... ok
+test a_shift_that_overflows_is_found_on_the_records_components ... ok
+test a_witness_through_contracts_is_run_on_a_jvm ... ok
+test generates_the_tla_operator_the_python_generator_wrote ... ok
+test impure_or_unbounded_methods_are_refused_with_the_reason ... ok
+test identity_and_initialization_agree_with_the_jvm ... ok
+test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok
+test generalized_quantifiers_fold_and_counterexamples_shrink ... ok
+test old_reads_an_array_as_the_call_received_it ... ok
+test relocation_renames_the_class_and_its_references ... ok
+test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok
+test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok
+test results_of_two_types_need_a_relation ... ok
+test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok
+test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok
+test jbmc_applies_the_contracts_for_its_gaps ... ok
+test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok
+test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok
+test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok
+test the_gap_scan_gives_each_class_initializer_a_shape ... ok
+test the_gap_scan_names_what_the_own_checker_approximates ... ok
+test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok
+test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok
+test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok
+test throws_clauses_prove_the_exceptional_path ... ok
+test unbounded_recursion_is_refused_not_run_forever ... ok
+test update_then_verify_passes_and_detects_drift_with_sarif ... ok
+test tlc_checks_the_box_office_model ... ok
+test tlc_checks_temporal_properties_and_names_the_violated_one ... ok
+test arrays_are_quantified_over_and_witnessed ... ok
+test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok
+test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok
+
+test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.51s
+
+     Running tests/interface_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/interface_parameters-cf1614b06724ba69)
+
+running 4 tests
+test what_a_given_implementation_does_not_answer_is_refused_by_name ... ok
+test the_scan_follows_a_call_into_the_classes_of_the_objects_made ... ok
+test the_given_implementation_answers_the_accessors_the_target_may_call ... ok
+test a_property_over_an_interface_parameter_is_proved_and_refuted_through_its_accessors ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+     Running tests/interface_regression.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/interface_regression-8b464d4e38a3b169)
+
+running 2 tests
+test a_regression_check_over_an_interface_parameter_names_what_it_is_not_given ... ok
+test a_fix_over_an_interface_parameter_is_preserved_outside_its_declared_change_across_two_closures ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.34s
+
+     Running tests/loops.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/loops-3f27bf529175b098)
+
+running 4 tests
+test a_loop_that_is_not_covered_says_why_and_one_not_shown_to_end_is_stated ... ok
+test what_only_the_invariant_admits_is_no_verdict_and_names_the_loop ... ok
+test a_defect_past_a_summarized_loop_is_refuted_on_the_least_input_and_replayed ... ok
+test a_loop_beyond_the_bound_is_covered_by_an_invariant_and_named_in_the_verdict ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s
+
+     Running tests/object_strings.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/object_strings-8233f737cbc527b9)
+
+running 3 tests
+test a_string_inside_an_object_outside_the_regression_check_is_refused_by_name ... ok
+test a_string_inside_an_object_is_a_leaf_and_a_string_field_is_compared_by_content ... ok
+test a_cached_proof_over_a_string_inside_an_object_is_tied_to_its_bound_and_its_constructor ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.32s
+
+     Running tests/observations.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/observations-7b976424b8698adc)
+
+running 12 tests
+test entry_points_a_key_does_not_tell_apart_are_unresolved ... ok
+test a_renamed_handler_or_path_variable_is_the_same_entry_point ... ok
+test a_route_observes_its_response_status_and_event ... ok
+test a_changed_shape_is_changed_not_preserved ... ok
+test the_command_prints_the_specs_as_text_and_json ... ok
+test the_command_compares_against_an_earlier_builds_specs ... ok
+test the_specs_are_the_same_for_the_refactor_and_say_where_the_defects_differ ... ok
+test what_the_analysis_cannot_see_stays_in_the_spec ... ok
+test two_builds_of_the_joint_example_compare_into_accounted_obligations ... ok
+test box_office_specs_say_what_its_source_does ... ok
+test every_box_office_entry_point_has_a_spec_that_matches_its_golden_text ... ok
+test box_office_examples_compare_as_their_boundary_diffs_say has been running for over 60 seconds
+test box_office_examples_compare_as_their_boundary_diffs_say ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 149.86s
+
+     Running tests/pairing.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/pairing-a167ef195ac152e2)
+
+running 3 tests
+test what_a_property_of_the_pair_does_not_take_is_refused_by_name ... ok
+test each_version_is_given_its_own_copy_of_an_array ... ok
+test two_versions_over_a_string_array_agree_outside_the_allowed_change_and_differ_with_none ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.77s
+
+     Running tests/preparation.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/preparation-195ed899a0d89a7e)
+
+running 1 test
+test where_a_compare_runs_time_goes_stage_by_stage ... ignored, cost:proof: a benchmark: javac, java and the binary on the preparation fixture, stage by stage, ~50 s, up to 64 s; proxy: none yet
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reuse.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/reuse-6b0a46c12a548a48)
+
+running 12 tests
+test a_field_a_plan_or_a_model_does_not_declare_makes_the_claim_uncacheable ... ok
+test a_construction_plans_history_is_part_of_the_claim ... ok
+test a_verified_property_is_stored_then_reused_exactly_with_its_statement ... ok
+test a_changed_constructor_of_an_input_invalidates_the_stored_proof ... ok
+test every_frozen_claim_has_a_key_of_its_own ... ok
+test a_refuted_property_is_reused_only_once_its_witness_fails_the_harness_again ... ok
+test every_semantic_part_of_a_plan_or_a_model_changes_the_key ... ok
+test a_planned_property_is_cached_and_an_edit_of_its_setup_method_alone_is_proved_again ... ok
+test an_unresolved_result_is_never_stored ... ok
+test property_and_regression_claims_of_one_target_never_share_a_key ... ok
+test an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim ... ok
+test every_part_of_a_property_claim_that_can_change_its_verdict_changes_its_key ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.13s
+
+     Running tests/reuse_summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/reuse_summaries-12b4e79e815ab682)
+
+running 14 tests
+test a_helper_whose_versions_read_fields_of_different_layouts_has_no_summary ... ok
+test a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted ... ok
+test a_helpers_summary_rests_on_its_own_proof_and_a_helper_reading_an_extra_field_has_none ... ok
+test a_caller_that_reads_the_receiver_before_its_mutation_or_through_an_alias_is_refuted ... ok
+test a_callers_classes_with_the_summary_applied_agree_with_the_versions_as_written_on_the_jvm ... ok
+test a_summary_over_constructor_made_receivers_is_not_offered_where_a_later_call_breaks_its_precondition ... ok
+test a_changed_callers_proof_reuses_the_helpers_summary_at_each_call ... ok
+test an_array_helper_lifted_agrees_with_the_helper_on_the_jvm_out_of_bounds_included ... ok
+test a_lifted_helper_agrees_with_the_helper_on_the_jvm ... ok
+test each_kind_of_helper_outside_the_category_is_refused_by_name ... ok
+test the_quote_helpers_footprint_is_its_fee_policy_and_the_defects_extra_read_is_found ... ok
+test a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact ... ok
+test an_array_summary_is_not_applied_past_its_bound_and_an_extra_read_has_none ... ok
+test an_array_summarys_adapters_agree_with_the_versions_as_written_on_the_jvm ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.09s
+
+     Running tests/string_literals.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/string_literals-3fab097784e63cb2)
+
+running 2 tests
+test a_literals_isolated_surrogate_is_its_own_code_unit_for_the_checker_the_interpreter_and_the_jvm ... ok
+test a_cached_proof_is_never_reused_for_a_literal_that_differs_only_in_its_surrogate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.71s
+
+     Running tests/summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/summaries-6614d45a604f7392)
+
+running 40 tests
+test a_changed_callee_body_names_the_callee ... ok
+test a_changed_superclass_changes_the_class_part ... ok
+test a_changed_enum_case_in_a_pattern_switch_is_a_changed_body ... ok
+test a_constant_field_changes_the_class_part ... ok
+test a_framework_annotation_or_configuration_value_changes_the_claim ... ok
+test a_framework_annotation_the_claim_uses_changes_the_closure ... ok
+test a_field_the_projection_does_not_know_makes_the_claim_uncacheable ... ok
+test a_helper_s_proof_never_rests_on_the_proof_it_is_used_in ... ok
+test a_changed_helper_proved_once_is_one_function_in_each_of_its_callers ... ok
+test a_part_not_computed_makes_the_claim_uncacheable ... ok
+test a_changed_version_or_setting_is_a_miss ... ok
+test a_helper_that_differs_only_where_its_caller_never_calls_it_is_proved_as_written ... ok
+test a_caller_s_key_is_the_same_whichever_run_proved_its_helper ... ok
+test a_new_class_that_adds_a_dispatch_target_changes_the_closure_with_no_body_changed ... ok
+test a_refuted_hit_replays_its_witness_first ... ok
+test a_stored_witness_reads_back_as_the_arguments_it_was ... ok
+test a_new_subclass_that_overrides_nothing_leaves_the_dispatch_alone ... ok
+test a_record_input_s_constructor_is_part_of_the_claim_s_code ... ok
+test an_entry_that_is_corrupt_for_another_key_or_unresolved_is_a_miss ... ok
+test a_real_regression_is_still_found_through_the_refinement ... ok
+test an_unresolved_result_or_a_refutation_without_a_witness_is_never_stored ... ok
+test claims_are_read_from_build_py_s_records_as_they_are ... ok
+test a_target_the_build_does_not_have_is_named_missing ... ok
+test each_part_the_brief_names_changes_the_key ... ok
+test every_part_of_the_claim_changed_in_turn_changes_the_key ... ok
+test a_renamed_target_a_target_gone_and_one_not_in_the_first_build ... ok
+test configuration_is_part_of_a_closure_that_touches_spring_and_of_no_other ... ok
+test a_rerun_of_the_same_claim_is_an_exact_hit ... ok
+test the_cache_gives_back_what_it_stored_for_that_key_only ... ok
+test an_unrelated_change_leaves_the_closure_alone ... ok
+test a_wrong_helper_change_is_not_shared_and_its_caller_s_check_finds_it ... ok
+test the_cache_is_used_with_the_own_checker_only ... ok
+test the_key_does_not_depend_on_how_the_claim_was_written ... ok
+test only_the_callee_a_spurious_counterexample_rests_on_is_computed_as_written ... ok
+test the_impact_report_names_the_claims_a_change_invalidates_and_the_parts_that_changed ... ok
+test the_replay_stub_gives_the_stub_s_answers_again_and_is_the_callee_elsewhere ... ok
+test only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof ... ok
+test the_same_sources_compiled_twice_give_the_same_closure ... ok
+test the_code_changes_that_no_body_shows_change_the_claim ... ok
+test the_binary_identity_is_the_digest_of_its_bytes ... ok
+
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.95s
+
+     Running tests/tiers.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/tiers-066621be2fc7a9e9)
+
+running 2 tests
+test a_reason_is_read_as_rust_reads_a_string_continued_over_lines ... ok
+test every_rust_test_is_tagged_with_its_cost_tier_as_the_inventory_says ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+     Running tests/value_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/value_parameters-d1a38c7d43a5a3e2)
+
+running 10 tests
+test a_planned_list_roots_unsupported_forms_are_refused_by_name ... ok
+test a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named ... ok
+test a_planned_list_root_has_its_own_bound_and_the_results_identity_with_its_elements_is_observed ... ok
+test a_list_parameter_is_proved_and_its_defects_refuted_on_witnesses_of_one_object_twice ... ok
+test a_witness_with_an_isolated_surrogate_replays_on_the_jvm_unit_for_unit ... ok
+test a_string_parameter_is_proved_and_its_defect_refuted_on_a_witness_replayed_on_a_jvm ... ok
+test a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named ... ok
+test a_string_parameters_cached_evidence_moves_with_its_bound ... ok
+test a_list_parameters_cached_evidence_moves_with_its_bound_and_its_elements_constructor ... ok
+test a_planned_list_claims_cached_evidence_moves_with_the_lists_bound ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.74s
+
+     Running tests/values.rs (/home/filip/.cache/in-the-loop/default-tests-target/debug/deps/values-07ec85f8ebc8b6f9)
+
+running 18 tests
+test a_claims_value_domains_are_resolved_before_its_key_and_its_checks ... ok
+test a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects ... ok
+test a_string_parameters_bound_is_explicit_and_every_length_up_to_it_is_an_input ... ok
+test an_array_cell_holds_a_symbolic_reference_of_its_element_type ... ok
+test an_operation_outside_the_values_models_is_a_named_gap_under_strict ... ok
+test confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict ... ok
+test the_gap_scan_counts_the_modelled_string_methods_and_no_others ... ok
+test a_strings_content_is_any_code_units_and_a_supplementary_character_is_two ... ok
+test equality_is_content_and_identity_is_apart_from_it ... ok
+test the_interpreters_strings_keep_every_code_unit ... ok
+test the_modelled_methods_throw_as_the_jdks_do ... ok
+test the_list_models_throw_refuse_and_share_as_the_jdks_do ... ok
+test the_own_checker_proves_the_codes_rewrite_and_refutes_a_dropped_prefix_character ... ok
+test a_concatenation_has_its_parts_content_up_to_a_named_cap ... ok
+test every_modelled_operation_has_a_record_its_boundary_cases_hold_on_the_jvm_the_interpreter_and_the_checker ... ok
+test the_own_checker_runs_the_immutable_list_models_and_keeps_order_duplicates_and_aliases ... ok
+test the_list_adapter_makes_reads_and_rebuilds_lists_that_keep_order_duplicates_and_identity ... ok
+test a_tiny_sweep_over_the_string_and_list_bounds ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.58s
+
+   Doc-tests jvmcontract
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+ok   examples/tools/targets/test_acceptance.py: Ran 15 tests in 6.939s, OK
+ok   examples/tools/targets/test_fixtures.py: Ran 6 tests in 6.680s, OK
+ok   examples/tools/targets/test_gap_inventory.py: Ran 12 tests in 4.867s, OK
+ok   examples/tools/targets/test_interfaces.py: Ran 4 tests in 0.000s, OK
+ok   examples/tools/targets/test_packets.py: Ran 22 tests in 0.720s, OK
+ok   examples/tools/targets/test_receipt_streams.py: Ran 5 tests in 13.855s, OK
+ok   examples/tools/targets/test_route.py: Ran 13 tests in 0.274s, OK
+FAIL examples/tools/targets/test_runtime.py: Ran 73 tests in 99.972s, FAILED (failures=1)
+...................................................................F.....
+======================================================================
+FAIL: test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds (targets.test_runtime.VerifierTest.test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261116-224337-default-test-run-at-yooukqwllnmu/examples/tools/targets/test_runtime.py", line 1276, in test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds
+    self.assertEqual(set(prove["env"]) - {"LC_CTYPE"},  # LC_CTYPE: Python's own locale coercion, if any
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAVA_OPTS"})
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the first set but not the second:
+'JVMCONTRACT_JBMC_MEMORY_MB'
+
+----------------------------------------------------------------------
+Ran 73 tests in 99.972s
+
+FAILED (failures=1)
+
+ok   examples/tools/targets/test_runtime_upstream.py: Ran 30 tests in 37.088s, OK
+ok   examples/tools/targets/test_sidecar.py: Ran 19 tests in 0.129s, OK
+ok   examples/tools/targets/test_without_jbmc.py: Ran 3 tests in 0.096s, OK
+ok   examples/tools/targets/test_workflow.py: Ran 64 tests in 11.640s, OK (skipped=1)
+ok   examples/tools/targets/test_workflow_refusal.py: Ran 9 tests in 0.426s, OK
+ok   examples/tools/test_alignment.py: Ran 23 tests in 0.008s, OK
+ok   examples/tools/test_build.py: Ran 191 tests in 4.948s, OK
+ok   examples/tools/test_economics.py: Ran 11 tests in 4.583s, OK
+ok   examples/tools/test_gap_table.py: Ran 3 tests in 0.002s, OK
+ok   examples/tools/test_scaffold_example.py: Ran 4 tests in 0.059s, OK
+ok   examples/tools/test_targets_contract.py: Ran 16 tests in 16.115s, OK (skipped=2)
+ok   lib/benchmark/test_run.py: Ran 27 tests in 0.938s, OK
+ok   lib/solvers/test_compare.py: Ran 5 tests in 0.002s, OK
+ok   lib/tools/test_cost_inventory.py: Ran 19 tests in 0.021s, OK
+ok   lib/tools/test_test_costs.py: Ran 16 tests in 0.692s, OK
+ok   lib/tools/test_tier_lint.py: Ran 12 tests in 2.091s, OK
+ok   llm-dlc/tools/test_changes.py: Ran 21 tests in 0.867s, OK
+ok   llm-dlc/tools/test_claude_setup.py: Ran 21 tests in 0.391s, OK
+ok   llm-dlc/tools/test_conductor.py: Ran 22 tests in 2.124s, OK
+ok   llm-dlc/tools/test_contribute.py: Ran 10 tests in 0.012s, OK
+ok   llm-dlc/tools/test_decisions.py: Ran 15 tests in 0.115s, OK
+ok   llm-dlc/tools/test_doctor.py: Ran 11 tests in 0.001s, OK
+ok   llm-dlc/tools/test_inbox.py: Ran 8 tests in 0.400s, OK
+ok   llm-dlc/tools/test_integration.py: Ran 5 tests in 1.770s, OK
+ok   llm-dlc/tools/test_loop_stats.py: Ran 22 tests in 0.024s, OK
+ok   llm-dlc/tools/test_metrics.py: Ran 21 tests in 0.003s, OK
+ok   llm-dlc/tools/test_mode.py: Ran 14 tests in 0.004s, OK
+ok   llm-dlc/tools/test_performance.py: Ran 104 tests in 21.771s, OK (skipped=2)
+ok   llm-dlc/tools/test_prove_loop.py: Ran 30 tests in 82.215s, OK
+ok   llm-dlc/tools/test_prune_workspaces.py: Ran 14 tests in 2.341s, OK
+ok   llm-dlc/tools/test_release.py: Ran 11 tests in 0.957s, OK
+ok   llm-dlc/tools/test_review.py: Ran 28 tests in 0.286s, OK
+ok   llm-dlc/tools/test_runs.py: Ran 13 tests in 0.119s, OK
+ok   llm-dlc/tools/test_streams_status.py: Ran 9 tests in 0.188s, OK
+ok   llm-dlc/tools/test_tool_time.py: Ran 10 tests in 0.010s, OK
+ok   llm-dlc/tools/test_verification_loop.py: Ran 2 tests in 12.350s, OK
+ok   llm-dlc/tools/test_watch.py: Ran 41 tests in 2.107s, OK
+ok   llm-dlc/tools/test_workspaces.py: Ran 11 tests in 1.677s, OK
+ok   verification/test_default_tests.py: Ran 7 tests in 0.026s, OK
+ok   verification/test_pipeline.py: Ran 38 tests in 82.922s, OK
+default tier: 48 of 49 passed; failed: examples/tools/targets/test_runtime.py
+default tests: failed: default tier: 48 of 49 passed; failed: examples/tools/targets/test_runtime.py

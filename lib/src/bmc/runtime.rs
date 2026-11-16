@@ -29,6 +29,8 @@
 //!   JDK has: whether the argument's class is the receiver's or below it, as `instanceof` decides it
 //!   ([`ClassPath::is_subtype`]). `NullPointerException` for a null argument. Of a primitive type's or an array's
 //!   `Class` it is the JDK call it was.
+//! - `Collections.emptyMap()`: the JDK's one empty map, the same object on every call, never null. The object has
+//!   no content: every method of it is the JDK call it was.
 //! - `Thread.currentThread()`: the one thread of the run, the same object on every call. Its
 //!   `getContextClassLoader()`: the loader of the check's class path, under the assumption the run states
 //!   ([`CONTEXT_LOADER_ASSUMPTION`]). Every other method of the thread is the JDK call it was.
@@ -71,13 +73,15 @@ const CLASS: &str = "java/lang/Class";
 const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
 const THREAD: &str = "java/lang/Thread";
+const COLLECTIONS: &str = "java/util/Collections";
+pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
 
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;")
+        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;")
     )
 }
 
@@ -236,6 +240,12 @@ impl Engine<'_> {
                     }
                 }
                 let o = self.literal(path, Literal::Class(internal), CLASS);
+                self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (COLLECTIONS, "emptyMap", []) => {
+                let o = self.literal(path, Literal::EmptyMap, EMPTY_MAP);
                 self.push(path, Val::R(Some(o)));
                 self.advance(path);
                 Some(Ok(None))

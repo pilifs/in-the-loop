@@ -1,0 +1,7 @@
+Note: /home/filip/code/in-the-loop/verification/.state/work/20261116-225709-example-290-fixed-security-through-the-a/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name "java"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✓ example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 7.7 s; loops unwound 64 times with unwinding assertions)
+  not vacuous: select(servlets=[0, 0], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls
+
+verdict: verified (expected verified); paths 659, solver calls 1699, variables 8509; outcome in verification/.work-290/fixed-security/outcome.json

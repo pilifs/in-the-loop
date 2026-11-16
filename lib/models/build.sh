@@ -12,4 +12,7 @@ javac --release 8 -Xlint:-options -g -d classes java/lang/*.java
 javac --release 8 -Xlint:-options -g -d classes java/nio/charset/*.java
 javac --release 8 -Xlint:-options -g -d classes java/util/*.java
 javac --release 8 -Xlint:-options -g -d classes java/util/stream/*.java
+# The model of the list Arrays.asList returns extends the JDK's AbstractList, so it is compiled against the JDK's
+# List and not the model of it in java/util: in a run of its own, with no source path.
+javac --release 8 -Xlint:-options -g -sourcepath "" -d classes java/util/lists/*.java
 find classes -name '*.class' | sort
