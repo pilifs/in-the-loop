@@ -235,6 +235,12 @@ class SetupTest(Made):
         m = watch.measures(self.run, [], {})
         self.assertEqual((m["setupRework"], m["firstAttemptInvoked"], m["toFirstCycle"]), ({"290": 1}, [1, 1], None))
 
+    def test_a_resumed_sessions_turn_costs_its_total_less_the_total_seen_before(self):
+        self.assertEqual(watch.turn_cost(self.run, "s", 12.5, fresh=True), 12.5, "a new session's first turn is its total")
+        self.assertEqual(watch.turn_cost(self.run, "s", 15.0, fresh=True), 2.5)
+        self.assertIsNone(watch.turn_cost(self.run, "old", 211.0, fresh=False), "a resumed session's earlier total is unknown")
+        self.assertAlmostEqual(watch.turn_cost(self.run, "old", 213.5, fresh=False), 2.5)
+
     def test_a_setup_under_way_says_its_command_and_its_last_validation(self):
         log = self.run.dir / "stage-setup.jsonl"
         self.run.dir.mkdir(parents=True)

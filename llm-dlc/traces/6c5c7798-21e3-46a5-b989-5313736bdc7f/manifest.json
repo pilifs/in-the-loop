@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T20:52:00.548Z",
-  "duration_seconds": 98674,
+  "ended": "2026-11-16T21:10:49.322Z",
+  "duration_seconds": 99803,
   "stats": {
-    "turns": 62,
-    "api_calls": 461,
-    "tool_calls": 423,
+    "turns": 64,
+    "api_calls": 471,
+    "tool_calls": 430,
     "tool_errors": 7,
     "compactions": 2,
-    "peak_context_tokens": 387194,
+    "peak_context_tokens": 398665,
     "usage": {
-      "input_tokens": 1060,
-      "output_tokens": 351625,
-      "cache_read_input_tokens": 86054338,
-      "cache_creation_input_tokens": 803713
+      "input_tokens": 1084,
+      "output_tokens": 355794,
+      "cache_read_input_tokens": 89983827,
+      "cache_creation_input_tokens": 814405
     }
   },
   "tools": {
-    "Bash": 397,
+    "Bash": 404,
     "ToolSearch": 6,
     "SendMessage": 5,
     "ListAgents": 4,
@@ -79,24 +79,24 @@
     {
       "index": 2,
       "started": "2026-11-16T09:49:36.548Z",
-      "ended": "2026-11-16T20:52:00.548Z",
-      "turns": 24,
-      "api_calls": 209,
+      "ended": "2026-11-16T21:10:49.322Z",
+      "turns": 26,
+      "api_calls": 219,
       "usage": {
-        "input_tokens": 464,
-        "output_tokens": 166382,
-        "cache_read_input_tokens": 49379422,
-        "cache_creation_input_tokens": 390524
+        "input_tokens": 488,
+        "output_tokens": 170551,
+        "cache_read_input_tokens": 53308911,
+        "cache_creation_input_tokens": 401216
       },
-      "peak_context_tokens": 387194
+      "peak_context_tokens": 398665
     }
   ],
   "log": {
-    "sha256": "41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6",
-    "bytes": 8584936,
-    "lines": 3684,
-    "gzip_bytes": 1473276,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6.jsonl.gz"
+    "sha256": "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd",
+    "bytes": 8880310,
+    "lines": 3766,
+    "gzip_bytes": 1522676,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -611,6 +611,46 @@
       "summary": "The watcher's decisions on the run of 288-290 so far",
       "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
       "log_sha256": "41f217d9c17b53758f42a9630743a99d77700582424c5ff04df9632912fc87c6"
+    },
+    {
+      "change_id": "qvqpqxpnkypnomvonkstvrymxxnypluk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging",
+      "body": "The repair's brief (llm-dlc/runtime.md) for example 289 (CVE-2022-22978, RegexRequestMatcher and line terminators), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 289 in toClassify because none of its four proof tasks recorded how it is invoked. Each one now records it as adapter (target.json, invocation). The route plans every task, but it enters RegexRequestMatcher#matches(HttpServletRequest), and the claims' expressions name the adapter's parameters (pattern, caseInsensitive, servletPath, pathInfo, query), so they can't compile there. RegexMatchAdapter#matches was compiled against each revision's pinned closure and run on the 44 probes on 5.6.3, 5.6.4 and the mutant, on JDK 21 and 25. The example has no proof script of its own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/prefix-classification-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement was replaced word for word by the remark's text, which states only that the releases agree, and the remark's note on the expected answers was added to the claim's notes. Nothing else in the claim changed. The README's preservation sentence was reworded the same way.\n\nFollowing the plan's revised controls: eight probes were added for unpaired surrogates, which the claims' domain includes. Six are guarded: a lone U+D800, a lone U+DC00, and a pair split between the servlet path and the path info, each in both case modes. Two are triggers: U+D800 then a line feed, in both case modes. That makes 44 probes: 18 triggers, 16 guarded, 7 legitimate, 3 outside. The driver now prints each input string as its UTF-16 code units, the form argv passes, and every other string as ASCII with escapes kept as text, so the route's controls record (written as UTF-8) can hold a lone surrogate. Its first line also reports LogFactory.getLog(RegexRequestMatcher.class).isDebugEnabled() and whether java.util.logging.config.file or .class is set. The oracle decodes the code units, and it refuses a run where debug is on or not reported. Its self-test covers the surrogate probes, a path that isn't in code-unit form, debug enabled, and a missing report. Both replays ran again, as the plan expected. 5.6.3 fails at exactly the 18 triggers, and 5.6.4 holds. Every surrogate probe that is guarded matches on both releases and on the mutant. The mutant fails at exactly the 5 case-insensitive triggers. Debug was off and no JUL property was set on every run, and JDK 21 and 25 gave identical results. The setup's receipts, whose controls changed, were replaced by the new ones, and the page's and example.json's probe counts and 'Not probed' paragraph now match.",
+      "log_sha256": "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd"
+    },
+    {
+      "change_id": "mlmnzmwkxwvokkwvxpnwyyxuxqplkoos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290 set up from its catalog entry: claims and tasks from the plan, release pair and mutant prepared, carriers, driver and oracle, both replays as expected",
+      "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 -> 5.8.5, requestMatchers(String...) in a multi-servlet application) was a catalog entry. The setup stage of /prove-java-change wrote the plan's two claims and six tasks with scaffold_example.py (unchanged from plan.json), and the rest from the entry: the release pair on the published-artifact route (spring-security-config/web/core, Spring Framework 5.3.28 and 5.3.29 with spring-webmvc, jakarta.servlet-api 4.0.4, pinned by sha256), sources.lock.json (each release's AbstractRequestMatcherRegistry.java is the exact-fix pair's blob; the other classes the replays load are byte-identical or differ outside the code reached; javap shows no subclass in either config JAR overriding the implicit overloads), and the mutant controls/first-registration-only.patch (hasDispatcherServlet looks at the first registration only).\n\nThe entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), with SelectionRegistry (the three abstract methods only), PlainServlet, ExtendedDispatcherServlet and carriers for the WebApplicationContext, servlet context and registrations whose other methods throw. controls/probes.json has 29 probes, each with the outcome expected of 5.8.4, 5.8.5 and the mutant written before the run; controls/oracle.py holds each run to its revision's expectations (told by the registry class's sha256) and its self-test tells the fix from six constructed registries. Two null-pattern probes beyond the plan show the mutant throwing IllegalArgumentException from AntPathRequestMatcher rather than a rejection.",
+      "log_sha256": "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd"
+    },
+    {
+      "change_id": "zppsuptrnwkzmxsusztpolrotxpyzmls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: the page and notes count three null-pattern probes beyond the plan, not two",
+      "body": "The setup commit's README and example.json notes said two probes with a null pattern element were added beyond the plan's list; there are three (ambiguous-plain-dispatcher-null-pattern, lone-dispatcher-null-pattern, no-dispatcher-plain-null-pattern). Corrected the count and stated the lone probe's outcome. Verified with validate_example.py 290.",
+      "log_sha256": "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd"
+    },
+    {
+      "change_id": "rlosmoxonwxyyssnwqoukroqoqkrxkqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once",
+      "body": "The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).",
+      "log_sha256": "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd"
+    },
+    {
+      "change_id": "urqorxxswwuuwtxmnmnqrwsuoytlqklo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result: example 288 fixed-security through the adapter entry passed",
+      "body": "Job 20261116-201436-example-288-fixed-security-through-the-a passed in 19m42s (peak 1.4 GiB, estimated 25m, 6 GiB) on vm-1, jvmcontract holds as expected; 3 outputs applied.",
+      "log_sha256": "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd"
     }
   ],
   "logs": {
@@ -732,6 +772,12 @@
       "bytes": 8019674,
       "lines": 3337,
       "gzip_bytes": 1396009,
+      "url": null
+    },
+    "bbb7e346cb53d86499d1bfae446a4aba112113425b4f9a53b3672b322b98a7fd": {
+      "bytes": 8880310,
+      "lines": 3766,
+      "gzip_bytes": 1522676,
       "url": null
     },
     "c59a622d4faf0af0a791fd6accf9c5968aa5fccead418097808cb54f1fa226eb": {

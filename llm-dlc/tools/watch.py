@@ -205,6 +205,20 @@ def workspace_root(run: Run, name: str) -> Path:
     return path
 
 
+def turn_cost(run: Run, session: str | None, total: float | None, fresh: bool) -> float | None:
+    """What one turn cost. A result's total_cost_usd is the session's running total, so a resumed session's turn is
+    its total less the total last seen for that session: None for the first turn seen of a session that was resumed,
+    whose earlier total is not known here."""
+    if session is None or total is None:
+        return None
+    totals = run.read().get("sessionTotals") or {}
+    before = totals.get(session)
+    run.update(sessionTotals={**totals, session: total})
+    if before is not None:
+        return max(0.0, total - before)
+    return total if fresh else None
+
+
 def head_change(where: Path) -> str | None:
     r = subprocess.run(["jj", "--quiet", "log", "--no-graph", "-r", "@-", "-T", 'change_id.short(8) ++ " " ++ description.first_line()'],
                        capture_output=True, text=True, cwd=where)
@@ -245,15 +259,17 @@ def cmd_stage(run: Run, name: str, prompt: str, model: str | None, effort: str |
                 result = event
         status = p.wait()
     ok = status == 0 and result is not None and result.get("subtype") == "success" and not result.get("is_error")
+    cost = turn_cost(run, (result or {}).get("session_id"), (result or {}).get("total_cost_usd"), "--resume" not in command)
     stages = run.read().get("stages") or stages
     stages[name] = {**stages.get(name, {}), "ended": conductor.now(), "ok": ok, "session": (result or {}).get("session_id"),
-                    "cost": (result or {}).get("total_cost_usd")}
-    run.update(stages=stages, costs={**(run.read().get("costs") or {}),
-                                     f"{name}-{conductor.now()}": (result or {}).get("total_cost_usd") or 0})
+                    "cost": cost}
+    run.update(stages=stages)
+    if cost is not None:
+        run.update(costs={**(run.read().get("costs") or {}), f"{name}-{conductor.now()}": cost})
     if attempt:
         row = (changes.listing(cwd, [example])["examples"] or [{}])[0]
         set_attempt(run, attempt, ended=conductor.now(), ok=ok, session=(result or {}).get("session_id"),
-                    cost=(result or {}).get("total_cost_usd"), commit=head_change(cwd), state=row.get("state"),
+                    cost=cost, commit=head_change(cwd), state=row.get("state"),
                     invocation=uninvoked(cwd, row) if row.get("path") else [],
                     report=((result or {}).get("result") or "")[-600:])
     print((result or {}).get("result") or f"the {name} session ended with status {status} and no report: see {log}")
@@ -789,20 +805,20 @@ def decisions_state(run: Run) -> dict:
     return {"record": where[0], "flagged": len(by["flagged"]), "unreviewed": len(by["unreviewed"]), "overturned": by["overturned"]}
 
 
-def cycle_cost(event: dict) -> float | None:
-    """The cost of the cycle a cycle-start event began, from the result its turn file ends with."""
+def cycle_total(event: dict) -> tuple[str | None, float | None]:
+    """The session and its running total, from the result the turn file of a cycle-start event ends with."""
     try:
         lines = Path(event.get("turn") or "").read_text().splitlines()
     except OSError:
-        return None
+        return None, None
     for line in reversed(lines):
         try:
             e = json.loads(line)
         except ValueError:
             continue
         if isinstance(e, dict) and e.get("type") == "result":
-            return e.get("total_cost_usd")
-    return None
+            return e.get("session_id"), e.get("total_cost_usd")
+    return None, None
 
 
 def measures(run: Run, events: list[dict], claims: dict) -> dict:
@@ -1053,8 +1069,12 @@ def next_thing(run: Run, interval: float) -> dict | None:
         if event.get("type") == "cycle":
             out["assessment"] = assessment(run, event)
             started = [e for e in conductor.read_events(run.dir) if e.get("type") == "cycle-start"]
-            if started and (cost := cycle_cost(started[-1])) is not None:
-                run.update(cycleCosts={**(run.read().get("cycleCosts") or {}), str(started[-1].get("cycle")): cost})
+            key = str(started[-1].get("cycle")) if started else None
+            if key and key not in (run.read().get("cycleCosts") or {}):
+                # the cycle's turn less what the session had cost before it (its compaction included)
+                cost = turn_cost(run, *cycle_total(started[-1]), fresh=False)
+                if cost is not None:
+                    run.update(cycleCosts={**(run.read().get("cycleCosts") or {}), key: cost})
         if event.get("type") == "example":
             out["mergeQueue"] = merge_queue(run)
         return out

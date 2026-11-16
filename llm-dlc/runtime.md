@@ -371,8 +371,9 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    - `gap`: neither can be given the task yet. Record the missing capability as an observed blocker of the task
      in the handoff, with the probe that showed it, and as an engineering task in `handoff.next`; the claim stays
      as it is.
-6. Each example checked with `python3 examples/tools/validate_example.py --replay NNN`, not the default run
-   ([tests in a run](#the-proof-loop)), and committed by itself.
+6. Each example checked with `python3 examples/tools/validate_example.py NNN`, not the default run
+   ([tests in a run](#the-proof-loop)), and committed by itself. Add `--replay` only when something a replay reads
+   changed after the replays of step 4 ran: each run of a replay leaves a receipt of its own.
 
 It is done when `changes.py` calls each example `prepared` and `watch.py preflight` doesn't name it in
 `toClassify`. You decide nothing the plan left open and change no claim: what does not work as the plan says (a
@@ -463,9 +464,10 @@ entries like it and are the model.
 3. Prove nothing. A probe that shows where the verifier stops belongs to the proof loop; the one that confirms an
    entry can be invoked is yours.
 4. Done when `changes.py NNN` calls the example `prepared` and preflight's `toClassify` doesn't name it. Check it
-   with `python3 examples/tools/validate_example.py --replay NNN` (it regenerates the router first, then checks the
-   form, the plans, the oracle and the replays, and runs the tests that read every example; they find a prepared
-   example by themselves, so add it to no test's list), not the default run, commit it by itself, and reply with
+   with `python3 examples/tools/validate_example.py NNN` (it checks the form, the plans and the oracle, regenerates
+   the router, and runs the tests that read every example; they find a prepared example by themselves, so add it to
+   no test's list; `--replay` runs the replays again, which only a change to what they read since step 1 needs, as
+   each run leaves a receipt of its own), not the default run, commit it by itself, and reply with
    each claim in a sentence, how each proof task is invoked, and anything that did not work as the plan or the entry
    predicted. An entry that can't be set up (a revision that does not build, a change no replay shows) is left as it
    was, with the reason in its notes and in your reply.
@@ -482,7 +484,8 @@ right what the check names, in the examples it names, and nothing else:
    the remark states it, and list every claim you changed in your report. Where a proof task or its claim is
    missing and the plan doesn't design it, write none and report that.
 4. A proof task with no `invocation`: confirm and record it, as stage 3's step 5 says.
-5. Check each example you changed with `validate_example.py --replay NNN`, commit it by itself, and reply with what
+5. Check each example you changed with `validate_example.py NNN` (`--replay` when you changed what a replay
+   reads and have not run it since), commit it by itself, and reply with what
    you did, what you could not, and why.
 
 ### Watching the loop
