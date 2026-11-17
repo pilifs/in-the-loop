@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-17T00:09:52.345Z",
-  "duration_seconds": 103551,
+  "ended": "2026-11-17T00:10:15.330Z",
+  "duration_seconds": 103574,
   "stats": {
     "turns": 27,
-    "api_calls": 716,
-    "tool_calls": 754,
+    "api_calls": 721,
+    "tool_calls": 758,
     "tool_errors": 21,
     "compactions": 6,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 1462,
-      "output_tokens": 1026886,
-      "cache_read_input_tokens": 177374389,
-      "cache_creation_input_tokens": 2335555
+      "input_tokens": 1474,
+      "output_tokens": 1028696,
+      "cache_read_input_tokens": 178542944,
+      "cache_creation_input_tokens": 2339105
     }
   },
   "tools": {
-    "Bash": 668,
+    "Bash": 672,
     "Write": 43,
     "Read": 16,
     "Edit": 8,
@@ -163,24 +163,24 @@
     {
       "index": 6,
       "started": "2026-11-16T17:06:47.678Z",
-      "ended": "2026-11-17T00:09:52.345Z",
+      "ended": "2026-11-17T00:10:15.330Z",
       "turns": 3,
-      "api_calls": 42,
+      "api_calls": 47,
       "usage": {
-        "input_tokens": 84,
-        "output_tokens": 70805,
-        "cache_read_input_tokens": 7014479,
-        "cache_creation_input_tokens": 203292
+        "input_tokens": 96,
+        "output_tokens": 72615,
+        "cache_read_input_tokens": 8183034,
+        "cache_creation_input_tokens": 206842
       },
-      "peak_context_tokens": 232817
+      "peak_context_tokens": 236367
     }
   ],
   "log": {
-    "sha256": "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803",
-    "bytes": 19122186,
-    "lines": 6661,
-    "gzip_bytes": 3262527,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803.jsonl.gz"
+    "sha256": "e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455",
+    "bytes": 19171685,
+    "lines": 6689,
+    "gzip_bytes": 3268255,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455.jsonl.gz"
   },
   "subagents": [
     {
@@ -830,6 +830,14 @@
       "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
       "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
       "log_sha256": "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803"
+    },
+    {
+      "change_id": "onkqouutwkoryzmluwqkymmqwqkmwpzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected",
+      "body": "Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.",
+      "log_sha256": "e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455"
     }
   ],
   "logs": {
@@ -964,6 +972,12 @@
       "lines": 2381,
       "gzip_bytes": 1389216,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/cb349b4cc63ab90184a8ec7b956d47247e30c9734067a9672e95b9b8c3ee98d9.jsonl.gz"
+    },
+    "e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455": {
+      "bytes": 19171685,
+      "lines": 6689,
+      "gzip_bytes": 3268255,
+      "url": null
     },
     "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803": {
       "bytes": 19122186,

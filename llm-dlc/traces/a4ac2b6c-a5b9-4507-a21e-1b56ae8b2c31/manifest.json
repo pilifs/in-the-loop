@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-17T00:09:05.840Z",
-  "duration_seconds": 114954,
+  "ended": "2026-11-17T00:13:39.404Z",
+  "duration_seconds": 115227,
   "stats": {
     "turns": 37,
-    "api_calls": 1877,
-    "tool_calls": 1930,
+    "api_calls": 1893,
+    "tool_calls": 1946,
     "tool_errors": 17,
     "compactions": 13,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3754,
-      "output_tokens": 2306991,
-      "cache_read_input_tokens": 491835887,
-      "cache_creation_input_tokens": 5544522
+      "input_tokens": 3786,
+      "output_tokens": 2321804,
+      "cache_read_input_tokens": 495343277,
+      "cache_creation_input_tokens": 5577677
     }
   },
   "tools": {
-    "Bash": 1857,
+    "Bash": 1873,
     "Read": 39,
     "Write": 23,
     "ToolSearch": 5,
@@ -246,24 +246,24 @@
     {
       "index": 13,
       "started": "2026-11-16T23:48:03.278Z",
-      "ended": "2026-11-17T00:09:05.840Z",
+      "ended": "2026-11-17T00:13:39.404Z",
       "turns": 4,
-      "api_calls": 51,
+      "api_calls": 67,
       "usage": {
-        "input_tokens": 102,
-        "output_tokens": 63716,
-        "cache_read_input_tokens": 6594931,
-        "cache_creation_input_tokens": 193510
+        "input_tokens": 134,
+        "output_tokens": 78529,
+        "cache_read_input_tokens": 10102321,
+        "cache_creation_input_tokens": 226665
       },
-      "peak_context_tokens": 204969
+      "peak_context_tokens": 238124
     }
   ],
   "log": {
-    "sha256": "7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b",
-    "bytes": 41809792,
-    "lines": 15723,
-    "gzip_bytes": 6339917,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b.jsonl.gz"
+    "sha256": "d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7",
+    "bytes": 42076351,
+    "lines": 15858,
+    "gzip_bytes": 6372157,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -778,6 +778,22 @@
       "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
       "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
       "log_sha256": "7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b"
+    },
+    {
+      "change_id": "pvqnynoylrqxzlysmlzpyvqwxuvmlsno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7"
+    },
+    {
+      "change_id": "onkqouutwkoryzmluwqkymmqwqkmwpzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected",
+      "body": "Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.",
+      "log_sha256": "d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7"
     }
   ],
   "logs": {
@@ -935,6 +951,12 @@
       "bytes": 30812781,
       "lines": 11678,
       "gzip_bytes": 4613932,
+      "url": null
+    },
+    "d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7": {
+      "bytes": 42076351,
+      "lines": 15858,
+      "gzip_bytes": 6372157,
       "url": null
     },
     "d8928155153d5141eadaa73960550217588ea59bdaaba09fa9e2977d48044227": {

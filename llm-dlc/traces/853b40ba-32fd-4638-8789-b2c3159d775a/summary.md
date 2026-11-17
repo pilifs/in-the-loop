@@ -60,6 +60,12 @@ change `qystlsvplrmv` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-trac
 
 5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.
 
+### Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected
+
+change `onkqouutwkor` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
+
+Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz) has every step in between: reasoning, tool calls and their results.
