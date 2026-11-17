@@ -104,6 +104,7 @@ mod loops;
 mod observed;
 mod regex;
 pub mod runtime;
+mod ties;
 pub mod sat;
 pub mod strings;
 pub mod transcript;
@@ -588,6 +589,10 @@ struct Obj {
     /// what would read the cells in bulk does not take it for an array ([`Obj::as_array`]) and is refused. A table
     /// of a thousand words a loop writes at an index it computes is this and no fresh word for each cell.
     unknown: bool,
+    /// Of such an array, in a pair of versions: the name of what its cells hold, the summary that made them any
+    /// values and each write since ([`ties`]), so that two reads of one content at one index are one value. `None`
+    /// where it is not kept: a read is then a value of its own.
+    content: Option<u64>,
 }
 
 /// An object `invokedynamic` made through `LambdaMetafactory.metafactory`: the interface it implements, the name
@@ -613,7 +618,7 @@ static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0)
 
 impl Obj {
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, unknown: false }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, unknown: false, content: None }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -690,6 +695,8 @@ struct Decoded {
     live: Vec<Vec<bool>>,
     /// The loops: each head a branch goes back to (its pc), with the pc of the last instruction that does.
     loops: Vec<(u32, u32)>,
+    /// The method's descriptor.
+    descriptor: String,
 }
 
 #[derive(Clone)]
@@ -1201,6 +1208,8 @@ struct Engine<'a> {
     indexed: Option<Vec<(u64, Bits)>>,
     /// The same loops by class, method and head, for [`Engine::summarize_at_entry`].
     known_loops: HashMap<(String, String, u32), loops::Known>,
+    /// The values a pair of versions' two runs share where they run the same code from the same state ([`ties`]).
+    ties: ties::Ties,
     /// Each `String[]` parameter's own array, by slot: its length, and for each cell whether it is null, and the
     /// length and code units of the String it holds otherwise.
     string_arrays: Vec<(u32, Bits, Vec<(Lit, Bits, Vec<Bits>)>)>,
@@ -1304,6 +1313,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         assumed: Default::default(),
         loops: Default::default(),
         known_loops: Default::default(),
+        ties: Default::default(),
         indexed: None,
         choices: Vec::new(),
         max_array_length: options.max_array_length,
@@ -1765,7 +1775,7 @@ impl<'a> Engine<'a> {
             }
         }
         let lines = pcs.iter().map(|&pc| code.line_at(pc)).collect();
-        Ok(Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins, exits, live, loops }))
+        Ok(Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins, exits, live, loops, descriptor: descriptor.to_string() }))
     }
 
     /// Whether the paths are many enough to be merged eagerly ([`Options::merge_heaps_after`]): heaps of two shapes
@@ -2351,6 +2361,10 @@ impl<'a> Engine<'a> {
                 }
                 o.same = same;
             }
+            // One content kept where both paths keep the same; else none ([`ties`]).
+            if o.unknown != q.unknown || o.content != q.content {
+                o.content = None;
+            }
             o.unknown |= q.unknown;
             let unknown = o.unknown;
             if let (Some(x), Some(y)) = (&mut o.array, &q.array) {
@@ -2645,7 +2659,7 @@ impl<'a> Engine<'a> {
                 self.index_used(path, o, &index);
                 // Past a summarized loop a computed index into a large array is not followed ([`loops`]).
                 let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && self.b.constant_value(&index).is_none());
-                let mut value = if loose { self.b.fresh(width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
+                let mut value = if loose { self.loose_read(path, o, &index, width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
                 for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
                     if loose {
                         break;
@@ -2689,10 +2703,12 @@ impl<'a> Engine<'a> {
                     // Past a summarized loop a write at a computed index into a large array may be any cell's:
                     // the cells hold any values from here on ([`loops`]).
                     let cells = path.objects[o].array.as_ref().expect("an array").cells.len();
-                    if path.loose && cells > loops::LOOSE_CELLS && engine.b.constant_value(&index).is_none() {
+                    let loose = path.loose && cells > loops::LOOSE_CELLS && engine.b.constant_value(&index).is_none();
+                    if loose || path.objects[o].unknown {
+                        // What the cells hold is named by what it was and this write ([`ties`]).
+                        let before = engine.content(path, o);
+                        path.objects[o].content = engine.written(before, &index, &stored);
                         path.objects[o].unknown = true;
-                    }
-                    if path.objects[o].unknown {
                         engine.advance(path);
                         return;
                     }
@@ -4202,6 +4218,9 @@ impl<'a> Engine<'a> {
         if self.previous.is_some() && caller == crate::pairing::CLASS && member.owner == crate::pairing::CLASS && (member.name.as_str(), member.descriptor.as_str()) == (crate::pairing::FRESH, "()V") {
             path.statics.clear();
             path.classes.retain(|c, _| c == crate::pairing::CLASS);
+            // Nor is it past the other's summarized loops: a computed index into a large array is followed again
+            // until it passes one of its own, so that its run is the other's where both run the same ([`ties`]).
+            path.loose = false;
             self.advance(path);
             return Ok(None);
         }
@@ -4407,7 +4426,7 @@ impl<'a> Engine<'a> {
             if path.objects[o].given {
                 self.reads(path, || "reads an array that was there before the call (clone)".into())?;
             }
-            let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, ..Obj::new(&path.objects[o].class) };
+            let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, content: path.objects[o].content, ..Obj::new(&path.objects[o].class) };
             path.objects.push(copy);
             let r = path.objects.len() - 1;
             self.push(path, Val::R(Some(r)));

@@ -155,9 +155,45 @@ relational result needs a new check (the rule's applications recorded in the out
   Job `20261117-151521-examples-289-and-290-preservation-once-m` reruns both and supersedes `20261117-134306-…`,
   whose statement is no longer the pair's. Evidence stream: accept 289's and 290's preservation from it, not from
   the earlier one. The default run passed after the merge.
-- Next: step 2. Read `shared.rs`, `equivalence.rs:1800` and `bmc/loops.rs`, and choose the boundary by the
-  evidence: the counterexample's three loops are in `crypt_raw` and `ekskey`, which are unchanged between the
-  releases.
+- 2026-11-17, steps 2 and 3 (the boundary chosen, made sound first; *working formalization* and *accepted claim*
+  unchanged). The boundary is the third candidate, joint execution from where the sides converge, taken at a loop's
+  summary: the state past a summarized loop is named by the state it was summarized from, so a summary of the same
+  code from the same state takes the same bits on either side (`lib/src/bmc/ties.rs`, wired into `loops.rs` and
+  `mod.rs`; `shared::fingerprint` compares the code). Why, by the evidence:
+  - The relational failure is free bits made at a summary, one set per side; nothing else differs. A miniature (one
+    table-mixing loop past the bound, the versions differing by a prefix check) gave 287's message exactly.
+  - The unchanged callee as one function would have to carry `crypt_raw`'s effects (the fields of the `BCrypt` it is
+    called on) from one side's heap to the other's. A coupled invariant needs both loops run in step. The tie needs
+    neither: each side runs its own code, and only the values are shared.
+  The key is everything an iteration can read: the code's fingerprint and the head, the live locals, the objects
+  reachable from them and from the static fields that code uses (numbered as reached, so an alias is part of it), the
+  JDK's statics, and the classes' initialization. A read past such a loop at an index the path does not follow is
+  named by the array's content (its cells, or the summary and each write since) and the index. One thing more: after
+  `fresh()` a side is no longer past the other's loops (`path.loose`), so both read their tables alike.
+  Countermodels first, in `lib/tests/pairing.rs` (`mix`, seven variants). Each countermodel differs on a JVM and is
+  not proved; with its side condition taken out (a temporary switch, removed) each was Verified:
+  - `callee`: the code fingerprint;
+  - `cells`: a cell of the table;
+  - `alias`: the numbering by object;
+  - `mutable`: a static the loop reads;
+  - `after`: a write past the loop on one side.
+  `shorter` (an exception on one side) is not proved in either case, since each side leaves by its own code. `same`
+  is now proved in 0.5 s, where it was "cannot be verified". Their differences show past round 50, so the bound's
+  rounds leave the states equal but for what each changes; a first set whose differences showed earlier tested
+  nothing.
+  Capped probe of 287 at bound 80 (`--timeout 240`): the new release's summaries of `ekskey` (pc 60, 260) and
+  `crypt_raw` (pc 165) take the previous release's bits, and the spurious counterexample is gone. The check then
+  reaches the stored hashes whose cost runs the key schedule and stops at the limit: 9.7 million variables, 189 of
+  240 s solving, mostly `crypt_raw`'s rounds loop, whose invariant search summarizes `key()`'s loops 32 times on
+  one side and about 20 on the other, with a written set that grows by the arrays earlier calls left. 287's notes
+  record it. `test_costs.py run --changed` passes. Its first try failed
+  `the_encoding_estimate_does_not_count_a_large_circuit_many_times_over`, which passes alone (load, not this
+  change). No new inbox items. I001 to I005 were acknowledged above.
+- Next: step 5's cost. Make the rounds loop's search cheaper before a job:
+  - keep out of `written` the places of objects nothing reachable holds;
+  - let a summary whose key and invariant the path already has (the other side's, on this path) go on without
+    searching again.
+  Then queue 287 `preservation` at bound 80.
 - Status: working
 
 ## Loop settings

@@ -12,30 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T15:18:27.984Z",
-  "duration_seconds": 8497,
+  "ended": "2026-11-17T16:23:50.734Z",
+  "duration_seconds": 12420,
   "stats": {
-    "turns": 16,
-    "api_calls": 242,
-    "tool_calls": 243,
+    "turns": 21,
+    "api_calls": 313,
+    "tool_calls": 314,
     "tool_errors": 4,
-    "compactions": 3,
-    "peak_context_tokens": 182526,
+    "compactions": 4,
+    "peak_context_tokens": 235931,
     "usage": {
-      "input_tokens": 484,
-      "output_tokens": 179477,
-      "cache_read_input_tokens": 26766812,
-      "cache_creation_input_tokens": 602473
+      "input_tokens": 628,
+      "output_tokens": 286636,
+      "cache_read_input_tokens": 37848720,
+      "cache_creation_input_tokens": 827946
     }
   },
   "tools": {
-    "Bash": 235,
-    "Edit": 6,
-    "Write": 2
+    "Bash": 304,
+    "Edit": 7,
+    "Write": 3
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
     "lib/src/bmc/mod.rs",
+    "lib/src/bmc/ties.rs",
+    "lib/src/shared.rs",
     "lib/tests/fixtures/claims/claims/Logged.java",
     "llm-dlc/loops/domain-advances-preservation.md"
   ],
@@ -85,24 +87,38 @@
     {
       "index": 3,
       "started": "2026-11-17T14:46:41.692Z",
-      "ended": "2026-11-17T15:18:27.984Z",
-      "turns": 4,
-      "api_calls": 58,
+      "ended": "2026-11-17T15:19:09.816Z",
+      "turns": 5,
+      "api_calls": 60,
       "usage": {
-        "input_tokens": 116,
-        "output_tokens": 32676,
-        "cache_read_input_tokens": 5518074,
-        "cache_creation_input_tokens": 129467
+        "input_tokens": 122,
+        "output_tokens": 33680,
+        "cache_read_input_tokens": 5805133,
+        "cache_creation_input_tokens": 132282
       },
-      "peak_context_tokens": 142740
+      "peak_context_tokens": 145557
+    },
+    {
+      "index": 4,
+      "started": "2026-11-17T15:19:53.139Z",
+      "ended": "2026-11-17T16:23:50.734Z",
+      "turns": 4,
+      "api_calls": 69,
+      "usage": {
+        "input_tokens": 138,
+        "output_tokens": 106155,
+        "cache_read_input_tokens": 10794849,
+        "cache_creation_input_tokens": 222658
+      },
+      "peak_context_tokens": 235931
     }
   ],
   "log": {
-    "sha256": "2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4",
-    "bytes": 6724018,
-    "lines": 2188,
-    "gzip_bytes": 1143410,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz"
+    "sha256": "b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea",
+    "bytes": 8530940,
+    "lines": 2844,
+    "gzip_bytes": 1437755,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -273,6 +289,14 @@
       "summary": "The pair of versions reads its scope on copies of its own and compares an exception by its class and the classes above it; 289 and 290 rerun (verification pending)",
       "body": "Merges ymzlyksq (the evidence stream: a verified pair with an allowed change is checked for an assumed input outside the change, which accept.py now asks of a preservation outcome) and roqtqlpm (the challenge stream's fresh-pair-countermodels), as the preservation stream's inbox items I004 and I005 ask. Conflicts in the notes of examples 289 and 290 and in lib/README.md were resolved by keeping every side's text; the router and the trace files were regenerated.\n\nTwo countermodels of the pair (lib/src/pairing.rs) were each proved to agree though a caller tells the versions apart. The fix has two parts. First, the scope meantToChange was called on the caller's own arrays, and the versions' copies were taken after it, so a scope that zeroed a cell decided what both versions saw; it is now called on copies of its own. Second, an exception was compared by its class's name alone; it is now compared by that name and the names of every class above it up to Object, by a recursive same(ea, eb) over Class.getSuperclass(). The checker (bmc/runtime.rs) and the interpreter (interp/natives.rs) now answer getSuperclass for a class literal: its class file's superclass, null for Object and for an interface, Object for an array. A first version built the chain as one String; that ran past the checker's 64-unit content cap and left the countermodel Unverifiable, not refuted. Interfaces are not compared, and the note, the module doc and lib/README.md say so.\n\nVerified as follows. The checker-side test from the fixtures' README is now in lib/tests/fresh_pair_countermodels.rs, and both countermodels are violations. Undoing either part of the fix makes its own countermodel Verified again. Capped probes at the frozen bounds: 289's preservation verifies in 55 s and 290's in about 1 s, each with a witness outside its allowed change. test_costs run --changed passes, and so do validate_example for 287, 289 and 290 and the default run after the merge (test_performance.py was flaky and passed on its second run).\n\nJob 20261117-151521-examples-289-and-290-preservation-once-m reruns 289's and 290's preservation on this checker and supersedes job 20261117-134306-examples-289-and-290-preservation-again, whose statement is no longer the pair's.",
       "log_sha256": "2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4"
+    },
+    {
+      "change_id": "owrsowqmmtyoxvrovxkwunotyryytunz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A pair of versions' two runs of one loop past the bound go on from one state where they run the same code from the same state",
+      "body": "Example 287's preservation stopped at a counterexample no run has: past bcrypt's loops each side's state was free bits of its own, so two runs equal in fact were two states in the formula. The tool's own checker now names those bits by the state the loop is summarized from (lib/src/bmc/ties.rs, wired into bmc/loops.rs and bmc/mod.rs, with shared::fingerprint comparing the code). A summary of the same code from the same state, on either side, takes the same bits, and a read past such a loop at an index the path does not follow is named by the array's content and the index. The key is everything an iteration can read: the code with everything it reaches, the head, the live locals, the objects reachable from them and from the static fields that code uses (numbered as reached, so an alias is part of it), the JDK's statics and the classes' initialization. Only values are shared; each side leaves the loop by its own code. This is step 2's boundary, chosen over the unchanged callee as one function (which would have to carry crypt_raw's effects across heaps) and a coupled invariant; the brief's Progress says why.\n\nCountermodels first (lib/tests/pairing.rs, seven variants of one table-mixing loop): a callee changed inside the loop, a cell, an alias on one side, a mutable static, a shorter array and a write past the loop on one side each differ on a JVM and are not proved, and five of them were Verified with their side condition taken out (checked by hand with a switch since removed). The variant with no difference, 'cannot be verified' before, is proved in 0.5 s. A capped probe of 287 at bound 80: the new release's summaries of ekskey and crypt_raw take the previous release's bits and the spurious counterexample is gone; the check then reaches the key schedule and stops at the 240 s limit, mostly in crypt_raw's rounds loop's invariant search (287's notes). test_costs.py run --changed passes; validate_example.py 287 passes.",
+      "log_sha256": "b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea"
     }
   ],
   "logs": {
@@ -298,6 +322,12 @@
       "bytes": 3340870,
       "lines": 1055,
       "gzip_bytes": 569167,
+      "url": null
+    },
+    "b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea": {
+      "bytes": 8530940,
+      "lines": 2844,
+      "gzip_bytes": 1437755,
       "url": null
     },
     "e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab": {

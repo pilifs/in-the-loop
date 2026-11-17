@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 138, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 15:18 UTC |
-| Prompts | 2,911 |
-| Model calls | 29,613 |
-| Tool calls | 30,608 (541 failed) |
-| Compactions | 433 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 16:23 UTC |
+| Prompts | 2,916 |
+| Model calls | 29,684 |
+| Tool calls | 30,679 (541 failed) |
+| Compactions | 434 |
 | Subagents | 21 |
-| Tokens written | 29,675,917 |
-| Tokens read | 4,899,791,023 (98.1% from cache) |
-| Commits with a trace | 912 |
-| Log snapshots | 1,189 (2614.9 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,783,076 |
+| Tokens read | 4,911,098,548 (98.1% from cache) |
+| Commits with a trace | 913 |
+| Log snapshots | 1,190 (2616.3 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -165,7 +165,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 1 h 6 min | `claude-opus-5-5` | 25 | 242 | 238 | 4 | 4 | 157,884 | 7 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 1 h 19 min | `claude-opus-5-5` | 25 | 293 | 297 | 5 | 4 | 211,368 | 6 |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 2 h 21 min | `claude-opus-5-5` | 16 | 242 | 243 | 4 | 3 | 182,526 | 21 |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 3 h 27 min | `claude-opus-5-5` | 21 | 313 | 314 | 4 | 4 | 235,931 | 22 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -312,16 +312,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 136,769 | 492 | 550,483 | 21,416,544 | 97.5% | 161 |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 264,005 | 600 | 740,665 | 34,090,121 | 97.9% | 132 |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 179,477 | 484 | 602,473 | 26,766,812 | 97.8% | 152 |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 286,636 | 628 | 827,946 | 37,848,720 | 97.9% | 135 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,205 | 88.9% | 138 |
-| `Read` | 1,272 | 4.2% | 57 |
-| `Edit` | 969 | 3.2% | 56 |
-| `Write` | 652 | 2.1% | 55 |
+| `Bash` | 27,274 | 88.9% | 138 |
+| `Read` | 1,272 | 4.1% | 57 |
+| `Edit` | 970 | 3.2% | 56 |
+| `Write` | 653 | 2.1% | 55 |
 | `ToolSearch` | 167 | 0.5% | 43 |
 | `Monitor` | 122 | 0.4% | 50 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
@@ -1253,6 +1253,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 910 | change `zmvkptqz` | The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz)) |
 | 911 | change `unswkkxp` | The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz)) |
 | 912 | change `wokytpkz` | The pair of versions reads its scope on copies of its own and compares an exception by its class and the classes above it; 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 913 | change `owrsowqm` | A pair of versions' two runs of one loop past the bound go on from one state where they run the same code from the same state | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea.jsonl.gz)) |
 
 ## Logs
 
@@ -1397,7 +1398,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 7 | 0 | 4.2 MB | `170f4ee1b342`, not uploaded |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 6 | 0 | 4.3 MB | `89db138451df`, not uploaded |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 6 | 0 | 3.5 MB | `2eda7e05ab43`, not uploaded |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 7 | 0 | 4.9 MB | `b436d23dc550`, not uploaded |
 
 ## Session notes
 

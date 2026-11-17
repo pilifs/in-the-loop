@@ -32,6 +32,10 @@
 //! a loop's writes to such an array do ([`Obj::unknown`]): a table looked up by a computed index (a cipher's
 //! S-box) is not followed, which is again more states and never fewer.
 //!
+//! In a pair of versions the state the path goes on from is named by the state it was summarized from
+//! ([`ties`]): a summary of the same code from the same state, on the other side or the same, goes on from the same
+//! values, where each side's were free bits of its own.
+//!
 //! **That the loop ends** is shown apart: a local of the frame that an iteration leaves strictly greater, or
 //! strictly less, as a signed number, on every way back to the head. Such a loop ends, since the local has
 //! finitely many values. Where no local does, the run says so among what it takes for granted
@@ -262,19 +266,35 @@ impl Engine<'_> {
 
     /// Sets each place of `written` in `path` to any value: for each number set, the bits it had and the new,
     /// free ones, and whether a candidate may be stated of it (not of a cell of an array of more than
-    /// [`SMALL_ARRAY`] cells).
-    fn havoc(&mut self, path: &mut Path, written: &BTreeMap<Place, (usize, bool)>) -> Vec<(Bits, Bits, bool)> {
+    /// [`SMALL_ARRAY`] cells), and whether the bits are made now. Under `tie`, the key of the state the loop is
+    /// summarized from with its objects' numbers ([`Engine::state_key`]), the bits of a place are the ones that
+    /// state's place was given before, if it was ([`ties`]).
+    fn havoc(&mut self, path: &mut Path, written: &BTreeMap<Place, (usize, bool)>, tie: Option<&(u64, HashMap<u64, i64>)>) -> Vec<(Bits, Bits, bool, bool)> {
         let there = by_allocation(path);
-        let mut new: Vec<(Bits, Bits, bool)> = Vec::new();
+        let mut new: Vec<(Bits, Bits, bool, bool)> = Vec::new();
         for (place, &(width, long)) in written {
             let zero = self.b.constant(0, width);
-            let any = |engine: &mut Self, old: Option<&Val>, new: &mut Vec<(Bits, Bits, bool)>| {
-                let bits = engine.b.fresh(width);
+            // The place's name under the tie: `None` where it has none (an object the state does not reach).
+            let named: Option<Vec<i64>> = tie.and_then(|(_, numbers)| match place {
+                Place::Local(slot) => Some(vec![0, *slot as i64]),
+                Place::Field(made, key) => Some(vec![1, *numbers.get(made)?, self.ties_name(key)]),
+                Place::Static(class, name) => Some(vec![2, self.ties_name(class), self.ties_name(name)]),
+                Place::Cells(made) => Some(vec![3, *numbers.get(made)?]),
+            });
+            let any = |engine: &mut Self, old: Option<&Val>, new: &mut Vec<(Bits, Bits, bool, bool)>, cell: Option<usize>| {
+                let (bits, made) = match (tie, &named) {
+                    (Some((state, _)), Some(place)) => {
+                        let mut place = place.clone();
+                        place.extend(cell.map(|c| c as i64));
+                        engine.ties.bits(&mut engine.b, *state, place, width)
+                    }
+                    _ => (engine.b.fresh(width), true),
+                };
                 let before = match old {
                     Some(Val::I(old) | Val::J(old)) if old.len() == width => old.clone(),
                     _ => zero.clone(),
                 };
-                new.push((before, bits.clone(), true));
+                new.push((before, bits.clone(), true, made));
                 if long {
                     Val::J(bits)
                 } else {
@@ -283,31 +303,39 @@ impl Engine<'_> {
             };
             match place {
                 Place::Local(slot) => {
-                    let locals = &mut path.frames.last_mut().expect("a frame").locals;
-                    let value = any(self, locals[*slot].as_ref(), &mut new);
-                    locals[*slot] = Some(value);
+                    let old = path.frames.last().expect("a frame").locals[*slot].clone();
+                    let value = any(self, old.as_ref(), &mut new, None);
+                    path.frames.last_mut().expect("a frame").locals[*slot] = Some(value);
                 }
                 Place::Field(made, key) => {
                     if let Some(&o) = there.get(made) {
-                        let value = any(self, path.objects[o].fields.get(key), &mut new);
+                        let old = path.objects[o].fields.get(key).cloned();
+                        let value = any(self, old.as_ref(), &mut new, None);
                         path.objects[o].fields.insert(key.clone(), value);
                     }
                 }
                 Place::Static(class, name) => {
                     let key = (class.clone(), name.clone());
-                    let value = any(self, path.statics.get(&key), &mut new);
+                    let old = path.statics.get(&key).cloned();
+                    let value = any(self, old.as_ref(), &mut new, None);
                     path.statics.insert(key, value);
                 }
                 Place::Cells(made) => {
                     if let Some(&o) = there.get(made) {
-                        // A large array's cells are not named one by one ([`Obj::unknown`]).
+                        // A large array's cells are not named one by one ([`Obj::unknown`]): what they hold is
+                        // named by the summary under a tie, and is no content kept otherwise ([`ties`]).
                         if path.objects[o].unknown || path.objects[o].array.as_ref().is_some_and(|a| a.cells.len() > LOOSE_CELLS) {
                             path.objects[o].unknown = true;
-                        } else if let Some(array) = path.objects[o].array.as_mut() {
-                            let small = array.cells.len() <= SMALL_ARRAY;
-                            for cell in array.cells.iter_mut() {
-                                let fresh = self.b.fresh(width);
-                                new.push((std::mem::replace(cell, fresh.clone()), fresh, small));
+                            path.objects[o].content = match (tie, &named) {
+                                (Some((state, _)), Some(place)) => Some(self.summarized(*state, place[1])),
+                                _ => None,
+                            };
+                        } else if let Some(cells) = path.objects[o].array.as_ref().map(|a| a.cells.clone()) {
+                            let small = cells.len() <= SMALL_ARRAY;
+                            for (i, cell) in cells.iter().enumerate() {
+                                let Val::I(fresh) = any(self, Some(&Val::I(cell.clone())), &mut new, Some(i)) else { unreachable!("a cell is a number") };
+                                new.last_mut().expect("just pushed").2 = small;
+                                path.objects[o].array.as_mut().expect("an array").cells[i] = fresh;
                             }
                         }
                     }
@@ -541,7 +569,7 @@ impl Engine<'_> {
         for _ in 0..MOST_ROUNDS {
             // The state an iteration starts in: what is written any value the candidates allow.
             let mut start = base.clone();
-            let any = self.havoc(&mut start, &written);
+            let any = self.havoc(&mut start, &written, None);
             let there = by_allocation(&start);
             for candidate in &candidates {
                 match self.holds(&start, &there, candidate) {
@@ -562,7 +590,7 @@ impl Engine<'_> {
                 if k > 0 {
                     model = model.salted(k.wrapping_mul(0x9E37_79B9_7F4A_7C15) ^ self.b.variables() as u64);
                 }
-                for (old, new, stated) in &any {
+                for (old, new, stated, _) in &any {
                     if *stated || k == 0 {
                         self.b.carry(&mut model, old, new);
                     }
@@ -687,12 +715,51 @@ impl Engine<'_> {
                 }
             }
             self.known_loops.insert(known, Known { written: written.clone(), failed });
-            *path = start;
+            *path = self.tied(&base, start, &written, &candidates)?;
             path.loose = true;
             path.frames.last_mut().expect("a frame").summarized.insert(head);
             return Ok(None);
         }
         unwound(format!("none was found in {MOST_ROUNDS} rounds"))
+    }
+
+    /// The state the path goes on from past the loop: `start`, the state the invariant was shown of, with the bits
+    /// of what the loop writes named by the state `base` at its head where that state has a key ([`ties`]), so that
+    /// a summary of the same code from the same state, on the other side of a pair of versions, goes on from the
+    /// same values. The invariant is stated of them as of `start`'s. Where no input takes the path in that state
+    /// (bits named before, which the path has said things of), it is `start`, untied.
+    fn tied(&mut self, base: &Path, start: Path, written: &BTreeMap<Place, (usize, bool)>, candidates: &[Candidate]) -> Result<Path, Stop> {
+        let Some(tie) = self.state_key(base) else { return Ok(start) };
+        let mut tied = base.clone();
+        let any = self.havoc(&mut tied, written, Some(&tie));
+        let there = by_allocation(&tied);
+        for candidate in candidates {
+            match self.holds(&tied, &there, candidate) {
+                Some(TRUE) | None => {}
+                Some(lit) => tied.cond.push(lit),
+            }
+        }
+        let assumed = tied.cond[base.cond.len()..].to_vec();
+        let mut models = Vec::new();
+        for model in &base.models {
+            let mut model = model.clone();
+            for (old, new, _, made) in &any {
+                if *made {
+                    self.b.carry(&mut model, old, new);
+                }
+            }
+            if assumed.iter().all(|&lit| self.b.holds(&mut model, lit)) {
+                models.push(model);
+            }
+        }
+        if models.is_empty() {
+            if !self.solve(&tied.cond)? {
+                return Ok(start);
+            }
+            models.push(self.b.snapshot());
+        }
+        tied.models = models;
+        Ok(tied)
     }
 
     /// The candidates among `candidates` that hold in the state `base`, of every input that takes the path there.

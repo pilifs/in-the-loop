@@ -241,3 +241,90 @@ fn the_previous_versions_questions_by_name_are_answered_on_its_own_class_path() 
     let o = equivalence::run(&plain).unwrap();
     assert!(o.verdict == Verdict::Unverifiable && o.output.contains("--observed-initializer lib.Absent: neither version's class path has the class"), "{}", o.output);
 }
+
+/// Example 287's relational failure in small, and what the tool's own checker's ties (`bmc/ties.rs`) take of it.
+/// Both versions run one loop of a hundred rounds over a table of 256 words, past the bound: each side's state past
+/// it is what an invariant allows, and two runs equal in fact were two free states in the formula, a counterexample
+/// no run has. A state of one key (the same code, from the same state) is now one state on both sides. Each
+/// variant but `same` is a countermodel, a pair of versions that differ on a JVM and whose loop the ties would make
+/// agree without one side condition: `callee` changes a helper the loop calls, `cells` one cell of the table,
+/// `alias` passes the table as both arrays on one side only, `mutable` a static field the loop reads, `shorter` the
+/// table's length (an exception on one side), and `after` writes a cell past the loop on one side. Their
+/// differences show past round 50, so the bound's sixteen rounds leave the two states the same but for what each
+/// countermodel changes. With that side condition taken out each was proved to agree (checked by hand, 2026-11-17).
+const MIXES: [&str; 7] = ["same", "callee", "cells", "alias", "mutable", "shorter", "after"];
+
+fn mix(variant: &str, old: bool) -> String {
+    let step = match (variant, old) {
+        ("mutable", _) => "acc * K",
+        ("callee", _) => "step(acc)",
+        _ => "acc * 31",
+    };
+    let helper = if variant == "callee" { format!("    private static int step(int acc) {{ return acc * {}; }}\n", if old { 31 } else { 33 }) } else { String::new() };
+    let length = if variant == "shorter" && !old { 255 } else { 256 };
+    let before = match variant {
+        "cells" => format!("t[7] = {};", if old { 1 } else { 2 }),
+        "mutable" => format!("K = {};", if old { 31 } else { 33 }),
+        _ => String::new(),
+    };
+    let second = if variant == "alias" && !old { "t.clone()" } else { "t" };
+    let after = if variant == "after" && old { "t[x & 255] ^= 1;" } else { "" };
+    let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
+    format!(
+        "package app.{variant};\npublic final class Mix {{\n    static int K = 31;\n{helper}    public static int digest(int x) {{\n        {check}\n        int[] t = new int[{length}];\n        {before}\n        int acc = run(t, {second}, x);\n        {after}\n        return acc + t[x & 127];\n    }}\n    private static int run(int[] a, int[] b, int x) {{\n        int acc = x;\n        for (int r = 0; r < 100; r++) {{\n            if (r >= 50) {{\n                acc = {step} + b[(acc >>> 3) & 255];\n                a[acc & 255] ^= acc;\n            }} else {{\n                acc = acc * 31 + r;\n            }}\n        }}\n        return acc;\n    }}\n}}\n"
+    )
+}
+
+/// Every variant, the previous versions in one folder and the new ones in another.
+fn mixes() -> &'static (PathBuf, PathBuf) {
+    static MIXED: std::sync::OnceLock<(PathBuf, PathBuf)> = std::sync::OnceLock::new();
+    MIXED.get_or_init(|| {
+        let paths: Vec<String> = MIXES.iter().map(|v| format!("app/{v}/Mix.java")).collect();
+        let sources = |old: bool| paths.iter().zip(MIXES).map(|(p, v)| (p.as_str(), mix(v, old))).collect::<Vec<_>>();
+        (compile("mixes-old", &sources(true), &[]), compile("mixes-new", &sources(false), &[]))
+    })
+}
+
+fn mixed(variant: &str) -> equivalence::Outcome {
+    let (old, new) = mixes();
+    let mut o = equivalence::Options::new(old, new, &format!("app.{variant}.Mix#digest"));
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assume = Some("x != 12345".into());
+    o.work = Some(tmp(&format!("mix-{variant}")));
+    equivalence::run(&o).unwrap()
+}
+
+#[test]
+fn two_runs_of_one_loop_past_the_bound_go_on_from_one_state() {
+    jvmcontract::tool_tier!();
+    let o = mixed("same");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("covered by invariants") && o.output.contains("before.app.same.Mix.run at pc"), "{}", o.output);
+}
+
+#[test]
+fn no_state_past_a_loop_is_one_of_two_runs_that_may_differ() {
+    jvmcontract::tool_tier!();
+    let proved: Vec<&str> = MIXES[1..].iter().copied().filter(|v| mixed(v).verdict == Verdict::Verified).collect();
+    assert!(proved.is_empty(), "proved to agree, though the versions differ on a JVM: {proved:?}");
+}
+
+/// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs, and `same` is not.
+#[test]
+fn each_mixes_countermodel_differs_on_a_jvm() {
+    jvmcontract::tool_tier!();
+    let (old, new) = mixes();
+    let runner = "public class Run {\n    public static void main(String[] variants) throws Exception {\n        for (String v : variants) {\n            StringBuilder out = new StringBuilder();\n            for (int x = 0; x < 64; x++) {\n                Object r;\n                try { r = Class.forName(\"app.\" + v + \".Mix\").getMethod(\"digest\", int.class).invoke(null, x); }\n                catch (java.lang.reflect.InvocationTargetException e) { r = e.getCause().getClass().getName(); }\n                out.append(r).append(',');\n            }\n            System.out.println(v + \" \" + out);\n        }\n    }\n}\n";
+    let run_dir = compile("mixes-runner", &[("Run.java", runner.to_string())], &[]);
+    let outputs = |version: &Path| {
+        let cp = format!("{}:{}", run_dir.display(), version.display());
+        let out = Command::new("java").args(["-cp", &cp, "Run"]).args(MIXES).output().expect("java runs");
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).lines().map(String::from).collect::<Vec<_>>()
+    };
+    let (before, after) = (outputs(old), outputs(new));
+    for (i, v) in MIXES.iter().enumerate() {
+        assert_eq!(before[i] == after[i], *v == "same", "{v}: {} | {}", before[i], after[i]);
+    }
+}

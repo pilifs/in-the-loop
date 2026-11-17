@@ -418,6 +418,30 @@ fn same_everywhere(before: &ClassPath, after_reach: &Reach) -> bool {
     true
 }
 
+/// The code `root` runs, with everything it reaches, as text two methods compare by: each method's shape, and each
+/// application class whose static fields it uses by its initializer and its constant values, each with `name`
+/// applied to it (the tool's own checker takes a previous version's copy back to its own names with it,
+/// [`crate::bmc`]'s ties). Two roots of one text run the same code on the same state: the same instructions, the
+/// same callees, the same constants. `None` where a call may reach an implementation not listed (a virtual call that
+/// is not fixed, a native method) or code does not decode. With it, the application classes the code belongs to or
+/// uses static fields of, by their names in `cp`: no other application class's static state is one it reads.
+pub(crate) fn fingerprint(cp: &ClassPath, root: &MemberRef, name: &dyn Fn(&str) -> String) -> Option<(String, BTreeSet<String>)> {
+    let reached = reach(cp, root);
+    if !reached.closed {
+        return None;
+    }
+    let mut parts = Vec::with_capacity(reached.methods.len() + reached.statics.len());
+    for (m, shape) in &reached.methods {
+        parts.push(name(&format!("{m:?}\n{}", shape.as_ref()?.join("\n"))));
+    }
+    for owner in &reached.statics {
+        let class = reached.classes.get(owner)?;
+        parts.push(name(&format!("{owner}\n{:?}\n{:?}", initializer_shape(class), constant_values(class))));
+    }
+    parts.sort();
+    Some((parts.join("\n\n"), reached.classes.keys().cloned().collect()))
+}
+
 /// Whether a method is declared by the same class with the same code in both versions.
 fn same_method(before: &ClassPath, after: &ClassPath, m: &MemberRef) -> bool {
     let (Some((bc, bm)), Some((ac, am))) = (before.find_method(&m.owner, &m.name, &m.descriptor), after.find_method(&m.owner, &m.name, &m.descriptor)) else { return false };
