@@ -200,6 +200,22 @@
       "summary": "Allow list: Filip Stankovic approved 2760c53e, 8db694e2, a4bdf7bf, c0b7a76e, fd843c30",
       "body": "Filip Stankovic approved 5 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n2760c53e  long-token  008…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\n8db694e2  long-token  005…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\na4bdf7bf  long-token  009…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\nc0b7a76e  long-token  004…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\nfd843c30  long-token  eNr…XH (173 chars): A 'default tests: unread zlib:...' line from verification/default_tests.py: a zlib+base64 pack of the repository paths a default run left unread. The packs in the job logs unpack to 580-581 relative paths, all present in the checkout; the value is generated output, not a credential.",
       "log_sha256": "e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c"
+    },
+    {
+      "change_id": "slquqtpylozmsxrqtqrqprxqqtsmmovy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the default test run at xunroyyopkuq passed",
+      "body": "Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
+      "log_sha256": "e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c"
+    },
+    {
+      "change_id": "kzwsnszxrwttokwmnsyzwolxyzwnzomx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Only one default test run runs at a time, and a job started again after a newer run finished is superseded",
+      "body": "Two default-run jobs ran at once on 2026-11-17 (010456, and 005759 started a second time after it had passed): they share the warm cargo target directory and the tests' work folders under its tmp/, and eight Rust tests that pass alone failed in one run and passed on its retry, while the other's rerun failed. default_tests.py step now holds an exclusive lock (flock on ~/.cache/in-the-loop/default-tests.lock, beside the target directory) for the whole run and its bisect; a second step says it is waiting, waits, and asks the queue again once it has the lock.\n\nSuperseding looked only at jobs pending or running, and read a job's id only at the start of a status row. It now also counts a newer default run that has finished or been collected, so a passed job the runner starts again exits at once, finds the id anywhere in the row, and says in the log when the queue could not be read (it then runs, as before). Why the runner started a passed job again is not found: that is in pipeline.py's collecting, not here. Checked with three new tests (a held lock makes a second step wait and re-ask; a newer collected run; an unreadable queue), the 13 Python test files test_costs.py run --changed chose, and tests/tiers.rs.",
+      "log_sha256": "e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c"
     }
   ],
   "logs": {

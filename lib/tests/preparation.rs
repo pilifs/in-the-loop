@@ -245,9 +245,42 @@ fn process(after: &Path, cache: &Path) -> (f64, Vec<(String, String)>) {
     (seconds, v)
 }
 
+/// The benchmark's proxy, in the default run: one cold run of `after` and one rerun, in process under the ledger,
+/// with what the benchmark asserts of those two scenarios and what its table rests on. The ledger splits a real run
+/// into proofs, every stage of the table is a time and not a negative remainder, the stages a proof's span covers
+/// don't exceed the run, and the rerun reaches the same verdicts with nothing proved again. Nothing is repeated or
+/// timed for a report, and no edit, defect or `compare` process is run: those are the benchmark's.
+#[test]
+fn a_cold_run_and_its_rerun_are_accounted_stage_by_stage_and_the_rerun_proves_nothing_again() {
+    jvmcontract::tool_tier!();
+    if builds("preparation").is_none() {
+        return;
+    }
+    let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("preparation-proxy-cache");
+    let _ = std::fs::remove_dir_all(&cache);
+    let cold = measured(build("after"), &cache);
+    let rerun = measured(build("after"), &cache);
+    assert!(cold.proofs.iter().any(|p| p.cache == "miss"), "a cold run proves: {:?}", proof_rows(&cold.proofs));
+    assert!(!rerun.proofs.is_empty() && rerun.proofs.iter().all(|p| p.cache != "miss"), "a rerun proves nothing again: {:?}", proof_rows(&rerun.proofs));
+    assert_eq!(verdicts(&rerun.report), verdicts(&cold.report), "and reaches the same verdicts");
+    let reached = evidence(&rerun.report);
+    assert!(reached.iter().all(|(_, how, _)| *how != "proved") && reached.iter().any(|(_, how, _)| *how == "exact hit"), "every proof of the rerun is an exact hit: {reached:?}");
+    for (name, run) in [("cold", &cold), ("rerun", &rerun)] {
+        let table = stages(&run.proofs, run.seconds);
+        assert_eq!(table.len(), 11, "{name}: the benchmark's eleven stages");
+        // A stage is a difference of spans the ledger nests (the key's closures inside the key, a run's loading
+        // inside the run), so a negative one would mean the nesting is not what the table says. A millisecond of
+        // slack: the spans are clock readings.
+        for (stage, seconds) in &table {
+            assert!(*seconds > -1e-3, "{name}: {stage}: {seconds} s");
+        }
+        assert!(run.seconds > 0.0 && table.last().unwrap().1 < run.seconds, "{name}: the proofs' spans are inside the run: {table:?}");
+    }
+}
+
 #[test]
 #[ignore = "cost:proof: a benchmark: javac, java and the binary on the preparation fixture, stage by stage, ~50 s, \
-    up to 64 s; proxy: none yet"]
+    up to 64 s; proxy: a_cold_run_and_its_rerun_are_accounted_stage_by_stage_and_the_rerun_proves_nothing_again"]
 fn where_a_compare_runs_time_goes_stage_by_stage() {
     if builds("preparation").is_none() {
         return;

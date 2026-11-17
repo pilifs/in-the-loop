@@ -18,6 +18,31 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-035: whole Python test files are tagged unit tier and take minutes, because the inventory doesn't see the processes their tests start
+
+- **Status**: open, to revisit later (the user's decision on 2026-11-17: note it, don't retag now).
+- **Raised**: 2026-11-17 on `vm-1`, by the session that made the default test run parallel, from that run's own
+  times (`~/.cache/in-the-loop/python-test-seconds.json`, a whole default run with three files at a time).
+- **Found**: `lib/tests/costs.json` gives a Python test its tier from what its code calls, and a test that starts
+  processes inside the module it tests shows no call. Four files are tagged almost wholly unit (in process, under 1 s
+  a test) and are far from it:
+
+  | File | Tagged | Took, the whole file |
+  |---|---|---|
+  | `examples/tools/targets/test_runtime.py` | 69 unit, 4 tool | 258 s |
+  | `verification/test_pipeline.py` | 34 unit, 4 tool | 110 s |
+  | `examples/tools/targets/test_receipt_streams.py` | 5 unit | 47 s |
+  | `examples/tools/test_targets_contract.py` | 16 unit | 16 s |
+
+  The times are under load (other files and the Rust binaries beside them), so they bound each file and say nothing
+  of one test. The effect: `test_costs.py run --tier unit` is minutes of Python and not the quick run its name says,
+  and the three slowest of these files are what the default run's Python half waits for.
+- **Needs**: a decision on retagging. The options seen: time these files test by test (`test_costs.py python FILE`)
+  and tag from the measured time; or teach the inventory to follow the module under test for spawned processes.
+  Moving a test between tiers is the user's to approve.
+- **Tracked in**: `lib/README.md`'s Tests section (the unit tier's note names the first two files).
+- **Closes when**: the four files' tests carry tiers that a measured run agrees with, or the user decides they stay.
+
 ### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
 
 - **Status**: closed (job `20261117-010456-default-test-run-at-lmwqozysyszl` passed at a descendant of `xunroyyopkuq`;
@@ -40,6 +65,20 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Needs**: the author of the prove-setup merge or the watcher of the `/prove-java-change` run: check whether
   `9c48697e070a`'s line has the failures when run alone (`cargo test --test effects --test application_core_joint
   --test environment`), and whether the passed run at `lmwqozysyszl` covers a fix.
+- **Likely cause** (added 2026-11-17 by the session that wrote the default-run job): two default runs were running
+  at once. Job `005759` was started a second time at 01:07 while `010456` ran, and both use one warm cargo target
+  directory, whose `tmp/` holds the tests' work folders and proof caches. All three failures are a test finding
+  another run's files there (a stored result for a build it had not checked, a changed claim answered from the
+  cache), and `010456` itself had eight Rust tests fail and pass on their second run. Not reproduced on purpose.
+  Since change `kzwsnszx` a default-run step holds a lock for its whole run, so two no longer overlap.
+- **Why the passed job ran again** (found the same day, from `jj op log`): the first pass was collected and
+  committed in the default workspace at 01:06:45 ("Record verification results: the default test run at
+  xunroyyopkuq passed", change `slquqtpy`), and in the same second a `jj new lzvyqmsy` there, the fast-forward to
+  prove-setup's rebased commits, moved the working copy off that commit before it was anyone's parent. The runner
+  looks for results in its state folder and in the working copy, found neither, and started the job again at
+  01:07:12. Change `slquqtpy` is still a visible head, with the result in it, and is not on the main line: it needs
+  merging there. The runner now also counts a result recorded on any visible head as done, says so, and
+  `pipeline.py status` lists such a job under "recorded on another head".
 - **Tracked in**: the job's `logs/1-default-tests.log`.
 - **Closes when**: a default test run at a commit that contains the merge passes (the run at `lmwqozysyszl` already
   passed; confirm it contains `9c48697e070a`, then this closes).

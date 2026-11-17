@@ -1169,8 +1169,9 @@ fn generates_the_tla_operator_the_python_generator_wrote() {
 }
 
 #[test]
+#[ignore = "cost:proof: TLC on the Box Office model, ~1 s; only the model checker shows the model holds; proxy: \
+    generates_the_tla_operator_the_python_generator_wrote"]
 fn tlc_checks_the_box_office_model() {
-    jvmcontract::tool_tier!(pending);
     let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/spec");
     if !spec.exists() {
         eprintln!("not inside the repository; skipping");
@@ -1199,8 +1200,9 @@ fn tlc_checks_the_box_office_model() {
 }
 
 #[test]
+#[ignore = "cost:proof: TLC on two temporal properties, ~4 s; only the model checker finds the violated one; \
+    proxy: generates_the_tla_operator_the_python_generator_wrote"]
 fn tlc_checks_temporal_properties_and_names_the_violated_one() {
-    jvmcontract::tool_tier!(pending);
     let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/quorum/spec");
     if !spec.exists() {
         eprintln!("not inside the repository; skipping");
@@ -1399,8 +1401,9 @@ fn the_json_reading_of_jbmc_gives_each_verdict_and_ending() {
 }
 
 #[test]
+#[ignore = "cost:proof: JBMC and the own checker on the same integer proofs, ~10 s; only JBMC itself shows the \
+    two agree; proxy: the_corpus_agrees_with_the_jvm_on_the_tools_own_checker"]
 fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
-    jvmcontract::tool_tier!(pending);
     use jvmcontract::Engine;
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");

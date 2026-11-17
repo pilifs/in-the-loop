@@ -11,6 +11,8 @@ digest and is the one implementation of it: this module calls it).
                          plus one) written into the plugin and the marketplace, the pin written from @'s tree,
                          the commit made with `sync.py commit`, and the result verified. Refuses while @ holds
                          uncommitted work: commit that first, so a release commit is only the release.
+                         Refuses too without a passed default test run covering @-
+                         (verification/default_tests.py gate; --skip-tests REASON is for the user alone).
     release.py verify    the pin in @'s history: the commit that carries it, and that its tree hashes to it
     release.py status    the last release, the commits since, and whether it is on the remote main yet
 
@@ -77,12 +79,33 @@ def uncommitted() -> list[str]:
     return [p for p in jj("diff", "--name-only").splitlines() if not b.left_out(p, b.EXCLUDED[1:])]
 
 
-def cut(version: str | None, note: str | None) -> int:
+def tests_gate(skipped: str | None) -> str | None:
+    """Why no release may be cut, or None: a release is what users install, so the default test run must have passed
+    for what it holds (verification/default_tests.py gate, as for a push): a run at @-, the commit a release is cut
+    on, or at an ancestor that differs from it only in files no test reads. The release commit itself changes only
+    the version files and the pin, which the default run leaves unread, so the same run covers its push."""
+    tool = REPO / "verification" / "default_tests.py"
+    if not tool.exists():
+        return None
+    if skipped is not None:
+        print(f"cutting a release without a passed default test run, as asked: {skipped}", file=sys.stderr)
+        return None
+    r = subprocess.run([sys.executable, str(tool), "gate", "--rev", "@-"], cwd=REPO, capture_output=True, text=True)
+    if r.returncode:
+        return (r.stderr.strip() + "\nno release cut: the default test run is required before a release (CLAUDE.md, "
+                "Tests). `--skip-tests REASON` is for the user alone.")
+    print(r.stdout.strip())
+    return None
+
+
+def cut(version: str | None, note: str | None, skip_tests: str | None = None) -> int:
     if mode.mode() != "development":
         raise SystemExit("a release is cut in a development checkout; this is a runtime one")
     if work := uncommitted():
         raise SystemExit("uncommitted work in @; commit it first, so the release commit holds only the release:\n  "
                          + "\n  ".join(work))
+    if refusal := tests_gate(skip_tests):
+        raise SystemExit(refusal)
     b = bootstrap()
     plugin = json.loads(PLUGIN.read_text())
     version = version or next_version(plugin["version"])
@@ -166,11 +189,13 @@ def main(argv: list[str]) -> int:
     c = sub.add_parser("cut", help="make @ a release and commit it")
     c.add_argument("version", nargs="?", help="MAJOR.MINOR.PATCH; by default the last version's patch number plus one")
     c.add_argument("--note", help="a sentence for the pin and the commit message: what this release is for")
+    c.add_argument("--skip-tests", metavar="REASON", help="cut without a passed default test run covering @-: for "
+                   "the user alone, never an agent")
     sub.add_parser("verify", help="check the pin against the commit that carries it")
     sub.add_parser("status", help="the last release and the commits since; exit 1 if the skill has changed since it")
     args = p.parse_args(argv)
     if args.command == "cut":
-        return cut(args.version, args.note)
+        return cut(args.version, args.note, args.skip_tests)
     return verify() if args.command == "verify" else status()
 
 

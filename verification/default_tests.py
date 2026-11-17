@@ -21,8 +21,12 @@ result when it comes in, and a push is where it is required.
                                                       every collected run: how often each, and in which runs
 
 Superseding: of default-run jobs waiting together, only the newest is worth running. The pipeline can't withdraw a
-committed job, so each run's step asks the queue first, and one with a newer default-run job pending or running
-says so and exits at once (its log says `default tests: superseded by ID`).
+committed job, so each run's step asks the queue first, and one with a newer default-run job pending, running or
+already finished says so and exits at once (its log says `default tests: superseded by ID`).
+
+One at a time: the runs share one warm cargo target directory, and the tests' work folders under it, so a step holds
+an exclusive lock beside that directory while it runs, and a second step waits for it (`default tests: waiting`),
+then asks the queue again before it starts.
 
 What a run read: the step runs in a fresh export of its commit, so afterwards a file's access time says whether
 anything in the run (a test, a script or a JVM it started) opened it, and a folder's whether anything listed it. The
@@ -106,19 +110,53 @@ def queue_status(root: Path) -> dict:
 
 
 def job_id(row: str) -> str | None:
-    m = re.match(r"\s*(\d{8}-\d{6}-\S+)", row)
+    m = re.search(r"(?<![\w-])(\d{8}-\d{6}-\S+)", row)  # anywhere in the row: a priority may come before it
     return m[1] if m else None
+
+
+def newer_than(me: str, runner_root: Path) -> tuple[str | None, bool]:
+    """(the newest default-run job after ME that is waiting, running, finished or collected, whether the queue
+    could be read). A newer run that has already finished makes this one moot as much as one still waiting: a job
+    started again after a later one ran has nothing left to say."""
+    status = queue_status(runner_root)
+    rows = [row for key in ("pending", "running", "finished, not collected", "recorded on another head") for row in status.get(key, [])]
+    ids = {i for row in rows if (i := job_id(row))}
+    ids |= {d.name for d in (runner_root / "verification/results").glob("*-default-test-run-at-*")}
+    newer = sorted(i for i in ids if i > me and "-default-test-run-at-" in i)
+    return (newer[-1] if newer else None), bool(status)
+
+
+def one_at_a_time():
+    """An exclusive lock every default-run step holds while it runs, waited for as long as it takes: two runs at
+    once share the warm cargo target directory, and with it the tests' work folders under its tmp/, so each
+    overwrites what the other is reading (on 2026-11-17 two at once failed eight Rust tests that pass alone).
+    The lock is the open file: it goes when the step ends, however it ends."""
+    import fcntl
+    CARGO_TARGET.mkdir(parents=True, exist_ok=True)
+    held = open(CARGO_TARGET.parent / "default-tests.lock", "w")
+    try:
+        fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        print(f"{MARK} waiting: another default run holds {held.name}; one runs at a time", flush=True)
+        fcntl.flock(held, fcntl.LOCK_EX)
+    return held
 
 
 def cmd_step() -> int:
     me = os.environ.get("VERIFY_JOB_ID", "")
     runner_root = Path(os.environ.get("VERIFY_RUNNER_ROOT") or ROOT)
-    status = queue_status(runner_root)
-    newer = sorted(i for key in ("pending", "running") for row in status.get(key, [])
-                   if (i := job_id(row)) and i > me and "-default-test-run-at-" in i)
-    if newer:
-        print(f"{MARK} superseded by {newer[-1]}: only the newest of the default runs waiting together runs", flush=True)
-        return 0
+    held = None
+    for attempt in ("before waiting", "after waiting"):  # asked again with the lock: the wait may have been long
+        newer, read = newer_than(me, runner_root)
+        if newer:
+            print(f"{MARK} superseded by {newer}: only the newest of the default runs waiting together runs", flush=True)
+            if held is not None:
+                held.close()
+            return 0
+        if not read:
+            print(f"{MARK} the queue could not be read ({attempt}): running, as nothing says a newer run waits", flush=True)
+        if held is None:
+            held = one_at_a_time()
     env = {**os.environ, "CARGO_TARGET_DIR": str(CARGO_TARGET)}
     CARGO_TARGET.mkdir(parents=True, exist_ok=True)
     # Streamed, so the log shows where the run is and the runner sees it is not stalled; kept, to read the verdict.
@@ -137,7 +175,8 @@ def cmd_step() -> int:
         print(f"{MARK} unread {len(left)} paths ({UNREAD_FILE})", flush=True)
     print(f"{MARK} {'passed' if code == 0 else 'failed'}: {tally[-1] if tally else 'no tally'}", flush=True)
     if code and os.environ.get("VERIFY_SOURCE_COMMIT"):
-        bisect(runner_root, os.environ["VERIFY_SOURCE_COMMIT"], output, env)
+        bisect(runner_root, os.environ["VERIFY_SOURCE_COMMIT"], output, env)  # under the lock: it runs tests too
+    held.close()
     return code
 
 

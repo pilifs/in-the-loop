@@ -685,8 +685,11 @@ fn has(lines: &[String], text: &str) -> bool {
 }
 
 #[test]
+#[ignore = "cost:proof: Box Office's ten example patches, each applied to a copy, compiled with javac and walked \
+    against its Spring class path, ~26 s; a smaller fixture can't show that the examples' own boundary diffs \
+    still hold; proxy: two_builds_of_the_joint_example_compare_into_accounted_obligations, \
+    every_box_office_entry_point_has_a_spec_that_matches_its_golden_text"]
 fn box_office_examples_compare_as_their_boundary_diffs_say() {
-    jvmcontract::tool_tier!(pending);
     let Some(base) = patched_specs("base", None) else { return };
     // The base as this test builds it is the base as the command analyses it.
     for (module, _) in MODULES {

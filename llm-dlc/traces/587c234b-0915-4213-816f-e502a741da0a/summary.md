@@ -130,6 +130,20 @@ a4bdf7bf  long-token  009…an (79 chars): A scratch file name this session made
 c0b7a76e  long-token  004…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.
 fd843c30  long-token  eNr…XH (173 chars): A 'default tests: unread zlib:...' line from verification/default_tests.py: a zlib+base64 pack of the repository paths a default run left unread. The packs in the job logs unpack to 580-581 relative paths, all present in the checkout; the value is generated output, not a credential.
 
+### Record verification results: the default test run at xunroyyopkuq passed
+
+change `slquqtpylozm` · [log `e30ea06db31e`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c.jsonl.gz)
+
+Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.
+
+### Only one default test run runs at a time, and a job started again after a newer run finished is superseded
+
+change `kzwsnszxrwtt` · [log `e30ea06db31e`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c.jsonl.gz)
+
+Two default-run jobs ran at once on 2026-11-17 (010456, and 005759 started a second time after it had passed): they share the warm cargo target directory and the tests' work folders under its tmp/, and eight Rust tests that pass alone failed in one run and passed on its retry, while the other's rerun failed. default_tests.py step now holds an exclusive lock (flock on ~/.cache/in-the-loop/default-tests.lock, beside the target directory) for the whole run and its bisect; a second step says it is waiting, waits, and asks the queue again once it has the lock.
+
+Superseding looked only at jobs pending or running, and read a job's id only at the start of a status row. It now also counts a newer default run that has finished or been collected, so a passed job the runner starts again exits at once, finds the id anywhere in the row, and says in the log when the queue could not be read (it then runs, as before). Why the runner started a passed job again is not found: that is in pipeline.py's collecting, not here. Checked with three new tests (a held lock makes a second step wait and re-ask; a newer collected run; an unreadable queue), the 13 Python test files test_costs.py run --changed chose, and tests/tiers.rs.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-013604-the-seven-tests-moved-to-the-proof-tier",
+  "title": "The seven tests moved to the proof tier on 2026-11-17, run as proof tier",
+  "description": "Seven Rust tests left the default run for the proof tier, by the user's decision on 2026-11-17 to retier what is over the tool tier's limits or runs JBMC or TLC: observations.rs's Box Office examples comparison, application_core_joint.rs's J1 quote family, application_core.rs's E1 and E2, and integration.rs's own-checker-against-JBMC agreement and its two TLC tests. Each passed in the default run earlier the same day; this runs them as the proof tier does (release, --ignored, by exact name), to show they pass there and what they take.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/costs.json"
+    ]
+  },
+  "expected": "exits 0: seven tests pass, none filtered away",
+  "submitted": {
+    "at": "2026-11-17T01:36:04+00:00",
+    "session": "b23a1dcc-0128-4ba1-b4aa-85526c834e11"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc",
+    "tlc",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "4G",
+    "duration": "20m",
+    "timeout": "2h",
+    "notes": "alone in the test-fast profile the seven took 26, 77, 56, 32, 10, 1 and 4 s; most of the job is the release build of four test binaries"
+  },
+  "steps": [
+    {
+      "name": "the seven, by name",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast --test observations --test application_core_joint --test application_core --test integration -- --ignored --test-threads 4 --exact box_office_examples_compare_as_their_boundary_diffs_say j1_the_quote_family_composes_the_four_streams e1_a_consumed_return_value_and_a_declared_failure e2_a_nullable_returned_dto the_tools_own_checker_agrees_with_jbmc_on_integer_proofs tlc_checks_the_box_office_model tlc_checks_temporal_properties_and_names_the_violated_one",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

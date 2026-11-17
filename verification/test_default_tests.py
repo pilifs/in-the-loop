@@ -29,15 +29,56 @@ def result(root, job, commit, log, status="passed"):
 
 
 class StepTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+
     def step(self, status):
+        """The step with a made-up queue, a runner's repository and a cache folder of its own, and no run."""
         out = io.StringIO()
-        with mock.patch.dict("os.environ", {"VERIFY_JOB_ID": MINE}), \
+        with mock.patch.dict("os.environ", {"VERIFY_JOB_ID": MINE, "VERIFY_RUNNER_ROOT": str(self.root)}), \
                 mock.patch.object(default_tests, "queue_status", return_value=status), \
+                mock.patch.object(default_tests, "CARGO_TARGET", self.root / "cache/target"), \
                 mock.patch.object(default_tests.subprocess, "Popen") as run, contextlib.redirect_stdout(out):
             run.return_value = mock.Mock(stdout=iter(["ok   a.py: Ran 1 test\n", "default tier: 48 of 48 passed\n"]))
             run.return_value.wait.return_value = 0
             code = default_tests.cmd_step()
         return code, out.getvalue(), run
+
+    def test_a_newer_run_is_seen_behind_a_priority_and_when_it_has_already_finished(self):
+        code, out, run = self.step({"pending": [f"[priority -1]  {NEWER}  Default test run at bbbb"], "running": [f"{MINE}  mine"]})
+        self.assertIn(f"default tests: superseded by {NEWER}", out)
+        result(self.root, NEWER, "c2", "default tests: passed: x\n")  # collected since: this job was started again
+        code, out, run = self.step({"running": [f"{MINE}  mine"]})
+        self.assertEqual(code, 0)
+        self.assertIn(f"default tests: superseded by {NEWER}", out)
+        run.assert_not_called()
+
+    def test_a_queue_that_cannot_be_read_is_said_and_the_run_goes_on(self):
+        code, out, run = self.step({})
+        self.assertIn("default tests: the queue could not be read (before waiting)", out)
+        self.assertIn("default tests: passed", out)
+
+    def test_one_default_run_at_a_time_a_second_waits_for_the_first_and_asks_the_queue_again(self):
+        import fcntl
+        import threading
+        import time
+        (self.root / "cache").mkdir()
+        first = open(self.root / "cache/default-tests.lock", "w")
+        fcntl.flock(first, fcntl.LOCK_EX)  # another step, running
+        done = {}
+        waiter = threading.Thread(target=lambda: done.update(zip(("code", "out", "run"), self.step({"running": [f"{MINE}  mine"]}))))
+        waiter.start()
+        time.sleep(0.3)
+        self.assertTrue(waiter.is_alive(), "the second step waits while the first holds the lock")
+        result(self.root, NEWER, "c2", "default tests: passed: x\n")  # a newer run came in during the wait
+        first.close()
+        waiter.join(5)
+        self.assertFalse(waiter.is_alive())
+        self.assertIn("default tests: waiting: another default run holds", done["out"])
+        self.assertIn(f"default tests: superseded by {NEWER}", done["out"], "asked again once it has the lock")
+        done["run"].assert_not_called()
 
     def test_a_newer_default_run_waiting_makes_this_one_moot(self):
         code, out, run = self.step({"pending": [f"{NEWER}  Default test run at bbbb"], "running": [f"{MINE}  mine"]})
@@ -168,7 +209,7 @@ class ResultsTest(unittest.TestCase):
             run = mock.Mock(stdout=iter(["default tier: 49 of 49 passed\n"]), wait=mock.Mock(return_value=0))
             os.chdir(tmp)
             try:
-                with mock.patch.dict(os.environ, {"VERIFY_JOB_ID": MINE, "VERIFY_SOURCE_COMMIT": "c1"}), \
+                with mock.patch.dict(os.environ, {"VERIFY_JOB_ID": MINE, "VERIFY_SOURCE_COMMIT": "c1", "VERIFY_RUNNER_ROOT": tmp}), \
                         mock.patch.object(default_tests, "queue_status", return_value={}), \
                         mock.patch.object(default_tests.subprocess, "Popen", return_value=run), \
                         mock.patch.object(default_tests, "unread", return_value=["docs/notes.md", "papers/"]), \
