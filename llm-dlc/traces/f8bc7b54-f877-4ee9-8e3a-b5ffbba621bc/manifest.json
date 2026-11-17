@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-17T15:49:14.371Z",
-  "duration_seconds": 10343,
+  "ended": "2026-11-17T16:03:18.739Z",
+  "duration_seconds": 11188,
   "stats": {
-    "turns": 55,
-    "api_calls": 601,
-    "tool_calls": 607,
+    "turns": 61,
+    "api_calls": 639,
+    "tool_calls": 642,
     "tool_errors": 8,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 294636,
     "usage": {
-      "input_tokens": 1222,
-      "output_tokens": 531783,
-      "cache_read_input_tokens": 72947166,
-      "cache_creation_input_tokens": 1644871
+      "input_tokens": 1302,
+      "output_tokens": 558644,
+      "cache_read_input_tokens": 76296643,
+      "cache_creation_input_tokens": 1749511
     }
   },
   "tools": {
-    "Bash": 552,
-    "Edit": 21,
-    "Write": 17,
-    "Read": 10,
-    "ToolSearch": 4,
+    "Bash": 583,
+    "Edit": 22,
+    "Write": 18,
+    "Read": 11,
+    "ToolSearch": 5,
     "Monitor": 3
   },
   "files_touched": [
@@ -47,6 +47,7 @@
     "lib/tests/fixtures/model-countermodels/README.md",
     "lib/tests/fixtures/observed-countermodels/README.md",
     "lib/tests/fixtures/rule-countermodels/README.md",
+    "lib/tests/fixtures/thrown-pair-countermodels/README.md",
     "lib/tests/fresh_pair_countermodels.rs",
     "lib/tests/lemma_countermodels.rs",
     "lib/tests/loop_countermodels.rs",
@@ -201,24 +202,38 @@
     {
       "index": 10,
       "started": "2026-11-17T15:36:58.027Z",
-      "ended": "2026-11-17T15:49:14.371Z",
-      "turns": 4,
-      "api_calls": 31,
+      "ended": "2026-11-17T15:49:51.489Z",
+      "turns": 5,
+      "api_calls": 34,
       "usage": {
-        "input_tokens": 62,
-        "output_tokens": 29693,
-        "cache_read_input_tokens": 2690767,
-        "cache_creation_input_tokens": 111379
+        "input_tokens": 68,
+        "output_tokens": 31561,
+        "cache_read_input_tokens": 3068039,
+        "cache_creation_input_tokens": 115248
       },
-      "peak_context_tokens": 124652
+      "peak_context_tokens": 128521
+    },
+    {
+      "index": 11,
+      "started": "2026-11-17T15:50:30.940Z",
+      "ended": "2026-11-17T16:03:18.739Z",
+      "turns": 5,
+      "api_calls": 35,
+      "usage": {
+        "input_tokens": 74,
+        "output_tokens": 24993,
+        "cache_read_input_tokens": 2972205,
+        "cache_creation_input_tokens": 100771
+      },
+      "peak_context_tokens": 114044
     }
   ],
   "log": {
-    "sha256": "f44b0d8206f523147f15e2b0f3aa16d62e7249b7fa104679b6831f14b63b4318",
-    "bytes": 15735571,
-    "lines": 5365,
-    "gzip_bytes": 2746232,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/f44b0d8206f523147f15e2b0f3aa16d62e7249b7fa104679b6831f14b63b4318.jsonl.gz"
+    "sha256": "8c6a507349923544b4d8e92cdf3b828518540024eeb9a2a813772523189c7d09",
+    "bytes": 16895847,
+    "lines": 5714,
+    "gzip_bytes": 2968012,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/8c6a507349923544b4d8e92cdf3b828518540024eeb9a2a813772523189c7d09.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -317,6 +332,14 @@
       "summary": "Countermodels of an effect contract past its fix: a final field a caller's object was made with, read as if the proof's constructor had made it",
       "body": "The challenge stream's item 5 on the state stream's fixes for its inbox items I005 (sltlykpk, a write set's frame on a declared exceptional exit and over inputs that may be one object) and I007 (nslmqyry, an effect contract reads no non-constant static and stands in only for arguments of exactly their classes). Built apart at nslmqyry, the earlier frame and effect countermodels all pass: both fixes hold.\n\nNew hole: inside an effect contract's proof the read gate exempts a final instance field of an object that was there before the call, but the proof makes the receiver and arguments with their constructors in the harness's fresh state, while a caller's object was made in its own. Two callers in lib/tests/fixtures/contract-countermodels (cc.Held) are Verified 'result == level' at nslmqyry, stating no assumption, where a JVM gives 0 for 5: a receiver whose 'final boolean locked = Config.locked' was made with the setting on, and the same through an argument's final field. lib/tests/contract_countermodels.rs holds the fixture to a JVM (tool tier); the checker-side test is in the README and fails on both at nslmqyry, as it should. The effect contract is the state stream's, so nothing in lib/src changes here; it goes to that stream as a failure item. Tried and guarded: a contract whose call starts a class initializer (Engine::initializes_in_frame, the first case of inbox item domain-advances-challenge-I002) and a receiver of a class with two constructors.",
       "log_sha256": "f44b0d8206f523147f15e2b0f3aa16d62e7249b7fa104679b6831f14b63b4318"
+    },
+    {
+      "change_id": "pklttqzwropkztlvvmlpxwskyrmsprlw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the pair of versions past its fix: an exception's interface, message and own field, each proved to agree where a caller's handler tells the versions apart",
+      "body": "Challenge stream, item 5, against the preservation stream's wokytpkz (lib/src/pairing.rs: the scope read on copies of its own, an exception compared by its class's name and the names of every class above it). Built apart at wokytpkz with the sources touched, the earlier pairing and fresh-pair countermodel tests pass, checker-side tests included: both fixes hold, and a changed superclass's superclass under kept names is refuted.\n\nNew fixture lib/tests/fixtures/thrown-pair-countermodels with lib/tests/thrown_pair_countermodels.rs (tool tier), which holds it to a JVM. Three pairs are each Verified 'agree on every input where k >= 0 && k < 4' at wokytpkz, non-vacuous and with no assumption stated, where a caller's handler tells the versions apart: marked (an interface, the module's documented limit), messaged (the message) and coded (a field of the exception's own class). The README's checker-side test fails on exactly those three there. The pairing is the preservation stream's, so nothing in lib/src changes here; the test goes to it as a failure item.\n\nAudit: 289's and 290's preservation claims say 'throw the same exception'. In their pinned JARs (hashes checked), no class named *Exception or *Error differs between the releases in what it extends, implements or holds (javap -p, 101 and 191 classes), so the interface and field cases cannot occur there. Messages were not compared. Notes are added to both examples. Nothing for the watcher.\n\nVerified with test_costs.py run --changed (all passed) and validate_example.py 289 and 290.",
+      "log_sha256": "8c6a507349923544b4d8e92cdf3b828518540024eeb9a2a813772523189c7d09"
     }
   ],
   "logs": {
@@ -366,6 +389,12 @@
       "bytes": 7224095,
       "lines": 2675,
       "gzip_bytes": 1225570,
+      "url": null
+    },
+    "8c6a507349923544b4d8e92cdf3b828518540024eeb9a2a813772523189c7d09": {
+      "bytes": 16895847,
+      "lines": 5714,
+      "gzip_bytes": 2968012,
       "url": null
     },
     "93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076": {

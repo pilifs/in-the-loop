@@ -392,12 +392,44 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
       neither stream.
     - Next: a trial merge of this line and state's, built apart with the conflict in `Engine::call` resolved as the
       inbox item describes, or the default line once the watcher has merged both.
+- The contract failure went to state as `domain-advances-state-I010`, citing `ukukylmu`.
+- 2026-11-17, item 5, preservation's `wokytpkz`, its fix for I003 and I005: **both hold, and three false proofs
+  past the exception comparison**, to be handed over.
+  - The fix:
+    - the scope is read on copies of its own;
+    - an exception is its class's name and the names of every class above it up to `Object`.
+  - Built apart at `wokytpkz` (sources touched first), `pairing_countermodels.rs` and `fresh_pair_countermodels.rs`
+    pass, their checker-side tests included.
+  - The fixture is `lib/tests/fixtures/thrown-pair-countermodels`; its README has the table, the commands, the
+    options, what was tried and the checker-side test. `lib/tests/thrown_pair_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** "agree on every input where k >= 0 && k < 4", non-vacuous, with no assumption stated, where
+    a caller's handler tells the versions apart on a JVM:
+    - `marked`: an interface the previous version's exception implements. The module says interfaces are not
+      compared, so this one is the documented limit, reproduced.
+    - `messaged`: the message.
+    - `coded`: a field of the exception's own class (403 against 404).
+  - The README's checker-side test fails on exactly these three there.
+  - **Tried and guarded**:
+    - a superclass's superclass that changed under kept names, refuted;
+    - a cause, a gap under strict;
+    - a shallow copy for the scope, which is whole for the arrays the pair takes.
+  - The pairing is preservation's, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*:
+    - 289's and 290's `preservation` say "throw the same exception". The rerun on this checker reads that as one class
+      name and one chain of superclass names.
+    - Across the releases' pinned JARs (hashes checked), no class named `*Exception` or `*Error` differs in what it
+      extends, what it implements or its members (`javap -p`; 101 classes for 289, 191 for 290). So `marked` and
+      `coded` cannot occur there.
+    - Messages were not compared.
+    - A note in both examples records this; it is also their item 6 entry for preservation. Nothing for the watcher.
+- Inbox: no open items.
 - Next:
-  - send the contract failure;
+  - send the exception failure;
   - I002's two remaining cases on a trial merge;
-  - item 5 on what landed during this cycle: preservation's `wokytpkz` (the fix for I003 and I005) and evidence's
-    `kqxwrwrx` (the fix for I007), and `nzsypymy` (290's preservation restated, also item 6);
-  - item 6's entries for 288's `fixed-security` and 289's answers.
+  - item 5: evidence's `kqxwrwrx` (the fix for I007), state's `llyzwmyp` (the observation binding on the state line,
+    and a lambda's per-run name), and `nzsypymy` (290's preservation restated, also item 6);
+  - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 
 ## Loop settings

@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 136, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 15:49 UTC |
-| Prompts | 2,890 |
-| Model calls | 29,395 |
-| Tool calls | 30,398 (535 failed) |
-| Compactions | 431 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 16:03 UTC |
+| Prompts | 2,896 |
+| Model calls | 29,433 |
+| Tool calls | 30,433 (535 failed) |
+| Compactions | 432 |
 | Subagents | 21 |
-| Tokens written | 29,612,541 |
-| Tokens read | 4,884,314,427 (98.1% from cache) |
-| Commits with a trace | 903 |
-| Log snapshots | 1,180 (2612.0 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,639,402 |
+| Tokens read | 4,887,768,624 (98.1% from cache) |
+| Commits with a trace | 904 |
+| Log snapshots | 1,181 (2614.9 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -163,7 +163,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
-| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 2 h 52 min | `claude-opus-5-5` | 55 | 601 | 607 | 8 | 10 | 294,636 | 12 |
+| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 3 h 6 min | `claude-opus-5-5` | 61 | 639 | 642 | 8 | 11 | 294,636 | 13 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -308,17 +308,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 531,783 | 1,222 | 1,644,871 | 72,947,166 | 97.8% | 140 |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 558,644 | 1,302 | 1,749,511 | 76,296,643 | 97.8% | 140 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,990 | 88.8% | 136 |
-| `Read` | 1,276 | 4.2% | 56 |
-| `Edit` | 966 | 3.2% | 54 |
-| `Write` | 656 | 2.2% | 53 |
-| `ToolSearch` | 167 | 0.5% | 42 |
+| `Bash` | 27,021 | 88.8% | 136 |
+| `Read` | 1,277 | 4.2% | 56 |
+| `Edit` | 967 | 3.2% | 54 |
+| `Write` | 657 | 2.2% | 53 |
+| `ToolSearch` | 168 | 0.6% | 42 |
 | `Monitor` | 122 | 0.4% | 49 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
 | `TaskStop` | 44 | 0.1% | 18 |
@@ -1240,6 +1240,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 901 | change `zwrpkwnl` | Countermodels of the acceptance check: seven controls accept.py accepts for an answer its evidence does not give | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/5943b8b85e67e9cff9f5678f0c53b6594722a01d712963d5c4b501d583f990e0.jsonl.gz)) |
 | 902 | change `lqvlvwsm` | Countermodels of three rules that landed, and three wrong implementations the claims of 287, 307 and 286's protected state accept | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/5ac0ccdaa95763c1d73ed322784e8d9d8669d7b133e3b7058485a70c83a6f9f0.jsonl.gz)) |
 | 903 | change `ukukylmu` | Countermodels of an effect contract past its fix: a final field a caller's object was made with, read as if the proof's constructor had made it | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/f44b0d8206f523147f15e2b0f3aa16d62e7249b7fa104679b6831f14b63b4318.jsonl.gz)) |
+| 904 | change `pklttqzw` | Countermodels of the pair of versions past its fix: an exception's interface, message and own field, each proved to agree where a caller's handler tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/8c6a507349923544b4d8e92cdf3b828518540024eeb9a2a813772523189c7d09.jsonl.gz)) |
 
 ## Logs
 
@@ -1382,7 +1383,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 12 | 0 | 16.7 MB | `f44b0d8206f5`, not uploaded |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 13 | 0 | 19.6 MB | `8c6a50734992`, not uploaded |
 
 ## Session notes
 
