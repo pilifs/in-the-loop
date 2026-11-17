@@ -76,7 +76,7 @@ The slow tests are the proof tier: the ignored Rust tests, tagged `cost:proof:`,
 `lib/README.md` gives the `submit` command for the whole tier; a job for one change runs only the proof tests whose
 inputs it touched. CLAUDE.md allows one exception inline: a single proof-tier test, once, when the change targets it
 directly and its row records a past run of it alone under a minute. The slow tests also include, until they move, the
-63 Rust tests marked `retier: pending` in the inventory: proof tier by what they call or took, but still in the default
+56 Rust tests marked `retier: pending` in the inventory: proof tier by what they call or took, but still in the default
 run until the next test-cost loop moves them behind proxies. They are a large part of what the default run costs.
 While iterating, run the tests of what you changed, not them, unless the change targets one.
 

@@ -319,8 +319,11 @@ fn regression_family(row: &str, family: &str, target: &str, bound: Option<u32>) 
 /// is another claim; and a change of the environment model is another key, checked again. `checked-claim` and
 /// `fee` as a plain regression are apart, below.
 #[test]
+#[ignore = "cost:proof: the quote family's every claim and regression on every build, then the cache, summary \
+    and property reuse rows, with javac and a JVM replay each, ~77 s; the rows only compose on the whole family; \
+    proxy: j1_r2_a_receiver_with_dependencies, j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string, \
+    h_the_throttle_family"]
 fn j1_the_quote_family_composes_the_four_streams() {
-    jvmcontract::tool_tier!(pending);
     claim_family("J1 (E1)", "quote", "quote-claim", Check::Planned);
     claim_family("J1 (E2)", "quote", "offer-claim", Check::Planned);
     regression_family("J1 (V1)", "quote", "quotes.Codes#vip", None);

@@ -309,15 +309,20 @@ fn v2_a_bounded_supported_list_as_input() {
 /// E1: a consumed return value and a declared failure, under one explicit environment: the rate a dependency
 /// returns, or its checked `RateUnavailable`. Wired at the merge (Phase 5 step 1): no stream's refusal is accepted.
 #[test]
+#[ignore = "cost:proof: the quote claim under its environment on every build of the family, each refutation \
+    replayed on a JVM, ~56 s; the contract row is every build's verdict; proxy: \
+    a_string_keyed_rate_and_an_events_code_are_refuted_and_replayed_by_content"]
 fn e1_a_consumed_return_value_and_a_declared_failure() {
-    jvmcontract::tool_tier!(pending);
     claims("quote", "quote-claim", &[], jvmcontract::environment::check);
 }
 
 /// E2: a nullable returned DTO, made by the shared construction plan. Wired at the merge: no refusal is accepted.
 #[test]
+#[ignore = "cost:proof: the offer claim under its environment on every build of the family, each refutation \
+    replayed on a JVM, ~32 s; the contract row is every build's verdict; proxy: \
+    a_handler_that_reads_a_nullable_dto_response_proves_its_rewrite, \
+    a_changed_null_branch_is_refuted_on_a_null_response_and_replayed"]
 fn e2_a_nullable_returned_dto() {
-    jvmcontract::tool_tier!(pending);
     claims("quote", "offer-claim", &[], jvmcontract::environment::check);
 }
 

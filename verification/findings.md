@@ -18,6 +18,31 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-035: whole Python test files are tagged unit tier and take minutes, because the inventory doesn't see the processes their tests start
+
+- **Status**: open, to revisit later (the user's decision on 2026-11-17: note it, don't retag now).
+- **Raised**: 2026-11-17 on `vm-1`, by the session that made the default test run parallel, from that run's own
+  times (`~/.cache/in-the-loop/python-test-seconds.json`, a whole default run with three files at a time).
+- **Found**: `lib/tests/costs.json` gives a Python test its tier from what its code calls, and a test that starts
+  processes inside the module it tests shows no call. Four files are tagged almost wholly unit (in process, under 1 s
+  a test) and are far from it:
+
+  | File | Tagged | Took, the whole file |
+  |---|---|---|
+  | `examples/tools/targets/test_runtime.py` | 69 unit, 4 tool | 258 s |
+  | `verification/test_pipeline.py` | 34 unit, 4 tool | 110 s |
+  | `examples/tools/targets/test_receipt_streams.py` | 5 unit | 47 s |
+  | `examples/tools/test_targets_contract.py` | 16 unit | 16 s |
+
+  The times are under load (other files and the Rust binaries beside them), so they bound each file and say nothing
+  of one test. The effect: `test_costs.py run --tier unit` is minutes of Python and not the quick run its name says,
+  and the three slowest of these files are what the default run's Python half waits for.
+- **Needs**: a decision on retagging. The options seen: time these files test by test (`test_costs.py python FILE`)
+  and tag from the measured time; or teach the inventory to follow the module under test for spawned processes.
+  Moving a test between tiers is the user's to approve.
+- **Tracked in**: `lib/README.md`'s Tests section (the unit tier's note names the first two files).
+- **Closes when**: the four files' tests carry tiers that a measured run agrees with, or the user decides they stay.
+
 ### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
 
 - **Status**: closed (job `20261117-010456-default-test-run-at-lmwqozysyszl` passed at a descendant of `xunroyyopkuq`;
