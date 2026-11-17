@@ -12,33 +12,35 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T15:45:41.874Z",
-  "duration_seconds": 10131,
+  "ended": "2026-11-17T16:06:18.329Z",
+  "duration_seconds": 11367,
   "stats": {
-    "turns": 36,
-    "api_calls": 419,
-    "tool_calls": 418,
+    "turns": 70,
+    "api_calls": 499,
+    "tool_calls": 471,
     "tool_errors": 7,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 838,
-      "output_tokens": 339612,
-      "cache_read_input_tokens": 47346349,
-      "cache_creation_input_tokens": 1120749
+      "input_tokens": 1058,
+      "output_tokens": 372653,
+      "cache_read_input_tokens": 56051202,
+      "cache_creation_input_tokens": 1250622
     }
   },
   "tools": {
-    "Bash": 401,
-    "Edit": 9,
-    "Read": 4,
-    "Write": 3,
-    "Monitor": 1
+    "Bash": 447,
+    "Edit": 12,
+    "Read": 5,
+    "Write": 4,
+    "Monitor": 2,
+    "ToolSearch": 1
   },
   "files_touched": [
     "lib/models/java/util/lists/ArrayDeque.java",
     "lib/src/bmc/mod.rs",
     "lib/tests/claims.rs",
+    "lib/tests/fixtures/claims/claims/Cloned.java",
     "lib/tests/fixtures/claims/claims/Deques.java",
     "lib/tests/fixtures/claims/claims/Frames.java",
     "llm-dlc/loops/domain-advances-state.md"
@@ -145,24 +147,38 @@
     {
       "index": 7,
       "started": "2026-11-17T15:26:46.950Z",
-      "ended": "2026-11-17T15:45:41.874Z",
-      "turns": 4,
-      "api_calls": 50,
+      "ended": "2026-11-17T15:46:18.689Z",
+      "turns": 5,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 100,
-        "output_tokens": 40243,
-        "cache_read_input_tokens": 4805910,
-        "cache_creation_input_tokens": 137092
+        "input_tokens": 104,
+        "output_tokens": 41215,
+        "cache_read_input_tokens": 5108321,
+        "cache_creation_input_tokens": 142042
       },
-      "peak_context_tokens": 150365
+      "peak_context_tokens": 155315
+    },
+    {
+      "index": 8,
+      "started": "2026-11-17T15:47:27.068Z",
+      "ended": "2026-11-17T16:06:18.329Z",
+      "turns": 33,
+      "api_calls": 78,
+      "usage": {
+        "input_tokens": 216,
+        "output_tokens": 32069,
+        "cache_read_input_tokens": 8402442,
+        "cache_creation_input_tokens": 124923
+      },
+      "peak_context_tokens": 138196
     }
   ],
   "log": {
-    "sha256": "7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f",
-    "bytes": 11703596,
-    "lines": 3957,
-    "gzip_bytes": 2015997,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f.jsonl.gz"
+    "sha256": "0c20377bf1c203036d989aff2a21b2dc5989bb24f418a37309eb534c503a91d4",
+    "bytes": 13255132,
+    "lines": 4681,
+    "gzip_bytes": 2280750,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/0c20377bf1c203036d989aff2a21b2dc5989bb24f418a37309eb534c503a91d4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -253,9 +269,23 @@
       "summary": "The state line takes the observation binding, and the binding no longer takes a lambda's per-run name for a write: example 286's bind reaches CachedIntrospectionResults again; step 3's account chosen",
       "body": "Example 286's protected-state path (state stream, step 3). The evidence stream's binding of an observed initializer to what it was observed on (lzpqszyo) is copied onto this line unchanged: lib/src/observed.rs, lib/src/observed/ObservedInitializer.java, lib/src/classpath.rs (ClassPath::refused, from mqkqvvmw), lib/tests/observed_countermodels.rs with its fixtures, and lib/README.md's paragraph. It is copied rather than merged because a merge would have this session's sync.py stamp the evidence line's commits made today, as happened once before (rzzuvvwl). On a merge of the two lines these files are identical except ObservedInitializer.java and observed.rs's module doc, changed here as below.\n\nWith the binding, 286's probe (fixed-protected-state-mutation at bound 2, a trial) ended before DataBinder.bind. Initializing CachedIntrospectionResults initializes ReflectionUtils, and the binding compares that class's state with its state when initialized alone. It found USER_DECLARED_METHODS to be 'an object of ReflectionUtils$$Lambda/0x000000006604a6e8' in one run and '...$$Lambda/0x000000000e040a90' in the other, and refused the observation as a write to another class. The address is the JVM's name for the lambda's hidden class, and it differs from run to run. The observer now names a hidden class by what it was defined from (R$$Lambda), both for an object it does not hold and for a HashMap key's class. Test: the fixture claims.Hooked initializes claims.Hooks, which holds a lambda, after defining two lambdas of its own. The proof of claims.Hooking#hooked through Hooked's observation is Verified (tests/claims.rs, an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so). With the address kept in the name, the test fails with exactly that refusal. With the fix, the probe stops where it did before the binding: the read of strongClassCache, a ConcurrentHashMap the observation does not hold. Inbox item domain-advances-evidence-I009 tells the evidence stream about the change, since its I008 work edits the same file.\n\nStep 3's account is chosen and recorded in the brief's Progress, from 5.3.19's bytecode. Below CachedIntrospectionResults.forClass the binder runs on reflection and caches. It reaches a ConcurrentHashMap and two of Spring's ConcurrentReferenceHashMaps, java.beans.Introspector, Method objects, some forty default editors and Method.invoke. A held empty ConcurrentHashMap would only move the stop to its get. The next piece is therefore the brief's option 2: a stand-in for AbstractNestablePropertyAccessor.processLocalProperty, checked against the real method on a JVM by sampling, with the resolved setter run as written or through its effect contract.\n\nVerified: test_costs.py run --changed passed (observed_countermodels 4, claims and the other changed tests). The cost inventory test failed only until test_costs.py estimate was run; after it the tiers test and lint pass. The brief's other sections are still accurate.",
       "log_sha256": "7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f"
+    },
+    {
+      "change_id": "vvpxytqsysyxomlzqxzlutpyxlluqmtm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Under --gaps assume, an object a JDK call is taken to return is of its declared class only where that class is final: HashSet.clone() and Date.clone() are no longer proved to return no HashSet and no Date",
+      "body": "The challenge stream's countermodels (lqvlvwsm, wd.Widened; inbox domain-advances-state-I008) showed the engine made the object a JDK call returns under assume of exactly the class its descriptor declares, so a type test on Object clone() said what the JDK's object is not; the earlier refusal (qysmsruu) compared that declared class for equality with a modelled one and missed it. Now the object is of the declared class only where that class is final, and otherwise of one at or below it that the engine does not know (Obj::assumed). A virtual call on it (an override may run), a throw of it, a cast, instanceof or lambda argument cast the declared class does not settle, sameClass, and an effect contract's exact-class test are refused by name; what the declared class settles is still proved. The fixture folder, its README and the JVM test are copied unchanged from lqvlvwsm, and the README's an_assumed_objects_class_is_not_taken_to_be_its_declared_one is added to lib/tests/rule_countermodels.rs. A countermodel of this stream's own, claims.Cloned (tests/claims.rs): Object.clone() of a class whose toString counts, then toString() on the copy, was proved to count nothing, where a JVM counts one. Both tests fail with the flag switched off by mutation.\n\nInbox domain-advances-state-I009 (286's frozen claim binds one value, so a mutant that checks only the first suppressed value is accepted) is reported in Progress, not obeyed: a claim over two values is a new claim file, the user's decision, and goes into the corrected formalization this stream proposes. Verified: test_costs.py run --changed (38 Rust binaries and the Python suites) passed; the tiers lint agrees.",
+      "log_sha256": "0c20377bf1c203036d989aff2a21b2dc5989bb24f418a37309eb534c503a91d4"
     }
   ],
   "logs": {
+    "0c20377bf1c203036d989aff2a21b2dc5989bb24f418a37309eb534c503a91d4": {
+      "bytes": 13255132,
+      "lines": 4681,
+      "gzip_bytes": 2280750,
+      "url": null
+    },
     "14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a": {
       "bytes": 5262429,
       "lines": 1802,

@@ -88,7 +88,11 @@
 //! assumed ([`Outcome::gaps`]); a gap with no assume form ([`gaps::GapKind::assumable`]) is refused there too, and so
 //! is one whose object (the one a constructor constructs, or the new one a method is taken to return) is of a class
 //! whose model the check runs ([`ClassPath::checker_runs`]), whose methods would read fields no constructor of it
-//! wrote (`tests/model_countermodels.rs`). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
+//! wrote (`tests/model_countermodels.rs`). The new object a method is taken to return is of the class its descriptor
+//! declares only where that class is final; otherwise its class is one at or below it that the engine does not know
+//! (`HashSet.clone()`, declared `Object`, returns a `HashSet`), and a virtual call on it, a throw of it, and a cast or
+//! `instanceof` the declared class does not settle are refused by name ([`Obj::assumed`];
+//! `tests/rule_countermodels.rs`). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
 //! drivers stop before the engine runs when the gap scan finds one with no contract ([`crate::advice`]), so the
 //! engine meets one only where the scan did not see it. A gap a contract closes (`--contracts`,
 //! [`crate::gap_contracts`], [`Options::contracts`]) is no gap: at a JDK call the engine runs the contract's method
@@ -633,6 +637,13 @@ struct Obj {
     /// what would read the cells in bulk does not take it for an array ([`Obj::as_array`]) and is refused. A table
     /// of a thousand words a loop writes at an index it computes is this and no fresh word for each cell.
     unknown: bool,
+    /// Made by a JDK call under `--gaps assume` that declares a class that is not final ([`Engine::assumed`]): the
+    /// JDK's object is of that class or of any below it (`HashSet.clone()`, declared `Object`, returns a `HashSet`),
+    /// and `class` is only the declared one. What the object's class would decide beyond what the declared class
+    /// settles is refused by name ([`Engine::of_unknown_class`]): a cast or `instanceof` to a class the declared one is
+    /// not below, a virtual call (an override may run), a throw (which handler takes it), and the exact class an
+    /// effect contract's use or `sameClass` reads.
+    assumed: bool,
 }
 
 /// An object `invokedynamic` made through `LambdaMetafactory.metafactory`: the interface it implements, the name
@@ -658,7 +669,7 @@ static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0)
 
 impl Obj {
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, assumed: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -3179,6 +3190,19 @@ impl<'a> Engine<'a> {
         path.objects.len() - 1
     }
 
+    /// The new object a JDK call under `--gaps assume` is taken to return: of the class its descriptor declares, or,
+    /// where that class is not final, of one at or below it that the engine does not know ([`Obj::assumed`]).
+    fn assumed(&self, path: &mut Path, declared: &str) -> usize {
+        let r = self.alloc(path, declared);
+        path.objects[r].assumed = !self.cp.is_effectively_final(declared);
+        r
+    }
+
+    /// Refuses by name what `what` would read of object `o`'s class where that class is not known ([`Obj::assumed`]).
+    fn of_unknown_class(&self, path: &Path, o: usize, what: &str) -> Step {
+        unsupported(format!("{what} on an object a JDK call returned under --gaps assume, declared {}: the JDK's object may be of any class below that one, which the engine does not know", path.objects[o].class.replace('/', ".")))
+    }
+
     /// The array the reference on the stack is, after the null check.
     fn pop_array(&mut self, path: &mut Path) -> Result<usize, Step> {
         let r = self.pop_ref(path).map_err(Err)?;
@@ -3678,6 +3702,9 @@ impl<'a> Engine<'a> {
                     Ok(o) => o.expect("checked"),
                     Err(step) => return step,
                 };
+                if path.objects[o].assumed {
+                    return self.of_unknown_class(path, o, "a throw (which handler takes it)");
+                }
                 return self.throw(path, o);
             }
             Insn::CheckCast(index) => {
@@ -3688,6 +3715,9 @@ impl<'a> Engine<'a> {
                 let r = self.pop_ref(path)?;
                 if let Some(o) = r {
                     if !self.cp.is_subtype(&path.objects[o].class, &target) {
+                        if path.objects[o].assumed {
+                            return self.of_unknown_class(path, o, &format!("a cast to {}", target.replace('/', ".")));
+                        }
                         return self.raise(path, "java/lang/ClassCastException");
                     }
                 }
@@ -3697,6 +3727,9 @@ impl<'a> Engine<'a> {
                 let target = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
                 let r = self.pop(path)?;
                 let Some(options) = r.options() else { return unsupported(format!("expected a reference on the stack, found {r:?}")) };
+                if let Some(o) = options.iter().filter_map(|(_, t)| *t).find(|&o| path.objects[o].assumed && !self.cp.is_subtype(&path.objects[o].class, &target)) {
+                    return self.of_unknown_class(path, o, &format!("an instanceof {}", target.replace('/', ".")));
+                }
                 let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| self.cp.is_subtype(&path.objects[o].class, &target))).map(|(g, _)| *g).collect();
                 let is = self.any(&guards);
                 let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
@@ -4048,6 +4081,9 @@ impl<'a> Engine<'a> {
             // Whether two objects are of one class, as `a.getClass() == b.getClass()` is on the JVM: a proof of a
             // contract against the JDK's bytecode ([`crate::contract_proving`]) checks the exception's exact class.
             ("sameClass", [Val::R(Some(a)), Val::R(Some(b))]) => {
+                if let Some(&o) = [a, b].into_iter().find(|&&o| path.objects[o].assumed) {
+                    return self.of_unknown_class(path, o, "sameClass");
+                }
                 let same = path.objects[*a].class == path.objects[*b].class;
                 let v = self.b.constant(i64::from(same), 32);
                 self.push(path, Val::I(v));
@@ -4403,6 +4439,9 @@ impl<'a> Engine<'a> {
         for (v, t) in stack[receiver_at + 1..].iter().zip(&takes.params[lambda.captured..]) {
             if let (Val::R(Some(a)), Type::Object(_) | Type::Array(_)) = (v, t) {
                 if !self.cp.is_subtype(&path.objects[*a].class, &class_of(t)) {
+                    if path.objects[*a].assumed {
+                        return self.of_unknown_class(path, *a, &format!("a cast to {}", class_of(t).replace('/', ".")));
+                    }
                     let args = called.params.len();
                     self.pop_args(path, args)?;
                     self.pop(path)?;
@@ -4467,6 +4506,10 @@ impl<'a> Engine<'a> {
             Err(step) => return step,
         };
         let special = special;
+        // A virtual call on an object whose class the engine does not know: an override of that class may run.
+        if !special && path.objects[o].assumed {
+            return self.of_unknown_class(path, o, &format!("a call of {}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor));
+        }
         // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
         if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].is_array() {
             let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, ..Obj::new(&path.objects[o].class) };
@@ -4520,7 +4563,7 @@ impl<'a> Engine<'a> {
                 return Ok(Some(end));
             }
             if let Type::Object(name) = &descriptor.ret {
-                let r = self.alloc(path, name);
+                let r = self.assumed(path, name);
                 self.push(path, Val::R(Some(r)));
             }
             self.advance(path);
@@ -4541,10 +4584,10 @@ impl<'a> Engine<'a> {
                 // Each object argument too, a String aside (a final class), is null or of exactly its parameter's
                 // class, as the proof's were: an argument of a subclass may override what the method calls on it.
                 let exact_arguments = descriptor.params.iter().zip(&full[1..]).all(|(ty, v)| match ty {
-                    Type::Object(class) if class != "java/lang/String" => v.options().is_some_and(|options| options.iter().all(|(_, t)| t.map_or(true, |a| path.objects[a].class == *class))),
+                    Type::Object(class) if class != "java/lang/String" => v.options().is_some_and(|options| options.iter().all(|(_, t)| t.map_or(true, |a| path.objects[a].class == *class && !path.objects[a].assumed))),
                     _ => true,
                 });
-                let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner && exact_arguments).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
+                let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner && !path.objects[o].assumed && exact_arguments).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
                 if let Some((stub, stub_descriptor)) = effect.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && path.frames.len() > 1) {
                     // The instruction runs again once the claim's class is initialized: its operands are on the
                     // stack while it is.
@@ -4606,7 +4649,7 @@ impl<'a> Engine<'a> {
                     return unsupported(format!("{}.{}{} under --gaps assume: the object it {made} is of {}, whose model this check runs, and the model's methods would read fields no constructor of it wrote, so their values could only be made up", member.owner.replace('/', "."), member.name, member.descriptor, class.replace('/', ".")));
                 }
                 if let Type::Object(name) = &descriptor.ret {
-                    let r = self.alloc(path, name);
+                    let r = self.assumed(path, name);
                     self.push(path, Val::R(Some(r)));
                 }
             }
@@ -4973,7 +5016,7 @@ impl<'a> Engine<'a> {
                         return Ok(Some(end));
                     }
                     if let Type::Object(class) = &parsed.ret {
-                        let r = self.alloc(path, class);
+                        let r = self.assumed(path, class);
                         self.push(path, Val::R(Some(r)));
                     }
                     self.advance(path);

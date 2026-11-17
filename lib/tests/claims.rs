@@ -416,6 +416,30 @@ fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definiti
     assert!(left_out.output.contains("remove(Ljava/lang/Object;)Z"), "{}", left_out.output);
 }
 
+/// Under `--gaps assume` a JDK call that returns an object returns one of its declared class or of any below it
+/// (`claims.Cloned`: `Object.clone()` of a `Cloned` is one). The engine does not know which, so a virtual call on it
+/// (the class's override runs on a JVM) and a type test the declared class does not settle are refused by name, and
+/// what the declared class settles is proved. `tests/rule_countermodels.rs` has the challenge stream's cases.
+#[test]
+fn an_object_a_jdk_call_returns_under_assume_is_of_a_class_the_engine_does_not_know() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.Cloned").output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "printsNothing=false notCloneable=false anObject=true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    let assumed = |method: &str| {
+        let mut o = options(classes, &format!("claims.Cloned#{method}"), 2, &format!("Cloned-{method}"));
+        o.gaps = jvmcontract::bmc::gaps::GapMode::Assume;
+        run(&o)
+    };
+    for (method, why) in [("printsNothing", "a call of java.lang.Object.toString()"), ("notCloneable", "an instanceof java.lang.Cloneable")] {
+        let o = assumed(method);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(why) && o.output.contains("may be of any class below that one"), "{method}: {}", o.output);
+    }
+    let o = assumed("anObject");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+}
+
 /// `toString()`, the class of an object the run made, and an initializer that keeps a method reference for the
 /// logging library the class path has (the reference it does not keep is never called, and is not walked).
 #[test]

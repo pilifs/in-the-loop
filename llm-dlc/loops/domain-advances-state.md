@@ -222,6 +222,24 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `java.beans` and `java.lang.reflect` classes, whose fields reflection does not read without opening `java.base`, and
   a model of each JDK call on them; a held empty `ConcurrentHashMap` alone only moves the stop to its `get`. So step
   3 takes option 2.
+- 2026-11-17, a soundness fix to the gaps under assume (nothing of 286 decided; the frozen claim unchanged). Inbox:
+  `domain-advances-state-I008` taken. The challenge stream's countermodels (`lqvlvwsm`, `wd.Widened`) showed that
+  under `--gaps assume` the object a JDK call is taken to return was made of exactly the class its descriptor
+  declares, so `HashSet.clone()` and `Date.clone()` (declared `Object`) were proved to return no `HashSet` and no
+  `Date`; my I004 refusal compared the declared class for equality and so did not see it. The README's first option
+  is taken, as it covers the I004 case too: the object is of the declared class only where that class is final, and
+  otherwise of one at or below it that the engine does not know (`Obj::assumed`). A virtual call on it (an override
+  may run), a throw of it, a cast, an `instanceof` or a lambda's argument cast the declared class does not settle,
+  `sameClass`, and an effect contract's exact-class test are refused by name, while what the declared class settles
+  is still proved. The fixture, its README and the JVM test are copied unchanged from `lqvlvwsm`; the README's
+  `an_assumed_objects_class_is_not_taken_to_be_its_declared_one` is added to `lib/tests/rule_countermodels.rs`. A
+  countermodel of my own, `claims.Cloned` (`tests/claims.rs`): `Object.clone()` of a class whose `toString` counts,
+  then `toString()` on the copy, was proved to count nothing (an `Object.toString` gap assumed), where a JVM counts
+  one. Both tests fail with the flag switched off (by mutation). `domain-advances-state-I009` noted, not obeyed: the
+  frozen claim binds one property value, so the challenge stream's `controls/first-suppressed-only.patch` (only the
+  first suppressed value removed) is accepted by it, whereas a JVM binds `Age=32` after `age=5`. A claim over two values is
+  a new claim file, which is the user's decision. It goes into the corrected formalization this stream proposes (with
+  the ASCII restriction on `field` from cycle 1), as "Done when" allows; the frozen claim is not edited.
 - Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
   PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
   - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's
