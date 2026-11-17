@@ -122,6 +122,12 @@ change `vypwysvxownk` · [log `f97b270b2ebc`](https://terminalvalue.net/raw-trac
 
 Job 20261117-004852-default-test-run-at-nmskpkrkukuy passed: 1 step in 7m01s, peak 6.0 GiB (estimated 12m, 4 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
+### Queue the default test run at the merge of prove-setup (verification pending)
+
+change `yuuvzuvykswq` · [log `f97b270b2ebc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f97b270b2ebc4822f6fc45c381dffe6fac11673e3f566e4444d5e0dac8e9f8ff.jsonl.gz)
+
+Job 20261117-005759-default-test-run-at-xunroyyopkuq: the default run at the merge commit, in the pipeline's clean export, which nobody waits for; the watcher reads its result.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f97b270b2ebc4822f6fc45c381dffe6fac11673e3f566e4444d5e0dac8e9f8ff.jsonl.gz) has every step in between: reasoning, tool calls and their results.
