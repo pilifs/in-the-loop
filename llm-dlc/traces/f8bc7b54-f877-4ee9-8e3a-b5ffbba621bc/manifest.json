@@ -12,32 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-17T14:46:52.131Z",
-  "duration_seconds": 6601,
+  "ended": "2026-11-17T14:57:17.533Z",
+  "duration_seconds": 7227,
   "stats": {
-    "turns": 35,
-    "api_calls": 391,
-    "tool_calls": 393,
+    "turns": 40,
+    "api_calls": 426,
+    "tool_calls": 428,
     "tool_errors": 6,
-    "compactions": 6,
+    "compactions": 7,
     "peak_context_tokens": 211368,
     "usage": {
-      "input_tokens": 796,
-      "output_tokens": 340457,
-      "cache_read_input_tokens": 43420780,
-      "cache_creation_input_tokens": 995534
+      "input_tokens": 866,
+      "output_tokens": 372717,
+      "cache_read_input_tokens": 46666162,
+      "cache_creation_input_tokens": 1104948
     }
   },
   "tools": {
-    "Bash": 357,
-    "Edit": 15,
-    "Write": 11,
-    "Read": 5,
+    "Bash": 389,
+    "Edit": 16,
+    "Write": 12,
+    "Read": 6,
     "ToolSearch": 3,
     "Monitor": 2
   },
   "files_touched": [
     "lib/src/classpath.rs",
+    "lib/tests/fixtures/effect-countermodels/README.md",
     "lib/tests/fixtures/frame-countermodels/README.md",
     "lib/tests/fixtures/fresh-pair-countermodels/README.md",
     "lib/tests/fixtures/lemma-countermodels/README.md",
@@ -139,24 +140,38 @@
     {
       "index": 6,
       "started": "2026-11-17T14:32:51.937Z",
-      "ended": "2026-11-17T14:46:52.131Z",
-      "turns": 4,
-      "api_calls": 40,
+      "ended": "2026-11-17T14:47:38.616Z",
+      "turns": 5,
+      "api_calls": 44,
       "usage": {
-        "input_tokens": 80,
-        "output_tokens": 33723,
-        "cache_read_input_tokens": 3695495,
-        "cache_creation_input_tokens": 118574
+        "input_tokens": 88,
+        "output_tokens": 35905,
+        "cache_read_input_tokens": 4227994,
+        "cache_creation_input_tokens": 122731
       },
-      "peak_context_tokens": 131847
+      "peak_context_tokens": 136004
+    },
+    {
+      "index": 7,
+      "started": "2026-11-17T14:48:22.167Z",
+      "ended": "2026-11-17T14:57:17.533Z",
+      "turns": 4,
+      "api_calls": 31,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 30078,
+        "cache_read_input_tokens": 2712883,
+        "cache_creation_input_tokens": 105257
+      },
+      "peak_context_tokens": 118530
     }
   ],
   "log": {
-    "sha256": "93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076",
-    "bytes": 9745115,
-    "lines": 3520,
-    "gzip_bytes": 1667785,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076.jsonl.gz"
+    "sha256": "fa96e5e35cf5a9a34fa023c35acce19583a8478fd9cd7c20ec2afce62a2af95b",
+    "bytes": 10844954,
+    "lines": 3846,
+    "gzip_bytes": 1877237,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/fa96e5e35cf5a9a34fa023c35acce19583a8478fd9cd7c20ec2afce62a2af95b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -223,6 +238,14 @@
       "summary": "Countermodels of a write set: a protected field written before a declared exception, and through one bean passed twice, each proved unchanged",
       "body": "Challenge stream, item 5, against the state stream's write set (qrqtplwq, prove --writes). The frame is conjoined to the assertion, so it is read only after a normal return and only on distinct object inputs. lib/tests/fixtures/frame-countermodels/fc/Framed.java has three methods that a JVM sees writing the protected admin field, each Verified on the state checker built apart at qrqtplwq and at vwktulky. Bean#rename, under --throws 'java.lang.IllegalArgumentException when length < 0', sets admin and then throws. Bean#promote(other), with the write set other.admin, does it when called as b.promote(b). Static grant(from, to), with the write set to.admin, does it when called as grant(b, b). lib/tests/frame_countermodels.rs holds the fixture to a JVM. The README has the table, the commands, the fix options and the checker-side test, which fails on all three on the state line. That test goes to domain-advances-state as a failure item, since the write set is its rule this run, so no refusal is committed here.\n\nTried and found guarded: a write through a callee, a lambda or a recursion (refuted by the frame); Locale.setDefault (refused by name); a StringBuilder parameter (not taken); an inherited field (fields_of refuses a subclass). The identity of a String field after 16 String operations matches JDK 25 or is a gap. Audit: no example task passes --writes on any line, so no accepted result rests on these holes. Verified with test_costs.py run --changed (passed) and the checker-side test run on both state commits (fails, as it should). Progress also records state-I004, and the evidence session's trace stamps on mqkqvvmw and yypzyxmw for the watcher.",
       "log_sha256": "93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076"
+    },
+    {
+      "change_id": "qmtxwupnmwmytxtyqsqmwwsxkrllypvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of an effect contract at a call: a final static set from a caller's setting, one bean passed twice, and a subclass argument, each a caller's property proved where a JVM breaks it",
+      "body": "The state stream's vwktulky lets a setter's checked write set (a lemma with writes:) stand in for its calls through a stub that makes the stated writes. Three callers in lib/tests/fixtures/effect-countermodels each have a proved contract and a property that is Verified on that checker (built apart) while a JVM breaks it. lockedLevel: the setter reads a final static that its class's initializer takes from Config.locked, which the caller sets first, and the contract's proof initialized the class fresh (a JVM gives 0 for 5). pairedLevel: bean.setBoth(bean, mine, theirs) writes the argument's field and then the receiver's, while the stub writes in the writes: order, and the contract's proof never passes one object twice (a JVM gives mine). linkedAdmin: an argument of a subclass whose override, called by the setter, grants admin, since only the receiver's class is checked to be exact.\n\nlib/tests/effect_countermodels.rs holds the fixtures to a JVM. The README has the checker-side test, which fails on all three at vwktulky; it goes to domain-advances-state as a failure item, since the effect contract is that stream's this run, so no refusal is committed here. Also recorded: an exceptional exit does not carry into a caller (throws: is refused, and an undeclared throw refutes the contract, tried), aliasing does, and prove --may-alias this,other already makes the frame refute the earlier promote countermodel. The stub writes a nested object-parameter class with its $, which javac rejects (a refusal). Audit: no example task uses a writes: lemma or --writes on any line. test_costs run --changed and lint pass. The brief is not wrong.",
+      "log_sha256": "fa96e5e35cf5a9a34fa023c35acce19583a8478fd9cd7c20ec2afce62a2af95b"
     }
   ],
   "logs": {
@@ -272,6 +295,12 @@
       "bytes": 8526219,
       "lines": 3105,
       "gzip_bytes": 1451132,
+      "url": null
+    },
+    "fa96e5e35cf5a9a34fa023c35acce19583a8478fd9cd7c20ec2afce62a2af95b": {
+      "bytes": 10844954,
+      "lines": 3846,
+      "gzip_bytes": 1877237,
       "url": null
     }
   },

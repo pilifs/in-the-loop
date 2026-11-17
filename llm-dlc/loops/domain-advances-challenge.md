@@ -254,11 +254,23 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     - the identity of a String field after 16 String operations matches JDK 25, or is a gap.
   - *Audit*: no example task passes `--writes` on any line, so no accepted result rests on these holes. Nothing for the watcher. Both holes bear on 286's protected state, the claim the write set is for.
 - Inbox: no open items.
-- Next, item 5:
-  - `vwktulky`, the write set standing in for a setter's calls: a contract used in a state its reads differ in, and whether the holes above carry into a caller's proof;
-  - the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as item 7 controls;
-  - then the evidence stream's `mzllzmkq` and `wowqurku`.
-- Items 6 and 7 after.
+- The write-set failure went to state as `domain-advances-state-I005`, citing `synvlnls`.
+- 2026-11-17, item 5, the state stream's effect contract at a call (`vwktulky`): **three false proofs of a caller's property**, to be handed over.
+  - The fixtures are in `lib/tests/fixtures/effect-countermodels`; its README has the table, the commands, the contracts, what was tried, the audit and the checker-side test.
+  - `lib/tests/effect_countermodels.rs` holds them to a JVM.
+  - Each contract is proved, and the caller's property through it is **Verified** on `vwktulky` (built apart), where a JVM breaks it:
+    - `lockedLevel`: the setter reads a final static that its class's initializer takes from a setting the caller changed first. The contract's proof initialized the class in a fresh state. A JVM gives 0 for 5.
+    - `pairedLevel`: `bean.setBoth(bean, mine, theirs)`. The method writes the argument's field and then the receiver's, while the stub writes in the `writes:` order. The contract's proof never passes one object twice. A JVM gives 1 where the proof says 2.
+    - `linkedAdmin`: an argument of a subclass whose override, called by the setter, grants admin. Only the receiver's class is checked to be exact.
+  - The README's checker-side test fails on all three there. The effect contract is the state stream's, so no refusal is committed here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id goes in the next entry.
+  - Whether I005's holes carry into a caller: an exceptional exit does not (`throws:` is refused, and an undeclared throw refutes the contract, tried). Aliasing does, through `pairedLevel`. `prove --may-alias this,other` already makes the frame refute I005's `promote`, so it is a ready fix.
+  - Also found: the stub names a nested object-parameter class with its `$`, which javac rejects. That is a refusal, not a false result.
+  - *Audit*: no example task has a `writes:` lemma or passes `--writes` on any line, so no accepted result rests on these holes. Nothing for the watcher. All three bear on 286's protected state.
+- Next:
+  - item 7, the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as `test_accept.py` controls;
+  - then the evidence stream's `mzllzmkq` and `wowqurku`;
+  - item 6;
+  - item 5 again as the other streams commit (state's `qysmsruu` is in progress on I004).
 - Status: working
 
 ## Loop settings
