@@ -221,7 +221,9 @@ A run that leaves work behind, such as jobs it resubmitted, is followed by anoth
 
 A brief is run on command by a watcher, as a proof run is: `/run-brief NAME`
 ([`.claude/skills/run-brief`](../.claude/skills/run-brief/SKILL.md)) in a Claude Code session on Opus 5.5 in the
-default workspace. The watcher does none of the brief's work. It runs
+default workspace, or the same asked in words of a session that is already open there, which then becomes the
+watcher. The run's state is all in files, so a watcher that was compacted, or a new session, takes over a run
+under way (`brief_run.py status NAME` first). The watcher does none of the brief's work. It runs
 [`tools/brief_run.py`](tools/brief_run.py), in four stages:
 
 1. **Preflight** (`brief_run.py preflight NAME`): what would start (the brief's streams, each one's workspace,

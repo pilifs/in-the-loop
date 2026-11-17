@@ -158,6 +158,24 @@ def running(root: Path, script: str) -> list[int]:
     return out
 
 
+def loops_in(root: Path) -> list[int]:
+    """The feature loops at work in this folder: feature-loop.sh runs from a private copy of itself
+    (feature-loop.XXXXXX), whatever started it, a proof run's prove-loop.sh included."""
+    out = []
+    r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", "feature-loop"], capture_output=True, text=True)
+    for pid in r.stdout.split():
+        try:
+            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+            cwd = Path(os.readlink(f"/proc/{pid}/cwd"))
+        except OSError:
+            continue
+        if cwd == root.resolve() and any(Path(w.decode(errors="replace")).name.startswith("feature-loop.") for w in words[:3]):
+            out.append(int(pid))
+    return out
+
+
+SESSION = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
 # -- before the run
 
 def runner_budget(streams: int, with_integration: bool) -> dict:
@@ -265,7 +283,9 @@ def preflight(run: Run) -> dict:
         blocking.append(f"{run.brief} has no `- Status:` line at the end of its Progress: run-streams.sh reads it to tell a finished loop from a stopped one")
     if out["integration"] and not os.access(root / out["integration"], os.X_OK):
         blocking.append(f"the brief's integration script {out['integration']} is not an executable file here")
-    names, forks = {}, set()
+    names, forks, sessions = {}, set(), {out["session"]: run.brief}
+    if not SESSION.fullmatch(out["session"] or ""):
+        blocking.append(f"{run.brief} has no `- session: UUID` in its Loop settings (a new one: `python3 -c 'import uuid; print(uuid.uuid4())'`)")
     for s in run.plan["streams"]:
         path = root / s["brief"]
         row = {**s, "workspace": setting(path, "workspace") or None, "session": setting(path, "session") or None,
@@ -275,6 +295,12 @@ def preflight(run: Run) -> dict:
             blocking.append(f"the stream {s['label']} has no brief: {s['brief']}")
             continue
         forks.add(row["fork"])
+        if not SESSION.fullmatch(row["session"] or ""):
+            blocking.append(f"{s['brief']} has no `- session: UUID` in its Loop settings: without one it would share the loops' default session")
+        elif row["session"] in sessions:
+            blocking.append(f"{s['brief']} names the session of {sessions[row['session']]}: each loop has its own")
+        else:
+            sessions[row["session"]] = s["brief"]
         ws = row["workspace"]
         if not ws:
             blocking.append(f"{s['brief']} has no `- workspace:` in its Loop settings")
@@ -295,10 +321,12 @@ def preflight(run: Run) -> dict:
     for fork in forks - {None}:
         if not watch.transcript(root, fork).exists():
             blocking.append(f"the streams fork session {fork}, which has no transcript in this checkout")
-    for script, what in (("run-streams.sh", "a run of streams"), ("prove-loop.sh", "a proof loop")):
-        if pids := running(root, script):
-            blocking.append(f"{what} is already running for this repository (pid {pids[0]}): two runs would commit into each "
-                            f"other's work in the default workspace")
+    if pids := running(root, "run-streams.sh"):
+        blocking.append(f"a run of streams is already under way for this repository (pid {pids[0]}): two would share the "
+                        f"default workspace and the machine's budget")
+    elif pids := loops_in(root):
+        blocking.append(f"a loop is at work in the default workspace (pid {pids[0]}; a proof run's, or a brief's own): the "
+                        f"brief's own loop would commit into its work. Start once it has ended")
     dirty = jj(root, "diff", "-r", "@", "--name-only").stdout.split()
     if dirty:
         notes.append(f"the default workspace has uncommitted changes ({len(dirty)} files, {dirty[0]} first): another "
@@ -309,7 +337,7 @@ def preflight(run: Run) -> dict:
         notes.append(f"{LOCAL} gives the runner more than is left beside {budget['loops']} loop(s): {'; '.join(over)}. "
                      f"`brief_run.py budget {run.name} --apply` lowers it for the run")
     foundation = run.read().get("foundation") or {}
-    out.update(foundation={k: foundation.get(k) for k in ("session", "ended", "ok", "commit", "landed")} if foundation else None,
+    out.update(foundation={k: foundation.get(k) for k in ("session", "ended", "ok", "commit", "landed", "cost")} if foundation else None,
                budget=budget, blocking=blocking, notes=notes)
     return out
 

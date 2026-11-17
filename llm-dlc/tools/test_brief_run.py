@@ -74,10 +74,12 @@ CLAUDE = textwrap.dedent('''\
 ''')
 
 
-def brief(streams: list[str] = (), workspace: str | None = None, status: str | None = "working", extra: list[str] = ()) -> str:
+def brief(streams: list[str] = (), workspace: str | None = None, status: str | None = "working", extra: list[str] = (),
+          session: int | None = None) -> str:
+    session = session if session is not None else sum(map(ord, workspace or "main"))
     return "\n".join(["# Brief: made up", "", "## Progress", "", "- made up: started.",
                       *([f"- Status: {status}"] if status else []), "", "## Loop settings", "",
-                      "- session: 00000000-0000-4000-8000-000000000001", "- verification: separate",
+                      *([f"- session: 00000000-0000-4000-8000-{session:012d}"] if session else []), "- verification: separate",
                       *([f"- streams: {', '.join(streams)}"] if streams else []),
                       *([f"- workspace: {workspace}"] if workspace else []), *extra, ""])
 
@@ -212,6 +214,29 @@ class BeforeTheRun(Fixture):
         blocking = " | ".join(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"])
         self.assertIn("root-made-up-a already exists, but no jj workspace is at it", blocking)
         self.assertIn("made-up-b.md has no `- Status:` line", blocking)
+
+    @cost("tool")
+    def test_each_loop_needs_a_session_of_its_own(self):
+        self.write("llm-dlc/loops/made-up-a.md", brief(workspace="made-up-a", session=0))
+        self.write("llm-dlc/loops/made-up-b.md", brief(workspace="made-up-b", session=sum(map(ord, "main"))))
+        blocking = " | ".join(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"])
+        self.assertIn("made-up-a.md has no `- session: UUID`", blocking)
+        self.assertIn("made-up-b.md names the session of llm-dlc/loops/made-up.md", blocking)
+
+    @cost("tool")
+    def test_a_loop_at_work_in_the_default_workspace_blocks_and_one_elsewhere_does_not(self):
+        copy = Path(self.tmp.name) / "feature-loop.AbC123"  # as feature-loop.sh runs: from a private copy of itself
+        copy.write_text("#!/usr/bin/env bash\nsleep 30\n")
+        copy.chmod(0o755)
+        for cwd, blocks in ((self.root, True), (Path(self.tmp.name), False)):
+            p = subprocess.Popen(["bash", str(copy), "prove-change"], cwd=cwd)
+            try:
+                time.sleep(0.3)
+                blocking = " | ".join(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"])
+                self.assertEqual("a loop is at work in the default workspace" in blocking, blocks, blocking)
+            finally:
+                p.kill()
+                p.wait()
 
     @cost("tool")
     def test_a_stream_without_its_brief_blocks(self):

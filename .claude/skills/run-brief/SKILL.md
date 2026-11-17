@@ -15,6 +15,12 @@ called back when something needs a judgement, and you keep the user informed. Ev
 
 - **You run on Opus 5.5.** If you are another model, say so and stop: the user switches with `/model` and runs the
   skill again.
+- **Any Opus 5.5 session of the default workspace can be the watcher**, one that is already open and has done
+  other work included: the user asks it to run a brief, and from then on it is the watcher. Nothing of the run
+  lives in your context. It is all in files (`llm-dlc/loop-summaries/run-streams-NAME/`), so a session that was
+  compacted, or a new one that takes a run over, reads where the run stands and goes on (see "A run under
+  way"). While you are the watcher, leave the default workspace's files alone but for what this skill has you
+  do: the brief's own loop and the result collector commit there.
 - **Read first**: "A brief's run" in `llm-dlc/README.md`, the brief itself, and Designs 2 and 3 of
   `llm-dlc/loops/stream-conductor.md` (inboxes, and which decisions are yours). They outrank your memory of them.
 - **Decide what you can, and record it.** A decision is yours when it is cheap to take back and you are sure
@@ -32,6 +38,24 @@ summary (`brief_run.py interval BRIEF SECONDS`, before stage 3); without it, eve
 means the user is away for the whole run: you put nothing to them that you can decide and record, and a question
 that is theirs alone is recorded as open (`decisions.py record`, state `open`) while the rest of the run goes on
 around it.
+
+If you were started by the session itself and not by the user typing the command, the request above is what
+they asked for in their own words: if it does not name one brief, ask before anything starts.
+
+## A run under way
+
+First, always:
+
+```bash
+python3 llm-dlc/tools/brief_run.py status BRIEF
+```
+
+- `running: true`: the run is under way and you are taking it over, or coming back to it. Start nothing. Say
+  where it stands in a few lines, and go to the `wait` of stage 3.
+- `running: false` with a `started`: a run ended or was interrupted while nobody watched. Read the end of
+  `streams.log` in the run's directory. If every loop's status is `done` or `blocked:`, go to stage 4; else it
+  was interrupted, and stage 3's `start` continues it (stage 2 is behind it).
+- No `started`: a new run. Go on with stage 1.
 
 ## 1. Before anything starts
 
