@@ -156,7 +156,7 @@ result says so. Measured here: examples 052 (B11) and 076 (D1) each peaked at ab
 | D1 example, up to about 100,000 states | 2 | 1G | 1m |
 | D1 example, about a million states, or liveness | 2 | 2G to 3G | 10m to 30m |
 | the proof tier, `test_costs.py run --tier proof` (see `lib/README.md`) | 4 | 8G | 1h30m |
-| the default test run, `default_tests.py queue` (below) | 6 | 4G | 25m |
+| the default test run, `default_tests.py queue` (below) | 6 | 4G | 12m |
 | one proof-tier test, by its row in `lib/tests/costs.json` | 1 | 2G | its recorded time: heap's up to about an hour |
 | a jvmcontract build, when `lib/` changed | counted by the runner, not by you | | |
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """The default test run as a verification job: queued at a commit, run by the pipeline in a clean export of it, and
-waited on by nobody. The run takes about 16 minutes and a run of /prove-java-change merges and finishes examples
+waited on by nobody. The run took about 16 minutes when this was written (3 to 9 since it runs its test files
+several at a time) and a run of /prove-java-change merges and finishes examples
 often, so it no longer runs inline there (CLAUDE.md, Tests): it is queued, the work goes on, the watcher reads the
 result when it comes in, and a push is where it is required.
 
@@ -80,9 +81,11 @@ def cmd_queue(rev: str, why: str | None) -> int:
     argv = [sys.executable, str(ROOT / "verification/pipeline.py"), "submit", "--title", f"{TITLE}{change}",
             "--description", description, "--kind", "other", "--capability", CAPABILITY, "--revision", commit,
             "--link", f"commit:{change}", "--expected", "exits 0: every test of the default run passes",
-            "--cpus", "6", "--memory", "4G", "--duration", "25m", "--timeout", "1h", "--requires", "cargo",
-            "--estimate-notes", "the default run took about 16 minutes inline in 2026-11 (11 Rust, 5 Python), longer "
-                                "beside proof jobs; its cargo target directory is kept warm between runs",
+            "--cpus", "6", "--memory", "4G", "--duration", "12m", "--timeout", "1h", "--requires", "cargo",
+            "--estimate-notes", "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with "
+                                "Rust beside Python and 8.6 with the Rust binaries and Python files several at a "
+                                "time (2026-11-17), longer beside proof jobs; its cargo target directory is kept "
+                                "warm between runs",
             "--step", "default tests", "nice -n 10 python3 verification/default_tests.py step"]
     return subprocess.run(argv, cwd=ROOT).returncode
 

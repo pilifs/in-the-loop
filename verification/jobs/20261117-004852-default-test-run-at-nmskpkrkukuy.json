@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-004852-default-test-run-at-nmskpkrkukuy",
+  "title": "Default test run at nmskpkrkukuy",
+  "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change nmskpkrkukuy, \"The default run builds Rust's tests in a lightly optimised profile and takes 3.4 minutes: the engine's own tests are sev\", queued with Rust's tests in the test-fast profile: the run's time as a job, and the profile's first build in the job's warm target directory. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+  "kind": "other",
+  "capabilities": [
+    "tests:default"
+  ],
+  "links": {
+    "commits": [
+      "nmskpkrkukuy"
+    ]
+  },
+  "expected": "exits 0: every test of the default run passes",
+  "submitted": {
+    "at": "2026-11-17T00:48:52+00:00",
+    "session": "b23a1dcc-0128-4ba1-b4aa-85526c834e11"
+  },
+  "revision": "225f3605b7c118efdc5c514b0edba18809fc49a1",
+  "requires": [
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "4G",
+    "duration": "12m",
+    "timeout": "1h",
+    "notes": "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with Rust beside Python and 8.6 with the Rust binaries and Python files several at a time (2026-11-17), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "steps": [
+    {
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
