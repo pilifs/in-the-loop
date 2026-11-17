@@ -662,7 +662,9 @@ def tier_runs(tier, doc, root=ROOT, only=None, tests=(), test_threads=None):
     env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}
     runs = []
     if only in (None, "rust"):
-        argv = ["cargo", "test", "--manifest-path", "lib/Cargo.toml"] + (["--release"] if tier == "proof" else [])
+        # The default and unit tiers in the test-fast profile (lib/Cargo.toml: dev, lightly optimised), the proof
+        # tier in release.
+        argv = ["cargo", "test", "--manifest-path", "lib/Cargo.toml"] + (["--release"] if tier == "proof" else ["--profile", "test-fast"])
         argv += [a for t in tests for a in ("--test", t)]
         after = (["--ignored"] if tier == "proof" else []) + (["--test-threads", str(test_threads)] if test_threads else [])
         runs.append(("cargo test", argv + (["--"] + after if after else []), env, root))

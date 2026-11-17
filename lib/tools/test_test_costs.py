@@ -219,7 +219,7 @@ class RunningATier(unittest.TestCase):
             runs = tc.tier_runs(tier, self.DOC, self.root)
             self.assertEqual([r[0] for r in runs], ["cargo test", "tools/targets/test_x.py", "tools/test_y.py"])
             label, argv, env, cwd = runs[0]
-            self.assertEqual(argv, ["cargo", "test", "--manifest-path", "lib/Cargo.toml"])
+            self.assertEqual(argv, ["cargo", "test", "--manifest-path", "lib/Cargo.toml", "--profile", "test-fast"])
             self.assertEqual((env, cwd), ({"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}, self.root))
             _, argv, env, _ = runs[1]
             self.assertEqual(argv[1:], ["-m", "unittest", "targets.test_x"])
