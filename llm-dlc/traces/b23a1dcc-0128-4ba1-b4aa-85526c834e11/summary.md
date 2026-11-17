@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `b23a1dcc-0128-4ba1-b4aa-85526c834e11` (open) |
+| Session | `b23a1dcc-0128-4ba1-b4aa-85526c834e11` (ended) |
 | When | 2026-11-16 23:33 UTC to 2026-11-17 01:50 UTC (137 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.326 |
