@@ -686,6 +686,12 @@ change `xtkpoqknmqkx` · [log `ecc1eb3d68bd`](https://terminalvalue.net/raw-trac
 
 Job 20261117-002240-example-290-the-four-proof-tasks-through ran proofs/prove.py on the four tasks at one commit (lxywqktl) and passed, 38.9 s after the build: vulnerable-security refuted on select(servlets=[0, 0], method=0, patterns={}), which returns 0 on 5.8.4, run on a JVM; fixed-security established (659 paths); mutant-security refuted on select(servlets=[1, 0], method=0, patterns={}), run on a JVM; preservation established for the pair 5.8.4 to 5.8.5 (573 paths, 7,907 variables). target.json records each as besideRoute with that job, dates the notes of the two blockers the work closed, and says in handoff.next what is left: the route has no adapter entry, so there are no route receipts. example.json's verdict and notes and the README's section follow, with what the verdicts rest on beyond the bytecode: up to five library initializers per release observed on a JVM instead of run by the checker, the hand-written ArrayList model run on request, and the stated class-loader assumptions.
 
+### The user's review of the watcher's answers to the run of 288-290, and its answer that 290 is finished
+
+change `mrtuvsowozvn` · [log `ecc1eb3d68bd`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49.jsonl.gz)
+
+Reviewed with the watcher on 2026-11-17: the user accepted all nine answers so far (D001-D009). The three claim acceptances made in the user's place under --unattended (288, 289, 290) stand; the known gaps are in how the proofs meet the claims (288: exception categories and array aliasing; 290: observed initializers and a preservation claim that compares the count of matchers by type), not in the claims' wording. D010: 290 is finished, at medium confidence while the proof-tier rerun after its engine changes is out.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49.jsonl.gz) has every step in between: reasoning, tool calls and their results.
