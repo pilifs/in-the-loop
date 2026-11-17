@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 136, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 22:46 UTC |
-| Prompts | 2,944 |
-| Model calls | 29,873 |
-| Tool calls | 30,879 (551 failed) |
-| Compactions | 440 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-18 00:14 UTC |
+| Prompts | 2,952 |
+| Model calls | 29,957 |
+| Tool calls | 30,969 (552 failed) |
+| Compactions | 441 |
 | Subagents | 21 |
-| Tokens written | 29,997,603 |
-| Tokens read | 4,940,935,430 (98.1% from cache) |
-| Commits with a trace | 912 |
-| Log snapshots | 1,189 (2648.1 MB gzipped, 1,162 uploaded) |
+| Tokens written | 30,064,933 |
+| Tokens read | 4,953,875,643 (98.1% from cache) |
+| Commits with a trace | 913 |
+| Log snapshots | 1,190 (2653.5 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -163,7 +163,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
-| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 9 h 49 min | `claude-opus-5-5` | 109 | 1,079 | 1,088 | 24 | 19 | 294,636 | 21 |
+| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 11 h 18 min | `claude-opus-5-5` | 117 | 1,163 | 1,178 | 25 | 20 | 294,636 | 22 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -308,20 +308,20 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 916,845 | 2,198 | 3,056,035 | 128,156,029 | 97.7% | 143 |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 984,175 | 2,372 | 3,259,907 | 140,892,196 | 97.7% | 146 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,418 | 88.8% | 136 |
-| `Read` | 1,289 | 4.2% | 56 |
-| `Edit` | 988 | 3.2% | 54 |
-| `Write` | 668 | 2.2% | 53 |
-| `ToolSearch` | 171 | 0.6% | 42 |
+| `Bash` | 27,492 | 88.8% | 136 |
+| `Read` | 1,292 | 4.2% | 56 |
+| `Edit` | 997 | 3.2% | 54 |
+| `Write` | 670 | 2.2% | 53 |
+| `ToolSearch` | 172 | 0.6% | 42 |
 | `Monitor` | 124 | 0.4% | 49 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
-| `TaskStop` | 44 | 0.1% | 18 |
+| `TaskStop` | 45 | 0.1% | 19 |
 | `WebFetch` | 29 | 0.1% | 9 |
 | `SendMessage` | 27 | 0.1% | 8 |
 | `Agent` | 21 | 0.1% | 8 |
@@ -1249,6 +1249,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 910 | change `tqmpowvx` | Countermodels of the code two versions are taken to share past the reach's fix: an override removed, a hidden field, an interface's initializer two ways and the target's own class's, each taken as identical or tied where a JVM tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/c9f2ba9c7f39ddeab68e2bdff1e3186c131d631503621da69e434efa4d389228.jsonl.gz)) |
 | 911 | change `mnwtrnrp` | Countermodels of a stand-in a lemma's proof rested on, and of an Error a logged record's getter raises with no athrow, each proved with nothing stated where a JVM says otherwise | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/a0036dc2033e2f723ca224c2073f96373b2ff789467cc41aab16cddc57c27118.jsonl.gz)) |
 | 912 | change `zmpzxkqn` | Countermodels of the code two versions are taken to share past the reach's second fix: a superclass, an interface and a default method's interface changed under identical code, each taken as identical or tied where a JVM tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/bbd1d15f7193100c25d3ad57ec48a4f507808e7eae415bd2547bc106ee9ef20b.jsonl.gz)) |
+| 913 | change `vtwrpxps` | Countermodels of a call taken as one function of both versions: cells a JDK method writes, a String's identity and an Error the JVM raises, each proved to agree where a JVM tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/611e52876cd2fb15a19d763d92e3fc9c670a9963a85643cd9d950548a3e13006.jsonl.gz)) |
 
 ## Logs
 
@@ -1391,7 +1392,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 21 | 0 | 52.8 MB | `bbd1d15f7193`, not uploaded |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 22 | 0 | 58.2 MB | `611e52876cd2`, not uploaded |
 
 ## Session notes
 

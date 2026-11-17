@@ -743,6 +743,62 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - evidence: `nzsypymy`.
 - Next: preservation's call-level rule as soon as it is committed; until then state's `lwxvoqsy` and `xokwnwqo`
   models, and item 6's entries for 288's `fixed-security` and 289's other answers.
+- The supertype failure went to preservation as `domain-advances-preservation-I022`, citing `zmpzxkqn`.
+- 2026-11-17, item 5 and I004, preservation's call-level rule (`uxyusvsv`, `xuwlklyo`: a call of code both versions
+  share taken as one function of its inputs), at `qmsonuow`: **the I004 floor holds, and seven false proofs past
+  it**, to be handed over.
+  - Built apart at `qmsonuow` (sources touched), JDK 25.0.5. `callee-countermodels/check.py --rule-landed`:
+    - `same`, `copied` and `parsed` are verified (`parsed` is now verified on JDK 25 too);
+    - `twice`, `table` and `aliased` get no verdict, from a spurious witness;
+    - the rest are violations;
+    - no row is a false proof.
+  - The fixture is `lib/tests/fixtures/function-countermodels`. Its README has the table, the commands, what was
+    tried, the options, the checker-side test and the audit. `lib/tests/function_countermodels.rs` holds it to a JVM
+    and checks that `Shared` is the same bytes in both versions.
+  - What the outcome leaves out:
+    - cells a listed JDK method writes, where the callee has no array store of its own;
+    - a String's identity, as an input and as a result;
+    - an `Error` the JVM raises.
+  - Each is **Verified**, non-vacuous, under `--assume 'k >= 0'`, where a JVM tells the versions apart:
+    - `filled` (`Arrays.fill`) and `copied` (`System.arraycopy`): the cell the callee wrote reads 0;
+    - `interned`: the callee tests `s == "key"`, given the literal on one side and a built String on the other;
+    - `same`: two calls' results are one object;
+    - `tagged`: a returned literal is never the literal;
+    - `overflowed` and `exhausted`: the two versions' handlers of a `StackOverflowError` and an `OutOfMemoryError`
+      differ.
+  - Only the rule is wrong. In a scratch copy with the rule off, none of the seven is proved: three are violations,
+    and four stop at a gap or a limit.
+  - **`--no-shared-callees` does not turn the rule off**, though its help says it proves each callee as written. All
+    seven are still Verified with it, since nothing passes it to `bmc::Options::calls_as_one_function`.
+  - Note: the rule runs only in a check made as a pair (`--assume`, `--lemmas`, a `String[]` or a nullable String).
+    Without one, `previous` is `None` and every call runs as written.
+  - **Tried and guarded**, kept in the fixture as controls:
+    - `hashed`: an identity hash through `String.valueOf(Object)` leaves the reach open;
+    - `encoded`: an `UnsupportedEncodingException` from `getBytes(String)` is declined the same way;
+    - `messaged`: an exception's message is a gap under strict.
+  - The rule is preservation's this run, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*:
+    - 287's accepted preservation and 307's two tasks, read with `javap` from the hash-checked JARs and slices: no
+      `if_acmp`, `Arrays.fill` or `arraycopy` in `BCrypt`, which stores into arrays itself, and no recursion.
+    - No caller of either catches an `Error`. 307's previous version's only handler is around `getBytes("UTF-8")`,
+      before the shared call.
+    - Not affected. Whether 289's and 290's reruns take a call is noted as open in the README.
+    - Nothing for the watcher.
+- Preservation's `sqprlwkv` (its fixes for I021 and I022) **holds**. At `qmsonuow`, built apart:
+  - `log_countermodels.rs`, `supertype_countermodels.rs` and `reach_countermodels.rs` pass, their checker-side tests
+    included;
+  - the supertype test there is the README's, word for word but for where its `use` line sits.
+- Tests:
+  - `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` passed;
+  - `function_countermodels.rs` and `tiers.rs` were run on their own after `estimate` and `tag`, and pass;
+  - `lint` agrees.
+  - At `qmsonuow` the README's checker-side test fails on exactly the seven, as it should.
+- Inbox: no open items. I004 is answered by this entry.
+- New on the other lines, not yet challenged: state's `plplrxrt` (a check through a lemma states what the lemma's
+  proof rested on: I017), `vwrmzmst`, `srxyxsns` and `szmkotwz` (286's effect contracts and write set).
+- Next: `plplrxrt` against the stand-in fixture's checker-side test, then state's 286 commits, then item 6's entries
+  for 288 and 289.
 - Status: working
 
 ## Loop settings
